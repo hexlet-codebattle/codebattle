@@ -655,7 +655,7 @@ const fetchPlaybook = (service, init) => (dispatch) => {
       const data = camelizeKeys(response);
       const type = isRecord ? PlaybookStatusCodes.stored : PlaybookStatusCodes.active;
       const urlParams = new URLSearchParams(window.location.search);
-      const isRealtime = urlParams.get("realtime") === "true";
+      const isRealtime = urlParams.get("realtime") !== "false";
       const resolvedData = isRealtime ? resolveRealtimeDiffs(data, type) : resolveDiffs(data, type);
 
       init(dispatch)(resolvedData);

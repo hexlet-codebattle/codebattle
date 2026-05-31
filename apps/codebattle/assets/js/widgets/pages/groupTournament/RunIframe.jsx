@@ -8,7 +8,12 @@ function RunIframe({ title = "Run Viewer", ...props }) {
   const dispatch = useDispatch();
   const currentUserId = useSelector(currentUserIdSelector);
   const { data } = useSelector(groupTournamentSelector);
-  const runs = data?.runs || [];
+  const runs = data?.runs;
+  const runsRef = useRef(runs);
+
+  useEffect(() => {
+    runsRef.current = runs;
+  }, [runs]);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -37,7 +42,7 @@ function RunIframe({ title = "Run Viewer", ...props }) {
         event.data.type === "set_current_user_id_result"
       ) {
         const { place, runId } = event.data;
-        const hasRun = runs.some((run) => run.id === runId);
+        const hasRun = (runsRef.current || []).some((run) => run.id === runId);
 
         if (hasRun) {
           dispatch(actions.updateRun({ runId, place }));
@@ -50,7 +55,7 @@ function RunIframe({ title = "Run Viewer", ...props }) {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [runs, dispatch]);
+  }, [dispatch]);
 
   return <iframe ref={iframeRef} title={title} {...props} />;
 }

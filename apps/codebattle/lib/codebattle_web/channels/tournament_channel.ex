@@ -200,7 +200,7 @@ defmodule CodebattleWeb.TournamentChannel do
       case params do
         %{"type" => "leaderboard"} ->
           tournament.id
-          |> TournamentUserResult.get_leaderboard(32)
+          |> TournamentUserResult.get_leaderboard()
           |> Enum.map(
             &Map.take(&1, [
               :avg_result_percent,

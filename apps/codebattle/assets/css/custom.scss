@@ -62,7 +62,7 @@
   top: 13px;
 }
 
-.cb-custom-event-nav-item.active+.cb-custom-event-nav-item::after {
+.cb-custom-event-nav-item.active + .cb-custom-event-nav-item::after {
   width: 0px;
 }
 
@@ -166,7 +166,7 @@
   color: #94a3b8;
 }
 
-.cb-task-advanced-table tbody tr+tr td {
+.cb-task-advanced-table tbody tr + tr td {
   border-top: 1px solid rgba(148, 163, 184, 0.08);
 }
 
@@ -227,9 +227,11 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg,
-      rgba(4, 6, 10, 0.35) 0%,
-      rgba(4, 6, 10, 0.75) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 10, 0.35) 0%,
+    rgba(4, 6, 10, 0.75) 100%
+  );
   z-index: 0;
 }
 
@@ -243,9 +245,11 @@
 }
 
 .cb-season-leaderboard-filters {
-  background: linear-gradient(180deg,
-      rgba(16, 22, 34, 0.82) 0%,
-      rgba(14, 19, 29, 0.94) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 22, 34, 0.82) 0%,
+    rgba(14, 19, 29, 0.94) 100%
+  );
 }
 
 .cb-season-leaderboard-filters .cb-season-filter-label {
@@ -259,9 +263,11 @@
 .cb-seasons-hero {
   background:
     radial-gradient(circle at top, rgba(201, 165, 108, 0.12), transparent 42%),
-    linear-gradient(135deg,
+    linear-gradient(
+      135deg,
       rgba(42, 42, 53, 0.96) 0%,
-      rgba(23, 23, 32, 0.98) 100%);
+      rgba(23, 23, 32, 0.98) 100%
+    );
   border: 1px solid rgba(201, 165, 108, 0.12);
 }
 
@@ -287,9 +293,11 @@
 .cb-seasons-card {
   background:
     radial-gradient(circle at top, rgba(201, 165, 108, 0.08), transparent 35%),
-    linear-gradient(135deg,
+    linear-gradient(
+      135deg,
       rgba(26, 26, 26, 0.98) 0%,
-      rgba(10, 10, 10, 0.98) 100%);
+      rgba(10, 10, 10, 0.98) 100%
+    );
 }
 
 .cb-seasons-card-header {
@@ -330,9 +338,11 @@
 }
 
 .cb-seasons-empty {
-  background: linear-gradient(135deg,
-      rgba(42, 42, 53, 0.92) 0%,
-      rgba(23, 23, 32, 0.98) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 53, 0.92) 0%,
+    rgba(23, 23, 32, 0.98) 100%
+  );
 }
 
 .cb-profile-heatmap-heading {
@@ -431,12 +441,16 @@
   font-size: 6px;
 }
 
-.cb-profile-heatmap .react-calendar-heatmap .react-calendar-heatmap-month-label {
+.cb-profile-heatmap
+  .react-calendar-heatmap
+  .react-calendar-heatmap-month-label {
   font-size: 7px;
   font-weight: 600;
 }
 
-.cb-profile-heatmap .react-calendar-heatmap .react-calendar-heatmap-weekday-label {
+.cb-profile-heatmap
+  .react-calendar-heatmap
+  .react-calendar-heatmap-weekday-label {
   font-size: 7px;
   font-weight: 500;
 }
@@ -476,7 +490,7 @@
     margin-right: -0.25rem;
   }
 
-  .cb-seasons-podium-row>[class*='col-'] {
+  .cb-seasons-podium-row > [class*='col-'] {
     padding-left: 0.25rem;
     padding-right: 0.25rem;
   }
@@ -569,7 +583,9 @@
   background-color: rgba(28, 36, 52, 0.98) !important;
 }
 
-.cb-season-leaderboard-filters .cb-season-filter-input-group .cb-season-filter-control {
+.cb-season-leaderboard-filters
+  .cb-season-filter-input-group
+  .cb-season-filter-control {
   padding: 0.45rem 0.85rem;
   border: 0 !important;
   border-radius: 0 !important;
@@ -612,30 +628,37 @@
   }
 }
 
-.cb-custom-event-pagination-page-item:first-child .cb-custom-event-pagination-page-link,
-.cb-custom-event-pagination-page-item:nth-child(2) .cb-custom-event-pagination-page-link,
-.cb-custom-event-pagination-page-item:nth-last-child(2) .cb-custom-event-pagination-page-link,
-.cb-custom-event-pagination-page-item:last-child .cb-custom-event-pagination-page-link {
+.cb-custom-event-pagination-page-item:first-child
+  .cb-custom-event-pagination-page-link,
+.cb-custom-event-pagination-page-item:nth-child(2)
+  .cb-custom-event-pagination-page-link,
+.cb-custom-event-pagination-page-item:nth-last-child(2)
+  .cb-custom-event-pagination-page-link,
+.cb-custom-event-pagination-page-item:last-child
+  .cb-custom-event-pagination-page-link {
   color: white;
   background-color: #8c64ff;
   border: 1px solid #8c64ff;
 }
 
-.cb-custom-event-pagination-page-item.disabled .cb-custom-event-pagination-page-link {
+.cb-custom-event-pagination-page-item.disabled
+  .cb-custom-event-pagination-page-link {
   pointer-events: none;
   cursor: auto;
   background-color: #9f8ed4;
   border-color: #9f8ed4;
 }
 
-.cb-custom-event-pagination-page-item.active .cb-custom-event-pagination-page-link {
+.cb-custom-event-pagination-page-item.active
+  .cb-custom-event-pagination-page-link {
   z-index: 3;
   color: white;
   background-color: #8c64ff;
   border: 1px solid #8c64ff;
 }
 
-.cb-custom-event-pagination-page-item:not(.active):not(.disabled):hover .cb-custom-event-pagination-page-link {
+.cb-custom-event-pagination-page-item:not(.active):not(.disabled):hover
+  .cb-custom-event-pagination-page-link {
   z-index: 3;
   color: white;
   background-color: #8c64ff;
@@ -659,7 +682,7 @@
   margin: 0;
 }
 
-.cb-ranking-pagination .cb-ranking-page-btn+.cb-ranking-page-btn {
+.cb-ranking-pagination .cb-ranking-page-btn + .cb-ranking-page-btn {
   margin-left: 0.4rem;
 }
 
@@ -684,7 +707,6 @@
 }
 
 @keyframes cb-run-pending-pulse {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
@@ -1075,21 +1097,20 @@
   bottom: -1rem;
   /* Overlap with next item */
   width: 2px;
-  background-color: #4A5568;
+  background-color: #4a5568;
   z-index: 2;
   pointer-events: none;
 }
 
-.cb-timeline>div:first-child .cb-run-item::after {
+.cb-timeline > div:first-child .cb-run-item::after {
   top: 50%;
   /* Start at the center of the first dot */
 }
 
-.cb-timeline>div:last-child .cb-run-item::after {
+.cb-timeline > div:last-child .cb-run-item::after {
   bottom: 50%;
   /* End at the center of the last dot */
 }
-
 
 .cb-run-item--group {
   background-color: rgba(245, 158, 11, 0.1);
@@ -1116,7 +1137,7 @@
 }
 
 .cb-run-item--timeout::before {
-  background-color: #A0AEC0; // Gray dot
+  background-color: #a0aec0; // Gray dot
 }
 
 .cb-run-item--pending::before {
@@ -1125,7 +1146,6 @@
 }
 
 @keyframes cb-pulse {
-
   0%,
   100% {
     opacity: 1;
@@ -1133,13 +1153,13 @@
   }
 
   50% {
-    opacity: .5;
+    opacity: 0.5;
     transform: translateY(-50%) scale(1.1);
   }
 }
 
 .cb-run-item:hover {
-  background-color: #4A5568;
+  background-color: #4a5568;
 }
 
 .cb-run-item--error:hover {

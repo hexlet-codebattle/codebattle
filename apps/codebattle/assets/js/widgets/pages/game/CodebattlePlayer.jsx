@@ -20,11 +20,28 @@ import ControlPanel from "./ControlPanel";
 const playDelays = {
   [speedModes.normal]: 100,
   [speedModes.fast]: 50,
+  [speedModes.faster]: 25,
+};
+
+const speedScales = {
+  [speedModes.normal]: 1,
+  [speedModes.fast]: 2,
+  [speedModes.faster]: 4,
 };
 
 const isEqual = (float1, float2) => {
   const compareEpsilon = Number.EPSILON;
   return Math.abs(float1 - float2) < compareEpsilon;
+};
+
+const getRecordTime = (records, index) => {
+  if (!records || index < 0 || index >= records.length) return null;
+  try {
+    const parsed = parse(records[index]);
+    return typeof parsed.time === "number" ? parsed.time : null;
+  } catch (e) {
+    return null;
+  }
 };
 
 class CodebattlePlayer extends Component {
@@ -35,7 +52,8 @@ class CodebattlePlayer extends Component {
     const getParams = window.location.href.split("?")[1];
     const parsedParams = getParams ? qs.parse(getParams) : {};
     const nextRecordId = parsedParams.t ? Number(parsedParams.t) : 0;
-    const playbackMode = parsedParams.realtime === "true" ? playbackModes.realtime : playbackModes.standard;
+    const playbackMode =
+      parsedParams.realtime === "false" ? playbackModes.standard : playbackModes.realtime;
 
     this.state = {
       isEnabled: true,
@@ -117,7 +135,10 @@ class CodebattlePlayer extends Component {
 
   onChangePlaybackMode = () => {
     this.setState((state) => ({
-      playbackMode: state.playbackMode === playbackModes.realtime ? playbackModes.standard : playbackModes.realtime,
+      playbackMode:
+        state.playbackMode === playbackModes.realtime
+          ? playbackModes.standard
+          : playbackModes.realtime,
     }));
   };
 
@@ -226,7 +247,7 @@ class CodebattlePlayer extends Component {
           if (currentRecord && nextRecord && currentRecord.time && nextRecord.time) {
             const diff = nextRecord.time - currentRecord.time;
             if (diff >= 0) {
-              const speedScale = speedMode === speedModes.fast ? 2 : 1;
+              const speedScale = speedScales[speedMode] || 1;
               const maxRealtimeDelay = 2000; // max delay between events in real-time is 2 seconds
               delay = Math.min(diff / speedScale, maxRealtimeDelay);
             }
@@ -239,7 +260,11 @@ class CodebattlePlayer extends Component {
 
     // Trigger smooth transition of smoothHandlerPosition
     const targetPosition = handlerPosition + stepCoefficient;
-    this.animateSmoothHandlerPosition(handlerPosition, targetPosition > 1.0 ? 1.0 : targetPosition, delay);
+    this.animateSmoothHandlerPosition(
+      handlerPosition,
+      targetPosition > 1.0 ? 1.0 : targetPosition,
+      delay,
+    );
 
     setTimeout(this.runPlay, delay, handlerPosition);
   };
@@ -279,13 +304,28 @@ class CodebattlePlayer extends Component {
   };
 
   render() {
-    const { recordsCount, mainEvents, roomMachineState } = this.props;
+    const { recordsCount, mainEvents, roomMachineState, records, startTime, totalDuration } =
+      this.props;
 
-    const { isEnabled, direction, handlerPosition, smoothHandlerPosition, lastIntent, nextRecordId, playbackMode } = this.state;
+    const {
+      isEnabled,
+      direction,
+      handlerPosition,
+      smoothHandlerPosition,
+      lastIntent,
+      nextRecordId,
+      playbackMode,
+    } = this.state;
 
     if (!roomMachineState.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
       return null;
     }
+
+    const currentRecordTime = getRecordTime(records, nextRecordId);
+    const currentTime =
+      currentRecordTime !== null && startTime !== null
+        ? Math.max(0, currentRecordTime - startTime)
+        : null;
 
     return (
       <>
@@ -302,6 +342,8 @@ class CodebattlePlayer extends Component {
                   onPlayClick={this.onPlayClick}
                   onPauseClick={this.onPauseClick}
                   onChangeSpeed={this.onChangeSpeed}
+                  currentTime={currentTime}
+                  totalDuration={totalDuration}
                 >
                   <Slider
                     className="cb-slider col-md-7 ml-1"
@@ -323,6 +365,7 @@ class CodebattlePlayer extends Component {
                       lastIntent={lastIntent}
                       recordsCount={recordsCount}
                       setGameState={this.setGameState}
+                      startTime={startTime}
                     />
                   </Slider>
                 </ControlPanel>
@@ -342,11 +385,18 @@ const mapStateToProps = (state) => {
   const recordsCount = records.length;
   const { mainEvents } = state.playbook;
 
+  const startTime = getRecordTime(records, 0);
+  const endTime = getRecordTime(records, recordsCount - 1);
+  const totalDuration =
+    startTime !== null && endTime !== null ? Math.max(0, endTime - startTime) : null;
+
   return {
     records,
     recordsCount,
     stepCoefficient: 1.0 / recordsCount,
     mainEvents,
+    startTime,
+    totalDuration,
   };
 };
 

@@ -9,14 +9,7 @@ import {
   getTitleForRun,
 } from "../../utils/groupTournament";
 
-const RunItem = ({
-  item,
-  items,
-  runId,
-  setRunId,
-  leaderboard,
-  currentUserId,
-}) => {
+const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }) => {
   const isActive = runId === item.id;
   const onClick = () => setRunId(item.id);
 

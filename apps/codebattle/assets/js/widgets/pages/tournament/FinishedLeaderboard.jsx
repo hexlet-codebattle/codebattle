@@ -78,6 +78,7 @@ function FinishedLeaderboard({ leaderboard }) {
                 <tr>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Wins")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Games")}</th>
@@ -118,6 +119,19 @@ function FinishedLeaderboard({ leaderboard }) {
                           )}
                           {(item?.userName ?? "").slice(0, 9) +
                             ((item?.userName?.length ?? 0) > 11 ? "..." : "")}
+                        </div>
+                      </td>
+                      <td title={item?.clanLongName} className={tableDataCellClassName}>
+                        <div
+                          className="cb-custom-event-name"
+                          style={{
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            maxWidth: "13ch",
+                          }}
+                        >
+                          {item?.clanName}
                         </div>
                       </td>
                       <td className={tableDataCellClassName}>{item.score}</td>

@@ -214,7 +214,10 @@ function Header({ name, status, groupTournament }) {
         >
           {i18n.t(badge.labelKey)}
         </span>
-        <a className="btn btn-outline-light rounded-pill px-4" href="https://t.me/+Z0_UGvNt_yE4ODcy">
+        <a
+          className="btn btn-outline-light rounded-pill px-4"
+          href="https://t.me/+Z0_UGvNt_yE4ODcy"
+        >
           {i18n.t("Support")}
         </a>
         <a className="btn btn-outline-light rounded-pill px-4" href="/">

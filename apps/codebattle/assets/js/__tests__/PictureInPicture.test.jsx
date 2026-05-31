@@ -34,7 +34,7 @@ describe("PictureInPicture component", () => {
     const { container } = render(
       <PictureInPicture isActive={false} onClose={jest.fn()}>
         <div>Timer Content</div>
-      </PictureInPicture>
+      </PictureInPicture>,
     );
 
     expect(container).toBeEmptyDOMElement();
@@ -47,7 +47,7 @@ describe("PictureInPicture component", () => {
     render(
       <PictureInPicture isActive={true} onClose={onCloseMock}>
         <div data-testid="pip-child">Timer Content</div>
-      </PictureInPicture>
+      </PictureInPicture>,
     );
 
     await waitFor(() => {
@@ -61,7 +61,7 @@ describe("PictureInPicture component", () => {
     const { unmount } = render(
       <PictureInPicture isActive={true} onClose={jest.fn()}>
         <div>Timer Content</div>
-      </PictureInPicture>
+      </PictureInPicture>,
     );
 
     await waitFor(() => {
@@ -79,7 +79,7 @@ describe("PictureInPicture component", () => {
     render(
       <PictureInPicture isActive={true} onClose={onCloseMock}>
         <div>Timer Content</div>
-      </PictureInPicture>
+      </PictureInPicture>,
     );
 
     await waitFor(() => {

@@ -373,6 +373,8 @@ export const config = {
           case speedModes.normal:
             return speedModes.fast;
           case speedModes.fast:
+            return speedModes.faster;
+          case speedModes.faster:
             return speedModes.normal;
           default:
             throw new Error("Unexpected speedMode [replayer machine]");

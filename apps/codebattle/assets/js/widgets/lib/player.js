@@ -478,10 +478,14 @@ export const reduceRealtimeOriginalRecords = (acc, record, index) => {
     return { ...acc, players: newPlayers, records: [...records, newRecord] };
   }
 
-  const newRecord = createFinalRecord(index, { ...record, time: record.time }, {
-    players,
-    chat: chatState,
-  });
+  const newRecord = createFinalRecord(
+    index,
+    { ...record, time: record.time },
+    {
+      players,
+      chat: chatState,
+    },
+  );
 
   return { ...acc, records: [...records, newRecord] };
 };

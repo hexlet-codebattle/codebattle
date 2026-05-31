@@ -5,6 +5,8 @@ import Tooltip from "react-bootstrap/Tooltip";
 
 import OverlayTrigger from "@/components/OverlayTriggerCompat";
 
+import { formatDuration } from "./ControlPanel";
+
 const handleClassnames = "cb-slider-handle position-absolute rounded-circle";
 const buttonClassnames = "cb-slider-handle-button position-absolute rounded-circle bg-danger";
 const sliderBarClassnames = "cb-slider-bar position-absolute cb-rounded";
@@ -20,12 +22,20 @@ function SliderBar({ value, className }) {
   );
 }
 
-function SliderAction({ value, className, event, setGameState }) {
+function SliderAction({ value, className, event, setGameState, startTime }) {
+  const hasDuration = typeof event.time === "number" && typeof startTime === "number";
+  const durationLabel = hasDuration ? formatDuration(event.time - startTime) : null;
+
   return (
     <div>
       <OverlayTrigger
         placement="top"
-        overlay={<Tooltip id="tooltip-top">{`Check started by ${event.userName}`}</Tooltip>}
+        overlay={
+          <Tooltip id="tooltip-top">
+            {`Check started by ${event.userName}`}
+            {durationLabel ? ` · ${durationLabel}` : ""}
+          </Tooltip>
+        }
       >
         <div
           role="button"
@@ -63,6 +73,7 @@ function CodebattleSliderBar({
   handlerPosition,
   recordsCount,
   setGameState,
+  startTime,
 }) {
   return (
     <>
@@ -82,6 +93,7 @@ function CodebattleSliderBar({
           key={event.recordId}
           event={event}
           setGameState={setGameState}
+          startTime={startTime}
         />
       ))}
       <SliderHandle className={handleClassnames} value={handlerPosition} />

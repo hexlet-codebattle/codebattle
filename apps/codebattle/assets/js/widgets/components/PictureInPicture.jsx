@@ -30,13 +30,7 @@ export function copyStyles(sourceDoc, targetDoc) {
   });
 }
 
-const PictureInPicture = ({
-  isActive,
-  onClose,
-  children,
-  width = 300,
-  height = 150,
-}) => {
+const PictureInPicture = ({ isActive, onClose, children, width = 300, height = 150 }) => {
   const [container, setContainer] = useState(null);
   const pipWindowRef = useRef(null);
 
@@ -75,7 +69,8 @@ const PictureInPicture = ({
 
         const pipContainer = pw.document.createElement("div");
         pipContainer.id = "pip-root";
-        pipContainer.className = "w-100 h-100 d-flex flex-column align-items-center justify-content-center";
+        pipContainer.className =
+          "w-100 h-100 d-flex flex-column align-items-center justify-content-center";
         pw.document.body.appendChild(pipContainer);
 
         pw.addEventListener("pagehide", () => {

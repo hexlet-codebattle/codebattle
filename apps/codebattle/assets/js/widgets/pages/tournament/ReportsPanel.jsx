@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cn from "classnames";
@@ -51,6 +51,31 @@ function ReportsPanel() {
   const players = useSelector(tournamentPlayersSelector);
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
+  const sortedReports = useMemo(() => {
+    const activeCountByOffender = reports.reduce((acc, item) => {
+      if (item.state !== "denied") {
+        acc[item.offenderId] = (acc[item.offenderId] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    return [...reports].sort((a, b) => {
+      const aDenied = a.state === "denied" ? 1 : 0;
+      const bDenied = b.state === "denied" ? 1 : 0;
+      if (aDenied !== bDenied) return aDenied - bDenied;
+
+      const aCount = activeCountByOffender[a.offenderId] || 0;
+      const bCount = activeCountByOffender[b.offenderId] || 0;
+      if (aCount !== bCount) return bCount - aCount;
+
+      if (a.offenderId !== b.offenderId) {
+        return a.offenderId < b.offenderId ? -1 : 1;
+      }
+
+      return new Date(b.insertedAt) - new Date(a.insertedAt);
+    });
+  }, [reports]);
+
   const changeReportState =
     (reportId) =>
     ({ value }) => {
@@ -74,7 +99,7 @@ function ReportsPanel() {
           </tr>
         </thead>
         <tbody>
-          {reports.map((item) => {
+          {sortedReports.map((item) => {
             const offender = players[item.offenderId];
             const reporter = players[item.reporterId];
             return (

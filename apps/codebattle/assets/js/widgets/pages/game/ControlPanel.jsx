@@ -13,6 +13,18 @@ import { actions } from "../../slices";
 
 const gameId = Gon.getAsset("game_id");
 
+const formatDuration = (ms) => {
+  if (ms === null || ms === undefined || Number.isNaN(ms)) return "--:--";
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+};
+
+export { formatDuration };
+
 function ControlPanel({
   roomMachineState,
   onPauseClick,
@@ -22,6 +34,8 @@ function ControlPanel({
   onChangePlaybackMode,
   children,
   nextRecordId,
+  currentTime,
+  totalDuration,
 }) {
   const dispatch = useDispatch();
 
@@ -30,7 +44,7 @@ function ControlPanel({
 
   const speedControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
     "btn-light": speedMode === speedModes.normal,
-    "btn-secondary cb-btn-secondary": speedMode === speedModes.fast,
+    "btn-secondary cb-btn-secondary": speedMode !== speedModes.normal,
   });
 
   const playbackControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
@@ -66,6 +80,13 @@ function ControlPanel({
         )}
       </button>
       {children}
+      {totalDuration !== null && totalDuration !== undefined && (
+        <span className="ml-3 mr-1 small text-monospace cb-text-muted" aria-label="Playback time">
+          {formatDuration(currentTime)}
+          {" / "}
+          {formatDuration(totalDuration)}
+        </span>
+      )}
       <div className="dropup ml-2">
         <button
           className="btn btn-secondary cb-btn-secondary px-2 ml-1 shadow-none d-flex cb-rounded"
@@ -85,15 +106,20 @@ function ControlPanel({
               className={speedControlClassNames}
               onClick={onChangeSpeed}
               aria-label="Toggle speed"
+              title={`Playback speed: ${speedMode}`}
             >
-              x2
+              {speedMode}
             </button>
             {playbackMode && (
               <button
                 type="button"
                 className={playbackControlClassNames}
                 onClick={onChangePlaybackMode}
-                title={playbackMode === playbackModes.realtime ? "Standard playback mode" : "Real-time playback mode"}
+                title={
+                  playbackMode === playbackModes.realtime
+                    ? "Standard playback mode"
+                    : "Real-time playback mode"
+                }
                 aria-label="Toggle playback mode"
               >
                 {playbackMode === playbackModes.realtime ? "RT" : "ST"}
