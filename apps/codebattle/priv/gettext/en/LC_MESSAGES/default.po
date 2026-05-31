@@ -291,10 +291,10 @@ msgid "execution time: %{time} ms"
 msgstr "execution time: %{time} ms"
 
 msgid "Receive:"
-msgstr "Receive:"
+msgstr "Receive:  "
 
 msgid "Expected:"
-msgstr "Expected:"
+msgstr "Expected: "
 
 msgid "Arguments:"
 msgstr "Arguments:"
