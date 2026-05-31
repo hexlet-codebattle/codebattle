@@ -109,7 +109,7 @@ function ReportsPanel() {
                     </span>
                   </td>
                   <td className={tableDataCellClassName}>
-                    <a href={`/games/${item.gameId}`}>
+                    <a href={`/games/${item.gameId}?realtime=true`}>
                       <FontAwesomeIcon icon="link" />
                     </a>
                   </td>

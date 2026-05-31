@@ -7,6 +7,7 @@ import { PlayerIcon } from "react-player-controls";
 import { useDispatch } from "react-redux";
 
 import speedModes from "../../config/speedModes";
+import playbackModes from "../../config/playbackModes";
 import { replayerMachineStates } from "../../machines/game";
 import { actions } from "../../slices";
 
@@ -17,6 +18,8 @@ function ControlPanel({
   onPauseClick,
   onPlayClick,
   onChangeSpeed,
+  playbackMode,
+  onChangePlaybackMode,
   children,
   nextRecordId,
 }) {
@@ -28,6 +31,11 @@ function ControlPanel({
   const speedControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
     "btn-light": speedMode === speedModes.normal,
     "btn-secondary cb-btn-secondary": speedMode === speedModes.fast,
+  });
+
+  const playbackControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
+    "btn-light": playbackMode === playbackModes.standard,
+    "btn-secondary cb-btn-secondary": playbackMode === playbackModes.realtime,
   });
 
   const onControlButtonClick = () => {
@@ -80,6 +88,17 @@ function ControlPanel({
             >
               x2
             </button>
+            {playbackMode && (
+              <button
+                type="button"
+                className={playbackControlClassNames}
+                onClick={onChangePlaybackMode}
+                title={playbackMode === playbackModes.realtime ? "Standard playback mode" : "Real-time playback mode"}
+                aria-label="Toggle playback mode"
+              >
+                {playbackMode === playbackModes.realtime ? "RT" : "ST"}
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-sm ml-2 border btn-light cb-rounded"

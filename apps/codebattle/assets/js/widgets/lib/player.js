@@ -315,6 +315,204 @@ export const getFinalState = ({ recordId, records, initRecords }) => {
   return nextRecordId === 0 ? gameInitialState : { ...finalRecord, nextRecordId };
 };
 
+export const reduceRealtimeOriginalRecords = (acc, record, index) => {
+  const { players, records, chat: chatState, type: playbookType } = acc;
+  const { messages, users } = chatState;
+
+  const { type } = record;
+
+  if (type === "update_editor_data" && playbookType === PlaybookStatusCodes.active) {
+    const { editorText: prevEditorText } = find(players, { id: record.id });
+
+    const diff = getDiff(prevEditorText, record.editorText);
+    const newPlayers = updatePlayers(players, {
+      id: record.id,
+      editorText: record.editorText,
+      editorLang: record.editorLang,
+    });
+    const data = {
+      type,
+      userId: record.id,
+      diff,
+      time: record.time,
+    };
+    const newRecord = createFinalRecord(index, data, {
+      players: newPlayers,
+      chat: chatState,
+    });
+
+    return { ...acc, players: newPlayers, records: [...records, newRecord] };
+  }
+
+  if (type === "update_editor_data" && playbookType === PlaybookStatusCodes.stored) {
+    const { editorText, editorLang: prevEditorLang } = find(players, { id: record.id });
+    const { diff } = record;
+
+    const newEditorText = getText(editorText, diff);
+    const editorLang = diff.nextLang || prevEditorLang;
+    const newPlayers = updatePlayers(players, {
+      id: record.id,
+      editorText: newEditorText,
+      editorLang,
+    });
+    const data = {
+      type,
+      userId: record.id,
+      diff: record.diff,
+      time: record.time,
+    };
+    const newRecord = createFinalRecord(index, data, {
+      players: newPlayers,
+      chat: chatState,
+    });
+
+    return { ...acc, players: newPlayers, records: [...records, newRecord] };
+  }
+
+  if (type === "check_complete") {
+    const { checkResult, editorText, editorLang } = record;
+
+    const newPlayers = updatePlayers(players, {
+      id: record.id,
+      checkResult,
+      editorText,
+      editorLang,
+    });
+    const userName = find(players, { id: record.id }).name;
+    const data = {
+      type,
+      userId: record.id,
+      checkResult,
+      userName,
+      recordId: record.recordId,
+      editorText,
+      editorLang,
+      time: record.time,
+    };
+    const newRecord = createFinalRecord(index, data, {
+      players: newPlayers,
+      chat: chatState,
+    });
+
+    return { ...acc, players: newPlayers, records: [...records, newRecord] };
+  }
+
+  if (type === "chat_message") {
+    const message = {
+      id: record.id,
+      time: record.time,
+      name: record.name,
+      text: record.text || record.message,
+    };
+
+    const newMessages = [...messages, message];
+    const newChatState = { users, messages: newMessages };
+    const data = {
+      type,
+      chat: newChatState,
+      time: record.time,
+    };
+    const newRecord = createFinalRecord(index, data, { players });
+
+    return { ...acc, chat: newChatState, records: [...records, newRecord] };
+  }
+
+  if (type === "join_chat") {
+    const user = {
+      id: record.id,
+      name: record.name,
+    };
+
+    const newChatUsers = [...users, user];
+    const newChatState = { users: newChatUsers, messages };
+    const data = {
+      type,
+      chat: newChatState,
+      time: record.time,
+    };
+    const newRecord = createFinalRecord(index, data, { players });
+
+    return { ...acc, chat: newChatState, records: [...records, newRecord] };
+  }
+
+  if (type === "leave_chat") {
+    const newUsers = users.filter((user) => user.id !== record.id);
+    const newChatState = { users: newUsers, messages };
+    const data = {
+      type,
+      chat: newChatState,
+      time: record.time,
+    };
+    const newRecord = createFinalRecord(index, data, { players });
+
+    return { ...acc, chat: newChatState, records: [...records, newRecord] };
+  }
+
+  if (type === "give_up") {
+    const newPlayers = updatePlayersGameResult(
+      players,
+      { id: record.id, gameResult: "gave_up" },
+      { gameResult: "won" },
+    );
+    const data = { type: record.type, time: record.time };
+    const newRecord = createFinalRecord(index, data, {
+      players: newPlayers,
+      chat: chatState,
+    });
+
+    return { ...acc, players: newPlayers, records: [...records, newRecord] };
+  }
+
+  if (type === "game_over") {
+    const newPlayers = updatePlayersGameResult(
+      players,
+      { id: record.id, gameResult: "won" },
+      { gameResult: "lost" },
+    );
+    const data = { type: record.type, time: record.time };
+    const newRecord = createFinalRecord(index, data, {
+      players: newPlayers,
+      chat: chatState,
+    });
+
+    return { ...acc, players: newPlayers, records: [...records, newRecord] };
+  }
+
+  const newRecord = createFinalRecord(index, { ...record, time: record.time }, {
+    players,
+    chat: chatState,
+  });
+
+  return { ...acc, records: [...records, newRecord] };
+};
+
+export const resolveRealtimeDiffs = (playbook, type) => {
+  const [initRecords, restRecords] = partition(
+    playbook.records,
+    (record) => record.type === "init",
+  );
+
+  // record types "init"
+  const initGameState = {
+    type,
+    players: initRecords,
+    records: [],
+    chat: {
+      messages: [],
+      users: [],
+    },
+  };
+
+  const finalGameState = restRecords.reduce(reduceRealtimeOriginalRecords, initGameState);
+
+  const finalPlaybook = {
+    ...playbook,
+    initRecords,
+    ...finalGameState,
+  };
+  return finalPlaybook;
+};
+
 export const resolveDiffs = (playbook, type) => {
   const [initRecords, restRecords] = partition(
     playbook.records,

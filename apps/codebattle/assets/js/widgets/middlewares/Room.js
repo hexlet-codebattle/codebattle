@@ -11,7 +11,7 @@ import { channelMethods, channelTopics } from "../../socket";
 import GameRoomModes from "../config/gameModes";
 import GameStateCodes from "../config/gameStateCodes";
 import PlaybookStatusCodes from "../config/playbookStatusCodes";
-import { parse, getFinalState, getText, resolveDiffs } from "../lib/player";
+import { parse, getFinalState, getText, resolveDiffs, resolveRealtimeDiffs } from "../lib/player";
 import * as selectors from "../selectors";
 import { actions, redirectToNewGame } from "../slices";
 import {
@@ -654,7 +654,9 @@ const fetchPlaybook = (service, init) => (dispatch) => {
     .then((response) => {
       const data = camelizeKeys(response);
       const type = isRecord ? PlaybookStatusCodes.stored : PlaybookStatusCodes.active;
-      const resolvedData = resolveDiffs(data, type);
+      const urlParams = new URLSearchParams(window.location.search);
+      const isRealtime = urlParams.get("realtime") === "true";
+      const resolvedData = isRealtime ? resolveRealtimeDiffs(data, type) : resolveDiffs(data, type);
 
       init(dispatch)(resolvedData);
 

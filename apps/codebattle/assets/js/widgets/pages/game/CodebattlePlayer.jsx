@@ -7,8 +7,10 @@ import { connect } from "react-redux";
 
 import RoomContext from "../../components/RoomContext";
 import speedModes from "../../config/speedModes";
+import playbackModes from "../../config/playbackModes";
 import { replayerMachineStates } from "../../machines/game";
 import * as GameActions from "../../middlewares/Room";
+import { parse } from "../../lib/player";
 import { playbookRecordsSelector } from "../../selectors";
 import { actions } from "../../slices";
 
@@ -31,7 +33,10 @@ class CodebattlePlayer extends Component {
     const { stepCoefficient } = props;
 
     const getParams = window.location.href.split("?")[1];
-    const nextRecordId = getParams ? Number(qs.parse(getParams).t || 0) : 0;
+    const parsedParams = getParams ? qs.parse(getParams) : {};
+    const nextRecordId = parsedParams.t ? Number(parsedParams.t) : 0;
+    const playbackMode = parsedParams.realtime === "true" ? playbackModes.realtime : playbackModes.standard;
+
     this.state = {
       isEnabled: true,
       setGameStateDelay: 10,
@@ -39,9 +44,44 @@ class CodebattlePlayer extends Component {
       nextRecordId,
       // handlerPosition and intent have range from 0.0 to 1.0
       handlerPosition: stepCoefficient * nextRecordId,
+      smoothHandlerPosition: stepCoefficient * nextRecordId,
       lastIntent: 0,
+      playbackMode,
     };
   }
+
+  componentWillUnmount() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+  }
+
+  animateSmoothHandlerPosition = (startPosition, targetPosition, duration) => {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+
+    if (duration <= 0) {
+      this.setState({ smoothHandlerPosition: targetPosition });
+      return;
+    }
+
+    const startTime = performance.now();
+
+    const tick = (now) => {
+      const elapsed = now - startTime;
+      const fraction = Math.min(elapsed / duration, 1.0);
+      const newPosition = startPosition + fraction * (targetPosition - startPosition);
+
+      this.setState({ smoothHandlerPosition: newPosition });
+
+      if (fraction < 1.0) {
+        this.animationFrameId = requestAnimationFrame(tick);
+      }
+    };
+
+    this.animationFrameId = requestAnimationFrame(tick);
+  };
 
   // ControlPanel API
 
@@ -63,6 +103,9 @@ class CodebattlePlayer extends Component {
   };
 
   onPauseClick = () => {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
     const { mainService } = this.context;
     mainService.send("PAUSE");
   };
@@ -72,10 +115,19 @@ class CodebattlePlayer extends Component {
     mainService.send("TOGGLE_SPEED_MODE");
   };
 
+  onChangePlaybackMode = () => {
+    this.setState((state) => ({
+      playbackMode: state.playbackMode === playbackModes.realtime ? playbackModes.standard : playbackModes.realtime,
+    }));
+  };
+
   // Slider callbacks
 
   onSliderHandleChange = (value) => {
-    this.setState({ handlerPosition: value });
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    this.setState({ handlerPosition: value, smoothHandlerPosition: value });
 
     const { roomMachineState } = this.props;
     const { setGameStateDelay } = this.state;
@@ -86,6 +138,9 @@ class CodebattlePlayer extends Component {
   };
 
   onSliderHandleChangeStart = () => {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
     const { mainService } = this.context;
     mainService.send("HOLD");
   };
@@ -119,6 +174,9 @@ class CodebattlePlayer extends Component {
   // Helpers
 
   setGameState = (handlerPosition) => {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
     const { setGameStateByRecordId, stepCoefficient, recordsCount } = this.props;
     const { mainService } = this.context;
 
@@ -131,7 +189,7 @@ class CodebattlePlayer extends Component {
       mainService.send("END");
     }
 
-    this.setState({ handlerPosition, nextRecordId });
+    this.setState({ handlerPosition, smoothHandlerPosition: handlerPosition, nextRecordId });
   };
 
   updateGameState = () => {
@@ -144,19 +202,46 @@ class CodebattlePlayer extends Component {
 
     if (nextRecordId >= recordsCount) {
       mainService.send("END");
-      this.setState({ handlerPosition: 1.0 });
+      this.setState({ handlerPosition: 1.0, smoothHandlerPosition: 1.0 });
     }
 
     this.setState({ nextRecordId });
   };
 
   play = (handlerPosition) => {
-    const { roomMachineState } = this.props;
+    const { roomMachineState, records, stepCoefficient } = this.props;
+    const { playbackMode } = this.state;
 
     const { speedMode } = roomMachineState.context;
     const playDelay = playDelays[speedMode];
 
-    setTimeout(this.runPlay, playDelay, handlerPosition);
+    let delay = playDelay;
+
+    if (playbackMode === playbackModes.realtime && records) {
+      const nextRecordId = Math.floor(handlerPosition / stepCoefficient);
+      if (nextRecordId > 0 && nextRecordId < records.length) {
+        try {
+          const currentRecord = parse(records[nextRecordId - 1]);
+          const nextRecord = parse(records[nextRecordId]);
+          if (currentRecord && nextRecord && currentRecord.time && nextRecord.time) {
+            const diff = nextRecord.time - currentRecord.time;
+            if (diff >= 0) {
+              const speedScale = speedMode === speedModes.fast ? 2 : 1;
+              const maxRealtimeDelay = 2000; // max delay between events in real-time is 2 seconds
+              delay = Math.min(diff / speedScale, maxRealtimeDelay);
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    // Trigger smooth transition of smoothHandlerPosition
+    const targetPosition = handlerPosition + stepCoefficient;
+    this.animateSmoothHandlerPosition(handlerPosition, targetPosition > 1.0 ? 1.0 : targetPosition, delay);
+
+    setTimeout(this.runPlay, delay, handlerPosition);
   };
 
   runPlay = (handlerPosition) => {
@@ -173,7 +258,7 @@ class CodebattlePlayer extends Component {
       const offset = handlerPosition + stepCoefficient;
       const newPosition = offset > 1 ? 1 : offset;
 
-      this.setState({ handlerPosition: newPosition });
+      this.setState({ handlerPosition: newPosition, smoothHandlerPosition: newPosition });
 
       this.updateGameState();
       this.play(newPosition);
@@ -196,7 +281,7 @@ class CodebattlePlayer extends Component {
   render() {
     const { recordsCount, mainEvents, roomMachineState } = this.props;
 
-    const { isEnabled, direction, handlerPosition, lastIntent, nextRecordId } = this.state;
+    const { isEnabled, direction, handlerPosition, smoothHandlerPosition, lastIntent, nextRecordId, playbackMode } = this.state;
 
     if (!roomMachineState.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
       return null;
@@ -212,13 +297,15 @@ class CodebattlePlayer extends Component {
                 <ControlPanel
                   nextRecordId={nextRecordId}
                   roomMachineState={roomMachineState}
+                  playbackMode={playbackMode}
+                  onChangePlaybackMode={this.onChangePlaybackMode}
                   onPlayClick={this.onPlayClick}
                   onPauseClick={this.onPauseClick}
                   onChangeSpeed={this.onChangeSpeed}
                 >
                   <Slider
                     className="cb-slider col-md-7 ml-1"
-                    value={handlerPosition}
+                    value={smoothHandlerPosition}
                     isEnabled={isEnabled}
                     direction={direction}
                     onChange={this.onSliderHandleChange}
@@ -232,7 +319,7 @@ class CodebattlePlayer extends Component {
                         replayer: replayerMachineStates.holded,
                       })}
                       mainEvents={mainEvents}
-                      handlerPosition={handlerPosition}
+                      handlerPosition={smoothHandlerPosition}
                       lastIntent={lastIntent}
                       recordsCount={recordsCount}
                       setGameState={this.setGameState}
@@ -251,10 +338,12 @@ class CodebattlePlayer extends Component {
 CodebattlePlayer.contextType = RoomContext;
 
 const mapStateToProps = (state) => {
-  const recordsCount = playbookRecordsSelector(state).length;
+  const records = playbookRecordsSelector(state) || [];
+  const recordsCount = records.length;
   const { mainEvents } = state.playbook;
 
   return {
+    records,
     recordsCount,
     stepCoefficient: 1.0 / recordsCount,
     mainEvents,
