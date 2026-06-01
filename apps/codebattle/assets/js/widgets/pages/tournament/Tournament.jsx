@@ -60,7 +60,7 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
 
   if (tournament.state === TournamentStates.waitingParticipants) {
     return (
-      <div className="h-100">
+      <div className="h-100 text-white">
         {joinCta}
         <Markdown>{tournament.description}</Markdown>
       </div>

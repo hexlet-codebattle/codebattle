@@ -81,9 +81,12 @@ function ControlPanel({
       </button>
       {children}
       {totalDuration !== null && totalDuration !== undefined && (
-        <span className="ml-3 mr-1 small text-monospace cb-text-muted" aria-label="Playback time">
+        <span
+          className="ml-3 mr-1 px-2 py-1 small text-monospace cb-text-light font-weight-bold"
+          aria-label="Playback time"
+        >
           {formatDuration(currentTime)}
-          {" / "}
+          <span className="mx-1 text-secondary">/</span>
           {formatDuration(totalDuration)}
         </span>
       )}
