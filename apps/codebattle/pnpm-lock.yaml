@@ -16,8 +16,8 @@ overrides:
   lodash-es: ^4.18.0
   picomatch@<2.3.2: ^2.3.2
   picomatch@>=4.0.0 <4.0.4: ^4.0.4
-  postcss: ^8.5.10
-  qs: ^6.14.2
+  postcss: ^8.5.15
+  qs: ^6.15.2
   rollup: ^4.59.0
   uuid: ^14.0.0
   yaml@>=1.0.0 <1.10.3: ^1.10.3
@@ -4581,13 +4581,13 @@ packages:
     resolution: {integrity: sha512-0AioNCJZ2DPYz5ABT6bddIqlhgwhpHZ/l65YAYo0BCIn0xiDpsnTHz0gnoTGk0OXZW0JRs+cDwL8u/teRdz+8A==}
     engines: {node: '>=18.0'}
     peerDependencies:
-      postcss: ^8.5.10
+      postcss: ^8.5.15
 
   postcss-scss@4.0.9:
     resolution: {integrity: sha512-AjKOeiwAitL/MXxQW2DliT28EKukvvbEWx3LBmJIRN8KfBGZbRTxNYW0kSqi1COiTZ57nZ9NW06S6ux//N1c9A==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: ^8.5.10
+      postcss: ^8.5.15
 
   postcss-selector-parser@7.1.1:
     resolution: {integrity: sha512-orRsuYpJVw8LdAwqqLykBj9ecS5/cRHlI5+nvTo8LcCKmzDmqVORXtOIYEEQuL9D4BxtA1lm5isAqzQZCoQ6Eg==}
@@ -5289,7 +5289,7 @@ packages:
     resolution: {integrity: sha512-x5DVehzJudcwF0od3sGpgkln2PLLranFE7twwbp7dqDINCyZvwzFkMc6TLhNOvazRiVBJYATQLouJY0xPGB8WA==}
     engines: {node: '>=20'}
     peerDependencies:
-      postcss: ^8.5.10
+      postcss: ^8.5.15
       stylelint: ^17.0.0
     peerDependenciesMeta:
       postcss:
@@ -5305,7 +5305,7 @@ packages:
     resolution: {integrity: sha512-uLJS6xgOCBw5EMsDW7Ukji8l28qRoMnkRch15s0qwZpskXvWt9oPzMmcYM307m9GN4MxuWLsQh4I6hU9yI53cQ==}
     engines: {node: '>=20'}
     peerDependencies:
-      postcss: ^8.5.10
+      postcss: ^8.5.15
       stylelint: ^17.0.0
     peerDependenciesMeta:
       postcss:
