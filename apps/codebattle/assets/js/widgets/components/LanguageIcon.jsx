@@ -6,7 +6,7 @@ import { FaDartLang } from "react-icons/fa6";
 import {
   SiClojure,
   SiCplusplus,
-  SiCss3,
+  SiCss,
   SiElixir,
   SiGo,
   SiJavascript,
@@ -54,7 +54,7 @@ const iconRenderers = {
       size: "1.25em",
     }),
   css: (className, style, color) =>
-    renderSimpleIcon(SiCss3, {
+    renderSimpleIcon(SiCss, {
       className,
       style,
       color,

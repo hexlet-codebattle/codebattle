@@ -262,6 +262,7 @@ export default defineConfig(({ command, mode }) => ({
       "@/selectors": path.resolve(__dirname, "assets/js/widgets/selectors"),
       "@/slices": path.resolve(__dirname, "assets/js/widgets/slices"),
       "@/utils": path.resolve(__dirname, "assets/js/widgets/utils"),
+      "monaco-themes/themes": path.resolve(__dirname, "node_modules/monaco-themes/themes"),
       path: "path-browserify",
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
