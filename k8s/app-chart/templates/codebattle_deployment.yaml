@@ -32,7 +32,7 @@ spec:
       containers:
         - name: nginx
           imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
-          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
+          image: "{{- $reg := default .Values.registry .Values.nginx.image.registry -}}{{- if $reg -}}{{ $reg }}/{{- end -}}{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
           volumeMounts:
             - name: nginx-shm
               mountPath: /dev/shm
@@ -57,7 +57,7 @@ spec:
               value: 127.0.0.1
         - name: codebattle
           imagePullPolicy: "{{ .Values.codebattle.image.imagePullPolicy }}"
-          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
+          image: "{{- $reg := default .Values.registry .Values.codebattle.image.registry -}}{{- if $reg -}}{{ $reg }}/{{- end -}}{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
           resources:
             {{- toYaml .Values.codebattle.resources | nindent 12 }}
           readinessProbe:

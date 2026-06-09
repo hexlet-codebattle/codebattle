@@ -133,13 +133,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     group_tournament.creator_id == user.id || User.admin_or_moderator?(user)
   end
 
-  defp list_runs_opts(%{type: "ranked"}, current_user) do
-    if User.admin_or_moderator?(current_user) do
-      [limit: :infinity]
-    else
-      [limit: :infinity, visible_for_user_id: current_user.id]
-    end
-  end
+  defp list_runs_opts(%{type: "ranked"}, current_user), do: [limit: :infinity, visible_for_user_id: current_user.id]
 
   defp list_runs_opts(_group_tournament, _current_user), do: [limit: :infinity]
 
