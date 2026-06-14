@@ -43,6 +43,23 @@ defmodule Codebattle.Tournament.TaskProviderTest do
     assert TaskProvider.get_rematch_task(random, [task1.id, task2.id, task3.id]) == nil
   end
 
+  test "task_pack + per_round_pair: get_task_ids возвращает task_ids пака в исходном порядке, обрезанные до rounds_limit*2" do
+    [t1, t2, t3, t4, t5] = insert_list(5, :task, level: "easy")
+    insert(:task_pack, name: "ordered-pack", task_ids: [t1.id, t2.id, t3.id, t4.id, t5.id])
+
+    tournament =
+      struct!(Tournament, %{
+        task_provider: "task_pack",
+        task_strategy: "per_round_pair",
+        task_pack_name: "ordered-pack",
+        rounds_limit: 2
+      })
+
+    # Must preserve pack order (per_round_pair uses task_ids[round*2] / [round*2+1])
+    # and trim to rounds_limit * 2 = 4 tasks.
+    assert TaskProvider.get_task_ids(tournament) == [t1.id, t2.id, t3.id, t4.id]
+  end
+
   test "per_round_pair strategy: get_all_tasks берёт 2 × rounds_limit задач (по 2 на раунд)" do
     insert_list(20, :task, level: "easy")
 

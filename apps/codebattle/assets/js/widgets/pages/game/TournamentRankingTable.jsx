@@ -39,11 +39,12 @@ function TournamentRankingTable() {
     lastRoundEndedAt,
     lastRoundStartedAt,
     ranking,
+    roundsLimit,
     state,
     taskIds,
   } = useSelector(tournamentSelector);
-  const tasksCount = taskIds?.length || 0;
-  const isLastRound = tasksCount > 0 && currentRoundPosition + 1 >= tasksCount;
+  const totalRounds = roundsLimit || taskIds?.length || 0;
+  const isLastRound = totalRounds > 0 && currentRoundPosition + 1 >= totalRounds;
   const isTournamentFinished = state === TournamentStates.finished;
 
   return (
@@ -139,7 +140,7 @@ function TournamentRankingTable() {
       </div>
 
       <div className="d-flex justify-content-around align-items-center mt-1">
-        {currentRoundPosition + 1 !== (taskIds?.length || 0) &&
+        {currentRoundPosition + 1 !== totalRounds &&
           gameStatus.state !== GameStateCodes.playing &&
           Number.isInteger(currentRoundTimeoutSeconds) &&
           breakState === "off" && (
@@ -169,11 +170,11 @@ function TournamentRankingTable() {
       </div>
 
       <div className="d-flex justify-content-around align-items-center mt-1">
-        {taskIds?.length > 0 && (
+        {totalRounds > 0 && (
           <span className="font-weight-bold cb-text">
-            {i18next.t("Task")}
+            {i18next.t("Round")}
             {": "}
-            {currentRoundPosition + 1}/{taskIds.length}
+            {currentRoundPosition + 1}/{totalRounds}
           </span>
         )}
       </div>

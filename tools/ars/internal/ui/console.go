@@ -519,17 +519,20 @@ func (m model) optionsFromInputs() (runtime.Options, error) {
 		return runtime.Options{}, fmt.Errorf("join ramp seconds must be zero or positive")
 	}
 
-	return runtime.Options{
-		ServerURL:            strings.TrimSpace(m.inputs[0].Value()),
-		AuthKey:              strings.TrimSpace(m.inputs[1].Value()),
-		UsersCount:           users,
-		RoundsLimit:          rounds,
-		BreakDurationSeconds: breakSeconds,
-		AvgTaskSeconds:       avgTaskSeconds,
-		RandomnessPercent:    randomness,
-		JoinRampSeconds:      joinRampSeconds,
-		LangMix:              runtime.ParseLangMix(m.inputs[8].Value()),
-	}, nil
+	// The settings form only edits 9 fields; preserve the rest (tournament shape, task
+	// provider/strategy, timeouts, etc.) from the master's current options so CLI flags
+	// like -type top200 or -task-pack-name aren't wiped out when the user presses Enter.
+	opts := m.master.Options()
+	opts.ServerURL = strings.TrimSpace(m.inputs[0].Value())
+	opts.AuthKey = strings.TrimSpace(m.inputs[1].Value())
+	opts.UsersCount = users
+	opts.RoundsLimit = rounds
+	opts.BreakDurationSeconds = breakSeconds
+	opts.AvgTaskSeconds = avgTaskSeconds
+	opts.RandomnessPercent = randomness
+	opts.JoinRampSeconds = joinRampSeconds
+	opts.LangMix = runtime.ParseLangMix(m.inputs[8].Value())
+	return opts, nil
 }
 
 func (m model) bumpSpeed(delta int) tea.Cmd {

@@ -17,7 +17,7 @@ function TournamentInfoPanel() {
 
   switch (waitType) {
     case "tournament":
-      return i18n.t("Tournament is over");
+      return i18n.t("Tournament finished");
     case "round":
       return i18n.t("Round is over, wait for the next round");
     case "rematch":

@@ -23,7 +23,7 @@ defmodule Runner.Executor do
 
   defp volume_label_suffix, do: System.get_env("RUNNER_VOLUME_LABEL", "")
 
-  @container_cmd_template "podman run --rm --init --entrypoint= --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
+  @container_cmd_template "docker run --rm --init --entrypoint= --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
   def call(%Runner.Task{type: "sql"}, lang_meta, solution_text, _run_id) do

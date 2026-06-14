@@ -6,7 +6,7 @@ defmodule Runner.AssertsExecutor do
   require Logger
 
   @tmp_basedir "/tmp/codebattle-runner"
-  @container_cmd_template "podman run --rm --init --entrypoint= --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent generate_asserts"
+  @container_cmd_template "docker run --rm --init --entrypoint= --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent generate_asserts"
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
   def call(task, lang_meta, solution_text, arguments_generator_text) do

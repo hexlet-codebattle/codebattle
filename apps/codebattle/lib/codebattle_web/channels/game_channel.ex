@@ -100,6 +100,7 @@ defmodule CodebattleWeb.GameChannel do
          break_duration_seconds: tournament.break_duration_seconds,
          current_round_timeout_seconds: Tournament.Helpers.current_round_timeout_seconds(tournament),
          task_ids: tournament.task_ids,
+         rounds_limit: tournament.rounds_limit,
          current_round_position: tournament.current_round_position
        }
      },

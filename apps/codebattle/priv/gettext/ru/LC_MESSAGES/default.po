@@ -764,10 +764,10 @@ msgid "Loading"
 msgstr "Загружается"
 
 msgid "Round ends in "
-msgstr "Задача завершится через "
+msgstr "Раунд завершится через "
 
 msgid "Next round will start in "
-msgstr "Следующая задача начнется через "
+msgstr "Следующий раунд начнется через "
 
 msgid "Draw"
 msgstr "Ничья"
@@ -843,9 +843,6 @@ msgstr "Баттл официально затащен!"
 
 msgid "Loading next game"
 msgstr "Ожидайте следующую игру"
-
-msgid "Tournament is over"
-msgstr "Раунд с ИИ-ассистентом скоро начнется"
 
 msgid "Round is over, wait for the next round"
 msgstr "Задача решена, дождись следующую"

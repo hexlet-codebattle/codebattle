@@ -16,9 +16,9 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     case parse_tournament_id(tournament_id) do
       {:ok, parsed_tournament_id} ->
         current_user = socket.assigns.current_user
-        group_tournament = GroupTournamentContext.get_group_tournament!(parsed_tournament_id)
+        group_tournament = GroupTournamentContext.get_current_for_player_page(parsed_tournament_id)
 
-        if has_access?(current_user, group_tournament) do
+        if group_tournament && has_access?(current_user, group_tournament) do
           subscribe_to_group_tournament(parsed_tournament_id, group_tournament, current_user)
           join_tournament(socket, current_user, group_tournament, parsed_tournament_id)
         else
@@ -101,14 +101,12 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         group_tournament_id: group_tournament.id
       )
 
-    current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
+    current_player = GroupTournamentContext.get_player(group_tournament.id, current_user.id)
 
     %{
       group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament),
-      current_player: serialize_player(current_player),
-      players: Enum.map(group_tournament.players, &serialize_player/1),
+      current_player: serialize_current_player(current_player),
       solution_history: Enum.map(current_user_solutions, &serialize_solution/1),
-      latest_solution: current_user_solutions |> List.first() |> serialize_solution(),
       runs:
         group_tournament
         |> GroupTournamentContext.list_runs(list_runs_opts(group_tournament, current_user))
@@ -126,29 +124,10 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     end
   end
 
-  defp list_runs_opts(%{type: "ranked"}, current_user) do
-    if Codebattle.User.admin_or_moderator?(current_user) do
-      [limit: :infinity]
-    else
-      [limit: :infinity, visible_for_user_id: current_user.id]
-    end
-  end
+  defp list_runs_opts(_group_tournament, current_user), do: [limit: :infinity, visible_for_user_id: current_user.id]
 
-  defp list_runs_opts(_group_tournament, _current_user), do: [limit: :infinity]
-
-  defp serialize_player(nil), do: nil
-
-  defp serialize_player(player) do
-    %{
-      id: player.id,
-      user_id: player.user_id,
-      name: player.user && player.user.name,
-      lang: player.lang,
-      state: player.state,
-      last_setup_at: player.last_setup_at,
-      inserted_at: player.inserted_at
-    }
-  end
+  defp serialize_current_player(nil), do: nil
+  defp serialize_current_player(player), do: %{lang: player.lang}
 
   def handle_in("request_invite_update", _, socket) do
     current_user = socket.assigns.current_user

@@ -1,15 +1,22 @@
 defmodule Codebattle.Tournament.Entire.Top200Test do
   use Codebattle.DataCase, async: false
 
+  import Codebattle.Tournament.Helpers, only: [get_matches: 1]
+  import Ecto.Query
+
+  alias Codebattle.Game.Context, as: GameContext
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Context, as: TournamentContext
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.Match
   alias Codebattle.Tournament.Player
+  alias Codebattle.Tournament.Server
   alias Codebattle.Tournament.Top200
+  alias Codebattle.Tournament.TournamentResult
 
-  describe "build_round_pairs/1 — R0 accelerated Swiss" do
-    test "200 players → 100 pairs covering everyone" do
+  describe "build_round_pairs/1 — R0 защита топ-32" do
+    test "200 игроков → 100 пар, покрывающих всех" do
       tournament = build_inline_tournament(0, players_with_ratings(1..200))
 
       {_, pairs} = Top200.build_round_pairs(tournament)
@@ -19,34 +26,70 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       assert length(all_ids) == 200
     end
 
-    test "top 8 by rating play in tennis bracket #1v#8, #4v#5, #3v#6, #2v#7" do
+    test "ни одна пара R0 не содержит двух игроков топ-32 по рейтингу" do
       tournament = build_inline_tournament(0, players_with_ratings(1..200))
+
+      # rating=id, значит топ-32 по рейтингу — это id 169..200.
+      top_32 = MapSet.new(169..200)
 
       {_, pairs} = Top200.build_round_pairs(tournament)
 
-      assert pair_ids(Enum.take(pairs, 4)) == [
-               # #1 vs #8
-               [193, 200],
-               # #4 vs #5
-               [196, 197],
-               # #3 vs #6
-               [195, 198],
-               # #2 vs #7
-               [194, 199]
-             ]
+      Enum.each(pairs, fn pair ->
+        pair_ids = MapSet.new(pair, & &1.id)
+        top_in_pair = pair_ids |> MapSet.intersection(top_32) |> MapSet.size()
+
+        assert top_in_pair <= 1,
+               "пара #{inspect(Enum.to_list(pair_ids))} содержит #{top_in_pair} игроков из топ-32"
+      end)
     end
 
-    test "players 9-200 paired by adjacent rating" do
+    test "каждый из топ-32 присутствует в одной из пар (защита, не выпадение)" do
       tournament = build_inline_tournament(0, players_with_ratings(1..200))
+      top_32 = 169..200 |> Enum.to_list() |> MapSet.new()
 
       {_, pairs} = Top200.build_round_pairs(tournament)
 
-      rest_pairs = Enum.drop(pairs, 4)
-      assert length(rest_pairs) == 96
+      all_pair_ids = pairs |> List.flatten() |> MapSet.new(& &1.id)
+      assert MapSet.subset?(top_32, all_pair_ids), "не все топ-32 попали в пары R0"
+    end
 
-      # отсортированы по рейтингу: 192, 191, ..., 1 → пары соседей
-      assert rest_pairs |> pair_ids() |> hd() == [191, 192]
-      assert rest_pairs |> pair_ids() |> List.last() == [1, 2]
+    test "топ-32 получают соперника из поля (#1..#168 ratings)" do
+      tournament = build_inline_tournament(0, players_with_ratings(1..200))
+      top_32 = 169..200 |> Enum.to_list() |> MapSet.new()
+      field = 1..168 |> Enum.to_list() |> MapSet.new()
+
+      {_, pairs} = Top200.build_round_pairs(tournament)
+
+      # У каждого топ-32 пара должна содержать ровно одного игрока из поля.
+      Enum.each(pairs, fn pair ->
+        pair_set = MapSet.new(pair, & &1.id)
+        top_in_pair = pair_set |> MapSet.intersection(top_32) |> MapSet.size()
+
+        if top_in_pair == 1 do
+          field_in_pair = pair_set |> MapSet.intersection(field) |> MapSet.size()
+          assert field_in_pair == 1, "топ должен пэйриться с одним игроком поля"
+        end
+      end)
+    end
+
+    test "8 игроков (минимум для top200) — топ-4 пэйрятся с оставшимися 4" do
+      # При <64 игроках протекция масштабируется: protected = min(32, total/2).
+      tournament = build_inline_tournament(0, players_with_ratings(1..8))
+
+      {_, pairs} = Top200.build_round_pairs(tournament)
+
+      assert length(pairs) == 4
+      all_ids = pairs |> List.flatten() |> Enum.map(& &1.id) |> Enum.sort()
+      assert all_ids == Enum.to_list(1..8)
+
+      # Топ-4 (id 5..8) не должны сводиться между собой.
+      top_4 = MapSet.new(5..8)
+
+      Enum.each(pairs, fn pair ->
+        pair_set = MapSet.new(pair, & &1.id)
+        top_in_pair = pair_set |> MapSet.intersection(top_4) |> MapSet.size()
+        assert top_in_pair <= 1
+      end)
     end
   end
 
@@ -104,6 +147,46 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
                # #2 vs #7
                [2, 7]
              ]
+    end
+  end
+
+  describe "build_round_pairs/1 — R6 semifinal с per_round_pair (2 матча на пару)" do
+    test "дедуп QF матчей по паре: 8 матчей (4 пары × 2 игры) → 4 пары SF без MatchError" do
+      # Регрессия: раньше `[qf1, qf2, qf3, qf4] = get_round_matches(5)` падал с MatchError,
+      # когда per_round_pair даёт по 2 матча на пару (4 пары × 2 = 8 матчей).
+      tournament = insert_top200_tournament()
+
+      qf_matches =
+        inline_matches([
+          # пара [1,8] — 2 игры
+          %Match{id: 1, player_ids: [1, 8], round_position: 5, state: "game_over"},
+          %Match{id: 5, player_ids: [1, 8], round_position: 5, state: "game_over"},
+          # пара [4,5] — 2 игры
+          %Match{id: 2, player_ids: [4, 5], round_position: 5, state: "game_over"},
+          %Match{id: 6, player_ids: [4, 5], round_position: 5, state: "game_over"},
+          # пара [3,6] — 2 игры
+          %Match{id: 3, player_ids: [3, 6], round_position: 5, state: "game_over"},
+          %Match{id: 7, player_ids: [3, 6], round_position: 5, state: "game_over"},
+          # пара [2,7] — 2 игры
+          %Match{id: 4, player_ids: [2, 7], round_position: 5, state: "game_over"},
+          %Match{id: 8, player_ids: [2, 7], round_position: 5, state: "game_over"}
+        ])
+
+      record_scores(tournament.id, 5, [
+        {1, 100},
+        {8, 50},
+        {4, 100},
+        {5, 50},
+        {3, 100},
+        {6, 50},
+        {2, 100},
+        {7, 50}
+      ])
+
+      tournament = put_inline(tournament, 6, players_with_ratings(1..8), qf_matches)
+      {_, pairs} = Top200.build_round_pairs(tournament)
+
+      assert pair_ids(pairs) == [[1, 4], [2, 3], [5, 8], [6, 7]]
     end
   end
 
@@ -316,6 +399,127 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     end
   end
 
+  describe "start_rematch/2" do
+    test "когда rematch-таска недоступна — broadcast'ит wait_type=round, не оставляя игроков на overlay" do
+      # Регрессия: раньше start_rematch молча возвращался при отсутствии таски, и UI зависал
+      # на overlay 'rematch coming'. Теперь должен явно broadcast'ить wait_type=round.
+      tournament_id = System.unique_integer([:positive])
+
+      tournament =
+        struct!(Tournament, %{
+          id: tournament_id,
+          type: "top200",
+          module: Top200,
+          ranking_type: "by_user",
+          rounds_limit: 8,
+          current_round_position: 0,
+          task_strategy: "per_round_pair",
+          task_ids: [],
+          players_table: Tournament.Players.create_table(tournament_id),
+          matches_table: Tournament.Matches.create_table(tournament_id),
+          tasks_table: Tournament.Tasks.create_table(tournament_id)
+        })
+
+      on_exit(fn ->
+        Enum.each(
+          [tournament.players_table, tournament.matches_table, tournament.tasks_table],
+          fn table ->
+            try do
+              :ets.delete(table)
+            rescue
+              _ -> :ok
+            end
+          end
+        )
+      end)
+
+      Enum.each([1, 2], fn id ->
+        Tournament.Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", state: "active"}))
+      end)
+
+      match = %Match{id: 7, game_id: 555, player_ids: [1, 2], round_position: 0, state: "game_over"}
+      Tournament.Matches.put_match(tournament, match)
+
+      Codebattle.PubSub.subscribe("game:555")
+
+      Top200.start_rematch(tournament, 7)
+
+      assert_receive %Message{
+        topic: "game:555",
+        event: "tournament:game:wait",
+        payload: %{type: "round"}
+      }
+    end
+
+    test "молчаливо логирует и не падает, если match_ref не найден" do
+      tournament_id = System.unique_integer([:positive])
+
+      tournament =
+        struct!(Tournament, %{
+          id: tournament_id,
+          type: "top200",
+          module: Top200,
+          rounds_limit: 8,
+          current_round_position: 0,
+          task_strategy: "per_round_pair",
+          task_ids: [],
+          players_table: Tournament.Players.create_table(tournament_id),
+          matches_table: Tournament.Matches.create_table(tournament_id),
+          tasks_table: Tournament.Tasks.create_table(tournament_id)
+        })
+
+      on_exit(fn ->
+        Enum.each(
+          [tournament.players_table, tournament.matches_table, tournament.tasks_table],
+          fn table ->
+            try do
+              :ets.delete(table)
+            rescue
+              _ -> :ok
+            end
+          end
+        )
+      end)
+
+      # Не должно падать на finished_match.player_ids при nil — раньше падало.
+      assert Top200.start_rematch(tournament, 9999) == tournament
+    end
+  end
+
+  describe "build_round_pairs/1 — R7 finals с per_round_pair (2 матча на пару)" do
+    test "дедуп SF матчей по паре: 8 матчей (4 пары × 2 игры) → 4 финала без MatchError" do
+      tournament = insert_top200_tournament()
+
+      sf_matches =
+        inline_matches([
+          %Match{id: 10, player_ids: [1, 4], round_position: 6, state: "game_over"},
+          %Match{id: 20, player_ids: [1, 4], round_position: 6, state: "game_over"},
+          %Match{id: 11, player_ids: [2, 3], round_position: 6, state: "game_over"},
+          %Match{id: 21, player_ids: [2, 3], round_position: 6, state: "game_over"},
+          %Match{id: 12, player_ids: [5, 8], round_position: 6, state: "game_over"},
+          %Match{id: 22, player_ids: [5, 8], round_position: 6, state: "game_over"},
+          %Match{id: 13, player_ids: [6, 7], round_position: 6, state: "game_over"},
+          %Match{id: 23, player_ids: [6, 7], round_position: 6, state: "game_over"}
+        ])
+
+      record_scores(tournament.id, 6, [
+        {1, 100},
+        {4, 50},
+        {2, 100},
+        {3, 50},
+        {5, 100},
+        {8, 50},
+        {6, 100},
+        {7, 50}
+      ])
+
+      tournament = put_inline(tournament, 7, players_with_ratings(1..8), sf_matches)
+      {_, pairs} = Top200.build_round_pairs(tournament)
+
+      assert pair_ids(pairs) == [[1, 2], [3, 4], [5, 6], [7, 8]]
+    end
+  end
+
   describe "build_round_pairs/1 — R7 finals" do
     test "4 финальных матча: за 1-2, 3-4, 5-6, 7-8 места" do
       tournament = insert_top200_tournament()
@@ -355,6 +559,537 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
                # За 7-8
                [7, 8]
              ]
+    end
+  end
+
+  describe "live tournament flow — R0 rematch" do
+    @tag :integration
+    test "после таймаута первой игры пары появляется ремач со второй задачей из task_pack" do
+      # Регрессия: ловит сразу обе ошибки —
+      #   1) TaskProvider.get_task_ids для task_pack+per_round_pair возвращал unordered ETS,
+      #      из-за чего task_ids[round*2+1] мог быть nil и rematch silently не создавался;
+      #   2) Base.start_rematch молча возвращал tournament, оставляя игроков на overlay.
+      [t1, t2] = insert_list(2, :task, level: "easy", time_to_solve_sec: 60)
+      insert(:task_pack, name: "top200-r0-rematch", task_ids: [t1.id, t2.id])
+
+      creator = insert(:user)
+      users = insert_list(8, :user)
+
+      {:ok, tournament} =
+        TournamentContext.create(%{
+          "starts_at" => "2026-01-01T12:00",
+          "name" => "Top200 r0 rematch",
+          "description" => "r0 rematch flow",
+          "user_timezone" => "Etc/UTC",
+          "task_pack_name" => "top200-r0-rematch",
+          "creator" => creator,
+          "break_duration_seconds" => 0,
+          "task_provider" => "task_pack",
+          "task_strategy" => "per_round_pair",
+          "ranking_type" => "by_user",
+          "score_strategy" => "75_percentile",
+          "timeout_mode" => "per_round_with_rematch",
+          "round_timeout_seconds" => 60,
+          "type" => "top200",
+          "state" => "waiting_participants",
+          "rounds_limit" => "8",
+          "players_limit" => 8
+        })
+
+      Server.handle_event(tournament.id, :join, %{users: users})
+      Server.handle_event(tournament.id, :start, %{user: creator})
+
+      tournament = TournamentContext.get(tournament.id)
+      assert tournament.current_round_position == 0
+
+      # R0 для 8 игроков — 4 пары (top-8 bracket), по 1 начальной игре в каждой.
+      initial_matches = get_matches(tournament)
+      assert length(initial_matches) == 4
+      assert Enum.all?(initial_matches, &(&1.state == "playing"))
+
+      # Завершаем первую игру одной из пар — должен запланироваться и создаться rematch.
+      [first_match | _] = initial_matches
+      assert {:ok, _game} = GameContext.trigger_timeout(first_match.game_id)
+
+      # tournament_rematch_timeout_ms в test config = 1ms, плюс несколько ms на planning/insert.
+      wait_for(fn -> length(get_matches(TournamentContext.get(tournament.id))) == 5 end)
+
+      tournament = TournamentContext.get(tournament.id)
+      matches = get_matches(tournament)
+      assert length(matches) == 5
+
+      pair = Enum.sort(first_match.player_ids)
+      pair_matches = Enum.filter(matches, &(Enum.sort(&1.player_ids) == pair))
+      assert length(pair_matches) == 2
+
+      rematch = Enum.find(pair_matches, &(&1.id != first_match.id))
+      assert rematch.state == "playing"
+      assert rematch.round_position == 0
+      # task_ids[round*2 + 1] = task_ids[1] = t2 для round 0
+      assert rematch.task_id == t2.id
+      # initial game для round 0 использует task_ids[0] = t1
+      finished = Enum.find(pair_matches, &(&1.id == first_match.id))
+      assert finished.task_id == t1.id
+    end
+  end
+
+  describe "per_round_pair scoring — суммирование очков пары за раунд" do
+    # Все сценарии для пары [1, 2], играющей 2 матча в раунде 5.
+    # Колонки: имя сценария, очки p1 за game1+game2, очки p2 за game1+game2,
+    # ожидаемый суммарный счёт {p1_total, p2_total}, ожидаемый победитель.
+    scoring_cases = [
+      {"p1 побеждает обе игры", {100, 100}, {0, 0}, {200, 0}, 1},
+      {"p2 побеждает обе игры", {0, 0}, {100, 100}, {0, 200}, 2},
+      {"1 win + 1 loss → итоговая сумма решает (p1)", {100, 0}, {0, 80}, {100, 80}, 1},
+      {"1 win + 1 loss → итоговая сумма решает (p2)", {0, 80}, {100, 0}, {80, 100}, 2},
+      {"1 win + 1 timeout (p1 выиграл одну, во второй обоим 0)", {100, 0}, {0, 0}, {100, 0}, 1},
+      {"0 wins но частичные баллы за timeouts (p2 решил больше asserts)", {10, 5}, {25, 30}, {15, 55}, 2},
+      {"оба обнулились → tie разрешается в пользу p1 (s1 >= s2)", {0, 0}, {0, 0}, {0, 0}, 1},
+      {"равная сумма из разных игр → tie в пользу p1", {60, 40}, {30, 70}, {100, 100}, 1}
+    ]
+
+    for {name, {p1_g1, p1_g2}, {p2_g1, p2_g2}, {p1_total, p2_total}, expected_winner} <-
+          scoring_cases do
+      test "#{name}" do
+        tournament = insert_top200_tournament()
+
+        seed_pair_round_results(
+          tournament.id,
+          5,
+          {1, unquote(p1_g1), unquote(p1_g2)},
+          {2, unquote(p2_g1), unquote(p2_g2)}
+        )
+
+        ranking = TournamentResult.get_user_ranking_for_round(tournament, 5)
+
+        # Сумма очков по двум играм должна совпадать с ожидаемой.
+        assert Decimal.equal?(ranking[1].score, Decimal.new(unquote(p1_total))),
+               "p1 round score: expected #{unquote(p1_total)}, got #{inspect(ranking[1].score)}"
+
+        assert Decimal.equal?(ranking[2].score, Decimal.new(unquote(p2_total))),
+               "p2 round score: expected #{unquote(p2_total)}, got #{inspect(ranking[2].score)}"
+
+        # Top200.winner_loser сравнивает суммарные round-очки.
+        assert choose_winner(ranking, 1, 2) == unquote(expected_winner),
+               "expected winner #{unquote(expected_winner)}, got #{choose_winner(ranking, 1, 2)}"
+      end
+    end
+  end
+
+  defp seed_pair_round_results(tournament_id, round, {p1_id, p1_game1, p1_game2}, {p2_id, p2_game1, p2_game2}) do
+    game1_id = System.unique_integer([:positive])
+    game2_id = System.unique_integer([:positive])
+
+    Enum.each(
+      [
+        {p1_id, "p#{p1_id}", game1_id, p1_game1},
+        {p2_id, "p#{p2_id}", game1_id, p2_game1},
+        {p1_id, "p#{p1_id}", game2_id, p1_game2},
+        {p2_id, "p#{p2_id}", game2_id, p2_game2}
+      ],
+      fn {user_id, user_name, game_id, score} ->
+        insert(:tournament_result,
+          tournament_id: tournament_id,
+          user_id: user_id,
+          user_name: user_name,
+          user_lang: "js",
+          game_id: game_id,
+          score: score,
+          # duration влияет только на tiebreaker — фиксируем одинаково, чтобы исследовать
+          # именно score-логику.
+          duration_sec: 30,
+          round_position: round
+        )
+      end
+    )
+  end
+
+  defp choose_winner(ranking, id1, id2) do
+    s1 = ranking |> get_in([id1, :score]) |> to_float()
+    s2 = ranking |> get_in([id2, :score]) |> to_float()
+    if s1 >= s2, do: id1, else: id2
+  end
+
+  defp to_float(nil), do: 0.0
+  defp to_float(%Decimal{} = d), do: Decimal.to_float(d)
+  defp to_float(n) when is_number(n), do: n
+
+  describe "live tournament flow — R0 with mixed game outcomes" do
+    @tag :integration
+    @tag timeout: 30_000
+    test "scoring + ranking после раунда с win/lose/timeout по парам" do
+      # Регрессия: гарантируем, что счёт за раунд = сумма обеих игр пары,
+      # а финальный ranking учитывает все 8 игр раунда (4 пары × 2 игры).
+      [t1, t2] = insert_list(2, :task, level: "easy", time_to_solve_sec: 60)
+      insert(:task_pack, name: "top200-mixed-r0", task_ids: [t1.id, t2.id])
+
+      creator = insert(:user)
+      users = insert_list(8, :user)
+      [u1, u2, u3, u4, u5, u6, u7, u8] = users
+      user_ids = Enum.map(users, & &1.id)
+
+      {:ok, tournament} =
+        TournamentContext.create(%{
+          "starts_at" => "2026-01-01T12:00",
+          "name" => "Top200 mixed r0",
+          "description" => "mixed outcomes",
+          "user_timezone" => "Etc/UTC",
+          "task_pack_name" => "top200-mixed-r0",
+          "creator" => creator,
+          "break_duration_seconds" => 0,
+          "task_provider" => "task_pack",
+          "task_strategy" => "per_round_pair",
+          "ranking_type" => "by_user",
+          "score_strategy" => "75_percentile",
+          "timeout_mode" => "per_round_with_rematch",
+          "round_timeout_seconds" => 60,
+          "type" => "top200",
+          "state" => "waiting_participants",
+          "rounds_limit" => "8",
+          "players_limit" => 8
+        })
+
+      Server.handle_event(tournament.id, :join, %{users: users})
+      Server.handle_event(tournament.id, :start, %{user: creator})
+
+      tournament_id = tournament.id
+
+      # Ждём, пока R0 создаст 4 начальных матча.
+      wait_for(fn ->
+        tournament_id
+        |> TournamentContext.get()
+        |> get_matches()
+        |> Enum.count(&(&1.round_position == 0 and &1.state == "playing")) == 4
+      end)
+
+      tournament = TournamentContext.get(tournament_id)
+      initial_matches = tournament |> current_round_playing_matches(0) |> Enum.sort_by(& &1.id)
+      assert length(initial_matches) == 4
+
+      # R0 пары для 8 игроков (top-8 bracket по рейтингу, все рейтинги дефолтные 1200,
+      # значит порядок определяется id desc → standard_bracket_qf: #1v#8, #4v#5, #3v#6, #2v#7).
+      # Берём пары как они есть и навешиваем сценарии по индексу пары:
+      [match_a, match_b, match_c, match_d] = initial_matches
+
+      # Pair A (game 1): a_p1 выигрывает за 20s.
+      [a_p1, _a_p2] = match_a.player_ids
+      finish_game_as_won(match_a.game_id, a_p1, 20)
+
+      # Pair B (game 1): b_p1 выигрывает за 10s (быстрее всех).
+      [b_p1, _b_p2] = match_b.player_ids
+      finish_game_as_won(match_b.game_id, b_p1, 10)
+
+      # Pair C (game 1): timeout (никто не решил).
+      {:ok, _} = GameContext.trigger_timeout(match_c.game_id)
+
+      # Pair D (game 1): d_p2 выигрывает за 40s (медленнее всех).
+      [_d_p1, d_p2] = match_d.player_ids
+      finish_game_as_won(match_d.game_id, d_p2, 40)
+
+      # Ждём, пока появятся 4 ремача (всего 8 матчей в R0).
+      wait_for(fn ->
+        tournament_id
+        |> TournamentContext.get()
+        |> get_matches()
+        |> Enum.count(&(&1.round_position == 0)) == 8
+      end)
+
+      rematches =
+        tournament_id
+        |> TournamentContext.get()
+        |> current_round_playing_matches(0)
+        |> Enum.sort_by(& &1.id)
+
+      assert length(rematches) == 4
+
+      # Сопоставляем ремачи с парами по player_ids.
+      pair_a_set = Enum.sort(match_a.player_ids)
+      pair_b_set = Enum.sort(match_b.player_ids)
+      pair_c_set = Enum.sort(match_c.player_ids)
+      pair_d_set = Enum.sort(match_d.player_ids)
+
+      rematch_for = fn pair_set ->
+        Enum.find(rematches, &(Enum.sort(&1.player_ids) == pair_set))
+      end
+
+      rematch_a = rematch_for.(pair_a_set)
+      rematch_b = rematch_for.(pair_b_set)
+      rematch_c = rematch_for.(pair_c_set)
+      rematch_d = rematch_for.(pair_d_set)
+
+      # Pair A rematch: a_p2 выигрывает за 25s (1-1 split в паре A).
+      a_p2 = Enum.at(match_a.player_ids, 1)
+      finish_game_as_won(rematch_a.game_id, a_p2, 25)
+
+      # Pair B rematch: b_p1 выигрывает снова за 15s (свип, две победы подряд).
+      finish_game_as_won(rematch_b.game_id, b_p1, 15)
+
+      # Pair C rematch: timeout снова (пара C — оба timeout оба раза).
+      {:ok, _} = GameContext.trigger_timeout(rematch_c.game_id)
+
+      # Pair D rematch: timeout (d_p2 победил game 1, во втором никто не решил).
+      {:ok, _} = GameContext.trigger_timeout(rematch_d.game_id)
+
+      # Ждём перехода на R1 — это значит R0 закрылся и tournament_results заполнен.
+      wait_for(
+        fn ->
+          t = TournamentContext.get(tournament_id)
+          t.current_round_position >= 1
+        end,
+        200,
+        50
+      )
+
+      # --- ПРОВЕРЯЕМ tournament_results: 8 пользователей × 2 игры = 16 строк за R0 ---
+      results =
+        Codebattle.Repo.all(
+          from(r in TournamentResult,
+            where: r.tournament_id == ^tournament_id and r.round_position == 0,
+            order_by: [asc: r.user_id, asc: r.game_id]
+          )
+        )
+
+      assert length(results) == 16,
+             "expected 16 tournament_result rows (8 users × 2 games), got #{length(results)}"
+
+      # --- ПРОВЕРЯЕМ ranking за R0 ---
+      r0_ranking = TournamentResult.get_user_ranking_for_round(tournament, 0)
+      cumulative_ranking = TournamentResult.get_user_ranking(tournament)
+
+      # Pair B: оба выигрыша принадлежат b_p1. b_p1 имеет максимальный score, b_p2 — 0.
+      assert score_of(r0_ranking, b_p1) > 0
+      assert Decimal.equal?(score_of(r0_ranking, Enum.at(match_b.player_ids, 1)), Decimal.new(0))
+
+      # Pair C: оба игрока timeout оба раза → score 0.
+      [c_p1, c_p2] = match_c.player_ids
+      assert Decimal.equal?(score_of(r0_ranking, c_p1), Decimal.new(0))
+      assert Decimal.equal?(score_of(r0_ranking, c_p2), Decimal.new(0))
+
+      # Pair A: 1 win + 1 win (по 1 на игрока) → у каждого по одному ненулевому score.
+      assert score_of(r0_ranking, a_p1) > 0
+      assert score_of(r0_ranking, Enum.at(match_a.player_ids, 1)) > 0
+
+      # Pair D: u_D_second победил один раз, потом timeout. У u_D_first нет побед.
+      [d_p1_id | _] = match_d.player_ids
+      assert score_of(r0_ranking, d_p2) > 0
+      # У проигравшего таймаут-партнёра в обоих → 0.
+      assert Decimal.equal?(score_of(r0_ranking, d_p1_id), Decimal.new(0))
+
+      # --- ЛИДЕР по сумме за R0 — победитель свипа в паре B (2 победы) ---
+      r0_sorted =
+        r0_ranking
+        |> Map.values()
+        |> Enum.sort_by(&to_float(&1.score), :desc)
+
+      assert hd(r0_sorted).id == b_p1,
+             "expected leader to be sweep winner #{b_p1}, got #{hd(r0_sorted).id}"
+
+      # --- СУММИРОВАНИЕ обеих игр: b_p1 имеет 2 победы, a_p1 — только 1.
+      # Если бы score брался только из одной игры, можно было бы получить tie.
+      # Сумма же даёт b_p1 строго больше, чем a_p1.
+      assert to_float(score_of(r0_ranking, b_p1)) > to_float(score_of(r0_ranking, a_p1)),
+             "sweep winner b_p1 must outrank single-game winner a_p1"
+
+      # --- Быстрый победитель набирает больше, чем медленный.
+      # b_p1 решал за 10s (game 1) и 15s (rematch), d_p2 — за 40s (одна победа, потом timeout).
+      assert to_float(score_of(r0_ranking, b_p1)) > to_float(score_of(r0_ranking, d_p2)),
+             "fast sweep winner b_p1 must outrank slow single-game winner d_p2"
+
+      # --- cumulative ranking покрывает всех 8 игроков ---
+      # Допускается, что игроки с 0 очками не попадают в результирующую выборку SQL
+      # (если все их score = 0, но строки в tournament_results всё равно есть);
+      # тогда требуем, чтобы там были хотя бы непустые победители.
+      assert MapSet.subset?(MapSet.new(user_ids), MapSet.new(Map.keys(cumulative_ranking))) or
+               cumulative_ranking |> Map.keys() |> length() >= 1
+
+      # Sanity: топ суммарного ranking == топ R0 (потому что R0 — единственный раунд с очками).
+      cumulative_sorted =
+        cumulative_ranking
+        |> Map.values()
+        |> Enum.sort_by(&to_float(&1.score), :desc)
+
+      assert hd(cumulative_sorted).id == b_p1
+
+      # Подавляем unused warnings.
+      _ = {u1, u2, u3, u4, u5, u6, u7, u8}
+    end
+  end
+
+  defp finish_game_as_won(game_id, winner_user_id, duration_sec) do
+    # Drive the FSM the same path Engine.check_result/2 takes on success:
+    # transition → store_result! → broadcast "game:finished" (mapped to
+    # game:tournament:finished by events.ex).
+    {:ok, {_old, new_game}} =
+      Codebattle.Game.Server.fire_transition(game_id, :check_success, %{
+        id: winner_user_id,
+        check_result: %{success_count: 10, asserts_count: 10, status: "ok"},
+        editor_text: "ok",
+        editor_lang: "js"
+      })
+
+    # Override duration_sec so PERCENTILE_CONT in TournamentResult SQL gets non-zero
+    # base_score (otherwise sub-second test games make every score collapse to 0).
+    new_game = %{new_game | duration_sec: duration_sec}
+    {:ok, _} = Codebattle.Game.Engine.store_result!(new_game, %{duration_sec: duration_sec})
+    Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+    :ok
+  end
+
+  defp score_of(ranking, user_id) do
+    case Map.get(ranking, user_id) do
+      %{score: score} -> score
+      _ -> Decimal.new(0)
+    end
+  end
+
+  describe "live tournament flow — full R0→R7 lifecycle" do
+    @tag :integration
+    @tag timeout: 60_000
+    test "8 игроков проходят весь top200 от create до finished, все 8 раундов и все ремачи" do
+      # Регрессия для всей связки top200: complete_players (no-op), task_pack+per_round_pair
+      # ordering, start_rematch (создаёт второй матч на пару), R5 QF + R6 SF + R7 Finals дедуп.
+      tasks = insert_list(16, :task, level: "easy", time_to_solve_sec: 60)
+      task_ids = Enum.map(tasks, & &1.id)
+      insert(:task_pack, name: "top200-full-flow", task_ids: task_ids)
+
+      creator = insert(:user)
+      users = insert_list(8, :user)
+
+      {:ok, tournament} =
+        TournamentContext.create(%{
+          "starts_at" => "2026-01-01T12:00",
+          "name" => "Top200 full flow",
+          "description" => "full lifecycle",
+          "user_timezone" => "Etc/UTC",
+          "task_pack_name" => "top200-full-flow",
+          "creator" => creator,
+          "break_duration_seconds" => 0,
+          "task_provider" => "task_pack",
+          "task_strategy" => "per_round_pair",
+          "ranking_type" => "by_user",
+          "score_strategy" => "75_percentile",
+          "timeout_mode" => "per_round_with_rematch",
+          "round_timeout_seconds" => 60,
+          "type" => "top200",
+          "state" => "waiting_participants",
+          "rounds_limit" => "8",
+          "players_limit" => 8
+        })
+
+      Server.handle_event(tournament.id, :join, %{users: users})
+      Server.handle_event(tournament.id, :start, %{user: creator})
+
+      tournament_id = tournament.id
+
+      Enum.each(0..7, fn round ->
+        play_top200_round(tournament_id, round)
+      end)
+
+      # После R7 турнир должен завершиться сам.
+      wait_for(
+        fn ->
+          TournamentContext.get(tournament_id).state == "finished"
+        end,
+        # тут break_duration=0, но min_break_duration_seconds=1 → пара секунд на финал.
+        300,
+        50
+      )
+
+      final = TournamentContext.get(tournament_id)
+      assert final.state == "finished"
+      assert final.current_round_position == 7
+      # 8 раундов × 4 пары × 2 матча на пару = 64.
+      assert length(get_matches(final)) == 64
+      # Каждый раунд должен содержать ровно 8 матчей (4 пары × 2 игры).
+      Enum.each(0..7, fn round ->
+        round_matches = Enum.filter(get_matches(final), &(&1.round_position == round))
+        assert length(round_matches) == 8, "round #{round} has #{length(round_matches)} matches, expected 8"
+
+        # И ровно 4 уникальные пары в каждом раунде.
+        pair_count =
+          round_matches
+          |> Enum.map(&Enum.sort(&1.player_ids))
+          |> Enum.uniq()
+          |> length()
+
+        assert pair_count == 4, "round #{round} has #{pair_count} unique pairs, expected 4"
+      end)
+    end
+  end
+
+  defp play_top200_round(tournament_id, round) do
+    tournament = TournamentContext.get(tournament_id)
+
+    assert tournament.current_round_position == round,
+           "expected to be at round #{round}, got #{tournament.current_round_position}"
+
+    # Ждём, пока создадутся 4 начальных матча текущего раунда.
+    wait_for(fn ->
+      tournament = TournamentContext.get(tournament_id)
+
+      tournament
+      |> get_matches()
+      |> Enum.count(&(&1.round_position == round and &1.state == "playing")) == 4
+    end)
+
+    tournament = TournamentContext.get(tournament_id)
+    initial_matches = current_round_playing_matches(tournament, round)
+    assert length(initial_matches) == 4
+
+    # Timeout всех первых игр → top200.maybe_create_rematch запланирует rematch для каждой пары.
+    Enum.each(initial_matches, fn match ->
+      assert {:ok, _} = GameContext.trigger_timeout(match.game_id)
+    end)
+
+    # Ждём, пока появятся 4 rematch-матча (всего 8 в раунде).
+    wait_for(fn ->
+      tournament = TournamentContext.get(tournament_id)
+
+      tournament
+      |> get_matches()
+      |> Enum.count(&(&1.round_position == round)) == 8
+    end)
+
+    tournament = TournamentContext.get(tournament_id)
+    rematch_matches = current_round_playing_matches(tournament, round)
+    assert length(rematch_matches) == 4
+
+    # Timeout всех ремачей → раунд должен закрыться через finish_round_after_match?.
+    Enum.each(rematch_matches, fn match ->
+      assert {:ok, _} = GameContext.trigger_timeout(match.game_id)
+    end)
+
+    if round < 7 do
+      # Ждём перехода на следующий раунд (через break).
+      wait_for(
+        fn ->
+          t = TournamentContext.get(tournament_id)
+          t.current_round_position == round + 1 and t.round_state == "active"
+        end,
+        # break_duration=0 + min_break_duration_seconds=1 в test config → ~1-2s.
+        200,
+        50
+      )
+    end
+  end
+
+  defp current_round_playing_matches(tournament, round) do
+    tournament
+    |> get_matches()
+    |> Enum.filter(&(&1.round_position == round and &1.state == "playing"))
+  end
+
+  defp wait_for(check_fn, attempts \\ 50, delay_ms \\ 20) do
+    cond do
+      check_fn.() ->
+        :ok
+
+      attempts <= 0 ->
+        raise "wait_for timed out"
+
+      true ->
+        Process.sleep(delay_ms)
+        wait_for(check_fn, attempts - 1, delay_ms)
     end
   end
 

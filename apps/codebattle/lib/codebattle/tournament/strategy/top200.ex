@@ -17,18 +17,31 @@ defmodule Codebattle.Tournament.Top200 do
   @impl Tournament.Base
   def calculate_round_results(tournament), do: tournament
 
-  # R0 — accelerated Swiss:
-  #   топ-8 по рейтингу — бракет #1v#8, #4v#5, #3v#6, #2v#7
-  #   остальные 192 — пары соседей по рейтингу #9v#10, #11v#12, ...
+  # R0 — одна «броня» для топ-32:
+  #   топ-32 по рейтингу не сводятся между собой в первом раунде, чтобы дать им
+  #   разогрев. Каждому из топ-32 случайный соперник из поля, остальное поле
+  #   перемешано случайно и идёт попарно.
   @impl Tournament.Base
   def build_round_pairs(%{current_round_position: 0} = tournament) do
     sorted = sort_by_rating(get_players(tournament))
-    {top_8, rest} = Enum.split(sorted, 8)
+    total = length(sorted)
+    protected_size = min(32, div(total, 2))
 
-    top_pairs = standard_bracket_qf(top_8)
-    rest_pairs = Enum.chunk_every(rest, 2)
+    {top, rest} = Enum.split(sorted, protected_size)
+    shuffled_rest = Enum.shuffle(rest)
 
-    {tournament, top_pairs ++ rest_pairs}
+    {opponents_for_top, field_internal} = Enum.split(shuffled_rest, length(top))
+
+    top_pairs =
+      top
+      |> Enum.zip(opponents_for_top)
+      |> Enum.map(fn {t, f} -> [t, f] end)
+
+    # Если поле нечётное, одиночка просто не получит соперника — обычно мы
+    # сюда не приходим, players_limit/состав турнира контролирует это.
+    internal_pairs = Enum.chunk_every(field_internal, 2, 2, :discard)
+
+    {tournament, top_pairs ++ internal_pairs}
   end
 
   # R1-R4 — Dutch Swiss:
@@ -62,10 +75,12 @@ defmodule Codebattle.Tournament.Top200 do
     qf_results = TournamentResult.get_user_ranking_for_round(tournament, 5)
     players_by_id = id_map(get_players(tournament))
 
+    # per_round_pair: каждая пара играет 2 матча → дедуп по pair, берём первый по id.
     [qf1, qf2, qf3, qf4] =
       tournament
       |> get_round_matches(5)
       |> Enum.sort_by(& &1.id)
+      |> Enum.uniq_by(&Enum.sort(&1.player_ids))
       |> Enum.map(& &1.player_ids)
 
     {qf1_w, qf1_l} = winner_loser(qf1, qf_results)
@@ -92,10 +107,12 @@ defmodule Codebattle.Tournament.Top200 do
     sf_results = TournamentResult.get_user_ranking_for_round(tournament, 6)
     players_by_id = id_map(get_players(tournament))
 
+    # per_round_pair: каждая пара играет 2 матча → дедуп по pair, берём первый по id.
     [sf_main_top, sf_main_bot, sf_cons_top, sf_cons_bot] =
       tournament
       |> get_round_matches(6)
       |> Enum.sort_by(& &1.id)
+      |> Enum.uniq_by(&Enum.sort(&1.player_ids))
       |> Enum.map(& &1.player_ids)
 
     {mt_w, mt_l} = winner_loser(sf_main_top, sf_results)

@@ -569,20 +569,33 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def start_rematch(tournament, match_ref) do
-        finished_match = get_match(tournament, match_ref)
-        new_match_id = matches_count(tournament)
-        players = get_players(tournament, finished_match.player_ids)
-
-        case create_rematch_game(tournament, players, new_match_id) do
+        case get_match(tournament, match_ref) do
           nil ->
-            # TODO: send message that there is no tasks in task_pack
-            nil
+            Logger.warning("start_rematch: match #{inspect(match_ref)} not found in tournament #{tournament.id}")
+            tournament
 
-          game ->
-            build_and_run_match(tournament, players, game, true)
+          finished_match ->
+            new_match_id = matches_count(tournament)
+            players = tournament |> get_players(finished_match.player_ids) |> Enum.reject(&is_nil/1)
+
+            case create_rematch_game(tournament, players, new_match_id) do
+              nil ->
+                # No rematch task available — unblock the players' UI so they don't sit on the wait overlay forever.
+                Logger.warning(
+                  "start_rematch: no rematch task for tournament=#{tournament.id} round=#{tournament.current_round_position} match=#{match_ref}"
+                )
+
+                Codebattle.PubSub.broadcast("tournament:game:wait", %{
+                  game_id: finished_match.game_id,
+                  type: "round"
+                })
+
+              game ->
+                build_and_run_match(tournament, players, game, true)
+            end
+
+            tournament
         end
-
-        tournament
       end
 
       defp pick_game_winner_id(player_ids, player_results) do

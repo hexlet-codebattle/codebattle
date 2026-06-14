@@ -31,19 +31,37 @@ defmodule Codebattle.GroupTournament.Context do
     |> Enum.map(&enrich/1)
   end
 
-  @spec get_group_tournament!(String.t() | pos_integer()) :: GroupTournament.t()
-  def get_group_tournament!(id) do
+  @spec get_group_tournament!(String.t() | pos_integer(), keyword()) :: GroupTournament.t()
+  def get_group_tournament!(id, opts \\ []) do
+    preload_players? = Keyword.get(opts, :preload_players, true)
+
     GroupTournament
     |> Repo.get!(id)
-    |> Repo.preload([:creator, :group_task, players: [:user]])
+    |> Repo.preload(group_tournament_preloads(preload_players?))
     |> enrich()
   end
 
-  @spec get_group_tournament(String.t() | pos_integer()) :: GroupTournament.t() | nil
-  def get_group_tournament(id) do
-    get_group_tournament!(id)
+  @spec get_group_tournament(String.t() | pos_integer(), keyword()) :: GroupTournament.t() | nil
+  def get_group_tournament(id, opts \\ []) do
+    get_group_tournament!(id, opts)
   rescue
     Ecto.NoResultsError -> nil
+  end
+
+  def get_current_for_player_page(id) do
+    case Server.get_group_tournament(id) do
+      nil -> get_group_tournament(id, preload_players: false)
+      group_tournament -> enrich(group_tournament)
+    end
+  end
+
+  def get_current_for_player_page!(id) do
+    get_current_for_player_page(id) || raise Ecto.NoResultsError, queryable: GroupTournament
+  end
+
+  @spec get_player(pos_integer(), pos_integer()) :: GroupTournamentPlayer.t() | nil
+  def get_player(group_tournament_id, user_id) do
+    Repo.get_by(GroupTournamentPlayer, group_tournament_id: group_tournament_id, user_id: user_id)
   end
 
   @spec create_group_tournament(map()) :: {:ok, GroupTournament.t()} | {:error, Ecto.Changeset.t()}
@@ -534,8 +552,18 @@ defmodule Codebattle.GroupTournament.Context do
   end
 
   defp enrich(%GroupTournament{} = group_tournament) do
-    Map.put(group_tournament, :players_count, length(group_tournament.players || []))
+    players_count =
+      if Ecto.assoc_loaded?(group_tournament.players) do
+        length(group_tournament.players || [])
+      else
+        count_players(group_tournament.id)
+      end
+
+    Map.put(group_tournament, :players_count, players_count)
   end
+
+  defp group_tournament_preloads(true), do: [:creator, :group_task, players: [:user]]
+  defp group_tournament_preloads(false), do: [:creator, :group_task]
 
   defp reset_starts_at(%DateTime{} = starts_at) do
     now = DateTime.utc_now()

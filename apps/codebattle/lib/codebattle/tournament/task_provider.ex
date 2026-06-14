@@ -42,6 +42,15 @@ defmodule Codebattle.Tournament.TaskProvider do
     |> Enum.shuffle()
   end
 
+  # per_round_pair must preserve the pack's order so task_ids[round*2] / [round*2+1] is stable.
+  def get_task_ids(%{task_provider: "task_pack", task_strategy: "per_round_pair", task_pack_name: tp_name} = tournament)
+      when not is_nil(tp_name) do
+    [name: tp_name]
+    |> TaskPack.get_by!()
+    |> Map.get(:task_ids)
+    |> Enum.take(tasks_needed_count(tournament))
+  end
+
   def get_task_ids(tournament) do
     Tasks.get_task_ids(tournament)
   end

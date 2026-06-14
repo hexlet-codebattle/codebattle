@@ -18,7 +18,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     max_attempts: 310,
     unique: [
       keys: [:invite_id],
-      states: [:available, :scheduled, :retryable, :executing],
+      states: [:available, :scheduled, :retryable, :executing, :suspended],
       period: :infinity
     ]
 

@@ -1,6 +1,4 @@
 import React from "react";
-import i18n from "../../../i18n";
-import JsonViewerModal from "./JsonViewerModal";
 import Leaderboard from "./Leaderboard";
 import MainPanelTabs from "./MainPanelTabs";
 import MainPanelDescription from "./MainPanelDescription";
@@ -25,17 +23,11 @@ function MainPanel({
   setActiveTab: setActiveTabProp,
 }) {
   const {
-    openJson,
-    setOpenJson,
     activeTab,
     setActiveTab,
     isPendingRun,
     hasViewer,
     isLoadingResult,
-    history,
-    summary,
-    hasHistory,
-    hasSummary,
     hasLeaderboard,
     hasTaskDescription,
   } = useMainPanel({
@@ -66,10 +58,7 @@ function MainPanel({
         <MainPanelRunActions
           activeTab={activeTab}
           run={run}
-          hasHistory={hasHistory}
-          hasSummary={hasSummary}
           hasViewer={hasViewer}
-          setOpenJson={setOpenJson}
           setViewerFullscreen={setViewerFullscreen}
         />
       </div>
@@ -95,18 +84,6 @@ function MainPanel({
       ) : (
         <MainPanelDescription description={description} />
       )}
-      <JsonViewerModal
-        open={openJson === "history"}
-        title={i18n.t("history.json")}
-        value={history}
-        onClose={() => setOpenJson(null)}
-      />
-      <JsonViewerModal
-        open={openJson === "summary"}
-        title={i18n.t("summary.json")}
-        value={summary}
-        onClose={() => setOpenJson(null)}
-      />
     </>
   );
 }

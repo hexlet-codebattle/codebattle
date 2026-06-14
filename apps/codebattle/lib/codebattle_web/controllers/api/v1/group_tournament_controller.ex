@@ -10,25 +10,21 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
 
   def show(conn, %{"id" => id}) do
     current_user = conn.assigns.current_user
-    group_tournament = Context.get_current(id) || Context.get_group_tournament!(id)
+    group_tournament = Context.get_current_for_player_page!(id)
 
     external_setup = ensure_external_setup_if_needed(current_user, group_tournament)
 
-    current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
+    current_player = Context.get_player(group_tournament.id, current_user.id)
 
     current_user_solutions =
       GroupTaskContext.list_user_solutions(group_tournament.group_task_id, current_user.id,
         group_tournament_id: group_tournament.id
       )
 
-    latest_solution = List.first(current_user_solutions)
-
     json(conn, %{
       group_tournament: serialize_group_tournament(group_tournament),
-      current_player: serialize_player(current_player),
-      players: Enum.map(group_tournament.players, &serialize_player/1),
+      current_player: serialize_current_player(current_player),
       solution_history: Enum.map(current_user_solutions, &serialize_solution/1),
-      latest_solution: serialize_solution(latest_solution),
       runs:
         group_tournament
         |> Context.list_runs(list_runs_opts(group_tournament, current_user))
@@ -133,9 +129,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     group_tournament.creator_id == user.id || User.admin_or_moderator?(user)
   end
 
-  defp list_runs_opts(%{type: "ranked"}, current_user), do: [limit: :infinity, visible_for_user_id: current_user.id]
-
-  defp list_runs_opts(_group_tournament, _current_user), do: [limit: :infinity]
+  defp list_runs_opts(_group_tournament, current_user), do: [limit: :infinity, visible_for_user_id: current_user.id]
 
   defp serialize_group_tournament(group_tournament) do
     %{
@@ -162,19 +156,8 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     }
   end
 
-  defp serialize_player(nil), do: nil
-
-  defp serialize_player(player) do
-    %{
-      id: player.id,
-      user_id: player.user_id,
-      name: player.user && player.user.name,
-      lang: player.lang,
-      state: player.state,
-      last_setup_at: player.last_setup_at,
-      inserted_at: player.inserted_at
-    }
-  end
+  defp serialize_current_player(nil), do: nil
+  defp serialize_current_player(player), do: %{lang: player.lang}
 
   defp serialize_solution(nil), do: nil
 
