@@ -292,6 +292,17 @@ export const retryTournament = () => {
   channel.push("tournament:retry", {});
 };
 
+export const kickTournamentPlayer = (userId, onSuccess) => {
+  channel
+    .push("tournament:player:kick", { userId })
+    .receive("ok", (payload) => {
+      if (onSuccess) {
+        onSuccess(camelizeKeys(payload));
+      }
+    })
+    .receive("error", (error) => console.error(error));
+};
+
 export const startRoundTournament = () => {
   channel.push("tournament:start_round", {});
 };

@@ -23,7 +23,7 @@ task_solutions = %{
   "cpp" => "int solution(int a, int b) {\n  return a + b;\n}\n"
 }
 
-Enum.each(1..10, fn x ->
+Enum.each(1..16, fn x ->
   for level <- levels do
     task_params = %{
       level: level,
@@ -295,6 +295,19 @@ for level <- levels do
       visibility: "public",
       state: "active",
       task_ids: Enum.take(task_ids, 10)
+    }
+    |> TaskPack.changeset()
+    |> Repo.insert!()
+
+  name = "16_#{level}"
+
+  Repo.get_by(TaskPack, name: name) ||
+    %TaskPack{
+      creator_id: 1,
+      name: name,
+      visibility: "public",
+      state: "active",
+      task_ids: Enum.take(task_ids, 16)
     }
     |> TaskPack.changeset()
     |> Repo.insert!()

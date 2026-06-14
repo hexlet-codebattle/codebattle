@@ -247,7 +247,7 @@ defmodule CodebattleWeb.GameChannel do
         broadcast!(socket, "user:give_up", %{
           players: game.players,
           state: game.state,
-          msg: "#{user.name} gave up!"
+          msg: gettext("%{name} gave up!", name: user.name)
         })
 
         {:noreply, socket}

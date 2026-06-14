@@ -174,9 +174,20 @@ function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executio
           </div>
         </div>
         <pre className="my-1">
-          <span className={assertClassName}>{`${i18n.t("Receive:")} ${result}`}</span>
-          <span className={assertClassName}>{`${i18n.t("Expected:")} ${assert.expected}`}</span>
-          <span className={assertClassName}>{`${i18n.t("Arguments:")} ${assert.arguments}`}</span>
+          {(() => {
+            const labels = [i18n.t("Receive:"), i18n.t("Expected:"), i18n.t("Arguments:")];
+            const width = Math.max(...labels.map((l) => l.length));
+            const [receiveLabel, expectedLabel, argumentsLabel] = labels.map((l) =>
+              l.padEnd(width),
+            );
+            return (
+              <>
+                <span className={assertClassName}>{`${receiveLabel} ${result}`}</span>
+                <span className={assertClassName}>{`${expectedLabel} ${assert.expected}`}</span>
+                <span className={assertClassName}>{`${argumentsLabel} ${assert.arguments}`}</span>
+              </>
+            );
+          })()}
         </pre>
         {hasOutput && (
           <div

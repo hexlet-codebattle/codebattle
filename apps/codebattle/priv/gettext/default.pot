@@ -206,8 +206,8 @@ msgid "You are in a different game"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:57
-msgid "gave up!"
+#: lib/codebattle_web/channels/game_channel.ex:250
+msgid "%{name} gave up!"
 msgstr ""
 
 #, elixir-format

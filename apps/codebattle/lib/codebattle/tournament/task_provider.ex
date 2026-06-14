@@ -6,21 +6,26 @@ defmodule Codebattle.Tournament.TaskProvider do
   def get_all_tasks(%{task_provider: "all"} = tournament) do
     Codebattle.Task.get_all_visible()
     |> Enum.shuffle()
-    |> Enum.take(tournament.rounds_limit)
+    |> Enum.take(tasks_needed_count(tournament))
   end
 
   def get_all_tasks(%{task_provider: "level", level: level} = tournament) do
     level
     |> Codebattle.Task.get_tasks_by_level()
     |> Enum.shuffle()
-    |> Enum.take(tournament.rounds_limit)
+    |> Enum.take(tasks_needed_count(tournament))
   end
 
   def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name} = tournament) when not is_nil(tp_name) do
     tp_name
     |> TaskPack.get_tasks_by_pack_name()
-    |> Enum.take(tournament.rounds_limit)
+    |> Enum.take(tasks_needed_count(tournament))
   end
+
+  # Сколько задач реально нужно за весь турнир. Для per_round_pair — 2 на раунд.
+  defp tasks_needed_count(%{task_strategy: "per_round_pair", rounds_limit: n}) when is_integer(n), do: n * 2
+  defp tasks_needed_count(%{rounds_limit: n}) when is_integer(n), do: n
+  defp tasks_needed_count(_), do: 0
 
   def get_task_ids(%{task_provider: "task_pack", task_strategy: "sequential", task_pack_name: tp_name})
       when not is_nil(tp_name) do

@@ -123,6 +123,13 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
                     >
                       Open
                     </a>
+                    <a
+                      href={"/admin/tournaments/#{t.id}/stream"}
+                      class="btn btn-sm btn-outline-info cb-rounded ml-1"
+                      target="_blank"
+                    >
+                      Stream
+                    </a>
                     <%= if t.state in ["waiting_participants", "active"] do %>
                       <button
                         phx-click="cancel"
@@ -214,6 +221,13 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
                           target="_blank"
                         >
                           Open
+                        </a>
+                        <a
+                          href={"/admin/tournaments/#{t.id}/stream"}
+                          class="btn btn-sm btn-outline-info cb-rounded ml-1"
+                          target="_blank"
+                        >
+                          Stream
                         </a>
                       </td>
                     </tr>

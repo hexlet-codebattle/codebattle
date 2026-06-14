@@ -9,7 +9,7 @@ import { getResults } from "../../middlewares/Tournament";
 import FinishedLeaderboard from "./FinishedLeaderboard";
 import PlayersRankingPanel from "./PlayersRankingPanel";
 
-function LeaderboardPanel({ state, ranking, playersCount }) {
+function LeaderboardPanel({ canModerate = false, state, ranking, playersCount }) {
   const dispatch = useDispatch();
   const [leaderboard, setLeaderboard] = useState(null);
 
@@ -30,7 +30,13 @@ function LeaderboardPanel({ state, ranking, playersCount }) {
   }
 
   if (ranking) {
-    return <PlayersRankingPanel playersCount={playersCount} ranking={ranking} />;
+    return (
+      <PlayersRankingPanel
+        canModerate={canModerate}
+        playersCount={playersCount}
+        ranking={ranking}
+      />
+    );
   }
 
   return (

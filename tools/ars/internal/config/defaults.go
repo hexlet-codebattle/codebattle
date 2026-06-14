@@ -38,6 +38,16 @@ func LoadDefaults() runtime.Options {
 		RandomnessPercent:    randomness,
 		JoinRampSeconds:      joinRampSeconds,
 		LangMix:              langs,
+		TournamentType:       envValues["ARS_TYPE"],
+		TaskProvider:         envValues["ARS_TASK_PROVIDER"],
+		TaskStrategy:         envValues["ARS_TASK_STRATEGY"],
+		TaskPackName:         envValues["ARS_TASK_PACK_NAME"],
+		Level:                envValues["ARS_LEVEL"],
+		RankingType:          envValues["ARS_RANKING_TYPE"],
+		ScoreStrategy:        envValues["ARS_SCORE_STRATEGY"],
+		TimeoutMode:          envValues["ARS_TIMEOUT_MODE"],
+		RoundTimeoutSeconds:  parseInt(envValues["ARS_ROUND_TIMEOUT_SECONDS"], 0),
+		PlayersLimit:         parseInt(envValues["ARS_PLAYERS_LIMIT"], 0),
 	}
 }
 

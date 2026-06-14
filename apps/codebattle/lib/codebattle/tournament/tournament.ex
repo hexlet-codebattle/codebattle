@@ -70,9 +70,9 @@ defmodule Codebattle.Tournament do
   @score_strategies ~w(75_percentile win_loss)
   @states ~w(upcoming waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack all)
-  @task_strategies ~w(random sequential)
+  @task_strategies ~w(random sequential per_round_pair)
   @timeout_modes ~w(per_task per_round_fixed per_round_with_rematch per_tournament)
-  @types ~w(swiss)
+  @types ~w(swiss top200)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 

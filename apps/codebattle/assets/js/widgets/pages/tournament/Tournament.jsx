@@ -456,6 +456,7 @@ function Tournament() {
                 {tournament.useClan && <TournamentClanTable />}
                 {tournament.state !== TournamentStates.finished && !tournament.useClan && (
                   <PlayersRankingPanel
+                    canModerate={canModerate}
                     playersCount={tournament.playersCount}
                     ranking={tournament.ranking}
                   />

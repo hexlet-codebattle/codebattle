@@ -63,6 +63,16 @@ func (m *Master) Options() Options {
 		RandomnessPercent:    m.opts.RandomnessPercent,
 		JoinRampSeconds:      m.opts.JoinRampSeconds,
 		LangMix:              append([]string(nil), m.opts.LangMix...),
+		TournamentType:       m.opts.TournamentType,
+		TaskProvider:         m.opts.TaskProvider,
+		TaskStrategy:         m.opts.TaskStrategy,
+		TaskPackName:         m.opts.TaskPackName,
+		Level:                m.opts.Level,
+		RankingType:          m.opts.RankingType,
+		ScoreStrategy:        m.opts.ScoreStrategy,
+		TimeoutMode:          m.opts.TimeoutMode,
+		RoundTimeoutSeconds:  m.opts.RoundTimeoutSeconds,
+		PlayersLimit:         m.opts.PlayersLimit,
 	}
 }
 
@@ -87,15 +97,50 @@ func (m *Master) UpdateOptions(opts Options) {
 func (m *Master) CreateScenario(ctx context.Context) error {
 	m.stopWorkers()
 
+	tournamentType := m.opts.TournamentType
+	if tournamentType == "" {
+		tournamentType = "swiss"
+	}
+
+	tournament := map[string]any{
+		"type":                   tournamentType,
+		"access_type":            "token",
+		"rounds_limit":           m.opts.RoundsLimit,
+		"break_duration_seconds": m.opts.BreakDurationSeconds,
+	}
+
+	if v := m.opts.TaskProvider; v != "" {
+		tournament["task_provider"] = v
+	}
+	if v := m.opts.TaskStrategy; v != "" {
+		tournament["task_strategy"] = v
+	}
+	if v := m.opts.TaskPackName; v != "" {
+		tournament["task_pack_name"] = v
+	}
+	if v := m.opts.Level; v != "" {
+		tournament["level"] = v
+	}
+	if v := m.opts.RankingType; v != "" {
+		tournament["ranking_type"] = v
+	}
+	if v := m.opts.ScoreStrategy; v != "" {
+		tournament["score_strategy"] = v
+	}
+	if v := m.opts.TimeoutMode; v != "" {
+		tournament["timeout_mode"] = v
+	}
+	if m.opts.RoundTimeoutSeconds > 0 {
+		tournament["round_timeout_seconds"] = m.opts.RoundTimeoutSeconds
+	}
+	if m.opts.PlayersLimit > 0 {
+		tournament["players_limit"] = m.opts.PlayersLimit
+	}
+
 	req := extapi.ScenarioRequest{
 		UsersCount: m.opts.UsersCount,
 		Languages:  m.opts.LangMix,
-		Tournament: map[string]any{
-			"type":                   "swiss",
-			"access_type":            "token",
-			"rounds_limit":           m.opts.RoundsLimit,
-			"break_duration_seconds": m.opts.BreakDurationSeconds,
-		},
+		Tournament: tournament,
 	}
 
 	scenario, err := m.client.CreateScenario(ctx, req)

@@ -70,6 +70,19 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:player:kick", %{"user_id" => user_id}, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    Tournament.Context.handle_event(tournament_id, :leave, %{
+      user_id: user_id
+    })
+
+    tournament_info = Tournament.Context.get_tournament_info(tournament_id)
+    ranking = Tournament.Ranking.get_page(tournament_info, 1, @default_ranking_size)
+
+    {:reply, {:ok, %{ranking: ranking}}, assign(socket, tournament_info: Helpers.tournament_info(tournament_info))}
+  end
+
   def handle_in("tournament:ban:list_reports", _params, socket) do
     # TODO: for pagination
     tournament_id = socket.assigns.tournament_info.id

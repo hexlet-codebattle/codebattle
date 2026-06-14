@@ -50,20 +50,37 @@ type model struct {
 }
 
 var (
+	panelBorderColor = lipgloss.AdaptiveColor{Light: "#15803D", Dark: "#4ADE80"}
+	fieldBorderColor = lipgloss.AdaptiveColor{Light: "#166534", Dark: "#166534"}
+	titleColor       = lipgloss.AdaptiveColor{Light: "#052E16", Dark: "#BBF7D0"}
+	textColor        = lipgloss.AdaptiveColor{Light: "#111827", Dark: "#DCFCE7"}
+	mutedColor       = lipgloss.AdaptiveColor{Light: "#365314", Dark: "#86EFAC"}
+	okColor          = lipgloss.AdaptiveColor{Light: "#166534", Dark: "#DCFCE7"}
+	errColor         = lipgloss.AdaptiveColor{Light: "#B91C1C", Dark: "#FCA5A5"}
+	accentColor      = lipgloss.AdaptiveColor{Light: "#047857", Dark: "#4ADE80"}
+	chipTextColor    = lipgloss.AdaptiveColor{Light: "#ECFDF5", Dark: "#DCFCE7"}
+	chipBgColor      = lipgloss.AdaptiveColor{Light: "#047857", Dark: "#14532D"}
+	matrixIdleColor  = lipgloss.AdaptiveColor{Light: "#ECFDF5", Dark: "#166534"}
+	matrixDimColor   = lipgloss.AdaptiveColor{Light: "#D1FAE5", Dark: "#14532D"}
+	matrixHeadColor  = lipgloss.AdaptiveColor{Light: "#065F46", Dark: "#DCFCE7"}
+	matrixHighColor  = lipgloss.AdaptiveColor{Light: "#047857", Dark: "#BBF7D0"}
+	matrixMidColor   = lipgloss.AdaptiveColor{Light: "#059669", Dark: "#86EFAC"}
+	matrixLowColor   = lipgloss.AdaptiveColor{Light: "#10B981", Dark: "#4ADE80"}
+
 	rootStyle  = lipgloss.NewStyle()
 	panelStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#4ADE80")).
+			BorderForeground(panelBorderColor).
 			Padding(1, 2)
 	fieldStyle = lipgloss.NewStyle().
 			Border(lipgloss.NormalBorder()).
-			BorderForeground(lipgloss.Color("#166534")).
+			BorderForeground(fieldBorderColor).
 			Padding(0, 1)
-	titleStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#BBF7D0")).Bold(true)
-	mutedStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#86EFAC"))
-	okStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#DCFCE7")).Bold(true)
-	errStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("#FCA5A5")).Bold(true)
-	accentStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4ADE80")).Bold(true)
+	titleStyle  = lipgloss.NewStyle().Foreground(titleColor).Bold(true)
+	mutedStyle  = lipgloss.NewStyle().Foreground(mutedColor)
+	okStyle     = lipgloss.NewStyle().Foreground(okColor).Bold(true)
+	errStyle    = lipgloss.NewStyle().Foreground(errColor).Bold(true)
+	accentStyle = lipgloss.NewStyle().Foreground(accentColor).Bold(true)
 )
 
 const matrixBG = "spaceTLECODEBATTLECODEBATTLECODEBATTLECODEBATTLECODEBATTLECODEBATTLECODEBATTLEC"
@@ -112,9 +129,10 @@ func newInput(placeholder, value string) textinput.Model {
 	ti.SetValue(value)
 	ti.Prompt = "• "
 	ti.Width = 36
-	ti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#DCFCE7"))
-	ti.TextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#DCFCE7"))
-	ti.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4ADE80"))
+	ti.Cursor.Style = lipgloss.NewStyle().Foreground(accentColor)
+	ti.TextStyle = lipgloss.NewStyle().Foreground(textColor)
+	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(mutedColor)
+	ti.PromptStyle = lipgloss.NewStyle().Foreground(accentColor)
 	return ti
 }
 
@@ -314,11 +332,11 @@ func (m model) renderSplash(width, height int) string {
 	heroStyle := lipgloss.NewStyle().
 		Width(panelWidth).
 		Border(lipgloss.DoubleBorder()).
-		BorderForeground(lipgloss.Color("#4ADE80")).
+		BorderForeground(panelBorderColor).
 		Padding(1, 3)
 	chipStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#DCFCE7")).
-		Background(lipgloss.Color("#14532D")).
+		Foreground(chipTextColor).
+		Background(chipBgColor).
 		Padding(0, 1).
 		Bold(true)
 
@@ -441,9 +459,9 @@ func (m model) renderDashboard(width, height int) string {
 }
 
 func (m model) renderHeader(mode string) string {
-	ars := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#DCFCE7")).Render("ARS")
-	modeTag := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#86EFAC")).Render(mode)
-	tag := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#4ADE80")).Render("CODEBATTLE LOAD TEST TOOL")
+	ars := lipgloss.NewStyle().Bold(true).Foreground(textColor).Render("ARS")
+	modeTag := lipgloss.NewStyle().Bold(true).Foreground(mutedColor).Render(mode)
+	tag := lipgloss.NewStyle().Bold(true).Foreground(accentColor).Render("CODEBATTLE LOAD TEST TOOL")
 	return lipgloss.JoinHorizontal(lipgloss.Center, ars, "  ", modeTag, "  ", tag)
 }
 
@@ -547,7 +565,11 @@ func tickCmd() tea.Cmd {
 }
 
 func metricRow(label, value string) string {
-	return lipgloss.JoinHorizontal(lipgloss.Top, mutedStyle.Width(18).Render(label), lipgloss.NewStyle().Bold(true).Render(value))
+	return lipgloss.JoinHorizontal(
+		lipgloss.Top,
+		mutedStyle.Width(18).Render(label),
+		lipgloss.NewStyle().Foreground(textColor).Bold(true).Render(value),
+	)
 }
 
 func tournamentValue(stats runtime.Snapshot) string {
@@ -571,7 +593,7 @@ func renderLogLines(lines []string, width, height, offset int) string {
 	}
 
 	if len(lines) == 0 {
-		return lipgloss.NewStyle().Height(height).Foreground(lipgloss.Color("#86EFAC")).Render("No events yet")
+		return lipgloss.NewStyle().Height(height).Foreground(mutedColor).Render("No events yet")
 	}
 
 	if offset < 0 {
@@ -591,7 +613,7 @@ func renderLogLines(lines []string, width, height, offset int) string {
 	}
 
 	rendered := make([]string, 0, end-start)
-	style := lipgloss.NewStyle().Width(width).Foreground(lipgloss.Color("#DCFCE7"))
+	style := lipgloss.NewStyle().Width(width).Foreground(textColor)
 	for _, line := range lines[start:end] {
 		rendered = append(rendered, style.Render(line))
 	}
@@ -604,13 +626,13 @@ func renderRankingLines(entries []runtime.RankingEntry, width, height int) strin
 	}
 
 	if len(entries) == 0 {
-		return lipgloss.NewStyle().Height(height).Foreground(lipgloss.Color("#86EFAC")).Render("No ranking data yet")
+		return lipgloss.NewStyle().Height(height).Foreground(mutedColor).Render("No ranking data yet")
 	}
 
 	lines := make([]string, 0, min(height, len(entries)))
 	for _, entry := range entries {
 		line := fmt.Sprintf("#%-3d %-18s %5d", entry.Place, trimRight(entry.Name, 18), entry.Score)
-		lines = append(lines, lipgloss.NewStyle().Width(width).Foreground(lipgloss.Color("#DCFCE7")).Render(line))
+		lines = append(lines, lipgloss.NewStyle().Width(width).Foreground(textColor).Render(line))
 		if len(lines) == height {
 			break
 		}
@@ -632,7 +654,7 @@ func matrixColor(frame int) lipgloss.Color {
 func renderARS(frame int) string {
 	_ = frame
 	return lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#BBF7D0")).
+		Foreground(titleColor).
 		Bold(true).
 		Render(`       d8888 8888888b.   .d8888b.  
       d88888 888   Y88b d88P  Y88b 
@@ -713,21 +735,21 @@ func matrixCell(x, y, height, frame int) string {
 	pos := y - (head - streamLen)
 	if pos < 0 || pos >= streamLen {
 		if (x+y+frame)%5 != 0 {
-			return lipgloss.NewStyle().Foreground(lipgloss.Color("#166534")).Render(string(matrixGlyph(x, y, frame)))
+			return lipgloss.NewStyle().Foreground(matrixIdleColor).Render(string(matrixGlyph(x, y, frame)))
 		}
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("#14532D")).Render(string(matrixGlyph(x, y, frame)))
+		return lipgloss.NewStyle().Foreground(matrixDimColor).Render(string(matrixGlyph(x, y, frame)))
 	}
 
 	glyph := string(matrixGlyph(x, y, frame))
 	switch {
 	case pos == streamLen-1:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("#DCFCE7")).Bold(true).Render(glyph)
+		return lipgloss.NewStyle().Foreground(matrixHeadColor).Bold(true).Render(glyph)
 	case pos >= streamLen-3:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("#BBF7D0")).Render(glyph)
+		return lipgloss.NewStyle().Foreground(matrixHighColor).Render(glyph)
 	case pos >= streamLen-6:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("#86EFAC")).Render(glyph)
+		return lipgloss.NewStyle().Foreground(matrixMidColor).Render(glyph)
 	default:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("#4ADE80")).Render(glyph)
+		return lipgloss.NewStyle().Foreground(matrixLowColor).Render(glyph)
 	}
 }
 

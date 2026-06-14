@@ -8,6 +8,7 @@ import { currentUserClanIdSelector, currentUserIdSelector } from "@/selectors";
 
 import LanguageIcon from "../../components/LanguageIcon";
 import { requestNearestRankingPage, requestRankingPage } from "../../middlewares/Tournament";
+import { kickTournamentPlayer } from "../../middlewares/TournamentAdmin";
 
 const getCustomEventTrClassName = (item, selectedId) =>
   cn(
@@ -27,7 +28,7 @@ const tableDataCellClassName = cn(
   "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
 );
 
-function PlayersRankingPanel({ playersCount, ranking }) {
+function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
   const dispatch = useDispatch();
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const currentUserId = useSelector(currentUserIdSelector);
@@ -128,6 +129,16 @@ function PlayersRankingPanel({ playersCount, ranking }) {
     }
   };
 
+  const handleKickPlayer = (player) => {
+    if (!window.confirm(i18next.t("Kick {{name}} from tournament?", { name: player.name }))) {
+      return;
+    }
+
+    kickTournamentPlayer(player.id, () => {
+      dispatch(requestRankingPage(effectivePageNumber, effectivePageSize));
+    });
+  };
+
   return (
     <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
       <div className="my-2">
@@ -149,9 +160,10 @@ function PlayersRankingPanel({ playersCount, ranking }) {
               <table className="table cb-text-light table-striped cb-custom-event-table m-1">
                 <colgroup>
                   <col style={{ width: "12%" }} />
-                  <col style={{ width: "40%" }} />
-                  <col style={{ width: "30%" }} />
-                  <col style={{ width: "18%" }} />
+                  <col style={{ width: canModerate ? "36%" : "40%" }} />
+                  <col style={{ width: canModerate ? "26%" : "30%" }} />
+                  <col style={{ width: canModerate ? "14%" : "18%" }} />
+                  <col style={{ width: canModerate ? "12%" : "0%" }} />
                 </colgroup>
                 <thead>
                   <tr>
@@ -159,12 +171,16 @@ function PlayersRankingPanel({ playersCount, ranking }) {
                     <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
                     <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
                     <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
+                    <th
+                      className="p-1 pl-4 font-weight-light border-0"
+                      aria-label={i18next.t("Actions")}
+                    />
                   </tr>
                 </thead>
                 <tbody>
                   {pagedRankingItems.map((item) => (
                     <React.Fragment key={item.id}>
-                      <tr className="cb-custom-event-empty-space-tr" />
+                      <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                       <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                         <td
                           style={{
@@ -213,8 +229,20 @@ function PlayersRankingPanel({ playersCount, ranking }) {
                             borderBottomRightRadius: "0.5rem",
                           }}
                           className={tableDataCellClassName}
-                          aria-label={i18next.t("Row spacer")}
-                        />
+                          aria-label={canModerate ? i18next.t("Actions") : i18next.t("Row spacer")}
+                        >
+                          {canModerate && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger py-0 px-2"
+                              title={i18next.t("Kick player")}
+                              aria-label={i18next.t("Kick player")}
+                              onClick={() => handleKickPlayer(item)}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     </React.Fragment>
                   ))}

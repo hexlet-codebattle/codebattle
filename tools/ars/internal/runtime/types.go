@@ -12,6 +12,18 @@ type Options struct {
 	RandomnessPercent    int
 	JoinRampSeconds      int
 	LangMix              []string
+
+	// Tournament shape — defaults pick a Swiss/easy setup so legacy callers keep working.
+	TournamentType      string
+	TaskProvider        string
+	TaskStrategy        string
+	TaskPackName        string
+	Level               string
+	RankingType         string
+	ScoreStrategy       string
+	TimeoutMode         string
+	RoundTimeoutSeconds int
+	PlayersLimit        int
 }
 
 type Behavior struct {

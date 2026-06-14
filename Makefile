@@ -138,6 +138,24 @@ ars:
 	@mkdir -p $(ARS_GOCACHE) $(ARS_GOPATH)
 	cd tools/ars && GOCACHE=$(ARS_GOCACHE) GOPATH=$(ARS_GOPATH) go build -o $(ARS_BIN) ./cmd/ars && exec $(ARS_BIN) $(ARS_ARGS)
 
+ars-200:
+	$(MAKE) ars ARS_ARGS="-server http://localhost:4000 -auth-key x-key \
+		-type top200 \
+		-users 200 -players-limit 200 \
+		-rounds 8 \
+		-break-seconds 30 \
+		-round-timeout-seconds 180 \
+		-avg-task-seconds 45 \
+		-randomness 25 \
+		-join-ramp-seconds 10 \
+		-langs python,cpp \
+		-task-provider task_pack \
+		-task-pack-name 16_easy \
+		-task-strategy per_round_pair \
+		-ranking-type by_user \
+		-score-strategy 75_percentile \
+		-timeout-mode per_round_with_rematch"
+
 DIMA_ARGS ?=
 DIMA_GOCACHE ?= $(CURDIR)/tmp/dima-go-build
 DIMA_GOPATH ?= $(CURDIR)/tmp/dima-go

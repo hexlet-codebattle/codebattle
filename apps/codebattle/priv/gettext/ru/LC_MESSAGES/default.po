@@ -12,7 +12,7 @@ msgstr ""
 
 #: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "Welcome to %{name}!"
-msgstr "Добро пожаловать в %{name}"
+msgstr "Добро пожаловать в %{name}!"
 
 #: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "%{name}: game for programmers."
@@ -145,11 +145,11 @@ msgstr "Вы успешно вышли из системы!"
 
 #: lib/codebattle_web/controllers/session_controller.ex:29
 msgid "Welcome to Codebattle!"
-msgstr  "Добро пожаловать в Codebattle!"
+msgstr "Добро пожаловать в Codebattle!"
 
 #: lib/codebattle_web/controllers/session_controller.ex:24
 msgid "Invalid name or password"
-msgstr  "Неверное имя пользователя или пароль"
+msgstr "Неверное имя пользователя или пароль"
 
 #: lib/codebattle_web/controllers/auth_controller.ex:15
 msgid "Failed to authenticate."
@@ -239,9 +239,9 @@ msgid "You are in a different game"
 msgstr "Вы уже участвуете в другой игре"
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:57
-msgid "gave up!"
-msgstr ""
+#: lib/codebattle_web/channels/game_channel.ex:250
+msgid "%{name} gave up!"
+msgstr "%{name} сдаётся!"
 
 #, elixir-format
 #: lib/codebattle_web/channels/game_channel.ex:162

@@ -221,7 +221,12 @@ function CustomTournamentInfoPanel({
           allowedPanelModes={allowedPanelModes}
         />
         {panelMode.panel === PanelModeCodes.leaderboardMode && (
-          <LeaderboardPanel state={state} ranking={ranking} playersCount={playersCount} />
+          <LeaderboardPanel
+            canModerate={canModerate}
+            state={state}
+            ranking={ranking}
+            playersCount={playersCount}
+          />
         )}
         {panelMode.panel === PanelModeCodes.playerMode && (
           <PlayerStatsPanel

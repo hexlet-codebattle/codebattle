@@ -43,6 +43,25 @@ defmodule Codebattle.Tournament.TaskProviderTest do
     assert TaskProvider.get_rematch_task(random, [task1.id, task2.id, task3.id]) == nil
   end
 
+  test "per_round_pair strategy: get_all_tasks берёт 2 × rounds_limit задач (по 2 на раунд)" do
+    insert_list(20, :task, level: "easy")
+
+    tournament =
+      struct!(Tournament, %{
+        task_provider: "level",
+        task_strategy: "per_round_pair",
+        level: "easy",
+        rounds_limit: 8
+      })
+
+    tasks = TaskProvider.get_all_tasks(tournament)
+    assert length(tasks) == 16
+
+    # без per_round_pair — старое поведение, 1 задача на раунд
+    sequential = %{tournament | task_strategy: "sequential"}
+    assert length(TaskProvider.get_all_tasks(sequential)) == 8
+  end
+
   test "per_round_pair strategy: round N → task[2N] (first game) и task[2N+1] (rematch)" do
     [t0a, t0b, t1a, t1b] = insert_list(4, :task, level: "easy")
 

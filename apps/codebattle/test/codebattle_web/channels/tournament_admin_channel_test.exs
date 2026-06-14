@@ -2,6 +2,7 @@ defmodule CodebattleWeb.TournamentAdminChannelTest do
   use CodebattleWeb.ChannelCase
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Helpers
   alias CodebattleWeb.TournamentAdminChannel
   alias CodebattleWeb.UserSocket
 
@@ -36,6 +37,31 @@ defmodule CodebattleWeb.TournamentAdminChannelTest do
       )
 
     channel_socket
+  end
+
+  describe "tournament:player:kick handle_in" do
+    test "removes a player from the tournament" do
+      creator = insert(:user)
+      player = insert(:user)
+      tournament = create_tournament(creator)
+      socket = join_admin(creator, tournament.id)
+
+      Tournament.Context.handle_event(tournament.id, :join, %{user: player})
+      tournament_info = Tournament.Context.get_tournament_info(tournament.id)
+
+      assert Helpers.get_player(tournament_info, player.id)
+
+      ref = push(socket, "tournament:player:kick", %{"user_id" => player.id})
+
+      assert_reply(ref, :ok, %{ranking: %{entries: _entries}})
+      assert_push("tournament:player:left", %{player_id: player_id})
+
+      tournament_info = Tournament.Context.get_tournament_info(tournament.id)
+
+      assert player_id == player.id
+      refute Helpers.get_player(tournament_info, player.id)
+      assert tournament_info.players_count == 0
+    end
   end
 
   describe "tournament:stream:active_game handle_in" do
