@@ -92,6 +92,7 @@ defmodule Codebattle.MixProject do
       {:ex_machina, "~> 2.4", only: :test},
       {:excoveralls, "~> 0.13", only: :test},
       {:floki, "~> 0.29", only: :test},
+      {:lazy_html, ">= 0.1.0", only: :test},
       {:mock, "~> 0.3.5", only: :test},
       {:phoenix_integration, github: "jaimeiniesta/phoenix_integration", branch: "relax-phoenix-html", only: :test}
     ]

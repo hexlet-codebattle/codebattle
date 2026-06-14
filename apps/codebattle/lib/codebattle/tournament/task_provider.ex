@@ -51,9 +51,28 @@ defmodule Codebattle.Tournament.TaskProvider do
     end
   end
 
+  # Раунд N: первая игра — task_ids[2N], ремач — task_ids[2N+1].
+  def get_rematch_task(%{task_strategy: "per_round_pair", current_round_position: round} = tournament, _completed) do
+    tournament.task_ids
+    |> Enum.at(round * 2 + 1)
+    |> case do
+      nil -> nil
+      task_id -> Tasks.get_task(tournament, task_id)
+    end
+  end
+
   def get_rematch_task(tournament, completed_task_ids) do
     (tournament.task_ids -- completed_task_ids)
     |> safe_random()
+    |> case do
+      nil -> nil
+      task_id -> Tasks.get_task(tournament, task_id)
+    end
+  end
+
+  def get_task(%{task_strategy: "per_round_pair", current_round_position: round} = tournament, nil) do
+    tournament.task_ids
+    |> Enum.at(round * 2)
     |> case do
       nil -> nil
       task_id -> Tasks.get_task(tournament, task_id)

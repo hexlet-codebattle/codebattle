@@ -7,6 +7,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
   alias CodebattleWeb.Api.GameView
+  alias CodebattleWeb.TournamentAdminChannel
 
   def show(conn, params) do
     tournament = Tournament.Context.get!(params["id"])
@@ -25,6 +26,57 @@ defmodule CodebattleWeb.Tournament.StreamController do
         game: game_params
       )
       |> render("threejs_stream.html")
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: "NOT_FOUND"})
+      |> halt()
+    end
+  end
+
+  def json_state(conn, params) do
+    tournament = Tournament.Context.get!(params["id"])
+    current_user = conn.assigns[:current_user]
+
+    if Helpers.can_moderate?(tournament, current_user) do
+      clans = if tournament.use_clan, do: Tournament.Clans.get_all(tournament), else: %{}
+      matches = try_get_matches(tournament)
+      players = Helpers.get_players(tournament)
+      active_game_id = TournamentAdminChannel.get_active_game(tournament.id)
+
+      json(conn, %{
+        tournament: Helpers.prepare_to_json(tournament),
+        active_game_id: active_game_id,
+        matches: matches,
+        players: players,
+        clans: clans,
+        ranking: Tournament.Ranking.get_page(tournament, 1, 200)
+      })
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: "NOT_FOUND"})
+      |> halt()
+    end
+  end
+
+  defp try_get_matches(tournament) do
+    Helpers.get_matches(tournament)
+  rescue
+    _ -> []
+  end
+
+  def admin(conn, params) do
+    tournament = Tournament.Context.get!(params["id"])
+    current_user = conn.assigns[:current_user]
+
+    if Helpers.can_moderate?(tournament, current_user) do
+      conn
+      |> put_meta_tags(%{title: "Stream Admin"})
+      |> Phoenix.LiveView.Controller.live_render(
+        CodebattleWeb.Live.Admin.TournamentStreamView,
+        session: %{"current_user" => current_user, "tournament" => tournament}
+      )
     else
       conn
       |> put_status(:not_found)

@@ -986,12 +986,9 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_start_round_timer(%{timeout_mode: "per_task"} = tournament, _round_params), do: tournament
       # per_tournament: global timer handles it
       defp maybe_start_round_timer(%{timeout_mode: "per_tournament"} = tournament, _round_params), do: tournament
-      # per_round_fixed: swiss/top200 don't need round timer (games have individual timeouts,
+      # per_round_fixed: swiss doesn't need round timer (games have individual timeouts,
       # rounds finish when all games complete)
       defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "swiss"} = tournament, _round_params),
-        do: tournament
-
-      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "top200"} = tournament, _round_params),
         do: tournament
 
       # per_round_with_rematch and per_round_fixed (for show type) need the round timer

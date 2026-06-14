@@ -447,7 +447,7 @@ function Pane({
   );
 }
 
-function EditorBody({ player, fontSize, onMount, isWinner }) {
+function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark" }) {
   const language = languages[getPlayerLang(player)] || "javascript";
   const text = getPlayerText(player) || "";
   const lines = text.split("\n");
@@ -458,7 +458,7 @@ function EditorBody({ player, fontSize, onMount, isWinner }) {
   return (
     <div style={{ position: "relative", height: "100%" }}>
       <MonacoEditor
-        theme="vs-dark"
+        theme={theme}
         language={language}
         value={text}
         height="100%"
@@ -489,7 +489,7 @@ function EditorBody({ player, fontSize, onMount, isWinner }) {
   );
 }
 
-function TestsBody({ tests, accent, isWinner }) {
+function TestsBody({ tests, accent, isWinner, kiosk = false }) {
   const total = tests?.assertsCount || 0;
   const success = tests?.successCount || 0;
   const percent = total > 0 ? clamp((success / total) * 100, 0, 100) : 0;
@@ -567,16 +567,23 @@ function TestsBody({ tests, accent, isWinner }) {
           display: "flex",
           alignItems: "baseline",
           justifyContent: "space-between",
-          gap: "8px",
+          gap: kiosk ? "min(3vw, 4vh)" : "8px",
         }}
       >
-        <div style={{ color: "#fff", fontSize: "20px", fontWeight: 700 }}>
+        <div
+          style={{
+            color: "#fff",
+            fontSize: kiosk ? "min(20vw, 30vh)" : "20px",
+            fontWeight: 700,
+            lineHeight: 1,
+          }}
+        >
           {`${success}/${total}`}
         </div>
         <div
           style={{
             color: statusColor,
-            fontSize: "13px",
+            fontSize: kiosk ? "min(3vw, 5vh)" : "13px",
             fontWeight: 700,
             textTransform: "uppercase",
             letterSpacing: "0.05em",
@@ -586,7 +593,12 @@ function TestsBody({ tests, accent, isWinner }) {
         </div>
       </div>
       <div
-        style={{ height: "12px", background: "#0f172a", borderRadius: "3px", overflow: "hidden" }}
+        style={{
+          height: kiosk ? "min(4vw, 6vh)" : "12px",
+          background: "#0f172a",
+          borderRadius: "3px",
+          overflow: "hidden",
+        }}
       >
         <div
           style={{
@@ -685,7 +697,7 @@ function formatDuration(totalSeconds) {
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 }
 
-function TimerBody({ deadlineMs, gameState }) {
+function TimerBody({ deadlineMs, gameState, kiosk = false }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 500);
@@ -700,6 +712,13 @@ function TimerBody({ deadlineMs, gameState }) {
       : null;
   const danger = !finished && remaining !== null && remaining < 60;
 
+  const text = remaining === null ? "--:--" : formatDuration(remaining);
+  const digitsCount = text.length;
+  const digitsFontSize = kiosk ? `min(${Math.floor(160 / digitsCount)}vw, 70vh)` : "44px";
+  const labelFontSize = kiosk ? "min(4vw, 6vh)" : "12px";
+  const stateFontSize = kiosk ? "min(3vw, 5vh)" : "11px";
+  const gap = kiosk ? "min(3vw, 4vh)" : "6px";
+
   return (
     <div
       style={{
@@ -709,14 +728,14 @@ function TimerBody({ deadlineMs, gameState }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "6px",
+        gap,
         fontFamily: "Menlo, Monaco, Consolas, monospace",
       }}
     >
       <div
         style={{
           color: "#94a3b8",
-          fontSize: "12px",
+          fontSize: labelFontSize,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
         }}
@@ -726,24 +745,60 @@ function TimerBody({ deadlineMs, gameState }) {
       <div
         style={{
           color: danger ? brand.red : "#ffffff",
-          fontSize: "44px",
+          fontSize: digitsFontSize,
           fontWeight: 700,
           letterSpacing: "0.04em",
+          lineHeight: 1,
         }}
       >
-        {remaining === null ? "--:--" : formatDuration(remaining)}
+        {text}
       </div>
-      <div style={{ color: "#64748b", fontSize: "11px", textTransform: "uppercase" }}>
+      <div style={{ color: "#64748b", fontSize: stateFontSize, textTransform: "uppercase" }}>
         {gameState}
       </div>
     </div>
   );
 }
 
-function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = {}) {
+const KIOSK_WIDGETS = new Set([
+  "task",
+  "examples",
+  "timer",
+  "leftEditor",
+  "rightEditor",
+  "leftTests",
+  "rightTests",
+]);
+
+function KioskWaiting() {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "#000",
+        color: "#e0bf7a",
+        fontFamily: "Menlo, Monaco, Consolas, monospace",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "26px",
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+      }}
+    >
+      Waiting...
+    </div>
+  );
+}
+
+function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, streamParams } = {}) {
   const gameId = gameIdProp ?? Gon.getAsset("game_id");
   const initialGameSource = initialGameProp ?? Gon.getAsset("game") ?? {};
   const [initialGame, setInitialGame] = useState(initialGameSource);
+  const forceFullscreen = Boolean(streamParams?.fullscreen);
+  const kioskWidget = streamParams?.widget || null;
+  const monacoTheme = streamParams?.editorTheme || "vs-dark";
 
   useEffect(() => {
     setInitialGame(initialGameSource);
@@ -1415,16 +1470,83 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
     return null;
   })();
 
+  if (kioskWidget) {
+    if (!KIOSK_WIDGETS.has(kioskWidget)) {
+      return <KioskWaiting />;
+    }
+
+    const kioskFontSize = streamParams?.fontSize || DEFAULT_FONT_SIZE;
+    let kioskBody = null;
+
+    if (kioskWidget === "task" && taskDescription) {
+      kioskBody = <TaskBody description={taskDescription} fontSize={kioskFontSize} />;
+    } else if (kioskWidget === "examples" && taskExamples) {
+      kioskBody = <ExamplesBody examples={taskExamples} fontSize={kioskFontSize} />;
+    } else if (kioskWidget === "timer") {
+      kioskBody = <TimerBody deadlineMs={deadlineMs} gameState={battleState.gameState} kiosk />;
+    } else if (kioskWidget === "leftEditor" && leftPlayer) {
+      kioskBody = (
+        <EditorBody
+          player={leftPlayer}
+          fontSize={kioskFontSize}
+          onMount={registerEditor(getPlayerId(leftPlayer))}
+          isWinner={leftPlayer?.result === "won"}
+          theme={monacoTheme}
+        />
+      );
+    } else if (kioskWidget === "rightEditor" && rightPlayer) {
+      kioskBody = (
+        <EditorBody
+          player={rightPlayer}
+          fontSize={kioskFontSize}
+          onMount={registerEditor(getPlayerId(rightPlayer))}
+          isWinner={rightPlayer?.result === "won"}
+          theme={monacoTheme}
+        />
+      );
+    } else if (kioskWidget === "leftTests" && leftPlayer) {
+      kioskBody = (
+        <TestsBody
+          tests={battleState.tests[getPlayerId(leftPlayer)]}
+          accent={editorThemes[0].header}
+          isWinner={leftPlayer?.result === "won"}
+          kiosk
+        />
+      );
+    } else if (kioskWidget === "rightTests" && rightPlayer) {
+      kioskBody = (
+        <TestsBody
+          tests={battleState.tests[getPlayerId(rightPlayer)]}
+          accent={editorThemes[1].header}
+          isWinner={rightPlayer?.result === "won"}
+          kiosk
+        />
+      );
+    }
+
+    if (!kioskBody) {
+      return <KioskWaiting />;
+    }
+
+    return (
+      <div style={{ position: "fixed", inset: 0, background: "#000", overflow: "hidden" }}>
+        {kioskBody}
+      </div>
+    );
+  }
+
+  const inFullscreen = isFullscreen || forceFullscreen;
+
   return (
-    <div className={isFullscreen ? "" : "container-fluid px-2 py-2"}>
+    <div className={inFullscreen ? "" : "container-fluid px-2 py-2"}>
       <div className="row">
         <div className="col-12">
           <div
             ref={arenaRef}
-            className={isFullscreen ? "" : "card shadow-sm border-0"}
-            style={{ minHeight: isFullscreen ? "100vh" : "78vh" }}
+            className={inFullscreen ? "" : "card shadow-sm border-0"}
+            style={{ minHeight: inFullscreen ? "100vh" : "78vh" }}
           >
-            {!isFullscreen && (
+            {!inFullscreen && (
               <div className="card-header d-flex justify-content-between align-items-center">
                 <strong>{i18next.t("Matrix Broadcast Arena")}</strong>
                 <div className="d-flex align-items-center">
@@ -1462,8 +1584,8 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
               className="cb-threejs-arena-hover"
               style={{
                 position: "relative",
-                height: isFullscreen ? "100vh" : "68vh",
-                minHeight: isFullscreen ? "100vh" : "68vh",
+                height: inFullscreen ? "100vh" : "68vh",
+                minHeight: inFullscreen ? "100vh" : "68vh",
                 background: "#000",
                 overflow: "hidden",
               }}
@@ -1568,6 +1690,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
                         fontSize={fontSizes.leftEditor}
                         onMount={registerEditor(getPlayerId(leftPlayer))}
                         isWinner={leftPlayer?.result === "won"}
+                        theme={monacoTheme}
                       />
                     </Pane>
 
@@ -1593,6 +1716,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
                         fontSize={fontSizes.rightEditor}
                         onMount={registerEditor(getPlayerId(rightPlayer))}
                         isWinner={rightPlayer?.result === "won"}
+                        theme={monacoTheme}
                       />
                     </Pane>
 

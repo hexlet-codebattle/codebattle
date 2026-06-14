@@ -55,6 +55,7 @@ import {
   renderStairwayGamePage,
   renderStreamPage,
   renderTournamentThreejsStreamPage,
+  renderTournamentStreamAdminPage,
   renderTaskPreviewPage,
   renderTournamentAdminPage,
   renderTournamentPage,
@@ -115,6 +116,7 @@ const invitesRoot = document.getElementById("invites-root");
 const mainChannelRoot = document.getElementById("main-channel-root");
 const streamRoot = document.getElementById("stream-classic-root");
 const tournamentThreejsStreamRoot = document.getElementById("tournament-threejs-stream-root");
+const tournamentStreamAdminRoot = document.getElementById("tournament-stream-admin-root");
 const lobbyRoot = document.getElementById("lobby-root");
 const ratingList = document.getElementById("rating-list");
 const registrationRoot = document.getElementById("registration");
@@ -216,6 +218,10 @@ if (streamRoot) {
 
 if (tournamentThreejsStreamRoot) {
   renderTournamentThreejsStreamPage(tournamentThreejsStreamRoot);
+}
+
+if (tournamentStreamAdminRoot) {
+  renderTournamentStreamAdminPage(tournamentStreamAdminRoot);
 }
 
 if (tournamentsScheduleRoot) {

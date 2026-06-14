@@ -22,6 +22,7 @@ import {
   StairwayGamePage,
   StreamPage,
   TournamentThreejsStreamPage,
+  TournamentStreamAdminPage,
   TournamentAdminPage,
   TournamentPage,
   TournamentEditPage,
@@ -54,6 +55,8 @@ export const renderStairwayGamePage = (domElement) =>
 export const renderStreamPage = (domElement) => createRoot(domElement).render(<StreamPage />);
 export const renderTournamentThreejsStreamPage = (domElement) =>
   createRoot(domElement).render(<TournamentThreejsStreamPage />);
+export const renderTournamentStreamAdminPage = (domElement) =>
+  createRoot(domElement).render(<TournamentStreamAdminPage />);
 export const renderHallOfFame = (domElement) => createRoot(domElement).render(<HallOfFamePage />);
 export const renderHeadToHeadPage = (domElement) =>
   createRoot(domElement).render(<HeadToHeadPage />);

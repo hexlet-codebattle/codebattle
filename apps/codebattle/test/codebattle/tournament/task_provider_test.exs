@@ -43,6 +43,32 @@ defmodule Codebattle.Tournament.TaskProviderTest do
     assert TaskProvider.get_rematch_task(random, [task1.id, task2.id, task3.id]) == nil
   end
 
+  test "per_round_pair strategy: round N → task[2N] (first game) и task[2N+1] (rematch)" do
+    [t0a, t0b, t1a, t1b] = insert_list(4, :task, level: "easy")
+
+    tournament =
+      build_ets_tournament(%{
+        task_strategy: "per_round_pair",
+        current_round_position: 0,
+        task_ids: [t0a.id, t0b.id, t1a.id, t1b.id]
+      })
+
+    Tournament.Tasks.put_tasks(tournament, [t0a, t0b, t1a, t1b])
+
+    # Round 0
+    assert TaskProvider.get_task(tournament, nil).id == t0a.id
+    assert TaskProvider.get_rematch_task(tournament, [t0a.id]).id == t0b.id
+
+    # Round 1
+    round1 = %{tournament | current_round_position: 1}
+    assert TaskProvider.get_task(round1, nil).id == t1a.id
+    assert TaskProvider.get_rematch_task(round1, [t0a.id, t0b.id, t1a.id]).id == t1b.id
+
+    # Out of range
+    assert TaskProvider.get_task(%{tournament | current_round_position: 2}, nil) == nil
+    assert TaskProvider.get_rematch_task(%{tournament | current_round_position: 2}, []) == nil
+  end
+
   test "returns task for current round and explicit task id" do
     [task1, task2] = insert_list(2, :task, level: "easy")
     tournament = build_ets_tournament(%{current_round_position: 1, task_ids: [task1.id, task2.id]})

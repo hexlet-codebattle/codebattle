@@ -244,6 +244,14 @@ defmodule CodebattleWeb.Router do
     post("/tournament_duplicator", TournamentDuplicatorController, :create, as: :admin_tournament_duplicator)
   end
 
+  scope "/admin", CodebattleWeb do
+    pipe_through(:browser)
+
+    get("/tournaments/:id/stream", Tournament.StreamController, :admin, as: :admin_tournament_stream)
+
+    get("/tournaments/:id/stream/state", Tournament.StreamController, :json_state, as: :admin_tournament_stream_state)
+  end
+
   scope "/auth", CodebattleWeb do
     pipe_through(:browser)
     get("/token", AuthController, :token)

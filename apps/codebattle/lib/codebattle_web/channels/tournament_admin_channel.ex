@@ -47,6 +47,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
          true <- Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
 
       {
         :ok,
@@ -287,14 +288,14 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:stream:active_game", payload, socket) do
     tournament_id = socket.assigns.tournament_info.id
+    game_id = payload["game_id"] || payload["gameId"]
 
-    # Store game_id in Agent when streaming active game
-    if payload["game_id"] do
-      store_active_game(tournament_id, payload["game_id"])
+    if game_id do
+      store_active_game(tournament_id, game_id)
     end
 
     Codebattle.PubSub.broadcast("tournament:stream:active_game", %{
-      game_id: payload["game_id"],
+      game_id: game_id,
       tournament_id: tournament_id
     })
 
@@ -360,6 +361,12 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
     push(socket, "tournament:match:upserted", %{match: payload.match, players: payload.players})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:stream:active_game", payload: payload}, socket) do
+    push(socket, "tournament:stream:active_game", %{game_id: payload.game_id})
 
     {:noreply, socket}
   end

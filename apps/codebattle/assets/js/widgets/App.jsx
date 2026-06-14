@@ -75,6 +75,9 @@ const TournamentThreejsStreamWidget = React.lazy(
 const Stream = React.lazy(() => import("./pages/stream/StreamWidget"));
 const Tournament = React.lazy(() => import("./pages/tournament"));
 const TournamentAdmin = React.lazy(() => import("./pages/tournament/TournamentAdminWidget"));
+const TournamentStreamAdmin = React.lazy(
+  () => import("./pages/tournament/TournamentStreamAdminPage"),
+);
 const TournamentEdit = React.lazy(() => import("./pages/tournament/EditTournament"));
 const TournamentPlayer = React.lazy(() => import("./pages/tournamentPlayer"));
 const GroupTournament = React.lazy(() => import("./pages/groupTournament"));
@@ -160,6 +163,16 @@ export function TournamentThreejsStreamPage() {
         }
       >
         <TournamentThreejsStreamWidget />
+      </Suspense>
+    </Provider>
+  );
+}
+
+export function TournamentStreamAdminPage() {
+  return (
+    <Provider store={store}>
+      <Suspense fallback={<div className="text-center py-5">Loading...</div>}>
+        <TournamentStreamAdmin />
       </Suspense>
     </Provider>
   );
