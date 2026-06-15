@@ -87,6 +87,61 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     end)
   end
 
+  defp solutions_before_opt(opts), do: Keyword.get(opts, :solutions_before)
+
+  @doc """
+  Per-submission preview against the submitter's slice. Runs every
+  slice-mate's latest solution together with the submitter's so the
+  submitter sees how their new submission ranks within their slice in
+  real time.
+
+  Returns `:no_slice` if the player has no `slice_index` yet — caller
+  should fall back to a solo run.
+
+  Tournament scoring is intentionally skipped: this passes the run with
+  `slice_index: nil` so `apply_tournament_scoring` no-ops for ranked
+  tournaments. Official scoring still comes from `run_all_slices/2` at
+  round-end.
+  """
+  @spec run_slice_preview(GroupTournament.t(), pos_integer()) ::
+          :ok | :skipped | :no_slice | {:error, term()}
+  def run_slice_preview(%GroupTournament{} = group_tournament, user_id) do
+    case get_player_slice_index(group_tournament.id, user_id) do
+      nil -> :no_slice
+      slice_index -> do_run_slice_preview(group_tournament, slice_index)
+    end
+  end
+
+  defp do_run_slice_preview(%GroupTournament{} = group_tournament, slice_index) do
+    player_ids = list_slice_player_ids(group_tournament.id, slice_index)
+    submitted_ids = list_player_ids_with_solution(group_tournament, player_ids, nil)
+
+    case submitted_ids do
+      [] ->
+        :skipped
+
+      ids ->
+        result =
+          GroupTaskContext.run_group_task(group_tournament.group_task, ids, %{
+            group_tournament_id: group_tournament.id,
+            include_bots: include_bots_for_slice?(group_tournament, ids, slice_index),
+            round: group_tournament.current_round_position || 1
+          })
+
+        case result do
+          {:ok, _run} -> :ok
+          {:error, _} = err -> err
+        end
+    end
+  end
+
+  defp get_player_slice_index(group_tournament_id, user_id) do
+    GroupTournamentPlayer
+    |> where([p], p.group_tournament_id == ^group_tournament_id and p.user_id == ^user_id)
+    |> select([p], p.slice_index)
+    |> Repo.one()
+  end
+
   defp run_slice_with_results(group_tournament, slice_index, opts) do
     case run_slice(group_tournament, slice_index, opts) do
       {:ok, round_results} -> {slice_index, :ok, round_results}
@@ -97,9 +152,10 @@ defmodule Codebattle.GroupTournament.SliceRunner do
 
   @spec run_slice(GroupTournament.t(), non_neg_integer(), keyword()) ::
           {:ok, list(map())} | :skipped | {:error, term()}
-  def run_slice(%GroupTournament{} = group_tournament, slice_index, _opts \\ []) do
+  def run_slice(%GroupTournament{} = group_tournament, slice_index, opts \\ []) do
+    cutoff = solutions_before_opt(opts)
     player_ids = list_slice_player_ids(group_tournament.id, slice_index)
-    submitted_ids = list_player_ids_with_solution(group_tournament, player_ids)
+    submitted_ids = list_player_ids_with_solution(group_tournament, player_ids, cutoff)
 
     case submitted_ids do
       [] ->
@@ -112,7 +168,8 @@ defmodule Codebattle.GroupTournament.SliceRunner do
             include_bots: include_bots_for_slice?(group_tournament, ids, slice_index),
             slice_index: slice_index,
             kind: :slice,
-            round: group_tournament.current_round_position || 1
+            round: group_tournament.current_round_position || 1,
+            solutions_before: cutoff
           })
 
         # run_group_task now broadcasts a per-user "run_updated" event for
@@ -139,14 +196,15 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   @spec run_seeding(GroupTournament.t(), keyword()) ::
           [{integer(), :ok | :skipped | {:error, term()}}]
   def run_seeding(%GroupTournament{} = group_tournament, opts \\ []) do
+    cutoff = solutions_before_opt(opts)
     player_ids = list_active_player_ids(group_tournament.id)
     max_concurrency = Keyword.get(opts, :max_concurrency, configured_max_concurrency())
 
-    submitted_ids = list_player_ids_with_solution(group_tournament, player_ids)
+    submitted_ids = list_player_ids_with_solution(group_tournament, player_ids, cutoff)
 
     submitted_ids
     |> Task.async_stream(
-      fn user_id -> {user_id, run_seed_for_player(group_tournament, user_id)} end,
+      fn user_id -> {user_id, run_seed_for_player(group_tournament, user_id, cutoff)} end,
       max_concurrency: max_concurrency,
       timeout: @slice_run_task_timeout_ms,
       on_timeout: :kill_task,
@@ -315,13 +373,14 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     end)
   end
 
-  defp run_seed_for_player(%GroupTournament{} = group_tournament, user_id) do
+  defp run_seed_for_player(%GroupTournament{} = group_tournament, user_id, cutoff) do
     result =
       GroupTaskContext.run_group_task(group_tournament.group_task, [user_id], %{
         group_tournament_id: group_tournament.id,
         include_bots: false,
         kind: :seed,
-        round: 1
+        round: 1,
+        solutions_before: cutoff
       })
 
     case result do
@@ -429,9 +488,9 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     Application.get_env(:codebattle, :group_tournament_slice_run_concurrency, @default_max_concurrency)
   end
 
-  defp list_player_ids_with_solution(_group_tournament, []), do: []
+  defp list_player_ids_with_solution(_group_tournament, [], _cutoff), do: []
 
-  defp list_player_ids_with_solution(%GroupTournament{} = group_tournament, player_ids) do
+  defp list_player_ids_with_solution(%GroupTournament{} = group_tournament, player_ids, cutoff) do
     GroupTaskSolution
     |> where(
       [s],
@@ -439,8 +498,19 @@ defmodule Codebattle.GroupTournament.SliceRunner do
         s.group_tournament_id == ^group_tournament.id and
         s.user_id in ^player_ids
     )
+    |> maybe_filter_solutions_before(cutoff)
     |> distinct([s], s.user_id)
     |> select([s], s.user_id)
     |> Repo.all()
+  end
+
+  defp maybe_filter_solutions_before(query, nil), do: query
+
+  defp maybe_filter_solutions_before(query, %NaiveDateTime{} = cutoff) do
+    where(query, [s], s.inserted_at <= ^cutoff)
+  end
+
+  defp maybe_filter_solutions_before(query, %DateTime{} = cutoff) do
+    where(query, [s], s.inserted_at <= ^DateTime.to_naive(cutoff))
   end
 end

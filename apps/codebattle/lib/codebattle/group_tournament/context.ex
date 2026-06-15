@@ -8,6 +8,7 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.GlobalSupervisor
   alias Codebattle.GroupTournament.Server
+  alias Codebattle.GroupTournament.SliceRunner
   alias Codebattle.GroupTournamentPlayer
   alias Codebattle.GroupTournamentRoundScore
   alias Codebattle.Repo
@@ -459,7 +460,7 @@ defmodule Codebattle.GroupTournament.Context do
         })
         |> case do
           {:ok, solution} ->
-            maybe_run_after_solution_submission(solution.group_tournament_id, solution, async: true)
+            enqueue_post_submit(solution)
             {:ok, solution}
 
           {:error, _} = error ->
@@ -469,6 +470,12 @@ defmodule Codebattle.GroupTournament.Context do
       %{group_tournament: _group_tournament} ->
         {:error, :tournament_finished}
     end
+  end
+
+  defp enqueue_post_submit(%GroupTaskSolution{id: solution_id}) do
+    %{solution_id: solution_id}
+    |> Codebattle.Workers.GroupTaskSolutionPostSubmitWorker.new()
+    |> Oban.insert()
   end
 
   @spec get_current(pos_integer()) :: GroupTournament.t() | nil
@@ -579,29 +586,53 @@ defmodule Codebattle.GroupTournament.Context do
 
   def maybe_run_after_solution_submission(nil, _submitted_solution, _opts), do: :ok
 
-  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution, opts) do
+  def maybe_run_after_solution_submission(_group_tournament_id, nil, _opts), do: :ok
+
+  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution, _opts) do
     case get_group_tournament(group_tournament_id) do
-      %{state: "active", group_task: group_task, include_bots: include_bots} = gt ->
-        attrs = %{
-          group_tournament_id: group_tournament_id,
-          include_bots: include_bots,
-          round: gt.current_round_position || 1
-        }
-
-        # run_group_task[_async] emits per-user "run_updated" broadcasts —
-        # the async variant inserts a pending row and broadcasts "pending"
-        # synchronously, then runs the runner step in an Oban job.
-        if Keyword.get(opts, :async, false) do
-          GroupTaskContext.run_group_task_async(group_task, [submitted_solution.user_id], attrs)
-        else
-          GroupTaskContext.run_group_task(group_task, [submitted_solution.user_id], attrs)
-        end
-
-        :ok
+      %{state: "active"} = gt ->
+        run_per_submission_preview(gt, submitted_solution)
 
       _ ->
         :ok
     end
+  end
+
+  # Per-submission preview: shows the submitter how their new code stacks up
+  # right now. Runs ALWAYS bypass tournament scoring — official scoring is
+  # the round-end slice run (see SliceRunner.run_all_slices).
+  #
+  #   * Seed round (ranked + has_seed_round + round 1): solo vs bots so the
+  #     player can iterate on a baseline.
+  #   * Slice round (ranked, slice already assigned): run the whole slice
+  #     using everyone's latest solution — head-to-head preview within the
+  #     slice.
+  #   * Anything else (non-ranked, or ranked without a slice yet): solo run
+  #     using the tournament's `include_bots` setting.
+  defp run_per_submission_preview(gt, %{user_id: user_id} = _submitted_solution) do
+    cond do
+      GroupTournament.seeding_round?(gt) ->
+        run_solo_preview(gt, user_id, _include_bots = true)
+
+      GroupTournament.ranked?(gt) ->
+        case SliceRunner.run_slice_preview(gt, user_id) do
+          :no_slice -> run_solo_preview(gt, user_id, gt.include_bots)
+          _ -> :ok
+        end
+
+      true ->
+        run_solo_preview(gt, user_id, gt.include_bots)
+    end
+
+    :ok
+  end
+
+  defp run_solo_preview(%GroupTournament{} = gt, user_id, include_bots) do
+    GroupTaskContext.run_group_task(gt.group_task, [user_id], %{
+      group_tournament_id: gt.id,
+      include_bots: include_bots,
+      round: gt.current_round_position || 1
+    })
   end
 
   def serialize_group_tournament(%GroupTournament{} = group_tournament) do

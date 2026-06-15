@@ -415,7 +415,8 @@ defmodule Codebattle.GroupTask.Context do
   defp build_run_payload(%GroupTask{} = group_task, player_ids, attrs) do
     latest_solutions =
       do_list_latest_solutions(group_task.id, player_ids,
-        group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id")
+        group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id"),
+        before: Map.get(attrs, :solutions_before) || Map.get(attrs, "solutions_before")
       )
 
     solution_user_ids = MapSet.new(Enum.map(latest_solutions, & &1.user_id))
@@ -502,10 +503,12 @@ defmodule Codebattle.GroupTask.Context do
 
   defp do_list_latest_solutions(group_task_id, player_ids, opts) do
     group_tournament_id = Keyword.get(opts, :group_tournament_id)
+    before = Keyword.get(opts, :before)
 
     GroupTaskSolution
     |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id in ^player_ids)
     |> maybe_filter_by_group_tournament(group_tournament_id)
+    |> maybe_filter_by_inserted_before(before)
     |> preload(:user)
     |> distinct([solution], solution.user_id)
     |> order_by([solution], asc: solution.user_id, desc: solution.id)
@@ -516,6 +519,16 @@ defmodule Codebattle.GroupTask.Context do
 
   defp maybe_filter_by_group_tournament(query, group_tournament_id) do
     where(query, [solution], solution.group_tournament_id == ^group_tournament_id)
+  end
+
+  defp maybe_filter_by_inserted_before(query, nil), do: query
+
+  defp maybe_filter_by_inserted_before(query, %NaiveDateTime{} = cutoff) do
+    where(query, [solution], solution.inserted_at <= ^cutoff)
+  end
+
+  defp maybe_filter_by_inserted_before(query, %DateTime{} = cutoff) do
+    where(query, [solution], solution.inserted_at <= ^DateTime.to_naive(cutoff))
   end
 
   defp normalize_player_ids(player_ids) do

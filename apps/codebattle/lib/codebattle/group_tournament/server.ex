@@ -366,7 +366,11 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_info(:finish_round, %{group_tournament: %{state: "active"} = group_tournament} = state) do
-    {slice_results, round_results} = run_round(group_tournament)
+    # Freeze the submission window at round-finish time. Any submission that
+    # lands after this timestamp is rolled into the next round, not this one.
+    solutions_cutoff = NaiveDateTime.utc_now(:second)
+
+    {slice_results, round_results} = run_round(group_tournament, solutions_before: solutions_cutoff)
 
     log_slice_results(group_tournament, slice_results)
 
@@ -500,19 +504,21 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   # `run_round` returns the slice-runner results AND the round_results array
-  # used by movement. Returns `[]` for the seeding round.
-  defp run_round(%GroupTournament{} = t) do
+  # used by movement. Returns `[]` for the seeding round. `opts` carries
+  # `:solutions_before` so submissions arriving after round-finish trigger
+  # are excluded from this round's runs.
+  defp run_round(%GroupTournament{} = t, opts) do
     cond do
       GroupTournament.seeding_round?(t) ->
         # Seeding round end: run each player's latest submission solo, no
         # bots (parallel pool inside SliceRunner) to produce seed scores
         # plus submission durations. No round_results — slicing happens in
         # apply_post_round_transitions.
-        SliceRunner.run_seeding(t)
+        SliceRunner.run_seeding(t, opts)
         {[], []}
 
       GroupTournament.ranked?(t) ->
-        slice_results = SliceRunner.run_all_slices(t)
+        slice_results = SliceRunner.run_all_slices(t, opts)
 
         round_results =
           Enum.flat_map(slice_results, fn
@@ -523,7 +529,7 @@ defmodule Codebattle.GroupTournament.Server do
         {slice_results, round_results}
 
       true ->
-        slice_results = SliceRunner.run_all_slices(t)
+        slice_results = SliceRunner.run_all_slices(t, opts)
         {slice_results, []}
     end
   end
