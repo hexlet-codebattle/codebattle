@@ -6,6 +6,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
   alias Codebattle.GroupTournament.Context
   alias Codebattle.GroupTournament.LeaderboardStore
   alias Codebattle.GroupTournament.Server
+  alias Codebattle.GroupTournament.SliceRunner
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
   plug(CodebattleWeb.Plugs.AdminOnly)
@@ -290,6 +291,25 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
         |> put_flash(:error, "Failed to retry group tournament.")
         |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
     end
+  end
+
+  def run_all_slices(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+
+    results = SliceRunner.run_all_slices(group_tournament)
+
+    {ok, skipped, errored} =
+      Enum.reduce(results, {0, 0, 0}, fn
+        {_idx, :ok, _}, {o, s, e} -> {o + 1, s, e}
+        {_idx, :skipped, _}, {o, s, e} -> {o, s + 1, e}
+        {_idx, {:error, _}, _}, {o, s, e} -> {o, s, e + 1}
+      end)
+
+    flash_msg = "Ran slices: #{ok} ok, #{skipped} skipped, #{errored} errored."
+
+    conn
+    |> put_flash(if(errored == 0, do: :info, else: :error), flash_msg)
+    |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
   end
 
   def toggle_leaderboard(conn, %{"id" => id}) do

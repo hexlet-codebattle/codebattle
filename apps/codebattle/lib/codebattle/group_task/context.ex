@@ -199,34 +199,95 @@ defmodule Codebattle.GroupTask.Context do
   @spec run_group_task(GroupTask.t(), list(pos_integer()), map()) ::
           {:ok, UserGroupTournamentRun.t()} | {:error, Ecto.Changeset.t()}
   def run_group_task(%GroupTask{} = group_task, player_ids, attrs \\ %{}) do
-    normalized_player_ids = normalize_player_ids(player_ids)
-    group_tournament_id = Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id")
-    slice_index = Map.get(attrs, :slice_index) || Map.get(attrs, "slice_index")
-    kind = normalize_kind(Map.get(attrs, :kind) || Map.get(attrs, "kind"))
+    with {:ok, runs, normalized_player_ids, run_ctx} <- start_group_task_run(group_task, player_ids, attrs) do
+      finalize_group_task_run(group_task, normalized_player_ids, runs, run_ctx, attrs)
+    end
+  end
 
-    run_ctx = %{
-      group_tournament_id: group_tournament_id,
-      run_key: Ecto.UUID.generate(),
-      slice_index: slice_index,
-      kind: kind
-    }
+  @doc """
+  Inserts the pending run rows and broadcasts a "pending" status to the UI
+  so the user sees an in-flight try, then enqueues an Oban job that does
+  the actual runner execution and the "finished" broadcast.
+  """
+  @spec run_group_task_async(GroupTask.t(), [integer()], map()) ::
+          {:ok, UserGroupTournamentRun.t() | nil} | {:error, Ecto.Changeset.t()}
+  def run_group_task_async(%GroupTask{} = group_task, player_ids, attrs \\ %{}) do
+    case start_group_task_run(group_task, player_ids, attrs) do
+      {:ok, [], _normalized_player_ids, _run_ctx} ->
+        {:ok, nil}
+
+      {:ok, [representative_run | _], _normalized_player_ids, run_ctx} ->
+        %{
+          group_task_id: group_task.id,
+          run_key: run_ctx.run_key,
+          attrs: stringify_attrs(attrs)
+        }
+        |> Codebattle.Workers.GroupTaskSolutionRunWorker.new()
+        |> Oban.insert()
+
+        {:ok, representative_run}
+
+      {:error, _} = error ->
+        error
+    end
+  end
+
+  @doc """
+  Loads the pending runs for `run_key` and finishes the execute+persist
+  phase. Called by `Codebattle.Workers.GroupTaskSolutionRunWorker`.
+  """
+  @spec finalize_group_task_run_by_key(pos_integer(), Ecto.UUID.t(), map()) ::
+          {:ok, UserGroupTournamentRun.t() | nil} | {:error, Ecto.Changeset.t()}
+  def finalize_group_task_run_by_key(group_task_id, run_key, attrs) do
+    group_task = Repo.get!(GroupTask, group_task_id)
+
+    runs =
+      UserGroupTournamentRun
+      |> where([run], run.run_key == ^run_key)
+      |> Repo.all()
+
+    player_ids = runs |> Enum.flat_map(& &1.player_ids) |> normalize_player_ids()
+    run_ctx = run_ctx_from_attrs(run_key, attrs)
+
+    finalize_group_task_run(group_task, player_ids, runs, run_ctx, attrs)
+  end
+
+  defp start_group_task_run(%GroupTask{} = group_task, player_ids, attrs) do
+    normalized_player_ids = normalize_player_ids(player_ids)
+    run_ctx = run_ctx_from_attrs(Ecto.UUID.generate(), attrs)
 
     case create_pending_runs(group_task, normalized_player_ids, run_ctx) do
       {:ok, runs} ->
         broadcast_pending_runs(runs, run_ctx)
-
-        case build_run_payload(group_task, normalized_player_ids, attrs) do
-          {:ok, payload} ->
-            run_result = execute_run(group_task.runner_url, payload)
-            persist_group_task_run_result(runs, group_task, normalized_player_ids, run_result, run_ctx)
-
-          {:run_error, result} ->
-            persist_group_task_run_result(runs, group_task, normalized_player_ids, {:run_error, result}, run_ctx)
-        end
+        {:ok, runs, normalized_player_ids, run_ctx}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
     end
+  end
+
+  defp finalize_group_task_run(group_task, normalized_player_ids, runs, run_ctx, attrs) do
+    case build_run_payload(group_task, normalized_player_ids, attrs) do
+      {:ok, payload} ->
+        run_result = execute_run(group_task.runner_url, payload)
+        persist_group_task_run_result(runs, group_task, normalized_player_ids, run_result, run_ctx)
+
+      {:run_error, result} ->
+        persist_group_task_run_result(runs, group_task, normalized_player_ids, {:run_error, result}, run_ctx)
+    end
+  end
+
+  defp run_ctx_from_attrs(run_key, attrs) do
+    %{
+      group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id"),
+      run_key: run_key,
+      slice_index: Map.get(attrs, :slice_index) || Map.get(attrs, "slice_index"),
+      kind: normalize_kind(Map.get(attrs, :kind) || Map.get(attrs, "kind"))
+    }
+  end
+
+  defp stringify_attrs(attrs) do
+    Map.new(attrs, fn {k, v} -> {to_string(k), v} end)
   end
 
   # Tell the UI a user-initiated run is in flight so the player sees a

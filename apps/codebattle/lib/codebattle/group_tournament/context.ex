@@ -459,7 +459,7 @@ defmodule Codebattle.GroupTournament.Context do
         })
         |> case do
           {:ok, solution} ->
-            maybe_run_after_solution_submission(solution.group_tournament_id, solution)
+            maybe_run_after_solution_submission(solution.group_tournament_id, solution, async: true)
             {:ok, solution}
 
           {:error, _} = error ->
@@ -574,20 +574,28 @@ defmodule Codebattle.GroupTournament.Context do
     end
   end
 
-  @spec maybe_run_after_solution_submission(pos_integer() | nil, GroupTaskSolution.t() | nil) :: :ok
-  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution \\ nil)
+  @spec maybe_run_after_solution_submission(pos_integer() | nil, GroupTaskSolution.t() | nil, keyword()) :: :ok
+  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution \\ nil, opts \\ [])
 
-  def maybe_run_after_solution_submission(nil, _submitted_solution), do: :ok
+  def maybe_run_after_solution_submission(nil, _submitted_solution, _opts), do: :ok
 
-  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution) do
+  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution, opts) do
     case get_group_tournament(group_tournament_id) do
       %{state: "active", group_task: group_task, include_bots: include_bots} = gt ->
-        # run_group_task itself emits per-user "run_updated" broadcasts.
-        GroupTaskContext.run_group_task(group_task, [submitted_solution.user_id], %{
+        attrs = %{
           group_tournament_id: group_tournament_id,
           include_bots: include_bots,
           round: gt.current_round_position || 1
-        })
+        }
+
+        # run_group_task[_async] emits per-user "run_updated" broadcasts —
+        # the async variant inserts a pending row and broadcasts "pending"
+        # synchronously, then runs the runner step in an Oban job.
+        if Keyword.get(opts, :async, false) do
+          GroupTaskContext.run_group_task_async(group_task, [submitted_solution.user_id], attrs)
+        else
+          GroupTaskContext.run_group_task(group_task, [submitted_solution.user_id], attrs)
+        end
 
         :ok
 
