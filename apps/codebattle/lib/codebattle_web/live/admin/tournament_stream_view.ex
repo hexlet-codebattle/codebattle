@@ -102,7 +102,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   defp assign_matches_and_players(socket) do
     tournament =
       try do
-        Tournament.Context.get!(socket.assigns.tournament.id) || socket.assigns.tournament
+        Tournament.Context.get!(socket.assigns.tournament.id)
       rescue
         _ -> socket.assigns.tournament
       end
