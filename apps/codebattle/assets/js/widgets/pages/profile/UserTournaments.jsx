@@ -162,7 +162,7 @@ function UserTournaments({ isActive = false }) {
 
   return (
     <div className="h-100 d-flex flex-column">
-      <div ref={tableRef} className="table-responsive cb-overflow-y-scroll">
+      <div ref={tableRef} className="table-responsive mvh-100 cb-overflow-y-scroll">
         <table className="table table-striped mb-0">
           <thead className="cb-text sticky-top">
             <tr>
