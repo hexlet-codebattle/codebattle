@@ -124,7 +124,10 @@
         {link("Run All Slices",
           to: Routes.admin_group_tournament_path(@conn, :run_all_slices, @group_tournament),
           method: :post,
-          data: [confirm: "Run every slice synchronously now? This calls the runner for each slice and may take a while."],
+          data: [
+            confirm:
+              "Run every slice synchronously now? This calls the runner for each slice and may take a while."
+          ],
           class: "btn btn-outline-warning cb-rounded ml-2"
         )}
         {link("Solution Tester",
