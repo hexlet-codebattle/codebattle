@@ -20,9 +20,12 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   For ranked (`type == "ranked"`) tournaments this module additionally
   provides:
 
-    * `run_seeding/1` — fans out one solo run per player (no bots) so each
-      player's baseline score and submission duration can be persisted
-      before slice assignment.
+    * `run_seeding/2` — reads each active player's latest successful
+      preview run for round 1 and persists its score / submission duration
+      as `seed_score` / `seed_duration_ms`. The seed round IS the bot
+      fight: the score the player earned against bots during the round
+      becomes the official seed score, with no extra runner work at
+      round end.
     * `apply_movement/2` — takes the round's per-player results and applies
       the tournament's configured movement strategy to update `slice_index`
       in a single transaction.
@@ -37,6 +40,7 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   alias Codebattle.GroupTournamentPlayer
   alias Codebattle.GroupTournamentRoundScore
   alias Codebattle.Repo
+  alias Codebattle.UserGroupTournamentRun
 
   require Logger
 
@@ -186,35 +190,78 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   end
 
   @doc """
-  Runs the seeding round for a ranked tournament: each active player runs solo
-  (no bots) so we can persist their baseline score and submission duration.
-  Duration is measured from `tournament.started_at` to
-  `solution.inserted_at` — see `Codebattle.GroupTask.Context`. This is what
-  drives the initial slice assignment (via `assign_slices/1` with strategy
-  `"rating"`).
+  Closes the seed round: for each active player, reads their latest
+  successful preview run from round 1 and persists its `score` /
+  `duration_ms` as the player's `seed_score` / `seed_duration_ms`. The
+  seed round IS the bot fight — the score earned against bots during
+  the round becomes the official seed score, no re-run needed.
+
+  Duration was already computed by `Codebattle.GroupTask.Context` when
+  the preview run was finalized (`tournament.started_at` →
+  `solution.inserted_at`), so we just copy it onto the player row.
+
+  Active players with no successful run for round 1 (never submitted,
+  or only had failed/pending runs) are skipped — their `seed_score`
+  stays nil and `assign_slices/1` won't place them.
+
+  `opts`:
+    * `:solutions_before` — `NaiveDateTime` / `DateTime` cutoff. Runs
+      inserted after the cutoff are ignored, matching the round-finish
+      fairness window used by slice rounds.
+
+  Returns `[{user_id, :ok | :skipped}]` for every active player.
   """
   @spec run_seeding(GroupTournament.t(), keyword()) ::
-          [{integer(), :ok | :skipped | {:error, term()}}]
+          [{integer(), :ok | :skipped}] | [{:unknown, {:error, term()}}]
   def run_seeding(%GroupTournament{} = group_tournament, opts \\ []) do
     cutoff = solutions_before_opt(opts)
     player_ids = list_active_player_ids(group_tournament.id)
-    max_concurrency = Keyword.get(opts, :max_concurrency, configured_max_concurrency())
+    latest_runs = list_latest_seed_runs(group_tournament.id, player_ids, cutoff)
 
-    submitted_ids = list_player_ids_with_solution(group_tournament, player_ids, cutoff)
-
-    submitted_ids
-    |> Task.async_stream(
-      fn user_id -> {user_id, run_seed_for_player(group_tournament, user_id, cutoff)} end,
-      max_concurrency: max_concurrency,
-      timeout: @slice_run_task_timeout_ms,
-      on_timeout: :kill_task,
-      ordered: false
-    )
-    |> Enum.map(fn
-      {:ok, result} -> result
-      {:exit, reason} -> {:unknown, {:error, {:exit, reason}}}
-    end)
+    case Repo.transaction(fn -> apply_seed_results(group_tournament.id, player_ids, latest_runs) end) do
+      {:ok, results} -> results
+      {:error, reason} -> [{:unknown, {:error, reason}}]
+    end
   end
+
+  defp apply_seed_results(group_tournament_id, player_ids, latest_runs) do
+    Enum.map(player_ids, &apply_seed_result(group_tournament_id, &1, Map.get(latest_runs, &1)))
+  end
+
+  defp apply_seed_result(_group_tournament_id, user_id, nil), do: {user_id, :skipped}
+
+  defp apply_seed_result(group_tournament_id, user_id, %{score: score, duration_ms: duration_ms}) do
+    persist_seed(group_tournament_id, user_id, score, duration_ms)
+    {user_id, :ok}
+  end
+
+  defp list_latest_seed_runs(_group_tournament_id, [], _cutoff), do: %{}
+
+  defp list_latest_seed_runs(group_tournament_id, player_ids, cutoff) do
+    UserGroupTournamentRun
+    |> join(:inner, [r], ugt in assoc(r, :user_group_tournament))
+    |> where(
+      [r, ugt],
+      ugt.group_tournament_id == ^group_tournament_id and
+        ugt.user_id in ^player_ids and
+        r.round_position == 1 and
+        r.status == "success" and
+        not is_nil(r.score)
+    )
+    |> maybe_filter_runs_before(cutoff)
+    |> order_by([r, ugt], asc: ugt.user_id, desc: r.inserted_at, desc: r.id)
+    |> distinct([_r, ugt], ugt.user_id)
+    |> select([r, ugt], {ugt.user_id, %{score: r.score, duration_ms: r.duration_ms}})
+    |> Repo.all()
+    |> Map.new()
+  end
+
+  defp maybe_filter_runs_before(query, nil), do: query
+
+  defp maybe_filter_runs_before(query, %NaiveDateTime{} = cutoff), do: where(query, [r, _ugt], r.inserted_at <= ^cutoff)
+
+  defp maybe_filter_runs_before(query, %DateTime{} = cutoff),
+    do: where(query, [r, _ugt], r.inserted_at <= ^DateTime.to_naive(cutoff))
 
   @doc """
   Persists the seed-round (round 1) score row for each seeded player,
@@ -371,27 +418,6 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     |> Enum.map(fn {r, dense_place} ->
       %{user_id: r.user_id, place: dense_place, score: r.score, duration_ms: r.duration_ms, slice_index: slice_index}
     end)
-  end
-
-  defp run_seed_for_player(%GroupTournament{} = group_tournament, user_id, cutoff) do
-    result =
-      GroupTaskContext.run_group_task(group_tournament.group_task, [user_id], %{
-        group_tournament_id: group_tournament.id,
-        include_bots: false,
-        kind: :seed,
-        round: 1,
-        solutions_before: cutoff
-      })
-
-    case result do
-      {:ok, run} ->
-        persist_seed(group_tournament.id, user_id, run.score, run.duration_ms)
-        # run_group_task already emits a per-user "run_updated" broadcast.
-        :ok
-
-      {:error, _} = err ->
-        err
-    end
   end
 
   defp persist_seed(group_tournament_id, user_id, score, duration_ms) do

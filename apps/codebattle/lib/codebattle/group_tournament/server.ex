@@ -608,17 +608,20 @@ defmodule Codebattle.GroupTournament.Server do
     end
   end
 
-  # Per-submission debug run: only the submitting player's solution is executed
-  # — never with bots — so the user can see their own output. The run is left
-  # untagged (slice_index nil). Scored runs fire on the round timer and carry
-  # the slice_index.
+  # Per-submission debug run: only the submitting player's solution is
+  # executed. In the seed round we deliberately include bots — the seed
+  # round IS the bot fight, and the score the player earns vs. bots here
+  # becomes their official seed score at round end (see
+  # `SliceRunner.run_seeding/2`). Outside the seed round the player runs
+  # solo so they see just their own output. Run is left untagged
+  # (slice_index nil); scored slice runs fire on the round timer.
   defp run_user_submission_sync(%GroupTournament{state: "active"} = group_tournament, submitted_solution)
        when not is_nil(submitted_solution) do
     # run_group_task itself emits per-user "run_updated" broadcasts (one
     # pending, one finished), so we don't broadcast again here.
     GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
       group_tournament_id: group_tournament.id,
-      include_bots: false,
+      include_bots: GroupTournament.seeding_round?(group_tournament),
       round: group_tournament.current_round_position || 1
     })
 
