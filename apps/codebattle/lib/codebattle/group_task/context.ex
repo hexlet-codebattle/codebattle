@@ -734,8 +734,7 @@ defmodule Codebattle.GroupTask.Context do
 
   defp submission_duration_ms(_, _), do: nil
 
-  defp round_position_for_run(%GroupTournament{current_round_position: pos}, kind)
-       when kind in ["slice", "seed"] and is_integer(pos), do: pos
+  defp round_position_for_run(%GroupTournament{current_round_position: pos}, _kind) when is_integer(pos), do: pos
 
   defp round_position_for_run(_tournament, _kind), do: nil
 

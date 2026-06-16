@@ -38,7 +38,12 @@ defmodule Codebattle.GroupTournament.IntegrationTest do
       put_scores(seed_scores)
 
       # === ROUND 1: SEEDING ===
+      # Seed scoring no longer re-runs at round end — it reads each player's
+      # latest preview run for round 1. Materialise those rows by running a
+      # preview per player against the deterministic runner.
       tournament = set_round(tournament, 1)
+      simulate_seed_previews(tournament, players)
+
       seed_results = SliceRunner.run_seeding(tournament)
       ok_count = Enum.count(seed_results, fn {_uid, status} -> status == :ok end)
       assert ok_count == 16
@@ -171,6 +176,7 @@ defmodule Codebattle.GroupTournament.IntegrationTest do
       put_scores(seed_scores)
 
       tournament = set_round(tournament, 1)
+      simulate_seed_previews(tournament, players)
       _ = SliceRunner.run_seeding(tournament)
       tournament_for_seed = %{tournament | slice_strategy: "rating", slice_count: 4}
       {:ok, _} = SliceRunner.assign_slices(tournament_for_seed)
@@ -469,6 +475,23 @@ defmodule Codebattle.GroupTournament.IntegrationTest do
     |> GroupTournament.changeset(%{current_round_position: n})
     |> Repo.update!()
     |> Repo.preload([:group_task])
+  end
+
+  # Produce a `UserGroupTournamentRun` per player for the current round so
+  # `SliceRunner.run_seeding/2` (which now reads instead of re-runs) has
+  # something to pick up. Scores come from `put_scores`.
+  defp simulate_seed_previews(%GroupTournament{} = tournament, players) do
+    tournament = Repo.preload(tournament, :group_task)
+
+    Enum.each(players, fn p ->
+      {:ok, _} =
+        GroupTaskContext.run_group_task(tournament.group_task, [p.user_id], %{
+          group_tournament_id: tournament.id,
+          include_bots: true
+        })
+    end)
+
+    tournament
   end
 
   defp reload_tournament(%GroupTournament{id: id}) do
