@@ -21,6 +21,8 @@ defmodule CodebattleWeb.Endpoint do
 
   socket("/ws", CodebattleWeb.UserSocket, websocket: [timeout: :infinity, compress: true])
 
+  socket("/ws-streamer", CodebattleWeb.StreamerSocket, websocket: [timeout: :infinity, compress: true])
+
   socket("/live", Phoenix.LiveView.Socket,
     websocket: [
       connect_info: [
