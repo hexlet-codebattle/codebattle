@@ -509,6 +509,9 @@ defmodule Codebattle.GroupTournament.Server do
   # are excluded from this round's runs.
   defp run_round(%GroupTournament{} = t, opts) do
     cond do
+      GroupTournament.seed_only?(t) ->
+        {[], []}
+
       GroupTournament.seeding_round?(t) ->
         # Seeding round end: run each player's latest submission solo, no
         # bots (parallel pool inside SliceRunner) to produce seed scores
@@ -659,7 +662,11 @@ defmodule Codebattle.GroupTournament.Server do
 
   defp schedule_start(state, _group_tournament), do: state
 
-  defp schedule_round_finish(state, group_tournament, break_seconds \\ 0) do
+  defp schedule_round_finish(state, group_tournament, break_seconds \\ 0)
+
+  defp schedule_round_finish(state, %GroupTournament{is_infinite: true}, _break_seconds), do: state
+
+  defp schedule_round_finish(state, group_tournament, break_seconds) do
     timeout_seconds = current_round_timeout(group_tournament)
     total = timeout_seconds + max(break_seconds, 0)
 
@@ -682,6 +689,8 @@ defmodule Codebattle.GroupTournament.Server do
   # init/1. If a round was in progress (last_round_started_at set, no end),
   # compute the remaining seconds and (re)schedule :finish_round. If the round
   # window has already elapsed, fire immediately so the round can advance.
+  defp maybe_resume_round_finish(state, %GroupTournament{is_infinite: true}), do: state
+
   defp maybe_resume_round_finish(state, %GroupTournament{state: "active", last_round_started_at: started_at} = t)
        when not is_nil(started_at) do
     timeout_seconds = current_round_timeout(t)

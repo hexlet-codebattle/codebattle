@@ -65,16 +65,15 @@ const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }) =
         <div
           className={`d-flex flex-wrap align-items-center small mt-1 w-100 ${isActive ? "text-white-50" : "text-muted"}`}
         >
-          {item.isStub ? (
-            <span
-              className="font-weight-bold mr-3 text-nowrap text-white"
-              style={{ opacity: 0.75 }}
-            >
-              {item.kind === "seed"
-                ? i18n.t("Group assignment soon")
-                : i18n.t("Group contest soon")}
-            </span>
-          ) : pending ? (
+          {item.isStub ? // <span
+          //   className="font-weight-bold mr-3 text-nowrap text-white"
+          //   style={{ opacity: 0.75 }}
+          // >
+          //   {item.kind === "seed"
+          //     ? i18n.t("Group assignment soon")
+          //     : i18n.t("Group contest soon")}
+          // </span>
+          null : pending ? (
             i18n.t("Running…")
           ) : (
             <>

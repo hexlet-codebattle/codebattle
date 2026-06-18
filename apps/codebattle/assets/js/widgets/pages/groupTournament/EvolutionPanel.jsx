@@ -76,7 +76,7 @@ function EvolutionPanel({
           )}
           {items?.length > 0 && (
             <div className="mt-2 small d-flex flex-column cb-timeline">
-              {!isFinished && !onBreak && (
+              {/* {!isFinished && !onBreak && !groupTournament?.isInfinite && (
                 <RunItem
                   item={{
                     id: "stub",
@@ -90,7 +90,7 @@ function EvolutionPanel({
                   leaderboard={leaderboard}
                   currentUserId={currentUserId}
                 />
-              )}
+              )}*/}
               {items.map((item) => (
                 <RunItem
                   key={item.id}
