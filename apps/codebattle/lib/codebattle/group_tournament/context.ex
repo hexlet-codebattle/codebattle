@@ -660,7 +660,8 @@ defmodule Codebattle.GroupTournament.Context do
       :group_task_id,
       :template_id,
       :meta,
-      :show_leaderboard
+      :show_leaderboard,
+      :is_infinite
     ])
     |> Map.put(:group_task_slug, group_tournament.group_task && group_tournament.group_task.slug)
   end

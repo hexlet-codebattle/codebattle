@@ -214,6 +214,15 @@
   </div>
 
   <div class="form-group form-check mb-4">
+    {checkbox(f, :is_infinite, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :is_infinite)}>
+      Infinite (hides the round timer and disables auto-advance — the creator
+      ends each round manually; <code>round_timeout_seconds</code> is not required)
+    </label>
+    {error_tag(f, :is_infinite)}
+  </div>
+
+  <div class="form-group form-check mb-4">
     {checkbox(f, :visible_to_users, class: "form-check-input")}
     <label class="form-check-label text-white" for={input_id(f, :visible_to_users)}>
       Visible to Players (uncheck to make the tournament admin-only — invited

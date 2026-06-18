@@ -82,7 +82,12 @@ function TournamentTimer({ groupTournament }) {
     Number.isInteger(currentRound) &&
     currentRound > 0;
 
-  if (groupTournament?.state !== "active" || !target || (!seconds && !time)) {
+  if (
+    groupTournament?.isInfinite ||
+    groupTournament?.state !== "active" ||
+    !target ||
+    (!seconds && !time)
+  ) {
     return null;
   }
 
@@ -197,16 +202,18 @@ function Header({ name, status, groupTournament }) {
   return (
     <div className="cb-custom-event-profile d-flex align-items-center w-100 position-relative">
       <h4 className="mb-0 mr-3 text-white">{name || i18n.t("Group Tournament")}</h4>
-      <div
-        className="position-absolute d-flex align-items-center"
-        style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
-      >
-        {isWaiting ? (
-          <WaitingStartTimer startsAt={groupTournament?.startsAt} />
-        ) : (
-          <TournamentTimer groupTournament={groupTournament} />
-        )}
-      </div>
+      {!groupTournament?.isInfinite && groupTournament?.type !== "seed_only" && (
+        <div
+          className="position-absolute d-flex align-items-center"
+          style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
+        >
+          {isWaiting ? (
+            <WaitingStartTimer startsAt={groupTournament?.startsAt} />
+          ) : (
+            <TournamentTimer groupTournament={groupTournament} />
+          )}
+        </div>
+      )}
       <div className="d-flex align-items-center ml-auto">
         <span
           className={`${badge.className || ""} rounded-pill px-4 py-2 mr-3 font-weight-bold`}
@@ -224,7 +231,7 @@ function Header({ name, status, groupTournament }) {
           {i18n.t("Back to event")}
         </a>
       </div>
-      {isPipSupported && (
+      {isPipSupported && !groupTournament?.isInfinite && groupTournament?.type !== "seed_only" && (
         <PictureInPicture
           isActive={isPipActive}
           onClose={() => setIsPipActive(false)}

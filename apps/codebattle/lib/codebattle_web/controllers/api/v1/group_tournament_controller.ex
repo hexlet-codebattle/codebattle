@@ -132,28 +132,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
   defp list_runs_opts(_group_tournament, current_user), do: [limit: :infinity, visible_for_user_id: current_user.id]
 
   defp serialize_group_tournament(group_tournament) do
-    %{
-      id: group_tournament.id,
-      name: group_tournament.name,
-      slug: group_tournament.slug,
-      description: group_tournament.description,
-      state: group_tournament.state,
-      starts_at: group_tournament.starts_at,
-      started_at: group_tournament.started_at,
-      finished_at: group_tournament.finished_at,
-      current_round_position: group_tournament.current_round_position,
-      rounds_count: group_tournament.rounds_count,
-      round_timeout_seconds: group_tournament.round_timeout_seconds,
-      include_bots: group_tournament.include_bots,
-      last_round_started_at: group_tournament.last_round_started_at,
-      last_round_ended_at: group_tournament.last_round_ended_at,
-      players_count: group_tournament.players_count,
-      group_task_id: group_tournament.group_task_id,
-      group_task_slug: group_tournament.group_task && group_tournament.group_task.slug,
-      template_id: Map.get(group_tournament, :template_id),
-      meta: group_tournament.meta,
-      max_score: Map.get(group_tournament, :max_score)
-    }
+    Context.serialize_group_tournament(group_tournament)
   end
 
   defp serialize_current_player(nil), do: nil
