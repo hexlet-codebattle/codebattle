@@ -207,6 +207,7 @@ function UsersRating() {
             <label className="form-check-label" htmlFor="withBots">
               <input
                 id="withBots"
+                aria-label={i18n.t("With bots")}
                 className="form-check-input"
                 type="checkbox"
                 name="with_bots"

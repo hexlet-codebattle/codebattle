@@ -158,6 +158,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
     <form className="border-top cb-border-color input-group mb-0 p-2" onSubmit={handleSubmit}>
       <input
         className={inputClassName}
+        aria-label={i18next.t("Chat message")}
         placeholder={i18next.t("Be nice in chat!")}
         value={text}
         onChange={handleChange}

@@ -120,6 +120,7 @@ function EditableTagsInput({ value, onChange, disabled, inputId }) {
       {!disabled && (
         <input
           id={inputId}
+          aria-label="Add tag"
           type="text"
           className="form-control form-control-sm cb-bg-panel cb-border-color text-white"
           placeholder="Add tag..."
@@ -525,6 +526,7 @@ function TaskPreviewWidget() {
                 {editingDesc ? (
                   <div>
                     <textarea
+                      aria-label="Description"
                       className="form-control cb-bg-highlight-panel cb-border-color text-white mb-2"
                       rows={12}
                       value={descDraft}

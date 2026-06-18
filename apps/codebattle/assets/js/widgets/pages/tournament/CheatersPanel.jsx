@@ -120,7 +120,7 @@ function CheatersPanel({ canModerate = false }) {
                         </td>
                       </tr>
                       {isExpanded && playerReports.length > 0 && (
-                        <tr>
+                        <tr aria-label="Reports">
                           <td colSpan="5" className="border-top-0 pt-0">
                             <div className="px-3 pb-3 pt-2">
                               {playerReports.map((report) => {

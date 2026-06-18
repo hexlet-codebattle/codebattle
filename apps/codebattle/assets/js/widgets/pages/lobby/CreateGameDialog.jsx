@@ -313,6 +313,7 @@ function CreateGameDialog({ hideModal }) {
         <div className="px-sm-3 px-md-5 mt-3">
           <input
             type="range"
+            aria-label={i18n.t("Time control")}
             className="form-range w-100 cb-range"
             value={timeoutMinutes}
             onChange={handleTimeoutChange}

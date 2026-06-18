@@ -68,7 +68,7 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
         <tbody>
           {items.map((item) => (
             <React.Fragment key={`${type}-task-${item.taskId}`}>
-              <tr className="cb-custom-event-empty-space-tr" />
+              <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
               <tr
                 onClick={handleTaskSelectClick}
                 data-task-id={item.taskId}

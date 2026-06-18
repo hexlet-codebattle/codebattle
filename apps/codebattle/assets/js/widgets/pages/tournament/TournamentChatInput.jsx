@@ -74,6 +74,7 @@ export default function TournamentChatInput({ disabled }) {
         <input
           type="text"
           ref={inputRef}
+          aria-label="Chat message"
           className="form-control bg-dark rounded-0 border-0 border-top cb-border-color x-rounded-bottom-left"
           value={message}
           onChange={handleChange}

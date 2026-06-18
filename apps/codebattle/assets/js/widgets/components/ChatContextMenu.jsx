@@ -119,22 +119,27 @@ function ChatContextMenu({
     <>
       {children}
       <Menu className="cb-bg-panel cb-border-color cb-rounded text-white" role="menu" id={menuId}>
-        <Item role="menuitem" aria-label="Copy Name" onClick={handleCopy}>
+        <Item role="menuitem" tabIndex={-1} aria-label="Copy Name" onClick={handleCopy}>
           <FontAwesomeIcon className="mr-2 text-white" icon="copy" />
           <span className="text-white">Copy Name</span>
         </Item>
-        <Item role="menuitem" aria-label="Info" onClick={handleShowInfo}>
+        <Item role="menuitem" tabIndex={-1} aria-label="Info" onClick={handleShowInfo}>
           <FontAwesomeIcon className="mr-2 text-white" icon="user" />
           <span className="text-white">Info</span>
         </Item>
         {githubName && (
-          <Item role="menuitem" aria-label="Github account" onClick={handleShowGithubProfile}>
+          <Item
+            role="menuitem"
+            tabIndex={-1}
+            aria-label="Github account"
+            onClick={handleShowGithubProfile}
+          >
             <FontAwesomeIcon className="mr-2 text-white" icon={["fab", "github"]} />
             <span className="text-white">{i18n.t("Github account")}</span>
           </Item>
         )}
         {!isCurrentUser && (
-          <Item role="menuitem" aria-label="Follow" onClick={handleFollow}>
+          <Item role="menuitem" tabIndex={-1} aria-label="Follow" onClick={handleFollow}>
             <FontAwesomeIcon className="mr-2 text-white" icon="binoculars" />
             <span className="text-white">Follow</span>
           </Item>

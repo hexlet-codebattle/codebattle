@@ -57,9 +57,10 @@ function Leaderboard() {
   return (
     <Table striped className="cb-bg-panel cb-border-color rounded shadow-sm m-0">
       <thead>
-        <tr>
+        <tr aria-label="Leaderboard header">
           <th
             scope="col"
+            aria-label="Leaderboard"
             className="text-uppercase py-1 px-0 text-white cb-border-color"
             colSpan="2"
           >
@@ -130,7 +131,7 @@ function Leaderboard() {
             <td className="cb-border-color">No rating</td>
           </tr>
         )}
-        <tr className="cb-bg-panel text-center cb-border-color">
+        <tr aria-label="Top list" className="cb-bg-panel text-center cb-border-color">
           <td className="cb-border-color">
             <a className="btn-link text-primary" href="/users">
               Top list

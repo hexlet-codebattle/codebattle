@@ -247,6 +247,7 @@ function PlayersMatchesPanel({
           </label>
           <input
             id="players-search"
+            aria-label={i18n.t("Fuzzy search")}
             type="text"
             value={searchTerm}
             placeholder={i18n.t("Type a player name")}

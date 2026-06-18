@@ -87,7 +87,7 @@ function PersonalEventTable({ currentUserId, currentUserClanId, items, type }) {
       <tbody>
         {groupedItems?.map((users, clanIndex) => (
           <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
-            <tr className="cb-custom-event-empty-space-tr" />
+            <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
             <tr
               className={getCustomEventTrClassNamePersonal(
                 "clan",
@@ -117,7 +117,7 @@ function PersonalEventTable({ currentUserId, currentUserClanId, items, type }) {
             </tr>
             {users.map((user, userIndex) => (
               <React.Fragment key={`${type}-user-${user.userId}`}>
-                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                 <tr
                   className={getCustomEventTrClassNamePersonal(
                     "user",
@@ -273,7 +273,7 @@ function EventRatingPanel({
               <tbody>
                 {items?.map((item) => (
                   <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
-                    <tr className="cb-custom-event-empty-space-tr" />
+                    <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                     <tr className={getCustomEventTrClassName(item, selectedId)}>
                       <td width="110" className={tableDataCellClassName}>
                         {item.place || "-"}

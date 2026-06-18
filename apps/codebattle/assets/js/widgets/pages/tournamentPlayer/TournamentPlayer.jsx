@@ -136,6 +136,46 @@ const taskSizeDefault = Number(window.localStorage.getItem("CodebattleSpectatorT
 const setTaskSizeDefault = (size) =>
   window.localStorage.setItem("CodebattleSpectatorTaskSize", size);
 
+function GamePanel({
+  spectatorStatus,
+  task,
+  taskSize,
+  taskLanguage,
+  handleSetLanguage,
+  changeTaskDescriptionSizes,
+  hidingControls,
+  spectatorGameStatusClassName,
+  output,
+}) {
+  return !spectatorStatus ? (
+    <>
+      <div className="card cb-card border-0 shadow-sm">
+        <TaskAssignment
+          task={task}
+          taskSize={taskSize}
+          taskLanguage={taskLanguage}
+          handleSetLanguage={handleSetLanguage}
+          changeTaskDescriptionSizes={changeTaskDescriptionSizes}
+          hideContribution
+          hidingControls={hidingControls}
+          fullSize
+        />
+      </div>
+      <div className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto">
+        <div className={spectatorGameStatusClassName}>
+          <OutputTab sideOutput={output} large />
+        </div>
+      </div>
+    </>
+  ) : (
+    <div className="card cb-card border-0 w-100">
+      <div className="d-flex justify-content-center align-items-center w-100">
+        {spectatorStatus}
+      </div>
+    </div>
+  );
+}
+
 function TournamentPlayer({ spectatorMachine }) {
   const dispatch = useDispatch();
 
@@ -268,45 +308,6 @@ function TournamentPlayer({ spectatorMachine }) {
     },
   );
 
-  function GamePanel() {
-    return !spectatorStatus ? (
-      <>
-        <div className="card cb-card border-0 shadow-sm">
-          <TaskAssignment
-            task={task}
-            taskSize={taskSize}
-            taskLanguage={taskLanguage}
-            handleSetLanguage={handleSetLanguage}
-            changeTaskDescriptionSizes={changeTaskDescriptionSizes}
-            hideContribution
-            hidingControls={hidingControls}
-            fullSize
-          />
-        </div>
-        <div className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto">
-          <div className={spectatorGameStatusClassName}>
-            {/* {GameStateCodes.playing !== gameState && <h3>Game Over</h3>} */}
-            {/* {startsAt && gameState === GameStateCodes.playing && ( */}
-            {/*   <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} /> */}
-            {/* )} */}
-            <OutputTab sideOutput={output} large />
-          </div>
-          {/* <div */}
-          {/*   className="d-flex flex-column w-100 h-100 user-select-none cb-overflow-y-auto" */}
-          {/* > */}
-          {/*   <Output fontSize={taskSize} sideOutput={output} /> */}
-          {/* </div> */}
-        </div>
-      </>
-    ) : (
-      <div className="card cb-card border-0 w-100">
-        <div className="d-flex justify-content-center align-items-center w-100">
-          {spectatorStatus}
-        </div>
-      </div>
-    );
-  }
-
   // const MatchesPannel = () => {
   //   const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
   //   const rounds = reverse(Object.keys(groupedMatches));
@@ -396,7 +397,17 @@ function TournamentPlayer({ spectatorMachine }) {
     <div className="container-fluid d-flex flex-column">
       <div className={spectatorDisplayClassName}>
         <div className="d-flex flex-column p-1">
-          <GamePanel />
+          <GamePanel
+            spectatorStatus={spectatorStatus}
+            task={task}
+            taskSize={taskSize}
+            taskLanguage={taskLanguage}
+            handleSetLanguage={handleSetLanguage}
+            changeTaskDescriptionSizes={changeTaskDescriptionSizes}
+            hidingControls={hidingControls}
+            spectatorGameStatusClassName={spectatorGameStatusClassName}
+            output={output}
+          />
           {/* <MatchesPannel /> */}
         </div>
         <SpectatorEditor

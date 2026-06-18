@@ -11,7 +11,7 @@ const LeaderboardRatingTableRow = ({ entry, index, rounds, currentUserId }) => {
 
   return (
     <React.Fragment>
-      <tr className="cb-custom-event-empty-space-tr" />
+      <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
       <tr
         className={cn(trClassName(place), { "text-muted": isLeft })}
         style={isMe ? { outline: "2px solid #ffc107" } : undefined}
