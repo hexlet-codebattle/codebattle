@@ -327,6 +327,7 @@ function EditorContainer({
     theme,
     ...userSettings,
     editable,
+    allowClipboard: isAdmin,
     loading: isPreview || editorCurrent.value === "loading",
   };
 
