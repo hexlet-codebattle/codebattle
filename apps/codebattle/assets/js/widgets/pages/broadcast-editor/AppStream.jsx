@@ -166,6 +166,7 @@ export default function App() {
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSaveConfirm()}
+              aria-label="Preset name"
             />
             <button type="button" className="preset-save-button" onClick={handleSaveConfirm}>
               💾 Save

@@ -167,6 +167,7 @@ function TournamentForm({
               type="text"
               id="name"
               name="name"
+              aria-label="Tournament Name"
               className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                 "is-invalid": errors.name,
               })}
@@ -185,6 +186,7 @@ function TournamentForm({
             <textarea
               id="description"
               name="description"
+              aria-label="Description"
               className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                 "is-invalid": errors.description,
               })}
@@ -205,6 +207,7 @@ function TournamentForm({
               type="number"
               id="creator_id"
               name="creator_id"
+              aria-label="Creator ID"
               className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                 "is-invalid": errors.creator_id,
               })}
@@ -225,6 +228,7 @@ function TournamentForm({
             <textarea
               id="moderator_ids"
               name="moderator_ids"
+              aria-label="Moderator IDs"
               className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                 "is-invalid": errors.moderator_ids,
               })}
@@ -257,6 +261,7 @@ function TournamentForm({
                 type="datetime-local"
                 id="starts_at"
                 name="starts_at"
+                aria-label="Starts at"
                 className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                   "is-invalid": errors.starts_at,
                 })}
@@ -305,6 +310,7 @@ function TournamentForm({
                 type="checkbox"
                 id="use_chat"
                 name="use_chat"
+                aria-label="Use Chat"
                 className="form-check-input"
                 checked={formData.use_chat}
                 onChange={handleChange}
@@ -319,6 +325,7 @@ function TournamentForm({
                 type="checkbox"
                 id="use_clan"
                 name="use_clan"
+                aria-label="Use Clan"
                 className="form-check-input"
                 checked={formData.use_clan}
                 onChange={handleChange}
@@ -333,6 +340,7 @@ function TournamentForm({
                 type="checkbox"
                 id="exclude_banned_players"
                 name="exclude_banned_players"
+                aria-label="Exclude Banned Players"
                 className="form-check-input"
                 checked={formData.exclude_banned_players}
                 onChange={handleChange}
@@ -460,6 +468,7 @@ function TournamentForm({
                   type="text"
                   id="tags"
                   name="tags"
+                  aria-label="Tags"
                   className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                     "is-invalid": errors.tags,
                   })}
@@ -583,6 +592,7 @@ function TournamentForm({
                 type="number"
                 id="break_duration_seconds"
                 name="break_duration_seconds"
+                aria-label="Break Duration (seconds)"
                 className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                   "is-invalid": errors.break_duration_seconds,
                 })}
@@ -642,6 +652,7 @@ function TournamentForm({
                 type="number"
                 id="round_timeout_seconds"
                 name="round_timeout_seconds"
+                aria-label="Round Timeout (seconds)"
                 className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                   "is-invalid": errors.round_timeout_seconds,
                 })}
@@ -674,6 +685,7 @@ function TournamentForm({
                 type="number"
                 id="tournament_timeout_seconds"
                 name="tournament_timeout_seconds"
+                aria-label="Tournament Timeout (seconds)"
                 className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                   "is-invalid": errors.tournament_timeout_seconds,
                 })}
@@ -706,6 +718,7 @@ function TournamentForm({
             <textarea
               id="meta_json"
               name="meta_json"
+              aria-label="Meta JSON"
               className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                 "is-invalid": errors.meta_json,
               })}

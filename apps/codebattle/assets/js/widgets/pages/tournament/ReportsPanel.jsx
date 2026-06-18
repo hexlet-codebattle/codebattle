@@ -104,7 +104,7 @@ function ReportsPanel() {
             const reporter = players[item.reporterId];
             return (
               <React.Fragment key={`report-${item.id}`}>
-                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                 <tr className={customEventTrClassName}>
                   <td className={tableDataCellClassName}>
                     <UserInfo

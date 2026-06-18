@@ -43,7 +43,7 @@ function TopLeaderboardPanel({ topLeaderboard = [], selectedId }) {
           <tbody>
             {topLeaderboard.map((item) => (
               <React.Fragment key={item.id}>
-                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                 <tr className={getCustomEventTrClassName(item, selectedId)}>
                   <td width="122" className={tableDataCellClassName}>
                     {item.place}

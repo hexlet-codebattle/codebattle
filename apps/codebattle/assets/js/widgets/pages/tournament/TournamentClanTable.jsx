@@ -50,7 +50,7 @@ function TournamentClanTable() {
         <tbody>
           {items?.map((item) => (
             <React.Fragment key={item.id}>
-              <tr className="cb-custom-event-empty-space-tr" />
+              <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
               <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                 {rankingType !== "byClan" && (
                   <>

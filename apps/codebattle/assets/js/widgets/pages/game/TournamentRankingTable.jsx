@@ -76,7 +76,7 @@ function TournamentRankingTable() {
           <tbody>
             {ranking?.entries?.slice(0, 7)?.map((item) => (
               <React.Fragment key={item.id}>
-                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                 <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                   <td
                     style={{

@@ -57,7 +57,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
           <tbody>
             {items?.map((users, index) => (
               <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
-                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                 <tr className={getCustomEventTrClassName("clan", index > 3)}>
                   <td className={tableDataCellClassName(true)}>{users[0].clanRank}</td>
                   <td title={users[0].clanLongName} className={tableDataCellClassName()}>
@@ -75,7 +75,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                 </tr>
                 {users.map((user) => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
-                    <tr className="cb-custom-event-empty-space-tr" />
+                    <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                     <tr className={getCustomEventTrClassName("user", index > 3)}>
                       <td className={tableDataCellClassName(true)} aria-label="User row" />
                       <td className={tableDataCellClassName()}>

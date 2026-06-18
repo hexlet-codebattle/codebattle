@@ -115,6 +115,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
             <div className="custom-control custom-switch">
               <input
                 id="task-params-view"
+                aria-label={i18next.t("Show task description")}
                 type="checkbox"
                 className="custom-control-input"
                 checked={mode}

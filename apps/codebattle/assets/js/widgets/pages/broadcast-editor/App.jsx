@@ -184,6 +184,7 @@ export default function App() {
               type="text"
               className="preset-input"
               placeholder="Название пресета"
+              aria-label="Preset name"
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSaveConfirm()}

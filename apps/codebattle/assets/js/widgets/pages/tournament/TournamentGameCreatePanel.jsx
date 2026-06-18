@@ -212,6 +212,7 @@ function TournamentGameCreatePanel({
                 <input
                   id="round-seconds"
                   name="round-seconds"
+                  aria-label="Round timeout seconds"
                   type="number"
                   min="180"
                   max="7200"

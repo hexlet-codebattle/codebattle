@@ -135,6 +135,7 @@ function FeedbackWidget() {
                 <label htmlFor="feedback-text">{i18n.t("Message")}</label>
                 <textarea
                   id="feedback-text"
+                  aria-label={i18n.t("Message")}
                   className="form-control cb-bg-panel cb-border-color text-white cb-rounded"
                   rows="5"
                   value={text}
