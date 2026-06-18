@@ -8,26 +8,26 @@ const getStubRoundPosition = (groupTournament) => {
   return roundPosition ?? 2;
 };
 
-const getExternalUrl = (url) => {
-  if (!url) {
-    return null;
-  }
+// const getExternalUrl = (url) => {
+//   if (!url) {
+//     return null;
+//   }
 
-  try {
-    const externalUrl = new URL(`${url.replace(/\/$/, "")}/browse/README.md`);
+//   try {
+//     const externalUrl = new URL(`${url.replace(/\/$/, "")}/browse/README.md`);
 
-    externalUrl.searchParams.set("rev", "main");
-    externalUrl.searchParams.set(
-      "chatMessage",
-      "Это ИИ-ассистент, который поможет тебе решить задачу.",
-    );
+//     externalUrl.searchParams.set("rev", "main");
+//     externalUrl.searchParams.set(
+//       "chatMessage",
+//       "Это ИИ-ассистент, который поможет тебе решить задачу.",
+//     );
 
-    return externalUrl.toString();
-  } catch (error) {
-    console.error("group_tournament: invalid repo url", url, error);
-    return null;
-  }
-};
+//     return externalUrl.toString();
+//   } catch (error) {
+//     console.error("group_tournament: invalid repo url", url, error);
+//     return null;
+//   }
+// };
 
 function EvolutionPanel({
   items,
@@ -42,7 +42,7 @@ function EvolutionPanel({
 }) {
   const isFinished = tournamentStatus === "finished";
   const isWaiting = tournamentStatus === "waiting_participants";
-  const externalUrl = !isFinished && !isWaiting ? getExternalUrl(repoUrl) : null;
+  const externalUrl = !isFinished && !isWaiting ? repoUrl : null;
   const canAddSolutionInternal = !isFinished && !isWaiting && !externalUrl && !!onAddSolution;
   const onBreak = isOnBreak(groupTournament);
 

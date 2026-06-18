@@ -13,7 +13,7 @@ defmodule Codebattle.GroupTournament do
 
   @states ~w(waiting_participants active finished canceled)
   @slice_strategies ~w(random rating)
-  @types ~w(individual ranked)
+  @types ~w(individual ranked seed_only)
   @scoring_strategies ~w(diagonal_quadratic diagonal_linear global_linear flat_linear)
   @movement_strategies ~w(mirrored_cascade global_rerank neighbor_ladder)
 
@@ -57,7 +57,8 @@ defmodule Codebattle.GroupTournament do
              :break_duration_seconds,
              :has_seed_round,
              :show_leaderboard,
-             :visible_to_users
+             :visible_to_users,
+             :is_infinite
            ]}
 
   schema "group_tournaments" do
@@ -95,6 +96,7 @@ defmodule Codebattle.GroupTournament do
     field(:has_seed_round, :boolean, default: false)
     field(:show_leaderboard, :boolean, default: true)
     field(:visible_to_users, :boolean, default: true)
+    field(:is_infinite, :boolean, default: false)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -146,7 +148,8 @@ defmodule Codebattle.GroupTournament do
       :break_duration_seconds,
       :has_seed_round,
       :show_leaderboard,
-      :visible_to_users
+      :visible_to_users,
+      :is_infinite
     ])
     |> validate_required([
       :group_task_id,
@@ -154,9 +157,9 @@ defmodule Codebattle.GroupTournament do
       :slug,
       :description,
       :starts_at,
-      :rounds_count,
-      :round_timeout_seconds
+      :rounds_count
     ])
+    |> validate_round_timeout()
     |> update_change(:slug, &normalize_slug/1)
     |> update_change(:template_id, &normalize_optional_string/1)
     |> update_change(:task_description, &normalize_optional_string/1)
@@ -198,6 +201,7 @@ defmodule Codebattle.GroupTournament do
   a slice round and round 1 is no different from the rest.
   """
   def seeding_round?(%__MODULE__{type: "ranked", has_seed_round: true, current_round_position: 1}), do: true
+  def seeding_round?(%__MODULE__{type: "seed_only"}), do: true
 
   def seeding_round?(_), do: false
 
@@ -206,6 +210,21 @@ defmodule Codebattle.GroupTournament do
   """
   def ranked?(%__MODULE__{type: "ranked"}), do: true
   def ranked?(_), do: false
+
+  @doc """
+  Seed-only tournaments are a single bot-fight pass — players submit a solution,
+  it runs against bots, results are recorded, and the tournament finishes. No
+  slice rounds, no timer-driven round transitions.
+  """
+  def seed_only?(%__MODULE__{type: "seed_only"}), do: true
+  def seed_only?(_), do: false
+
+  @doc """
+  Infinite tournaments hide the round timer in the UI and do not auto-advance
+  rounds — the creator ends the round manually.
+  """
+  def infinite?(%__MODULE__{is_infinite: true}), do: true
+  def infinite?(_), do: false
 
   defp normalize_slug(nil), do: nil
   defp normalize_slug(slug), do: slug |> String.trim() |> String.downcase()
@@ -220,6 +239,14 @@ defmodule Codebattle.GroupTournament do
   end
 
   defp normalize_optional_string(value), do: value
+
+  defp validate_round_timeout(changeset) do
+    if get_field(changeset, :is_infinite) do
+      changeset
+    else
+      validate_required(changeset, [:round_timeout_seconds])
+    end
+  end
 
   defp validate_template_id(changeset) do
     if get_field(changeset, :run_on_external_platform) do
