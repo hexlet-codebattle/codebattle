@@ -114,6 +114,7 @@ defmodule CodebattleWeb.TournamentStreamerChannelTest do
         game_state: "game_over",
         game_level: "easy",
         duration_sec: 120,
+        winner_id: 1,
         player_results: %{1 => %{result: "won"}, 2 => %{result: "lost"}}
       }
 

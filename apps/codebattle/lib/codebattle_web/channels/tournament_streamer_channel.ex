@@ -57,6 +57,7 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
       game_state: payload.game_state,
       game_level: payload.game_level,
       duration_sec: payload.duration_sec,
+      winner_id: Map.get(payload, :winner_id),
       player_results: payload.player_results
     })
 
