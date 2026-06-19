@@ -520,6 +520,7 @@ defmodule Codebattle.PubSub.Events do
             game_state: game.state,
             game_level: game.level,
             duration_sec: game.duration_sec || game.timeout_seconds,
+            winner_id: winner_id(game),
             player_results: Game.Helpers.get_player_results(game)
           }
         }
@@ -741,6 +742,13 @@ defmodule Codebattle.PubSub.Events do
   defp chat_topic(:lobby), do: "chat:lobby"
   defp chat_topic({:tournament, id}), do: "chat:tournament:#{id}"
   defp chat_topic({:game, id}), do: "chat:game:#{id}"
+
+  defp winner_id(game) do
+    case Game.Helpers.get_winner(game) do
+      %{id: id} -> id
+      _ -> nil
+    end
+  end
 
   defp game_main_data(game) do
     %{
