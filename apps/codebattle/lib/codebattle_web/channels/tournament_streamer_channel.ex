@@ -281,14 +281,8 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
   defp task_payload(task) do
     %{
       id: Map.get(task, :id),
-      name: Map.get(task, :name),
-      level: Map.get(task, :level),
-      description_en: Map.get(task, :description_en),
       description_ru: Map.get(task, :description_ru),
-      examples: Map.get(task, :examples),
-      asserts_examples: Map.get(task, :asserts_examples, []),
-      input_signature: Map.get(task, :input_signature, []),
-      output_signature: Map.get(task, :output_signature, %{})
+      examples_list: Map.get(task, :examples_list, [])
     }
   end
 

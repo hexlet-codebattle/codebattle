@@ -51,6 +51,45 @@ defmodule CodebattleWeb.TournamentStreamerChannelTest do
       assert t.state == "waiting_participants"
     end
 
+    test "includes only required task fields in active game payload" do
+      creator = insert(:user)
+      player1 = insert(:user)
+      player2 = insert(:user)
+      tournament = create_tournament(creator)
+
+      task =
+        insert(:task,
+          description_ru: "проверка суммы",
+          examples: "sum examples",
+          examples_list: ["solution(1, 1) == 2"]
+        )
+
+      game =
+        insert(:game,
+          task: task,
+          tournament_id: tournament.id,
+          state: "playing",
+          player_ids: [player1.id, player2.id],
+          players: [Player.build(player1), Player.build(player2)]
+        )
+
+      TournamentAdminChannel.store_active_game(tournament.id, game.id)
+
+      assert {:ok, %{active_game: %{task: active_task}}, _socket} =
+               subscribe_and_join(
+                 streamer_socket(tournament.id),
+                 TournamentStreamerChannel,
+                 "tournament_streamer",
+                 %{}
+               )
+
+      assert active_task == %{
+               id: task.id,
+               description_ru: "проверка суммы",
+               examples_list: ["solution(1, 1) == 2"]
+             }
+    end
+
     test "rejects join when socket is not streamer-authed" do
       socket = socket(StreamerSocket, "streamer_unauth", %{streamer?: false, tournament_id: 1})
 
