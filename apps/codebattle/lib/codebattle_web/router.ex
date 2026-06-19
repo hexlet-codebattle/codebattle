@@ -257,6 +257,10 @@ defmodule CodebattleWeb.Router do
     get("/tournaments/:id/stream", Tournament.StreamController, :admin, as: :admin_tournament_stream)
 
     get("/tournaments/:id/stream/state", Tournament.StreamController, :json_state, as: :admin_tournament_stream_state)
+
+    get("/group_tournaments/:id/history.json", Admin.GroupTournamentJsonController, :history,
+      as: :admin_group_tournament_history_json
+    )
   end
 
   scope "/auth", CodebattleWeb do

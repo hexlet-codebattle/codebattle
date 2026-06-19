@@ -25,7 +25,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
   # Paths that perform their own (token-based) authentication and must not be
   # short-circuited by the guest/free-user/mini-mode redirects below.
   @token_authed_paths [
-    ~r{^\/admin\/tournaments\/\d+\/stream\/state\/?$}
+    ~r{^\/admin\/tournaments\/\d+\/stream\/state\/?$},
+    ~r{^\/admin\/group_tournaments\/\d+\/history\.json\/?$}
   ]
 
   @allowed_mini_paths [
