@@ -107,8 +107,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
 
       case action do
         "start" -> Simulator.start(tid)
-        "pause" -> Simulator.pause(tid)
-        "resume" -> Simulator.resume(tid)
         "retry" -> Simulator.retry(tid)
         "stop" -> Simulator.stop(tid)
         "settings" -> Simulator.update_settings(tid, params)
@@ -175,7 +173,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   defp state_order(_), do: 9
 
   defp sim_status_color(:running), do: "#22c55e"
-  defp sim_status_color(:paused), do: "#f59e0b"
   defp sim_status_color(:idle), do: "#94a3b8"
   defp sim_status_color(_), do: "#a4aab3"
 
@@ -283,22 +280,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             </button>
             <button
               type="button"
-              phx-click="sim_pause"
-              class="btn btn-sm btn-warning cb-rounded"
-              disabled={@simulator.status != :running}
-            >
-              ⏸ Pause
-            </button>
-            <button
-              type="button"
-              phx-click="sim_resume"
-              class="btn btn-sm btn-info cb-rounded"
-              disabled={@simulator.status != :paused}
-            >
-              ⏵ Continue
-            </button>
-            <button
-              type="button"
               phx-click="sim_retry"
               class="btn btn-sm btn-outline-warning cb-rounded"
               data-confirm="Reset matches and re-run from round 0?"
@@ -309,7 +290,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
               type="button"
               phx-click="sim_stop"
               class="btn btn-sm btn-outline-danger cb-rounded"
-              data-confirm="Stop the simulator process? (you can re-start it again)"
+              data-confirm="Stop the simulator and finish the tournament? Final results will be calculated. Use Retry instead if you want to re-run with the same players."
             >
               ⏹ Stop
             </button>

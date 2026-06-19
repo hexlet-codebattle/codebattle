@@ -164,36 +164,52 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
       tournament = create_tournament(creator)
 
       api_key = Application.get_env(:codebattle, :api_key) || "test-api-key"
-      Application.put_env(:codebattle, :api_key, api_key)
 
-      conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state?auth_token=#{api_key}")
-      assert %{"tournament_id" => tid} = json_response(conn, 200)
-      assert tid == tournament.id
+      with_api_key(api_key, fn ->
+        conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state?auth_token=#{api_key}")
+        assert %{"tournament_id" => tid} = json_response(conn, 200)
+        assert tid == tournament.id
+      end)
     end
 
     test "anonymous request with invalid auth_token is denied", %{conn: conn} do
       creator = insert(:user)
       tournament = create_tournament(creator)
 
-      Application.put_env(:codebattle, :api_key, "correct-key")
-
-      conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state?auth_token=wrong-key")
-      assert json_response(conn, 404) == %{"error" => "NOT_FOUND"}
+      with_api_key("correct-key", fn ->
+        conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state?auth_token=wrong-key")
+        assert json_response(conn, 404) == %{"error" => "NOT_FOUND"}
+      end)
     end
 
     test "anonymous request with valid x-auth-key header is allowed", %{conn: conn} do
       creator = insert(:user)
       tournament = create_tournament(creator)
 
-      Application.put_env(:codebattle, :api_key, "header-key")
+      with_api_key("header-key", fn ->
+        conn =
+          conn
+          |> put_req_header("x-auth-key", "header-key")
+          |> get("/admin/tournaments/#{tournament.id}/stream/state")
 
-      conn =
-        conn
-        |> put_req_header("x-auth-key", "header-key")
-        |> get("/admin/tournaments/#{tournament.id}/stream/state")
+        assert %{"tournament_id" => tid} = json_response(conn, 200)
+        assert tid == tournament.id
+      end)
+    end
+  end
 
-      assert %{"tournament_id" => tid} = json_response(conn, 200)
-      assert tid == tournament.id
+  defp with_api_key(key, fun) do
+    previous = Application.get_env(:codebattle, :api_key)
+    Application.put_env(:codebattle, :api_key, key)
+
+    try do
+      fun.()
+    after
+      if previous == nil do
+        Application.delete_env(:codebattle, :api_key)
+      else
+        Application.put_env(:codebattle, :api_key, previous)
+      end
     end
   end
 end
