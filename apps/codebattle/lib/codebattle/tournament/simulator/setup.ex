@@ -174,7 +174,7 @@ defmodule Codebattle.Tournament.Simulator.Setup do
       "round_timeout_seconds" => 300,
       "match_timeout_seconds" => 300,
       "break_duration_seconds" => 5,
-      "score_strategy" => "win_loss",
+      "score_strategy" => "75_percentile",
       "ranking_type" => "by_user",
       "meta" => %{"simulator" => true}
     }

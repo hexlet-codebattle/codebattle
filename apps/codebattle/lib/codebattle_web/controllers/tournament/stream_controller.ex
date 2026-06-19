@@ -40,25 +40,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
     current_user = conn.assigns[:current_user]
 
     if Helpers.can_moderate?(tournament, current_user) do
-      matches = safe_get_matches(tournament)
-      players = safe_get_players(tournament)
-
-      clans =
-        if tournament.use_clan,
-          do: format_clans(Tournament.Clans.get_all(tournament)),
-          else: %{}
-
-      ranking = safe_get_ranking(tournament)
-      active_game_id = TournamentAdminChannel.get_active_game(tournament.id)
-
-      json(conn, %{
-        tournament: Helpers.prepare_to_json(tournament),
-        matches: matches,
-        players: players,
-        clans: clans,
-        ranking: ranking,
-        active_game_id: active_game_id
-      })
+      json(conn, build_json_state(tournament))
     else
       conn
       |> put_status(:not_found)
@@ -67,11 +49,48 @@ defmodule CodebattleWeb.Tournament.StreamController do
     end
   end
 
-  defp safe_get_matches(tournament) do
-    Helpers.get_matches(tournament)
-  rescue
-    _ -> []
+  defp build_json_state(tournament) do
+    players = safe_get_players(tournament)
+    user_history = safe_get_users_history(tournament, players)
+    max_draw_index = Helpers.get_max_draw_index(players)
+    win_probs = compute_win_probs(user_history)
+
+    %{
+      tournament_id: tournament.id,
+      current_round: current_round(tournament),
+      players: serialize_players(players, user_history, win_probs, max_draw_index),
+      clans: serialize_clans(tournament),
+      active_game_id: TournamentAdminChannel.get_active_game(tournament.id)
+    }
   end
+
+  defp current_round(%{state: "waiting_participants"}), do: 0
+  defp current_round(%{current_round_position: pos}), do: (pos || 0) + 1
+
+  defp serialize_players(players, user_history, win_probs, max_draw_index) do
+    players
+    |> Enum.sort_by(&{-(&1.score || 0), &1.place || 99_999, &1.id})
+    |> Enum.map(&serialize_player(&1, user_history, win_probs, max_draw_index))
+  end
+
+  defp serialize_player(player, user_history, win_probs, max_draw_index) do
+    %{
+      id: to_string(player.id),
+      name: player.name,
+      clan_id: player.clan_id && to_string(player.clan_id),
+      total_score: player.score || 0,
+      total_tasks: length(player.matches_ids || []),
+      won_tasks: player.wins_count || 0,
+      rank: player.rank,
+      win_prob: to_string(win_probs[player.id] || ""),
+      active: if(player.draw_index == max_draw_index, do: 1, else: 0),
+      history: user_history[player.id] || []
+    }
+  end
+
+  defp serialize_clans(%{use_clan: true} = tournament), do: format_clans(Tournament.Clans.get_all(tournament))
+
+  defp serialize_clans(_tournament), do: %{}
 
   defp safe_get_players(tournament) do
     Helpers.get_players(tournament)
@@ -79,10 +98,33 @@ defmodule CodebattleWeb.Tournament.StreamController do
     _ -> []
   end
 
-  defp safe_get_ranking(tournament) do
-    TournamentResult.get_user_ranking(tournament)
+  defp safe_get_users_history(tournament, players) do
+    TournamentResult.get_users_history(tournament, Enum.map(players, & &1.id))
   rescue
     _ -> %{}
+  end
+
+  # Win probability = each top-8 player's share of the top-8 total history score.
+  # Score for each player is summed from their full history. Players outside the
+  # top 8 get no win_prob.
+  defp compute_win_probs(user_history) do
+    totals =
+      Map.new(user_history, fn {user_id, rounds} ->
+        {user_id, Enum.sum(Enum.map(rounds, &(&1.score || 0)))}
+      end)
+
+    top_8 =
+      totals
+      |> Enum.sort_by(fn {_id, score} -> -score end)
+      |> Enum.take(8)
+
+    top_8_total = top_8 |> Enum.map(fn {_id, s} -> s end) |> Enum.sum()
+
+    if top_8_total > 0 do
+      Map.new(top_8, fn {id, score} -> {id, round(score * 100.0 / top_8_total)} end)
+    else
+      %{}
+    end
   end
 
   defp format_clans(clans) do

@@ -119,12 +119,10 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
         |> get("/admin/tournaments/#{tournament.id}/stream/state")
 
       body = json_response(conn, 200)
-      assert %{"tournament" => %{"id" => tid}} = body
-      assert tid == tournament.id
-      assert Map.has_key?(body, "matches")
+      assert body["tournament_id"] == tournament.id
+      assert Map.has_key?(body, "current_round")
       assert Map.has_key?(body, "players")
       assert Map.has_key?(body, "clans")
-      assert Map.has_key?(body, "ranking")
       assert Map.has_key?(body, "active_game_id")
     end
 
