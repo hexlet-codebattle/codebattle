@@ -336,11 +336,6 @@ defmodule Codebattle.Tournament.Simulator do
 
             :ok
 
-          {:ok, _game, _check} ->
-            Logger.info("simulator(#{tournament_id}): submitted game=#{game_id} player=#{user.name}(##{user_id})")
-
-            :ok
-
           {:error, reason} ->
             Logger.warning(
               "simulator(#{tournament_id}): check_result error game=#{game_id} user=#{user_id} reason=#{inspect(reason)}"
