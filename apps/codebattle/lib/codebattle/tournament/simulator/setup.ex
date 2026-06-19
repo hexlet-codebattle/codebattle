@@ -41,6 +41,31 @@ defmodule Codebattle.Tournament.Simulator.Setup do
     end
   end
 
+  @doc """
+  Ensure the simulation tournament has all 200 named users joined.
+  Joins any that are missing. Tournament must be in `waiting_participants`.
+  """
+  @spec top_up_players(integer()) :: :ok | {:error, term()}
+  def top_up_players(tournament_id) when is_integer(tournament_id) do
+    with {:ok, creator} <- find_creator(),
+         {:ok, clans} <- ensure_clans(creator),
+         {:ok, users} <- ensure_users(clans),
+         %{} = tournament <- Tournament.Context.get(tournament_id) do
+      existing_ids = tournament |> Tournament.Helpers.get_players() |> MapSet.new(& &1.id)
+      missing = Enum.reject(users, &MapSet.member?(existing_ids, &1.id))
+
+      Logger.info(
+        "simulator: top_up_players tournament=#{tournament_id} existing=#{MapSet.size(existing_ids)} missing=#{length(missing)}"
+      )
+
+      if missing == [] do
+        :ok
+      else
+        join_users(tournament, missing)
+      end
+    end
+  end
+
   # `Tournament.Context.prepare_tournament_params/1` hard-resets `meta` to `%{}`,
   # so we have to write the simulator flag after insertion and replay it into
   # the live Tournament.Server state so the stream LiveView sees it.

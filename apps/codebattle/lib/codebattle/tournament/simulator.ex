@@ -53,17 +53,16 @@ defmodule Codebattle.Tournament.Simulator do
   @spec start(integer()) :: :ok | {:error, term()}
   def start(tournament_id), do: call(tournament_id, :start)
 
-  @spec pause(integer()) :: :ok | {:error, term()}
-  def pause(tournament_id), do: call(tournament_id, :pause)
-
-  @spec resume(integer()) :: :ok | {:error, term()}
-  def resume(tournament_id), do: call(tournament_id, :resume)
-
   @spec retry(integer()) :: :ok | {:error, term()}
   def retry(tournament_id), do: call(tournament_id, :retry)
 
   @spec stop(integer()) :: :ok
   def stop(tournament_id) do
+    # Finish the tournament gracefully (state -> "finished" or "timeout"+force);
+    # then kill the simulator process. Failure on either side is non-fatal.
+    Logger.info("simulator(#{tournament_id}): stop — finishing tournament")
+    Tournament.Server.handle_event(tournament_id, :finish_tournament, %{})
+
     case Registry.lookup(Codebattle.Registry, registry_key(tournament_id)) do
       [{pid, _}] -> GenServer.stop(pid, :normal)
       _ -> :ok
@@ -120,26 +119,25 @@ defmodule Codebattle.Tournament.Simulator do
     {:reply, :ok, state}
   end
 
-  def handle_call(:pause, _from, state) do
-    Logger.info("simulator(#{state.tournament_id}): pause (canceling #{map_size(state.timers)} timers)")
-    state = cancel_all_timers(state)
-    {:reply, :ok, %{state | status: :paused}}
-  end
-
-  def handle_call(:resume, _from, state) do
-    Logger.info("simulator(#{state.tournament_id}): resume")
-    state = %{state | status: :running}
-    state = scan_and_schedule(state)
-    {:reply, :ok, state}
-  end
-
   def handle_call(:retry, _from, state) do
-    Logger.info("simulator(#{state.tournament_id}): retry — resetting tournament to round 0")
+    Logger.info("simulator(#{state.tournament_id}): retry — resetting tournament to waiting_participants")
     state = cancel_all_timers(state)
 
     with %{} = tournament <- get_tournament(state.tournament_id),
          %User{} = creator <- get_creator(tournament) do
+      # Step 1: reset matches/results, drop tournament back to waiting_participants
       Tournament.Server.handle_event(state.tournament_id, :retry, %{user: creator})
+
+      # Step 2: re-join any of the 200 simulator users that were dropped
+      case Codebattle.Tournament.Simulator.Setup.top_up_players(state.tournament_id) do
+        :ok ->
+          :ok
+
+        other ->
+          Logger.warning("simulator(#{state.tournament_id}): top_up_players returned #{inspect(other)}")
+      end
+
+      # Step 3: start the tournament again
       Tournament.Server.handle_event(state.tournament_id, :start, %{user: creator})
     else
       _ -> :noop
