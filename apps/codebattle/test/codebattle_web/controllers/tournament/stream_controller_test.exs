@@ -158,5 +158,42 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
       conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state")
       assert json_response(conn, 404) == %{"error" => "NOT_FOUND"}
     end
+
+    test "anonymous request with valid auth_token query param is allowed", %{conn: conn} do
+      creator = insert(:user)
+      tournament = create_tournament(creator)
+
+      api_key = Application.get_env(:codebattle, :api_key) || "test-api-key"
+      Application.put_env(:codebattle, :api_key, api_key)
+
+      conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state?auth_token=#{api_key}")
+      assert %{"tournament_id" => tid} = json_response(conn, 200)
+      assert tid == tournament.id
+    end
+
+    test "anonymous request with invalid auth_token is denied", %{conn: conn} do
+      creator = insert(:user)
+      tournament = create_tournament(creator)
+
+      Application.put_env(:codebattle, :api_key, "correct-key")
+
+      conn = get(conn, "/admin/tournaments/#{tournament.id}/stream/state?auth_token=wrong-key")
+      assert json_response(conn, 404) == %{"error" => "NOT_FOUND"}
+    end
+
+    test "anonymous request with valid x-auth-key header is allowed", %{conn: conn} do
+      creator = insert(:user)
+      tournament = create_tournament(creator)
+
+      Application.put_env(:codebattle, :api_key, "header-key")
+
+      conn =
+        conn
+        |> put_req_header("x-auth-key", "header-key")
+        |> get("/admin/tournaments/#{tournament.id}/stream/state")
+
+      assert %{"tournament_id" => tid} = json_response(conn, 200)
+      assert tid == tournament.id
+    end
   end
 end

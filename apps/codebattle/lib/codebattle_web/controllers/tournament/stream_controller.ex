@@ -39,13 +39,28 @@ defmodule CodebattleWeb.Tournament.StreamController do
     tournament = Tournament.Context.get!(params["id"])
     current_user = conn.assigns[:current_user]
 
-    if Helpers.can_moderate?(tournament, current_user) do
+    if Helpers.can_moderate?(tournament, current_user) or valid_api_token?(conn) do
       json(conn, build_json_state(tournament))
     else
       conn
       |> put_status(:not_found)
       |> json(%{error: "NOT_FOUND"})
       |> halt()
+    end
+  end
+
+  # Mirrors `CodebattleWeb.Plugs.TokenAuth`: accept `x-auth-key` header or
+  # `auth-key` / `auth_token` query params. Configured key in :codebattle, :api_key.
+  defp valid_api_token?(conn) do
+    expected = Application.get_env(:codebattle, :api_key)
+    provided = extract_api_token(conn)
+    is_binary(expected) and expected != "" and expected == provided
+  end
+
+  defp extract_api_token(conn) do
+    case Plug.Conn.get_req_header(conn, "x-auth-key") do
+      [header_key | _] -> header_key
+      _ -> conn.params["auth-key"] || conn.params["auth_token"]
     end
   end
 
