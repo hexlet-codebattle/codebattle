@@ -112,24 +112,29 @@ defmodule Codebattle.Tournament.Simulator do
 
   @impl true
   def handle_call(:start, _from, state) do
+    Logger.info("simulator(#{state.tournament_id}): start (settings=#{inspect(state.settings)})")
     state = ensure_tournament_started(state)
     state = %{state | status: :running}
     state = scan_and_schedule(state)
+    Logger.info("simulator(#{state.tournament_id}): running scheduled=#{MapSet.size(state.scheduled_games)}")
     {:reply, :ok, state}
   end
 
   def handle_call(:pause, _from, state) do
+    Logger.info("simulator(#{state.tournament_id}): pause (canceling #{map_size(state.timers)} timers)")
     state = cancel_all_timers(state)
     {:reply, :ok, %{state | status: :paused}}
   end
 
   def handle_call(:resume, _from, state) do
+    Logger.info("simulator(#{state.tournament_id}): resume")
     state = %{state | status: :running}
     state = scan_and_schedule(state)
     {:reply, :ok, state}
   end
 
   def handle_call(:retry, _from, state) do
+    Logger.info("simulator(#{state.tournament_id}): retry — resetting tournament to round 0")
     state = cancel_all_timers(state)
 
     with %{} = tournament <- get_tournament(state.tournament_id),
@@ -237,6 +242,11 @@ defmodule Codebattle.Tournament.Simulator do
     lang = "python"
     timer_ref = Process.send_after(self(), {:submit, match.game_id, winner_id, lang}, delay_ms)
 
+    Logger.info(
+      "simulator(#{state.tournament_id}): scheduled game=#{match.game_id} winner=#{winner_id} " <>
+        "delay=#{delay_ms}ms players=#{inspect(match.player_ids)}"
+    )
+
     %{
       state
       | scheduled_games: MapSet.put(state.scheduled_games, match.game_id),
@@ -303,9 +313,14 @@ defmodule Codebattle.Tournament.Simulator do
   end
 
   defp submit_solution(tournament_id, game_id, user_id, lang) do
-    with {:ok, %{task: %{solutions: solutions}}} when is_map(solutions) <- Game.Context.fetch_game(game_id),
-         text when is_binary(text) and text != "" <- solutions[lang] || solutions["python"] || solutions["py"],
+    with {:ok, %{task: task} = _game} <- Game.Context.fetch_game(game_id),
+         text when is_binary(text) and text != "" <- pick_solution_text(task),
          %User{} = user <- User.get(user_id) do
+      Logger.info(
+        "simulator(#{tournament_id}): submitting game=#{game_id} player=#{user.name}(##{user_id}) " <>
+          "task=#{task.id} lang=#{lang} chars=#{String.length(text)}"
+      )
+
       try do
         case Game.Context.check_result(game_id, %{
                user: user,
@@ -313,7 +328,17 @@ defmodule Codebattle.Tournament.Simulator do
                editor_lang: lang,
                duration_sec: 1
              }) do
+          {:ok, _game, %{solution_status: solution_status}} ->
+            Logger.info(
+              "simulator(#{tournament_id}): submitted game=#{game_id} player=#{user.name}(##{user_id}) " <>
+                "solution_status=#{solution_status}"
+            )
+
+            :ok
+
           {:ok, _game, _check} ->
+            Logger.info("simulator(#{tournament_id}): submitted game=#{game_id} player=#{user.name}(##{user_id})")
+
             :ok
 
           {:error, reason} ->
@@ -329,12 +354,26 @@ defmodule Codebattle.Tournament.Simulator do
       end
     else
       nil ->
-        Logger.warning("simulator(#{tournament_id}): no python solution for game=#{game_id}")
+        Logger.warning("simulator(#{tournament_id}): no solution found for game=#{game_id}")
 
       other ->
         Logger.warning("simulator(#{tournament_id}): submit failed game=#{game_id} #{inspect(other)}")
     end
   end
+
+  # Prefer `task.solution` (canonical); fall back to `task.solutions["python"]`.
+  defp pick_solution_text(%{solution: text}) when is_binary(text) and byte_size(text) > 0, do: text
+
+  defp pick_solution_text(%{solutions: solutions}) when is_map(solutions) do
+    Enum.find_value(["python", "py"], fn key ->
+      case Map.get(solutions, key) do
+        text when is_binary(text) and byte_size(text) > 0 -> text
+        _ -> nil
+      end
+    end)
+  end
+
+  defp pick_solution_text(_), do: nil
 
   defp get_tournament(tournament_id) do
     case Tournament.Context.get(tournament_id) do
