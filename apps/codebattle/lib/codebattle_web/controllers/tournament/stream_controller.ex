@@ -6,7 +6,9 @@ defmodule CodebattleWeb.Tournament.StreamController do
   alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.TournamentResult
   alias CodebattleWeb.Api.GameView
+  alias CodebattleWeb.TournamentAdminChannel
 
   def show(conn, params) do
     tournament = Tournament.Context.get!(params["id"])
@@ -38,16 +40,49 @@ defmodule CodebattleWeb.Tournament.StreamController do
     current_user = conn.assigns[:current_user]
 
     if Helpers.can_moderate?(tournament, current_user) do
-      stats = Helpers.get_player_ranking_stats(tournament)
-      clans = if tournament.use_clan, do: format_clans(Tournament.Clans.get_all(tournament)), else: %{}
+      matches = safe_get_matches(tournament)
+      players = safe_get_players(tournament)
 
-      json(conn, Map.put(stats, "clans", clans))
+      clans =
+        if tournament.use_clan,
+          do: format_clans(Tournament.Clans.get_all(tournament)),
+          else: %{}
+
+      ranking = safe_get_ranking(tournament)
+      active_game_id = TournamentAdminChannel.get_active_game(tournament.id)
+
+      json(conn, %{
+        tournament: Helpers.prepare_to_json(tournament),
+        matches: matches,
+        players: players,
+        clans: clans,
+        ranking: ranking,
+        active_game_id: active_game_id
+      })
     else
       conn
       |> put_status(:not_found)
       |> json(%{error: "NOT_FOUND"})
       |> halt()
     end
+  end
+
+  defp safe_get_matches(tournament) do
+    Helpers.get_matches(tournament)
+  rescue
+    _ -> []
+  end
+
+  defp safe_get_players(tournament) do
+    Helpers.get_players(tournament)
+  rescue
+    _ -> []
+  end
+
+  defp safe_get_ranking(tournament) do
+    TournamentResult.get_user_ranking(tournament)
+  rescue
+    _ -> %{}
   end
 
   defp format_clans(clans) do
