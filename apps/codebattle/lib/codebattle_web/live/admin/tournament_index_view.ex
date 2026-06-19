@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   use CodebattleWeb, :live_view
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Simulator
 
   @impl true
   def mount(_params, _session, socket) do
@@ -11,7 +12,8 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
      assign(socket,
        layout: {CodebattleWeb.LayoutView, :admin},
        tournaments: list_tournaments(),
-       duplicate_result: nil
+       duplicate_result: nil,
+       creating_simulation: false
      )}
   end
 
@@ -54,6 +56,40 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   def handle_event("cancel", %{"id" => id}, socket) do
     Tournament.Server.handle_event(String.to_integer(id), :cancel, %{})
     {:noreply, assign(socket, :tournaments, list_tournaments())}
+  end
+
+  def handle_event("create_simulation", _params, socket) do
+    socket =
+      socket
+      |> assign(:creating_simulation, true)
+      |> start_async(:create_simulation, fn -> Simulator.Setup.create(%{}) end)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_async(:create_simulation, {:ok, {:ok, tournament}}, socket) do
+    {:ok, _pid} = Simulator.ensure_started(tournament.id)
+
+    {:noreply,
+     socket
+     |> assign(:creating_simulation, false)
+     |> put_flash(:info, "Simulation tournament ##{tournament.id} created with 200 players.")
+     |> redirect(to: "/admin/tournaments/#{tournament.id}/stream")}
+  end
+
+  def handle_async(:create_simulation, {:ok, {:error, reason}}, socket) do
+    {:noreply,
+     socket
+     |> assign(:creating_simulation, false)
+     |> put_flash(:error, "Failed to create simulator: #{inspect(reason)}")}
+  end
+
+  def handle_async(:create_simulation, {:exit, reason}, socket) do
+    {:noreply,
+     socket
+     |> assign(:creating_simulation, false)
+     |> put_flash(:error, "Simulator creation crashed: #{inspect(reason)}")}
   end
 
   defp list_tournaments do
@@ -146,6 +182,27 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4 mt-3">
+        <h3 class="text-white mb-3">Top200 Simulator</h3>
+        <p class="cb-text mb-3">
+          Spins up a private Top200 tournament with 200 simulated players (real names,
+          random clans). Bots submit full Python solutions from <code>task.solutions["python"]</code>
+          at randomized delays. Use the Start / Pause / Continue / Retry controls on the
+          tournament's stream admin page.
+        </p>
+        <button
+          type="button"
+          phx-click="create_simulation"
+          data-confirm="Create a new Top200 simulator tournament with 200 bots?"
+          disabled={@creating_simulation}
+          class="btn btn-warning text-white cb-rounded"
+        >
+          {if @creating_simulation,
+            do: "Creating… (this can take ~30s)",
+            else: "Create Top200 Simulation"}
+        </button>
       </div>
 
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4 mt-3">
