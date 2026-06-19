@@ -22,6 +22,12 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
     ~r{^\/auth\/(?:github|discord|external)\/callback\/?$}
   ]
 
+  # Paths that perform their own (token-based) authentication and must not be
+  # short-circuited by the guest/free-user/mini-mode redirects below.
+  @token_authed_paths [
+    ~r{^\/admin\/tournaments\/\d+\/stream\/state\/?$}
+  ]
+
   @allowed_mini_paths [
     ~r{^\/$},
     ~r{^\/authorized\/?$},
@@ -47,6 +53,10 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
     current_user = conn.assigns.current_user
 
     cond do
+      # paths that handle their own (token) auth — let them through unconditionally
+      Enum.any?(@token_authed_paths, &Regex.match?(&1, conn.request_path)) ->
+        conn
+
       # allow admins and moderators to access any page
       User.admin_or_moderator?(current_user) ->
         conn
