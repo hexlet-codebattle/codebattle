@@ -1,8 +1,11 @@
 defmodule CodebattleWeb.TournamentStreamerChannelTest do
   use CodebattleWeb.ChannelCase
 
+  alias Codebattle.Game.Player
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Match
   alias CodebattleWeb.StreamerSocket
+  alias CodebattleWeb.TournamentAdminChannel
   alias CodebattleWeb.TournamentStreamerChannel
 
   defp create_tournament(creator, attrs \\ %{}) do
@@ -89,22 +92,19 @@ defmodule CodebattleWeb.TournamentStreamerChannelTest do
       %{tournament: tournament, socket: socket}
     end
 
-    test "forwards tournament:updated as compact state", %{socket: socket, tournament: tournament} do
+    test "ignores tournament lifecycle updates", %{socket: socket, tournament: tournament} do
       send(socket.channel_pid, %{
         event: "tournament:updated",
         payload: %{tournament: %{id: tournament.id, name: "x", state: "active", type: "swiss"}}
       })
 
-      assert_push("tournament:updated", %{tournament: %{id: _, state: "active"}})
-    end
-
-    test "forwards tournament:round_created", %{socket: socket, tournament: tournament} do
       send(socket.channel_pid, %{
         event: "tournament:round_created",
         payload: %{tournament: %{id: tournament.id, current_round_position: 1}}
       })
 
-      assert_push("tournament:round_created", %{tournament: %{current_round_position: 1}})
+      refute_push("tournament:updated", _)
+      refute_push("tournament:round_created", _)
     end
 
     test "pushes tournament:game:finished on game:tournament:finished", %{socket: socket} do
@@ -155,6 +155,58 @@ defmodule CodebattleWeb.TournamentStreamerChannelTest do
       send(socket.channel_pid, %{event: "tournament:totally:unknown", payload: %{}})
 
       refute_push("tournament:totally:unknown", _)
+    end
+
+    test "auto-selects rematch for the active pair" do
+      creator = insert(:user)
+      player1 = insert(:user)
+      player2 = insert(:user)
+      tournament = create_tournament(creator)
+
+      active_game =
+        insert(:game,
+          tournament_id: tournament.id,
+          state: "playing",
+          player_ids: [player1.id, player2.id],
+          players: [Player.build(player1), Player.build(player2)]
+        )
+
+      rematch_game =
+        insert(:game,
+          tournament_id: tournament.id,
+          state: "playing",
+          player_ids: [player2.id, player1.id],
+          players: [Player.build(player2), Player.build(player1)]
+        )
+
+      TournamentAdminChannel.store_active_game(tournament.id, active_game.id)
+
+      assert {:ok, %{active_game: %{id: active_game_id}}, socket} =
+               subscribe_and_join(
+                 streamer_socket(tournament.id),
+                 TournamentStreamerChannel,
+                 "tournament_streamer",
+                 %{}
+               )
+
+      assert active_game_id == active_game.id
+
+      send(socket.channel_pid, %{
+        event: "tournament:match:upserted",
+        payload: %{
+          match: %Match{
+            id: 2,
+            game_id: rematch_game.id,
+            player_ids: [player2.id, player1.id],
+            rematch: true,
+            state: "playing"
+          }
+        }
+      })
+
+      assert_push("active_game:set", %{game_id: game_id, game: %{id: game_id}})
+      assert game_id == rematch_game.id
+      assert TournamentAdminChannel.get_active_game(tournament.id) == rematch_game.id
     end
   end
 
