@@ -4,6 +4,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.Simulator
   alias CodebattleWeb.TournamentAdminChannel
 
   require Logger
@@ -37,9 +38,31 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
        current_user: current_user,
        active_game_id: TournamentAdminChannel.get_active_game(tournament.id),
        filter: "playing",
-       widgets: @widgets
+       widgets: @widgets,
+       simulator_enabled: simulator_enabled?(tournament)
      )
-     |> assign_matches_and_players()}
+     |> assign_matches_and_players()
+     |> assign_simulator_state()}
+  end
+
+  defp simulator_enabled?(%{meta: meta}) when is_map(meta) do
+    meta["simulator"] == true or meta[:simulator] == true
+  end
+
+  defp simulator_enabled?(_), do: false
+
+  defp assign_simulator_state(socket) do
+    if socket.assigns.simulator_enabled do
+      sim =
+        case Simulator.get_state(socket.assigns.tournament.id) do
+          nil -> %{status: :idle, settings: Simulator.default_settings(), scheduled_count: 0}
+          other -> other
+        end
+
+      assign(socket, simulator: sim)
+    else
+      assign(socket, simulator: nil)
+    end
   end
 
   @impl true
@@ -78,6 +101,26 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
     {:noreply, assign(socket, active_game_id: nil)}
   end
 
+  def handle_event("sim_" <> action, params, socket) do
+    if socket.assigns.simulator_enabled do
+      tid = socket.assigns.tournament.id
+
+      case action do
+        "start" -> Simulator.start(tid)
+        "pause" -> Simulator.pause(tid)
+        "resume" -> Simulator.resume(tid)
+        "retry" -> Simulator.retry(tid)
+        "stop" -> Simulator.stop(tid)
+        "settings" -> Simulator.update_settings(tid, params)
+        _ -> :ok
+      end
+
+      {:noreply, assign_simulator_state(socket)}
+    else
+      {:noreply, socket}
+    end
+  end
+
   @impl true
   def handle_info(%{event: "tournament:stream:active_game", payload: payload}, socket) do
     {:noreply, assign(socket, active_game_id: payload[:game_id] || payload["game_id"])}
@@ -91,7 +134,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
              "tournament:updated",
              "tournament:finished"
            ] do
-    {:noreply, assign_matches_and_players(socket)}
+    {:noreply, socket |> assign_matches_and_players() |> assign_simulator_state()}
   end
 
   def handle_info(msg, socket) do
@@ -130,6 +173,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   defp state_order("timeout"), do: 3
   defp state_order("canceled"), do: 4
   defp state_order(_), do: 9
+
+  defp sim_status_color(:running), do: "#22c55e"
+  defp sim_status_color(:paused), do: "#f59e0b"
+  defp sim_status_color(:idle), do: "#94a3b8"
+  defp sim_status_color(_), do: "#a4aab3"
 
   defp state_color("playing"), do: "#22c55e"
   defp state_color("pending"), do: "#94a3b8"
@@ -206,6 +254,113 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
           </div>
         </div>
       </div>
+
+      <%= if @simulator_enabled do %>
+        <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3 mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="text-white mb-0">Simulator</h4>
+            <div>
+              <span
+                class="badge cb-rounded"
+                style={"background:" <> sim_status_color(@simulator.status) <> ";color:#0b1220;font-weight:700"}
+              >
+                {@simulator.status}
+              </span>
+              <span class="cb-text ml-2" style="font-size:12px">
+                scheduled: {@simulator.scheduled_count}
+              </span>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap mb-3" style="gap:8px">
+            <button
+              type="button"
+              phx-click="sim_start"
+              class="btn btn-sm btn-success cb-rounded"
+              disabled={@simulator.status == :running}
+            >
+              ▶ Start
+            </button>
+            <button
+              type="button"
+              phx-click="sim_pause"
+              class="btn btn-sm btn-warning cb-rounded"
+              disabled={@simulator.status != :running}
+            >
+              ⏸ Pause
+            </button>
+            <button
+              type="button"
+              phx-click="sim_resume"
+              class="btn btn-sm btn-info cb-rounded"
+              disabled={@simulator.status != :paused}
+            >
+              ⏵ Continue
+            </button>
+            <button
+              type="button"
+              phx-click="sim_retry"
+              class="btn btn-sm btn-outline-warning cb-rounded"
+              data-confirm="Reset matches and re-run from round 0?"
+            >
+              ⟳ Retry
+            </button>
+            <button
+              type="button"
+              phx-click="sim_stop"
+              class="btn btn-sm btn-outline-danger cb-rounded"
+              data-confirm="Stop the simulator process? (you can re-start it again)"
+            >
+              ⏹ Stop
+            </button>
+          </div>
+
+          <form phx-change="sim_settings" phx-submit="sim_settings">
+            <div class="row">
+              <div class="col-sm-4 mb-2">
+                <label class="cb-text small mb-1">Avg solve time (sec)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0.5"
+                  max="600"
+                  name="avg_seconds"
+                  value={@simulator.settings.avg_seconds}
+                  class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+                />
+              </div>
+              <div class="col-sm-4 mb-2">
+                <label class="cb-text small mb-1">Jitter (% of avg)</label>
+                <input
+                  type="number"
+                  step="5"
+                  min="0"
+                  max="100"
+                  name="jitter_pct"
+                  value={@simulator.settings.jitter_pct}
+                  class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+                />
+              </div>
+              <div class="col-sm-4 mb-2">
+                <label class="cb-text small mb-1">Top-rated win probability</label>
+                <input
+                  type="number"
+                  step="0.05"
+                  min="0.5"
+                  max="1"
+                  name="win_skew"
+                  value={@simulator.settings.win_skew}
+                  class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+                />
+              </div>
+            </div>
+            <small class="cb-text">
+              Bots submit full python solutions from <code>task.solutions["python"]</code>.
+              Each match's winner is deterministic per pair; the chosen player submits after the random delay above.
+            </small>
+          </form>
+        </div>
+      <% end %>
 
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3 mb-3">
         <h4 class="text-white mb-3">OBS / stream URLs</h4>
