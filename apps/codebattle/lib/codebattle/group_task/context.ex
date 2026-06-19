@@ -413,41 +413,62 @@ defmodule Codebattle.GroupTask.Context do
   end
 
   defp build_run_payload(%GroupTask{} = group_task, player_ids, attrs) do
-    latest_solutions =
-      do_list_latest_solutions(group_task.id, player_ids,
-        group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id"),
-        before: Map.get(attrs, :solutions_before) || Map.get(attrs, "solutions_before")
-      )
+    solutions = run_payload_solutions(group_task, player_ids, attrs)
 
-    solution_user_ids = MapSet.new(Enum.map(latest_solutions, & &1.user_id))
-    missing_player_ids = Enum.reject(player_ids, &MapSet.member?(solution_user_ids, &1))
-
-    if missing_player_ids == [] do
-      round = Map.get(attrs, :round) || Map.get(attrs, "round") || 1
-
-      {:ok,
-       %{
-         include_bots: Map.get(attrs, :include_bots) || Map.get(attrs, "include_bots") || false,
-         include_viewer_html: true,
-         options: %{round: round},
-         solutions:
-           Enum.map(latest_solutions, fn solution ->
-             %{
-               lang: solution.lang,
-               name: solution.user && solution.user.name,
-               player_id: solution.user_id,
-               solution: solution.solution
-             }
-           end)
-       }}
-    else
-      {:run_error,
-       %{
-         "error" => "solutions_not_found",
-         "missing_player_ids" => missing_player_ids
-       }}
+    case missing_player_ids(player_ids, solutions) do
+      [] -> {:ok, run_payload(solutions, attrs)}
+      missing_player_ids -> {:run_error, solutions_not_found_payload(missing_player_ids)}
     end
   end
+
+  defp run_payload_solutions(%GroupTask{id: group_task_id}, player_ids, attrs) do
+    # Callers may pass an explicit list of `%GroupTaskSolution{}` (with `:user`
+    # preloaded) to run a hand-picked solution per player, e.g. a "top N" slice
+    # that runs each player's best-scoring solution rather than their latest.
+    case attr_value(attrs, :solutions) do
+      solutions when is_list(solutions) and solutions != [] ->
+        solutions
+
+      _ ->
+        do_list_latest_solutions(group_task_id, player_ids,
+          group_tournament_id: attr_value(attrs, :group_tournament_id),
+          before: attr_value(attrs, :solutions_before)
+        )
+    end
+  end
+
+  defp missing_player_ids(player_ids, solutions) do
+    solution_user_ids = MapSet.new(Enum.map(solutions, & &1.user_id))
+
+    Enum.reject(player_ids, &MapSet.member?(solution_user_ids, &1))
+  end
+
+  defp run_payload(solutions, attrs) do
+    %{
+      include_bots: attr_value(attrs, :include_bots) || false,
+      include_viewer_html: true,
+      options: %{round: attr_value(attrs, :round) || 1},
+      solutions: Enum.map(solutions, &runner_solution_payload/1)
+    }
+  end
+
+  defp runner_solution_payload(solution) do
+    %{
+      lang: solution.lang,
+      name: solution.user && solution.user.name,
+      player_id: solution.user_id,
+      solution: solution.solution
+    }
+  end
+
+  defp solutions_not_found_payload(missing_player_ids) do
+    %{
+      "error" => "solutions_not_found",
+      "missing_player_ids" => missing_player_ids
+    }
+  end
+
+  defp attr_value(attrs, key), do: Map.get(attrs, key) || Map.get(attrs, to_string(key))
 
   defp execute_run(nil, _payload), do: {:run_error, %{"error" => "runner_url_not_configured"}}
   defp execute_run("", _payload), do: {:run_error, %{"error" => "runner_url_not_configured"}}

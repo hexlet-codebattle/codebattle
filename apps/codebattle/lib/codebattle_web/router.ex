@@ -175,6 +175,10 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post("/group_tournaments/:id/run_top8", CodebattleWeb.Admin.GroupTournamentController, :run_top8,
+      as: :admin_group_tournament
+    )
+
     post("/group_tournaments/:id/tokens", CodebattleWeb.Admin.GroupTournamentController, :create_token,
       as: :admin_group_tournament
     )

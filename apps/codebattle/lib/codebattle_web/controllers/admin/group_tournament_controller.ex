@@ -312,6 +312,29 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
   end
 
+  @top_slice_size 8
+
+  def run_top8(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+
+    case SliceRunner.run_top_slice(group_tournament, @top_slice_size) do
+      {:ok, count} ->
+        conn
+        |> put_flash(:info, "Ran top #{count} slice with the best solution per player.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+      :skipped ->
+        conn
+        |> put_flash(:error, "No scored solutions found to build a top #{@top_slice_size} slice.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, "Top #{@top_slice_size} slice run failed: #{inspect(reason)}")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+    end
+  end
+
   def toggle_leaderboard(conn, %{"id" => id}) do
     group_tournament = Context.get_group_tournament!(id)
     next_value = !group_tournament.show_leaderboard

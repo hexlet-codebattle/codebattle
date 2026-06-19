@@ -20,6 +20,7 @@ defmodule Codebattle.Tournament.Simulator do
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.Simulator.Setup
   alias Codebattle.Tournament.Simulator.Supervisor, as: SimSup
   alias Codebattle.User
 
@@ -129,7 +130,7 @@ defmodule Codebattle.Tournament.Simulator do
       Tournament.Server.handle_event(state.tournament_id, :retry, %{user: creator})
 
       # Step 2: re-join any of the 200 simulator users that were dropped
-      case Codebattle.Tournament.Simulator.Setup.top_up_players(state.tournament_id) do
+      case Setup.top_up_players(state.tournament_id) do
         :ok ->
           :ok
 
@@ -201,6 +202,13 @@ defmodule Codebattle.Tournament.Simulator do
   defp ensure_tournament_started(state) do
     with %{state: "waiting_participants"} = tournament <- get_tournament(state.tournament_id),
          %User{} = creator <- get_creator(tournament) do
+      # Always run the simulation with the full 100_001..100_200 player set:
+      # join any that aren't already in the tournament before starting.
+      case Setup.top_up_players(state.tournament_id) do
+        :ok -> :ok
+        other -> Logger.warning("simulator(#{state.tournament_id}): top_up_players returned #{inspect(other)}")
+      end
+
       Tournament.Server.handle_event(state.tournament_id, :start, %{user: creator})
     else
       _ -> :noop
