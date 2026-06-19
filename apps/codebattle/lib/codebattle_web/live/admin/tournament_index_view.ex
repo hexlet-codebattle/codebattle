@@ -68,14 +68,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   end
 
   @impl true
-  def handle_async(:create_simulation, {:ok, {:ok, tournament}}, socket) do
-    {:ok, _pid} = Simulator.ensure_started(tournament.id)
-
+  def handle_async(:create_simulation, {:ok, {:ok, users}}, socket) do
     {:noreply,
      socket
      |> assign(:creating_simulation, false)
-     |> put_flash(:info, "Simulation tournament ##{tournament.id} created with 200 players.")
-     |> redirect(to: "/admin/tournaments/#{tournament.id}/stream")}
+     |> put_flash(:info, "Loaded #{length(users)} Top200 simulator players from DB.")}
   end
 
   def handle_async(:create_simulation, {:ok, {:error, reason}}, socket) do
@@ -187,21 +184,19 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4 mt-3">
         <h3 class="text-white mb-3">Top200 Simulator</h3>
         <p class="cb-text mb-3">
-          Spins up a private Top200 tournament with 200 simulated players (real names,
-          random clans). Bots submit full Python solutions from <code>task.solutions["python"]</code>
-          at randomized delays. Use the Start / Pause / Continue / Retry controls on the
-          tournament's stream admin page.
+          Inserts or updates 200 Top200 simulator players with fixed ids, names,
+          ranks, languages, categories, and clans.
         </p>
         <button
           type="button"
           phx-click="create_simulation"
-          data-confirm="Create a new Top200 simulator tournament with 200 bots?"
+          data-confirm="Insert or update 200 Top200 simulator players?"
           disabled={@creating_simulation}
           class="btn btn-warning text-white cb-rounded"
         >
           {if @creating_simulation,
-            do: "Creating… (this can take ~30s)",
-            else: "Create Top200 Simulation"}
+            do: "Inserting…",
+            else: "Insert Top200 Players"}
         </button>
       </div>
 

@@ -130,6 +130,15 @@
           ],
           class: "btn btn-outline-warning cb-rounded ml-2"
         )}
+        {link("Run Top 8",
+          to: Routes.admin_group_tournament_path(@conn, :run_top8, @group_tournament),
+          method: :post,
+          data: [
+            confirm:
+              "Run a top-8 slice now? Picks the best solution per player (highest score, earliest submission as tiebreak), takes the top 8, and runs them together as one slice."
+          ],
+          class: "btn btn-outline-warning cb-rounded ml-2"
+        )}
         {link("Solution Tester",
           to: Routes.admin_group_tournament_path(@conn, :solution_tester, @group_tournament),
           class: "btn btn-outline-info cb-rounded ml-2"

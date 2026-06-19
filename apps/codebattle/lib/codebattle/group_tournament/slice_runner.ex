@@ -46,6 +46,7 @@ defmodule Codebattle.GroupTournament.SliceRunner do
 
   @slice_run_task_timeout_ms 200_000
   @default_max_concurrency 30
+  @default_top_n 8
 
   @spec assign_slices(GroupTournament.t()) :: {:ok, non_neg_integer()} | {:error, term()}
   def assign_slices(%GroupTournament{id: id, slice_size: slice_size, slice_strategy: strategy}) do
@@ -89,6 +90,48 @@ defmodule Codebattle.GroupTournament.SliceRunner do
       {:ok, result} -> result
       {:exit, reason} -> {:unknown, {:error, {:exit, reason}}, []}
     end)
+  end
+
+  @doc """
+  Runs a one-off "top N" slice.
+
+  Picks each player's best scored solution (highest run score; for an equal
+  score, the earliest submission), ranks players by that same key, takes the
+  top `n`, and runs their solutions together as a single slice.
+
+  The run is recorded with `kind: :slice` but no `slice_index`, so it shows up
+  in the slice runs list while `apply_tournament_scoring` no-ops — it's a
+  standalone showcase (e.g. a top-8 final), not a scored round that moves
+  players between slices.
+
+  Returns `{:ok, player_count}`, `:skipped` (no scored solutions yet), or
+  `{:error, term}`.
+  """
+  @spec run_top_slice(GroupTournament.t(), pos_integer()) ::
+          {:ok, non_neg_integer()} | :skipped | {:error, term()}
+  def run_top_slice(%GroupTournament{} = group_tournament, n \\ @default_top_n) do
+    case list_top_solutions(group_tournament, n) do
+      [] ->
+        :skipped
+
+      selected ->
+        player_ids = Enum.map(selected, & &1.user_id)
+        solutions = Enum.map(selected, & &1.solution)
+
+        result =
+          GroupTaskContext.run_group_task(group_tournament.group_task, player_ids, %{
+            group_tournament_id: group_tournament.id,
+            include_bots: false,
+            kind: :slice,
+            round: group_tournament.current_round_position || 1,
+            solutions: solutions
+          })
+
+        case result do
+          {:ok, _run} -> {:ok, length(player_ids)}
+          {:error, _} = err -> err
+        end
+    end
   end
 
   defp solutions_before_opt(opts), do: Keyword.get(opts, :solutions_before)
@@ -418,6 +461,64 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     |> Enum.map(fn {r, dense_place} ->
       %{user_id: r.user_id, place: dense_place, score: r.score, duration_ms: r.duration_ms, slice_index: slice_index}
     end)
+  end
+
+  # Pick each player's best scored run, rank players by the same key, take the
+  # top `n`, and resolve each chosen run back to the exact solution that
+  # produced it. Players with no successful scored run are excluded.
+  defp list_top_solutions(%GroupTournament{} = group_tournament, n) do
+    group_tournament.id
+    |> best_run_per_user()
+    |> Enum.sort_by(&run_ranking_key/1)
+    |> Enum.take(n)
+    |> Enum.flat_map(fn best ->
+      case solution_for_run(group_tournament, best) do
+        nil -> []
+        solution -> [%{user_id: best.user_id, solution: solution}]
+      end
+    end)
+  end
+
+  defp best_run_per_user(group_tournament_id) do
+    UserGroupTournamentRun
+    |> join(:inner, [r], ugt in assoc(r, :user_group_tournament))
+    |> where(
+      [r, ugt],
+      ugt.group_tournament_id == ^group_tournament_id and
+        r.status == "success" and not is_nil(r.score)
+    )
+    |> select([r, ugt], %{
+      user_id: ugt.user_id,
+      score: r.score,
+      duration_ms: r.duration_ms,
+      inserted_at: r.inserted_at
+    })
+    |> Repo.all()
+    |> Enum.group_by(& &1.user_id)
+    |> Enum.map(fn {_user_id, runs} -> Enum.min_by(runs, &run_ranking_key/1) end)
+  end
+
+  # Ranking: highest score first, then earliest submission. `duration_ms`
+  # (tournament-start → submit) is the primary "who submitted earlier" signal;
+  # a missing duration sorts last, with run insertion time as a final
+  # deterministic tiebreak.
+  defp run_ranking_key(%{score: score, duration_ms: duration_ms, inserted_at: inserted_at}) do
+    {-score, duration_ms || @missing_duration_sentinel, NaiveDateTime.to_iso8601(inserted_at)}
+  end
+
+  defp solution_for_run(%GroupTournament{} = group_tournament, %{user_id: user_id, inserted_at: run_inserted_at}) do
+    GroupTaskSolution
+    |> where(
+      [s],
+      s.group_task_id == ^group_tournament.group_task_id and
+        s.group_tournament_id == ^group_tournament.id and
+        s.user_id == ^user_id and
+        s.inserted_at <= ^run_inserted_at
+    )
+    |> preload(:user)
+    |> order_by([s], desc: s.inserted_at, desc: s.id)
+    |> limit(1)
+    |> Repo.one()
   end
 
   defp persist_seed(group_tournament_id, user_id, score, duration_ms) do
