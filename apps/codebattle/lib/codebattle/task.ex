@@ -22,6 +22,7 @@ defmodule Codebattle.Task do
              :description_en,
              :description_ru,
              :examples,
+             :examples_list,
              :generator_lang,
              :id,
              :input_signature,
@@ -73,6 +74,7 @@ defmodule Codebattle.Task do
     field(:asserts_examples, {:array, AtomizedMap}, default: [])
     field(:asserts, {:array, AtomizedMap}, default: [])
     field(:examples, :string)
+    field(:examples_list, {:array, :string}, default: [])
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:tags, {:array, :string}, default: [])
@@ -100,6 +102,7 @@ defmodule Codebattle.Task do
       :description_ru,
       :disabled,
       :examples,
+      :examples_list,
       :generator_lang,
       :input_signature,
       :level,
@@ -146,6 +149,7 @@ defmodule Codebattle.Task do
           solutions: Map.get(params, :solutions, %{}),
           state: params.state,
           tags: Map.get(params, :tags, []),
+          examples_list: Map.get(params, :examples_list, []),
           updated_at: DateTime.utc_now(),
           visibility: params.visibility
         ]
@@ -298,6 +302,7 @@ defmodule Codebattle.Task do
       creator_id: creator_id,
       solution: "",
       solutions: %{},
+      examples_list: [],
       arguments_generator: "",
       generator_lang: "js"
     }

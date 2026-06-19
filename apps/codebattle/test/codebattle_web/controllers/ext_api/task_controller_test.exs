@@ -29,7 +29,8 @@ defmodule CodebattleWeb.ExtApi.TaskControllerTest do
             %{argument_name: "b", type: %{name: "integer"}}
           ],
           output_signature: %{type: %{name: "integer"}},
-          examples: "sum(1, 1) -> 2"
+          examples: "sum(1, 1) -> 2",
+          examples_list: ["solution(1, 1) == 2", "solution(2, 3) == 5"]
         },
         %{
           name: "multiply_numbers",
@@ -72,6 +73,7 @@ defmodule CodebattleWeb.ExtApi.TaskControllerTest do
       assert task1.origin == "github"
       assert task1.level == "easy"
       assert task1.description_en == "Calculate sum of two numbers"
+      assert task1.examples_list == ["solution(1, 1) == 2", "solution(2, 3) == 5"]
       assert length(task1.asserts) == 2
 
       task2 = Repo.get_by(Task, name: "multiply_numbers")
@@ -104,7 +106,8 @@ defmodule CodebattleWeb.ExtApi.TaskControllerTest do
             %{argument_name: "b", type: %{name: "integer"}}
           ],
           output_signature: %{type: %{name: "integer"}},
-          examples: "updated examples"
+          examples: "updated examples",
+          examples_list: ["solution(1, 2) == 3"]
         }
       ]
 
@@ -127,6 +130,7 @@ defmodule CodebattleWeb.ExtApi.TaskControllerTest do
       updated_task = Repo.get_by(Task, name: "existing_task")
       assert updated_task.description_en == "Updated description"
       assert updated_task.level == "medium"
+      assert updated_task.examples_list == ["solution(1, 2) == 3"]
       assert updated_task.visibility == "public"
     end
 
