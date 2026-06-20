@@ -143,16 +143,42 @@ const parseTestProgress = (payload = {}) => {
   };
 };
 
+const FINISHED_RESULTS = new Set(["won", "lost", "gave_up", "timeout"]);
+
+// A finished game resets each player's `check_result` back to the default 0/1
+// payload, keeping only `result` / `result_percent`. In that case reconstruct the
+// tests view from result_percent (scaled to /100) so a winner reads 100/100.
+const testsFromResult = (player) => {
+  const percent = clamp(Number(player?.result_percent) || 0, 0, 100);
+  return {
+    successCount: Math.round(percent),
+    assertsCount: 100,
+    status: percent >= 100 ? "ok" : "failure",
+    output: "",
+    outputError: "",
+    failedAssert: undefined,
+  };
+};
+
 // Seed the per-player tests map from a game payload, so finished games (or games
 // joined mid-flight) show their last check result instead of 0/0 until the next
 // live `user:check_complete` event arrives.
 const testsFromPlayers = (players = []) =>
   players.reduce((acc, player) => {
     const id = getPlayerId(player);
-    const checkResult = player?.check_result || player?.checkResult;
-    if (id != null && checkResult) {
-      acc[id] = parseTestProgress({ check_result: checkResult });
+    if (id == null) {
+      return acc;
     }
+
+    const checkResult = player?.check_result || player?.checkResult;
+    const parsed = checkResult ? parseTestProgress({ check_result: checkResult }) : null;
+
+    if (parsed && parsed.status !== "initial") {
+      acc[id] = parsed;
+    } else if (FINISHED_RESULTS.has(player?.result)) {
+      acc[id] = testsFromResult(player);
+    }
+
     return acc;
   }, {});
 
