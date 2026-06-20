@@ -331,8 +331,7 @@ defmodule Codebattle.Tournament.Simulator do
         case Game.Context.check_result(game_id, %{
                user: user,
                editor_text: text,
-               editor_lang: lang,
-               duration_sec: 1
+               editor_lang: lang
              }) do
           {:ok, _game, %{solution_status: solution_status}} ->
             Logger.info(
