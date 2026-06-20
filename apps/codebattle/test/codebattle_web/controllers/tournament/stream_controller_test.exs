@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
   use CodebattleWeb.ConnCase
 
   alias Codebattle.Tournament
+  alias CodebattleWeb.Tournament.StreamController
   alias CodebattleWeb.TournamentAdminChannel
 
   defp create_tournament(creator, attrs \\ %{}) do
@@ -196,6 +197,135 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
         assert tid == tournament.id
       end)
     end
+  end
+
+  describe "build_json_state/1 — active & rank funnel (top200 play-off)" do
+    test "Swiss phase (completed 5): active = top-8 by place, rank = place" do
+      players = playoff_players(for id <- 1..10, do: {id, id, 1})
+
+      # 5 раундов сыграно (позиция 4, идёт перерыв) → отсечка топ-8 по месту.
+      state = StreamController.build_json_state(top200(players, %{current_round_position: 4, break_state: "on"}))
+
+      assert active_by_id(state) == bool_map(1..10, [1, 2, 3, 4, 5, 6, 7, 8])
+      assert rank_by_id(state) == Map.new(1..10, &{to_string(&1), &1})
+    end
+
+    test "after QF (completed 6): the 4 QF winners (max draw_index) are active" do
+      # Победители QF — 1,3,5,7 (draw_index поднят до 2); проигравшие — 2,4,6,8.
+      players =
+        playoff_players([
+          {1, 1, 2},
+          {2, 5, 1},
+          {3, 2, 2},
+          {4, 6, 1},
+          {5, 3, 2},
+          {6, 7, 1},
+          {7, 4, 2},
+          {8, 8, 1}
+        ])
+
+      state = StreamController.build_json_state(top200(players, %{current_round_position: 5, break_state: "on"}))
+
+      assert active_by_id(state) == bool_map(1..8, [1, 3, 5, 7])
+    end
+
+    test "after SF (completed 7): only the 2 finalists (max draw_index) are active" do
+      # 1,3 — финалисты (di 3); 5,7 — проигравшие SF; 2,6 — победители утешительных SF; 4,8 — проигравшие.
+      players =
+        playoff_players([
+          {1, 1, 3},
+          {3, 2, 3},
+          {5, 3, 2},
+          {7, 4, 2},
+          {2, 5, 2},
+          {6, 6, 2},
+          {4, 7, 1},
+          {8, 8, 1}
+        ])
+
+      state = StreamController.build_json_state(top200(players, %{current_round_position: 6, break_state: "on"}))
+
+      assert active_by_id(state) == bool_map(1..8, [1, 3])
+    end
+
+    test "after final (completed 8): only the champion is active — исход A, чемпион 1" do
+      players =
+        playoff_players([
+          {1, 1, 4},
+          {3, 2, 3},
+          {5, 3, 2},
+          {7, 4, 2},
+          {2, 5, 2},
+          {6, 6, 2},
+          {4, 7, 1},
+          {8, 8, 1}
+        ])
+
+      state = StreamController.build_json_state(top200(players, %{state: "finished", current_round_position: 7}))
+
+      assert active_by_id(state) == bool_map(1..8, [1])
+    end
+
+    test "after final (completed 8): only the champion is active — исход B, чемпион 3" do
+      # Тот же расклад, но финал за 1-2 выиграл игрок 3 → активен он, а не 1.
+      players =
+        playoff_players([
+          {3, 1, 4},
+          {1, 2, 3},
+          {5, 3, 2},
+          {7, 4, 2},
+          {2, 5, 2},
+          {6, 6, 2},
+          {4, 7, 1},
+          {8, 8, 1}
+        ])
+
+      state = StreamController.build_json_state(top200(players, %{state: "finished", current_round_position: 7}))
+
+      assert active_by_id(state) == bool_map(1..8, [3])
+    end
+
+    test "active is always a boolean, rank tracks current place" do
+      players = playoff_players([{1, 2, 4}, {2, 1, 3}])
+      state = StreamController.build_json_state(top200(players, %{state: "finished", current_round_position: 7}))
+
+      assert rank_by_id(state) == %{"1" => 2, "2" => 1}
+      assert Enum.all?(state.players, &is_boolean(&1.active))
+    end
+  end
+
+  defp top200(players, attrs) do
+    base = %{
+      id: System.unique_integer([:positive]),
+      type: "top200",
+      state: "active",
+      current_round_position: 0,
+      break_state: "off",
+      rounds_limit: 8,
+      use_clan: false,
+      players: players,
+      players_table: nil,
+      matches_table: nil
+    }
+
+    struct(Tournament, Map.merge(base, attrs))
+  end
+
+  # specs: list of {id, place, draw_index}
+  defp playoff_players(specs) do
+    Map.new(specs, fn {id, place, draw_index} ->
+      {id,
+       struct(Tournament.Player, %{id: id, name: "p#{id}", place: place, draw_index: draw_index, score: 1000 - place})}
+    end)
+  end
+
+  defp active_by_id(state), do: Map.new(state.players, fn p -> {p.id, p.active} end)
+
+  defp rank_by_id(state), do: Map.new(state.players, fn p -> {p.id, p.rank} end)
+
+  defp bool_map(ids, active_ids) do
+    active = MapSet.new(active_ids)
+    Map.new(ids, fn id -> {to_string(id), MapSet.member?(active, id)} end)
   end
 
   defp with_api_key(key, fun) do

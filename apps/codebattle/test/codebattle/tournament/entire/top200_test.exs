@@ -148,6 +148,24 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
                [2, 7]
              ]
     end
+
+    test "в плей-офф играют только топ-8: остальные 192 не получают пар (и игр)" do
+      tournament = insert_top200_tournament()
+
+      record_scores(tournament.id, 0, Enum.map(1..200, fn id -> {id, 1000 - id} end))
+
+      tournament = put_inline(tournament, 5, players_with_ratings(1..200), %{})
+      {_, pairs} = Top200.build_round_pairs(tournament)
+
+      paired_ids = pairs |> Enum.flat_map(fn pair -> Enum.map(pair, & &1.id) end) |> MapSet.new()
+
+      # ровно 8 уникальных игроков в парах QF
+      assert MapSet.size(paired_ids) == 8
+      assert paired_ids == MapSet.new(1..8)
+
+      # ни один из игроков 9..200 не попадает в пары → у них нет матчей/игр в плей-офф
+      assert Enum.all?(9..200, &(&1 not in paired_ids))
+    end
   end
 
   describe "build_round_pairs/1 — R6 semifinal с per_round_pair (2 матча на пару)" do
@@ -191,12 +209,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
   end
 
   describe "build_round_pairs/1 — R6 semifinal" do
-    test "победители QF в главной сетке, проигравшие в утешительной за 5-8" do
+    test "победители QF (по draw_index) в главной сетке, проигравшие в утешительной за 5-8" do
       tournament = insert_top200_tournament()
 
-      # QF (R5) матчи: [1,8], [4,5], [3,6], [2,7]
-      # Победители: 1, 4, 3, 2 (нечётные позиции в исходной паре)
-      # Проигравшие: 8, 5, 6, 7
+      # QF (R5) матчи: [1,8], [4,5], [3,6], [2,7].
       qf_matches =
         inline_matches([
           %Match{id: 1, player_ids: [1, 8], round_position: 5, state: "game_over"},
@@ -205,29 +221,32 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
           %Match{id: 4, player_ids: [2, 7], round_position: 5, state: "game_over"}
         ])
 
-      record_scores(tournament.id, 5, [
-        {1, 100},
-        {8, 50},
-        {4, 100},
-        {5, 50},
-        {3, 100},
-        {6, 50},
-        {2, 100},
-        {7, 50}
-      ])
+      # calculate_round_results уже поднял draw_index победителям пар: 8, 4, 6, 2 — нарочно
+      # не «первые» в паре, чтобы проверить, что пэйринг идёт по draw_index, а не по позиции.
+      players =
+        players_with_draw_index(%{
+          8 => 2,
+          4 => 2,
+          6 => 2,
+          2 => 2,
+          1 => 1,
+          5 => 1,
+          3 => 1,
+          7 => 1
+        })
 
-      tournament = put_inline(tournament, 6, players_with_ratings(1..8), qf_matches)
+      tournament = put_inline(tournament, 6, players, qf_matches)
       {_, pairs} = Top200.build_round_pairs(tournament)
 
       assert pair_ids(pairs) == [
-               # SF1 — главная сетка, верхняя половина
-               [1, 4],
-               # SF2 — главная сетка, нижняя половина
-               [2, 3],
-               # Cons SF1 — за 5-8, верхняя половина
-               [5, 8],
-               # Cons SF2 — за 5-8, нижняя половина
-               [6, 7]
+               # SF1 — главная сетка: победители QF1 (8) и QF2 (4)
+               [4, 8],
+               # SF2 — главная сетка: победители QF3 (6) и QF4 (2)
+               [2, 6],
+               # Cons SF1 — за 5-8: проигравшие QF1 (1) и QF2 (5)
+               [1, 5],
+               # Cons SF2 — за 5-8: проигравшие QF3 (3) и QF4 (7)
+               [3, 7]
              ]
     end
   end
@@ -521,10 +540,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
   end
 
   describe "build_round_pairs/1 — R7 finals" do
-    test "4 финальных матча: за 1-2, 3-4, 5-6, 7-8 места" do
+    test "4 финальных матча за 1-2, 3-4, 5-6, 7-8 (победители по draw_index)" do
       tournament = insert_top200_tournament()
 
-      # SF (R6) матчи в порядке: [1,4] (SF1), [2,3] (SF2), [5,8] (Cons1), [6,7] (Cons2)
+      # SF (R6) матчи в порядке: [1,4] (SF1 main), [2,3] (SF2 main), [5,8] (Cons1), [6,7] (Cons2).
       sf_matches =
         inline_matches([
           %Match{id: 10, player_ids: [1, 4], round_position: 6, state: "game_over"},
@@ -533,32 +552,146 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
           %Match{id: 13, player_ids: [6, 7], round_position: 6, state: "game_over"}
         ])
 
-      # Победители SF: 1, 2 → играют за 1-2; проигравшие SF: 4, 3 → играют за 3-4
-      # Победители Cons: 5, 6 → за 5-6; проигравшие Cons: 8, 7 → за 7-8
-      record_scores(tournament.id, 6, [
-        {1, 100},
-        {4, 50},
-        {2, 100},
-        {3, 50},
-        {5, 100},
-        {8, 50},
-        {6, 100},
-        {7, 50}
-      ])
+      # calculate_round_results уже проставил draw_index: чемпионская ветка глубже всех.
+      # Победители main SF: 4, 2 (draw_index 3) → финал за 1-2; проигравшие: 1, 3 → за 3-4.
+      # Победители cons SF: 8, 6 (draw_index 2) → за 5-6; проигравшие: 5, 7 → за 7-8.
+      players =
+        players_with_draw_index(%{
+          4 => 3,
+          2 => 3,
+          1 => 2,
+          3 => 2,
+          8 => 2,
+          6 => 2,
+          5 => 1,
+          7 => 1
+        })
 
-      tournament = put_inline(tournament, 7, players_with_ratings(1..8), sf_matches)
+      tournament = put_inline(tournament, 7, players, sf_matches)
       {_, pairs} = Top200.build_round_pairs(tournament)
 
       assert pair_ids(pairs) == [
                # За 1-2
-               [1, 2],
+               [2, 4],
                # За 3-4
-               [3, 4],
+               [1, 3],
                # За 5-6
-               [5, 6],
+               [6, 8],
                # За 7-8
-               [7, 8]
+               [5, 7]
              ]
+    end
+  end
+
+  describe "calculate_round_results/1 — draw_index по итогам плей-офф раунда" do
+    test "QF: победитель каждой пары (по сумме очков раунда) получает +1 к draw_index" do
+      tournament = insert_top200_tournament()
+      table = Tournament.Players.create_table(tournament.id)
+      tournament = %{tournament | players_table: table, current_round_position: 5}
+
+      # стартовый draw_index = 1 у всех (дефолт схемы)
+      Enum.each(1..8, fn id ->
+        Tournament.Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", state: "active"}))
+      end)
+
+      # QF пары [1,8] [4,5] [3,6] [2,7], по 2 матча на пару (per_round_pair).
+      qf_matches =
+        inline_matches([
+          %Match{id: 1, player_ids: [1, 8], round_position: 5, state: "game_over"},
+          %Match{id: 5, player_ids: [1, 8], round_position: 5, state: "game_over"},
+          %Match{id: 2, player_ids: [4, 5], round_position: 5, state: "game_over"},
+          %Match{id: 6, player_ids: [4, 5], round_position: 5, state: "game_over"},
+          %Match{id: 3, player_ids: [3, 6], round_position: 5, state: "game_over"},
+          %Match{id: 7, player_ids: [3, 6], round_position: 5, state: "game_over"},
+          %Match{id: 4, player_ids: [2, 7], round_position: 5, state: "game_over"},
+          %Match{id: 8, player_ids: [2, 7], round_position: 5, state: "game_over"}
+        ])
+
+      tournament = %{tournament | matches: qf_matches}
+
+      # Победители по очкам раунда: 8, 4, 6, 2 (нарочно не «первые» в паре).
+      record_scores(tournament.id, 5, [
+        {1, 50},
+        {8, 100},
+        {4, 100},
+        {5, 50},
+        {3, 50},
+        {6, 100},
+        {2, 100},
+        {7, 50}
+      ])
+
+      Top200.calculate_round_results(tournament)
+
+      assert draw_index_by_id(tournament, 1..8) == %{
+               1 => 1,
+               2 => 2,
+               3 => 1,
+               4 => 2,
+               5 => 1,
+               6 => 2,
+               7 => 1,
+               8 => 2
+             }
+    end
+
+    test "SF: победители главной сетки уходят глубже (di 3), победители утешительной — di 2" do
+      tournament = insert_top200_tournament()
+      table = Tournament.Players.create_table(tournament.id)
+      tournament = %{tournament | players_table: table, current_round_position: 6}
+
+      # После QF: главная сетка (победители QF) на draw_index 2, утешительная — на 1.
+      Enum.each(
+        [{1, 2}, {2, 2}, {3, 2}, {4, 2}, {5, 1}, {6, 1}, {7, 1}, {8, 1}],
+        fn {id, di} ->
+          Tournament.Players.put_player(
+            tournament,
+            Player.new!(%{id: id, name: "p#{id}", state: "active", draw_index: di})
+          )
+        end
+      )
+
+      # SF матчи (по 2 на пару): главная [1,4] [2,3], утешительная [5,8] [6,7].
+      sf_matches =
+        inline_matches([
+          %Match{id: 10, player_ids: [1, 4], round_position: 6, state: "game_over"},
+          %Match{id: 14, player_ids: [1, 4], round_position: 6, state: "game_over"},
+          %Match{id: 11, player_ids: [2, 3], round_position: 6, state: "game_over"},
+          %Match{id: 15, player_ids: [2, 3], round_position: 6, state: "game_over"},
+          %Match{id: 12, player_ids: [5, 8], round_position: 6, state: "game_over"},
+          %Match{id: 16, player_ids: [5, 8], round_position: 6, state: "game_over"},
+          %Match{id: 13, player_ids: [6, 7], round_position: 6, state: "game_over"},
+          %Match{id: 17, player_ids: [6, 7], round_position: 6, state: "game_over"}
+        ])
+
+      tournament = %{tournament | matches: sf_matches}
+
+      # Победители раунда: 4, 2 (главная сетка) и 8, 6 (утешительная) — снова не «первые».
+      record_scores(tournament.id, 6, [
+        {1, 50},
+        {4, 100},
+        {2, 100},
+        {3, 50},
+        {5, 50},
+        {8, 100},
+        {6, 100},
+        {7, 50}
+      ])
+
+      Top200.calculate_round_results(tournament)
+
+      assert draw_index_by_id(tournament, 1..8) == %{
+               # главная сетка: победители → 3, проигравшие остаются на 2
+               4 => 3,
+               2 => 3,
+               1 => 2,
+               3 => 2,
+               # утешительная: победители → 2, проигравшие остаются на 1
+               8 => 2,
+               6 => 2,
+               5 => 1,
+               7 => 1
+             }
     end
   end
 
@@ -1138,6 +1271,14 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     end)
   end
 
+  # Игроки с явным draw_index — имитируем результат calculate_round_results прошлого
+  # раунда (победителю каждой пары draw_index уже подняли). Принимает map id => draw_index.
+  defp players_with_draw_index(id_to_draw_index) do
+    Map.new(id_to_draw_index, fn {id, draw_index} ->
+      {id, Player.new!(%{id: id, name: "p#{id}", rating: id, state: "active", draw_index: draw_index})}
+    end)
+  end
+
   defp record_scores(tournament_id, round_position, user_scores) do
     Enum.each(user_scores, fn {user_id, score} ->
       insert(:tournament_result,
@@ -1174,6 +1315,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       duration_sec: 1,
       round_position: round_position
     )
+  end
+
+  defp draw_index_by_id(tournament, ids) do
+    Map.new(ids, fn id -> {id, Tournament.Players.get_player(tournament, id).draw_index} end)
   end
 
   defp pair_ids(pairs) do

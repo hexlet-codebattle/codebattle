@@ -1780,6 +1780,18 @@ body.cb-stream-transparent-page {
   background: transparent !important;
 }
 
+// Drop Monaco's focus/decoration borders on the stream kiosk so the editor
+// blends into the OBS overlay instead of showing a blue outline.
+body.cb-stream-transparent-page {
+  .monaco-editor,
+  .monaco-editor .overflow-guard,
+  .monaco-editor.focused,
+  .monaco-editor .decorationsOverviewRuler {
+    outline: none !important;
+    border: none !important;
+  }
+}
+
 .cb-stream-tasks-stats {
   background-color: #faff0f;
   padding: 20px 16px;

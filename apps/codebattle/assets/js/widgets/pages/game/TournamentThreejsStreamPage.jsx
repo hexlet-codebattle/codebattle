@@ -32,6 +32,7 @@ function parseStreamParams(search) {
     widgetValid: widgetRaw ? ALLOWED_WIDGETS.has(widgetRaw) : true,
     fontSize: Number.isFinite(fontRaw) && fontRaw >= 8 && fontRaw <= 200 ? fontRaw : null,
     editorTheme: ALLOWED_THEMES.has(themeRaw) ? themeRaw : null,
+    hideCup: TRUTHY.has((p.get("hide_cup") || "").toLowerCase()),
   };
 }
 

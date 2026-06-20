@@ -68,16 +68,18 @@ defmodule CodebattleWeb.Tournament.StreamController do
   # Funnel of how many top players stay "active" after each completed round.
   @active_cutoffs %{1 => 128, 2 => 64, 3 => 32, 4 => 16, 5 => 8, 6 => 4, 7 => 2, 8 => 1}
 
-  defp build_json_state(tournament) do
+  # Public so the stream-state shape (active/rank funnel) can be unit-tested with an
+  # inline tournament struct without spinning up a tournament server.
+  def build_json_state(tournament) do
     players = safe_get_players(tournament)
     user_history = safe_get_users_history(tournament, players)
-    cutoff = active_cutoff(completed_rounds(tournament))
+    active_ids = active_player_ids(tournament, players)
     win_probs = compute_win_probs(user_history)
 
     %{
       tournament_id: tournament.id,
       current_round: current_round(tournament),
-      players: serialize_players(players, user_history, win_probs, cutoff),
+      players: serialize_players(players, user_history, win_probs, active_ids),
       clans: serialize_clans(tournament),
       active_game_id: TournamentAdminChannel.get_active_game(tournament.id)
     }
@@ -92,21 +94,53 @@ defmodule CodebattleWeb.Tournament.StreamController do
   defp completed_rounds(%{break_state: "on", current_round_position: pos}), do: (pos || 0) + 1
   defp completed_rounds(%{current_round_position: pos}), do: pos || 0
 
+  # Set of player ids still "active" in the funnel.
+  #   - top200 play-off phase (last 3 rounds, 4→2→1): bracket survivors — the
+  #     deepest draw_index wave (top200 bumps draw_index for each pair's winner).
+  #   - otherwise (Swiss phase / other types): top-N by place per the cutoff table.
+  defp active_player_ids(%{type: "top200"} = tournament, players) do
+    if completed_rounds(tournament) >= 6 do
+      bracket_survivor_ids(players)
+    else
+      cutoff_player_ids(players, completed_rounds(tournament))
+    end
+  end
+
+  defp active_player_ids(tournament, players) do
+    cutoff_player_ids(players, completed_rounds(tournament))
+  end
+
+  defp cutoff_player_ids(players, completed) do
+    case active_cutoff(completed) do
+      :infinity ->
+        MapSet.new(players, & &1.id)
+
+      cutoff ->
+        players
+        |> Enum.filter(&(is_integer(&1.place) and &1.place >= 1 and &1.place <= cutoff))
+        |> MapSet.new(& &1.id)
+    end
+  end
+
+  defp bracket_survivor_ids(players) do
+    max_draw_index = players |> Enum.map(&(&1.draw_index || 0)) |> Enum.max(fn -> 0 end)
+
+    players
+    |> Enum.filter(&((&1.draw_index || 0) == max_draw_index))
+    |> MapSet.new(& &1.id)
+  end
+
   # No round finished yet → everyone is still active; otherwise top-N by place.
   defp active_cutoff(0), do: :infinity
   defp active_cutoff(n), do: Map.get(@active_cutoffs, n, 1)
 
-  defp player_active?(_player, :infinity), do: true
-  defp player_active?(%{place: place}, cutoff) when is_integer(place) and place > 0, do: place <= cutoff
-  defp player_active?(_player, _cutoff), do: false
-
-  defp serialize_players(players, user_history, win_probs, cutoff) do
+  defp serialize_players(players, user_history, win_probs, active_ids) do
     players
     |> Enum.sort_by(&{-(&1.score || 0), &1.place || 99_999, &1.id})
-    |> Enum.map(&serialize_player(&1, user_history, win_probs, cutoff))
+    |> Enum.map(&serialize_player(&1, user_history, win_probs, active_ids))
   end
 
-  defp serialize_player(player, user_history, win_probs, cutoff) do
+  defp serialize_player(player, user_history, win_probs, active_ids) do
     %{
       id: to_string(player.id),
       name: player.name,
@@ -116,7 +150,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
       won_tasks: player.wins_count || 0,
       rank: player.place,
       win_prob: to_string(win_probs[player.id] || ""),
-      active: player_active?(player, cutoff),
+      active: MapSet.member?(active_ids, player.id),
       history: user_history[player.id] || []
     }
   end

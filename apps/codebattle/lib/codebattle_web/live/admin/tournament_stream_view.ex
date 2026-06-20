@@ -37,7 +37,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
        tournament: tournament,
        current_user: current_user,
        active_game_id: TournamentAdminChannel.get_active_game(tournament.id),
-       filter: "playing",
        widgets: @widgets,
        simulator_enabled: simulator_enabled?(tournament)
      )
@@ -66,10 +65,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   end
 
   @impl true
-  def handle_event("set_filter", %{"filter" => filter}, socket) do
-    {:noreply, assign(socket, filter: filter)}
-  end
-
   def handle_event("set_active", %{"game_id" => game_id_str}, socket) do
     tournament_id = socket.assigns.tournament.id
 
@@ -176,26 +171,17 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   defp sim_status_color(:idle), do: "#94a3b8"
   defp sim_status_color(_), do: "#a4aab3"
 
-  defp state_color("playing"), do: "#22c55e"
-  defp state_color("pending"), do: "#94a3b8"
-  defp state_color("timeout"), do: "#f59e0b"
-  defp state_color("canceled"), do: "#64748b"
-  defp state_color(_), do: "#a4aab3"
-
-  defp filter_matches(matches, "playing", _active), do: Enum.filter(matches, &(&1.state == "playing"))
-
-  defp filter_matches(matches, "live", active) do
-    Enum.filter(matches, &(&1.state == "playing" or &1.game_id == active))
+  defp players_sorted(players_by_id) do
+    players_by_id
+    |> Map.values()
+    |> Enum.sort_by(&{-(&1.score || 0), &1.name})
   end
 
-  defp filter_matches(matches, _all, _active), do: matches
-
-  defp player_name(players_by_id, id) do
-    case Map.get(players_by_id, id) do
-      nil -> "##{id}"
-      %{name: name} -> name
-      _ -> "##{id}"
-    end
+  defp player_games(matches, player_id) do
+    matches
+    |> Enum.filter(&(player_id in (&1.player_ids || []) and not is_nil(&1.game_id)))
+    |> Enum.map(&%{game_id: &1.game_id, state: &1.state, round: &1.round_id || &1.round_position})
+    |> Enum.sort_by(& &1.round)
   end
 
   defp widget_url(tournament_id, widget) do
@@ -209,9 +195,9 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
 
   @impl true
   def render(assigns) do
-    visible_matches = filter_matches(assigns.matches, assigns.filter, assigns.active_game_id)
     playing_count = Enum.count(assigns.matches, &(&1.state == "playing"))
-    assigns = assign(assigns, visible_matches: visible_matches, playing_count: playing_count)
+    players = players_sorted(assigns.players_by_id)
+    assigns = assign(assigns, players: players, playing_count: playing_count)
 
     ~H"""
     <div class="container-fluid px-0">
@@ -343,97 +329,67 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         </div>
       <% end %>
 
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3 mb-3">
-        <h4 class="text-white mb-3">OBS / stream URLs</h4>
-        <ul class="list-group">
+      <details class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-2 mb-3">
+        <summary class="text-white" style="cursor:pointer;font-size:14px;font-weight:600">
+          OBS / stream URLs
+          <span class="cb-text ml-1" style="font-size:12px;font-weight:400">({length(@widgets)})</span>
+        </summary>
+        <ul class="list-group mt-2">
           <%= for widget <- @widgets do %>
             <% url = widget_url(@tournament.id, widget) %>
-            <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color">
+            <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color py-1">
               <div class="text-truncate mr-2" style="min-width:0">
-                <strong class="text-white mr-2">{widget.label}</strong>
-                <code class="cb-text" style="font-size:12px">{url}</code>
+                <strong class="text-white mr-2" style="font-size:13px">{widget.label}</strong>
+                <code class="cb-text" style="font-size:11px">{url}</code>
               </div>
-              <a href={url} target="_blank" class="btn btn-sm btn-outline-primary cb-rounded ml-2">
+              <a
+                href={url}
+                target="_blank"
+                class="btn btn-sm btn-outline-primary cb-rounded ml-2 py-0"
+              >
                 Open
               </a>
             </li>
           <% end %>
         </ul>
-      </div>
+      </details>
 
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="text-white mb-0">Matches</h4>
-          <div class="btn-group btn-group-sm" role="group">
-            <%= for {key, label} <- [{"playing", "Playing"}, {"live", "Live + Active"}, {"all", "All"}] do %>
-              <button
-                type="button"
-                phx-click="set_filter"
-                phx-value-filter={key}
-                class={"btn cb-rounded " <> if @filter == key, do: "btn-primary", else: "btn-outline-primary"}
-              >
-                {label}
-              </button>
-            <% end %>
-          </div>
+          <small class="cb-text">{length(@players)} players</small>
         </div>
 
-        <%= if @visible_matches == [] do %>
-          <div class="text-center cb-text py-4">No matches to show.</div>
+        <%= if @players == [] do %>
+          <div class="text-center cb-text py-4">No players to show.</div>
         <% else %>
           <ul class="list-group">
-            <%= for m <- @visible_matches do %>
-              <% is_active = m.game_id && m.game_id == @active_game_id %>
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color"
-                style={"border-left:4px solid " <> if is_active, do: "#22c55e", else: "transparent"}
-              >
-                <div style="min-width:0">
-                  <div class="d-flex align-items-center" style="gap:10px">
-                    <span
-                      class="badge text-uppercase"
-                      style={"background:" <> state_color(m.state) <> ";color:#0b1220;font-weight:700"}
-                    >
-                      {m.state}
-                    </span>
-                    <span style="font-family:Menlo,monospace;font-size:13px" class="text-white">
-                      round {m.round_id || m.round_position || "?"} · match #{m.id}
-                    </span>
-                    <%= if m.game_id do %>
-                      <span class="cb-text" style="font-size:12px">game #{m.game_id}</span>
-                    <% end %>
-                  </div>
-                  <div class="mt-1 text-white" style="font-size:15px">
-                    <%= for {pid, idx} <- Enum.with_index(m.player_ids || []) do %>
-                      <%= if idx > 0 do %>
-                        <span class="cb-text mx-2">vs</span>
-                      <% end %>
-                      <strong>{player_name(@players_by_id, pid)}</strong>
-                    <% end %>
-                    <%= if (m.player_ids || []) == [] do %>
-                      <span class="cb-text">no players</span>
-                    <% end %>
-                  </div>
+            <%= for {player, idx} <- Enum.with_index(@players, 1) do %>
+              <% games = player_games(@matches, player.id) %>
+              <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color">
+                <div class="d-flex align-items-center" style="gap:10px;min-width:0">
+                  <span class="cb-text" style="font-size:12px;width:24px;text-align:right">{idx}.</span>
+                  <strong class="text-white text-truncate">{player.name}</strong>
+                  <span class="badge cb-rounded" style="background:#1e293b;color:#fff">
+                    {player.score || 0}
+                  </span>
                 </div>
-                <div class="d-flex align-items-center" style="gap:6px">
-                  <%= if m.game_id do %>
-                    <a
-                      href={"/games/#{m.game_id}"}
-                      target="_blank"
-                      class="btn btn-sm btn-outline-secondary cb-rounded"
+                <div class="d-flex flex-wrap justify-content-end" style="gap:6px">
+                  <%= for g <- games do %>
+                    <% is_active = g.game_id == @active_game_id %>
+                    <button
+                      type="button"
+                      phx-click="set_active"
+                      phx-value-game_id={g.game_id}
+                      title={"round #{g.round} · #{g.state}"}
+                      class={"btn btn-sm cb-rounded " <> if is_active, do: "btn-success", else: "btn-outline-success"}
                     >
-                      Game
-                    </a>
+                      {if is_active, do: "✓ ", else: ""}#{g.game_id}
+                    </button>
                   <% end %>
-                  <button
-                    type="button"
-                    phx-click="set_active"
-                    phx-value-game_id={m.game_id}
-                    disabled={is_nil(m.game_id)}
-                    class={"btn btn-sm cb-rounded " <> if is_active, do: "btn-success", else: "btn-outline-success"}
-                  >
-                    {if is_active, do: "✓ Live", else: "Set Live"}
-                  </button>
+                  <%= if games == [] do %>
+                    <span class="cb-text" style="font-size:12px">no games</span>
+                  <% end %>
                 </div>
               </li>
             <% end %>
