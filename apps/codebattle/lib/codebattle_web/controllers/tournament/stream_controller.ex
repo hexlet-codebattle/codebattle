@@ -20,6 +20,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
       conn
       |> put_view(CodebattleWeb.TournamentView)
       |> put_layout(html: {CodebattleWeb.LayoutView, :empty})
+      |> assign(:body_class, "cb-stream-transparent-page")
       |> put_meta_tags(%{title: "Stream Tournament"})
       |> put_gon(
         tournament_id: tournament_id,
@@ -64,16 +65,19 @@ defmodule CodebattleWeb.Tournament.StreamController do
     end
   end
 
+  # Funnel of how many top players stay "active" after each completed round.
+  @active_cutoffs %{1 => 128, 2 => 64, 3 => 32, 4 => 16, 5 => 8, 6 => 4, 7 => 2, 8 => 1}
+
   defp build_json_state(tournament) do
     players = safe_get_players(tournament)
     user_history = safe_get_users_history(tournament, players)
-    max_draw_index = Helpers.get_max_draw_index(players)
+    cutoff = active_cutoff(completed_rounds(tournament))
     win_probs = compute_win_probs(user_history)
 
     %{
       tournament_id: tournament.id,
       current_round: current_round(tournament),
-      players: serialize_players(players, user_history, win_probs, max_draw_index),
+      players: serialize_players(players, user_history, win_probs, cutoff),
       clans: serialize_clans(tournament),
       active_game_id: TournamentAdminChannel.get_active_game(tournament.id)
     }
@@ -82,13 +86,27 @@ defmodule CodebattleWeb.Tournament.StreamController do
   defp current_round(%{state: "waiting_participants"}), do: 0
   defp current_round(%{current_round_position: pos}), do: (pos || 0) + 1
 
-  defp serialize_players(players, user_history, win_probs, max_draw_index) do
+  # How many rounds have fully finished. During a round's break the just-played
+  # round already counts as complete; once the tournament is finished all do.
+  defp completed_rounds(%{state: "finished", rounds_limit: limit}) when is_integer(limit), do: limit
+  defp completed_rounds(%{break_state: "on", current_round_position: pos}), do: (pos || 0) + 1
+  defp completed_rounds(%{current_round_position: pos}), do: pos || 0
+
+  # No round finished yet → everyone is still active; otherwise top-N by place.
+  defp active_cutoff(0), do: :infinity
+  defp active_cutoff(n), do: Map.get(@active_cutoffs, n, 1)
+
+  defp player_active?(_player, :infinity), do: true
+  defp player_active?(%{place: place}, cutoff) when is_integer(place) and place > 0, do: place <= cutoff
+  defp player_active?(_player, _cutoff), do: false
+
+  defp serialize_players(players, user_history, win_probs, cutoff) do
     players
     |> Enum.sort_by(&{-(&1.score || 0), &1.place || 99_999, &1.id})
-    |> Enum.map(&serialize_player(&1, user_history, win_probs, max_draw_index))
+    |> Enum.map(&serialize_player(&1, user_history, win_probs, cutoff))
   end
 
-  defp serialize_player(player, user_history, win_probs, max_draw_index) do
+  defp serialize_player(player, user_history, win_probs, cutoff) do
     %{
       id: to_string(player.id),
       name: player.name,
@@ -96,9 +114,9 @@ defmodule CodebattleWeb.Tournament.StreamController do
       total_score: player.score || 0,
       total_tasks: length(player.matches_ids || []),
       won_tasks: player.wins_count || 0,
-      rank: player.rank,
+      rank: player.place,
       win_prob: to_string(win_probs[player.id] || ""),
-      active: if(player.draw_index == max_draw_index, do: 1, else: 0),
+      active: player_active?(player, cutoff),
       history: user_history[player.id] || []
     }
   end
