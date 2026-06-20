@@ -486,7 +486,16 @@ function Pane({
   );
 }
 
-function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark", showCup = true }) {
+function EditorBody({
+  player,
+  fontSize,
+  onMount,
+  isWinner,
+  theme = "vs-dark",
+  showCup = true,
+  cupX = null,
+  cupY = null,
+}) {
   const language = languages[getPlayerLang(player)] || "javascript";
   const text = getPlayerText(player) || "";
   return (
@@ -507,8 +516,8 @@ function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark", sh
           title="Winner"
           style={{
             position: "absolute",
-            bottom: "20px",
-            left: "24px",
+            ...(cupY != null ? { top: `${cupY}px`, bottom: "auto" } : { bottom: "20px" }),
+            left: cupX != null ? `${cupX}px` : "24px",
             height: "160px",
             width: "auto",
             filter: `drop-shadow(0 0 28px ${brand.gold}) drop-shadow(0 0 48px rgba(224,191,122,0.55))`,
@@ -523,7 +532,7 @@ function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark", sh
   );
 }
 
-function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
+function TestsBody({ tests, isWinner, kiosk = false, showCup = true, fontSize = null }) {
   const status = tests?.status || "initial";
   // Before a check runs the default payload is 0/1; show a 0/100 placeholder instead.
   const hasRun = status !== "initial";
@@ -608,7 +617,7 @@ function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
             fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
             fontStyle: "italic",
             fontWeight: 900,
-            fontSize: kiosk ? "min(14vw, 70vh)" : "28px",
+            fontSize: kiosk ? (fontSize ? `${fontSize}px` : "min(14vw, 70vh)") : "28px",
             lineHeight: 1,
             letterSpacing: "-0.02em",
             paddingRight: kiosk ? "min(3vw, 4vh)" : "16px",
@@ -618,7 +627,7 @@ function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
           {`${displayPercent}/100`}
         </div>
       </div>
-      {(isError || isFailure) && (errorText || failedAssert) && (
+      {!kiosk && (isError || isFailure) && (errorText || failedAssert) && (
         <pre
           style={{
             margin: 0,
@@ -638,7 +647,7 @@ function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
           {isError
             ? errorText || "Unknown error"
             : failedAssert
-              ? `Expected: ${JSON.stringify(failedAssert.expected)}\nGot:      ${JSON.stringify(failedAssert.result ?? failedAssert.actual)}\nArgs:     ${JSON.stringify(failedAssert.arguments)}${failedAssert.output ? `\n\n${failedAssert.output}` : ""}`
+              ? failedAssert.output || ""
               : errorText}
         </pre>
       )}
@@ -1521,6 +1530,8 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
           isWinner={leftPlayer?.result === "won"}
           theme={monacoTheme}
           showCup={!hideCup}
+          cupX={streamParams?.cupX}
+          cupY={streamParams?.cupY}
         />
       );
     } else if (kioskWidget === "rightEditor" && rightPlayer) {
@@ -1532,6 +1543,8 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
           isWinner={rightPlayer?.result === "won"}
           theme={monacoTheme}
           showCup={!hideCup}
+          cupX={streamParams?.cupX}
+          cupY={streamParams?.cupY}
         />
       );
     } else if (kioskWidget === "leftTests" && leftPlayer) {
@@ -1540,6 +1553,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
           tests={battleState.tests[getPlayerId(leftPlayer)]}
           isWinner={leftPlayer?.result === "won"}
           kiosk
+          fontSize={streamParams?.fontSize || null}
           showCup={!hideCup}
         />
       );
@@ -1549,6 +1563,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
           tests={battleState.tests[getPlayerId(rightPlayer)]}
           isWinner={rightPlayer?.result === "won"}
           kiosk
+          fontSize={streamParams?.fontSize || null}
           showCup={!hideCup}
         />
       );
