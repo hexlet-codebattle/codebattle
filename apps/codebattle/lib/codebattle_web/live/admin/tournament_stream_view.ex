@@ -38,6 +38,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
        current_user: current_user,
        active_game_id: TournamentAdminChannel.get_active_game(tournament.id),
        widgets: @widgets,
+       filter: "all",
        simulator_enabled: simulator_enabled?(tournament)
      )
      |> assign_matches_and_players()
@@ -95,6 +96,12 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
 
     {:noreply, assign(socket, active_game_id: nil)}
   end
+
+  def handle_event("set_filter", %{"filter" => filter}, socket) when filter in ~w(all playing) do
+    {:noreply, assign(socket, filter: filter)}
+  end
+
+  def handle_event("set_filter", _, socket), do: {:noreply, socket}
 
   def handle_event("sim_" <> action, params, socket) do
     if socket.assigns.simulator_enabled do
@@ -177,6 +184,14 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
     |> Enum.sort_by(&{-(&1.score || 0), &1.name})
   end
 
+  defp filter_players(players, _matches, "all"), do: players
+
+  defp filter_players(players, matches, "playing") do
+    Enum.filter(players, fn player ->
+      Enum.any?(player_games(matches, player.id), &(&1.state == "playing"))
+    end)
+  end
+
   defp player_games(matches, player_id) do
     matches
     |> Enum.filter(&(player_id in (&1.player_ids || []) and not is_nil(&1.game_id)))
@@ -196,7 +211,12 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   @impl true
   def render(assigns) do
     playing_count = Enum.count(assigns.matches, &(&1.state == "playing"))
-    players = players_sorted(assigns.players_by_id)
+
+    players =
+      assigns.players_by_id
+      |> players_sorted()
+      |> filter_players(assigns.matches, assigns.filter)
+
     assigns = assign(assigns, players: players, playing_count: playing_count)
 
     ~H"""
@@ -357,7 +377,27 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="text-white mb-0">Matches</h4>
-          <small class="cb-text">{length(@players)} players</small>
+          <div class="d-flex align-items-center" style="gap:8px">
+            <div class="btn-group btn-group-sm" role="group">
+              <button
+                type="button"
+                phx-click="set_filter"
+                phx-value-filter="all"
+                class={"btn cb-rounded " <> if @filter == "all", do: "btn-primary", else: "btn-outline-primary"}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                phx-click="set_filter"
+                phx-value-filter="playing"
+                class={"btn cb-rounded " <> if @filter == "playing", do: "btn-primary", else: "btn-outline-primary"}
+              >
+                Playing
+              </button>
+            </div>
+            <small class="cb-text">{length(@players)} players</small>
+          </div>
         </div>
 
         <%= if @players == [] do %>

@@ -580,7 +580,7 @@ function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
           position: "relative",
           flexGrow: 1,
           minHeight: kiosk ? "0" : "44px",
-          background: "#2b2f4d",
+          background: kiosk ? "transparent" : "#2b2f4d",
           borderRadius: "4px",
           overflow: "hidden",
           display: "flex",
@@ -645,19 +645,35 @@ function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
   );
 }
 
-function TaskBody({ description, fontSize }) {
+function TaskBody({ description, fontSize, transparent = false }) {
   return (
     <div
+      className="cb-threejs-task"
       style={{
-        background: "#060a12",
-        color: "#e5e7eb",
+        background: transparent ? "transparent" : "#060a12",
+        color: "#B6A4FF",
         padding: "12px 16px",
         height: "100%",
         overflowY: "auto",
+        overflowX: "hidden",
         fontSize: `${fontSize}px`,
         lineHeight: 1.5,
+        overflowWrap: "break-word",
+        wordBreak: "break-word",
       }}
     >
+      <style>{`
+        .cb-threejs-task pre,
+        .cb-threejs-task code {
+          white-space: pre-wrap;
+          word-break: break-word;
+          overflow-wrap: break-word;
+        }
+        .cb-threejs-task img,
+        .cb-threejs-task table {
+          max-width: 100%;
+        }
+      `}</style>
       <TaskDescriptionMarkdown description={description} />
     </div>
   );
@@ -1490,7 +1506,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
     let kioskBody = null;
 
     if (kioskWidget === "task" && taskDescription) {
-      kioskBody = <TaskBody description={taskDescription} fontSize={kioskFontSize} />;
+      kioskBody = <TaskBody description={taskDescription} fontSize={kioskFontSize} transparent />;
     } else if (kioskWidget === "examples" && taskExamples) {
       kioskBody = <ExamplesBody examples={taskExamples} fontSize={kioskFontSize} />;
     } else if (kioskWidget === "timer") {
@@ -1543,8 +1559,11 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
 
     const isEditorWidget = kioskWidget === "leftEditor" || kioskWidget === "rightEditor";
     const isTestsWidget = kioskWidget === "leftTests" || kioskWidget === "rightTests";
+    const isTaskWidget = kioskWidget === "task";
     const kioskBackground =
-      (isEditorWidget && monacoTheme === "cb-stream") || isTestsWidget ? "transparent" : "#000";
+      isTaskWidget || (isEditorWidget && monacoTheme === "cb-stream") || isTestsWidget
+        ? "transparent"
+        : "#000";
 
     return (
       <div style={{ position: "fixed", inset: 0, background: kioskBackground, overflow: "hidden" }}>
