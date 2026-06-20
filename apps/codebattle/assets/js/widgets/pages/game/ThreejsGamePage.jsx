@@ -1528,8 +1528,11 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
       return <KioskWaiting />;
     }
 
+    const isEditorWidget = kioskWidget === "leftEditor" || kioskWidget === "rightEditor";
+    const kioskBackground = isEditorWidget && monacoTheme === "cb-stream" ? "transparent" : "#000";
+
     return (
-      <div style={{ position: "fixed", inset: 0, background: "#000", overflow: "hidden" }}>
+      <div style={{ position: "fixed", inset: 0, background: kioskBackground, overflow: "hidden" }}>
         {kioskBody}
       </div>
     );

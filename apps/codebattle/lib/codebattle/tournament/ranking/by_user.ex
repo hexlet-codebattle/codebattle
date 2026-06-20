@@ -80,10 +80,6 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
 
   def update_player_result(tournament, _player, _score), do: tournament
 
-  def set_places_with_score_to_players(%{type: "top200"} = _tournament, _ranking) do
-    :ok
-  end
-
   def set_places_with_score_to_players(tournament, ranking) do
     Enum.each(ranking, fn %{id: id, place: place, score: score} ->
       tournament

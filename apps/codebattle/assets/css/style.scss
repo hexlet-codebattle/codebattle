@@ -1773,6 +1773,13 @@ div.cb-dropdown-menu {
   height: 410px;
 }
 
+// Stream kiosk page: keep html/body transparent so OBS browser source
+// composites the cb-stream editor over the live capture instead of a solid bg.
+html:has(body.cb-stream-transparent-page),
+body.cb-stream-transparent-page {
+  background: transparent !important;
+}
+
 .cb-stream-tasks-stats {
   background-color: #faff0f;
   padding: 20px 16px;
