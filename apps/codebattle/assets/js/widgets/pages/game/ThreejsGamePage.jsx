@@ -143,6 +143,19 @@ const parseTestProgress = (payload = {}) => {
   };
 };
 
+// Seed the per-player tests map from a game payload, so finished games (or games
+// joined mid-flight) show their last check result instead of 0/0 until the next
+// live `user:check_complete` event arrives.
+const testsFromPlayers = (players = []) =>
+  players.reduce((acc, player) => {
+    const id = getPlayerId(player);
+    const checkResult = player?.check_result || player?.checkResult;
+    if (id != null && checkResult) {
+      acc[id] = parseTestProgress({ check_result: checkResult });
+    }
+    return acc;
+  }, {});
+
 const getEditorBorderState = ({
   isChecking,
   isWinner,
@@ -447,14 +460,9 @@ function Pane({
   );
 }
 
-function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark" }) {
+function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark", showCup = true }) {
   const language = languages[getPlayerLang(player)] || "javascript";
   const text = getPlayerText(player) || "";
-  const lines = text.split("\n");
-  const maxLineLen = lines.reduce((m, l) => Math.max(m, l.length), 0);
-  const lineCount = lines.length;
-  const cupOnRight = maxLineLen < 60;
-  const cupOnBottom = lineCount < 30;
   return (
     <div style={{ position: "relative", height: "100%" }}>
       <MonacoEditor
@@ -465,35 +473,37 @@ function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark" }) 
         options={{ ...baseEditorOptions, fontSize }}
         onMount={onMount}
       />
-      {isWinner && (
-        <div
-          aria-label="Winner"
+      {isWinner && showCup && (
+        <img
+          src="/assets/images/stream/lightning.png"
+          alt="Winner"
           title="Winner"
           style={{
             position: "absolute",
-            ...(cupOnBottom ? { bottom: "20px" } : { top: "20px" }),
-            ...(cupOnRight ? { right: "24px" } : { left: "24px" }),
-            fontSize: "160px",
-            lineHeight: 1,
+            bottom: "20px",
+            left: "24px",
+            height: "160px",
+            width: "auto",
             filter: `drop-shadow(0 0 28px ${brand.gold}) drop-shadow(0 0 48px rgba(224,191,122,0.55))`,
             pointerEvents: "none",
             zIndex: 10,
             animation: "cb-cup-bounce-big 1.8s ease-in-out infinite",
             transformOrigin: "center",
           }}
-        >
-          🏆
-        </div>
+        />
       )}
     </div>
   );
 }
 
-function TestsBody({ tests, accent, isWinner, kiosk = false }) {
-  const total = tests?.assertsCount || 0;
-  const success = tests?.successCount || 0;
-  const percent = total > 0 ? clamp((success / total) * 100, 0, 100) : 0;
+function TestsBody({ tests, isWinner, kiosk = false, showCup = true }) {
   const status = tests?.status || "initial";
+  // Before a check runs the default payload is 0/1; show a 0/100 placeholder instead.
+  const hasRun = status !== "initial";
+  const total = hasRun ? tests?.assertsCount || 0 : 100;
+  const success = hasRun ? tests?.successCount || 0 : 0;
+  const percent = total > 0 ? clamp((success / total) * 100, 0, 100) : 0;
+  const displayPercent = Math.min(100, Math.round(percent));
   const isError = [
     "error",
     "memory_leak",
@@ -503,29 +513,6 @@ function TestsBody({ tests, accent, isWinner, kiosk = false }) {
     "client_timeout",
   ].includes(status);
   const isFailure = status === "failure";
-  const isOk = status === "ok";
-
-  let statusLabel = "Waiting";
-  let statusColor = "#94a3b8";
-  if (isOk) {
-    statusLabel = "All tests passed";
-    statusColor = "#22c55e";
-  } else if (isFailure) {
-    statusLabel = `${total - success} test${total - success === 1 ? "" : "s"} failed`;
-    statusColor = brand.red;
-  } else if (status === "error") {
-    statusLabel = "Compilation / runtime error";
-    statusColor = brand.red;
-  } else if (status === "timeout" || status === "client_timeout" || status === "service_timeout") {
-    statusLabel = "Execution timed out";
-    statusColor = "#f59e0b";
-  } else if (status === "memory_leak") {
-    statusLabel = "Memory limit exceeded";
-    statusColor = "#f59e0b";
-  } else if (status === "service_failure") {
-    statusLabel = "Service failure";
-    statusColor = brand.red;
-  }
 
   const errorText = tests?.outputError || tests?.output || "";
   const failedAssert = tests?.failedAssert;
@@ -533,8 +520,8 @@ function TestsBody({ tests, accent, isWinner, kiosk = false }) {
   return (
     <div
       style={{
-        background: "#060a12",
-        padding: "12px 14px",
+        background: "transparent",
+        padding: kiosk ? "0" : "12px 14px",
         fontFamily: "Menlo, Monaco, Consolas, monospace",
         height: "100%",
         display: "flex",
@@ -544,7 +531,7 @@ function TestsBody({ tests, accent, isWinner, kiosk = false }) {
         position: "relative",
       }}
     >
-      {isWinner && (
+      {isWinner && showCup && (
         <div
           aria-label="Winner"
           title="Winner"
@@ -564,50 +551,45 @@ function TestsBody({ tests, accent, isWinner, kiosk = false }) {
       )}
       <div
         style={{
-          display: "flex",
-          alignItems: "baseline",
-          justifyContent: "space-between",
-          gap: kiosk ? "min(3vw, 4vh)" : "8px",
-        }}
-      >
-        <div
-          style={{
-            color: "#fff",
-            fontSize: kiosk ? "min(20vw, 30vh)" : "20px",
-            fontWeight: 700,
-            lineHeight: 1,
-          }}
-        >
-          {`${success}/${total}`}
-        </div>
-        <div
-          style={{
-            color: statusColor,
-            fontSize: kiosk ? "min(3vw, 5vh)" : "13px",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {statusLabel}
-        </div>
-      </div>
-      <div
-        style={{
-          height: kiosk ? "min(4vw, 6vh)" : "12px",
-          background: "#0f172a",
-          borderRadius: "3px",
+          position: "relative",
+          flexGrow: 1,
+          minHeight: kiosk ? "0" : "44px",
+          background: "#2b2f4d",
+          borderRadius: "4px",
           overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
         }}
       >
         <div
           style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
             width: `${percent}%`,
-            height: "100%",
-            background: isError ? brand.red : accent,
+            background: isError ? brand.red : "#FAFF0F",
             transition: "width 200ms ease",
           }}
         />
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            color: "#0a0a0a",
+            fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+            fontStyle: "italic",
+            fontWeight: 900,
+            fontSize: kiosk ? "min(14vw, 70vh)" : "28px",
+            lineHeight: 1,
+            letterSpacing: "-0.02em",
+            paddingRight: kiosk ? "min(3vw, 4vh)" : "16px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {`${displayPercent}/100`}
+        </div>
       </div>
       {(isError || isFailure) && (errorText || failedAssert) && (
         <pre
@@ -799,6 +781,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
   const forceFullscreen = Boolean(streamParams?.fullscreen);
   const kioskWidget = streamParams?.widget || null;
   const monacoTheme = streamParams?.editorTheme || "vs-dark";
+  const hideCup = Boolean(streamParams?.hideCup);
 
   useEffect(() => {
     setInitialGame(initialGameSource);
@@ -993,7 +976,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
     players: normalizePlayers(initialGame.players || []),
     checking: {},
     typing: {},
-    tests: {},
+    tests: testsFromPlayers(initialGame.players || []),
     fx: {
       checkAt: 0,
       winAt: 0,
@@ -1228,6 +1211,8 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
         ...prev,
         gameState: game.state || prev.gameState,
         players: normalizePlayers(game.players || [], prev.players),
+        // Seed from payload, but let any live results already in state win.
+        tests: { ...testsFromPlayers(game.players || []), ...prev.tests },
       }));
     });
 
@@ -1492,6 +1477,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
           onMount={registerEditor(getPlayerId(leftPlayer))}
           isWinner={leftPlayer?.result === "won"}
           theme={monacoTheme}
+          showCup={!hideCup}
         />
       );
     } else if (kioskWidget === "rightEditor" && rightPlayer) {
@@ -1502,24 +1488,25 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
           onMount={registerEditor(getPlayerId(rightPlayer))}
           isWinner={rightPlayer?.result === "won"}
           theme={monacoTheme}
+          showCup={!hideCup}
         />
       );
     } else if (kioskWidget === "leftTests" && leftPlayer) {
       kioskBody = (
         <TestsBody
           tests={battleState.tests[getPlayerId(leftPlayer)]}
-          accent={editorThemes[0].header}
           isWinner={leftPlayer?.result === "won"}
           kiosk
+          showCup={!hideCup}
         />
       );
     } else if (kioskWidget === "rightTests" && rightPlayer) {
       kioskBody = (
         <TestsBody
           tests={battleState.tests[getPlayerId(rightPlayer)]}
-          accent={editorThemes[1].header}
           isWinner={rightPlayer?.result === "won"}
           kiosk
+          showCup={!hideCup}
         />
       );
     }
@@ -1529,7 +1516,9 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
     }
 
     const isEditorWidget = kioskWidget === "leftEditor" || kioskWidget === "rightEditor";
-    const kioskBackground = isEditorWidget && monacoTheme === "cb-stream" ? "transparent" : "#000";
+    const isTestsWidget = kioskWidget === "leftTests" || kioskWidget === "rightTests";
+    const kioskBackground =
+      (isEditorWidget && monacoTheme === "cb-stream") || isTestsWidget ? "transparent" : "#000";
 
     return (
       <div style={{ position: "fixed", inset: 0, background: kioskBackground, overflow: "hidden" }}>
@@ -1737,7 +1726,6 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
                     >
                       <TestsBody
                         tests={battleState.tests[getPlayerId(leftPlayer)]}
-                        accent={editorThemes[0].header}
                         isWinner={leftPlayer?.result === "won"}
                       />
                     </Pane>
@@ -1756,7 +1744,6 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp, str
                     >
                       <TestsBody
                         tests={battleState.tests[getPlayerId(rightPlayer)]}
-                        accent={editorThemes[1].header}
                         isWinner={rightPlayer?.result === "won"}
                       />
                     </Pane>

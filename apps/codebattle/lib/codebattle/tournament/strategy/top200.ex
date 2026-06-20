@@ -14,7 +14,16 @@ defmodule Codebattle.Tournament.Top200 do
   @impl Tournament.Base
   def game_type, do: "duo"
 
+  # Конец плей-офф раунда: победителю КАЖДОЙ пары (по сумме очков раунда) поднимаем
+  # draw_index на 1. Дальше draw_index — единственный источник правды о том, кто
+  # прошёл: и пэйринг следующего раунда, и подсветка «живых» в стриме читают его, а
+  # не пересчитывают победителей по очкам. Чемпионская ветка набирает больше всех
+  # «бампов», поэтому max(draw_index) = живые (8→4→2→1).
   @impl Tournament.Base
+  def calculate_round_results(%{current_round_position: pos} = tournament) when pos in 5..7 do
+    advance_pair_winners(tournament, pos)
+  end
+
   def calculate_round_results(tournament), do: tournament
 
   # R0 — одна «броня» для топ-32:
@@ -72,21 +81,16 @@ defmodule Codebattle.Tournament.Top200 do
   #   победители QF → главная сетка (играют за 1-4 места)
   #   проигравшие QF → утешительная сетка (играют за 5-8 места)
   def build_round_pairs(%{current_round_position: 6} = tournament) do
-    qf_results = TournamentResult.get_user_ranking_for_round(tournament, 5)
     players_by_id = id_map(get_players(tournament))
 
     # per_round_pair: каждая пара играет 2 матча → дедуп по pair, берём первый по id.
-    [qf1, qf2, qf3, qf4] =
-      tournament
-      |> get_round_matches(5)
-      |> Enum.sort_by(& &1.id)
-      |> Enum.uniq_by(&Enum.sort(&1.player_ids))
-      |> Enum.map(& &1.player_ids)
+    # Победитель пары — тот, кому calculate_round_results поднял draw_index.
+    [qf1, qf2, qf3, qf4] = round_player_pairs(tournament, 5)
 
-    {qf1_w, qf1_l} = winner_loser(qf1, qf_results)
-    {qf2_w, qf2_l} = winner_loser(qf2, qf_results)
-    {qf3_w, qf3_l} = winner_loser(qf3, qf_results)
-    {qf4_w, qf4_l} = winner_loser(qf4, qf_results)
+    {qf1_w, qf1_l} = winner_loser_by_draw_index(qf1, players_by_id)
+    {qf2_w, qf2_l} = winner_loser_by_draw_index(qf2, players_by_id)
+    {qf3_w, qf3_l} = winner_loser_by_draw_index(qf3, players_by_id)
+    {qf4_w, qf4_l} = winner_loser_by_draw_index(qf4, players_by_id)
 
     pairs = [
       # SF1 — верхняя половина сетки за 1-4
@@ -104,21 +108,16 @@ defmodule Codebattle.Tournament.Top200 do
 
   # R7 — Finals: 4 параллельных матча за 1/2, 3/4, 5/6, 7/8
   def build_round_pairs(%{current_round_position: 7} = tournament) do
-    sf_results = TournamentResult.get_user_ranking_for_round(tournament, 6)
     players_by_id = id_map(get_players(tournament))
 
     # per_round_pair: каждая пара играет 2 матча → дедуп по pair, берём первый по id.
-    [sf_main_top, sf_main_bot, sf_cons_top, sf_cons_bot] =
-      tournament
-      |> get_round_matches(6)
-      |> Enum.sort_by(& &1.id)
-      |> Enum.uniq_by(&Enum.sort(&1.player_ids))
-      |> Enum.map(& &1.player_ids)
+    # Победитель пары — тот, кому calculate_round_results поднял draw_index.
+    [sf_main_top, sf_main_bot, sf_cons_top, sf_cons_bot] = round_player_pairs(tournament, 6)
 
-    {mt_w, mt_l} = winner_loser(sf_main_top, sf_results)
-    {mb_w, mb_l} = winner_loser(sf_main_bot, sf_results)
-    {ct_w, ct_l} = winner_loser(sf_cons_top, sf_results)
-    {cb_w, cb_l} = winner_loser(sf_cons_bot, sf_results)
+    {mt_w, mt_l} = winner_loser_by_draw_index(sf_main_top, players_by_id)
+    {mb_w, mb_l} = winner_loser_by_draw_index(sf_main_bot, players_by_id)
+    {ct_w, ct_l} = winner_loser_by_draw_index(sf_cons_top, players_by_id)
+    {cb_w, cb_l} = winner_loser_by_draw_index(sf_cons_bot, players_by_id)
 
     pairs = [
       # За 1-2
@@ -249,6 +248,53 @@ defmodule Codebattle.Tournament.Top200 do
   end
 
   defp id_map(players), do: Map.new(players, &{&1.id, &1})
+
+  # Пары раунда в порядке создания матчей, по одной записи на пару (в раунде 2 игры).
+  defp round_player_pairs(tournament, round_position) do
+    tournament
+    |> get_round_matches(round_position)
+    |> Enum.sort_by(& &1.id)
+    |> Enum.uniq_by(&Enum.sort(&1.player_ids))
+    |> Enum.map(& &1.player_ids)
+  end
+
+  # Победитель каждой пары раунда (по сумме очков раунда) получает +1 к draw_index.
+  defp advance_pair_winners(tournament, round_position) do
+    results = TournamentResult.get_user_ranking_for_round(tournament, round_position)
+
+    tournament
+    |> round_player_pairs(round_position)
+    |> Enum.each(fn pair ->
+      {winner_id, _loser_id} = winner_loser(pair, results)
+
+      case Tournament.Players.get_player(tournament, winner_id) do
+        nil ->
+          :noop
+
+        player ->
+          Tournament.Players.put_player(tournament, %{player | draw_index: (player.draw_index || 1) + 1})
+      end
+    end)
+
+    tournament
+  end
+
+  # Победитель пары по draw_index: у прошедшего дальше он на 1 больше (его проставил
+  # calculate_round_results прошлого раунда). При равенстве — первый по id пары.
+  defp winner_loser_by_draw_index([p1_id, p2_id], players_by_id) do
+    if draw_index_of(players_by_id, p1_id) >= draw_index_of(players_by_id, p2_id) do
+      {p1_id, p2_id}
+    else
+      {p2_id, p1_id}
+    end
+  end
+
+  defp draw_index_of(players_by_id, id) do
+    case players_by_id[id] do
+      %{draw_index: di} when is_integer(di) -> di
+      _ -> 0
+    end
+  end
 
   defp score_value(nil), do: 0
   defp score_value(%Decimal{} = d), do: Decimal.to_float(d)
