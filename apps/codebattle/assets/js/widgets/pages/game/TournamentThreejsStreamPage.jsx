@@ -25,6 +25,8 @@ function parseStreamParams(search) {
   const widgetRaw = (p.get("widget") || "").trim();
   const themeRaw = (p.get("editor_theme") || p.get("theme") || "").trim();
   const fontRaw = parseInt(p.get("font_size") || p.get("fontSize") || "", 10);
+  const cupXRaw = parseInt(p.get("cup_x") || p.get("cupX") || "", 10);
+  const cupYRaw = parseInt(p.get("cup_y") || p.get("cupY") || "", 10);
 
   return {
     fullscreen: TRUTHY.has((p.get("fullscreen") || "").toLowerCase()),
@@ -33,6 +35,8 @@ function parseStreamParams(search) {
     fontSize: Number.isFinite(fontRaw) && fontRaw >= 8 && fontRaw <= 200 ? fontRaw : null,
     editorTheme: ALLOWED_THEMES.has(themeRaw) ? themeRaw : null,
     hideCup: TRUTHY.has((p.get("hide_cup") || "").toLowerCase()),
+    cupX: Number.isFinite(cupXRaw) ? cupXRaw : null,
+    cupY: Number.isFinite(cupYRaw) ? cupYRaw : null,
   };
 }
 
