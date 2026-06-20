@@ -288,6 +288,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:player:redirect", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament_id}:player:#{params.player_id}",
+        event: "tournament:redirect",
+        payload: %{url: params.url}
+      }
+    ]
+  end
+
   def get_messages("tournament:player:matchmaking_started", params) do
     player = get_player_changed_fields(params.player)
 

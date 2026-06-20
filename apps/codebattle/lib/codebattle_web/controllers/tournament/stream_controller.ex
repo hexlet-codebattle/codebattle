@@ -219,18 +219,14 @@ defmodule CodebattleWeb.Tournament.StreamController do
     end
   end
 
+  # Seed the initial game from the admin-selected active game if one is stored,
+  # otherwise fall back to the first currently-playing match. Without this, a page
+  # reload (e.g. tweaking font_size in an OBS source URL) renders with no game_id
+  # and flashes the "Waiting..." placeholder until the stream channel round-trips
+  # back the active game id.
   defp fetch_active_game(tournament) do
-    matches =
-      try do
-        Helpers.get_matches(tournament, "playing")
-      rescue
-        _ -> []
-      end
-
-    active = List.first(matches)
-
-    case active do
-      %{game_id: game_id} when is_integer(game_id) ->
+    case active_game_id(tournament) do
+      game_id when is_integer(game_id) ->
         case Game.Context.fetch_game(game_id) do
           {:ok, game} ->
             head_to_head = Game.Context.fetch_head_to_head_by_game_id(game.id)
@@ -242,6 +238,27 @@ defmodule CodebattleWeb.Tournament.StreamController do
 
       _ ->
         {nil, nil}
+    end
+  end
+
+  defp active_game_id(tournament) do
+    case TournamentAdminChannel.get_active_game(tournament.id) do
+      game_id when is_integer(game_id) -> game_id
+      _ -> first_playing_game_id(tournament)
+    end
+  end
+
+  defp first_playing_game_id(tournament) do
+    matches =
+      try do
+        Helpers.get_matches(tournament, "playing")
+      rescue
+        _ -> []
+      end
+
+    case List.first(matches) do
+      %{game_id: game_id} when is_integer(game_id) -> game_id
+      _ -> nil
     end
   end
 end

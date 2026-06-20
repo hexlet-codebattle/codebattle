@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   alias Codebattle.Tournament.Context
+  alias Codebattle.Tournament.Server
 
   describe "#index" do
     test "shows empty tournaments", %{conn: conn} do
@@ -542,10 +543,98 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       assert updated_moderator_id == new_moderator.id
 
       updated_tournament = Context.get!(tournament.id)
-      live_tournament = Codebattle.Tournament.Server.get_tournament(tournament.id)
+      live_tournament = Server.get_tournament(tournament.id)
 
       assert updated_tournament.moderator_ids == [new_moderator.id]
       assert live_tournament.moderator_ids == [new_moderator.id]
+    end
+
+    test "updates meta from the form meta_json field in db and live tournament state", %{conn: conn} do
+      creator = insert(:user)
+
+      {:ok, tournament} =
+        Context.create(%{
+          "starts_at" => "2026-02-24T06:00",
+          "name" => "Meta update",
+          "description" => "Meta update",
+          "user_timezone" => "Etc/UTC",
+          "level" => "easy",
+          "creator" => creator,
+          "break_duration_seconds" => 0,
+          "type" => "swiss",
+          "state" => "waiting_participants",
+          "players_limit" => 200
+        })
+
+      assert tournament.meta == %{}
+
+      conn =
+        conn
+        |> put_session(:user_id, creator.id)
+        |> put(
+          Routes.api_v1_tournament_path(conn, :update, tournament.id),
+          %{
+            "tournament" => %{
+              "name" => tournament.name,
+              "description" => tournament.description,
+              "starts_at" => "2026-02-25T06:00",
+              "user_timezone" => "Etc/UTC",
+              "meta_json" => ~s({"rounds_config_type": "per_round", "game_passwords": ["secret"]})
+            }
+          }
+        )
+
+      assert %{
+               "tournament" => %{
+                 "meta" => %{
+                   "rounds_config_type" => "per_round",
+                   "game_passwords" => ["secret"]
+                 }
+               }
+             } = json_response(conn, 200)
+
+      updated_tournament = Context.get!(tournament.id)
+      live_tournament = Server.get_tournament(tournament.id)
+
+      assert updated_tournament.meta == %{rounds_config_type: "per_round", game_passwords: ["secret"]}
+      assert live_tournament.meta == %{rounds_config_type: "per_round", game_passwords: ["secret"]}
+    end
+
+    test "keeps meta empty when meta_json is blank or invalid", %{conn: conn} do
+      creator = insert(:user)
+
+      {:ok, tournament} =
+        Context.create(%{
+          "starts_at" => "2026-02-24T06:00",
+          "name" => "Invalid meta",
+          "description" => "Invalid meta",
+          "user_timezone" => "Etc/UTC",
+          "level" => "easy",
+          "creator" => creator,
+          "break_duration_seconds" => 0,
+          "type" => "swiss",
+          "state" => "waiting_participants",
+          "players_limit" => 200
+        })
+
+      conn =
+        conn
+        |> put_session(:user_id, creator.id)
+        |> put(
+          Routes.api_v1_tournament_path(conn, :update, tournament.id),
+          %{
+            "tournament" => %{
+              "name" => tournament.name,
+              "description" => tournament.description,
+              "starts_at" => "2026-02-25T06:00",
+              "user_timezone" => "Etc/UTC",
+              "meta_json" => "{ not valid json"
+            }
+          }
+        )
+
+      assert %{"tournament" => %{"meta" => meta}} = json_response(conn, 200)
+      assert meta == %{}
     end
 
     test "includes moderator tournaments in user tournaments list", %{conn: conn} do

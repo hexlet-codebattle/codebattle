@@ -496,6 +496,7 @@ function EditorBody({ player, fontSize, onMount, isWinner, theme = "vs-dark", sh
         language={language}
         value={text}
         height="100%"
+        loading=""
         options={{ ...baseEditorOptions, fontSize }}
         onMount={onMount}
       />
