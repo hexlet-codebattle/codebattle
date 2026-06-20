@@ -568,10 +568,20 @@ defmodule Codebattle.Tournament.Context do
       match_timeout_seconds: match_timeout_seconds,
       timeout_mode: timeout_mode,
       starts_at: starts_at,
-      meta: %{},
+      meta: parse_meta(params),
       show_results: show_results
     })
   end
+
+  defp parse_meta(%{meta_json: meta_json}) when is_binary(meta_json) and meta_json != "" do
+    case Jason.decode(meta_json) do
+      {:ok, meta} when is_map(meta) -> meta
+      _ -> %{}
+    end
+  end
+
+  defp parse_meta(%{meta: meta}) when is_map(meta), do: meta
+  defp parse_meta(_params), do: %{}
 
   defp normalize_moderator_ids(%{moderator_ids: moderator_ids} = params) do
     creator_id =

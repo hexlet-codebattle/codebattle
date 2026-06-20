@@ -24,6 +24,14 @@ defmodule Codebattle.Tournament.Top200 do
     advance_pair_winners(tournament, pos)
   end
 
+  # Конец 5-го раунда (current_round_position == 4): в плей-офф проходят только
+  # топ-8 по сумме очков. Остальных (для Top200 это 192 игрока) уводим по ссылке
+  # из meta.players_redirect_url — турнир для них окончен.
+  def calculate_round_results(%{current_round_position: 4} = tournament) do
+    redirect_eliminated_players(tournament)
+    tournament
+  end
+
   def calculate_round_results(tournament), do: tournament
 
   # R0 — одна «броня» для топ-32:
@@ -178,6 +186,32 @@ defmodule Codebattle.Tournament.Top200 do
   end
 
   # ---- helpers ----
+
+  # Игроков, не попавших в топ-8 (которые играют плей-офф с раунда 5/QF), уводим
+  # на ссылку из meta. Без ссылки в meta — ничего не делаем.
+  defp redirect_eliminated_players(%{meta: %{players_redirect_url: url}} = tournament)
+       when is_binary(url) and url != "" do
+    ranking = TournamentResult.get_user_ranking(tournament)
+    players = get_players(tournament)
+
+    advancing_ids =
+      players
+      |> sort_by_ranking(ranking)
+      |> Enum.take(8)
+      |> MapSet.new(& &1.id)
+
+    players
+    |> Enum.reject(&MapSet.member?(advancing_ids, &1.id))
+    |> Enum.each(fn player ->
+      Codebattle.PubSub.broadcast("tournament:player:redirect", %{
+        tournament_id: tournament.id,
+        player_id: player.id,
+        url: url
+      })
+    end)
+  end
+
+  defp redirect_eliminated_players(_tournament), do: :noop
 
   defp sort_by_rating(players) do
     Enum.sort_by(players, fn p -> {-(p.rating || 0), p.id} end)

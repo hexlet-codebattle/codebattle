@@ -146,22 +146,7 @@ export function GameThreejsPage() {
 export function TournamentThreejsStreamPage() {
   return (
     <Provider store={store}>
-      <Suspense
-        fallback={
-          <div
-            style={{
-              background: "#000",
-              color: "#e0bf7a",
-              height: "100vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            Loading...
-          </div>
-        }
-      >
+      <Suspense fallback={null}>
         <TournamentThreejsStreamWidget />
       </Suspense>
     </Provider>

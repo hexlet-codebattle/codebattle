@@ -346,6 +346,12 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:redirect", payload: payload}, socket) do
+    push(socket, "tournament:redirect", payload)
+
+    {:noreply, socket}
+  end
+
   def handle_info(message, socket) do
     Logger.warning("TournamentChannel Unexpected message: " <> inspect(message))
     {:noreply, socket}

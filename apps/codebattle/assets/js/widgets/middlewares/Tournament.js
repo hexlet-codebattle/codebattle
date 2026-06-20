@@ -170,6 +170,13 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     dispatch(actions.updateTournamentData(response.tournament));
   };
 
+  const handleRedirect = (response) => {
+    const { url } = response || {};
+    if (typeof url === "string" && url.length > 0) {
+      window.location.href = url;
+    }
+  };
+
   const handleTournamentRankingUpdate = (response) => {
     dispatch(
       actions.updateTournamentData({
@@ -190,7 +197,8 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     .addListener("tournament:match:upserted", handleMatchUpserted)
     .addListener("tournament:restarted", handleTournamentRestarted)
     .addListener("tournament:finished", handleTournamentFinished)
-    .addListener("tournament:ranking_update", handleTournamentRankingUpdate);
+    .addListener("tournament:ranking_update", handleTournamentRankingUpdate)
+    .addListener("tournament:redirect", handleRedirect);
 };
 
 export const uploadTournamentsByFilter = (from, to) =>
