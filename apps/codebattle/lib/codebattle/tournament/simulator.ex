@@ -4,8 +4,11 @@ defmodule Codebattle.Tournament.Simulator do
 
   One simulator process per tournament. The process:
     * listens to the per-tournament PubSub topic for new matches
-    * for each live match it picks a winner (rating-weighted) and schedules
-      a Python solution submission at a randomized delay
+    * for each live match it picks a winner (rating-weighted) and a randomized
+      "think time" (delay) window. The winner then *types* the solution into
+      the editor line by line over that window — broadcasting each partial text
+      to spectators exactly like a real player — and only submits the full,
+      correct solution for checking at the very end of the window.
     * exposes start/pause/resume/retry/stop/update_settings API for the
       admin stream LiveView controls
 
@@ -25,6 +28,14 @@ defmodule Codebattle.Tournament.Simulator do
   alias Codebattle.User
 
   require Logger
+
+  # Minimum gap between two consecutive "typed" lines. Keeps very long solutions
+  # from spamming sub-frame editor updates inside a short think window.
+  @min_type_interval_ms 120
+
+  # Tiny delay before the typing task is kicked off, so the scheduling stays
+  # timer-based (and therefore cancellable) like the rest of the simulator.
+  @start_delay_ms 1
 
   @default_settings %{
     avg_seconds: 8.0,
@@ -185,12 +196,12 @@ defmodule Codebattle.Tournament.Simulator do
     {:noreply, cancel_all_timers(state)}
   end
 
-  def handle_info({:submit, game_id, user_id, lang}, %{status: :running} = state) do
-    Task.start(fn -> submit_solution(state.tournament_id, game_id, user_id, lang) end)
+  def handle_info({:start_typing, game_id, user_id, lang, duration_ms}, %{status: :running} = state) do
+    Task.start(fn -> run_typing(state.tournament_id, game_id, user_id, lang, duration_ms) end)
     {:noreply, %{state | timers: Map.delete(state.timers, game_id)}}
   end
 
-  def handle_info({:submit, _game_id, _uid, _lang}, state) do
+  def handle_info({:start_typing, _game_id, _uid, _lang, _duration_ms}, state) do
     # paused / idle: drop the timer fire silently
     {:noreply, state}
   end
@@ -244,13 +255,15 @@ defmodule Codebattle.Tournament.Simulator do
     {winner_id, pair_winners} =
       ensure_winner(state.tournament_id, state.pair_winners, match.player_ids, state.settings.win_skew)
 
-    delay_ms = pick_delay_ms(state.settings)
+    duration_ms = pick_delay_ms(state.settings)
     lang = "python"
-    timer_ref = Process.send_after(self(), {:submit, match.game_id, winner_id, lang}, delay_ms)
+
+    timer_ref =
+      Process.send_after(self(), {:start_typing, match.game_id, winner_id, lang, duration_ms}, @start_delay_ms)
 
     Logger.info(
       "simulator(#{state.tournament_id}): scheduled game=#{match.game_id} winner=#{winner_id} " <>
-        "delay=#{delay_ms}ms players=#{inspect(match.player_ids)}"
+        "type_window=#{duration_ms}ms players=#{inspect(match.player_ids)}"
     )
 
     %{
@@ -318,46 +331,90 @@ defmodule Codebattle.Tournament.Simulator do
     %{state | timers: %{}}
   end
 
-  defp submit_solution(tournament_id, game_id, user_id, lang) do
+  # Type the solution into the editor line by line over `duration_ms`, then
+  # submit the full correct solution for checking at the end of the window.
+  defp run_typing(tournament_id, game_id, user_id, lang, duration_ms) do
     with {:ok, %{task: task} = _game} <- Game.Context.fetch_game(game_id),
          text when is_binary(text) and text != "" <- pick_solution_text(task),
          %User{} = user <- User.get(user_id) do
+      lines = String.split(text, "\n")
+      steps = length(lines)
+      # `steps + 1` slots: one per typed line, plus a final pause before submit.
+      interval_ms = max(div(duration_ms, steps + 1), @min_type_interval_ms)
+
       Logger.info(
-        "simulator(#{tournament_id}): submitting game=#{game_id} player=#{user.name}(##{user_id}) " <>
-          "task=#{task.id} lang=#{lang} chars=#{String.length(text)}"
+        "simulator(#{tournament_id}): typing game=#{game_id} player=#{user.name}(##{user_id}) " <>
+          "task=#{task.id} lang=#{lang} lines=#{steps} interval=#{interval_ms}ms"
       )
 
-      try do
-        case Game.Context.check_result(game_id, %{
-               user: user,
-               editor_text: text,
-               editor_lang: lang
-             }) do
-          {:ok, _game, %{solution_status: solution_status}} ->
-            Logger.info(
-              "simulator(#{tournament_id}): submitted game=#{game_id} player=#{user.name}(##{user_id}) " <>
-                "solution_status=#{solution_status}"
-            )
+      # Reveal the solution one line at a time. Each step broadcasts the partial
+      # editor text to spectators just like a real player typing.
+      Enum.each(1..steps, fn line_no ->
+        Process.sleep(interval_ms)
+        partial = lines |> Enum.take(line_no) |> Enum.join("\n")
+        type_editor(game_id, user, partial, lang)
+      end)
 
-            :ok
-
-          {:error, reason} ->
-            Logger.warning(
-              "simulator(#{tournament_id}): check_result error game=#{game_id} user=#{user_id} reason=#{inspect(reason)}"
-            )
-        end
-      rescue
-        e ->
-          Logger.warning(
-            "simulator(#{tournament_id}): check_result raised game=#{game_id} user=#{user_id} #{Exception.message(e)}"
-          )
-      end
+      # Final beat, then submit the complete, correct solution for checking.
+      Process.sleep(interval_ms)
+      submit_check(tournament_id, game_id, user, text, lang)
     else
       nil ->
         Logger.warning("simulator(#{tournament_id}): no solution found for game=#{game_id}")
 
       other ->
-        Logger.warning("simulator(#{tournament_id}): submit failed game=#{game_id} #{inspect(other)}")
+        Logger.warning("simulator(#{tournament_id}): typing failed game=#{game_id} #{inspect(other)}")
+    end
+  end
+
+  # Push a partial editor text: update the server-side game state and broadcast
+  # to spectators on the game channel, mirroring `GameChannel`'s "editor:data".
+  defp type_editor(game_id, user, editor_text, lang) do
+    case Game.Context.update_editor_data(game_id, user, editor_text, lang) do
+      {:ok, _game} ->
+        CodebattleWeb.Endpoint.broadcast("game:#{game_id}", "editor:data", %{
+          user_id: user.id,
+          lang_slug: lang,
+          editor_text: editor_text
+        })
+
+        :ok
+
+      _ ->
+        :ok
+    end
+  end
+
+  defp submit_check(tournament_id, game_id, user, text, lang) do
+    Logger.info(
+      "simulator(#{tournament_id}): submitting game=#{game_id} player=#{user.name}(##{user.id}) " <>
+        "lang=#{lang} chars=#{String.length(text)}"
+    )
+
+    try do
+      case Game.Context.check_result(game_id, %{
+             user: user,
+             editor_text: text,
+             editor_lang: lang
+           }) do
+        {:ok, _game, %{solution_status: solution_status}} ->
+          Logger.info(
+            "simulator(#{tournament_id}): submitted game=#{game_id} player=#{user.name}(##{user.id}) " <>
+              "solution_status=#{solution_status}"
+          )
+
+          :ok
+
+        {:error, reason} ->
+          Logger.warning(
+            "simulator(#{tournament_id}): check_result error game=#{game_id} user=#{user.id} reason=#{inspect(reason)}"
+          )
+      end
+    rescue
+      e ->
+        Logger.warning(
+          "simulator(#{tournament_id}): check_result raised game=#{game_id} user=#{user.id} #{Exception.message(e)}"
+        )
     end
   end
 
