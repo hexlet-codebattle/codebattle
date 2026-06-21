@@ -49,6 +49,20 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
     {:noreply, socket}
   end
 
+  # Delayed auto-select fired. Only broadcast if the admin hasn't picked a
+  # different game in the meantime (the stored game is still the one we reserved).
+  def handle_info({:auto_select_broadcast, tournament_id, game_id}, socket) do
+    socket =
+      if TournamentAdminChannel.get_active_game(tournament_id) == game_id do
+        broadcast_active_game(tournament_id, game_id)
+        switch_active_game(socket, game_id)
+      else
+        socket
+      end
+
+    {:noreply, socket}
+  end
+
   # Any game in this tournament finished — push winner summary.
   def handle_info(%{event: "game:tournament:finished", payload: payload}, socket) do
     push(socket, "tournament:game:finished", %{
@@ -150,17 +164,30 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
          tournament_id when not is_nil(tournament_id) <- socket.assigns[:tournament_id],
          stored_game_id = TournamentAdminChannel.get_active_game(tournament_id),
          true <- is_nil(stored_game_id) or stored_game_id == current_game_id do
+      # Reserve the slot immediately so concurrent streamer channels / duplicate
+      # match events don't each schedule the switch.
       TournamentAdminChannel.store_active_game(tournament_id, game_id)
 
-      Codebattle.PubSub.broadcast("tournament:stream:active_game", %{
-        game_id: game_id,
-        tournament_id: tournament_id
-      })
+      case TournamentAdminChannel.get_autoselect_delay(tournament_id) do
+        delay_ms when is_integer(delay_ms) and delay_ms > 0 ->
+          Logger.info("streamer: delaying auto-select game=#{game_id} by #{delay_ms}ms")
+          Process.send_after(self(), {:auto_select_broadcast, tournament_id, game_id}, delay_ms)
+          socket
 
-      switch_active_game(socket, game_id)
+        _ ->
+          broadcast_active_game(tournament_id, game_id)
+          switch_active_game(socket, game_id)
+      end
     else
       _ -> socket
     end
+  end
+
+  defp broadcast_active_game(tournament_id, game_id) do
+    Codebattle.PubSub.broadcast("tournament:stream:active_game", %{
+      game_id: game_id,
+      tournament_id: tournament_id
+    })
   end
 
   defp switch_active_pair(socket, nil) do
