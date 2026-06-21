@@ -39,6 +39,29 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     end)
   end
 
+  # Store the delay (ms) applied before the stream auto-switches to a finished
+  # pair's next (rematch) game. Reuses GamesAgent under a namespaced tuple key.
+  def store_autoselect_delay(tournament_id, delay_ms) when is_integer(delay_ms) do
+    if Process.whereis(__MODULE__.GamesAgent) == nil do
+      start_games_agent()
+    end
+
+    Agent.update(__MODULE__.GamesAgent, fn games_map ->
+      Map.put(games_map, {:autoselect_delay, tournament_id}, delay_ms)
+    end)
+  end
+
+  # Get the auto-select delay (ms) for a tournament. Defaults to 0 (instant).
+  def get_autoselect_delay(tournament_id) do
+    if Process.whereis(__MODULE__.GamesAgent) == nil do
+      start_games_agent()
+    end
+
+    Agent.get(__MODULE__.GamesAgent, fn games_map ->
+      Map.get(games_map, {:autoselect_delay, tournament_id}, 0)
+    end)
+  end
+
   def join("tournament_admin:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
 

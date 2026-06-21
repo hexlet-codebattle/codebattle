@@ -28,6 +28,8 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
+      # Drive the "round ends in" countdown.
+      Process.send_after(self(), :tick, 1000)
     end
 
     {:ok,
@@ -37,8 +39,10 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
        tournament: tournament,
        current_user: current_user,
        active_game_id: TournamentAdminChannel.get_active_game(tournament.id),
+       autoselect_delay_ms: TournamentAdminChannel.get_autoselect_delay(tournament.id),
        widgets: @widgets,
-       filter: "all",
+       filter: "current",
+       now: NaiveDateTime.utc_now(:second),
        simulator_enabled: simulator_enabled?(tournament)
      )
      |> assign_matches_and_players()
@@ -97,7 +101,14 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
     {:noreply, assign(socket, active_game_id: nil)}
   end
 
-  def handle_event("set_filter", %{"filter" => filter}, socket) when filter in ~w(all playing) do
+  def handle_event("save_autoselect_delay", %{"autoselect_delay_sec" => raw}, socket) do
+    tournament_id = socket.assigns.tournament.id
+    delay_ms = parse_delay_ms(raw)
+    TournamentAdminChannel.store_autoselect_delay(tournament_id, delay_ms)
+    {:noreply, assign(socket, autoselect_delay_ms: delay_ms)}
+  end
+
+  def handle_event("set_filter", %{"filter" => filter}, socket) when filter in ~w(current playing history) do
     {:noreply, assign(socket, filter: filter)}
   end
 
@@ -135,6 +146,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
              "tournament:finished"
            ] do
     {:noreply, socket |> assign_matches_and_players() |> assign_simulator_state()}
+  end
+
+  def handle_info(:tick, socket) do
+    Process.send_after(self(), :tick, 1000)
+    {:noreply, assign(socket, now: NaiveDateTime.utc_now(:second))}
   end
 
   def handle_info(msg, socket) do
@@ -178,25 +194,73 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   defp sim_status_color(:idle), do: "#94a3b8"
   defp sim_status_color(_), do: "#a4aab3"
 
+  # Order by tournament place first (1, 2, 3, …; unranked players last), then by
+  # id — never by name.
   defp players_sorted(players_by_id) do
     players_by_id
     |> Map.values()
-    |> Enum.sort_by(&{-(&1.score || 0), &1.name})
+    |> Enum.sort_by(&{&1.place || 99_999, &1.id})
   end
 
-  defp filter_players(players, _matches, "all"), do: players
-
-  defp filter_players(players, matches, "playing") do
-    Enum.filter(players, fn player ->
-      Enum.any?(player_games(matches, player.id), &(&1.state == "playing"))
-    end)
+  # Display name as "name(N)" where N is the seeded simulator number. Simulator
+  # ids are hardcoded as 100_001..100_200, so subtracting 100_000 yields 1..200.
+  defp player_label(player) do
+    "#{player.name}(#{player.id - 100_000})"
   end
 
-  defp player_games(matches, player_id) do
+  defp parse_delay_ms(raw) do
+    case Float.parse(to_string(raw)) do
+      {sec, _} when sec >= 0 -> trunc(sec * 1000)
+      _ -> 0
+    end
+  end
+
+  # Games for a player, filtered by the active view:
+  #   * "current"  → only games in the tournament's current round
+  #   * "playing"  → only games currently being played
+  #   * "history"  → every game across all rounds
+  defp player_games(matches, player_id, current_round, filter) do
     matches
     |> Enum.filter(&(player_id in (&1.player_ids || []) and not is_nil(&1.game_id)))
-    |> Enum.map(&%{game_id: &1.game_id, state: &1.state, round: &1.round_id || &1.round_position})
-    |> Enum.sort_by(& &1.round)
+    |> Enum.map(&%{game_id: &1.game_id, state: &1.state, round: &1.round_position})
+    |> Enum.filter(&game_matches_filter?(&1, current_round, filter))
+    |> Enum.sort_by(&(&1.round || 0))
+  end
+
+  defp game_matches_filter?(_game, _current_round, "history"), do: true
+  defp game_matches_filter?(game, _current_round, "playing"), do: game.state == "playing"
+  defp game_matches_filter?(game, current_round, "current"), do: game.round == current_round
+
+  # "Round N" (1-based), derived from current_round_position.
+  defp round_name(%{current_round_position: pos}), do: "Round #{(pos || 0) + 1}"
+
+  # Short status shown next to the round name: break / finished / "ends in mm:ss".
+  defp round_status(%{state: "finished"}, _now), do: "finished"
+  defp round_status(%{break_state: "on"}, _now), do: "break"
+
+  defp round_status(tournament, now) do
+    case round_remaining_seconds(tournament, now) do
+      nil -> nil
+      secs -> "ends in #{format_mmss(secs)}"
+    end
+  end
+
+  # Mirrors Tournament.Context: round timer only applies to per-round modes.
+  defp round_remaining_seconds(%{timeout_mode: mode}, _now)
+       when mode not in ["per_round_fixed", "per_round_with_rematch"], do: nil
+
+  defp round_remaining_seconds(%{last_round_started_at: nil}, _now), do: nil
+  defp round_remaining_seconds(%{round_timeout_seconds: nil}, _now), do: nil
+
+  defp round_remaining_seconds(tournament, now) do
+    elapsed = NaiveDateTime.diff(now, tournament.last_round_started_at)
+    max(tournament.round_timeout_seconds - elapsed, 0)
+  end
+
+  defp format_mmss(total_seconds) when total_seconds >= 0 do
+    minutes = div(total_seconds, 60)
+    seconds = rem(total_seconds, 60)
+    "#{minutes}:#{String.pad_leading(Integer.to_string(seconds), 2, "0")}"
   end
 
   defp widget_url(tournament_id, widget) do
@@ -211,13 +275,26 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   @impl true
   def render(assigns) do
     playing_count = Enum.count(assigns.matches, &(&1.state == "playing"))
+    current_round = assigns.tournament.current_round_position
 
-    players =
+    # Pair each player with the games visible under the active filter; drop
+    # players that have no games to show.
+    players_with_games =
       assigns.players_by_id
       |> players_sorted()
-      |> filter_players(assigns.matches, assigns.filter)
+      |> Enum.map(fn player ->
+        {player, player_games(assigns.matches, player.id, current_round, assigns.filter)}
+      end)
+      |> Enum.reject(fn {_player, games} -> games == [] end)
 
-    assigns = assign(assigns, players: players, playing_count: playing_count)
+    autoselect_delay_sec = (assigns.autoselect_delay_ms || 0) / 1000
+
+    assigns =
+      assign(assigns,
+        players_with_games: players_with_games,
+        playing_count: playing_count,
+        autoselect_delay_sec: autoselect_delay_sec
+      )
 
     ~H"""
     <div class="container-fluid px-0">
@@ -256,6 +333,33 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             </button>
           </div>
         </div>
+      </div>
+
+      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3 mb-3">
+        <form
+          phx-submit="save_autoselect_delay"
+          class="d-flex align-items-end flex-wrap"
+          style="gap:12px"
+        >
+          <div>
+            <label class="cb-text small mb-1 d-block">Auto-select next game delay (sec)</label>
+            <input
+              type="number"
+              step="0.5"
+              min="0"
+              max="120"
+              name="autoselect_delay_sec"
+              value={@autoselect_delay_sec}
+              class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+              style="max-width:160px"
+            />
+          </div>
+          <button type="submit" class="btn btn-sm btn-primary cb-rounded">Save</button>
+          <small class="cb-text" style="max-width:560px">
+            When a pair finishes and their next (rematch) game starts, the stream auto-switches to it
+            after this delay. 0 = instant.
+          </small>
+        </form>
       </div>
 
       <%= if @simulator_enabled do %>
@@ -376,16 +480,26 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
 
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="text-white mb-0">Matches</h4>
+          <div>
+            <h4 class="text-white mb-0">Matches</h4>
+            <%= if @filter == "current" do %>
+              <small class="cb-text">
+                {round_name(@tournament)}
+                <%= if status = round_status(@tournament, @now) do %>
+                  · <span class="text-white">{status}</span>
+                <% end %>
+              </small>
+            <% end %>
+          </div>
           <div class="d-flex align-items-center" style="gap:8px">
             <div class="btn-group btn-group-sm" role="group">
               <button
                 type="button"
                 phx-click="set_filter"
-                phx-value-filter="all"
-                class={"btn cb-rounded " <> if @filter == "all", do: "btn-primary", else: "btn-outline-primary"}
+                phx-value-filter="current"
+                class={"btn cb-rounded " <> if @filter == "current", do: "btn-primary", else: "btn-outline-primary"}
               >
-                All
+                Current round
               </button>
               <button
                 type="button"
@@ -395,21 +509,28 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
               >
                 Playing
               </button>
+              <button
+                type="button"
+                phx-click="set_filter"
+                phx-value-filter="history"
+                class={"btn cb-rounded " <> if @filter == "history", do: "btn-primary", else: "btn-outline-primary"}
+              >
+                History
+              </button>
             </div>
-            <small class="cb-text">{length(@players)} players</small>
+            <small class="cb-text">{length(@players_with_games)} players</small>
           </div>
         </div>
 
-        <%= if @players == [] do %>
+        <%= if @players_with_games == [] do %>
           <div class="text-center cb-text py-4">No players to show.</div>
         <% else %>
           <ul class="list-group">
-            <%= for {player, idx} <- Enum.with_index(@players, 1) do %>
-              <% games = player_games(@matches, player.id) %>
+            <%= for {{player, games}, idx} <- Enum.with_index(@players_with_games, 1) do %>
               <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color">
                 <div class="d-flex align-items-center" style="gap:10px;min-width:0">
                   <span class="cb-text" style="font-size:12px;width:24px;text-align:right">{idx}.</span>
-                  <strong class="text-white text-truncate">{player.name}</strong>
+                  <strong class="text-white text-truncate">{player_label(player)}</strong>
                   <span class="badge cb-rounded" style="background:#1e293b;color:#fff">
                     {player.score || 0}
                   </span>
@@ -426,9 +547,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                     >
                       {if is_active, do: "✓ ", else: ""}#{g.game_id}
                     </button>
-                  <% end %>
-                  <%= if games == [] do %>
-                    <span class="cb-text" style="font-size:12px">no games</span>
                   <% end %>
                 </div>
               </li>
