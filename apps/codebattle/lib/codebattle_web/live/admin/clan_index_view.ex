@@ -152,7 +152,14 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
             </div>
           </div>
           <div class="card-body">
-            <.form :let={f} for={@changeset} phx-change="validate" phx-submit="save" class="row g-3">
+            <.form
+              :let={f}
+              id="clan-form"
+              for={@changeset}
+              phx-change="validate"
+              phx-submit="save"
+              class="row g-3"
+            >
               <div class="col-md-4">
                 {label(f, :name, class: "form-label")}
                 {text_input(f, :name,
@@ -192,7 +199,12 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
       <% end %>
 
       <div class="d-flex align-items-center mb-3">
-        <form phx-submit="search" phx-change="search" class="d-flex align-items-center">
+        <form
+          id="clan-search-form"
+          phx-submit="search"
+          phx-change="search"
+          class="d-flex align-items-center"
+        >
           <input
             class="form-control cb-bg-panel cb-border-color text-white cb-rounded"
             type="text"

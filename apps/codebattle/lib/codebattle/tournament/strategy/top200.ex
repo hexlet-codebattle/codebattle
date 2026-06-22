@@ -14,6 +14,13 @@ defmodule Codebattle.Tournament.Top200 do
   @impl Tournament.Base
   def game_type, do: "duo"
 
+  # Тайминги раундов зашиты и игнорируют round_timeout_seconds из БД:
+  #   5 раундов марафона (позиции 0..4) — по 3.5 мин (210 c);
+  #   3 раунда плей-офф QF/SF/финал (позиции 5..7) — по 5 мин (300 c).
+  # Значение читают и таймаут каждой игры, и таймер авто-финиша раунда.
+  def round_timeout_seconds(%{current_round_position: pos}) when pos in 0..4, do: 210
+  def round_timeout_seconds(_tournament), do: 300
+
   # Конец плей-офф раунда: победителю КАЖДОЙ пары (по сумме очков раунда) поднимаем
   # draw_index на 1. Дальше draw_index — единственный источник правды о том, кто
   # прошёл: и пэйринг следующего раунда, и подсветка «живых» в стриме читают его, а
