@@ -1016,7 +1016,7 @@ defmodule Codebattle.Tournament.Base do
       # per_round_with_rematch and per_round_fixed (for show type) need the round timer
       defp maybe_start_round_timer(tournament, round_params) do
         timeout_seconds =
-          Map.get(round_params, :remaining_timeout_seconds, tournament.round_timeout_seconds)
+          Map.get(round_params, :remaining_timeout_seconds, round_timeout_seconds(tournament))
 
         Process.send_after(
           self(),
@@ -1162,6 +1162,12 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
+      # Duration of the current round in seconds. Defaults to the tournament's
+      # round_timeout_seconds field; strategies (e.g. Top200) override this to vary
+      # the timeout by current_round_position. Both the per-game timeout and the
+      # round auto-finish timer read it, so a single override covers both.
+      def round_timeout_seconds(tournament), do: tournament.round_timeout_seconds
+
       defp get_round_game_timeout(tournament, task) do
         case tournament.timeout_mode do
           "per_tournament" ->
@@ -1172,7 +1178,7 @@ defmodule Codebattle.Tournament.Base do
             )
 
           mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
-            tournament.round_timeout_seconds
+            round_timeout_seconds(tournament)
 
           _per_task ->
             (task && task.time_to_solve_sec) || 300
@@ -1181,14 +1187,14 @@ defmodule Codebattle.Tournament.Base do
 
       defp get_rematch_game_timeout(%{timeout_mode: "per_round_with_rematch"} = tournament) do
         elapsed = NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at)
-        max(tournament.round_timeout_seconds - elapsed, 10)
+        max(round_timeout_seconds(tournament) - elapsed, 10)
       end
 
       defp get_rematch_game_timeout(tournament), do: get_round_timeout_seconds(tournament)
 
       defp get_round_timeout_seconds(tournament) do
         if tournament.timeout_mode in ["per_round_fixed", "per_round_with_rematch"] do
-          tournament.round_timeout_seconds
+          round_timeout_seconds(tournament)
         else
           tournament.match_timeout_seconds
         end
@@ -1374,7 +1380,9 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defoverridable maybe_finish_round_after_finish_match: 1, compute_final_standings: 1
+      defoverridable maybe_finish_round_after_finish_match: 1,
+                     compute_final_standings: 1,
+                     round_timeout_seconds: 1
     end
   end
 end

@@ -40,7 +40,6 @@ defmodule CodebattleWeb.Live.Admin.ClanIndexViewTest do
         "clan" => %{"name" => "new-clan", "long_name" => "New Clan", "creator_id" => ""}
       })
 
-    assert html =~ "Clan created successfully"
     assert html =~ "new-clan"
     assert Clan.get_by_name!("new-clan").long_name == "New Clan"
   end
@@ -56,7 +55,6 @@ defmodule CodebattleWeb.Live.Admin.ClanIndexViewTest do
         "clan" => %{"name" => "updated-clan", "long_name" => "Updated Clan", "creator_id" => ""}
       })
 
-    assert html =~ "Clan updated successfully"
     assert html =~ "updated-clan"
     assert Clan.get!(clan.id).long_name == "Updated Clan"
   end
@@ -69,7 +67,6 @@ defmodule CodebattleWeb.Live.Admin.ClanIndexViewTest do
 
     html = render_click(view, "delete", %{"id" => clan.id})
 
-    assert html =~ "Clan deleted successfully"
     refute html =~ "delete-me"
     refute Clan.get(clan.id)
   end

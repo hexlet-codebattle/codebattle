@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Live.Admin.User.IndexView do
   use CodebattleWeb, :live_view
 
+  alias Codebattle.Clan
   alias Codebattle.User
 
   @impl true
@@ -12,6 +13,7 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
      socket
      |> assign(
        users: [],
+       clans: Clan.search(""),
        query: query,
        subscription_type: subscription_type,
        users_source: :search,
@@ -64,6 +66,22 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
     end
   end
 
+  def handle_event("update_clan", %{"user" => %{"clan_id" => clan_id, "user_id" => user_id}}, socket) do
+    case User.update_clan(user_id, clan_id) do
+      {:ok, user} ->
+        users =
+          Enum.map(socket.assigns.users, fn
+            u when u.id == user.id -> user
+            u -> u
+          end)
+
+        {:noreply, assign(socket, users: users)}
+
+      {:error, _reason} ->
+        {:noreply, put_flash(socket, :error, "Failed to update user clan")}
+    end
+  end
+
   def handle_event("reset_token", %{"id" => id}, socket) do
     case User.reset_auth_token(id) do
       {:ok, user} ->
@@ -87,7 +105,12 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
       <h1 class="text-white">User Management</h1>
 
       <div class="d-flex align-items-center mb-3">
-        <form phx-submit="search" phx-change="search" class="d-flex align-items-center">
+        <form
+          id="user-search-form"
+          phx-submit="search"
+          phx-change="search"
+          class="d-flex align-items-center"
+        >
           <input
             class="form-control cb-bg-panel cb-border-color text-white cb-rounded"
             type="text"
@@ -100,7 +123,7 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
             Search
           </button>
         </form>
-        <form phx-change="filter_subscription_type" class="ml-2">
+        <form id="subscription-type-filter-form" phx-change="filter_subscription_type" class="ml-2">
           <select
             class="custom-select cb-bg-panel cb-border-color text-white cb-rounded"
             name="subscription_type"
@@ -128,6 +151,7 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
               <th class="cb-border-color border-bottom">Id</th>
               <th class="cb-border-color border-bottom">Name</th>
               <th class="cb-border-color border-bottom">Clan</th>
+              <th class="cb-border-color border-bottom">Change Clan</th>
               <th class="cb-border-color border-bottom">Auth Link</th>
               <th class="cb-border-color border-bottom">Joined</th>
               <th class="cb-border-color border-bottom">Auth Reset</th>
@@ -151,6 +175,21 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
                 </td>
                 <td class="align-middle text-white cb-border-color">
                   {user.clan && String.slice(user.clan, 0, 20)}
+                </td>
+                <td class="align-middle text-white cb-border-color">
+                  <.form
+                    :let={f}
+                    id={"user-clan-#{user.id}"}
+                    for={Ecto.Changeset.change(user)}
+                    phx-change="update_clan"
+                    phx-submit="update"
+                    class="m-0"
+                  >
+                    {hidden_input(f, :user_id, value: user.id)}
+                    {select(f, :clan_id, clan_options(@clans),
+                      class: "custom-select cb-bg-panel cb-border-color text-white cb-rounded"
+                    )}
+                  </.form>
                 </td>
                 <td class="align-middle text-white cb-border-color">
                   <%= if auth_link do %>
@@ -258,5 +297,9 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
     Enum.map(User.subscription_types(), fn type ->
       {Atom.to_string(type), type}
     end)
+  end
+
+  defp clan_options(clans) do
+    [{"No clan", ""} | Enum.map(clans, &{&1.name, &1.id})]
   end
 end

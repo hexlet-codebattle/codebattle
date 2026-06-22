@@ -283,6 +283,22 @@ defmodule Codebattle.User do
     |> Repo.update()
   end
 
+  def update_clan(user_id, clan_id) when clan_id in ["", nil] do
+    user_id
+    |> get!()
+    |> change(%{clan: nil, clan_id: nil})
+    |> Repo.update()
+  end
+
+  def update_clan(user_id, clan_id) do
+    clan = Clan.get!(clan_id)
+
+    user_id
+    |> get!()
+    |> change(%{clan: clan.name, clan_id: clan.id})
+    |> Repo.update()
+  end
+
   def authenticate(name, password) do
     __MODULE__
     |> Repo.get_by(name: name)

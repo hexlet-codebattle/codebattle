@@ -946,7 +946,7 @@ defmodule Codebattle.Tournament.Context do
 
   defp remaining_round_seconds(tournament) do
     elapsed = NaiveDateTime.diff(NaiveDateTime.utc_now(:second), tournament.last_round_started_at)
-    max(tournament.round_timeout_seconds - elapsed, 0)
+    max(apply(get_module(tournament), :round_timeout_seconds, [tournament]) - elapsed, 0)
   end
 
   defp remaining_break_seconds(%{last_round_ended_at: nil}), do: 0
