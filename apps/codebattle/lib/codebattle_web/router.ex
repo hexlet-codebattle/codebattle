@@ -107,6 +107,7 @@ defmodule CodebattleWeb.Router do
     live("/feedback", CodebattleWeb.Live.Admin.Feedback.IndexView, :index)
     live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
     live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
+    live("/clans", CodebattleWeb.Live.Admin.Clan.IndexView, :index)
     live("/invites", CodebattleWeb.Live.Admin.InviteIndexView, :index)
     live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
     live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
