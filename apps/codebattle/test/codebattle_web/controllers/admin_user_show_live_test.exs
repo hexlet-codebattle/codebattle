@@ -1,8 +1,10 @@
 defmodule CodebattleWeb.AdminUserShowLiveTest do
   use CodebattleWeb.ConnCase, async: false
 
+  alias Codebattle.User
   alias Codebattle.UserEvent
   alias CodebattleWeb.Live.Admin.UserShowView
+  alias Phoenix.LiveView.Socket
 
   test "admin edit user selector includes moderator", %{conn: conn} do
     admin = insert(:admin)
@@ -16,6 +18,42 @@ defmodule CodebattleWeb.AdminUserShowLiveTest do
 
     assert html =~ ~s(value="moderator")
     assert html =~ ">moderator</option>"
+  end
+
+  test "admin user profile includes user name editor", %{conn: conn} do
+    admin = insert(:admin)
+    user = insert(:user)
+
+    html =
+      conn
+      |> put_session(:user_id, admin.id)
+      |> get(Routes.admin_user_show_view_path(conn, :show, user.id))
+      |> html_response(200)
+
+    assert html =~ ~s(phx-submit="update_name")
+    assert html =~ ~s(name="name")
+    assert html =~ ~s(value="#{user.name}")
+  end
+
+  test "admin can update user name", _context do
+    user = insert(:user)
+
+    {:ok, socket} =
+      UserShowView.mount(
+        %{"id" => to_string(user.id)},
+        %{},
+        %Socket{assigns: %{flash: %{}, __changed__: %{}}}
+      )
+
+    {:noreply, socket} =
+      UserShowView.handle_event(
+        "update_name",
+        %{"name" => "  renamed-user  "},
+        socket
+      )
+
+    assert socket.assigns.user.name == "renamed-user"
+    assert User.get!(user.id).name == "renamed-user"
   end
 
   test "admin can see all user events for a user", %{conn: conn} do
@@ -83,7 +121,7 @@ defmodule CodebattleWeb.AdminUserShowLiveTest do
       UserShowView.mount(
         %{"id" => to_string(user.id)},
         %{},
-        %Phoenix.LiveView.Socket{assigns: %{flash: %{}, __changed__: %{}}}
+        %Socket{assigns: %{flash: %{}, __changed__: %{}}}
       )
 
     {:noreply, socket} =

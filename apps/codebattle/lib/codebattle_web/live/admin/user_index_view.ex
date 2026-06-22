@@ -66,6 +66,25 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
     end
   end
 
+  def handle_event("update_name", %{"user" => %{"name" => name, "user_id" => user_id}}, socket) do
+    case User.update_name(user_id, name) do
+      {:ok, user} ->
+        users =
+          Enum.map(socket.assigns.users, fn
+            u when u.id == user.id -> user
+            u -> u
+          end)
+
+        {:noreply,
+         socket
+         |> assign(users: users)
+         |> put_flash(:info, "User name updated")}
+
+      {:error, _reason} ->
+        {:noreply, put_flash(socket, :error, "Failed to update user name")}
+    end
+  end
+
   def handle_event("update_clan", %{"user" => %{"clan_id" => clan_id, "user_id" => user_id}}, socket) do
     case User.update_clan(user_id, clan_id) do
       {:ok, user} ->
@@ -166,12 +185,32 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
                 <td class="align-middle text-white cb-border-color">{index}</td>
                 <td class="align-middle text-white cb-border-color">{user.id}</td>
                 <td class="align-middle text-white cb-border-color">
-                  <a
-                    href={Routes.admin_user_show_view_path(@socket, :show, user.id)}
-                    class="text-primary"
+                  <form
+                    id={"user-name-#{user.id}"}
+                    phx-submit="update_name"
+                    class="d-flex align-items-center gap-2 m-0"
                   >
-                    {user.name}
-                  </a>
+                    <input type="hidden" name="user[user_id]" value={user.id} />
+                    <input
+                      type="text"
+                      name="user[name]"
+                      value={user.name}
+                      minlength="2"
+                      maxlength="39"
+                      required
+                      class="form-control form-control-sm cb-bg-panel cb-border-color text-white cb-rounded"
+                      style="min-width: 140px;"
+                    />
+                    <button type="submit" class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded">
+                      Save
+                    </button>
+                    <a
+                      href={Routes.admin_user_show_view_path(@socket, :show, user.id)}
+                      class="text-primary text-nowrap"
+                    >
+                      Profile
+                    </a>
+                  </form>
                 </td>
                 <td class="align-middle text-white cb-border-color">
                   {user.clan && String.slice(user.clan, 0, 20)}
