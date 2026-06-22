@@ -37,6 +37,10 @@ defmodule Codebattle.Tournament.Simulator do
   # timer-based (and therefore cancellable) like the rest of the simulator.
   @start_delay_ms 1
 
+  # Extra slack added on top of `tournament_rematch_timeout_ms` before re-scanning,
+  # so the rematch game is already created/persisted when we look for it.
+  @rescan_buffer_ms 300
+
   @default_settings %{
     avg_seconds: 8.0,
     jitter_pct: 60.0,
@@ -115,7 +119,8 @@ defmodule Codebattle.Tournament.Simulator do
       settings: @default_settings,
       scheduled_games: MapSet.new(),
       pair_winners: %{},
-      timers: %{}
+      timers: %{},
+      rescan_timer: nil
     }
 
     {:ok, state}
@@ -187,6 +192,13 @@ defmodule Codebattle.Tournament.Simulator do
       %{state: "playing", game_id: gid} = m when is_integer(gid) ->
         {:noreply, maybe_schedule_match(state, m)}
 
+      %{state: finished} when finished in ~w(game_over timeout finished) ->
+        # A game just finished. If the pair gets a rematch, its new game is
+        # created `tournament_rematch_timeout_ms` later and is announced only on
+        # per-player topics (which we don't subscribe to). Re-scan after that
+        # window so the rematch game gets typed/submitted too.
+        {:noreply, schedule_rescan(state)}
+
       _ ->
         {:noreply, state}
     end
@@ -204,6 +216,14 @@ defmodule Codebattle.Tournament.Simulator do
   def handle_info({:start_typing, _game_id, _uid, _lang, _duration_ms}, state) do
     # paused / idle: drop the timer fire silently
     {:noreply, state}
+  end
+
+  def handle_info(:rescan, %{status: :running} = state) do
+    {:noreply, scan_and_schedule(%{state | rescan_timer: nil})}
+  end
+
+  def handle_info(:rescan, state) do
+    {:noreply, %{state | rescan_timer: nil}}
   end
 
   def handle_info(_msg, state), do: {:noreply, state}
@@ -319,7 +339,22 @@ defmodule Codebattle.Tournament.Simulator do
     trunc(delay * 1000)
   end
 
+  # Re-scan for newly created (rematch) games shortly after the rematch window.
+  # Coalesce: keep a single pending rescan timer so a burst of finishes only
+  # triggers one scan.
+  defp schedule_rescan(%{rescan_timer: ref} = state) when is_reference(ref), do: state
+
+  defp schedule_rescan(state) do
+    rematch_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms, 2000)
+    ref = Process.send_after(self(), :rescan, rematch_ms + @rescan_buffer_ms)
+    %{state | rescan_timer: ref}
+  end
+
   defp cancel_all_timers(state) do
+    if is_reference(state.rescan_timer) do
+      Process.cancel_timer(state.rescan_timer)
+    end
+
     Enum.each(state.timers, fn {_gid, ref} ->
       try do
         Process.cancel_timer(ref)
@@ -328,7 +363,7 @@ defmodule Codebattle.Tournament.Simulator do
       end
     end)
 
-    %{state | timers: %{}}
+    %{state | timers: %{}, rescan_timer: nil}
   end
 
   # Type the solution into the editor line by line over `duration_ms`, then
