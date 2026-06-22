@@ -4,7 +4,6 @@ import environment from "vite-plugin-environment";
 import path from "path";
 import fs from "fs";
 import gettextParser from "gettext-parser";
-import { minifySync } from "oxc-minify";
 
 // --- tiny .po loader so your i18next-po-loader use keeps working
 function poLoader() {
@@ -48,7 +47,7 @@ function copyCodiconFont() {
       const dest = path.resolve(__dirname, "priv/static/codicon.ttf");
       const monacoDest = path.resolve(
         __dirname,
-        "priv/static/node_modules/.pnpm/monaco-editor@0.52.2/node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.ttf"
+        "priv/static/node_modules/.pnpm/monaco-editor@0.52.2/node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.ttf",
       );
       try {
         fs.mkdirSync(path.dirname(monacoDest), { recursive: true });
@@ -79,10 +78,7 @@ function copyKatexFonts() {
         const fonts = fs.readdirSync(katexFontsDir);
         for (const font of fonts) {
           if (/\.(woff2?|ttf)$/.test(font)) {
-            fs.copyFileSync(
-              path.join(katexFontsDir, font),
-              path.join(devDestDir, font)
-            );
+            fs.copyFileSync(path.join(katexFontsDir, font), path.join(devDestDir, font));
           }
         }
         console.log("✓ Copied KaTeX fonts to assets/static/fonts/katex/");
@@ -103,41 +99,13 @@ function copyKatexFonts() {
         const fonts = fs.readdirSync(katexFontsDir);
         for (const font of fonts) {
           if (/\.(woff2?|ttf)$/.test(font)) {
-            fs.copyFileSync(
-              path.join(katexFontsDir, font),
-              path.join(prodDestDir, font)
-            );
+            fs.copyFileSync(path.join(katexFontsDir, font), path.join(prodDestDir, font));
           }
         }
         console.log("✓ Copied KaTeX fonts to priv/static/fonts/katex/");
       } catch (err) {
         console.error("Failed to copy KaTeX fonts:", err);
       }
-    },
-  };
-}
-
-// --- minify JS chunks with OXC during production build
-function oxcMinifyChunks() {
-  return {
-    name: "oxc-minify-chunks",
-    apply: "build",
-    renderChunk(code, chunk) {
-      const result = minifySync(chunk.fileName, code, {
-        module: true,
-        compress: { target: "esnext" },
-        mangle: true,
-        codegen: { removeWhitespace: true },
-      });
-
-      if (result.errors.length > 0) {
-        this.error(`OXC minify failed for ${chunk.fileName}: ${result.errors[0].message}`);
-      }
-
-      return {
-        code: result.code,
-        map: null,
-      };
     },
   };
 }
@@ -178,7 +146,6 @@ export default defineConfig(({ command, mode }) => ({
     forceFullReload(), // always trigger full reload
     copyCodiconFont(), // copy codicon font for Phoenix to serve
     copyKatexFonts(), // copy KaTeX fonts for serving
-    oxcMinifyChunks(),
     environment(["NODE_ENV"]),
   ],
 
@@ -186,7 +153,7 @@ export default defineConfig(({ command, mode }) => ({
   base: command === "serve" ? "/" : "/assets/",
 
   build: {
-    minify: false,
+    minify: "esbuild",
     cssMinify: "esbuild",
     outDir: "priv/static/assets",
     assetsDir: "",
@@ -199,16 +166,16 @@ export default defineConfig(({ command, mode }) => ({
         chunkFileNames: "[name]-[hash].js",
         assetFileNames: (assetInfo) => {
           // Rename styles.css to app.css for backwards compatibility
-          if (assetInfo.name === 'styles.css') {
-            return 'app.css';
+          if (assetInfo.name === "styles.css") {
+            return "app.css";
           }
           // Rename landingStyles.css to landing.css
-          if (assetInfo.name === 'landingStyles.css') {
-            return 'landing.css';
+          if (assetInfo.name === "landingStyles.css") {
+            return "landing.css";
           }
           // Rename externalStyles.css to external.css
-          if (assetInfo.name === 'externalStyles.css') {
-            return 'external.css';
+          if (assetInfo.name === "externalStyles.css") {
+            return "external.css";
           }
           // Add hash to images for cache busting in production
           if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {
@@ -266,5 +233,5 @@ export default defineConfig(({ command, mode }) => ({
   publicDir: "assets/static",
 
   // Explicitly include font files as assets
-  assetsInclude: ['**/*.ttf', '**/*.woff', '**/*.woff2'],
+  assetsInclude: ["**/*.ttf", "**/*.woff", "**/*.woff2"],
 }));
