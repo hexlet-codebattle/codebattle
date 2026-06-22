@@ -9,6 +9,9 @@
     <%= if @task_pack.creator_id do %>
       <span>Creator_id: {@task_pack.creator_id}</span>
     <% end %>
+    <%= if @tasks != [] and Enum.all?(@tasks, & &1.time_to_solve_sec) do %>
+      <span>Total time: {div(Enum.reduce(@tasks, 0, &(&1.time_to_solve_sec + &2)), 60)} min</span>
+    <% end %>
   </div>
 
   <h3 class="text-center text-white mt-4">Tasks</h3>
