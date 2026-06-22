@@ -40,6 +40,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
     assert response(conn, 200) =~ "Games"
     assert response(conn, 200) =~ "Tournaments"
     assert response(conn, 200) =~ "/admin/users"
+    assert response(conn, 200) =~ "/admin/clans"
     assert response(conn, 200) =~ "/admin/events"
     assert response(conn, 200) =~ "/admin/seasons"
     assert response(conn, 200) =~ "/admin/group_tasks"

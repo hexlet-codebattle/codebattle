@@ -28,6 +28,17 @@ defmodule Codebattle.Clan do
     __MODULE__ |> Repo.all() |> Repo.preload(preload)
   end
 
+  @spec search(String.t(), term()) :: list(t())
+  def search(query, preload \\ []) do
+    query = String.trim(query)
+
+    __MODULE__
+    |> maybe_filter_by_query(query)
+    |> order_by([c], asc: c.name)
+    |> Repo.all()
+    |> Repo.preload(preload)
+  end
+
   @spec get(String.t() | integer(), term()) :: t() | nil
   def get(id, preload \\ []) do
     __MODULE__ |> Repo.get(id) |> Repo.preload(preload)
@@ -77,12 +88,42 @@ defmodule Codebattle.Clan do
     end
   end
 
-  defp changeset(clan, attrs) do
+  @spec create(map()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  def create(attrs) do
+    %__MODULE__{}
+    |> changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @spec update(t(), map()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  def update(clan, attrs) do
+    clan
+    |> changeset(attrs)
+    |> Repo.update()
+  end
+
+  @spec delete(t()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  def delete(clan), do: Repo.delete(clan)
+
+  @spec changeset(t(), map()) :: Ecto.Changeset.t()
+  def changeset(clan, attrs \\ %{}) do
     clan
     |> cast(attrs, [:name, :long_name, :creator_id])
     |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 256)
     |> validate_length(:long_name, min: 2, max: 256)
     |> unique_constraint(:name)
+  end
+
+  defp maybe_filter_by_query(queryable, ""), do: queryable
+
+  defp maybe_filter_by_query(queryable, query) do
+    pattern = "%#{query}%"
+
+    where(
+      queryable,
+      [c],
+      ilike(c.name, ^pattern) or ilike(c.long_name, ^pattern)
+    )
   end
 end
