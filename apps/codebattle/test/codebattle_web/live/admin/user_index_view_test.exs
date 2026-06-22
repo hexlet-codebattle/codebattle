@@ -27,6 +27,20 @@ defmodule CodebattleWeb.Live.Admin.UserIndexViewTest do
     assert updated_user.clan == clan.name
   end
 
+  test "admin can update user name", %{conn: conn} do
+    user = insert(:user, name: "Old Admin Name")
+
+    {:ok, view, html} = live(signed_conn(conn), "/admin/users")
+
+    assert html =~ "Old Admin Name"
+
+    render_submit(view, "update_name", %{
+      "user" => %{"user_id" => user.id, "name" => "  New Admin Name  "}
+    })
+
+    assert User.get!(user.id).name == "New Admin Name"
+  end
+
   test "admin can clear user clan", %{conn: conn} do
     clan = insert(:clan, name: "old-clan", long_name: "Old Clan")
     user = insert(:user, name: "Clear Clan User", clan: clan.name, clan_id: clan.id)

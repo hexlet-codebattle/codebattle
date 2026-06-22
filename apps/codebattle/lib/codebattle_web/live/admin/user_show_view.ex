@@ -455,6 +455,21 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
+  def handle_event("update_name", %{"name" => name}, socket) do
+    user = socket.assigns.user
+
+    case User.update_name(user.id, name) do
+      {:ok, updated_user} ->
+        {:noreply,
+         socket
+         |> assign(user: updated_user, progress: user_progress(updated_user))
+         |> put_flash(:info, "User name updated")}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update user name")}
+    end
+  end
+
   def handle_event("update_platform_id", %{"external_platform_id" => id}, socket) do
     user = socket.assigns.user
     id = String.trim(id)
@@ -1257,9 +1272,28 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
               <div class="cb-bg-panel cb-border-color border cb-rounded p-4 mt-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="text-white fw-bold">External Platform Identity</div>
+                  <div class="text-white fw-bold">Editable Profile Fields</div>
                 </div>
                 <div class="row g-3">
+                  <div class="col-md-12">
+                    <form phx-submit="update_name" class="d-flex flex-column gap-2">
+                      <label class="cb-text small text-uppercase">User Name</label>
+                      <div class="d-flex gap-2">
+                        <input
+                          type="text"
+                          name="name"
+                          value={@user.name || ""}
+                          minlength="2"
+                          maxlength="39"
+                          required
+                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                        />
+                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                          Save
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                   <div class="col-md-6">
                     <form phx-submit="update_platform_login" class="d-flex flex-column gap-2">
                       <label class="cb-text small text-uppercase">Platform Login</label>

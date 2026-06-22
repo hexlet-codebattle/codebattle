@@ -283,6 +283,13 @@ defmodule Codebattle.User do
     |> Repo.update()
   end
 
+  def update_name(user_id, name) do
+    user_id
+    |> get!()
+    |> changeset(%{name: String.trim(name)})
+    |> Repo.update()
+  end
+
   def update_clan(user_id, clan_id) when clan_id in ["", nil] do
     user_id
     |> get!()
