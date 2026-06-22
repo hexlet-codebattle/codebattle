@@ -128,7 +128,71 @@ defmodule Codebattle.Tournament.TournamentUserResult do
     tournament
   end
 
+  # Top200: финальные места уже проставлены на игроках (топ-8 — по сетке финалов,
+  # остальные — по сумме очков 5 раундов), порядок не пересчитываем. place/score/total_time
+  # берём с игрока, агрегаты (игры, победы, средний %) — из tournament_results.
+  def upsert_results(%{type: "top200"} = tournament) do
+    clean_results(tournament.id)
+
+    timestamp = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+    cheater_ids = tournament.cheater_ids || []
+    stats_by_user = user_stats_from_results(tournament, cheater_ids)
+
+    rows =
+      tournament
+      |> Helpers.get_players()
+      |> Enum.reject(&(&1.is_bot || &1.id in cheater_ids))
+      |> Enum.map(fn player ->
+        stats = Map.get(stats_by_user, player.id, %{})
+        score = player.score || 0
+        wins_count = Map.get(stats, :wins_count, 0)
+
+        %{
+          tournament_id: tournament.id,
+          user_id: player.id,
+          clan_id: player.clan_id,
+          clan_name: player.clan,
+          user_name: player.name,
+          user_lang: player.lang,
+          score: score,
+          place: player.place,
+          points: grade_points(tournament.grade, player.place, %{wins_count: wins_count, score: score}),
+          games_count: Map.get(stats, :games_count, 0),
+          wins_count: wins_count,
+          total_time: player.total_duration_sec || 0,
+          is_cheater: false,
+          avg_result_percent: Map.get(stats, :avg_result_percent) || Decimal.new("0.0"),
+          inserted_at: timestamp
+        }
+      end)
+
+    if rows != [] do
+      Repo.insert_all(__MODULE__, rows)
+    end
+
+    upsert_cheater_results(tournament)
+
+    tournament
+  end
+
   def upsert_results(tournament), do: tournament
+
+  defp user_stats_from_results(tournament, cheater_ids) do
+    from(tr in TournamentResult,
+      where: tr.tournament_id == ^tournament.id and tr.was_cheated == false,
+      where: tr.user_id not in ^cheater_ids,
+      group_by: [tr.user_id],
+      select:
+        {tr.user_id,
+         %{
+           games_count: count(tr.id),
+           wins_count: fragment("SUM(CASE WHEN ? = 100.0 THEN 1 ELSE 0 END)::integer", tr.result_percent),
+           avg_result_percent: type(avg(tr.result_percent), :decimal)
+         }}
+    )
+    |> Repo.all()
+    |> Map.new()
+  end
 
   def clean_results(tournament_id) do
     __MODULE__

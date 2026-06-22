@@ -878,9 +878,7 @@ defmodule Codebattle.Tournament.Base do
         if get_matches(tournament, "playing") == [] do
           tournament
           |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
-          |> reset_player_scores()
-          |> rebuild_round_results()
-          |> recalculate_player_wins_count()
+          |> compute_final_standings()
           |> set_stats()
           |> maybe_save_event_results()
           |> upsert_tournament_user_results()
@@ -899,6 +897,17 @@ defmodule Codebattle.Tournament.Base do
 
           update_struct(tournament, %{state: "timeout", finished_at: DateTime.utc_now(:second)})
         end
+      end
+
+      # Default: replay every round from scratch to rebuild scores, ranking and wins.
+      # Strategies whose final standings are already correct on the player structs
+      # (e.g. Top200, where only the top-8 need bracket re-placement) override this
+      # to avoid recalculating all results.
+      def compute_final_standings(tournament) do
+        tournament
+        |> reset_player_scores()
+        |> rebuild_round_results()
+        |> recalculate_player_wins_count()
       end
 
       defp set_stats(tournament) do
@@ -1365,7 +1374,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defoverridable maybe_finish_round_after_finish_match: 1
+      defoverridable maybe_finish_round_after_finish_match: 1, compute_final_standings: 1
     end
   end
 end

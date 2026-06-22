@@ -185,6 +185,48 @@ defmodule Codebattle.Tournament.Top200 do
     end
   end
 
+  # Финал турнира. Места 9..N уже корректны: ранжирование после раунда 7 расставило
+  # игроков по сумме очков, а вылетевшие после 5-го раунда (раунд 4) плей-офф не играли,
+  # поэтому их сумма = очки за 5 раундов и они стоят на 9..N. Полный пересчёт результатов
+  # (reset+rebuild) не нужен — переставляем ТОЛЬКО топ-8: их места задаёт сетка финалов.
+  def compute_final_standings(tournament) do
+    tournament
+    |> assign_final_bracket_places()
+    |> recalculate_player_wins_count()
+  end
+
+  # Раунд 7 — 4 параллельных финала за 1-2, 3-4, 5-6, 7-8. round_player_pairs возвращает
+  # пары в порядке создания матчей (см. build_round_pairs/7 для pos=7), т.е.
+  # [за 1-2, за 3-4, за 5-6, за 7-8]. Победитель пары (по draw_index, проставленному
+  # calculate_round_results) занимает лучшее место пары, проигравший — худшее.
+  defp assign_final_bracket_places(tournament) do
+    players_by_id = id_map(get_players(tournament))
+
+    case round_player_pairs(tournament, 7) do
+      [final_12, final_34, final_56, final_78] ->
+        Enum.each([{final_12, 1, 2}, {final_34, 3, 4}, {final_56, 5, 6}, {final_78, 7, 8}], fn {pair, winner_place,
+                                                                                                loser_place} ->
+          {winner_id, loser_id} = winner_loser_by_draw_index(pair, players_by_id)
+          put_player_place(tournament, winner_id, winner_place)
+          put_player_place(tournament, loser_id, loser_place)
+        end)
+
+      _ ->
+        # Плей-офф не доигран (например, форс-финиш по таймеру) — оставляем топ-8 на
+        # местах, проставленных ранжированием по сумме очков.
+        :noop
+    end
+
+    tournament
+  end
+
+  defp put_player_place(tournament, player_id, place) do
+    case Tournament.Players.get_player(tournament, player_id) do
+      nil -> :noop
+      player -> Tournament.Players.put_player(tournament, %{player | place: place})
+    end
+  end
+
   # ---- helpers ----
 
   # Игроков, не попавших в топ-8 (которые играют плей-офф с раунда 5/QF), уводим

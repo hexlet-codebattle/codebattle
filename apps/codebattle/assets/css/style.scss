@@ -1993,6 +1993,18 @@ body.cb-stream-transparent-page {
 
 .cb-bg-highlight-panel {
   background-color: $cb-bg-highlight-panel;
+
+  &.form-control {
+    background-color: $cb-bg-highlight-panel;
+    color: white;
+    caret-color: white;
+  }
+
+  &.form-control:hover,
+  &.form-control:focus {
+    background-color: $cb-bg-highlight-panel;
+    color: white;
+  }
 }
 
 .cb-create-game {
