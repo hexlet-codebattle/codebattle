@@ -14,6 +14,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
   alias Codebattle.Tournament.Server
   alias Codebattle.Tournament.Top200
   alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.Tournament.TournamentUserResult
 
   describe "build_round_pairs/1 — R0 защита топ-32" do
     test "200 игроков → 100 пар, покрывающих всех" do
@@ -248,6 +249,117 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
                # Cons SF2 — за 5-8: проигравшие QF3 (3) и QF4 (7)
                [3, 7]
              ]
+    end
+  end
+
+  describe "compute_final_standings/1 — финальные места" do
+    test "топ-8 расставляются по сетке финалов, места 9+ сохраняются по сумме 5 раундов" do
+      tournament = insert_top200_tournament()
+      players_table = Tournament.Players.create_table(tournament.id)
+
+      # Раунд 7 — финалы за [1-2, 3-4, 5-6, 7-8] (порядок матчей = порядок мест).
+      finals =
+        inline_matches([
+          %Match{id: 1, player_ids: [1, 2], round_position: 7, state: "game_over"},
+          %Match{id: 2, player_ids: [3, 4], round_position: 7, state: "game_over"},
+          %Match{id: 3, player_ids: [5, 6], round_position: 7, state: "game_over"},
+          %Match{id: 4, player_ids: [7, 8], round_position: 7, state: "game_over"}
+        ])
+
+      tournament = %{tournament | players_table: players_table, current_round_position: 7, matches: finals}
+
+      # Топ-8: {draw_index, score}. Победитель пары — больший draw_index (его поднял
+      # calculate_round_results). Очки нарочно выше у проигравших — доказываем, что место
+      # топ-8 определяет сетка, а не сумма очков.
+      top8 = %{
+        1 => {3, 999},
+        2 => {4, 10},
+        3 => {1, 999},
+        4 => {2, 10},
+        5 => {2, 10},
+        6 => {1, 999},
+        7 => {0, 999},
+        8 => {1, 10}
+      }
+
+      Enum.each(top8, fn {id, {draw_index, score}} ->
+        Tournament.Players.put_player(
+          tournament,
+          Player.new!(%{id: id, name: "p#{id}", state: "active", draw_index: draw_index, score: score, place: 0})
+        )
+      end)
+
+      # Места 9+ уже проставлены ранжированием по сумме 5 раундов — не должны меняться.
+      Enum.each([{9, 50}, {10, 40}, {11, 30}], fn {id, score} ->
+        Tournament.Players.put_player(
+          tournament,
+          Player.new!(%{id: id, name: "p#{id}", state: "active", score: score, place: id})
+        )
+      end)
+
+      Top200.compute_final_standings(tournament)
+
+      place_of = fn id -> Tournament.Players.get_player(tournament, id).place end
+
+      # Места топ-8 по сетке финалов (победитель пары — лучшее место).
+      assert place_of.(2) == 1
+      assert place_of.(1) == 2
+      assert place_of.(4) == 3
+      assert place_of.(3) == 4
+      assert place_of.(5) == 5
+      assert place_of.(6) == 6
+      assert place_of.(8) == 7
+      assert place_of.(7) == 8
+
+      # Места 9+ без изменений.
+      assert place_of.(9) == 9
+      assert place_of.(10) == 10
+      assert place_of.(11) == 11
+
+      # Очки не обнулены (регрессия на потерю рейтинга после финиша).
+      assert Tournament.Players.get_player(tournament, 2).score == 10
+      assert Tournament.Players.get_player(tournament, 9).score == 50
+    end
+  end
+
+  describe "TournamentUserResult.upsert_results/1 — top200 (регрессия на потерю рейтинга)" do
+    test "пишет результаты из расставленных игроков — place/score/points не обнуляются" do
+      tournament = insert_top200_tournament()
+
+      # Игроки уже расставлены compute_final_standings: топ-3 по сетке, 9-10 по сумме очков.
+      players =
+        Map.new([{1, 1, 500}, {2, 2, 450}, {3, 3, 400}, {9, 9, 50}, {10, 10, 40}], fn {id, place, score} ->
+          {id,
+           Player.new!(%{
+             id: id,
+             name: "p#{id}",
+             state: "active",
+             place: place,
+             score: score,
+             total_duration_sec: id
+           })}
+        end)
+
+      tournament = %{tournament | grade: "elite", players: players}
+
+      # Сырые результаты по играм — для агрегатов games_count/wins_count/avg_result_percent.
+      record_scores(tournament.id, 0, [{1, 100}, {2, 90}, {3, 80}, {9, 10}, {10, 5}])
+
+      assert %{type: "top200"} = TournamentUserResult.upsert_results(tournament)
+
+      results = Map.new(TournamentUserResult.get_by(tournament.id), &{&1.user_id, &1})
+
+      # Места и очки сохранены (раньше пустая таблица → sync обнулял всё в 0).
+      assert results[1].place == 1
+      assert results[1].score == 500
+      assert results[9].place == 9
+      assert results[9].score == 50
+
+      # Очки сезона (grade_points) начислены по месту: elite, 1-е место = 256.
+      assert results[1].points == 256
+
+      # Никого не обнулило.
+      assert Enum.all?([1, 2, 3, 9, 10], &(results[&1].score > 0 and results[&1].place > 0))
     end
   end
 

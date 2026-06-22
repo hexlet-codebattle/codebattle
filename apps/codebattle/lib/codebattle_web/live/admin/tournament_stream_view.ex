@@ -176,7 +176,20 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       |> Helpers.get_players()
       |> Map.new(fn p -> {p.id, p} end)
 
-    assign(socket, tournament: tournament, matches: matches, players_by_id: players_by_id)
+    assign(socket,
+      tournament: tournament,
+      matches: matches,
+      players_by_id: players_by_id,
+      # Effective round timeout (same value the tournament page shows). Computed
+      # here rather than per tick since it can hit the task provider.
+      round_timeout_seconds: safe_current_round_timeout(tournament)
+    )
+  end
+
+  defp safe_current_round_timeout(tournament) do
+    Helpers.current_round_timeout_seconds(tournament)
+  rescue
+    _ -> nil
   end
 
   defp match_sort_key(%{state: state, id: id}) do
@@ -234,33 +247,50 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
   # "Round N" (1-based), derived from current_round_position.
   defp round_name(%{current_round_position: pos}), do: "Round #{(pos || 0) + 1}"
 
-  # Short status shown next to the round name: break / finished / "ends in mm:ss".
-  defp round_status(%{state: "finished"}, _now), do: "finished"
-  defp round_status(%{break_state: "on"}, _now), do: "break"
+  # Short status next to the round name, mirroring the tournament page header:
+  #   * active            → "ends in HH:MM:SS"  (last_round_started_at + timeout)
+  #   * active + break on → "next round in HH:MM:SS" (last_round_ended_at + break)
+  #   * finished          → "finished"
+  defp round_status(%{state: "finished"}, _timeout, _now), do: "finished"
 
-  defp round_status(tournament, now) do
-    case round_remaining_seconds(tournament, now) do
-      nil -> nil
-      secs -> "ends in #{format_mmss(secs)}"
+  defp round_status(%{state: "active", break_state: "on"} = tournament, _timeout, now) do
+    case break_remaining_seconds(tournament, now) do
+      nil -> "break"
+      secs -> "next round in #{format_hms(secs)}"
     end
   end
 
-  # Mirrors Tournament.Context: round timer only applies to per-round modes.
-  defp round_remaining_seconds(%{timeout_mode: mode}, _now)
-       when mode not in ["per_round_fixed", "per_round_with_rematch"], do: nil
-
-  defp round_remaining_seconds(%{last_round_started_at: nil}, _now), do: nil
-  defp round_remaining_seconds(%{round_timeout_seconds: nil}, _now), do: nil
-
-  defp round_remaining_seconds(tournament, now) do
-    elapsed = NaiveDateTime.diff(now, tournament.last_round_started_at)
-    max(tournament.round_timeout_seconds - elapsed, 0)
+  defp round_status(%{state: "active"} = tournament, timeout, now) do
+    case round_remaining_seconds(tournament, timeout, now) do
+      nil -> nil
+      secs -> "ends in #{format_hms(secs)}"
+    end
   end
 
-  defp format_mmss(total_seconds) when total_seconds >= 0 do
-    minutes = div(total_seconds, 60)
-    seconds = rem(total_seconds, 60)
-    "#{minutes}:#{String.pad_leading(Integer.to_string(seconds), 2, "0")}"
+  defp round_status(_tournament, _timeout, _now), do: nil
+
+  defp round_remaining_seconds(%{last_round_started_at: nil}, _timeout, _now), do: nil
+  defp round_remaining_seconds(_tournament, timeout, _now) when not is_integer(timeout), do: nil
+
+  defp round_remaining_seconds(tournament, timeout, now) do
+    elapsed = NaiveDateTime.diff(now, tournament.last_round_started_at)
+    max(timeout - elapsed, 0)
+  end
+
+  defp break_remaining_seconds(%{last_round_ended_at: nil}, _now), do: nil
+
+  defp break_remaining_seconds(tournament, now) do
+    elapsed = NaiveDateTime.diff(now, tournament.last_round_ended_at)
+    max((tournament.break_duration_seconds || 0) - elapsed, 0)
+  end
+
+  # HH:MM:SS, matching the tournament page (e.g. "00:04:49").
+  defp format_hms(total_seconds) when total_seconds >= 0 do
+    Enum.map_join(
+      [div(total_seconds, 3600), total_seconds |> rem(3600) |> div(60), rem(total_seconds, 60)],
+      ":",
+      &(&1 |> Integer.to_string() |> String.pad_leading(2, "0"))
+    )
   end
 
   defp widget_url(tournament_id, widget) do
@@ -485,7 +515,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             <%= if @filter == "current" do %>
               <small class="cb-text">
                 {round_name(@tournament)}
-                <%= if status = round_status(@tournament, @now) do %>
+                <%= if status = round_status(@tournament, @round_timeout_seconds, @now) do %>
                   · <span class="text-white">{status}</span>
                 <% end %>
               </small>
