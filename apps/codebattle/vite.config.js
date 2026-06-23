@@ -26,6 +26,57 @@ function poLoader() {
   };
 }
 
+// --- redirect es-toolkit's CJS-only `./compat/*` subpaths to their ESM builds.
+//
+// recharts imports `es-toolkit/compat/<fn>` (maxBy, minBy, get, ...). es-toolkit's
+// package exports map only ships a CJS variant for the `./compat/*` wildcard
+// (no `import` condition), so Rollup wraps each in a `__commonJS` getter. rolldown's
+// CJS-interop renaming then collides a module-getter with a hoisted `var` of the same
+// minified name, emitting self-referential `var a=a()` — which throws
+// "a is not a function" at runtime (crashed PlayerInsightsModal). Resolving these
+// imports to the real `.mjs` files keeps them as plain ESM and avoids the wrapper.
+const ES_COMPAT_RE = /^es-toolkit\/compat\/([\w-]+)$/;
+const ES_VIRTUAL_PREFIX = "\0es-toolkit-esm:";
+
+function esToolkitCompatEsm() {
+  return {
+    name: "es-toolkit-compat-esm",
+    enforce: "pre",
+    async resolveId(source, importer) {
+      const match = source.match(ES_COMPAT_RE);
+      if (!match) return null;
+
+      const resolved = await this.resolve(source, importer, { skipSelf: true });
+      if (!resolved) return null;
+
+      // The CJS shim is `module.exports = require('../dist/compat/<cat>/<fn>.js').<fn>`.
+      let shim;
+      try {
+        shim = fs.readFileSync(resolved.id, "utf8");
+      } catch {
+        return null;
+      }
+      const req = shim.match(/require\(['"](.+?)['"]\)\.(\w+)/);
+      if (!req) return null;
+
+      const esmPath = path.resolve(path.dirname(resolved.id), req[1].replace(/\.js$/, ".mjs"));
+      if (!fs.existsSync(esmPath)) return null;
+
+      return `${ES_VIRTUAL_PREFIX}${req[2]}:${esmPath}`;
+    },
+    load(id) {
+      if (!id.startsWith(ES_VIRTUAL_PREFIX)) return null;
+      const rest = id.slice(ES_VIRTUAL_PREFIX.length);
+      const sep = rest.indexOf(":");
+      const name = rest.slice(0, sep);
+      const esmPath = rest.slice(sep + 1);
+      const spec = JSON.stringify(esmPath);
+      // Re-export both as named (for `{ fn }`) and default (recharts uses `import fn`).
+      return `export { ${name} } from ${spec};\nexport { ${name} as default } from ${spec};\n`;
+    },
+  };
+}
+
 // --- force a hard reload for every change (no module-level HMR)
 function forceFullReload() {
   return {
@@ -142,6 +193,7 @@ export default defineConfig(({ command, mode }) => ({
 
   plugins: [
     react({ fastRefresh: false }), // no react-refresh preamble
+    esToolkitCompatEsm(), // resolve es-toolkit/compat/* to ESM (avoid broken CJS wrapper)
     poLoader(),
     forceFullReload(), // always trigger full reload
     copyCodiconFont(), // copy codicon font for Phoenix to serve

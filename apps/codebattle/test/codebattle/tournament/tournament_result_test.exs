@@ -1118,4 +1118,113 @@ defmodule Codebattle.Tournament.TournamenResultTest do
     def get_result(100.0), do: "won"
     def get_result(_), do: "lost"
   end
+
+  describe "static_base_score strategy" do
+    setup do
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "static_base_score",
+          round_timeout_seconds: 100,
+          current_round_position: 0
+        )
+
+      task = insert(:task, level: "easy", base_score: 100, time_to_solve_sec: 100)
+      {:ok, tournament: tournament, task: task}
+    end
+
+    # tournament_results.score is an integer column; the numeric score is truncated on insert.
+    defp score_by_user(tournament) do
+      TournamentResult
+      |> where([tr], tr.tournament_id == ^tournament.id)
+      |> Repo.all()
+      |> Map.new(&{&1.user_id, &1.score})
+    end
+
+    test "fastest winner gets 2x, slower winner scales toward 1x at time_to_solve_sec, losers get 0.75",
+         %{tournament: tournament, task: task} do
+      fast = insert(:user, name: "fast")
+      slow = insert(:user, name: "slow")
+      loser1 = insert(:user, name: "loser1")
+      loser2 = insert(:user, name: "loser2")
+
+      # Same task, two winning games -> min_winner_time = 20, time_to_solve_sec = 100.
+      insert_game(task, tournament, fast, loser1, 20, 100.0, 80.0)
+      insert_game(task, tournament, slow, loser2, 60, 100.0, 40.0)
+
+      TournamentResult.upsert_results(tournament)
+      scores = score_by_user(tournament)
+
+      # fast (min time): factor 1 + (100-20)/(100-20) = 2 -> 100 * 2 = 200
+      assert scores[fast.id] == 200
+      # slow: factor 1 + (100-60)/(100-20) = 1.5 -> 100 * 1.5 = 150
+      assert scores[slow.id] == 150
+      # losers: 0.75 * 100 * result_percent/100
+      assert scores[loser1.id] == 60
+      assert scores[loser2.id] == 30
+    end
+
+    test "winner slower than time_to_solve_sec is clamped to 1x",
+         %{tournament: tournament} do
+      fast = insert(:user, name: "fast")
+      slow = insert(:user, name: "slow")
+      task = insert(:task, level: "easy", base_score: 100, time_to_solve_sec: 30)
+
+      # min_winner_time = 10, time_to_solve_sec = 30
+      insert_game(task, tournament, fast, insert(:user, name: "l1"), 10, 100.0, 0.0)
+      insert_game(task, tournament, slow, insert(:user, name: "l2"), 40, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+      scores = score_by_user(tournament)
+
+      # fast: factor 2 -> 200
+      assert scores[fast.id] == 200
+      # slow (40s > 30s time_to_solve): factor clamps to 1 -> 100
+      assert scores[slow.id] == 100
+    end
+
+    test "full-solver who lost on speed gets the 0.75 loss penalty, not the win bonus",
+         %{tournament: tournament, task: task} do
+      winner = insert(:user, name: "winner")
+      loser = insert(:user, name: "loser")
+
+      # Both solved 100% but `loser` was slower -> result 'lost'. Crafted directly because the
+      # shared insert_game helper marks every 100% player as 'won'.
+      insert(:game,
+        state: "game_over",
+        level: task.level,
+        duration_sec: 25,
+        tournament_id: tournament.id,
+        task: task,
+        players: [
+          %{id: winner.id, name: winner.name, clan_id: nil, result_percent: 100.0, result: "won", is_bot: false},
+          %{id: loser.id, name: loser.name, clan_id: nil, result_percent: 100.0, result: "lost", is_bot: false}
+        ]
+      )
+
+      TournamentResult.upsert_results(tournament)
+      scores = score_by_user(tournament)
+
+      # winner (fastest, = min_winner_time): factor 2 -> 200
+      assert scores[winner.id] == 200
+      # loser despite 100% tests: 0.75 * 100 * 100/100 = 75
+      assert scores[loser.id] == 75
+    end
+
+    test "timeout (both lost) scores 0.5 * base_score * result_percent / 100",
+         %{tournament: tournament, task: task} do
+      u1 = insert(:user, name: "to-1")
+      u2 = insert(:user, name: "to-2")
+
+      # neither reached 100% -> insert_game marks the game as "timeout"
+      insert_game(task, tournament, u1, u2, 100, 40.0, 60.0)
+
+      TournamentResult.upsert_results(tournament)
+      scores = score_by_user(tournament)
+
+      assert scores[u1.id] == 20
+      assert scores[u2.id] == 30
+    end
+  end
 end

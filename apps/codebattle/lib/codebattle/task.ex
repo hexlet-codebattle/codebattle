@@ -17,6 +17,7 @@ defmodule Codebattle.Task do
              :arguments_generator,
              :asserts,
              :asserts_examples,
+             :base_score,
              :comment,
              :creator_id,
              :description_en,
@@ -87,6 +88,7 @@ defmodule Codebattle.Task do
     field(:arguments_generator, :string, default: "")
     field(:generator_lang, :string, default: "js")
     field(:time_to_solve_sec, :integer)
+    field(:base_score, :integer)
 
     timestamps()
   end
@@ -96,6 +98,7 @@ defmodule Codebattle.Task do
     |> cast(params, [
       :arguments_generator,
       :asserts,
+      :base_score,
       :comment,
       :creator_id,
       :description_en,
@@ -134,6 +137,7 @@ defmodule Codebattle.Task do
           arguments_generator: Map.get(params, :arguments_generator, ""),
           asserts: params.asserts,
           asserts_examples: Map.get(params, :asserts_examples, []),
+          base_score: Map.get(params, :base_score),
           comment: Map.get(params, :comment),
           creator_id: params[:creator_id],
           description_en: params.description_en,

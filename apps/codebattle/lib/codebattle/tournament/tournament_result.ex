@@ -167,6 +167,129 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
+  # Static-base-score strategy. base_score is fixed per task; the speed bonus is scaled between
+  # the fastest winner's time (2x) and the task's time_to_solve_sec (1x), and losses are penalised
+  # by a flat factor.
+  #
+  #   winner (result = 'won'):
+  #     base_score * clamp(1 + (tts - duration) / (tts - min_winner_time), 1, 2) * result_percent/100
+  #     - fastest winner (duration = min_winner_time)  -> x2
+  #     - winner at/over time_to_solve_sec             -> x1
+  #     - linear in between
+  #   loser who solved some tests (game_over, not won): 0.75 * base_score * result_percent/100
+  #   both timed out (state = 'timeout'):              0.5  * base_score * result_percent/100
+  #
+  # tts = COALESCE(task.time_to_solve_sec, round_timeout_seconds); min_winner_time is the fastest
+  # winning solve for the task in this round. Assumes time_to_solve_sec is set above the fastest
+  # solve; if not, clamp keeps the multiplier in [1, 2].
+  #
+  # Cheater handling matches "75_percentile": a cheater scores 0, and the honest opponent who
+  # lost to a cheater is compensated with the full base_score.
+  def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "static_base_score"} = tournament)
+      when type in ["swiss", "top200"] do
+    round_position = tournament.current_round_position || 0
+    round_timeout = max(round_timeout_seconds(tournament), 1)
+    player_cheater_sql = player_cheater_sql(tournament)
+    game_has_cheater_sql = game_has_cheater_sql("g", tournament)
+    clean_results(tournament.id, round_position)
+
+    Repo.query!("""
+      with min_winner_time as (
+      select
+      task_id,
+      min(duration_sec) as min_duration
+      from games g
+      where tournament_id = #{tournament.id}
+      and COALESCE(round_position, 0) = #{round_position}
+      and state = 'game_over'
+      and bot_won = FALSE
+      and not COALESCE(g.was_cheated, FALSE)
+      and not (#{cheater_won_game_sql("g", tournament)})
+      group by task_id),
+      stats as (
+      select
+      (p.player_info->>'result_percent')::numeric AS result_percent,
+      (p.player_info->>'id')::integer AS user_id,
+      (p.player_info->>'name')::text AS user_name,
+      (p.player_info->>'editor_lang')::text AS user_lang,
+      (p.player_info->>'clan_id')::integer AS clan_id,
+      g.duration_sec,
+      g.tournament_id,
+      g.id as game_id,
+      COALESCE(g.round_position, 0) as round_position,
+      (COALESCE(g.was_cheated, FALSE) OR (#{player_cheater_sql})) AS was_cheated,
+      COALESCE(t.base_score, 0) AS base_score,
+      CASE
+      -- Game-level cheated flag or this player is a cheater
+      WHEN COALESCE(g.was_cheated, FALSE) OR (#{player_cheater_sql}) THEN
+        0
+      -- Opponent of cheater who lost (cheater won) — give base_score as compensation
+      WHEN (#{game_has_cheater_sql}) AND g.state = 'game_over' AND (p.player_info->>'result_percent')::numeric < 100.0 THEN
+        COALESCE(t.base_score, 0)
+      -- Timeout: both players lost
+      WHEN g.state = 'timeout' THEN
+        0.5 * COALESCE(t.base_score, 0) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+      -- Winner: speed bonus scaled from fastest winner (x2) to time_to_solve_sec (x1)
+      WHEN (p.player_info->>'result') = 'won' THEN
+        COALESCE(t.base_score, 0)
+        * LEAST(2.0, GREATEST(1.0,
+            1.0 + (COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}) - g.duration_sec)::numeric
+                  / GREATEST(COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}) - COALESCE(mwt.min_duration, 0), 1)
+          ))
+        * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+      -- Loser who solved some tests but lost the game — flat 0.75 penalty, no speed bonus
+      ELSE
+        0.75 * COALESCE(t.base_score, 0) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+      END AS score,
+      g.level,
+      g.task_id,
+      g.id
+      from games g
+      CROSS JOIN LATERAL
+      jsonb_array_elements(g.players) AS p(player_info)
+      join tasks t on t.id = g.task_id
+      left join min_winner_time mwt on mwt.task_id = g.task_id
+      where g.tournament_id = #{tournament.id}
+      and COALESCE(g.round_position, 0) = #{round_position}
+      and (p.player_info->>'is_bot')::boolean = 'f'
+      and g.state in ('game_over', 'timeout')
+      )
+      insert into tournament_results
+      (
+      tournament_id,
+      game_id,
+      user_id,
+      user_name,
+      user_lang,
+      clan_id,
+      task_id,
+      score,
+      level,
+      duration_sec,
+      result_percent,
+      round_position,
+      was_cheated
+      )
+      select
+      tournament_id,
+      game_id,
+      user_id,
+      user_name,
+      user_lang,
+      clan_id,
+      task_id,
+      score,
+      level,
+      duration_sec,
+      result_percent,
+      round_position,
+      was_cheated
+      from stats
+    """)
+
+    tournament
+  end
+
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "win_loss"} = tournament)
       when type in ["swiss"] do
     round_position = tournament.current_round_position || 0
@@ -241,6 +364,16 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def upsert_results(t), do: t
+
+  # Round duration used as the speed-multiplier anchor in the static_base_score strategy.
+  # Top200 hardcodes per-position timings, so delegate to its strategy; others use the
+  # tournament's configured round_timeout_seconds.
+  defp round_timeout_seconds(%{type: "top200"} = tournament) do
+    Tournament.Top200.round_timeout_seconds(tournament)
+  end
+
+  defp round_timeout_seconds(%{round_timeout_seconds: secs}) when is_integer(secs) and secs > 0, do: secs
+  defp round_timeout_seconds(_tournament), do: 180
 
   def get_wins_count_by_user(tournament) do
     __MODULE__
