@@ -4,6 +4,7 @@ defmodule CodebattleWeb.SupportTournamentController do
   alias Codebattle.SupportTournament
 
   plug(:put_view, CodebattleWeb.SupportTournamentView)
+  plug(:ensure_feature_enabled)
   plug(:authorize)
 
   def index(conn, params) do
@@ -38,6 +39,18 @@ defmodule CodebattleWeb.SupportTournamentController do
       user_id: "",
       error: "Enter a user id"
     )
+  end
+
+  defp ensure_feature_enabled(conn, _opts) do
+    if FunWithFlags.enabled?(:support_tournament_page) do
+      conn
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html")
+      |> halt()
+    end
   end
 
   defp authorize(conn, _opts) do
