@@ -956,6 +956,7 @@ defmodule Codebattle.Tournament.Base do
 
         players
         |> Enum.reject(& &1.is_bot)
+        |> Enum.sort_by(& &1.id)
         |> Enum.map(&reset_player_for_retry/1)
       end
 

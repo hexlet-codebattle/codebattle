@@ -63,6 +63,19 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
     end
   end
 
+  def add_new_player(%{type: "top200", state: state} = tournament, _player)
+      when state in ["waiting_participants", "active"] do
+    round_position = tournament.current_round_position || 0
+
+    if Enum.empty?(TournamentResult.get_user_round_delta(tournament, round_position)) do
+      ranking = build_initial_ranking(tournament)
+      set_places_with_score_to_players(tournament, ranking)
+      Ranking.put_ranking(tournament, ranking)
+    end
+
+    tournament
+  end
+
   def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
     place = Ranking.count(tournament) + 1
 

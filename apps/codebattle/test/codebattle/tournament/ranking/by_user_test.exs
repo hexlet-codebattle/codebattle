@@ -6,6 +6,41 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
   alias Codebattle.Tournament.Ranking
   alias Codebattle.Tournament.Ranking.ByUser
 
+  test "add_new_player keeps top200 initial ranking ordered by player id" do
+    tournament_id = System.unique_integer([:positive])
+
+    tournament =
+      :tournament
+      |> insert(
+        id: tournament_id,
+        type: "top200",
+        ranking_type: "by_user",
+        state: "active",
+        current_round_position: 0
+      )
+      |> Map.merge(%{
+        players_table: Players.create_table(tournament_id),
+        ranking_table: Ranking.create_table(tournament_id)
+      })
+
+    Enum.each([3, 1, 2], fn id ->
+      player = Player.new!(%{id: id, name: "player-#{id}", lang: "js", state: "active"})
+
+      Players.put_player(tournament, player)
+      ByUser.add_new_player(tournament, player)
+    end)
+
+    assert Enum.map(ByUser.get_page(tournament, 1, 10).entries, &{&1.id, &1.place}) == [
+             {1, 1},
+             {2, 2},
+             {3, 3}
+           ]
+
+    assert %{place: 1} = Players.get_player(tournament, 1)
+    assert %{place: 2} = Players.get_player(tournament, 2)
+    assert %{place: 3} = Players.get_player(tournament, 3)
+  end
+
   test "set_places_with_score_to_players updates place and score without overwriting lang" do
     tournament_id = System.unique_integer([:positive])
 
