@@ -106,6 +106,43 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       assert %{^user_id => %{score: 300, place: 1}} = TournamentResult.get_user_ranking(tournament)
     end
 
+    test "ranking tiebreak: equal score and time -> lower user_id ranks higher (semifinal place)" do
+      tournament = insert(:tournament, type: "top200", ranking_type: "by_user", use_clan: false)
+      low = insert(:user, name: "low")
+      high = insert(:user, name: "high")
+      # Гарантируем low.id < high.id независимо от порядка вставки.
+      {low, high} = if low.id <= high.id, do: {low, high}, else: {high, low}
+
+      Repo.insert_all(TournamentResult, [
+        result_row(tournament.id, low, 1),
+        result_row(tournament.id, high, 2)
+      ])
+
+      ranking = TournamentResult.get_user_ranking(tournament)
+
+      # Одинаковые score и duration_sec — выше тот, у кого меньше id (выше место в полуфинале).
+      assert ranking[low.id].place == 1
+      assert ranking[high.id].place == 2
+    end
+
+    defp result_row(tournament_id, user, game_id) do
+      %{
+        tournament_id: tournament_id,
+        user_id: user.id,
+        user_name: user.name,
+        user_lang: "js",
+        score: 100,
+        duration_sec: 30,
+        round_position: 0,
+        game_id: game_id,
+        task_id: game_id,
+        level: "easy",
+        result_percent: Decimal.new("100"),
+        clan_id: nil,
+        was_cheated: false
+      }
+    end
+
     test "win_loss: cheater gets 0, opponent gets win as compensation" do
       task = insert(:task, level: "easy")
       cheater = insert(:user, name: "cheater")
@@ -1225,6 +1262,31 @@ defmodule Codebattle.Tournament.TournamenResultTest do
 
       assert scores[u1.id] == 20
       assert scores[u2.id] == 30
+    end
+
+    test "cheater scores 0, the honest loser to a cheater gets full base_score as compensation" do
+      task = insert(:task, level: "easy", base_score: 100, time_to_solve_sec: 100)
+      cheater = insert(:user, name: "cheater")
+      fair = insert(:user, name: "fair")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "static_base_score",
+          round_timeout_seconds: 100,
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Cheater "won" (100%), honest player lost with 80% tests.
+      insert_game(task, tournament, cheater, fair, 20, 100.0, 80.0)
+
+      TournamentResult.upsert_results(tournament)
+      scores = score_by_user(tournament)
+
+      assert scores[cheater.id] == 0
+      assert scores[fair.id] == 100
     end
   end
 end
