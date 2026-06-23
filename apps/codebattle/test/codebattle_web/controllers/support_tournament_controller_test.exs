@@ -6,14 +6,30 @@ defmodule CodebattleWeb.SupportTournamentControllerTest do
   alias Codebattle.SupportTournament
   alias Codebattle.UserGroupTournament
 
+  setup do
+    FunWithFlags.disable(:support_tournament_page)
+
+    on_exit(fn -> FunWithFlags.disable(:support_tournament_page) end)
+  end
+
   describe "GET /support-tournament" do
+    test "returns not found when feature flag is disabled", %{conn: conn} do
+      conn = get(conn, "/support-tournament?auth_token=support-token")
+
+      assert html_response(conn, 404) =~ "Page not found"
+    end
+
     test "returns not found without auth token", %{conn: conn} do
+      FunWithFlags.enable(:support_tournament_page)
+
       conn = get(conn, "/support-tournament")
 
       assert html_response(conn, 404) =~ "Page not found"
     end
 
     test "shows configured tournament info for a user", %{conn: conn} do
+      FunWithFlags.enable(:support_tournament_page)
+
       user = insert(:user, name: "Support User", clan: "Hexlet", clan_id: 42)
 
       tournament =
