@@ -509,8 +509,9 @@ defmodule Codebattle.Tournament.TournamentResult do
         where: r.tournament_id == ^tournament.id,
         where: r.was_cheated == false,
         group_by: [r.user_id, r.user_name, c.id],
-        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+        # tiebreak: points desc, then less total time, then user_id asc (= better semifinal place)
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id]]]
       )
 
     query
@@ -537,8 +538,9 @@ defmodule Codebattle.Tournament.TournamentResult do
         where: r.tournament_id == ^tournament.id,
         where: r.was_cheated == false,
         group_by: [r.user_id, r.user_name, c.id],
-        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+        # tiebreak: points desc, then less total time, then user_id asc (= better semifinal place)
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id]]]
       )
 
     query
