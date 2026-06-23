@@ -324,10 +324,23 @@ defmodule Codebattle.Tournament.Top200 do
     end
   end
 
+  # Pair winner is the player ranked higher in the round. `place` from get_user_ranking_for_round
+  # is ordered by score desc, then total duration_sec asc, then user_id — so ties on points are
+  # broken by less total time spent, matching the tournament tiebreak rule.
   defp winner_loser([p1_id, p2_id], results) do
-    s1 = score_value(get_in(results, [p1_id, :score]))
-    s2 = score_value(get_in(results, [p2_id, :score]))
-    if s1 >= s2, do: {p1_id, p2_id}, else: {p2_id, p1_id}
+    if place_value(results, p1_id) <= place_value(results, p2_id) do
+      {p1_id, p2_id}
+    else
+      {p2_id, p1_id}
+    end
+  end
+
+  # Players with no result row in the round sort last (never win the pair).
+  defp place_value(results, id) do
+    case get_in(results, [id, :place]) do
+      place when is_integer(place) -> place
+      _ -> 999_999
+    end
   end
 
   defp id_map(players), do: Map.new(players, &{&1.id, &1})
