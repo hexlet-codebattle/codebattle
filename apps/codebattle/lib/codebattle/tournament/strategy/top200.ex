@@ -4,6 +4,7 @@ defmodule Codebattle.Tournament.Top200 do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.TournamentResult
+  alias CodebattleWeb.TournamentAdminChannel
 
   @impl Tournament.Base
   def complete_players(tournament), do: tournament
@@ -148,6 +149,24 @@ defmodule Codebattle.Tournament.Top200 do
     {tournament, pairs}
   end
 
+  # При старте раунда наводим стрим на игру лидера: первое место по сумме очков
+  # (в R0 рейтинг пуст → sort_by_ranking падает на меньший id = лучшее место в полуфинале).
+  # Запоминаем игру как активную и шлём стримерам tournament:stream:active_game, чтобы
+  # уже подключённые каналы переключились на неё.
+  def setup_round_active_game(tournament) do
+    with leader when not is_nil(leader) <- top_ranked_player(tournament),
+         game_id when is_integer(game_id) <- get_active_game_id(tournament, leader.id) do
+      TournamentAdminChannel.store_active_game(tournament.id, game_id)
+
+      Codebattle.PubSub.broadcast("tournament:stream:active_game", %{
+        game_id: game_id,
+        tournament_id: tournament.id
+      })
+    end
+
+    tournament
+  end
+
   @impl Tournament.Base
   def finish_tournament?(tournament) do
     tournament.rounds_limit - 1 == tournament.current_round_position
@@ -265,6 +284,16 @@ defmodule Codebattle.Tournament.Top200 do
   # Место в полуфинале кодируется id игрока: меньший id = выше место.
   defp sort_by_semifinal_place(players) do
     Enum.sort_by(players, & &1.id)
+  end
+
+  # Лидер раунда по текущему рейтингу (та же сортировка, что и пэйринг плей-офф).
+  defp top_ranked_player(tournament) do
+    ranking = TournamentResult.get_user_ranking(tournament)
+
+    tournament
+    |> get_players()
+    |> sort_by_ranking(ranking)
+    |> List.first()
   end
 
   defp sort_by_ranking(players, ranking) do

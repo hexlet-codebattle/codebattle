@@ -662,6 +662,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
         |> update_struct(%{round_state: "active"})
         |> broadcast_round_created()
+        |> setup_round_active_game()
       end
 
       defp maybe_set_task_ids(%{current_round_position: 0} = tournament) do
@@ -1169,6 +1170,11 @@ defmodule Codebattle.Tournament.Base do
       # round auto-finish timer read it, so a single override covers both.
       def round_timeout_seconds(tournament), do: tournament.round_timeout_seconds
 
+      # Hook fired right after a round is created. Strategies override it to pick the
+      # game the stream should focus on at round start (default: leave selection to the
+      # admin / streamer auto-select). Must return the tournament unchanged.
+      def setup_round_active_game(tournament), do: tournament
+
       defp get_round_game_timeout(tournament, task) do
         case tournament.timeout_mode do
           "per_tournament" ->
@@ -1383,7 +1389,8 @@ defmodule Codebattle.Tournament.Base do
 
       defoverridable maybe_finish_round_after_finish_match: 1,
                      compute_final_standings: 1,
-                     round_timeout_seconds: 1
+                     round_timeout_seconds: 1,
+                     setup_round_active_game: 1
     end
   end
 end
