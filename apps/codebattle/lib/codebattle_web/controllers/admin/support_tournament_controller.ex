@@ -23,7 +23,8 @@ defmodule CodebattleWeb.Admin.SupportTournamentController do
         |> put_flash(:error, reason)
         |> render_form(%{
           tournament_ids: params["tournament_ids"] || "",
-          group_tournament_ids: params["group_tournament_ids"] || ""
+          group_tournament_ids: params["group_tournament_ids"] || "",
+          text: params["text"] || ""
         })
     end
   end
@@ -39,6 +40,7 @@ defmodule CodebattleWeb.Admin.SupportTournamentController do
       config: config,
       tournament_ids: format_config_ids(config.tournament_ids),
       group_tournament_ids: format_config_ids(config.group_tournament_ids),
+      text: Map.get(config, :text, ""),
       user: conn.assigns.current_user
     )
   end

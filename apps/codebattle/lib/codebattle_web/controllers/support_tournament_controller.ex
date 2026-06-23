@@ -11,6 +11,7 @@ defmodule CodebattleWeb.SupportTournamentController do
     render(conn, "index.html",
       result: nil,
       user_id: params["user_id"] || "",
+      text: config_text(),
       error: nil
     )
   end
@@ -21,6 +22,7 @@ defmodule CodebattleWeb.SupportTournamentController do
         render(conn, "index.html",
           result: result,
           user_id: user_id,
+          text: config_text(),
           error: nil
         )
 
@@ -28,6 +30,7 @@ defmodule CodebattleWeb.SupportTournamentController do
         render(conn, "index.html",
           result: nil,
           user_id: user_id,
+          text: config_text(),
           error: reason
         )
     end
@@ -37,9 +40,12 @@ defmodule CodebattleWeb.SupportTournamentController do
     render(conn, "index.html",
       result: nil,
       user_id: "",
+      text: config_text(),
       error: "Enter a user id"
     )
   end
+
+  defp config_text, do: Map.get(SupportTournament.get_config(), :text, "")
 
   defp ensure_feature_enabled(conn, _opts) do
     if FunWithFlags.enabled?(:support_tournament_page) do

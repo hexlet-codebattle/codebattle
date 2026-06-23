@@ -11,7 +11,7 @@ defmodule Codebattle.SupportTournament do
   alias Codebattle.UserGroupTournament
 
   @config_key "support_tournament"
-  @empty_config %{tournament_ids: [], group_tournament_ids: []}
+  @empty_config %{tournament_ids: [], group_tournament_ids: [], text: ""}
 
   def config_key, do: @config_key
 
@@ -34,7 +34,11 @@ defmodule Codebattle.SupportTournament do
     with {:ok, tournament_ids} <- parse_ids(attrs["tournament_ids"] || attrs[:tournament_ids] || ""),
          {:ok, group_tournament_ids} <-
            parse_ids(attrs["group_tournament_ids"] || attrs[:group_tournament_ids] || "") do
-      config = %{tournament_ids: tournament_ids, group_tournament_ids: group_tournament_ids}
+      config = %{
+        tournament_ids: tournament_ids,
+        group_tournament_ids: group_tournament_ids,
+        text: normalize_text(attrs["text"] || attrs[:text])
+      }
 
       case Customization.upsert(@config_key, Jason.encode!(config)) do
         {:ok, _customization} -> {:ok, config}
@@ -65,9 +69,13 @@ defmodule Codebattle.SupportTournament do
   defp normalize_config(data) do
     %{
       tournament_ids: normalize_ids(data["tournament_ids"] || data[:tournament_ids]),
-      group_tournament_ids: normalize_ids(data["group_tournament_ids"] || data[:group_tournament_ids])
+      group_tournament_ids: normalize_ids(data["group_tournament_ids"] || data[:group_tournament_ids]),
+      text: normalize_text(data["text"] || data[:text])
     }
   end
+
+  defp normalize_text(text) when is_binary(text), do: text
+  defp normalize_text(_text), do: ""
 
   defp normalize_ids(ids) when is_list(ids) do
     ids
