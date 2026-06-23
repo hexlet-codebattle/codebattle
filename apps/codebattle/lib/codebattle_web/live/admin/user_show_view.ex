@@ -487,6 +487,30 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
+  def handle_event("update_clan", %{"clan_id" => clan_id}, socket) do
+    user = socket.assigns.user
+    clan_id = String.trim(clan_id)
+
+    try do
+      case User.update_clan(user.id, clan_id) do
+        {:ok, updated_user} ->
+          {:noreply,
+           socket
+           |> assign(user: updated_user, progress: user_progress(updated_user))
+           |> put_flash(:info, "Clan updated")}
+
+        {:error, _changeset} ->
+          {:noreply, put_flash(socket, :error, "Failed to update clan")}
+      end
+    rescue
+      Ecto.NoResultsError ->
+        {:noreply, put_flash(socket, :error, "Clan ##{clan_id} not found")}
+
+      Ecto.Query.CastError ->
+        {:noreply, put_flash(socket, :error, "Invalid clan id")}
+    end
+  end
+
   def handle_event("delete_token", %{"id" => id}, socket) do
     case User.delete_auth_token(id) do
       {:ok, user} ->
@@ -1320,6 +1344,30 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           name="external_platform_id"
                           value={@user.external_platform_id || ""}
                           placeholder="e.g. platform user id"
+                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                        />
+                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                          Save
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-md-6">
+                    <form phx-submit="update_clan" class="d-flex flex-column gap-2">
+                      <label class="cb-text small text-uppercase">
+                        Clan
+                        <span class="text-white">
+                          {if @user.clan_id,
+                            do: "(current: #{@user.clan} ##{@user.clan_id})",
+                            else: "(none)"}
+                        </span>
+                      </label>
+                      <div class="d-flex gap-2">
+                        <input
+                          type="number"
+                          name="clan_id"
+                          value={@user.clan_id || ""}
+                          placeholder="clan id (empty to clear)"
                           class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
                         />
                         <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
