@@ -27,11 +27,11 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       assert length(all_ids) == 200
     end
 
-    test "ни одна пара R0 не содержит двух игроков топ-32 по рейтингу" do
+    test "ни одна пара R0 не содержит двух игроков топ-32 по итогам полуфинала" do
       tournament = build_inline_tournament(0, players_with_ratings(1..200))
 
-      # rating=id, значит топ-32 по рейтингу — это id 169..200.
-      top_32 = MapSet.new(169..200)
+      # место в полуфинале = id (меньше = выше), значит топ-32 — это id 1..32.
+      top_32 = MapSet.new(1..32)
 
       {_, pairs} = Top200.build_round_pairs(tournament)
 
@@ -46,7 +46,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     test "каждый из топ-32 присутствует в одной из пар (защита, не выпадение)" do
       tournament = build_inline_tournament(0, players_with_ratings(1..200))
-      top_32 = 169..200 |> Enum.to_list() |> MapSet.new()
+      top_32 = 1..32 |> Enum.to_list() |> MapSet.new()
 
       {_, pairs} = Top200.build_round_pairs(tournament)
 
@@ -54,10 +54,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       assert MapSet.subset?(top_32, all_pair_ids), "не все топ-32 попали в пары R0"
     end
 
-    test "топ-32 получают соперника из поля (#1..#168 ratings)" do
+    test "топ-32 получают соперника из поля (id 33..200)" do
       tournament = build_inline_tournament(0, players_with_ratings(1..200))
-      top_32 = 169..200 |> Enum.to_list() |> MapSet.new()
-      field = 1..168 |> Enum.to_list() |> MapSet.new()
+      top_32 = 1..32 |> Enum.to_list() |> MapSet.new()
+      field = 33..200 |> Enum.to_list() |> MapSet.new()
 
       {_, pairs} = Top200.build_round_pairs(tournament)
 
@@ -83,8 +83,8 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       all_ids = pairs |> List.flatten() |> Enum.map(& &1.id) |> Enum.sort()
       assert all_ids == Enum.to_list(1..8)
 
-      # Топ-4 (id 5..8) не должны сводиться между собой.
-      top_4 = MapSet.new(5..8)
+      # Топ-4 по полуфиналу (id 1..4) не должны сводиться между собой.
+      top_4 = MapSet.new(1..4)
 
       Enum.each(pairs, fn pair ->
         pair_set = MapSet.new(pair, & &1.id)
@@ -805,6 +805,34 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
                7 => 1
              }
     end
+
+    test "tie по очкам раунда → побеждает игрок с меньшим id (выше место в полуфинале)" do
+      tournament = insert_top200_tournament()
+      table = Tournament.Players.create_table(tournament.id)
+      tournament = %{tournament | players_table: table, current_round_position: 5}
+
+      Enum.each([1, 8], fn id ->
+        Tournament.Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", state: "active"}))
+      end)
+
+      # Пара хранится как [8, 1] — больший id первым, чтобы отличить «tie → меньший id»
+      # от старого «tie → первый в паре».
+      matches =
+        inline_matches([
+          %Match{id: 1, player_ids: [8, 1], round_position: 5, state: "game_over"},
+          %Match{id: 2, player_ids: [8, 1], round_position: 5, state: "game_over"}
+        ])
+
+      tournament = %{tournament | matches: matches}
+
+      # Равная сумма очков за раунд у обоих.
+      record_scores(tournament.id, 5, [{1, 100}, {8, 100}])
+
+      Top200.calculate_round_results(tournament)
+
+      # Победитель пары — id 1: ему подняли draw_index, id 8 остаётся на дефолте.
+      assert draw_index_by_id(tournament, [1, 8]) == %{1 => 2, 8 => 1}
+    end
   end
 
   describe "live tournament flow — R0 rematch" do
@@ -889,8 +917,8 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       {"1 win + 1 loss → итоговая сумма решает (p2)", {0, 80}, {100, 0}, {80, 100}, 2},
       {"1 win + 1 timeout (p1 выиграл одну, во второй обоим 0)", {100, 0}, {0, 0}, {100, 0}, 1},
       {"0 wins но частичные баллы за timeouts (p2 решил больше asserts)", {10, 5}, {25, 30}, {15, 55}, 2},
-      {"оба обнулились → tie разрешается в пользу p1 (s1 >= s2)", {0, 0}, {0, 0}, {0, 0}, 1},
-      {"равная сумма из разных игр → tie в пользу p1", {60, 40}, {30, 70}, {100, 100}, 1}
+      {"оба обнулились → tie в пользу меньшего id (1)", {0, 0}, {0, 0}, {0, 0}, 1},
+      {"равная сумма из разных игр → tie в пользу меньшего id (1)", {60, 40}, {30, 70}, {100, 100}, 1}
     ]
 
     for {name, {p1_g1, p1_g2}, {p2_g1, p2_g2}, {p1_total, p2_total}, expected_winner} <-
@@ -949,10 +977,17 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     )
   end
 
+  # Зеркалит Top200.winner_loser/2: по очкам раунда, ничья — в пользу меньшего id.
   defp choose_winner(ranking, id1, id2) do
     s1 = ranking |> get_in([id1, :score]) |> to_float()
     s2 = ranking |> get_in([id2, :score]) |> to_float()
-    if s1 >= s2, do: id1, else: id2
+
+    cond do
+      s1 > s2 -> id1
+      s2 > s1 -> id2
+      id1 <= id2 -> id1
+      true -> id2
+    end
   end
 
   defp to_float(nil), do: 0.0

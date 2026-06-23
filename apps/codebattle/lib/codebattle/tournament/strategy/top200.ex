@@ -42,12 +42,12 @@ defmodule Codebattle.Tournament.Top200 do
   def calculate_round_results(tournament), do: tournament
 
   # R0 — одна «броня» для топ-32:
-  #   топ-32 по рейтингу не сводятся между собой в первом раунде, чтобы дать им
-  #   разогрев. Каждому из топ-32 случайный соперник из поля, остальное поле
-  #   перемешано случайно и идёт попарно.
+  #   топ-32 по итогам полуфинала (меньший id = выше место) не сводятся между собой в
+  #   первом раунде, чтобы дать им разогрев. Каждому из топ-32 случайный соперник из поля,
+  #   остальное поле перемешано случайно и идёт попарно.
   @impl Tournament.Base
   def build_round_pairs(%{current_round_position: 0} = tournament) do
-    sorted = sort_by_rating(get_players(tournament))
+    sorted = sort_by_semifinal_place(get_players(tournament))
     total = length(sorted)
     protected_size = min(32, div(total, 2))
 
@@ -262,8 +262,9 @@ defmodule Codebattle.Tournament.Top200 do
 
   defp redirect_eliminated_players(_tournament), do: :noop
 
-  defp sort_by_rating(players) do
-    Enum.sort_by(players, fn p -> {-(p.rating || 0), p.id} end)
+  # Место в полуфинале кодируется id игрока: меньший id = выше место.
+  defp sort_by_semifinal_place(players) do
+    Enum.sort_by(players, & &1.id)
   end
 
   defp sort_by_ranking(players, ranking) do
