@@ -33,6 +33,7 @@ const RANKING_TYPES = [
 
 const SCORE_STRATEGIES = [
   { value: "75_percentile", label: "75 Percentile" },
+  { value: "static_base_score", label: "Static Base Score" },
   { value: "win_loss", label: "Win/Loss" },
 ];
 
