@@ -1,0 +1,38 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Support Tournament</h1>
+
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+      <form action="/admin/support-tournament" method="post">
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <input type="hidden" name="_method" value="put" />
+
+        <div class="form-group mb-4">
+          <label class="cb-text" for="tournament_ids">Tournament IDs</label>
+          <textarea
+            name="support_tournament[tournament_ids]"
+            id="tournament_ids"
+            class="form-control cb-bg-highlight-panel cb-text cb-border-color"
+            rows="8"
+            placeholder="123&#10;456"
+          ><%= @tournament_ids %></textarea>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="cb-text" for="group_tournament_ids">Group Tournament IDs</label>
+          <textarea
+            name="support_tournament[group_tournament_ids]"
+            id="group_tournament_ids"
+            class="form-control cb-bg-highlight-panel cb-text cb-border-color"
+            rows="8"
+            placeholder="123&#10;456"
+          ><%= @group_tournament_ids %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success text-white cb-rounded">
+          Save
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
