@@ -204,7 +204,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
       tournament.excludeBannedPlayers !== undefined ? tournament.excludeBannedPlayers : false,
     ranking_type: tournament.rankingType || "by_user",
     score_strategy: tournament.scoreStrategy || "75_percentile",
-    meta_json: tournament.meta ? JSON.stringify(tournament.meta, null, 2) : "{}",
+    meta_json: tournament.meta ? JSON.stringify(decamelizeKeys(tournament.meta), null, 2) : "{}",
   };
 
   return (

@@ -239,6 +239,7 @@ function CustomTournamentInfoPanel({
             currentUserId={currentUserId}
             hideBots={hideBots}
             canModerate={canModerate}
+            playersRedirectUrl={playersRedirectUrl}
           />
         )}
         {panelMode.panel === PanelModeCodes.ratingMode && (
