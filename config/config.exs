@@ -84,6 +84,7 @@ config :codebattle, :oauth,
   external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
 config :codebattle, :start_create_bot_timeout, to_timeout(second: 3)
+config :codebattle, :support_tournament_auth_token, System.get_env("CODEBATTLE_SUPPORT_TOURNAMENT_AUTH_TOKEN")
 config :codebattle, :tournament_run_upcoming, false
 config :codebattle, app_version: "dev"
 # config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteZig

@@ -252,6 +252,9 @@ defmodule CodebattleWeb.Router do
 
     live("/tournaments", CodebattleWeb.Live.Admin.TournamentIndexView, :index)
 
+    get("/support-tournament", CodebattleWeb.Admin.SupportTournamentController, :edit)
+    put("/support-tournament", CodebattleWeb.Admin.SupportTournamentController, :update)
+
     get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)
 
     post("/tournament_duplicator", TournamentDuplicatorController, :create, as: :admin_tournament_duplicator)
@@ -356,6 +359,9 @@ defmodule CodebattleWeb.Router do
     get("/broadcast-editor", BroadcastEditorController, :index)
 
     get("/cssbattle/builder", CssBattleBuilderController, :index)
+
+    get("/support-tournament", SupportTournamentController, :index)
+    post("/support-tournament", SupportTournamentController, :search)
 
     get("/robots.txt", RootController, :robots)
     get("/sitemap.xml", RootController, :sitemap)
