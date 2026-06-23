@@ -96,10 +96,14 @@ export const detectOS = () => {
   return "linux";
 };
 
-// Builds a vscode://file/... deep link that opens <folder> from the player's
-// standard Downloads directory. We only store the folder name, so the home
-// directory is resolved per detected OS. Note: VS Code does not expand env vars
-// in file URIs — the link assumes the conventional Downloads location.
+// Builds a vscode://file/... deep link that opens <folder>. VS Code does not
+// expand env vars or `~` in file URIs, and the browser cannot know the player's
+// home directory — so we anchor the link at a fixed, username-independent shared
+// location that is identical on every machine. Players must extract the folder
+// into that location for the link to resolve:
+//   macOS:   /Users/Shared/<folder>
+//   Windows: C:\Users\Public\<folder>
+//   Linux:   /tmp/<folder> (world-writable; note: cleared on reboot)
 export const buildVscodeFolderUrl = (folderName, os = detectOS()) => {
   if (!folderName) return null;
 
@@ -116,11 +120,12 @@ export const buildVscodeFolderUrl = (folderName, os = detectOS()) => {
 
   switch (os) {
     case "windows":
-      return `vscode://file/%USERPROFILE%/Downloads/${encoded}`;
-    case "mac":
+      return `vscode://file/C:/Users/Public/${encoded}`;
     case "linux":
+      return `vscode://file//tmp/${encoded}`;
+    case "mac":
     default:
-      return `vscode://file/$HOME/Downloads/${encoded}`;
+      return `vscode://file//Users/Shared/${encoded}`;
   }
 };
 
