@@ -95,7 +95,8 @@ defmodule CodebattleWeb.SupportTournamentControllerTest do
 
       assert Jason.decode!(customization.value) == %{
                "tournament_ids" => [10, 20],
-               "group_tournament_ids" => [30, 40]
+               "group_tournament_ids" => [30, 40],
+               "text" => ""
              }
     end
   end
