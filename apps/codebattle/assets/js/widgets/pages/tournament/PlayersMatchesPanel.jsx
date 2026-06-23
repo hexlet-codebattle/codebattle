@@ -5,7 +5,6 @@ import reverse from "lodash/reverse";
 import { useDispatch } from "react-redux";
 
 import i18n from "../../../i18n";
-import TournamentTypes from "../../config/tournamentTypes";
 import {
   requestMatchesForRound as requestMatchesForRoundUser,
   uploadPlayersMatches as uploadPlayersMatchesUser,
@@ -20,6 +19,7 @@ import { actions } from "../../slices";
 
 import TournamentPlayersPagination from "./TournamentPlayersPagination";
 import TournamentUserPanel from "./TournamentUserPanel";
+import Top200RedirectButton from "./Top200RedirectButton";
 
 const filterControlsClassName = cn(
   "d-flex flex-column flex-md-row align-items-md-center justify-content-between",
@@ -37,11 +37,6 @@ const searchInputClassName = cn(
 );
 
 const fuzzyBadgeClassName = cn("badge cb-text-light ml-2", "cb-bg-panel");
-
-const redirectNoticeClassName = cn(
-  "d-flex flex-column flex-md-row align-items-md-center justify-content-between",
-  "border-top border-bottom-0 cb-border-color py-2 gap-2",
-);
 
 const isFuzzyMatch = (value, query) => {
   if (!query) return true;
@@ -237,28 +232,15 @@ function PlayersMatchesPanel({
 
   const showHideResultsNotice = hideResults;
   const currentPlayer = players[currentUserId];
-  const currentPlayerPlace = Number(currentPlayer?.place);
-  const showPlayersRedirectButton =
-    type === TournamentTypes.top200 &&
-    typeof playersRedirectUrl === "string" &&
-    playersRedirectUrl.length > 0 &&
-    currentRoundPosition >= 4 &&
-    Number.isFinite(currentPlayerPlace) &&
-    currentPlayerPlace >= 9 &&
-    currentPlayerPlace <= 200;
 
   return (
     <>
-      {showPlayersRedirectButton && (
-        <div className={redirectNoticeClassName}>
-          <span className="font-weight-bold cb-text-light">
-            {i18n.t("The tournament continues for top 8 players.")}
-          </span>
-          <a className="btn btn-sm btn-warning text-nowrap" href={playersRedirectUrl}>
-            {i18n.t("Continue")}
-          </a>
-        </div>
-      )}
+      <Top200RedirectButton
+        currentRoundPosition={currentRoundPosition}
+        player={currentPlayer}
+        playersRedirectUrl={playersRedirectUrl}
+        type={type}
+      />
       {showHideResultsNotice && (
         <div
           className={cn(

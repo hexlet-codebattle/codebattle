@@ -4,9 +4,19 @@ import i18next from "i18next";
 import reverse from "lodash/reverse";
 
 import Loading from "../../components/Loading";
+import Top200RedirectButton from "./Top200RedirectButton";
 import UsersMatchList from "./UsersMatchList";
 
-function PlayerStatsPanel({ matches, players, currentUserId, hideBots, canModerate }) {
+function PlayerStatsPanel({
+  currentRoundPosition,
+  matches,
+  players,
+  currentUserId,
+  hideBots,
+  canModerate,
+  playersRedirectUrl,
+  type,
+}) {
   const currentPlayer = players[currentUserId];
 
   const matchList = useMemo(
@@ -21,6 +31,12 @@ function PlayerStatsPanel({ matches, players, currentUserId, hideBots, canModera
 
   return (
     <div className="d-flex flex-column cb-rounded shadow-sm cb-bg-panel">
+      <Top200RedirectButton
+        currentRoundPosition={currentRoundPosition}
+        player={currentPlayer}
+        playersRedirectUrl={playersRedirectUrl}
+        type={type}
+      />
       {currentPlayer.state === "banned" && (
         <div className="alert alert-warning m-2 mb-0" role="alert">
           {i18next.t(
