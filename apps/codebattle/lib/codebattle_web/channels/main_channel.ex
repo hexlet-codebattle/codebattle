@@ -136,9 +136,9 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_info(%{event: "main:redirect", payload: payload}, socket) do
-    # Skip admins/moderators — the redirect is for gathering regular users into
-    # a tournament, not for pulling staff away from their dashboards.
-    if !User.admin_or_moderator?(socket.assigns.current_user) do
+    # Global redirect broadcasts skip staff by default. Targeted redirects can
+    # pass skip_admins: false, for example when an admin is also a player.
+    if !skip_redirect?(payload, socket.assigns.current_user) do
       push(socket, "main:redirect", payload)
     end
 
@@ -170,5 +170,11 @@ defmodule CodebattleWeb.MainChannel do
   def handle_info(message, socket) do
     Logger.warning("MainChannel Unexpected message: " <> inspect(message))
     {:noreply, socket}
+  end
+
+  defp skip_redirect?(payload, user) do
+    skip_admins? = Map.get(payload, :skip_admins, Map.get(payload, "skip_admins", true))
+
+    skip_admins? && User.admin_or_moderator?(user)
   end
 end

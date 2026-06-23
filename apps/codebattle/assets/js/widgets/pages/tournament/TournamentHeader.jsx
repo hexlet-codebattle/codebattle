@@ -81,6 +81,7 @@ function TournamentStateDescription({
   lastRoundStartedAt,
   lastRoundEndedAt,
   isOnline,
+  canModerate,
 }) {
   if (state === TournamentStates.waitingParticipants) {
     return <TournamentTimer startsAt={startsAt} isOnline={isOnline} />;
@@ -104,6 +105,10 @@ function TournamentStateDescription({
   }
 
   if (state === TournamentStates.active && breakState === "on") {
+    if (!canModerate) {
+      return <span>{i18next.t("Next round will start soon")}</span>;
+    }
+
     return (
       <span>
         {i18next.t("Next round will start in ")}
@@ -237,6 +242,7 @@ function TournamentHeader({
                   isLive={isLive}
                   isOver={isOver}
                   isOnline={isOnline}
+                  canModerate={canModerate}
                 />
               </span>
             </div>

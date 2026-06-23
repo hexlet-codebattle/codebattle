@@ -100,6 +100,7 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
         topPlayerIds={tournament.topPlayerIds}
         tournamentId={tournament.id}
         type={tournament.type}
+        playersRedirectUrl={tournament.meta?.playersRedirectUrl}
         hideCustomGameConsole={
           tournament.type !== "versus" || tournament.state !== TournamentStates.active
         }

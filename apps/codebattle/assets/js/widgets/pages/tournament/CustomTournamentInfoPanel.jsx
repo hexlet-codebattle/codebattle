@@ -57,6 +57,7 @@ function CustomTournamentInfoPanel({
   pageSize,
   players,
   playersCount,
+  playersRedirectUrl,
   ranking,
   roundsLimit = 1,
   state,
@@ -248,12 +249,15 @@ function CustomTournamentInfoPanel({
             players={players}
             topPlayerIds={topPlayerIds}
             currentUserId={currentUserId}
+            currentRoundPosition={currentRoundPosition}
             playersCount={playersCount}
+            playersRedirectUrl={playersRedirectUrl}
             pageNumber={pageNumber}
             pageSize={pageSize}
             hideBots={hideBots}
             canModerate={canModerate}
             hideResults={(hideResults && !canModerate) || (!players[currentUserId] && !canModerate)}
+            type={type}
           />
         )}
         {panelMode.panel === PanelModeCodes.topUserByClansMode && (
