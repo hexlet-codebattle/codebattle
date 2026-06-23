@@ -4,7 +4,12 @@ import cn from "classnames";
 import i18next from "i18next";
 import { useSelector } from "react-redux";
 
-import { currentUserClanIdSelector, tournamentSelector, gameStatusSelector } from "@/selectors";
+import {
+  currentUserClanIdSelector,
+  tournamentSelector,
+  gameStatusSelector,
+  currentUserCanModerateTournament,
+} from "@/selectors";
 
 import LanguageIcon from "../../components/LanguageIcon";
 import GameStateCodes from "../../config/gameStateCodes";
@@ -31,6 +36,7 @@ const tableDataCellClassName = cn(
 function TournamentRankingTable() {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const gameStatus = useSelector(gameStatusSelector);
+  const canModerate = useSelector(currentUserCanModerateTournament);
   const {
     breakDurationSeconds,
     breakState,
@@ -157,7 +163,8 @@ function TournamentRankingTable() {
         {gameStatus.state !== GameStateCodes.playing &&
           breakState === "on" &&
           !isTournamentFinished &&
-          !isLastRound && (
+          !isLastRound &&
+          (canModerate ? (
             <span className="font-weight-bold me-3 cb-text">
               {i18next.t("Next round will start in ")}
               <TournamentRemainingTimer
@@ -166,7 +173,11 @@ function TournamentRankingTable() {
                 duration={breakDurationSeconds}
               />
             </span>
-          )}
+          ) : (
+            <span className="font-weight-bold me-3 cb-text">
+              {i18next.t("Next round will start soon")}
+            </span>
+          ))}
       </div>
 
       <div className="d-flex justify-content-around align-items-center mt-1">

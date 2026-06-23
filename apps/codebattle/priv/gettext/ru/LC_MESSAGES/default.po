@@ -769,6 +769,9 @@ msgstr "Раунд завершится через "
 msgid "Next round will start in "
 msgstr "Следующий раунд начнется через "
 
+msgid "Next round will start soon"
+msgstr "Следующий раунд скоро начнется"
+
 msgid "Draw"
 msgstr "Ничья"
 

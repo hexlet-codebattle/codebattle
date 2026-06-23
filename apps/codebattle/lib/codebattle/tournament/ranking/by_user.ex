@@ -49,7 +49,10 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
     round_deltas = TournamentResult.get_user_round_delta(tournament, round_position)
 
     if Enum.empty?(round_deltas) do
-      # Keep existing ETS ranking (seeded on join) when there are no results yet.
+      # No results yet: seed the initial ranking ordered by player id.
+      ranking = build_initial_ranking(tournament)
+      set_places_with_score_to_players(tournament, ranking)
+      Ranking.put_ranking(tournament, ranking)
       tournament
     else
       apply_round_deltas(tournament, round_deltas, round_position)
@@ -113,6 +116,25 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
               last_ranked_round_position: round_position
           })
       end
+    end)
+  end
+
+  defp build_initial_ranking(tournament) do
+    tournament
+    |> Players.get_players()
+    |> Enum.reject(&(&1.is_bot || &1.state == "banned"))
+    |> Enum.sort_by(& &1.id)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {player, place} ->
+      %{
+        id: player.id,
+        place: place,
+        score: player.score || 0,
+        lang: player.lang,
+        name: player.name,
+        clan_id: player.clan_id,
+        clan: player.clan
+      }
     end)
   end
 

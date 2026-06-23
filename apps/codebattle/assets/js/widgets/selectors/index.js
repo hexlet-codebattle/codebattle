@@ -379,6 +379,9 @@ export const currentTournamentPlayerSelector = (state) => state.tournamentPlayer
 
 export const tournamentPlayersSelector = (state) => state.tournament.players;
 
+export const tournamentPlayerSelector = (playerId) => (state) =>
+  state.tournament.players?.[playerId];
+
 export const tournamentMatchesSelector = (state) => state.tournament.matches;
 
 export const groupTournamentSelector = (state) => state.groupTournament;

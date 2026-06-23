@@ -4,6 +4,27 @@ defmodule Codebattle.PubSub.EventsTest do
   alias Codebattle.Game.Player
   alias Codebattle.PubSub.Events
 
+  describe "tournament:player:redirect" do
+    test "targets the player's main channel" do
+      assert [
+               %{
+                 topic: "main:42",
+                 event: "main:redirect",
+                 payload: %{
+                   tournament_id: 13,
+                   url: "https://example.com/next",
+                   skip_admins: false
+                 }
+               }
+             ] =
+               Events.get_messages("tournament:player:redirect", %{
+                 tournament_id: 13,
+                 player_id: 42,
+                 url: "https://example.com/next"
+               })
+    end
+  end
+
   describe "game:finished" do
     test "includes tournament game winner_id when a player won" do
       winner = build(:user, id: 1)
