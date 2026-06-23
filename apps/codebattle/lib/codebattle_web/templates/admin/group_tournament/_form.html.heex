@@ -96,6 +96,22 @@
   </div>
 
   <div class="form-group">
+    <div>
+      <span class="text-white">
+        Local Folder (optional) — folder name under the player's Downloads
+        directory. When set, the "Add Solution +" button opens that folder in
+        VS Code (<code>vscode://file/…/Downloads/&lt;folder&gt;</code>) instead of
+        the in-app editor.
+      </span>
+    </div>
+    {text_input(f, :local_folder,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      maxlength: "255"
+    )}
+    {error_tag(f, :local_folder)}
+  </div>
+
+  <div class="form-group">
     <div><span class="text-white">Max Score</span></div>
     {number_input(f, :max_score,
       class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
