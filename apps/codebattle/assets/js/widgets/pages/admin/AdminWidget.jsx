@@ -182,14 +182,33 @@ const REDIRECT_ROUTES = [
   {
     label: "Group Tournament",
     value: "group_tournaments",
+    placeholder: "ID",
     build: (id) => `/group_tournaments/${id}`,
+  },
+  {
+    label: "Game",
+    value: "games",
+    placeholder: "Game ID",
+    build: (id) => `/games/${id}`,
+  },
+  {
+    label: "Tournament",
+    value: "tournaments",
+    placeholder: "Tournament ID",
+    build: (id) => `/tournaments/${id}`,
+  },
+  {
+    label: "Event",
+    value: "events",
+    placeholder: "Event slug",
+    build: (slug) => `/e/${slug}`,
   },
 ];
 
 const parseUserIds = (raw) =>
   [...new Set((raw.match(/\d+/g) || []).map(Number))];
 
-function RedirectPanel() {
+function RedirectPanel({ allUserIds }) {
   const dispatch = useDispatch();
   const [route, setRoute] = useState(REDIRECT_ROUTES[0].value);
   const [id, setId] = useState("");
@@ -198,6 +217,11 @@ function RedirectPanel() {
   const [status, setStatus] = useState(null);
 
   const userIds = useMemo(() => parseUserIds(userIdsRaw), [userIdsRaw]);
+
+  const selectedRoute = useMemo(
+    () => REDIRECT_ROUTES.find((item) => item.value === route) || REDIRECT_ROUTES[0],
+    [route],
+  );
 
   const handleFetch = (event) => {
     event.preventDefault();
@@ -216,6 +240,10 @@ function RedirectPanel() {
         () => setStatus("fetch-error"),
       ),
     );
+  };
+
+  const handleSelectAll = () => {
+    setUserIdsRaw((prev) => parseUserIds(`${prev} ${allUserIds.join(" ")}`).join(", "));
   };
 
   const handleSubmit = (event) => {
@@ -262,6 +290,14 @@ function RedirectPanel() {
         <button className="btn btn-secondary" type="submit" disabled={!tournamentId.trim()}>
           Fetch player IDs
         </button>
+        <button
+          className="btn btn-secondary"
+          type="button"
+          disabled={allUserIds.length === 0}
+          onClick={handleSelectAll}
+        >
+          All ({allUserIds.length})
+        </button>
       </form>
 
       <textarea
@@ -289,7 +325,7 @@ function RedirectPanel() {
           className="form-control"
           style={{ maxWidth: "160px" }}
           type="text"
-          placeholder="ID"
+          placeholder={selectedRoute.placeholder}
           value={id}
           onChange={(event) => setId(event.target.value)}
         />
@@ -316,6 +352,11 @@ function AdminWidget() {
 
   const totalConnections = useMemo(
     () => presenceList.reduce((sum, entry) => sum + (entry.count || 0), 0),
+    [presenceList],
+  );
+
+  const allUserIds = useMemo(
+    () => [...new Set(presenceList.map((entry) => entry.id))],
     [presenceList],
   );
 
@@ -368,7 +409,7 @@ function AdminWidget() {
           {presenceList.length} users · {totalConnections} connections
         </div>
       </div>
-      <RedirectPanel />
+      <RedirectPanel allUserIds={allUserIds} />
       {groups.length === 0 ? (
         <div className="text-center text-muted py-5">No active connections</div>
       ) : (
