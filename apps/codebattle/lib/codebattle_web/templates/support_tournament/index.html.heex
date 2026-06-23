@@ -100,7 +100,9 @@
               <tr>
                 <td class="align-middle text-white cb-border-color">{group_tournament.id}</td>
                 <td class="align-middle text-white cb-border-color">{group_tournament.name}</td>
-                <td class="align-middle text-white cb-border-color">{group_tournament.user_id}</td>
+                <td class="align-middle text-white cb-border-color">
+                  {group_tournament.user_id}
+                </td>
                 <td class="align-middle text-white cb-border-color">
                   <%= if group_tournament.token do %>
                     <div class="d-flex align-items-center">
