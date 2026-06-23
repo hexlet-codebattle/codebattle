@@ -31,6 +31,18 @@ defmodule Codebattle.PubSub.Events do
   # the group tournament admin "Gather players" button. Admin filtering is done
   # in MainChannel.handle_info/2 (we can't filter by topic because every user
   # shares the same one), so the broadcast itself is unconditional.
+  def get_messages("main:redirect", %{user_ids: user_ids} = params) when is_list(user_ids) do
+    payload = Map.delete(params, :user_ids)
+
+    Enum.map(user_ids, fn id ->
+      %Message{
+        topic: "main:#{id}",
+        event: "main:redirect",
+        payload: payload
+      }
+    end)
+  end
+
   def get_messages("main:redirect", params) do
     [
       %Message{

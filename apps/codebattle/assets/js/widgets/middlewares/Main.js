@@ -105,6 +105,7 @@ const removeDeployBanner = () => {
 const initPresence = (followId) => (dispatch) => {
   channel = new Channel("main", {
     ...getUserStateByPath(),
+    path: document.location.pathname,
     followId,
   });
   channel.syncPresence((list) => {
@@ -156,6 +157,20 @@ const initPresence = (followId) => (dispatch) => {
 
 export const changePresenceState = (state) => () => {
   channel.push("change_presence_state", { state });
+};
+
+export const broadcastRedirect = (url, userIds, onSuccess, onError) => () => {
+  channel
+    .push("main:redirect", { url, userIds })
+    .receive("ok", () => onSuccess && onSuccess())
+    .receive("error", (payload) => onError && onError(payload));
+};
+
+export const fetchTournamentPlayerIds = (tournamentId, onSuccess, onError) => () => {
+  channel
+    .push("tournament:player_ids", { tournamentId })
+    .receive("ok", (payload) => onSuccess && onSuccess(camelizeKeys(payload).userIds || []))
+    .receive("error", (payload) => onError && onError(payload));
 };
 
 export const changePresenceUser = (user) => () => {

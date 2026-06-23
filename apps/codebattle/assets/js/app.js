@@ -64,6 +64,7 @@ import {
   renderTournamentsSchedule,
   renderUserPage,
   renderUsersRating,
+  renderAdminPage,
 } from "./widgets";
 
 if (process.env.NODE_ENV === "development") {
@@ -135,9 +136,14 @@ const headToHeadRoot = document.getElementById("head-to-head-root");
 const seasonsRoot = document.getElementById("seasons-root");
 const seasonShowRoot = document.getElementById("season-show-root");
 const taskPreviewRoot = document.getElementById("task-preview-root");
+const adminConnectionsRoot = document.getElementById("admin-connections-root");
 
 if (mainChannelRoot) {
   renderMainChannelWidget(mainChannelRoot);
+}
+
+if (adminConnectionsRoot) {
+  renderAdminPage(adminConnectionsRoot);
 }
 
 if (gameWidgetRoot) {

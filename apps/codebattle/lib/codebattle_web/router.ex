@@ -99,6 +99,7 @@ defmodule CodebattleWeb.Router do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
     oban_dashboard("/oban")
+    get("/connections", CodebattleWeb.AdminController, :connections)
     live("/", CodebattleWeb.Live.Admin.IndexView, :index)
     live("/events", CodebattleWeb.Live.Admin.EventIndexView, :index)
     live("/events/:id/dashboard", CodebattleWeb.Live.Admin.EventDashboardView, :show)
