@@ -82,6 +82,48 @@ export const getTitleForRun = (item, allItems) => {
   return i18n.t("Test run"); // Fallback
 };
 
+export const detectOS = () => {
+  const platform =
+    (typeof navigator !== "undefined" &&
+      ((navigator.userAgentData && navigator.userAgentData.platform) ||
+        navigator.platform ||
+        navigator.userAgent)) ||
+    "";
+  const value = platform.toLowerCase();
+
+  if (value.includes("win")) return "windows";
+  if (value.includes("mac") || value.includes("iphone") || value.includes("ipad")) return "mac";
+  return "linux";
+};
+
+// Builds a vscode://file/... deep link that opens <folder> from the player's
+// standard Downloads directory. We only store the folder name, so the home
+// directory is resolved per detected OS. Note: VS Code does not expand env vars
+// in file URIs — the link assumes the conventional Downloads location.
+export const buildVscodeFolderUrl = (folderName, os = detectOS()) => {
+  if (!folderName) return null;
+
+  const safe = String(folderName)
+    .trim()
+    .replace(/^[/\\]+|[/\\]+$/g, "");
+
+  if (!safe) return null;
+
+  const encoded = safe
+    .split(/[/\\]+/)
+    .map(encodeURIComponent)
+    .join("/");
+
+  switch (os) {
+    case "windows":
+      return `vscode://file/%USERPROFILE%/Downloads/${encoded}`;
+    case "mac":
+    case "linux":
+    default:
+      return `vscode://file/$HOME/Downloads/${encoded}`;
+  }
+};
+
 export const isOnBreak = (groupTournament) => {
   const roundStartedAt = groupTournament?.lastRoundStartedAt || groupTournament?.startedAt;
   if (!roundStartedAt) return false;

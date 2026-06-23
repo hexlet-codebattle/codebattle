@@ -58,7 +58,8 @@ defmodule Codebattle.GroupTournament do
              :has_seed_round,
              :show_leaderboard,
              :visible_to_users,
-             :is_infinite
+             :is_infinite,
+             :local_folder
            ]}
 
   schema "group_tournaments" do
@@ -97,6 +98,7 @@ defmodule Codebattle.GroupTournament do
     field(:show_leaderboard, :boolean, default: true)
     field(:visible_to_users, :boolean, default: true)
     field(:is_infinite, :boolean, default: false)
+    field(:local_folder, :string)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -149,7 +151,8 @@ defmodule Codebattle.GroupTournament do
       :has_seed_round,
       :show_leaderboard,
       :visible_to_users,
-      :is_infinite
+      :is_infinite,
+      :local_folder
     ])
     |> validate_required([
       :group_task_id,
@@ -163,6 +166,7 @@ defmodule Codebattle.GroupTournament do
     |> update_change(:slug, &normalize_slug/1)
     |> update_change(:template_id, &normalize_optional_string/1)
     |> update_change(:task_description, &normalize_optional_string/1)
+    |> update_change(:local_folder, &normalize_optional_string/1)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:slice_strategy, @slice_strategies)
     |> validate_inclusion(:type, @types)
@@ -177,6 +181,7 @@ defmodule Codebattle.GroupTournament do
     |> validate_length(:description, min: 3, max: 7531)
     |> validate_length(:task_description, max: 32_768)
     |> validate_length(:template_id, max: 255)
+    |> validate_length(:local_folder, max: 255)
     |> validate_number(:rounds_count, greater_than: 0)
     |> validate_number(:round_timeout_seconds, greater_than: 0)
     |> validate_number(:seed_round_timeout_seconds, greater_than: 0)

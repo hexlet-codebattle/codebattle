@@ -1,7 +1,7 @@
 import React from "react";
 import i18n from "../../../i18n";
 import RunItem from "./RunItem";
-import { isOnBreak } from "../../utils/groupTournament";
+import { buildVscodeFolderUrl, isOnBreak } from "../../utils/groupTournament";
 
 const getStubRoundPosition = (groupTournament) => {
   const roundPosition = groupTournament?.currentRoundPosition;
@@ -43,7 +43,12 @@ function EvolutionPanel({
   const isFinished = tournamentStatus === "finished";
   const isWaiting = tournamentStatus === "waiting_participants";
   const externalUrl = !isFinished && !isWaiting ? repoUrl : null;
-  const canAddSolutionInternal = !isFinished && !isWaiting && !externalUrl && !!onAddSolution;
+  const vscodeUrl =
+    !isFinished && !isWaiting && !externalUrl
+      ? buildVscodeFolderUrl(groupTournament?.localFolder)
+      : null;
+  const canAddSolutionInternal =
+    !isFinished && !isWaiting && !externalUrl && !vscodeUrl && !!onAddSolution;
   const onBreak = isOnBreak(groupTournament);
 
   return (
@@ -60,6 +65,13 @@ function EvolutionPanel({
               rel="noopener noreferrer"
               className="d-block text-decoration-none mb-3"
             >
+              <div className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center">
+                {i18n.t("Add Solution +")}
+              </div>
+            </a>
+          )}
+          {vscodeUrl && (
+            <a href={vscodeUrl} className="d-block text-decoration-none mb-3">
               <div className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center">
                 {i18n.t("Add Solution +")}
               </div>
