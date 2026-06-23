@@ -490,6 +490,7 @@ defmodule Codebattle.Tournament.ContextTest do
       assert tournament.cheater_ids == []
       assert Tournament.Helpers.players_count(tournament) == 2
       assert Enum.sort(Enum.map(players, & &1.id)) == Enum.sort([player_1.id, player_2.id])
+      assert tournament |> Tournament.Ranking.get_first(10) |> Enum.map(& &1.id) == Enum.sort([player_1.id, player_2.id])
 
       Enum.each(players, fn player ->
         assert player.state == "active"
