@@ -34,7 +34,12 @@ export default class Channel {
     const channel = socket.channel(topic, decamelizeKeys(params, { separator: "_" }));
 
     channel.onMessage = (event, payload) => {
-      const result = this.onMessageHandler(event, camelizeKeys(payload));
+      // Preserve Phoenix Presence's `phx_ref`/`phx_ref_prev` keys — camelizing them
+      // breaks Presence meta merging, collapsing multiple connections into one.
+      const camelized = camelizeKeys(payload, (key, convert) =>
+        key.startsWith("phx_") ? key : convert(key),
+      );
+      const result = this.onMessageHandler(event, camelized);
 
       return result;
     };

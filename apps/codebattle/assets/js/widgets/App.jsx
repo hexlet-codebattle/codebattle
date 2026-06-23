@@ -61,6 +61,7 @@ const HeadToHead = React.lazy(() => import("./pages/headToHeadPage"));
 const GameMl = React.lazy(() => import("./pages/gameMl/GameMlPage"));
 const Seasons = React.lazy(() => import("./pages/seasonsPage"));
 const SeasonShow = React.lazy(() => import("./pages/seasonsPage/SeasonShowPage"));
+const AdminContainer = React.lazy(() => import("./pages/admin"));
 const InvitesContainer = React.lazy(() => import("./components/InvitesContainer"));
 const MainChannelContainer = React.lazy(() => import("./components/MainChannelContainer"));
 const LobbyWidget = React.lazy(() => import("./pages/lobby"));
@@ -435,6 +436,18 @@ export function SeasonShowPage() {
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
           <SeasonShow />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
+
+export function AdminPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <AdminContainer />
         </Suspense>
       </PersistGate>
     </Provider>

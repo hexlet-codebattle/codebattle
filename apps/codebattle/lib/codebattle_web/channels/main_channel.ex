@@ -11,6 +11,7 @@ defmodule CodebattleWeb.MainChannel do
 
   def join("main", %{"state" => state} = params, socket) do
     current_user = socket.assigns.current_user
+    socket = assign(socket, :presence_path, params["path"])
 
     active_game_id =
       if !current_user.is_guest do
@@ -75,10 +76,40 @@ defmodule CodebattleWeb.MainChannel do
     {:reply, {:ok, %{}}, socket}
   end
 
+  def handle_in("main:redirect", %{"url" => url, "user_ids" => user_ids}, socket) do
+    if User.admin_or_moderator?(socket.assigns.current_user) do
+      Codebattle.PubSub.broadcast("main:redirect", %{url: url, user_ids: user_ids})
+      {:reply, {:ok, %{}}, socket}
+    else
+      {:reply, {:error, :no_permission}, socket}
+    end
+  end
+
+  def handle_in("tournament:player_ids", %{"tournament_id" => tournament_id}, socket) do
+    if User.admin_or_moderator?(socket.assigns.current_user) do
+      case fetch_tournament(tournament_id) do
+        nil ->
+          {:reply, {:error, %{reason: "not_found"}}, socket}
+
+        tournament ->
+          user_ids =
+            tournament
+            |> Tournament.Helpers.get_players()
+            |> Enum.reject(& &1.is_bot)
+            |> Enum.map(& &1.id)
+
+          {:reply, {:ok, %{user_ids: user_ids}}, socket}
+      end
+    else
+      {:reply, {:error, :no_permission}, socket}
+    end
+  end
+
   def handle_in("change_presence_state", %{"state" => state}, socket) do
     Presence.update(socket, socket.assigns.current_user.id, %{
       online_at: inspect(System.system_time(:second)),
       state: state,
+      path: socket.assigns[:presence_path],
       user: socket.assigns.current_user,
       id: socket.assigns.current_user.id
     })
@@ -126,6 +157,7 @@ defmodule CodebattleWeb.MainChannel do
       Presence.track(socket, socket.assigns.current_user.id, %{
         online_at: inspect(System.system_time(:second)),
         state: state,
+        path: socket.assigns[:presence_path],
         user: socket.assigns.current_user,
         id: socket.assigns.current_user.id
       })
@@ -176,5 +208,12 @@ defmodule CodebattleWeb.MainChannel do
     skip_admins? = Map.get(payload, :skip_admins, Map.get(payload, "skip_admins", true))
 
     skip_admins? && User.admin_or_moderator?(user)
+  end
+
+  defp fetch_tournament(tournament_id) do
+    case Integer.parse(to_string(tournament_id)) do
+      {id, _} -> Tournament.Context.get(id)
+      :error -> nil
+    end
   end
 end

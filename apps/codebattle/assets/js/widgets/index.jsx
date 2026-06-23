@@ -30,6 +30,7 @@ import {
   TournamentsSchedulePage,
   UserPage,
   UsersRating,
+  AdminPage,
 } from "./App";
 
 const Heatmap = React.lazy(() => import("./pages/profile/Heatmap"));
@@ -77,3 +78,4 @@ export const renderTournamentsSchedule = (domElement) =>
   createRoot(domElement).render(<TournamentsSchedulePage />);
 export const renderUserPage = (domElement) => createRoot(domElement).render(<UserPage />);
 export const renderUsersRating = (domElement) => createRoot(domElement).render(<UsersRating />);
+export const renderAdminPage = (domElement) => createRoot(domElement).render(<AdminPage />);
