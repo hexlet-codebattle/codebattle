@@ -1,130 +1,181 @@
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-  <h1 class="text-center text-white">Tournament Support</h1>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 px-4 mt-3 mb-4">
+  <div class="text-center mb-4">
+    <h1 class="text-white mb-1">
+      <i class="fa fa-headset mr-2"></i>Tournament Support
+    </h1>
+    <p class="cb-text mb-0">Look up a user to inspect their tournament participation and access tokens.</p>
+  </div>
 
-  <div class="row justify-content-center mt-4">
-    <div class="col-md-6">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
       <form action="/support-tournament" method="post">
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-3">
-          <label class="cb-text" for="user_id">User ID</label>
+        <label class="cb-text mb-1" for="user_id">User ID</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text cb-bg-highlight-panel cb-text cb-border-color">
+              <i class="fa fa-user"></i>
+            </span>
+          </div>
           <input
             type="number"
             name="user_id"
             id="user_id"
             class="form-control cb-bg-highlight-panel cb-text cb-border-color"
+            placeholder="Enter user id"
             required
             min="1"
             value={@user_id}
+            autofocus
           />
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-success text-white">
+              <i class="fa fa-search mr-1"></i>Find
+            </button>
+          </div>
         </div>
-        <button type="submit" class="btn btn-success text-white cb-rounded">
-          Find
-        </button>
       </form>
     </div>
   </div>
 
+  <%= if @text not in [nil, ""] do %>
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-10">
+        <div class="cb-bg-highlight-panel cb-text cb-rounded border cb-border-color p-3">
+          {raw(render_markdown(@text))}
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <%= if @error do %>
-    <div class="alert alert-danger mt-4">{@error}</div>
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-8 col-lg-6">
+        <div class="alert alert-danger mb-0">
+          <i class="fa fa-exclamation-triangle mr-2"></i>{@error}
+        </div>
+      </div>
+    </div>
   <% end %>
 
   <%= if @result do %>
     <div class="mt-5">
-      <h2 class="text-white">User</h2>
-      <div class="table-responsive mt-3">
-        <table class="table table-sm">
-          <thead class="cb-text">
-            <tr>
-              <th class="cb-border-color border-bottom">id</th>
-              <th class="cb-border-color border-bottom">clan</th>
-              <th class="cb-border-color border-bottom">clan_id</th>
-              <th class="cb-border-color border-bottom">name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="align-middle text-white cb-border-color">{@result.user.id}</td>
-              <td class="align-middle text-white cb-border-color">{@result.user.clan}</td>
-              <td class="align-middle text-white cb-border-color">{@result.user.clan_id}</td>
-              <td class="align-middle text-white cb-border-color">{@result.user.name}</td>
-            </tr>
-          </tbody>
-        </table>
+      <h2 class="text-white h4 mb-3">
+        <i class="fa fa-user-circle mr-2"></i>User
+      </h2>
+      <div class="cb-bg-highlight-panel cb-rounded border cb-border-color p-3">
+        <div class="row">
+          <div class="col-sm-3 mb-2 mb-sm-0">
+            <div class="cb-text small text-uppercase">id</div>
+            <div class="text-white">{@result.user.id}</div>
+          </div>
+          <div class="col-sm-3 mb-2 mb-sm-0">
+            <div class="cb-text small text-uppercase">name</div>
+            <div class="text-white">{@result.user.name}</div>
+          </div>
+          <div class="col-sm-3 mb-2 mb-sm-0">
+            <div class="cb-text small text-uppercase">clan</div>
+            <div class="text-white">{@result.user.clan || "—"}</div>
+          </div>
+          <div class="col-sm-3">
+            <div class="cb-text small text-uppercase">clan_id</div>
+            <div class="text-white">{@result.user.clan_id || "—"}</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="mt-5">
-      <h2 class="text-white">Tournaments</h2>
-      <div class="table-responsive mt-3">
-        <table class="table table-sm">
-          <thead class="cb-text">
-            <tr>
-              <th class="cb-border-color border-bottom">id</th>
-              <th class="cb-border-color border-bottom">name</th>
-              <th class="cb-border-color border-bottom">present in players</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%= for tournament <- @result.tournaments do %>
+      <h2 class="text-white h4 mb-3">
+        <i class="fa fa-trophy mr-2"></i>Tournaments
+        <span class="badge badge-secondary align-middle ml-1">{length(@result.tournaments)}</span>
+      </h2>
+      <%= if @result.tournaments == [] do %>
+        <p class="cb-text mb-0">No tournaments configured.</p>
+      <% else %>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="cb-text">
               <tr>
-                <td class="align-middle text-white cb-border-color">{tournament.id}</td>
-                <td class="align-middle text-white cb-border-color">{tournament.name}</td>
-                <td class="align-middle text-white cb-border-color">
-                  <%= if tournament.present do %>
-                    <span class="badge badge-success">yes</span>
-                  <% else %>
-                    <span class="badge badge-secondary">no</span>
-                  <% end %>
-                </td>
+                <th class="cb-border-color border-bottom">id</th>
+                <th class="cb-border-color border-bottom">name</th>
+                <th class="cb-border-color border-bottom">present in players</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              <%= for tournament <- @result.tournaments do %>
+                <tr>
+                  <td class="align-middle text-white cb-border-color">{tournament.id}</td>
+                  <td class="align-middle text-white cb-border-color">{tournament.name}</td>
+                  <td class="align-middle cb-border-color">
+                    <%= if tournament.present do %>
+                      <span class="badge badge-success">
+                        <i class="fa fa-check mr-1"></i>yes
+                      </span>
+                    <% else %>
+                      <span class="badge badge-secondary">
+                        <i class="fa fa-times mr-1"></i>no
+                      </span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
     </div>
 
     <div class="mt-5">
-      <h2 class="text-white">Group Tournaments</h2>
-      <div class="table-responsive mt-3">
-        <table class="table table-sm">
-          <thead class="cb-text">
-            <tr>
-              <th class="cb-border-color border-bottom">id</th>
-              <th class="cb-border-color border-bottom">name</th>
-              <th class="cb-border-color border-bottom">user_id</th>
-              <th class="cb-border-color border-bottom">token</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%= for group_tournament <- @result.group_tournaments do %>
+      <h2 class="text-white h4 mb-3">
+        <i class="fa fa-users mr-2"></i>Group Tournaments
+        <span class="badge badge-secondary align-middle ml-1">{length(@result.group_tournaments)}</span>
+      </h2>
+      <%= if @result.group_tournaments == [] do %>
+        <p class="cb-text mb-0">No group tournaments configured.</p>
+      <% else %>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="cb-text">
               <tr>
-                <td class="align-middle text-white cb-border-color">{group_tournament.id}</td>
-                <td class="align-middle text-white cb-border-color">{group_tournament.name}</td>
-                <td class="align-middle text-white cb-border-color">
-                  {group_tournament.user_id}
-                </td>
-                <td class="align-middle text-white cb-border-color">
-                  <%= if group_tournament.token do %>
-                    <div class="d-flex align-items-center">
-                      <code class="text-white mr-2">{group_tournament.token}</code>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-                        data-token={group_tournament.token}
-                        onclick="navigator.clipboard && navigator.clipboard.writeText(this.dataset.token)"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  <% else %>
-                    <span class="cb-text">not found</span>
-                  <% end %>
-                </td>
+                <th class="cb-border-color border-bottom">id</th>
+                <th class="cb-border-color border-bottom">name</th>
+                <th class="cb-border-color border-bottom">user_id</th>
+                <th class="cb-border-color border-bottom">token</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              <%= for group_tournament <- @result.group_tournaments do %>
+                <tr>
+                  <td class="align-middle text-white cb-border-color">{group_tournament.id}</td>
+                  <td class="align-middle text-white cb-border-color">{group_tournament.name}</td>
+                  <td class="align-middle text-white cb-border-color">
+                    {group_tournament.user_id || "—"}
+                  </td>
+                  <td class="align-middle cb-border-color">
+                    <%= if group_tournament.token do %>
+                      <div class="d-flex align-items-center">
+                        <code class="text-white mr-2">{group_tournament.token}</code>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                          data-token={group_tournament.token}
+                          onclick="if (navigator.clipboard) { navigator.clipboard.writeText(this.dataset.token); const t = this.innerHTML; this.innerHTML = '<i class=&quot;fa fa-check&quot;></i>'; setTimeout(() => { this.innerHTML = t; }, 1200); }"
+                          title="Copy token"
+                        >
+                          <i class="fa fa-copy"></i>
+                        </button>
+                      </div>
+                    <% else %>
+                      <span class="badge badge-secondary">not found</span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>
