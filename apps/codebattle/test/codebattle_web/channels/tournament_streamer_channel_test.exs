@@ -232,6 +232,7 @@ defmodule CodebattleWeb.TournamentStreamerChannelTest do
         )
 
       TournamentAdminChannel.store_active_game(tournament.id, active_game.id)
+      TournamentAdminChannel.store_autoselect_delay(tournament.id, 0)
 
       assert {:ok, %{active_game: %{id: active_game_id}}, socket} =
                subscribe_and_join(
