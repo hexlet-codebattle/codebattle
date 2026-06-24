@@ -1,6 +1,6 @@
 defmodule Codebattle.Tournament.Simulator.Setup do
   @moduledoc """
-  Selects the Top200 simulator players (ids 100_001..100_200) and joins them
+  Selects the simulator players (ids 100_001..100_209) and joins them
   into a simulation tournament.
 
   These users are seeded once via `Codebattle.Tournament.Simulator.Names.insert_all/0`
@@ -18,7 +18,7 @@ defmodule Codebattle.Tournament.Simulator.Setup do
   require Logger
 
   @first_id 100_001
-  @last_id 100_200
+  @last_id 100_209
 
   @doc """
   Select the seeded simulator players (ids #{@first_id}..#{@last_id}).
