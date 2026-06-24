@@ -1,8 +1,15 @@
 defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   use CodebattleWeb, :live_view
 
+  import Ecto.Query
+
+  alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Simulator
+  alias Codebattle.User
+
+  @players_first_id 100_001
+  @players_last_id 100_209
 
   @impl true
   def mount(_params, _session, socket) do
@@ -13,7 +20,9 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
        layout: {CodebattleWeb.LayoutView, :admin},
        tournaments: list_tournaments(),
        duplicate_result: nil,
-       creating_simulation: false
+       creating_simulation: false,
+       players_first_id: @players_first_id,
+       players_last_id: @players_last_id
      )}
   end
 
@@ -56,6 +65,33 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   def handle_event("cancel", %{"id" => id}, socket) do
     Tournament.Server.handle_event(String.to_integer(id), :cancel, %{})
     {:noreply, assign(socket, :tournaments, list_tournaments())}
+  end
+
+  def handle_event("add_players", %{"id" => id}, socket) do
+    tournament_id = String.to_integer(id)
+
+    users =
+      Repo.all(
+        from(u in User,
+          where: u.id >= @players_first_id and u.id <= @players_last_id,
+          order_by: u.id
+        )
+      )
+
+    if users == [] do
+      {:noreply, put_flash(socket, :error, "No players found in id range #{@players_first_id}..#{@players_last_id}.")}
+    else
+      users
+      |> Enum.chunk_every(50)
+      |> Enum.each(fn chunk ->
+        Tournament.Server.handle_event(tournament_id, :join, %{users: chunk})
+      end)
+
+      {:noreply,
+       socket
+       |> assign(:tournaments, list_tournaments())
+       |> put_flash(:info, "Added #{length(users)} players to tournament ##{tournament_id}.")}
+    end
   end
 
   def handle_event("create_simulation", _params, socket) do
@@ -163,6 +199,16 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
                     >
                       Stream
                     </a>
+                    <%= if t.state == "waiting_participants" do %>
+                      <button
+                        phx-click="add_players"
+                        phx-value-id={t.id}
+                        data-confirm={"Add players #{@players_first_id}-#{@players_last_id} to tournament ##{t.id}?"}
+                        class="btn btn-sm btn-outline-primary cb-rounded ml-1"
+                      >
+                        Add players
+                      </button>
+                    <% end %>
                     <%= if t.state in ["waiting_participants", "active"] do %>
                       <button
                         phx-click="cancel"

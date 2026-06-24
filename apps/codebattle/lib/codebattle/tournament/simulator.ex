@@ -14,6 +14,14 @@ defmodule Codebattle.Tournament.Simulator do
 
   Submitted solutions are read from `Codebattle.Task.solutions["python"]`.
   Matches whose tasks have no python solution are logged and skipped.
+
+  ## Killswitch
+
+  The `:enable_simulator_bots` feature flag globally gates the bots. It is OFF by
+  default, so bots do **not** type or submit until the flag is explicitly enabled
+  (from `/feature-flags`). Disabling it again stops bots across all simulated
+  tournaments — including tasks already mid-typing — while leaving the tournaments
+  themselves untouched.
   """
 
   use GenServer
@@ -40,6 +48,12 @@ defmodule Codebattle.Tournament.Simulator do
   # Extra slack added on top of `tournament_rematch_timeout_ms` before re-scanning,
   # so the rematch game is already created/persisted when we look for it.
   @rescan_buffer_ms 300
+
+  # Global gate for the bots. OFF by default: bots only type/submit when the
+  # `:enable_simulator_bots` feature flag is enabled. Disabling it stops bots for
+  # every simulated tournament — without finishing or otherwise touching the
+  # tournaments themselves. Toggle it live from `/feature-flags`.
+  @bots_flag :enable_simulator_bots
 
   @default_settings %{
     avg_seconds: 8.0,
@@ -72,6 +86,20 @@ defmodule Codebattle.Tournament.Simulator do
   @spec retry(integer()) :: :ok | {:error, term()}
   def retry(tournament_id), do: call(tournament_id, :retry)
 
+  @doc """
+  Gracefully stop the bots WITHOUT finishing the tournament.
+
+  Cancels all pending typing timers and idles the simulator, so no further
+  typing or submitting happens. The tournament and the simulator process are
+  left alive; call `resume/1` to pick scheduling back up.
+  """
+  @spec pause(integer()) :: :ok | {:error, term()}
+  def pause(tournament_id), do: call(tournament_id, :pause)
+
+  @doc "Resume bots after `pause/1`: re-scan live games and continue scheduling."
+  @spec resume(integer()) :: :ok | {:error, term()}
+  def resume(tournament_id), do: call(tournament_id, :resume)
+
   @spec stop(integer()) :: :ok
   def stop(tournament_id) do
     # Finish the tournament gracefully (state -> "finished" or "timeout"+force);
@@ -102,6 +130,10 @@ defmodule Codebattle.Tournament.Simulator do
 
   def default_settings, do: @default_settings
 
+  @doc "Whether the global `:enable_simulator_bots` killswitch is on (bots allowed)."
+  @spec bots_globally_enabled?() :: boolean()
+  def bots_globally_enabled?, do: FunWithFlags.enabled?(@bots_flag)
+
   # GENSERVER
 
   def start_link(tournament_id) do
@@ -120,7 +152,10 @@ defmodule Codebattle.Tournament.Simulator do
       scheduled_games: MapSet.new(),
       pair_winners: %{},
       timers: %{},
-      rescan_timer: nil
+      rescan_timer: nil,
+      # monitor_ref => pid of in-flight typing tasks, so pause/stop can kill bots
+      # that are mid-typing (not just cancel not-yet-fired timers).
+      typing: %{}
     }
 
     {:ok, state}
@@ -129,6 +164,10 @@ defmodule Codebattle.Tournament.Simulator do
   @impl true
   def handle_call(:start, _from, state) do
     Logger.info("simulator(#{state.tournament_id}): start (settings=#{inspect(state.settings)})")
+    # Starting the simulator opts the tournament into simulation, even if it was
+    # created without `meta.simulator` — so bots can be started from the stream
+    # page for any tournament. `bots_active?` then sees the meta and runs.
+    ensure_simulator_meta(state)
     state = ensure_tournament_started(state)
     state = %{state | status: :running}
     state = scan_and_schedule(state)
@@ -162,6 +201,18 @@ defmodule Codebattle.Tournament.Simulator do
 
     state = scan_and_schedule(%{state | scheduled_games: MapSet.new(), pair_winners: %{}, status: :running})
 
+    {:reply, :ok, state}
+  end
+
+  def handle_call(:pause, _from, state) do
+    Logger.info("simulator(#{state.tournament_id}): pause — stopping bots, tournament left running")
+    state = cancel_all_timers(%{state | scheduled_games: MapSet.new()})
+    {:reply, :ok, %{state | status: :idle}}
+  end
+
+  def handle_call(:resume, _from, state) do
+    Logger.info("simulator(#{state.tournament_id}): resume — re-scanning live games")
+    state = scan_and_schedule(%{state | status: :running})
     {:reply, :ok, state}
   end
 
@@ -209,8 +260,16 @@ defmodule Codebattle.Tournament.Simulator do
   end
 
   def handle_info({:start_typing, game_id, user_id, lang, duration_ms}, %{status: :running} = state) do
-    Task.start(fn -> run_typing(state.tournament_id, game_id, user_id, lang, duration_ms) end)
-    {:noreply, %{state | timers: Map.delete(state.timers, game_id)}}
+    state = %{state | timers: Map.delete(state.timers, game_id)}
+
+    if bots_active?(state.tournament_id) do
+      pid = spawn(fn -> run_typing(state.tournament_id, game_id, user_id, lang, duration_ms) end)
+      ref = Process.monitor(pid)
+      {:noreply, %{state | typing: Map.put(state.typing, ref, pid)}}
+    else
+      Logger.info("simulator(#{state.tournament_id}): bots inactive — skip typing game=#{game_id}")
+      {:noreply, state}
+    end
   end
 
   def handle_info({:start_typing, _game_id, _uid, _lang, _duration_ms}, state) do
@@ -224,6 +283,11 @@ defmodule Codebattle.Tournament.Simulator do
 
   def handle_info(:rescan, state) do
     {:noreply, %{state | rescan_timer: nil}}
+  end
+
+  # A typing task finished (or was killed): drop it from the tracking map.
+  def handle_info({:DOWN, ref, :process, _pid, _reason}, state) do
+    {:noreply, %{state | typing: Map.delete(state.typing, ref)}}
   end
 
   def handle_info(_msg, state), do: {:noreply, state}
@@ -250,13 +314,19 @@ defmodule Codebattle.Tournament.Simulator do
 
   defp scan_and_schedule(state) do
     case get_tournament(state.tournament_id) do
-      %{} = tournament ->
-        tournament
-        |> Helpers.get_matches("playing")
-        |> Enum.reduce(state, fn match, acc -> maybe_schedule_match(acc, match) end)
+      %{} = tournament -> schedule_playing_matches(state, tournament)
+      _ -> state
+    end
+  end
 
-      _ ->
-        state
+  defp schedule_playing_matches(state, tournament) do
+    if bots_active?(tournament) do
+      tournament
+      |> Helpers.get_matches("playing")
+      |> Enum.reduce(state, fn match, acc -> maybe_schedule_match(acc, match) end)
+    else
+      Logger.info("simulator(#{state.tournament_id}): bots inactive — skip scheduling")
+      state
     end
   end
 
@@ -363,7 +433,19 @@ defmodule Codebattle.Tournament.Simulator do
       end
     end)
 
-    %{state | timers: %{}, rescan_timer: nil}
+    %{kill_typing(state) | timers: %{}, rescan_timer: nil}
+  end
+
+  # Kill any in-flight typing tasks so bots that are mid-typing stop immediately
+  # (and never reach their submit). Demonitor with :flush so the resulting :DOWN
+  # is dropped rather than left in the mailbox.
+  defp kill_typing(state) do
+    Enum.each(state.typing, fn {ref, pid} ->
+      Process.demonitor(ref, [:flush])
+      Process.exit(pid, :kill)
+    end)
+
+    %{state | typing: %{}}
   end
 
   # Type the solution into the editor line by line over `duration_ms`, then
@@ -421,6 +503,16 @@ defmodule Codebattle.Tournament.Simulator do
   end
 
   defp submit_check(tournament_id, game_id, user, text, lang) do
+    if bots_active?(tournament_id) do
+      do_submit_check(tournament_id, game_id, user, text, lang)
+    else
+      Logger.info(
+        "simulator(#{tournament_id}): bots inactive — skip submit game=#{game_id} player=#{user.name}(##{user.id})"
+      )
+    end
+  end
+
+  defp do_submit_check(tournament_id, game_id, user, text, lang) do
     Logger.info(
       "simulator(#{tournament_id}): submitting game=#{game_id} player=#{user.name}(##{user.id}) " <>
         "lang=#{lang} chars=#{String.length(text)}"
@@ -526,4 +618,40 @@ defmodule Codebattle.Tournament.Simulator do
 
   defp via(tournament_id), do: {:via, Registry, {Codebattle.Registry, registry_key(tournament_id)}}
   defp registry_key(tournament_id), do: "tournament_simulator::#{tournament_id}"
+
+  # Bots act only when BOTH gates are open:
+  #   * the global `:enable_simulator_bots` flag is on (OFF by default), and
+  #   * this tournament is still opted in via `meta.simulator == true`.
+  # Either one being off makes the simulator inert (no scheduling, typing, or
+  # submitting) without finishing or otherwise touching the tournament.
+  defp bots_active?(%{} = tournament), do: bots_enabled?() and meta_simulator?(tournament)
+
+  defp bots_active?(tournament_id) when is_integer(tournament_id) do
+    case get_tournament(tournament_id) do
+      %{} = tournament -> bots_active?(tournament)
+      _ -> false
+    end
+  end
+
+  defp bots_enabled?, do: bots_globally_enabled?()
+
+  defp meta_simulator?(%{meta: meta}) when is_map(meta), do: meta["simulator"] == true or meta[:simulator] == true
+  defp meta_simulator?(_), do: false
+
+  # Persist `meta.simulator = true` on the tournament if it isn't already set,
+  # so a tournament created without it can still be driven by bots.
+  defp ensure_simulator_meta(state) do
+    case get_tournament(state.tournament_id) do
+      %{meta: meta} = tournament ->
+        if !meta_simulator?(tournament) do
+          new_meta = Map.put(meta || %{}, :simulator, true)
+          Tournament.Server.update_tournament(%{tournament | meta: new_meta})
+        end
+
+      _ ->
+        :noop
+    end
+
+    state
+  end
 end

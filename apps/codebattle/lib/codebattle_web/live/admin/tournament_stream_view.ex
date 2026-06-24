@@ -43,30 +43,25 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
        widgets: @widgets,
        filter: "current",
        now: NaiveDateTime.utc_now(:second),
-       simulator_enabled: simulator_enabled?(tournament)
+       # The simulator panel is always available on the admin stream page, so bots
+       # can be started for any tournament — even one created without meta.simulator.
+       simulator_enabled: true
      )
      |> assign_matches_and_players()
      |> assign_simulator_state()}
   end
 
-  defp simulator_enabled?(%{meta: meta}) when is_map(meta) do
-    meta["simulator"] == true or meta[:simulator] == true
-  end
-
-  defp simulator_enabled?(_), do: false
-
   defp assign_simulator_state(socket) do
-    if socket.assigns.simulator_enabled do
-      sim =
-        case Simulator.get_state(socket.assigns.tournament.id) do
-          nil -> %{status: :idle, settings: Simulator.default_settings(), scheduled_count: 0}
-          other -> other
-        end
+    sim =
+      case Simulator.get_state(socket.assigns.tournament.id) do
+        nil -> %{status: :idle, settings: Simulator.default_settings(), scheduled_count: 0}
+        other -> other
+      end
 
-      assign(socket, simulator: sim)
-    else
-      assign(socket, simulator: nil)
-    end
+    assign(socket,
+      simulator: sim,
+      bots_globally_enabled: Simulator.bots_globally_enabled?()
+    )
   end
 
   @impl true
@@ -121,6 +116,8 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       case action do
         "start" -> Simulator.start(tid)
         "retry" -> Simulator.retry(tid)
+        "pause" -> Simulator.pause(tid)
+        "resume" -> Simulator.resume(tid)
         "stop" -> Simulator.stop(tid)
         "settings" -> Simulator.update_settings(tid, params)
         _ -> :ok
@@ -237,8 +234,24 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
     |> Enum.filter(&(player_id in (&1.player_ids || []) and not is_nil(&1.game_id)))
     |> Enum.map(&%{game_id: &1.game_id, state: &1.state, round: &1.round_position})
     |> Enum.filter(&game_matches_filter?(&1, current_round, filter))
-    |> Enum.sort_by(&(&1.round || 0))
+    # Sort so the newest game (highest round, then highest game_id) ends up
+    # rightmost in the list.
+    |> Enum.sort_by(&{&1.round || 0, &1.game_id})
   end
+
+  # Human-readable status shown next to each game button.
+  defp game_status_label("playing"), do: "active"
+  defp game_status_label("game_over"), do: "finished"
+  defp game_status_label("timeout"), do: "timeout"
+  defp game_status_label("canceled"), do: "canceled"
+  defp game_status_label("pending"), do: "pending"
+  defp game_status_label(other), do: to_string(other)
+
+  defp game_status_color("playing"), do: "#4cd964"
+  defp game_status_color("game_over"), do: "#64748b"
+  defp game_status_color("timeout"), do: "#f59e0b"
+  defp game_status_color("canceled"), do: "#ef4444"
+  defp game_status_color(_), do: "#475569"
 
   defp game_matches_filter?(_game, _current_round, "history"), do: true
   defp game_matches_filter?(game, _current_round, "playing"), do: game.state == "playing"
@@ -409,6 +422,13 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             </div>
           </div>
 
+          <%= unless @bots_globally_enabled do %>
+            <div class="alert alert-warning py-2 px-3 mb-3" style="font-size:13px">
+              ⚠ Bots are globally disabled. Enable the <code>enable_simulator_bots</code>
+              feature flag for bots to type and submit.
+            </div>
+          <% end %>
+
           <div class="d-flex flex-wrap mb-3" style="gap:8px">
             <button
               type="button"
@@ -417,6 +437,22 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
               disabled={@simulator.status == :running}
             >
               ▶ Start
+            </button>
+            <button
+              type="button"
+              phx-click="sim_pause"
+              class="btn btn-sm btn-outline-secondary cb-rounded"
+              disabled={@simulator.status != :running}
+            >
+              ⏸ Pause bots
+            </button>
+            <button
+              type="button"
+              phx-click="sim_resume"
+              class="btn btn-sm btn-outline-info cb-rounded"
+              disabled={@simulator.status == :running}
+            >
+              ⏵ Resume bots
             </button>
             <button
               type="button"
@@ -565,18 +601,26 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                     {player.score || 0}
                   </span>
                 </div>
-                <div class="d-flex flex-wrap justify-content-end" style="gap:6px">
+                <div class="d-flex flex-wrap justify-content-end align-items-end" style="gap:6px">
                   <%= for g <- games do %>
                     <% is_active = g.game_id == @active_game_id %>
-                    <button
-                      type="button"
-                      phx-click="set_active"
-                      phx-value-game_id={g.game_id}
-                      title={"round #{g.round} · #{g.state}"}
-                      class={"btn btn-sm cb-rounded " <> if is_active, do: "btn-success", else: "btn-outline-success"}
-                    >
-                      {if is_active, do: "✓ ", else: ""}#{g.game_id}
-                    </button>
+                    <div class="d-flex flex-column align-items-center" style="gap:3px">
+                      <button
+                        type="button"
+                        phx-click="set_active"
+                        phx-value-game_id={g.game_id}
+                        title={"round #{g.round} · #{g.state}"}
+                        class={"btn btn-sm cb-rounded " <> if is_active, do: "btn-success", else: "btn-outline-success"}
+                      >
+                        {if is_active, do: "✓ ", else: ""}#{g.game_id}
+                      </button>
+                      <span
+                        class="badge cb-rounded"
+                        style={"font-size:10px;color:#fff;background:#{game_status_color(g.state)}"}
+                      >
+                        {game_status_label(g.state)}
+                      </span>
+                    </div>
                   <% end %>
                 </div>
               </li>

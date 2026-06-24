@@ -6,8 +6,13 @@ defmodule Codebattle.Tournament.Top200 do
   alias Codebattle.Tournament.TournamentResult
   alias CodebattleWeb.TournamentAdminChannel
 
+  # Top200 жёстко завязан на «2 игры за раунд»: пэйринг плей-офф и finish_round_after_match?/1
+  # ждут по 2 матча на пару, а задачи раунда N берутся из пака по индексам round*2 / round*2+1.
+  # Поэтому стратегию выбора задач пинуем сами и игнорируем task_strategy из конфига (как и
+  # round_timeout_seconds). complete_players/1 вызывается из start/2 до загрузки task_ids и
+  # попадает в db_save!, поэтому значение переживает рестарт/восстановление турнира.
   @impl Tournament.Base
-  def complete_players(tournament), do: tournament
+  def complete_players(tournament), do: %{tournament | task_strategy: "per_round_pair"}
 
   @impl Tournament.Base
   def reset_meta(meta), do: meta
@@ -215,26 +220,40 @@ defmodule Codebattle.Tournament.Top200 do
   # игроков по сумме очков, а вылетевшие после 5-го раунда (раунд 4) плей-офф не играли,
   # поэтому их сумма = очки за 5 раундов и они стоят на 9..N. Полный пересчёт результатов
   # (reset+rebuild) не нужен — переставляем ТОЛЬКО топ-8: их места задаёт сетка финалов.
+  #
+  # upsert_results обязателен ПЕРВЫМ шагом: при завершении через finish_tournament_force
+  # последний раунд не проходит через prepare_round_finish, и строк раунда в
+  # TournamentResult может не быть. Без них assign_final_bracket_places определял бы
+  # победителей пар по tie-break (id), а не по реальным очкам. upsert_results читает
+  # результаты из таблицы games (они есть на любом пути) и идемпотентен.
   def compute_final_standings(tournament) do
     tournament
+    |> TournamentResult.upsert_results()
     |> assign_final_bracket_places()
     |> recalculate_player_wins_count()
   end
 
   # Раунд 7 — 4 параллельных финала за 1-2, 3-4, 5-6, 7-8. round_player_pairs возвращает
   # пары в порядке создания матчей (см. build_round_pairs/7 для pos=7), т.е.
-  # [за 1-2, за 3-4, за 5-6, за 7-8]. Победитель пары (по draw_index, проставленному
-  # calculate_round_results) занимает лучшее место пары, проигравший — худшее.
+  # [за 1-2, за 3-4, за 5-6, за 7-8].
+  #
+  # Победителя пары определяем по СУММЕ ОЧКОВ РАУНДА 7, а не по draw_index: при
+  # завершении турнира через finish_tournament_force последний раунд не проходит через
+  # prepare_round_finish/calculate_round_results, поэтому draw_index финалистов остаётся
+  # равным и не годится как источник правды. Очки раунда есть на любом пути завершения.
+  #
+  # Каждому игроку пары проставляем И место, И draw_index (см. put_player_final_place),
+  # чтобы «живым» (max draw_index) остался ровно чемпион независимо от пути завершения.
   defp assign_final_bracket_places(tournament) do
-    players_by_id = id_map(get_players(tournament))
+    results = TournamentResult.get_user_ranking_for_round(tournament, 7)
 
     case round_player_pairs(tournament, 7) do
       [final_12, final_34, final_56, final_78] ->
         Enum.each([{final_12, 1, 2}, {final_34, 3, 4}, {final_56, 5, 6}, {final_78, 7, 8}], fn {pair, winner_place,
                                                                                                 loser_place} ->
-          {winner_id, loser_id} = winner_loser_by_draw_index(pair, players_by_id)
-          put_player_place(tournament, winner_id, winner_place)
-          put_player_place(tournament, loser_id, loser_place)
+          {winner_id, loser_id} = winner_loser(pair, results)
+          put_player_final_place(tournament, winner_id, winner_place)
+          put_player_final_place(tournament, loser_id, loser_place)
         end)
 
       _ ->
@@ -246,10 +265,13 @@ defmodule Codebattle.Tournament.Top200 do
     tournament
   end
 
-  defp put_player_place(tournament, player_id, place) do
+  # Финальное место в плей-офф задаёт И place, И draw_index = 9 - place. Так 1-е место
+  # получает уникальный максимум draw_index (8), и подсветка «живых» (draw_index == max)
+  # оставляет ровно чемпиона. Места 2..8 идут по убыванию, как и положено сетке.
+  defp put_player_final_place(tournament, player_id, place) do
     case Tournament.Players.get_player(tournament, player_id) do
       nil -> :noop
-      player -> Tournament.Players.put_player(tournament, %{player | place: place})
+      player -> Tournament.Players.put_player(tournament, %{player | place: place, draw_index: 9 - place})
     end
   end
 
