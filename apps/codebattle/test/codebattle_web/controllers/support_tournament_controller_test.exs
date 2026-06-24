@@ -65,6 +65,18 @@ defmodule CodebattleWeb.SupportTournamentControllerTest do
       assert html =~ "yes"
       assert html =~ "Group Main"
       assert html =~ "support-token-123456"
+
+      generated_token = Codebattle.User.get!(user.id).auth_token
+
+      assert is_binary(generated_token) and generated_token != ""
+
+      expected_link =
+        CodebattleWeb.Endpoint
+        |> CodebattleWeb.Router.Helpers.auth_url(:token, t: generated_token)
+        |> Plug.HTML.html_escape()
+
+      assert html =~ "auth link"
+      assert html =~ expected_link
     end
   end
 

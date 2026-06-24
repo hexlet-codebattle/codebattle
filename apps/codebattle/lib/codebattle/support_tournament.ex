@@ -54,13 +54,26 @@ defmodule Codebattle.SupportTournament do
 
       {:ok,
        %{
-         user: user,
+         user: ensure_auth_token(user),
          tournaments: find_tournaments(user_id, config.tournament_ids),
          group_tournaments: find_group_tournaments(user_id, config.group_tournament_ids)
        }}
     else
       nil -> {:error, "User not found"}
       {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp ensure_auth_token(%User{auth_token: token} = user) when is_binary(token) do
+    if String.trim(token) == "", do: regenerate_auth_token(user), else: user
+  end
+
+  defp ensure_auth_token(%User{} = user), do: regenerate_auth_token(user)
+
+  defp regenerate_auth_token(%User{} = user) do
+    case User.reset_auth_token(user.id) do
+      {:ok, updated_user} -> updated_user
+      {:error, _changeset} -> user
     end
   end
 
