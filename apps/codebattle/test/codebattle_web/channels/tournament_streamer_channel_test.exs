@@ -137,13 +137,25 @@ defmodule CodebattleWeb.TournamentStreamerChannelTest do
         payload: %{tournament: %{id: tournament.id, name: "x", state: "active", type: "swiss"}}
       })
 
+      refute_push("tournament:updated", _)
+    end
+
+    test "pushes round_started with round_id on tournament:round_created", %{socket: socket, tournament: tournament} do
       send(socket.channel_pid, %{
         event: "tournament:round_created",
-        payload: %{tournament: %{id: tournament.id, current_round_position: 1}}
+        payload: %{tournament: %{id: tournament.id, current_round_position: 0}}
       })
 
-      refute_push("tournament:updated", _)
-      refute_push("tournament:round_created", _)
+      assert_push("tournament:round_started", %{round_id: 0})
+    end
+
+    test "pushes round_finished with round_id on tournament:round_finished", %{socket: socket, tournament: tournament} do
+      send(socket.channel_pid, %{
+        event: "tournament:round_finished",
+        payload: %{tournament: %{id: tournament.id, current_round_position: 3}}
+      })
+
+      assert_push("tournament:round_finished", %{round_id: 3})
     end
 
     test "pushes tournament:game:finished on game:tournament:finished", %{socket: socket} do

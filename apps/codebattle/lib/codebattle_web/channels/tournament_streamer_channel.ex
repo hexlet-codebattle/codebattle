@@ -14,6 +14,7 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
          tournament_id when not is_nil(tournament_id) <- socket.assigns[:tournament_id],
          tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("game:tournament:#{tournament.id}")
 
       active_game_id =
@@ -106,14 +107,19 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
     {:noreply, socket}
   end
 
+  # Round started/finished — push only the round id (0, 1, 2, ...).
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "tournament:round_started", %{round_id: payload.tournament.current_round_position})
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
+    push(socket, "tournament:round_finished", %{round_id: payload.tournament.current_round_position})
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: event}, socket)
-      when event in [
-             "tournament:updated",
-             "tournament:round_created",
-             "tournament:round_finished",
-             "tournament:finished",
-             "tournament:restarted"
-           ] do
+      when event in ["tournament:updated", "tournament:finished", "tournament:restarted"] do
     {:noreply, socket}
   end
 
