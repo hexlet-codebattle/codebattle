@@ -41,13 +41,19 @@ defmodule CodebattleWeb.TournamentStreamChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "stream:round_started", %{round_id: payload.tournament.current_round_position})
+    maybe_push_active_game(socket)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
+    push(socket, "stream:round_finished", %{round_id: payload.tournament.current_round_position})
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: event}, socket)
-      when event in [
-             "tournament:round_created",
-             "tournament:updated",
-             "tournament:match:upserted",
-             "tournament:match:created"
-           ] do
+      when event in ["tournament:updated", "tournament:match:upserted", "tournament:match:created"] do
     maybe_push_active_game(socket)
     {:noreply, socket}
   end

@@ -127,6 +127,24 @@ defmodule CodebattleWeb.TournamentStreamChannelTest do
       assert_push("stream:active_game_selected", %{id: 777})
     end
 
+    test "pushes round_started with round_id on tournament:round_created", %{socket: socket} do
+      send(socket.channel_pid, %{
+        event: "tournament:round_created",
+        payload: %{tournament: %{current_round_position: 0}}
+      })
+
+      assert_push("stream:round_started", %{round_id: 0})
+    end
+
+    test "pushes round_finished with round_id on tournament:round_finished", %{socket: socket} do
+      send(socket.channel_pid, %{
+        event: "tournament:round_finished",
+        payload: %{tournament: %{current_round_position: 3}}
+      })
+
+      assert_push("stream:round_finished", %{round_id: 3})
+    end
+
     test "ignores unknown events", %{socket: socket} do
       send(socket.channel_pid, %{event: "tournament:unknown"})
 
