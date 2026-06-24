@@ -14,7 +14,7 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_first(tournament, num)
   end
 
-  @spec get_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
+  @spec get_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t() | nil) ::
           map() | nil
   def get_by_player(%{ranking_table: nil}, _player), do: nil
 
