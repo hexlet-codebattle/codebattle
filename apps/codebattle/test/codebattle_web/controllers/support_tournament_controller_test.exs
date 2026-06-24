@@ -53,11 +53,7 @@ defmodule CodebattleWeb.SupportTournamentControllerTest do
           "group_tournament_ids" => "#{group_tournament.id}"
         })
 
-      conn =
-        conn
-        |> get("/support-tournament?auth_token=support-token")
-        |> recycle()
-        |> post("/support-tournament", %{user_id: "#{user.id}"})
+      conn = post(conn, "/support-tournament", %{user_id: "#{user.id}", auth_token: "support-token"})
 
       html = html_response(conn, 200)
 

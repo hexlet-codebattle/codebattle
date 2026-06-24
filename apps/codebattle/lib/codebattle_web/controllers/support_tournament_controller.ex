@@ -2,47 +2,37 @@ defmodule CodebattleWeb.SupportTournamentController do
   use CodebattleWeb, :controller
 
   alias Codebattle.SupportTournament
+  alias CodebattleWeb.SupportTournamentView
 
-  plug(:put_view, CodebattleWeb.SupportTournamentView)
   plug(:ensure_feature_enabled)
   plug(:authorize)
 
   def index(conn, params) do
-    render(conn, "index.html",
-      result: nil,
-      user_id: params["user_id"] || "",
-      text: config_text(),
-      error: nil
-    )
+    render_page(conn, result: nil, user_id: params["user_id"] || "", error: nil)
   end
 
   def search(conn, %{"user_id" => user_id}) do
     case SupportTournament.lookup_user(user_id) do
-      {:ok, result} ->
-        render(conn, "index.html",
-          result: result,
-          user_id: user_id,
-          text: config_text(),
-          error: nil
-        )
-
-      {:error, reason} ->
-        render(conn, "index.html",
-          result: nil,
-          user_id: user_id,
-          text: config_text(),
-          error: reason
-        )
+      {:ok, result} -> render_page(conn, result: result, user_id: user_id, error: nil)
+      {:error, reason} -> render_page(conn, result: nil, user_id: user_id, error: reason)
     end
   end
 
   def search(conn, _params) do
-    render(conn, "index.html",
-      result: nil,
-      user_id: "",
+    render_page(conn, result: nil, user_id: "", error: "Enter a user id")
+  end
+
+  defp render_page(conn, opts) do
+    assigns = %{
+      result: opts[:result],
+      user_id: opts[:user_id],
+      error: opts[:error],
       text: config_text(),
-      error: "Enter a user id"
-    )
+      auth_token: conn.assigns.auth_token,
+      csrf_token: Plug.CSRFProtection.get_csrf_token()
+    }
+
+    html(conn, SupportTournamentView.page(assigns))
   end
 
   defp config_text, do: Map.get(SupportTournament.get_config(), :text, "")
@@ -64,7 +54,7 @@ defmodule CodebattleWeb.SupportTournamentController do
     provided_token = token_from_conn(conn)
 
     if valid_token?(provided_token, expected_token) do
-      put_session(conn, :support_tournament_auth_token, provided_token)
+      assign(conn, :auth_token, provided_token)
     else
       conn
       |> put_status(:not_found)
@@ -76,8 +66,7 @@ defmodule CodebattleWeb.SupportTournamentController do
 
   defp token_from_conn(conn) do
     conn.params["auth_token"] ||
-      List.first(get_req_header(conn, "x-auth-key")) ||
-      get_session(conn, :support_tournament_auth_token)
+      List.first(get_req_header(conn, "x-auth-key"))
   end
 
   defp valid_token?(token, expected_token)
