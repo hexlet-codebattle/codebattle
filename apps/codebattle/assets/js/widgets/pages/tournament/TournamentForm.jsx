@@ -12,6 +12,7 @@ const TASK_PROVIDERS = [
 const TASK_STRATEGIES = [
   { value: "random", label: "Random" },
   { value: "sequential", label: "Sequential" },
+  { value: "per_round_pair", label: "Per round pair (2 tasks/round)" },
 ];
 
 const ACCESS_TYPES = [
