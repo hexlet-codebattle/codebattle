@@ -86,6 +86,8 @@ defmodule CodebattleWeb.SupportTournamentView do
   .stat { min-width: 0; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; background: #151821; padding: 14px; }
   .stat-label { margin-bottom: 6px; color: #8f98a8; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
   .stat-value { overflow-wrap: anywhere; color: #fff; font-size: 1rem; font-weight: 700; }
+  .auth-link { margin-top: 12px; }
+  .auth-link .token { margin-top: 8px; }
 
   .table-wrap { overflow-x: auto; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; }
   table { width: 100%; margin: 0; border-collapse: collapse; color: #eef2f7; }
@@ -189,8 +191,24 @@ defmodule CodebattleWeb.SupportTournamentView do
         #{stat("clan", user.clan)}
         #{stat("clan_id", user.clan_id)}
       </div>
+      #{auth_link_field(user.auth_token)}
     </section>
     """
+  end
+
+  defp auth_link_field(token) when token in [nil, ""], do: ""
+
+  defp auth_link_field(token) do
+    """
+    <div class="stat auth-link">
+      <div class="stat-label">auth link</div>
+      #{copy_field(auth_link(token))}
+    </div>
+    """
+  end
+
+  defp auth_link(token) do
+    CodebattleWeb.Router.Helpers.auth_url(CodebattleWeb.Endpoint, :token, t: String.trim(token))
   end
 
   defp stat(label, value) do
@@ -242,9 +260,10 @@ defmodule CodebattleWeb.SupportTournamentView do
   defp present_pill(_present), do: ~s(<span class="pill pill-muted">no</span>)
 
   defp token_cell(nil), do: ~s(<span class="pill pill-muted">not found</span>)
+  defp token_cell(token), do: copy_field(token)
 
-  defp token_cell(token) do
-    safe = esc(token)
+  defp copy_field(value) do
+    safe = esc(value)
 
     """
     <div class="token">
