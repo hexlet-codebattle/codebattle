@@ -28,27 +28,34 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
-      # Drive the "round ends in" countdown.
-      Process.send_after(self(), :tick, 1000)
     end
 
-    {:ok,
-     socket
-     |> assign(
-       layout: {CodebattleWeb.LayoutView, :admin},
-       tournament: tournament,
-       current_user: current_user,
-       active_game_id: TournamentAdminChannel.get_active_game(tournament.id),
-       autoselect_delay_ms: TournamentAdminChannel.get_autoselect_delay(tournament.id),
-       widgets: @widgets,
-       filter: "current",
-       now: NaiveDateTime.utc_now(:second),
-       # The simulator panel is always available on the admin stream page, so bots
-       # can be started for any tournament — even one created without meta.simulator.
-       simulator_enabled: true
-     )
-     |> assign_matches_and_players()
-     |> assign_simulator_state()}
+    socket =
+      socket
+      |> assign(
+        layout: {CodebattleWeb.LayoutView, :admin},
+        tournament: tournament,
+        current_user: current_user,
+        active_game_id: TournamentAdminChannel.get_active_game(tournament.id),
+        autoselect_delay_ms: TournamentAdminChannel.get_autoselect_delay(tournament.id),
+        widgets: @widgets,
+        filter: "current",
+        now: NaiveDateTime.utc_now(:second),
+        # Whether the per-second countdown tick loop is currently armed.
+        ticking: false,
+        # The simulator panel is always available on the admin stream page, so bots
+        # can be started for any tournament — even one created without meta.simulator.
+        simulator_enabled: true
+      )
+      |> assign_matches_and_players()
+      |> assign_simulator_state()
+
+    # Only arm the "round ends in" countdown once connected, and only while a
+    # round is actually counting down (see ensure_ticking/1). A finished/waiting
+    # tournament shows a static label, so it must not push a diff every second.
+    socket = if connected?(socket), do: ensure_ticking(socket), else: socket
+
+    {:ok, socket}
   end
 
   defp assign_simulator_state(socket) do
@@ -142,18 +149,51 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
              "tournament:updated",
              "tournament:finished"
            ] do
-    {:noreply, socket |> assign_matches_and_players() |> assign_simulator_state()}
+    {:noreply,
+     socket
+     |> assign_matches_and_players()
+     |> assign_simulator_state()
+     |> ensure_ticking()}
   end
 
   def handle_info(:tick, socket) do
-    Process.send_after(self(), :tick, 1000)
-    {:noreply, assign(socket, now: NaiveDateTime.utc_now(:second))}
+    socket = assign(socket, now: NaiveDateTime.utc_now(:second))
+
+    # Keep the loop alive only while there is a moving countdown to refresh.
+    # Otherwise stop, so a finished/waiting tournament no longer pushes a diff
+    # to the client every second; a new round re-arms it via ensure_ticking/1.
+    socket =
+      if countdown_active?(socket.assigns.tournament) do
+        Process.send_after(self(), :tick, 1000)
+        socket
+      else
+        assign(socket, ticking: false)
+      end
+
+    {:noreply, socket}
   end
 
   def handle_info(msg, socket) do
     Logger.debug("Stream admin LV unexpected: #{inspect(msg)}")
     {:noreply, socket}
   end
+
+  # Arm the countdown tick loop if it isn't already running and the tournament is
+  # in a state that needs a per-second countdown. Idempotent: safe to call from
+  # mount and from any handler that may have changed the tournament state.
+  defp ensure_ticking(socket) do
+    if not socket.assigns.ticking and countdown_active?(socket.assigns.tournament) do
+      Process.send_after(self(), :tick, 1000)
+      assign(socket, ticking: true)
+    else
+      socket
+    end
+  end
+
+  # Only an active round (including its break) has a moving "ends in / next round
+  # in" countdown. Finished/waiting tournaments show a static label.
+  defp countdown_active?(%{state: "active"}), do: true
+  defp countdown_active?(_), do: false
 
   defp assign_matches_and_players(socket) do
     tournament =
@@ -519,7 +559,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         </div>
       <% end %>
 
-      <details class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-2 mb-3">
+      <details
+        id="obs-stream-urls"
+        phx-update="ignore"
+        class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-2 mb-3"
+      >
         <summary class="text-white" style="cursor:pointer;font-size:14px;font-weight:600">
           OBS / stream URLs
           <span class="cb-text ml-1" style="font-size:12px;font-weight:400">({length(@widgets)})</span>

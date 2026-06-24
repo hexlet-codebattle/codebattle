@@ -74,7 +74,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
     players = safe_get_players(tournament)
     user_history = safe_get_users_history(tournament, players)
     active_ids = active_player_ids(tournament, players)
-    win_probs = compute_win_probs(user_history)
+    win_probs = compute_win_probs(tournament, user_history, active_ids)
 
     %{
       tournament_id: tournament.id,
@@ -171,28 +171,51 @@ defmodule CodebattleWeb.Tournament.StreamController do
     _ -> %{}
   end
 
-  # Win probability = each top-8 player's share of the top-8 total history score.
-  # Score for each player is summed from their full history. Players outside the
-  # top 8 get no win_prob.
-  defp compute_win_probs(user_history) do
-    totals =
-      Map.new(user_history, fn {user_id, rounds} ->
-        {user_id, Enum.sum(Enum.map(rounds, &(&1.score || 0)))}
-      end)
-
-    top_8 =
-      totals
-      |> Enum.sort_by(fn {_id, score} -> -score end)
-      |> Enum.take(8)
-
-    top_8_total = top_8 |> Enum.map(fn {_id, s} -> s end) |> Enum.sum()
-
-    if top_8_total > 0 do
-      Map.new(top_8, fn {id, score} -> {id, round(score * 100.0 / top_8_total)} end)
+  # Win probability for the players still contending for 1st place: each remaining
+  # main-net player's share of that pool's total history score (summed from their
+  # full history).
+  #
+  # The pool is the bracket "active" set (same funnel as the `active` flag), which
+  # narrows by draw_index as the playoff progresses:
+  #   * Swiss done / QF in progress → the top-8 entering the quarterfinals
+  #   * after QF → 4 main-net survivors, after SF → 2 finalists, then the champion
+  #
+  # Only shown in the playoff phase (top200, >=5 completed rounds); blank during the
+  # Swiss stage and for non-bracket tournaments. Players outside the pool get no
+  # win_prob.
+  defp compute_win_probs(tournament, user_history, active_ids) do
+    if win_prob_phase?(tournament) do
+      user_history
+      |> active_history_totals(active_ids)
+      |> normalize_win_probs()
     else
       %{}
     end
   end
+
+  defp active_history_totals(user_history, active_ids) do
+    user_history
+    |> Enum.filter(fn {user_id, _rounds} -> MapSet.member?(active_ids, user_id) end)
+    |> Map.new(fn {user_id, rounds} ->
+      {user_id, Enum.sum(Enum.map(rounds, &(&1.score || 0)))}
+    end)
+  end
+
+  defp normalize_win_probs(totals) do
+    total = totals |> Map.values() |> Enum.sum()
+
+    if total > 0 do
+      Map.new(totals, fn {id, score} -> {id, round(score * 100.0 / total)} end)
+    else
+      %{}
+    end
+  end
+
+  # Win probabilities are a playoff-bracket concept: only meaningful once the Swiss
+  # stage is over and the top-8 bracket is set (top200, >=5 completed rounds). The
+  # active set is driven by draw_index from the quarterfinals onward.
+  defp win_prob_phase?(%{type: "top200"} = tournament), do: completed_rounds(tournament) >= 5
+  defp win_prob_phase?(_tournament), do: false
 
   defp format_clans(clans) do
     Map.new(clans, fn {id, clan} ->

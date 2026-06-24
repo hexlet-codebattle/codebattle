@@ -51,14 +51,14 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     end)
   end
 
-  # Get the auto-select delay (ms) for a tournament. Defaults to 0 (instant).
+  # Get the auto-select delay (ms) for a tournament. Defaults to 5500 (5.5s).
   def get_autoselect_delay(tournament_id) do
     if Process.whereis(__MODULE__.GamesAgent) == nil do
       start_games_agent()
     end
 
     Agent.get(__MODULE__.GamesAgent, fn games_map ->
-      Map.get(games_map, {:autoselect_delay, tournament_id}, 0)
+      Map.get(games_map, {:autoselect_delay, tournament_id}, 5500)
     end)
   end
 

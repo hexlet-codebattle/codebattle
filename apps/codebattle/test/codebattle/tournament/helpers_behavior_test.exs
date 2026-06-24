@@ -186,6 +186,8 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       tournament =
         build_ets_tournament(%{
           id: System.unique_integer([:positive]),
+          # get_max_draw_index/«active»/top-8/win_prob — это статистика сетки top200.
+          type: "top200",
           state: "active",
           current_round_position: 3,
           use_clan: true,

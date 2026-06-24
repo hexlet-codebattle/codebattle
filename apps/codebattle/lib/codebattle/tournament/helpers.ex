@@ -365,7 +365,7 @@ defmodule Codebattle.Tournament.Helpers do
   def get_player_ranking_stats(tournament) do
     players = get_players(tournament)
 
-    max_draw_index = get_max_draw_index(players)
+    max_draw_index = get_max_draw_index(tournament)
 
     top_8_ids =
       players
@@ -421,10 +421,19 @@ defmodule Codebattle.Tournament.Helpers do
     }
   end
 
-  def get_max_draw_index(players) do
-    case players do
-      [%{max_draw_index: i} | _] -> i
-      [] -> 0
-    end
+  # «Живой» максимум draw_index — индикатор глубочайшей волны победителей сетки. Имеет
+  # смысл ТОЛЬКО для top200: там draw_index бампается за каждый плей-офф раунд. Для
+  # остальных типов draw_index не используется как маркер сетки, поэтому возвращаем 0
+  # (никто не «в сетке») — это сохраняет прежнее поведение endpoint'а для не-top200.
+  #
+  # Раньше читали хранимое поле player.max_draw_index, но оно нигде не обновляется
+  # (всегда 0). Теперь для top200 считаем максимум по факту — как stream_controller.
+  def get_max_draw_index(%{type: "top200"} = tournament) do
+    tournament
+    |> get_players()
+    |> Enum.map(&(&1.draw_index || 0))
+    |> Enum.max(fn -> 0 end)
   end
+
+  def get_max_draw_index(_tournament), do: 0
 end

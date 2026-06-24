@@ -221,14 +221,11 @@ defmodule Codebattle.Tournament.Top200 do
   # поэтому их сумма = очки за 5 раундов и они стоят на 9..N. Полный пересчёт результатов
   # (reset+rebuild) не нужен — переставляем ТОЛЬКО топ-8: их места задаёт сетка финалов.
   #
-  # upsert_results обязателен ПЕРВЫМ шагом: при завершении через finish_tournament_force
-  # последний раунд не проходит через prepare_round_finish, и строк раунда в
-  # TournamentResult может не быть. Без них assign_final_bracket_places определял бы
-  # победителей пар по tie-break (id), а не по реальным очкам. upsert_results читает
-  # результаты из таблицы games (они есть на любом пути) и идемпотентен.
+  # Результаты раунда 7 здесь уже в TournamentResult: на любом пути завершения их пишет
+  # finish_tournament (base) через upsert_results перед вызовом compute_final_standings.
+  # Поэтому assign_final_bracket_places определяет победителей пар по реальным очкам.
   def compute_final_standings(tournament) do
     tournament
-    |> TournamentResult.upsert_results()
     |> assign_final_bracket_places()
     |> recalculate_player_wins_count()
   end

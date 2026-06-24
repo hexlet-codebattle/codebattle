@@ -294,6 +294,43 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
     end
   end
 
+  describe "build_json_state/1 — win_prob (top200 play-off, driven by draw_index)" do
+    test "after QF (completed 6): win_prob = each main-net survivor's share of the active pool" do
+      # Winners 1,3,5,7 carry draw_index 2 → they are the active main net; 2,4,6,8 (draw_index 1)
+      # are eliminated. Pool history scores 40/30/20/10 sum to 100 → clean percentage shares.
+      players = playoff_players([{1, 1, 2}, {2, 5, 1}, {3, 2, 2}, {4, 6, 1}, {5, 3, 2}, {6, 7, 1}, {7, 4, 2}, {8, 8, 1}])
+      tournament = top200(players, %{current_round_position: 5, break_state: "on"})
+
+      seed_game_result(tournament.id, 1, 5, {1, 40}, {2, 10})
+      seed_game_result(tournament.id, 2, 5, {3, 30}, {4, 10})
+      seed_game_result(tournament.id, 3, 5, {5, 20}, {6, 10})
+      seed_game_result(tournament.id, 4, 5, {7, 10}, {8, 10})
+
+      state = StreamController.build_json_state(tournament)
+
+      assert win_prob_by_id(state) == %{
+               "1" => "40",
+               "3" => "30",
+               "5" => "20",
+               "7" => "10",
+               "2" => "",
+               "4" => "",
+               "6" => "",
+               "8" => ""
+             }
+    end
+
+    test "Swiss phase (completed < 5): win_prob is blank for everyone, even with history" do
+      players = playoff_players([{1, 1, 1}, {2, 2, 1}])
+      tournament = top200(players, %{current_round_position: 2})
+      seed_game_result(tournament.id, 1, 2, {1, 50}, {2, 10})
+
+      state = StreamController.build_json_state(tournament)
+
+      assert Enum.all?(state.players, &(&1.win_prob == ""))
+    end
+  end
+
   defp top200(players, attrs) do
     base = %{
       id: System.unique_integer([:positive]),
@@ -318,6 +355,30 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
        struct(Tournament.Player, %{id: id, name: "p#{id}", place: place, draw_index: draw_index, score: 1000 - place})}
     end)
   end
+
+  # Insert the two per-game TournamentResult rows get_users_history's self-join needs
+  # (one per player, same game_id, distinct user_ids).
+  defp seed_game_result(tournament_id, game_id, round, {user_a, score_a}, {user_b, score_b}) do
+    Codebattle.Repo.insert_all(Tournament.TournamentResult, [
+      result_row(tournament_id, game_id, round, user_a, score_a),
+      result_row(tournament_id, game_id, round, user_b, score_b)
+    ])
+  end
+
+  defp result_row(tournament_id, game_id, round, user_id, score) do
+    %{
+      tournament_id: tournament_id,
+      game_id: game_id,
+      user_id: user_id,
+      user_name: "p#{user_id}",
+      task_id: game_id * 100 + user_id,
+      score: score,
+      round_position: round,
+      result_percent: Decimal.new(100)
+    }
+  end
+
+  defp win_prob_by_id(state), do: Map.new(state.players, fn p -> {p.id, p.win_prob} end)
 
   defp active_by_id(state), do: Map.new(state.players, fn p -> {p.id, p.active} end)
 

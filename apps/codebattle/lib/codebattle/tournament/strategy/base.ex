@@ -879,6 +879,12 @@ defmodule Codebattle.Tournament.Base do
         if get_matches(tournament, "playing") == [] do
           tournament
           |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
+          # Гарантируем, что результаты последнего раунда записаны ДО подсчёта финальных
+          # мест. На force-пути (:finish_tournament_force) раунд не проходит через
+          # prepare_round_finish, поэтому без этого upsert строк раунда в TournamentResult
+          # может не быть (top200 определяет победителей финалов по очкам раунда).
+          # Идемпотентно: на штатном пути просто перезапишет уже посчитанные строки.
+          |> Tournament.TournamentResult.upsert_results()
           |> compute_final_standings()
           |> set_stats()
           |> maybe_save_event_results()

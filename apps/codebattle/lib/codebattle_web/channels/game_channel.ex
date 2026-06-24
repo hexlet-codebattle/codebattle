@@ -72,8 +72,7 @@ defmodule CodebattleWeb.GameChannel do
         %{entries: ranking}
       end)
 
-    in_main_draw =
-      match?(%{draw_index: draw_index, max_draw_index: draw_index}, current_player)
+    in_main_draw = player_in_main_draw?(tournament, current_player)
 
     game_params =
       game
@@ -132,6 +131,15 @@ defmodule CodebattleWeb.GameChannel do
     else
       {nil, nil}
     end
+  end
+
+  # Игрок в главной сетке плей-офф = его draw_index равен максимальному среди всех
+  # игроков (самая глубокая «волна» победителей). get_max_draw_index считает максимум
+  # вживую только для top200 (для остальных типов вернёт 0). Зритель (nil) — не в сетке.
+  defp player_in_main_draw?(_tournament, nil), do: false
+
+  defp player_in_main_draw?(tournament, %{draw_index: draw_index}) do
+    (draw_index || 0) == Tournament.Helpers.get_max_draw_index(tournament)
   end
 
   def terminate(_reason, socket) do

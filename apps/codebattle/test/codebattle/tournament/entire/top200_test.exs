@@ -253,7 +253,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
   end
 
   describe "compute_final_standings/1 — финальные места" do
-    test "топ-8 расставляются по сетке финалов, места 9+ сохраняются по сумме 5 раундов" do
+    test "топ-8 по результату финалов (очки раунда 7): place + draw_index, ровно 1 «живой»" do
       tournament = insert_top200_tournament()
       players_table = Tournament.Players.create_table(tournament.id)
 
@@ -268,17 +268,30 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
       tournament = %{tournament | players_table: players_table, current_round_position: 7, matches: finals}
 
-      # Топ-8: {draw_index, score}. Победитель пары — больший draw_index (его поднял
-      # calculate_round_results). Очки нарочно выше у проигравших — доказываем, что место
-      # топ-8 определяет сетка, а не сумма очков.
+      # Победитель каждой пары — по СУММЕ ОЧКОВ РАУНДА 7. Победители: 2, 4, 5, 8.
+      record_scores(tournament.id, 7, [
+        {1, 10},
+        {2, 100},
+        {3, 10},
+        {4, 100},
+        {5, 100},
+        {6, 10},
+        {7, 10},
+        {8, 100}
+      ])
+
+      # Топ-8: {начальный draw_index, накопленный score}. Оба НАРОЧНО инвертированы — у
+      # проигравших финал выше и draw_index (имитация force-финиша, где бамп не успел
+      # развести финалистов), и накопленная сумма. Доказываем: место и draw_index задаёт
+      # результат финала (очки раунда 7), а не прежний draw_index и не сумма очков.
       top8 = %{
-        1 => {3, 999},
-        2 => {4, 10},
-        3 => {1, 999},
-        4 => {2, 10},
-        5 => {2, 10},
-        6 => {1, 999},
-        7 => {0, 999},
+        1 => {9, 999},
+        2 => {1, 10},
+        3 => {9, 999},
+        4 => {1, 10},
+        5 => {1, 10},
+        6 => {9, 999},
+        7 => {9, 999},
         8 => {1, 10}
       }
 
@@ -301,7 +314,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
       place_of = fn id -> Tournament.Players.get_player(tournament, id).place end
 
-      # Места топ-8 по сетке финалов (победитель пары — лучшее место).
+      # Места топ-8 по результату финалов (победитель пары — лучшее место).
       assert place_of.(2) == 1
       assert place_of.(1) == 2
       assert place_of.(4) == 3
@@ -310,6 +323,23 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       assert place_of.(6) == 6
       assert place_of.(8) == 7
       assert place_of.(7) == 8
+
+      # draw_index = 9 - place: у чемпиона уникальный максимум (8), дальше по убыванию.
+      assert draw_index_by_id(tournament, [1, 2, 3, 4, 5, 6, 7, 8]) == %{
+               2 => 8,
+               1 => 7,
+               4 => 6,
+               3 => 5,
+               5 => 4,
+               6 => 3,
+               8 => 2,
+               7 => 1
+             }
+
+      # Игроки вне сетки (места 9+) — дефолтный draw_index (1), заведомо ниже максимума (8).
+      # Значит «живой» (draw_index == max) ровно один — чемпион (id 2). Это и есть починка
+      # «2 active после финала».
+      assert draw_index_by_id(tournament, [9, 10, 11]) == %{9 => 1, 10 => 1, 11 => 1}
 
       # Места 9+ без изменений.
       assert place_of.(9) == 9
