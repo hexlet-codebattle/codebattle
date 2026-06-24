@@ -274,12 +274,12 @@ defmodule Codebattle.Tournament.Top200 do
   # (не-боты, не-читеры), чтобы места шли подряд без дыр; читеров доставляет upsert.
   defp assign_eliminated_places(tournament) do
     bracket_ids = final_bracket_ids(tournament)
-    cheater_ids = MapSet.new(tournament.cheater_ids || [])
-    start_place = MapSet.size(bracket_ids) + 1
+    excluded = MapSet.new(bracket_ids ++ (tournament.cheater_ids || []))
+    start_place = length(bracket_ids) + 1
 
     tournament
     |> get_players()
-    |> Enum.reject(&(&1.is_bot || MapSet.member?(bracket_ids, &1.id) || MapSet.member?(cheater_ids, &1.id)))
+    |> Enum.reject(&(&1.is_bot || MapSet.member?(excluded, &1.id)))
     |> Enum.sort_by(fn p -> {-score_value(p.score), p.total_duration_sec || 0, p.id} end)
     |> Enum.with_index(start_place)
     |> Enum.each(fn {player, place} ->
@@ -290,12 +290,12 @@ defmodule Codebattle.Tournament.Top200 do
   end
 
   # id восьми финалистов плей-офф (пары раунда 7) — те, кому assign_final_bracket_places
-  # уже выдал места 1..8. Если раунд 7 не доигран, пар нет → пустое множество, и тогда
+  # уже выдал места 1..8. Если раунд 7 не доигран, пар нет → пустой список, и тогда
   # assign_eliminated_places честно перенумеровывает всё поле с 1.
   defp final_bracket_ids(tournament) do
     case round_player_pairs(tournament, 7) do
-      [_, _, _, _] = pairs -> pairs |> List.flatten() |> MapSet.new()
-      _ -> MapSet.new()
+      [_, _, _, _] = pairs -> List.flatten(pairs)
+      _ -> []
     end
   end
 

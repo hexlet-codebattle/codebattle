@@ -258,6 +258,33 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
     "#{player.name}(#{player.id - 100_000})"
   end
 
+  # «За какое место играет участник» в плей-офф top200 (позиции 5/6/7 = раунды 6/7/8).
+  # Возвращает map player_id => подпись для ТЕКУЩЕГО раунда, чтобы в списке игроков были
+  # видны финалисты. Для марафона (поз. 0..4) и других типов турниров — пусто.
+  defp player_slot_labels(%{type: "top200", current_round_position: pos}, matches) when pos in 5..7 do
+    labels = round_slot_labels(pos)
+
+    matches
+    |> Enum.filter(&(&1.round_position == pos))
+    |> Enum.sort_by(& &1.id)
+    # per_round_pair: у пары 2 матча за раунд — берём по одному на пару в порядке создания.
+    |> Enum.uniq_by(&Enum.sort(&1.player_ids))
+    |> Enum.zip(labels)
+    |> Enum.flat_map(fn {match, label} -> Enum.map(match.player_ids || [], &{&1, label}) end)
+    |> Map.new()
+  end
+
+  defp player_slot_labels(_tournament, _matches), do: %{}
+
+  # Подписи пар в порядке создания матчей раунда (см. Top200.build_round_pairs):
+  #   поз. 5 (QF, «раунд 6»):     4 пары #1v#8/#4v#5/#3v#6/#2v#7 — за выход в топ-4;
+  #   поз. 6 (SF, «раунд 7»):     2 пары основной сетки за 1-4, 2 утешительной за 5-8;
+  #   поз. 7 (финалы, «раунд 8»): за 1-2 / 3-4 / 5-6 / 7-8.
+  defp round_slot_labels(5), do: List.duplicate("за выход в топ-4", 4)
+  defp round_slot_labels(6), do: ["за 1-4", "за 1-4", "за 5-8", "за 5-8"]
+  defp round_slot_labels(7), do: ["за 1-2", "за 3-4", "за 5-6", "за 7-8"]
+  defp round_slot_labels(_pos), do: []
+
   defp parse_delay_ms(raw) do
     case Float.parse(to_string(raw)) do
       {sec, _} when sec >= 0 -> trunc(sec * 1000)
@@ -376,7 +403,8 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       assign(assigns,
         players_with_games: players_with_games,
         playing_count: playing_count,
-        autoselect_delay_sec: autoselect_delay_sec
+        autoselect_delay_sec: autoselect_delay_sec,
+        player_slot_labels: player_slot_labels(assigns.tournament, assigns.matches)
       )
 
     ~H"""
@@ -637,13 +665,27 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         <% else %>
           <ul class="list-group">
             <%= for {{player, games}, idx} <- Enum.with_index(@players_with_games, 1) do %>
+              <% slot_label = @player_slot_labels[player.id] %>
               <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color">
                 <div class="d-flex align-items-center" style="gap:10px;min-width:0">
                   <span class="cb-text" style="font-size:12px;width:24px;text-align:right">{idx}.</span>
                   <strong class="text-white text-truncate">{player_label(player)}</strong>
+                  <%= if player.clan && player.clan != "" do %>
+                    <span
+                      class="badge cb-rounded text-truncate"
+                      style="background:#334155;color:#cbd5e1;max-width:160px"
+                    >
+                      {player.clan}
+                    </span>
+                  <% end %>
                   <span class="badge cb-rounded" style="background:#1e293b;color:#fff">
                     {player.score || 0}
                   </span>
+                  <%= if slot_label do %>
+                    <span class="badge cb-rounded" style="background:#7c3aed;color:#fff">
+                      {slot_label}
+                    </span>
+                  <% end %>
                 </div>
                 <div class="d-flex flex-wrap justify-content-end align-items-end" style="gap:6px">
                   <%= for g <- games do %>
