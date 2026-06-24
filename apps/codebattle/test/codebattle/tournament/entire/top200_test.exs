@@ -350,6 +350,69 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       assert Tournament.Players.get_player(tournament, 2).score == 10
       assert Tournament.Players.get_player(tournament, 9).score == 50
     end
+
+    test "вылетевшие перенумеровываются в 9..N — нет дублей мест с топ-8 сетки" do
+      # Регрессия: set_ranking нумерует ВСЁ поле (1..N) по сумме очков, поэтому вылетевшие
+      # приходят в compute_final_standings с местами, пересекающимися с 1..8 сетки (на проде
+      # это давало дубли мест 3..8 у топ-8 в лидерборде). Должны стать 9..N без коллизий.
+      tournament = insert_top200_tournament()
+      players_table = Tournament.Players.create_table(tournament.id)
+
+      finals =
+        inline_matches([
+          %Match{id: 1, player_ids: [1, 2], round_position: 7, state: "game_over"},
+          %Match{id: 2, player_ids: [3, 4], round_position: 7, state: "game_over"},
+          %Match{id: 3, player_ids: [5, 6], round_position: 7, state: "game_over"},
+          %Match{id: 4, player_ids: [7, 8], round_position: 7, state: "game_over"}
+        ])
+
+      tournament = %{tournament | players_table: players_table, current_round_position: 7, matches: finals}
+
+      # Победители финалов по очкам раунда 7: 1, 3, 5, 7.
+      record_scores(tournament.id, 7, [
+        {1, 100},
+        {2, 10},
+        {3, 100},
+        {4, 10},
+        {5, 100},
+        {6, 10},
+        {7, 100},
+        {8, 10}
+      ])
+
+      Enum.each(1..8, fn id ->
+        Tournament.Players.put_player(
+          tournament,
+          Player.new!(%{id: id, name: "p#{id}", state: "active", score: 0, place: 0})
+        )
+      end)
+
+      # Вылетевшие 9..14: НАРОЧНО с местами 3..8 (как их пронумеровал set_ranking по полю) —
+      # ровно те, что пересекаются с сеткой. Сумма очков убывает с id → ожидаемый порядок 9..14.
+      Enum.each([{9, 60, 3}, {10, 50, 4}, {11, 40, 5}, {12, 30, 6}, {13, 20, 7}, {14, 10, 8}], fn {id, score, place} ->
+        Tournament.Players.put_player(
+          tournament,
+          Player.new!(%{id: id, name: "p#{id}", state: "active", score: score, place: place})
+        )
+      end)
+
+      Top200.compute_final_standings(tournament)
+
+      place_of = fn id -> Tournament.Players.get_player(tournament, id).place end
+
+      # Топ-8 — по сетке финалов (победитель пары — лучшее место).
+      assert place_of.(1) == 1
+      assert place_of.(3) == 3
+      assert place_of.(5) == 5
+      assert place_of.(7) == 7
+
+      # Вылетевшие — строго 9..14 по убыванию суммы очков, БЕЗ пересечения с 1..8.
+      assert Enum.map(9..14, place_of) == [9, 10, 11, 12, 13, 14]
+
+      # Главное: места всего поля уникальны и образуют ровно 1..14 — дублей нет.
+      all_places = Enum.map(1..14, place_of)
+      assert Enum.sort(all_places) == Enum.to_list(1..14)
+    end
   end
 
   describe "TournamentUserResult.upsert_results/1 — top200 (регрессия на потерю рейтинга)" do

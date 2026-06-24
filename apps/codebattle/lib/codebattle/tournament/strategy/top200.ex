@@ -216,10 +216,14 @@ defmodule Codebattle.Tournament.Top200 do
     end
   end
 
-  # Финал турнира. Места 9..N уже корректны: ранжирование после раунда 7 расставило
-  # игроков по сумме очков, а вылетевшие после 5-го раунда (раунд 4) плей-офф не играли,
-  # поэтому их сумма = очки за 5 раундов и они стоят на 9..N. Полный пересчёт результатов
-  # (reset+rebuild) не нужен — переставляем ТОЛЬКО топ-8: их места задаёт сетка финалов.
+  # Финал турнира. Полный пересчёт результатов (reset+rebuild) не нужен — расставляем места
+  # в два шага:
+  #   1) топ-8 по сетке финалов получают места 1..8 (assign_final_bracket_places);
+  #   2) всем остальным проставляем места 9..N по сумме очков (assign_eliminated_places).
+  #
+  # Шаг 2 ОБЯЗАТЕЛЕН: set_ranking перед этим нумерует ВСЁ поле (1..N) по сумме очков, и эти
+  # места вылетевших пересекаются с 1..8 из сетки → в лидерборде появляются дубли мест
+  # (топ-8 vs вылетевшие). Поэтому вылетевших надо перенумеровать ровно с 9.
   #
   # Результаты раунда 7 здесь уже в TournamentResult: на любом пути завершения их пишет
   # finish_tournament (base) через upsert_results перед вызовом compute_final_standings.
@@ -227,6 +231,7 @@ defmodule Codebattle.Tournament.Top200 do
   def compute_final_standings(tournament) do
     tournament
     |> assign_final_bracket_places()
+    |> assign_eliminated_places()
     |> recalculate_player_wins_count()
   end
 
@@ -260,6 +265,38 @@ defmodule Codebattle.Tournament.Top200 do
     end
 
     tournament
+  end
+
+  # Все, кроме топ-8 финалистов, получают места 9..N по сумме очков (тай-брейк: меньшее
+  # общее время, затем меньший id — как в set_ranking). Без этого вылетевшие сохраняют
+  # места из set_ranking по всему полю (1..N), пересекающиеся с 1..8 сетки → дубли в
+  # лидерборде. Перенумеровываем ровно тех, кого попадёт в tournament_user_results
+  # (не-боты, не-читеры), чтобы места шли подряд без дыр; читеров доставляет upsert.
+  defp assign_eliminated_places(tournament) do
+    bracket_ids = final_bracket_ids(tournament)
+    cheater_ids = MapSet.new(tournament.cheater_ids || [])
+    start_place = MapSet.size(bracket_ids) + 1
+
+    tournament
+    |> get_players()
+    |> Enum.reject(&(&1.is_bot || MapSet.member?(bracket_ids, &1.id) || MapSet.member?(cheater_ids, &1.id)))
+    |> Enum.sort_by(fn p -> {-score_value(p.score), p.total_duration_sec || 0, p.id} end)
+    |> Enum.with_index(start_place)
+    |> Enum.each(fn {player, place} ->
+      Tournament.Players.put_player(tournament, %{player | place: place})
+    end)
+
+    tournament
+  end
+
+  # id восьми финалистов плей-офф (пары раунда 7) — те, кому assign_final_bracket_places
+  # уже выдал места 1..8. Если раунд 7 не доигран, пар нет → пустое множество, и тогда
+  # assign_eliminated_places честно перенумеровывает всё поле с 1.
+  defp final_bracket_ids(tournament) do
+    case round_player_pairs(tournament, 7) do
+      [_, _, _, _] = pairs -> pairs |> List.flatten() |> MapSet.new()
+      _ -> MapSet.new()
+    end
   end
 
   # Финальное место в плей-офф задаёт И place, И draw_index = 9 - place. Так 1-е место
