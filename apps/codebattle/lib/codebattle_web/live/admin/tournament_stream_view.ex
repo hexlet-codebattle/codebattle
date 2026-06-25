@@ -276,13 +276,15 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
 
   defp player_slot_labels(_tournament, _matches), do: %{}
 
-  # Подписи пар в порядке создания матчей раунда (см. Top200.build_round_pairs):
-  #   поз. 5 (QF, «раунд 6»):     4 пары #1v#8/#4v#5/#3v#6/#2v#7 — за выход в топ-4;
-  #   поз. 6 (SF, «раунд 7»):     2 пары основной сетки за 1-4, 2 утешительной за 5-8;
-  #   поз. 7 (финалы, «раунд 8»): за 1-2 / 3-4 / 5-6 / 7-8.
-  defp round_slot_labels(5), do: List.duplicate("за выход в топ-4", 4)
-  defp round_slot_labels(6), do: ["за 1-4", "за 1-4", "за 5-8", "за 5-8"]
-  defp round_slot_labels(7), do: ["за 1-2", "за 3-4", "за 5-6", "за 7-8"]
+  # Подписи пар в порядке создания матчей раунда (см. Top200.build_round_pairs).
+  # Каждая подпись — {текст, ярус}: :top (борьба за верхнюю половину — фиолетовый бейдж),
+  # :other (утешительная сетка — бейдж в цвет клана).
+  #   поз. 5 (QF, «раунд 6»):     4 пары #1v#8/#4v#5/#3v#6/#2v#7 — выход в топ-4;
+  #   поз. 6 (SF, «раунд 7»):     2 пары основной сетки 1-4, 2 утешительной 5-8;
+  #   поз. 7 (финалы, «раунд 8»): 1-2 / 3-4 / 5-6 / 7-8.
+  defp round_slot_labels(5), do: List.duplicate({"выход в топ-4", :top}, 4)
+  defp round_slot_labels(6), do: [{"1-4", :top}, {"1-4", :top}, {"5-8", :other}, {"5-8", :other}]
+  defp round_slot_labels(7), do: [{"1-2", :top}, {"3-4", :top}, {"5-6", :other}, {"7-8", :other}]
   defp round_slot_labels(_pos), do: []
 
   defp parse_delay_ms(raw) do
@@ -665,7 +667,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         <% else %>
           <ul class="list-group">
             <%= for {{player, games}, idx} <- Enum.with_index(@players_with_games, 1) do %>
-              <% slot_label = @player_slot_labels[player.id] %>
+              <% slot = @player_slot_labels[player.id] %>
               <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color">
                 <div class="d-flex align-items-center" style="gap:10px;min-width:0">
                   <span class="cb-text" style="font-size:12px;width:24px;text-align:right">{idx}.</span>
@@ -681,9 +683,17 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                   <span class="badge cb-rounded" style="background:#1e293b;color:#fff">
                     {player.score || 0}
                   </span>
-                  <%= if slot_label do %>
-                    <span class="badge cb-rounded" style="background:#7c3aed;color:#fff">
-                      {slot_label}
+                  <%= if slot do %>
+                    <% {slot_text, slot_tier} = slot %>
+                    <span
+                      class="badge cb-rounded"
+                      style={
+                        if slot_tier == :top,
+                          do: "background:#7c3aed;color:#fff",
+                          else: "background:#334155;color:#cbd5e1"
+                      }
+                    >
+                      {slot_text}
                     </span>
                   <% end %>
                 </div>
