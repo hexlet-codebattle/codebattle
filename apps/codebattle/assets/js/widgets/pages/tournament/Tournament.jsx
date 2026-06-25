@@ -39,22 +39,35 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
   const showJoinCta = [TournamentStates.waitingParticipants, TournamentStates.active].includes(
     tournament.state,
   );
-  const isParticipant = !!tournament.players[currentUserId];
+  const currentPlayer = tournament.players[currentUserId];
+  const isParticipant = !!currentPlayer;
+  // Top200: registered players can't leave — show their name/clan instead of the leave CTA.
+  const isTop200 = tournament.type === "top200";
 
   const joinCta =
     showJoinCta && !canModerate ? (
       <div className="mb-3 pb-2 border-bottom cb-border-color">
-        <p className="mb-2 text-muted">
-          {isParticipant
-            ? i18next.t("You are registered for this tournament. You can leave before it starts.")
-            : i18next.t("Join this tournament to take part in the matches.")}
-        </p>
-        <JoinButton
-          isShow
-          isShowLeave={tournament.state === TournamentStates.waitingParticipants}
-          isParticipant={isParticipant}
-          disabled={!isOnline}
-        />
+        {isParticipant && isTop200 ? (
+          <p className="mb-2 text-muted">
+            {[currentPlayer.name, currentPlayer.clan].filter(Boolean).join(", ")}
+          </p>
+        ) : (
+          <>
+            <p className="mb-2 text-muted">
+              {isParticipant
+                ? i18next.t(
+                    "You are registered for this tournament. You can leave before it starts.",
+                  )
+                : i18next.t("Join this tournament to take part in the matches.")}
+            </p>
+            <JoinButton
+              isShow
+              isShowLeave={tournament.state === TournamentStates.waitingParticipants}
+              isParticipant={isParticipant}
+              disabled={!isOnline}
+            />
+          </>
+        )}
       </div>
     ) : null;
 
