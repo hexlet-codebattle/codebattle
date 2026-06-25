@@ -43,13 +43,18 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
   const isParticipant = !!currentPlayer;
   // Top200: registered players can't leave — show their name/clan instead of the leave CTA.
   const isTop200 = tournament.type === "top200";
+  // Simulator players use ids 100_001..100_209; show the 1..209 ordinal, real users keep their id.
+  const displayId =
+    currentPlayer && currentPlayer.id > 100000 ? currentPlayer.id - 100000 : currentPlayer?.id;
 
   const joinCta =
     showJoinCta && !canModerate ? (
       <div className="mb-3 pb-2 border-bottom cb-border-color">
         {isParticipant && isTop200 ? (
-          <p className="mb-2 text-muted">
-            {[currentPlayer.name, currentPlayer.clan].filter(Boolean).join(", ")}
+          <p className="mb-2 font-weight-bold text-white">
+            {[`${currentPlayer.name} (${displayId})`, currentPlayer.clan]
+              .filter(Boolean)
+              .join(", ")}
           </p>
         ) : (
           <>
