@@ -173,4 +173,66 @@ defmodule Codebattle.GroupTask.ContextTest do
       assert [] = all_enqueued(worker: GroupTaskSolutionRunWorker)
     end
   end
+
+  describe "run_group_task/3 runner payload" do
+    setup do
+      user = insert(:user)
+      group_task = insert(:group_task, runner_url: "http://runner.test/api/v1/group_tasks/run")
+      tournament = insert(:group_tournament, group_task: group_task, state: "active")
+
+      {:ok, _token} = Codebattle.GroupTournament.Context.create_or_rotate_token(tournament, user.id)
+
+      solution =
+        insert(:group_task_solution,
+          user: user,
+          group_task: group_task,
+          group_tournament: tournament,
+          solution: "def solution():\n    return 7\n",
+          lang: "python"
+        )
+
+      %{user: user, group_task: group_task, tournament: tournament, solution: solution}
+    end
+
+    test "includes submitted_at as a unix timestamp for each latest solution",
+         %{user: user, group_task: group_task, tournament: tournament, solution: solution} do
+      assert {:ok, _run} =
+               Context.run_group_task(group_task, [user.id], %{
+                 group_tournament_id: tournament.id,
+                 round: 1
+               })
+
+      assert [payload_solution] = last_runner_solutions()
+
+      assert payload_solution.player_id == user.id
+      assert payload_solution.submitted_at == expected_unix(solution.inserted_at)
+      assert is_integer(payload_solution.submitted_at)
+    end
+
+    test "includes submitted_at for hand-picked solutions passed via :solutions",
+         %{user: user, group_task: group_task, tournament: tournament, solution: solution} do
+      assert {:ok, _run} =
+               Context.run_group_task(group_task, [user.id], %{
+                 group_tournament_id: tournament.id,
+                 round: 1,
+                 solutions: [solution]
+               })
+
+      assert [payload_solution] = last_runner_solutions()
+
+      assert payload_solution.player_id == user.id
+      assert payload_solution.submitted_at == expected_unix(solution.inserted_at)
+    end
+  end
+
+  defp last_runner_solutions do
+    %{opts: opts} = Process.get(:group_task_runner_last_request)
+    opts[:json].solutions
+  end
+
+  defp expected_unix(%NaiveDateTime{} = inserted_at) do
+    inserted_at
+    |> DateTime.from_naive!("Etc/UTC")
+    |> DateTime.to_unix()
+  end
 end

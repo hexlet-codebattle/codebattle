@@ -457,9 +457,18 @@ defmodule Codebattle.GroupTask.Context do
       lang: solution.lang,
       name: solution.user && solution.user.name,
       player_id: solution.user_id,
+      submitted_at: solution_submitted_at_unix(solution.inserted_at),
       solution: solution.solution
     }
   end
+
+  defp solution_submitted_at_unix(%NaiveDateTime{} = inserted_at) do
+    inserted_at
+    |> DateTime.from_naive!("Etc/UTC")
+    |> DateTime.to_unix()
+  end
+
+  defp solution_submitted_at_unix(_), do: nil
 
   defp solutions_not_found_payload(missing_player_ids) do
     %{
