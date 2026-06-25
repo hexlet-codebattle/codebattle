@@ -87,10 +87,6 @@ function ParticipantDashboard() {
                   {user.clan}
                 </span>
               </div>
-              <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
-                {i18n.t("Category")}
-                <span className="cb-custom-event-profile-data ms-2">{user.category}</span>
-              </div>
             </div>
           </div>
         </div>
