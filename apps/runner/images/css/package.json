@@ -6,7 +6,7 @@
     "basic-ftp": "^5.2.1",
     "handlebars": "^4.7.9",
     "tar-fs": "^3.1.1",
-    "js-yaml": "^4.1.1"
+    "js-yaml": "^4.2.0"
   },
   "dependencies": {
     "@types/node": "^20.11.25",
