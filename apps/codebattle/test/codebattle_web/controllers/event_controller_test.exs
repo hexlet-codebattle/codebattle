@@ -3,7 +3,7 @@ defmodule CodebattleWeb.EventControllerTest do
 
   test ".index", %{conn: conn} do
     admin = insert(:admin)
-    event = insert(:event, title: "University Battle")
+    event = insert(:event, title: "Code Battle")
 
     conn =
       conn

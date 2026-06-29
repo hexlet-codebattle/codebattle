@@ -191,7 +191,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   defp enqueue_external_setup(_invite), do: :ok
 
   @doc """
-  Re-fetches the invite from SourceCraft (using the new GET /invites/{id} endpoint)
+  Re-fetches the invite from External Platform (using the new GET /invites/{id} endpoint)
   and updates our state machine based on the platform-reported status.
 
   Maps the platform's invite status to our state machine:
@@ -350,7 +350,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     :ok
   end
 
-  # When the SourceCraft platform confirms an invite acceptance, mirror the user's
+  # When the External Platform platform confirms an invite acceptance, mirror the user's
   # platform identity (id + login) onto our User record so future checks and joins
   # can use it without round-tripping the platform.
   defp persist_platform_user(user_id, %{id: platform_id} = user_data) when is_binary(platform_id) and platform_id != "" do

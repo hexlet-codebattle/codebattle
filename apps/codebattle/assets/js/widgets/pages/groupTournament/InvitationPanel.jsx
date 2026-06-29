@@ -6,13 +6,13 @@ function InvitationPanel({ name, meta, invite, onStart }) {
   const isAccepted = invite?.state === "accepted";
   const m = meta || {};
 
-  const taskInfoLabel = m.taskInfoLabel || i18n.t("Task is solved in SourceCraft");
+  const taskInfoLabel = m.taskInfoLabel || i18n.t("Task is solved in External Plaform");
   const taskInfoIconUrl = m.taskInfoIconUrl || null;
   const taskDurationLabel = m.taskDurationLabel || i18n.t("30 minutes to solve");
   const taskDurationIconUrl = m.taskDurationIconUrl || null;
   const stepsTitle = m.stepsTitle || i18n.t("Before you begin:");
   const step1Label =
-    m.step1Label || i18n.t("Join our SourceCraft organization to receive the task");
+    m.step1Label || i18n.t("Join our External Platform organization to receive the task");
   const step1ButtonLabel = m.step1ButtonLabel || i18n.t("Accept invitation");
   const step2Label = m.step2Label || i18n.t("Once all steps are complete, you can start solving");
   const step2ButtonLabel = m.step2ButtonLabel || i18n.t("Go to task");
@@ -32,11 +32,11 @@ function InvitationPanel({ name, meta, invite, onStart }) {
               {i18n.t("Find tournament details at")}{" "}
               <a
                 className="text-white text-decoration-underline"
-                href="https://universitybattle.ru/tournaments/2026"
+                href=""
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                universitybattle.ru/tournaments/2026
+                tournament
               </a>
             </p>
           </div>

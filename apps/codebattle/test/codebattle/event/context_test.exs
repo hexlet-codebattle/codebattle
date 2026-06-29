@@ -19,9 +19,9 @@ defmodule Codebattle.Event.ContextTest do
           slice_size: 8,
           slice_strategy: "rating",
           meta: %{
-            "task_info_label" => "Задание выполняется в SourceCraft",
+            "task_info_label" => "Задание выполняется в External Platform",
             "task_duration_label" => "30 минут на решение",
-            "step1_label" => "Авторизуйся в SourceCraft через Яндекс ID"
+            "step1_label" => "Авторизуйся в External Platform через External Auth"
           }
         )
 

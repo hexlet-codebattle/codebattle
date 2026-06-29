@@ -1838,7 +1838,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               class="btn btn-sm btn-outline-primary cb-rounded me-1"
                               phx-click="refresh_invite_via_api"
                               phx-value-id={invite.id}
-                              title="Fetch latest status from SourceCraft (GET /invites/{id})"
+                              title="Fetch latest status from External Platform (GET /invites/{id})"
                             >
                               Check on Platform
                             </button>
