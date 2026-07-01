@@ -27,7 +27,6 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
   @token_authed_paths [
     ~r{^\/admin\/tournaments\/\d+\/stream\/state\/?$},
     ~r{^\/admin\/group_tournaments\/\d+\/history\.json\/?$},
-    ~r{^\/support-tournament\/?$}
   ]
 
   @allowed_mini_paths [

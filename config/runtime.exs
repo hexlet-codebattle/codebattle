@@ -193,7 +193,6 @@ config :codebattle, :oauth,
   external_user_info_url: System.get_env("EXTERNAL_USER_INFO_URL", "ASFD"),
   external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
-config :codebattle, :support_tournament_auth_token, System.get_env("CODEBATTLE_SUPPORT_TOURNAMENT_AUTH_TOKEN")
 config :codebattle, :tournament_run_upcoming, true
 config :codebattle, app_version: System.get_env("APP_VERSION", "")
 config :codebattle, checker_executor: checker_executor

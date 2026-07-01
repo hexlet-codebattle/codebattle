@@ -85,7 +85,6 @@ config :codebattle,
 
 config :codebattle, min_break_duration_seconds: 1
 config :codebattle, store_playbook_async: false
-config :codebattle, support_tournament_auth_token: "support-token"
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 config :codebattle, tournament_finish_timeout_ms: 0
 config :codebattle, tournament_match_timeout: 1
