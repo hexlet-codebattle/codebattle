@@ -24,6 +24,11 @@ const notifications = {
   error: { variant: "danger", message: i18n.t("Something went wrong") },
   empty: {},
 };
+const emptyPasswordValues = {
+  currentPassword: "",
+  password: "",
+  passwordConfirmation: "",
+};
 
 const csrfToken = document?.querySelector("meta[name='csrf-token']")?.getAttribute("content");
 const updateSettings = async (values) => {
@@ -45,6 +50,49 @@ const updateSettings = async (values) => {
 
   return data;
 };
+
+const updatePassword = async (values) => {
+  const response = await fetch("/api/v1/settings/password", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": csrfToken,
+    },
+    body: JSON.stringify(decamelizeKeys(values)),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
+
+const getPasswordValues = ({ currentPassword, password, passwordConfirmation }) => ({
+  currentPassword,
+  password,
+  passwordConfirmation,
+});
+
+const getSettingsValues = ({
+  currentPassword,
+  password,
+  passwordConfirmation,
+  ...settingsValues
+}) => settingsValues;
+
+const hasPasswordChanges = (values) =>
+  Object.values(values).some((value) => String(value || "").trim() !== "");
+
+const formatFieldErrors = (errors = {}) =>
+  Object.entries(camelizeKeys(errors)).reduce((acc, [fieldName, messages]) => {
+    const fieldMessages = Array.isArray(messages) ? messages : [messages];
+    acc[fieldName] = fieldMessages.map(capitalize).join(", ");
+    return acc;
+  }, {});
 
 function Notification({ notification, onClose }) {
   const { variant, message } = notification;
@@ -103,12 +151,23 @@ function UserSettings() {
   const dispatch = useDispatch();
 
   const handleUpdateUserSettings = useCallback(
-    async (values, { setErrors }) => {
-      try {
-        const data = await updateSettings(values);
+    async (values, { setErrors, resetForm, settingsDirty }) => {
+      const passwordValues = getPasswordValues(values);
+      const settingsValues = getSettingsValues(values);
 
-        await i18n.changeLanguage(getSupportedLocale(data.locale));
-        dispatch(actions.updateUserSettings(camelizeKeys(data)));
+      try {
+        if (settingsDirty) {
+          const data = await updateSettings(settingsValues);
+
+          await i18n.changeLanguage(getSupportedLocale(data.locale));
+          dispatch(actions.updateUserSettings(camelizeKeys(data)));
+        }
+
+        if (hasPasswordChanges(passwordValues)) {
+          await updatePassword(passwordValues);
+        }
+
+        resetForm({ values: { ...settingsValues, ...emptyPasswordValues } });
         setNotification(notifications.success);
       } catch (error) {
         if (!error.response) {
@@ -116,8 +175,14 @@ function UserSettings() {
           return;
         }
 
-        const { name: userNameErrors = [] } = error.response.data.errors;
-        setErrors({ name: userNameErrors.map(capitalize).join(", ") });
+        const fieldErrors = formatFieldErrors(error.response.data.errors);
+
+        if (Object.keys(fieldErrors).length === 0) {
+          setNotification(notifications.error);
+          return;
+        }
+
+        setErrors(fieldErrors);
       }
     },
     [dispatch],

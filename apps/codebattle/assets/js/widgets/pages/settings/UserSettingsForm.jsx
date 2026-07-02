@@ -21,6 +21,7 @@ const views = {
   sql: "sql",
 };
 
+const passwordFieldNames = ["currentPassword", "password", "passwordConfirmation"];
 const playingLanguages = Object.entries(omit(languages, [...cssProcessors, ...dbNames]));
 const cssLanguages = Object.entries(pick(languages, cssProcessors));
 const databaseTypes = Object.entries(pick(languages, dbNames));
@@ -51,6 +52,50 @@ const getPlaceholder = ({ disabled, placeholder }) => {
   }
 
   return "No access yet";
+};
+
+const hasPasswordValue = (values) =>
+  passwordFieldNames.some((fieldName) => String(values[fieldName] || "").trim() !== "");
+
+const passwordValidationSchema = {
+  currentPassword: Yup.string().test(
+    "required-current-password",
+    "Field can't be empty",
+    function (value) {
+      return !hasPasswordValue(this.parent) || String(value || "").trim() !== "";
+    },
+  ),
+  password: Yup.string()
+    .test("required-password", "Field can't be empty", function (value) {
+      return !hasPasswordValue(this.parent) || String(value || "").trim() !== "";
+    })
+    .test("password-min-length", "Should be at least 6 characters", function (value) {
+      return !hasPasswordValue(this.parent) || String(value || "").length >= 6;
+    }),
+  passwordConfirmation: Yup.string()
+    .test("required-password-confirmation", "Field can't be empty", function (value) {
+      return !hasPasswordValue(this.parent) || String(value || "").trim() !== "";
+    })
+    .test("password-confirmation", "Passwords must match", function (value) {
+      return !hasPasswordValue(this.parent) || value === this.parent.password;
+    }),
+};
+
+const canChangePassword = (settings) => {
+  if (typeof settings.hasPassword === "boolean") {
+    return settings.hasPassword;
+  }
+
+  const hasLinkedProvider = Boolean(
+    settings.githubId ||
+    settings.discordId ||
+    settings.externalOauthLogin ||
+    settings.externalPlatformId ||
+    settings.externalPlatformLogin ||
+    settings.firebaseUid,
+  );
+
+  return !settings.isGuest && !hasLinkedProvider;
 };
 
 function TextInput({ label, ...props }) {
@@ -182,11 +227,18 @@ function UserSettingsForm({ onSubmit, settings }) {
       lang: settings.lang || "",
       styleLang: settings.styleLang || "",
       dbType: settings.dbType || "",
+      currentPassword: "",
+      password: "",
+      passwordConfirmation: "",
     }),
     [settings],
   );
 
-  const validationSchema = useMemo(() => Yup.object(schemas.userSettings(settings)), [settings]);
+  const validationSchema = useMemo(
+    () => Yup.object({ ...schemas.userSettings(settings), ...passwordValidationSchema }),
+    [settings],
+  );
+  const showPasswordFields = canChangePassword(settings);
 
   return (
     <Formik
@@ -195,7 +247,14 @@ function UserSettingsForm({ onSubmit, settings }) {
       enableReinitialize
       validateOnChange
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, helpers) =>
+        onSubmit(values, {
+          ...helpers,
+          settingsDirty:
+            JSON.stringify(omit(values, passwordFieldNames)) !==
+            JSON.stringify(omit(initialValues, passwordFieldNames)),
+        })
+      }
     >
       {({ handleChange, dirty, isValid, isSubmitting, values }) => (
         <Form>
@@ -251,6 +310,42 @@ function UserSettingsForm({ onSubmit, settings }) {
               />
             </div>
           </div>
+
+          {showPasswordFields && (
+            <div className="container">
+              <div className="row form-group mb-3">
+                <div className="col-lg-3">
+                  <TextInput
+                    data-testid="currentPasswordInput"
+                    label="Old password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="Enter old password"
+                  />
+                  <TextInput
+                    data-testid="passwordInput"
+                    label="New password"
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Enter new password"
+                  />
+                  <TextInput
+                    data-testid="passwordConfirmationInput"
+                    label="Confirm new password"
+                    id="passwordConfirmation"
+                    name="passwordConfirmation"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Confirm new password"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div id="my-radio-group" className="h6 ml-2">
             Select sound type

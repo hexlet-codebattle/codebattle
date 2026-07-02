@@ -339,6 +339,8 @@ defmodule CodebattleWeb.Router do
       scope("/games") do
         resources("/:game_id/user_game_reports", UserGameReportController, only: [:create])
       end
+
+      patch("/settings/password", SettingsController, :update_password)
     end
   end
 
