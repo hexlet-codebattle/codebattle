@@ -87,7 +87,10 @@ defmodule Codebattle.User do
     field(:timezone, :string, default: "Etc/UTC")
 
     field(:games_played, :integer, virtual: true)
+    field(:current_password, :string, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)
+    field(:password, :string, virtual: true)
+    field(:password_confirmation, :string, virtual: true)
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -147,6 +150,17 @@ defmodule Codebattle.User do
     |> validate_length(:name, min: 2, max: 39)
     |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, user.id)
+  end
+
+  def password_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:current_password, :password, :password_confirmation])
+    |> validate_required([:current_password, :password, :password_confirmation])
+    |> validate_not_blank(:password)
+    |> validate_length(:password, min: 6, message: "should be at least 6 character(s)")
+    |> validate_confirmation(:password)
+    |> validate_current_password()
+    |> put_password_hash()
   end
 
   def token_changeset(user, params \\ %{}) do
@@ -276,6 +290,8 @@ defmodule Codebattle.User do
     available_login_methods_count(user) > 1
   end
 
+  def has_password?(user), do: present?(user.password_hash)
+
   def update_subscription_type(user_id, type) do
     user_id
     |> get!()
@@ -315,9 +331,11 @@ defmodule Codebattle.User do
     end
   end
 
-  defp verify_password(_user, nil), do: nil
+  def verify_password(_user, nil), do: nil
 
-  defp verify_password(user, password) do
+  def verify_password(%__MODULE__{password_hash: password_hash}, _password) when password_hash in [nil, ""], do: nil
+
+  def verify_password(user, password) do
     if Bcrypt.verify_pass(password, user.password_hash) do
       user
     end
@@ -330,10 +348,8 @@ defmodule Codebattle.User do
   end
 
   def create_password_hash(user, password) do
-    hashed_password = Bcrypt.hash_pwd_salt(password)
-
     Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id),
-      set: [password_hash: hashed_password]
+      set: [password_hash: hash_password(password)]
     )
   end
 
@@ -352,6 +368,39 @@ defmodule Codebattle.User do
   end
 
   defp present?(value), do: not is_nil(value) and value != ""
+
+  defp validate_not_blank(changeset, field) do
+    validate_change(changeset, field, fn _, value ->
+      if String.trim(to_string(value)) == "" do
+        [{field, "can't be blank"}]
+      else
+        []
+      end
+    end)
+  end
+
+  defp validate_current_password(%{valid?: true} = changeset) do
+    if verify_password(changeset.data, get_change(changeset, :current_password)) do
+      changeset
+    else
+      add_error(changeset, :current_password, "is invalid")
+    end
+  end
+
+  defp validate_current_password(changeset), do: changeset
+
+  defp put_password_hash(%{valid?: true} = changeset) do
+    changeset
+    |> get_change(:password)
+    |> case do
+      nil -> changeset
+      password -> put_change(changeset, :password_hash, hash_password(password))
+    end
+  end
+
+  defp put_password_hash(changeset), do: changeset
+
+  defp hash_password(password), do: Bcrypt.hash_pwd_salt(password)
 
   defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil],
     do: change(changeset, %{clan: nil, clan_id: nil})

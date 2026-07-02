@@ -67,6 +67,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :sound_settings
     ])
     |> Map.put(:can_unlink_social, Codebattle.User.can_unlink_social?(user))
+    |> Map.put(:has_password, Codebattle.User.has_password?(user))
     |> Map.put(:is_admin, Codebattle.User.admin?(user))
   end
 end

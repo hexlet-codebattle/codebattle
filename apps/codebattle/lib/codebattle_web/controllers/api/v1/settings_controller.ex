@@ -12,6 +12,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
       clan: current_user.clan,
       locale: current_user.locale,
       can_unlink_social: User.can_unlink_social?(current_user),
+      has_password: User.has_password?(current_user),
       discord_id: current_user.discord_id,
       discord_name: current_user.discord_name,
       github_id: current_user.github_id,
@@ -36,11 +37,29 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
           clan: user.clan,
           locale: user.locale,
           can_unlink_social: User.can_unlink_social?(user),
+          has_password: User.has_password?(user),
           sound_settings: user.sound_settings,
           lang: user.lang,
           style_lang: user.style_lang,
           db_type: user.db_type
         })
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: translate_errors(changeset)})
+    end
+  end
+
+  def update_password(conn, params) do
+    current_user = conn.assigns.current_user
+
+    current_user
+    |> User.password_changeset(params)
+    |> Repo.update()
+    |> case do
+      {:ok, _user} ->
+        json(conn, %{status: "ok", has_password: true})
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
