@@ -52,6 +52,7 @@ const preloadedState = {
       canUnlinkSocial: false,
       discordName: null,
       discordId: null,
+      hasPassword: false,
       error: "",
     },
   },
@@ -60,6 +61,19 @@ const store = configureStore({
   reducer,
   preloadedState,
 });
+const buildStore = (settings = {}) =>
+  configureStore({
+    reducer,
+    preloadedState: {
+      user: {
+        settings: {
+          ...preloadedState.user.settings,
+          ...settings,
+        },
+      },
+    },
+  });
+
 jest.mock(
   "gon",
   () => {
@@ -216,6 +230,41 @@ describe("UserSettings test cases", () => {
     await user.click(submitButton);
 
     expect(await findByRole("alert")).toHaveClass("alert-danger");
+  });
+
+  test("hides password fields for Firebase user without local password", () => {
+    const customStore = buildStore({
+      firebaseUid: "firebase-user",
+      hasPassword: false,
+    });
+
+    const { queryByTestId } = setup(
+      <Provider store={customStore}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    expect(queryByTestId("currentPasswordInput")).not.toBeInTheDocument();
+    expect(queryByTestId("passwordInput")).not.toBeInTheDocument();
+    expect(queryByTestId("passwordConfirmationInput")).not.toBeInTheDocument();
+  });
+
+  test("shows password fields for local password user with linked OAuth", () => {
+    const customStore = buildStore({
+      githubId: 19,
+      githubName: "octocat",
+      hasPassword: true,
+    });
+
+    const { getByTestId } = setup(
+      <Provider store={customStore}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    expect(getByTestId("currentPasswordInput")).toBeInTheDocument();
+    expect(getByTestId("passwordInput")).toBeInTheDocument();
+    expect(getByTestId("passwordConfirmationInput")).toBeInTheDocument();
   });
 
   test("unlink button is disabled when it is the last sign-in method", () => {

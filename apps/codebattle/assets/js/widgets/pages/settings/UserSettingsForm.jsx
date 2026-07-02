@@ -82,20 +82,7 @@ const passwordValidationSchema = {
 };
 
 const canChangePassword = (settings) => {
-  if (typeof settings.hasPassword === "boolean") {
-    return settings.hasPassword;
-  }
-
-  const hasLinkedProvider = Boolean(
-    settings.githubId ||
-    settings.discordId ||
-    settings.externalOauthLogin ||
-    settings.externalPlatformId ||
-    settings.externalPlatformLogin ||
-    settings.firebaseUid,
-  );
-
-  return !settings.isGuest && !hasLinkedProvider;
+  return settings.hasPassword === true;
 };
 
 function TextInput({ label, ...props }) {
