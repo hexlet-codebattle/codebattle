@@ -394,7 +394,7 @@ defmodule CodebattleWeb.Router do
       get("/:id/timer", LiveViewTournamentController, :show_timer, as: :tournament_timer)
     end
 
-    resources("/clans", ClanController, only: [:index, :show])
+    resources("/clans", ClanController, only: [:index, :show, :delete])
 
     get("/e/:slug", PublicEventController, :show)
     post("/e/:slug/stage", PublicEventController, :stage)

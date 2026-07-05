@@ -1,28 +1,53 @@
 <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
   <h1 class="text-center text-white">Clans</h1>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="cb-text">
+      Total clans: <span class="text-white">{@total_clans}</span>
+    </div>
+  </div>
   <div class="table-responsive mt-4">
     <table class="table table-sm">
       <thead class="cb-text">
         <tr>
-          <th class="cb-border-color border-bottom-0">name</th>
-          <th class="cb-border-color border-bottom-0">long_name</th>
-          <th class="cb-border-color border-bottom-0">creator</th>
-          <th class="cb-border-color border-bottom-0">actions</th>
+          <th class="cb-border-color border-bottom-0">
+            {sort_link(@conn, "Name", "name", @sort, @order)}
+          </th>
+          <th class="cb-border-color border-bottom-0">
+            {sort_link(@conn, "Players", "players_count", @sort, @order)}
+          </th>
+          <th class="cb-border-color border-bottom-0">Creator</th>
+          <th class="cb-border-color border-bottom-0">
+            {sort_link(@conn, "Created at", "created_at", @sort, @order)}
+          </th>
+          <th class="cb-border-color border-bottom-0">Actions</th>
         </tr>
       </thead>
       <tbody>
         <%= for clan <- @clans do %>
           <tr>
             <td class="align-middle text text-white cb-border-color">{clan.name}</td>
-            <td class="align-middle text text-white cb-border-color">{clan.long_name}</td>
+            <td class="align-middle text text-white cb-border-color">{clan.users_count}</td>
             <td class="align-middle text text-white cb-border-color">
               {clan.creator && clan.creator.name}
             </td>
+            <td class="align-middle text text-white cb-border-color">
+              {format_inserted_at(clan.inserted_at)}
+            </td>
             <td class="align-middle cb-border-color">
-              {link("Show",
-                to: Routes.clan_path(@conn, :show, clan.id),
-                class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
-              )}
+              <div class="btn-group btn-group-sm">
+                {link("Show",
+                  to: Routes.clan_path(@conn, :show, clan.id),
+                  class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                )}
+                <%= if Codebattle.User.admin?(@current_user) do %>
+                  {link("Delete",
+                    to: Routes.clan_path(@conn, :delete, clan.id),
+                    method: :delete,
+                    data: [confirm: "Delete this clan?"],
+                    class: "btn btn-sm btn-outline-danger cb-rounded"
+                  )}
+                <% end %>
+              </div>
             </td>
           </tr>
         <% end %>

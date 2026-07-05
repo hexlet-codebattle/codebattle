@@ -19,6 +19,7 @@ defmodule Codebattle.Clan do
 
     field(:name, :string)
     field(:long_name, :string)
+    field(:users_count, :integer, virtual: true, default: 0)
 
     timestamps()
   end
@@ -26,6 +27,21 @@ defmodule Codebattle.Clan do
   @spec get_all(term()) :: list(t())
   def get_all(preload \\ []) do
     __MODULE__ |> Repo.all() |> Repo.preload(preload)
+  end
+
+  @spec list_with_stats(keyword()) :: list(t())
+  def list_with_stats(opts \\ []) do
+    sort = Keyword.get(opts, :sort, "name")
+    order = Keyword.get(opts, :order, "asc")
+    preload = Keyword.get(opts, :preload, [])
+
+    __MODULE__
+    |> join(:left, [c], u in User, on: u.clan_id == c.id)
+    |> group_by([c], c.id)
+    |> select_merge([_c, u], %{users_count: count(u.id)})
+    |> order_with_stats(sort, order)
+    |> Repo.all()
+    |> Repo.preload(preload)
   end
 
   @spec search(String.t(), term()) :: list(t())
@@ -125,5 +141,29 @@ defmodule Codebattle.Clan do
       [c],
       ilike(c.name, ^pattern) or ilike(c.long_name, ^pattern)
     )
+  end
+
+  defp order_with_stats(queryable, "players_count", "desc") do
+    order_by(queryable, [c, u], desc: count(u.id), asc: c.name)
+  end
+
+  defp order_with_stats(queryable, "players_count", _order) do
+    order_by(queryable, [c, u], asc: count(u.id), asc: c.name)
+  end
+
+  defp order_with_stats(queryable, "created_at", "asc") do
+    order_by(queryable, [c], asc: c.inserted_at, asc: c.name)
+  end
+
+  defp order_with_stats(queryable, "created_at", _order) do
+    order_by(queryable, [c], desc: c.inserted_at, asc: c.name)
+  end
+
+  defp order_with_stats(queryable, _sort, "desc") do
+    order_by(queryable, [c], desc: c.name)
+  end
+
+  defp order_with_stats(queryable, _sort, _order) do
+    order_by(queryable, [c], asc: c.name)
   end
 end
