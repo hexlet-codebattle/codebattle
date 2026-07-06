@@ -475,12 +475,12 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       # Check a sample of each type
       Enum.each(tournaments, fn changeset ->
         assert Ecto.Changeset.get_field(changeset, :state) == "upcoming"
-        assert Ecto.Changeset.get_field(changeset, :type) == "swiss"
+        assert Ecto.Changeset.get_field(changeset, :type) == "ladder"
         assert Ecto.Changeset.get_field(changeset, :access_type) == "public"
         assert Ecto.Changeset.get_field(changeset, :use_chat) == true
         assert Ecto.Changeset.get_field(changeset, :use_timer) == true
         assert Ecto.Changeset.get_field(changeset, :timeout_mode) == "per_task"
-        assert Ecto.Changeset.get_field(changeset, :round_timeout_seconds) == nil
+        assert Ecto.Changeset.get_field(changeset, :round_timeout_seconds) == 60
         assert Ecto.Changeset.get_field(changeset, :match_timeout_seconds) == nil
       end)
     end

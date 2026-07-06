@@ -109,6 +109,9 @@ lint-js:
 lint-js-fix:
 	cd apps/codebattle && pnpm run lint-fix
 
+mdl:
+	mix dialyzer
+
 start:
 	bin/codebattle eval "Codebattle.Utils.Release.migrate"
 	bin/codebattle start

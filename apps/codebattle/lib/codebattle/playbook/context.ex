@@ -22,28 +22,6 @@ defmodule Codebattle.Playbook.Context do
     :game_over
   ]
 
-  def get_random_completed_id(nil), do: nil
-
-  def get_random_completed_id(task_id) do
-    query =
-      from(p in Playbook,
-        where: not is_nil(p.winner_id) and p.task_id == ^task_id and p.solution_type == "complete"
-      )
-
-    if_result =
-      if FunWithFlags.enabled?(:use_only_approved_playbooks) do
-        where(query, [p], p.approved == true)
-      else
-        query
-      end
-
-    if_result
-    |> order_by(fragment("RANDOM()"))
-    |> select([p], p.id)
-    |> limit(1)
-    |> Repo.one()
-  end
-
   def exists?(game_id) do
     Repo.one(from(p in Playbook, where: p.game_id == ^game_id, limit: 1))
   end

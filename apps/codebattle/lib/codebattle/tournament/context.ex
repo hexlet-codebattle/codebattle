@@ -665,6 +665,7 @@ defmodule Codebattle.Tournament.Context do
   defp get_module(%{type: "show"}), do: Tournament.Show
   defp get_module(%{type: "swiss"}), do: Tournament.Swiss
   defp get_module(%{type: "versus"}), do: Tournament.Versus
+  defp get_module(%{type: "ladder"}), do: Tournament.Ladder
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
 

@@ -70,7 +70,8 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       assert first_rookie.level == "easy"
       assert first_rookie.task_provider == "level"
       assert first_rookie.task_strategy == "random"
-      assert first_rookie.type == "swiss"
+      assert first_rookie.type == "ladder"
+      assert first_rookie.round_timeout_seconds == 60
       assert first_rookie.access_type == "public"
       assert first_rookie.name == "Rookie"
     end

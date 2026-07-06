@@ -536,16 +536,6 @@ defmodule Codebattle.Game.Engine do
     Game.Server.init_playbook(game.id)
   end
 
-  defp maybe_get_playbook_id_for_bot(_bot, nil), do: nil
-
-  defp maybe_get_playbook_id_for_bot(%{is_bot: true}, %{type: "css"}), do: nil
-
-  defp maybe_get_playbook_id_for_bot(%{is_bot: true}, task) do
-    Playbook.Context.get_random_completed_id(task.id)
-  end
-
-  defp maybe_get_playbook_id_for_bot(_player, _task), do: nil
-
   defp run_bots(%{type: "solo"}), do: :noop
   defp run_bots(game), do: Bot.Context.start_bots(game)
 
@@ -606,8 +596,7 @@ defmodule Codebattle.Game.Engine do
     Enum.map(players, fn player ->
       Game.Player.build(player, %{
         creator: creator && player.id == creator.id,
-        task: task,
-        playbook_id: maybe_get_playbook_id_for_bot(player, task)
+        task: task
       })
     end)
   end

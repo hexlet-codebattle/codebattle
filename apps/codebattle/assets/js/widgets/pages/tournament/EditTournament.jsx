@@ -125,7 +125,10 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
             setNotification(notifications.error);
           }
         } else {
-          setNotification({ variant: "danger", message: "Network error. Please try again." });
+          setNotification({
+            variant: "danger",
+            message: "Network error. Please try again.",
+          });
         }
       }
     },
@@ -181,6 +184,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
   };
 
   const initialValues = {
+    type: tournament.type || "swiss",
     name: tournament.name || "",
     description: tournament.description || "",
     creator_id: tournament.creatorId || "",

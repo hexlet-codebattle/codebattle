@@ -186,7 +186,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   # Cheater handling matches "75_percentile": a cheater scores 0, and the honest opponent who
   # lost to a cheater is compensated with the full base_score.
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "static_base_score"} = tournament)
-      when type in ["swiss", "top200"] do
+      when type in ["swiss", "top200", "ladder"] do
     round_position = tournament.current_round_position || 0
     round_timeout = max(round_timeout_seconds(tournament), 1)
     player_cheater_sql = player_cheater_sql(tournament)

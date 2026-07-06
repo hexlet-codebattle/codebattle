@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament do
   @task_providers ~w(level task_pack all)
   @task_strategies ~w(random sequential per_round_pair)
   @timeout_modes ~w(per_task per_round_fixed per_round_with_rematch per_tournament)
-  @types ~w(swiss top200)
+  @types ~w(swiss top200 ladder)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -197,6 +197,7 @@ defmodule Codebattle.Tournament do
       :use_infinite_break,
       :use_timer
     ])
+    |> apply_ladder_config()
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
     |> validate_inclusion(:grade, @grades)
@@ -216,6 +217,22 @@ defmodule Codebattle.Tournament do
     |> validate_length(:description, min: 3, max: 7531)
     |> validate_event_id(params["event_id"] || params[:event_id])
     |> add_creator(params["creator"] || params[:creator])
+  end
+
+  # Ladder is a continuous pool-matchmaking format: `round_timeout_seconds` is the
+  # matching-tick interval, games time out on the task clock (`per_task`), and ranking
+  # uses `static_base_score` by user. Coerce those before the inclusion checks run.
+  defp apply_ladder_config(%Ecto.Changeset{} = changeset) do
+    if get_field(changeset, :type) == "ladder" do
+      changeset
+      |> put_change(:timeout_mode, "per_task")
+      |> put_change(:score_strategy, "static_base_score")
+      |> put_change(:ranking_type, "by_user")
+      |> validate_required([:round_timeout_seconds])
+      |> validate_number(:rounds_limit, greater_than_or_equal_to: 1)
+    else
+      changeset
+    end
   end
 
   defp validate_round_timeout_for_mode(%Ecto.Changeset{} = changeset) do

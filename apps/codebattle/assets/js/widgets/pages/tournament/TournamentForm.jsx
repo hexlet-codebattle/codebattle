@@ -54,6 +54,11 @@ const TIMEOUT_DESCRIPTIONS = {
     "One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires.",
 };
 
+const TOURNAMENT_TYPES = [
+  { value: "swiss", label: "Swiss" },
+  { value: "ladder", label: "Ladder (continuous matchmaking)" },
+];
+
 const PLAYERS_LIMITS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384];
 
 function TournamentForm({
@@ -70,6 +75,7 @@ function TournamentForm({
   onCancel,
 }) {
   const [formData, setFormData] = useState({
+    type: initialValues.type || "swiss",
     name: initialValues.name || "",
     description: initialValues.description || "",
     creator_id: initialValues.creator_id || "",
@@ -121,13 +127,26 @@ function TournamentForm({
         .split(/[\s,]+/)
         .map((id) => id.trim())
         .filter(Boolean);
-      payload.round_timeout_seconds = ["per_round_fixed", "per_round_with_rematch"].includes(
-        formData.timeout_mode,
-      )
-        ? formData.round_timeout_seconds
-        : null;
-      payload.tournament_timeout_seconds =
-        formData.timeout_mode === "per_tournament" ? formData.tournament_timeout_seconds : null;
+
+      const isLadder = formData.type === "ladder";
+
+      if (isLadder) {
+        // Ladder repurposes round_timeout_seconds as the matching-tick interval and
+        // forces per_task / static_base_score / by_user (the backend also coerces these).
+        payload.timeout_mode = "per_task";
+        payload.score_strategy = "static_base_score";
+        payload.ranking_type = "by_user";
+        payload.round_timeout_seconds = formData.round_timeout_seconds;
+        payload.tournament_timeout_seconds = null;
+      } else {
+        payload.round_timeout_seconds = ["per_round_fixed", "per_round_with_rematch"].includes(
+          formData.timeout_mode,
+        )
+          ? formData.round_timeout_seconds
+          : null;
+        payload.tournament_timeout_seconds =
+          formData.timeout_mode === "per_tournament" ? formData.tournament_timeout_seconds : null;
+      }
 
       onSubmit(payload);
     },
@@ -144,6 +163,10 @@ function TournamentForm({
     }
     return null;
   };
+
+  const isLadder = formData.type === "ladder";
+  const roundTimeoutActive =
+    isLadder || ["per_round_fixed", "per_round_with_rematch"].includes(formData.timeout_mode);
 
   return (
     <form onSubmit={handleSubmit} className="w-100">
@@ -492,6 +515,37 @@ function TournamentForm({
         <div className="card-body">
           <div className="row mb-3">
             <div className="col-md-4 mb-3">
+              <label htmlFor="type" className="form-label text-white">
+                Tournament Type
+              </label>
+              <select
+                id="type"
+                name="type"
+                className={cn(
+                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
+                  { "is-invalid": errors.type },
+                )}
+                value={formData.type}
+                onChange={handleChange}
+              >
+                {TOURNAMENT_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+              {renderError("type")}
+              {isLadder && (
+                <small className="text-muted d-block mt-1">
+                  Continuous pool matchmaking. &quot;Rounds Limit&quot; is the number of matching
+                  rounds; &quot;Round Timeout&quot; is the matching interval. Timeout/score are
+                  fixed (per-task, static base score).
+                </small>
+              )}
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 mb-3">
               <label htmlFor="players_limit" className="form-label text-white">
                 Players Limit
               </label>
@@ -639,15 +693,11 @@ function TournamentForm({
               <label
                 htmlFor="round_timeout_seconds"
                 className={cn("form-label", {
-                  "text-white": ["per_round_fixed", "per_round_with_rematch"].includes(
-                    formData.timeout_mode,
-                  ),
-                  "text-muted": !["per_round_fixed", "per_round_with_rematch"].includes(
-                    formData.timeout_mode,
-                  ),
+                  "text-white": roundTimeoutActive,
+                  "text-muted": !roundTimeoutActive,
                 })}
               >
-                Round Timeout (seconds)
+                {isLadder ? "Matching interval (sec)" : "Round Timeout (seconds)"}
               </label>
               <input
                 type="number"
@@ -657,17 +707,11 @@ function TournamentForm({
                 className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
                   "is-invalid": errors.round_timeout_seconds,
                 })}
-                value={
-                  ["per_round_fixed", "per_round_with_rematch"].includes(formData.timeout_mode)
-                    ? formData.round_timeout_seconds
-                    : ""
-                }
+                value={roundTimeoutActive ? formData.round_timeout_seconds : ""}
                 onChange={handleChange}
-                min={10}
+                min={isLadder ? 1 : 10}
                 max={10000}
-                disabled={
-                  !["per_round_fixed", "per_round_with_rematch"].includes(formData.timeout_mode)
-                }
+                disabled={!roundTimeoutActive}
               />
               {renderError("round_timeout_seconds")}
             </div>

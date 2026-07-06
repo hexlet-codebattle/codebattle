@@ -11,6 +11,17 @@ defmodule Codebattle.Bot.Server do
 
   @port Application.compile_env(:codebattle, :ws_port, 4000)
 
+  @type status :: :initial | :playing | :finished
+  @type channel :: pid() | nil
+  @type state :: %{
+          required(:state) => status(),
+          required(:game) => Game.t(),
+          required(:bot_id) => integer(),
+          required(:game_channel) => channel(),
+          required(:chat_channel) => channel(),
+          required(:playbook_params) => Bot.PlaybookPlayer.Params.t() | nil
+        }
+
   @spec start_link(%{game: Game.t(), bot_id: integer()}) :: GenServer.on_start()
   def start_link(%{game: game, bot_id: bot_id} = params) do
     GenServer.start_link(__MODULE__, params, name: server_name(game.id, bot_id))
@@ -58,7 +69,7 @@ defmodule Codebattle.Bot.Server do
       params ->
         Logger.debug("""
         Start bot playbook player for game_id: #{inspect(state.game.id)},
-        with playbook_params: #{inspect(Map.delete(params, :actions))}
+        with playbook_params: #{inspect(Map.delete(params, :steps))}
         """)
 
         {:noreply, state}
@@ -140,6 +151,7 @@ defmodule Codebattle.Bot.Server do
     {:noreply, state}
   end
 
+  @spec do_playbook_step(state()) :: {:noreply, state()}
   defp do_playbook_step(%{state: :finished} = state), do: {:noreply, state}
 
   defp do_playbook_step(state) do
@@ -158,6 +170,7 @@ defmodule Codebattle.Bot.Server do
     end
   end
 
+  @spec init_socket(state()) :: state()
   defp init_socket(state) do
     socket_opts = [
       url: "ws://localhost:#{@port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot_id)}"
@@ -187,15 +200,15 @@ defmodule Codebattle.Bot.Server do
     end
   end
 
-  defp init_playbook_player(state) do
-    case Bot.PlaybookPlayer.init(state) do
+  @spec init_playbook_player(state()) :: state()
+  defp init_playbook_player(%{game: game, bot_id: bot_id} = state) do
+    case Bot.PlaybookPlayer.init(%{game: game, bot_id: bot_id}) do
       {:ok, playbook_params} -> Map.put(state, :playbook_params, playbook_params)
-      {:error, :no_playbook} -> state
+      {:error, _reason} -> state
     end
   end
 
   defp send_game_message(nil, _type, _editor_params), do: :noop
-  defp send_game_message(_game_channel, _type, {nil, _lang}), do: :noop
 
   defp send_game_message(game_channel, :update_editor, editor_params),
     do: Bot.GameClient.send(game_channel, :update_editor, editor_params)

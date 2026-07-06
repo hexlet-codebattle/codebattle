@@ -26,10 +26,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
     creator_id: nil,
     break_duration_seconds: 10,
     timeout_mode: "per_task",
-    round_timeout_seconds: nil,
+    round_timeout_seconds: 60,
     match_timeout_seconds: nil,
     state: "upcoming",
-    type: "swiss",
+    type: "ladder",
     access_type: "public",
     use_chat: true,
     use_timer: true

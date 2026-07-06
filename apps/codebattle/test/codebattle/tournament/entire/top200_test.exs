@@ -326,6 +326,9 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     test "пишет результаты из расставленных игроков — place/score/points не обнуляются" do
       tournament = insert_top200_tournament()
 
+      # tournament_user_results has an FK on user_id, so the referenced users must exist.
+      Enum.each([1, 2, 3, 9, 10], fn id -> insert(:user, id: id) end)
+
       # Игроки уже расставлены compute_final_standings: топ-3 по сетке, 9-10 по сумме очков.
       players =
         Map.new([{1, 1, 500}, {2, 2, 450}, {3, 3, 400}, {9, 9, 50}, {10, 10, 40}], fn {id, place, score} ->

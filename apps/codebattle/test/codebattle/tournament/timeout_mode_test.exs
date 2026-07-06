@@ -52,17 +52,18 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
       assert game.timeout_seconds == 123
     end
 
-    test "falls back to 300 seconds when task timeout is nil" do
-      task = insert(:task, level: "easy", time_to_solve_sec: nil)
-      insert(:task_pack, name: "tp-per-task-nil", task_ids: [task.id])
+    test "uses the task's default time_to_solve_sec when it is not set explicitly" do
+      # time_to_solve_sec is NOT NULL and defaults to 180 (3 minutes).
+      task = insert(:task, level: "easy")
+      insert(:task_pack, name: "tp-per-task-default", task_ids: [task.id])
       {creator, users} = create_users()
 
       {:ok, tournament} =
         Tournament.Context.create(
           Map.merge(@base_params, %{
-            "name" => "per_task nil fallback",
+            "name" => "per_task default",
             "creator" => creator,
-            "task_pack_name" => "tp-per-task-nil",
+            "task_pack_name" => "tp-per-task-default",
             "timeout_mode" => "per_task",
             "round_timeout_seconds" => nil
           })
@@ -71,7 +72,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
       start_tournament(tournament, users, creator)
 
       game = get_first_game(tournament)
-      assert game.timeout_seconds == 300
+      assert game.timeout_seconds == 180
     end
 
     test "clears round_timeout_seconds and tournament_timeout_seconds" do

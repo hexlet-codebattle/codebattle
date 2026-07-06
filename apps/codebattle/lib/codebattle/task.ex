@@ -87,7 +87,7 @@ defmodule Codebattle.Task do
     field(:solutions, :map, default: %{})
     field(:arguments_generator, :string, default: "")
     field(:generator_lang, :string, default: "js")
-    field(:time_to_solve_sec, :integer)
+    field(:time_to_solve_sec, :integer, default: 180)
     field(:base_score, :integer)
 
     timestamps()
@@ -146,7 +146,7 @@ defmodule Codebattle.Task do
           generator_lang: Map.get(params, :generator_lang, "js"),
           input_signature: params.input_signature,
           level: params.level,
-          time_to_solve_sec: Map.get(params, :time_to_solve_sec, nil),
+          time_to_solve_sec: Map.get(params, :time_to_solve_sec) || 180,
           origin: params.origin,
           output_signature: params.output_signature,
           solution: Map.get(params, :solution, ""),

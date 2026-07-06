@@ -30,17 +30,13 @@ defmodule Codebattle.Bot.Context do
 
   @spec build(map()) :: User.t()
   def build(params \\ %{}) do
-    bots_query()
-    |> Repo.one!()
-    |> Map.merge(params)
+    Map.merge(codebot(), params)
   end
 
   @spec build_list(pos_integer(), map()) :: list(User.t())
   def build_list(count, params \\ %{}) do
-    count
-    |> bots_query()
-    |> Repo.all()
-    |> Enum.map(&Map.merge(&1, params))
+    bot = codebot()
+    Enum.map(1..count, fn _ -> Map.merge(bot, params) end)
   end
 
   @spec get(pos_integer()) :: User.t() | nil
@@ -51,12 +47,15 @@ defmodule Codebattle.Bot.Context do
     end
   end
 
-  defp bots_query(limit \\ 1) do
-    from(
-      user in User,
-      where: user.is_bot == true,
-      order_by: fragment("RANDOM()"),
-      limit: ^limit
+  # There is a single canonical bot user ("Codebot") that solves every task.
+  defp codebot do
+    Repo.one!(
+      from(
+        user in User,
+        where: user.is_bot == true,
+        order_by: [asc: user.id],
+        limit: 1
+      )
     )
   end
 end

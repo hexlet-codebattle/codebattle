@@ -18,6 +18,11 @@ defmodule Codebattle.Tournament.Base do
   @callback reset_meta(map()) :: map()
   @callback game_type() :: String.t()
 
+  # Optional: fired periodically by the server for continuous-matchmaking strategies
+  # (e.g. Ladder). Default is a no-op so synchronized-round strategies are unaffected.
+  @callback matchmaking_tick(Tournament.t()) :: Tournament.t()
+  @optional_callbacks matchmaking_tick: 1
+
   defmacro __using__(_opts) do
     quote location: :keep do
       @behaviour Tournament.Base
@@ -1175,6 +1180,10 @@ defmodule Codebattle.Tournament.Base do
       # admin / streamer auto-select). Must return the tournament unchanged.
       def setup_round_active_game(tournament), do: tournament
 
+      # Fired by the server on the matchmaking-tick timer. Default no-op; continuous
+      # strategies (Ladder) override this to pair the idle pool and recompute ranking.
+      def matchmaking_tick(tournament), do: tournament
+
       defp get_round_game_timeout(tournament, task) do
         case tournament.timeout_mode do
           "per_tournament" ->
@@ -1389,6 +1398,7 @@ defmodule Codebattle.Tournament.Base do
 
       defoverridable maybe_finish_round_after_finish_match: 1,
                      compute_final_standings: 1,
+                     matchmaking_tick: 1,
                      round_timeout_seconds: 1,
                      setup_round_active_game: 1
     end

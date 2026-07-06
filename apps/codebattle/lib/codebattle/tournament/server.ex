@@ -327,6 +327,8 @@ defmodule Codebattle.Tournament.Server do
 
       update_tournament_info_cache(new_tournament)
 
+      maybe_arm_matchmaking_tick(event_type, new_tournament)
+
       # TODO: rethink broadcasting during applying event, maybe put inside tournament module
       broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
@@ -389,6 +391,19 @@ defmodule Codebattle.Tournament.Server do
       else
         {:noreply, %{state | tournament: tournament}}
       end
+    end
+  end
+
+  def handle_info(:matchmaking_tick, %{tournament: tournament} = state) do
+    cond do
+      state.frozen ->
+        defer_message(:matchmaking_tick, "matchmaking_tick", state)
+
+      tournament.type == "ladder" and tournament.state == "active" ->
+        run_matchmaking_tick(state)
+
+      true ->
+        {:noreply, state}
     end
   end
 
@@ -646,6 +661,30 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, state}
   end
 
+  # Ladder only: arm the periodic matchmaking tick when the tournament (re)activates,
+  # including after a crash/restart restore (R1) — the generic restore path is a no-op
+  # under per_task, so without this the tick would be lost. Guarded by state so it fires
+  # once per activation (not on every event).
+  defp maybe_arm_matchmaking_tick(event_type, %{type: "ladder", state: "active"} = tournament)
+       when event_type in [:start, :restart, :retry, :restore_active_round, :restore_active_break] do
+    schedule_matchmaking_tick(tournament)
+  end
+
+  defp maybe_arm_matchmaking_tick(_event_type, _tournament), do: :ok
+
+  defp run_matchmaking_tick(%{tournament: tournament} = state) do
+    new_tournament = tournament.module.matchmaking_tick(tournament)
+    update_tournament_info_cache(new_tournament)
+    # Re-arm the next tick only while the tournament is still running.
+    if new_tournament.state == "active", do: schedule_matchmaking_tick(new_tournament)
+    {:noreply, %{state | tournament: new_tournament}}
+  end
+
+  defp schedule_matchmaking_tick(tournament) do
+    interval = max(tournament.round_timeout_seconds || 60, 1)
+    Process.send_after(self(), :matchmaking_tick, to_timeout(second: interval))
+  end
+
   defp should_schedule_round_finish?(%{round_state: "round_finishing"}), do: false
 
   defp should_schedule_round_finish?(tournament) do
@@ -708,6 +747,20 @@ defmodule Codebattle.Tournament.Server do
 
       {:error, reason} ->
         send(server_pid, {:round_finish_failed, op_id, reason})
+    end
+  end
+
+  # Ladder games from earlier ticks finish while a later tick is current, so the
+  # round_position guard used by other types would silently drop them. Ladder has no
+  # break cycle and never auto-finishes a round, so just record the result (the strategy's
+  # maybe_create_rematch handles the empty-pool early tick and finish decision).
+  defp maybe_finish_live_match(state, %{type: "ladder"} = tournament, match, payload) do
+    if finished?(tournament) do
+      {:noreply, %{state | tournament: tournament}}
+    else
+      new_tournament = tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
+      update_tournament_info_cache(new_tournament)
+      {:noreply, %{state | tournament: new_tournament}}
     end
   end
 
