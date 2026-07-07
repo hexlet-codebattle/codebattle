@@ -49,7 +49,7 @@ defmodule CodebattleWeb.LobbyChannel do
           {:reply, {:ok, %{game_id: game.id}}, socket}
 
         {:error, reason} ->
-          {:reply, {:error, %{reason: reason}}, socket}
+          {:reply, {:error, error_payload(reason)}, socket}
       end
     end
   end
@@ -73,7 +73,7 @@ defmodule CodebattleWeb.LobbyChannel do
         {:reply, {:ok, %{game_id: game.id}}, socket}
 
       {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
+        {:reply, {:error, error_payload(reason)}, socket}
     end
   end
 
@@ -144,7 +144,7 @@ defmodule CodebattleWeb.LobbyChannel do
   def handle_info(_, socket), do: {:noreply, socket}
 
   defp can_user_see_game?(game, user) do
-    game.visibility_type == "public" || Game.Helpers.player?(game, user)
+    game.visibility_type == "public" || Game.Helpers.player?(game, user.id)
   end
 
   defp add_players(acc, %{"opponent_type" => "bot"}, user), do: Map.put(acc, :players, [user, Bot.Context.build()])
@@ -171,4 +171,13 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   defp maybe_add_task(params, _payload, _user), do: params
+
+  defp error_payload(:already_in_a_game) do
+    %{
+      reason: :already_in_a_game,
+      message: gettext("You are already in a game. Finish or cancel your current game before joining another one.")
+    }
+  end
+
+  defp error_payload(reason), do: %{reason: reason}
 end

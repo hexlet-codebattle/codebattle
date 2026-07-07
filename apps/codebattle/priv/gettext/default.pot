@@ -119,6 +119,11 @@ msgstr ""
 msgid "Failed to authenticate."
 msgstr ""
 
+#: lib/codebattle_web/controllers/fallback_controller.ex
+#: lib/codebattle_web/channels/lobby_channel.ex
+msgid "You are already in a game. Finish or cancel your current game before joining another one."
+msgstr ""
+
 #: lib/codebattle_web/controllers/auth_controller.ex:30
 msgid "Successfully authenticated"
 msgstr ""

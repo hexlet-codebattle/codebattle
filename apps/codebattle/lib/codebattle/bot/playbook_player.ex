@@ -8,7 +8,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   `time_to_solve_sec - 5s`.
   """
 
-  alias Codebattle.Bot
   alias Codebattle.Bot.PlaybookPlayer.Params
   alias Codebattle.Game
 
@@ -18,8 +17,8 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     @moduledoc false
     # `steps` is the precomputed list of actions the bot performs, each shaped as:
     #
-    #   %{command: :update_editor, text: "partial solution", timeout_ms: 1500}
-    #   %{command: :check_result,  text: "full solution",    timeout_ms: 0}
+    #   %{command: :update_editor, text: "partial editor text", timeout_ms: 1500}
+    #   %{command: :check_result,  text: "full solution",       timeout_ms: 0}
     #
     # `next_step/1` pops one step at a time, exposing `step_command`,
     # `editor_state` and `step_timeout_ms` for `Bot.Server` to act on.
@@ -52,6 +51,13 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     )a
   end
 
+  @type edit_op :: %{
+          required(:type) => :insert | :delete,
+          optional(:text) => String.t(),
+          optional(:phase) => :solution | :typo_insert | :typo_delete,
+          optional(:line) => non_neg_integer()
+        }
+
   # The bot submits a bit earlier than the full allotted time, so it looks like
   # a human who finished with a few seconds to spare.
   @submit_buffer_ms to_timeout(second: 5)
@@ -63,12 +69,14 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   # Lower bound for the total typing time, so tiny `time_to_solve_sec` values
   # don't make the bot submit instantly.
   @min_total_time_ms to_timeout(second: 5)
-
-  # Roughly how many characters the bot "types" per editor update. Controls how
-  # granular the typing animation looks; the total time is unaffected.
-  @chars_per_step 20
+  @max_activity_delay_ms 1_999
 
   @bot_lang "python"
+  @wrong_lines [
+    "print('debug')\n",
+    "# temporary check\n",
+    "tmp = None\n"
+  ]
 
   @spec init(%{game: Game.t(), bot_id: integer()}) ::
           {:ok, Params.t()} | {:error, :no_solution}
@@ -136,46 +144,250 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     max(@min_total_time_ms, @fallback_time_ms - @submit_buffer_ms)
   end
 
-  # Builds the typing animation: a list of `:update_editor` steps that reveal the
-  # solution incrementally, followed by a final `:check_result` submission.
-  #
-  # The number of typing steps is bounded so that each step waits at least
-  # `@min_bot_step_timeout`, while the sum of the waits stays close to
-  # `total_time_ms` (the last `:check_result` fires immediately after the last
-  # keystroke).
+  # Builds the typing animation from low-level edit operations:
+  #   * reference solution text becomes one `:insert` op per grapheme;
+  #   * short wrong lines become `:insert` ops followed by matching `:delete` ops;
+  #   * operation timings are weighted with deterministic white noise;
+  #   * the final `:check_result` submits the clean reference solution immediately.
   defp build_steps(solution, total_time_ms) do
-    length = String.length(solution)
-    steps_count = steps_count(length, total_time_ms)
-    interval = div(total_time_ms, steps_count)
+    operations = build_operations(solution)
+    states = build_editor_states(operations)
+    timeouts = distribute_timeouts(total_time_ms, operations, solution)
 
     typing_steps =
-      Enum.map(1..steps_count, fn i ->
-        chars = round(length * i / steps_count)
-
+      states
+      |> Enum.zip(timeouts)
+      |> expand_activity_steps()
+      |> Enum.map(fn {text, timeout_ms} ->
         %{
           command: :update_editor,
-          text: String.slice(solution, 0, chars),
-          timeout_ms: interval
+          text: text,
+          timeout_ms: timeout_ms
         }
       end)
 
     typing_steps ++ [%{command: :check_result, text: solution, timeout_ms: 0}]
   end
 
-  defp steps_count(length, total_time_ms) do
-    desired = max(1, div(length, @chars_per_step))
-
-    max_by_time = max_steps_by_time(total_time_ms, desired, min_bot_step_timeout())
-
-    desired
-    |> min(max_by_time)
-    |> min(max(length, 1))
+  defp expand_activity_steps(timed_states) do
+    Enum.flat_map(timed_states, fn {text, timeout_ms} ->
+      timeout_ms
+      |> split_timeout()
+      |> Enum.with_index()
+      |> Enum.map(&activity_step(text, &1))
+    end)
   end
 
-  defp max_steps_by_time(_total_time_ms, desired, timeout) when timeout <= 0, do: desired
-  defp max_steps_by_time(total_time_ms, _desired, timeout), do: max(1, div(total_time_ms, timeout))
+  defp activity_step(text, {timeout_ms, index}) when rem(index, 2) == 0, do: {text, timeout_ms}
+  defp activity_step(text, {timeout_ms, _index}), do: {text <> filler_char(text), timeout_ms}
 
-  defp min_bot_step_timeout do
-    Application.get_env(:codebattle, Bot)[:min_bot_step_timeout]
+  defp split_timeout(timeout_ms) when timeout_ms <= @max_activity_delay_ms, do: [timeout_ms]
+
+  defp split_timeout(timeout_ms) do
+    parts_count =
+      timeout_ms
+      |> div_ceil(@max_activity_delay_ms)
+      |> odd_count()
+
+    interval = div(timeout_ms, parts_count)
+    remainder = rem(timeout_ms, parts_count)
+
+    Enum.map(0..(parts_count - 1), fn index ->
+      if index < remainder, do: interval + 1, else: interval
+    end)
+  end
+
+  defp div_ceil(value, divisor), do: div(value + divisor - 1, divisor)
+
+  defp odd_count(value) when rem(value, 2) == 0, do: value + 1
+  defp odd_count(value), do: value
+
+  defp filler_char(text) do
+    case rem(:erlang.phash2(text), 3) do
+      0 -> "x"
+      1 -> "_"
+      _ -> "0"
+    end
+  end
+
+  @spec build_operations(String.t()) :: [edit_op()]
+  defp build_operations(solution) do
+    chars = String.graphemes(solution)
+    correction_positions = solution |> correction_positions() |> MapSet.new()
+
+    {operations, _line} =
+      chars
+      |> Enum.with_index(1)
+      |> Enum.reduce({[], 0}, fn {char, position}, {operations, line} ->
+        operation = %{type: :insert, text: char, phase: :solution, line: line}
+        operations = [operation | operations]
+        next_line = if char == "\n", do: line + 1, else: line
+
+        if MapSet.member?(correction_positions, position) do
+          correction_operations = build_correction_operations(solution, position, next_line)
+          {Enum.reverse(correction_operations, operations), next_line}
+        else
+          {operations, next_line}
+        end
+      end)
+
+    Enum.reverse(operations)
+  end
+
+  defp build_correction_operations(solution, position, line) do
+    wrong_line = wrong_line(solution, position)
+
+    insert_operations =
+      wrong_line
+      |> String.graphemes()
+      |> Enum.map(&%{type: :insert, text: &1, phase: :typo_insert, line: line})
+
+    delete_operations =
+      wrong_line
+      |> String.graphemes()
+      |> Enum.map(fn _char -> %{type: :delete, phase: :typo_delete, line: line} end)
+
+    insert_operations ++ delete_operations
+  end
+
+  defp build_editor_states(operations) do
+    Enum.scan(operations, "", &apply_operation/2)
+  end
+
+  defp apply_operation(%{type: :insert, text: text}, current_text), do: current_text <> text
+
+  defp apply_operation(%{type: :delete}, current_text) do
+    current_text
+    |> String.graphemes()
+    |> Enum.drop(-1)
+    |> Enum.join()
+  end
+
+  defp correction_positions(solution) do
+    length = String.length(solution)
+    max_corrections = correction_count(length)
+
+    if max_corrections == 0 do
+      []
+    else
+      chars = String.graphemes(solution)
+
+      newline_positions =
+        chars
+        |> Enum.with_index(1)
+        |> Enum.filter(fn {char, position} -> char == "\n" and position < length end)
+        |> Enum.map(&elem(&1, 1))
+
+      targets =
+        case max_corrections do
+          1 -> [div(length, 2)]
+          _ -> [div(length, 3), div(length * 2, 3)]
+        end
+
+      targets
+      |> Enum.map(&nearest_position(newline_positions, &1, length))
+      |> Enum.uniq()
+      |> Enum.take(max_corrections)
+    end
+  end
+
+  defp correction_count(length) when length < 40, do: 0
+  defp correction_count(length) when length < 120, do: 1
+  defp correction_count(_length), do: 2
+
+  defp nearest_position([], target, length), do: max(1, min(target, length - 1))
+
+  defp nearest_position(positions, target, _length) do
+    Enum.min_by(positions, &abs(&1 - target))
+  end
+
+  defp wrong_line(solution, position) do
+    index = :erlang.phash2({solution, position}, length(@wrong_lines))
+    line = Enum.at(@wrong_lines, index)
+
+    if position == 0 or String.at(solution, position - 1) == "\n" do
+      line
+    else
+      "\n" <> line
+    end
+  end
+
+  defp distribute_timeouts(_total_time_ms, [], _solution), do: []
+
+  defp distribute_timeouts(total_time_ms, operations, solution) do
+    weighted_operations =
+      operations
+      |> Enum.with_index()
+      |> Enum.map(fn {operation, index} ->
+        {operation, operation_weight(operation, index, solution)}
+      end)
+
+    total_weight =
+      weighted_operations
+      |> Enum.map(&elem(&1, 1))
+      |> Enum.sum()
+
+    {timeouts, allocated_ms} =
+      Enum.map_reduce(weighted_operations, 0, fn {_operation, weight}, allocated_ms ->
+        timeout_ms = div(total_time_ms * weight, total_weight)
+        {timeout_ms, allocated_ms + timeout_ms}
+      end)
+
+    add_remainder(timeouts, total_time_ms - allocated_ms)
+  end
+
+  defp operation_weight(%{type: :delete} = operation, index, solution) do
+    13
+    |> add_line_tempo(operation)
+    |> add_noise(index, solution, 5)
+    |> max(1)
+  end
+
+  defp operation_weight(%{type: :insert, phase: :typo_insert} = operation, index, solution) do
+    7
+    |> add_line_tempo(operation)
+    |> add_noise(index, solution, 4)
+    |> max(1)
+  end
+
+  defp operation_weight(%{type: :insert, text: "\n"} = operation, index, solution) do
+    20
+    |> add_line_tempo(operation)
+    |> add_noise(index, solution, 6)
+    |> max(1)
+  end
+
+  defp operation_weight(%{type: :insert, text: text} = operation, index, solution) do
+    text
+    |> char_weight()
+    |> add_line_tempo(operation)
+    |> add_noise(index, solution, 4)
+    |> max(1)
+  end
+
+  defp char_weight(text) when text in [" ", "\t"], do: 6
+  defp char_weight(text) when text in ["(", ")", "[", "]", "{", "}", ",", ".", ":", "_"], do: 11
+  defp char_weight(_text), do: 9
+
+  defp add_line_tempo(weight, %{line: line}) do
+    line_tempo = rem(line * 7 + 3, 9) - 4
+    weight + line_tempo
+  end
+
+  defp add_line_tempo(weight, _operation), do: weight
+
+  defp add_noise(weight, index, solution, amplitude) do
+    noise = rem(:erlang.phash2({solution, index}, amplitude * 2 + 1), amplitude * 2 + 1) - amplitude
+    weight + noise
+  end
+
+  defp add_remainder(timeouts, 0), do: timeouts
+
+  defp add_remainder(timeouts, remainder) do
+    timeouts
+    |> Enum.with_index()
+    |> Enum.map(fn {timeout_ms, index} ->
+      if index < remainder, do: timeout_ms + 1, else: timeout_ms
+    end)
   end
 end

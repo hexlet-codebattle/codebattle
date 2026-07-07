@@ -685,8 +685,8 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp build_round_matches(tournament, round_params) do
-        case Map.get(round_params, :match_blueprints) do
-          blueprints when is_list(blueprints) and blueprints != [] ->
+        case round_params do
+          %{match_blueprints: blueprints} when is_list(blueprints) ->
             build_round_matches_from_blueprints(tournament, blueprints)
 
           _ ->

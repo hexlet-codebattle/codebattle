@@ -17,7 +17,11 @@ defmodule Codebattle.Game.Auth do
   def player_can_play_game?(player) do
     is_player =
       Enum.any?(Game.Context.get_active_games(), fn game ->
-        Game.Helpers.player?(game, player.id)
+        case Game.Helpers.get_player(game, player.id) do
+          %{is_bot: true} -> false
+          nil -> false
+          _player -> true
+        end
       end)
 
     if is_player do

@@ -21,7 +21,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
   """
 
   describe "init/1 and next_step/1" do
-    test "types the python solution incrementally and submits it at the end" do
+    test "types the python solution character by character and submits it at the end" do
       {:ok, params} = PlaybookPlayer.init(%{game: build_game(), bot_id: @bot_id})
 
       assert params.lang == "python"
@@ -29,14 +29,26 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
       steps = collect_steps(params)
       commands = Enum.map(steps, & &1.step_command)
       texts = Enum.map(steps, fn step -> elem(step.editor_state, 0) end)
+      update_texts = Enum.drop(texts, -1)
+      update_lengths = Enum.map(update_texts, &String.length/1)
 
       # every step but the last one types into the editor, the last one submits
       assert List.last(commands) == :check_result
       assert commands |> Enum.drop(-1) |> Enum.all?(&(&1 == :update_editor))
 
-      # every typed text is a growing prefix of the solution, ending with the full one
-      assert Enum.all?(texts, &String.starts_with?(@python_solution, &1))
-      assert texts == Enum.sort_by(texts, &String.length/1)
+      # the bot types wrong text and deletes it before continuing with the clean solution
+      assert Enum.any?(update_texts, &(not String.starts_with?(@python_solution, &1)))
+      assert Enum.any?(Enum.chunk_every(update_lengths, 2, 1, :discard), fn [prev, next] -> next < prev end)
+      assert Enum.all?(Enum.chunk_every(update_texts, 2, 1, :discard), fn [prev, next] -> prev != next end)
+
+      edit_deltas =
+        update_lengths
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [prev, next] -> next - prev end)
+        |> Enum.reject(&(&1 == 0))
+
+      assert Enum.all?(edit_deltas, &(abs(&1) == 1))
+
       assert List.last(texts) == @python_solution
     end
 
@@ -47,12 +59,38 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
 
       steps = collect_steps(params)
       typing_steps = Enum.drop(steps, -1)
-      total_typing_ms = typing_steps |> Enum.map(& &1.step_timeout_ms) |> Enum.sum()
+      typing_timeouts = Enum.map(typing_steps, & &1.step_timeout_ms)
+      total_typing_ms = Enum.sum(typing_timeouts)
 
-      # integer division loses at most (steps - 1) ms across the run
-      assert_in_delta total_typing_ms, 95_000, length(typing_steps)
+      assert total_typing_ms == 95_000
+      assert Enum.max(typing_timeouts) < 2_000
+      assert typing_timeouts |> Enum.uniq() |> length() > 1
       # the final submission fires right after the last keystroke
       assert List.last(steps).step_timeout_ms == 0
+    end
+
+    test "keeps activity delays under 2 seconds even for short solutions" do
+      {:ok, params} =
+        PlaybookPlayer.init(%{
+          game: build_game(%{solutions: %{"python" => "x = 1\n"}, time_to_solve_sec: 100}),
+          bot_id: @bot_id
+        })
+
+      steps = collect_steps(params)
+
+      typing_timeouts =
+        steps
+        |> Enum.drop(-1)
+        |> Enum.map(& &1.step_timeout_ms)
+
+      update_texts =
+        steps
+        |> Enum.drop(-1)
+        |> Enum.map(fn step -> elem(step.editor_state, 0) end)
+
+      assert Enum.sum(typing_timeouts) == 95_000
+      assert Enum.max(typing_timeouts) < 2_000
+      assert Enum.all?(Enum.chunk_every(update_texts, 2, 1, :discard), fn [prev, next] -> prev != next end)
     end
 
     test "falls back to 3 minutes when the task has no time_to_solve_sec" do

@@ -40,6 +40,7 @@ defmodule Codebattle.Game.BotDetection do
   alias Codebattle.Game.EditorEventBatch
   alias Codebattle.Game.Helpers
   alias Codebattle.Repo
+  alias Codebattle.User
 
   @doc """
   Run the full pipeline for the given game and return one `Analysis`
@@ -52,7 +53,11 @@ defmodule Codebattle.Game.BotDetection do
       {:ok, game} ->
         batches = EditorEventBatch.list_by_game(game.id)
         batches_by_user = Enum.group_by(batches, & &1.user_id)
-        players = Helpers.get_players(game)
+
+        players =
+          game
+          |> Helpers.get_players()
+          |> Enum.reject(&ignored_player?/1)
 
         analyses =
           Enum.map(players, fn player ->
@@ -126,6 +131,7 @@ defmodule Codebattle.Game.BotDetection do
     analyses
     |> Enum.reduce_while({:ok, []}, fn analysis, {:ok, acc} ->
       case upsert_report(analysis) do
+        {:ok, nil} -> {:cont, {:ok, acc}}
         {:ok, report} -> {:cont, {:ok, [report | acc]}}
         {:error, changeset} -> {:halt, {:error, changeset}}
       end
@@ -139,14 +145,23 @@ defmodule Codebattle.Game.BotDetection do
   defp upsert_report(%Analysis{} = analysis) do
     attrs = PlayerReport.from_analysis(analysis)
 
-    %PlayerReport{}
-    |> PlayerReport.changeset(attrs)
-    |> Repo.insert(
-      on_conflict: {:replace_all_except, [:id, :inserted_at]},
-      conflict_target: [:game_id, :user_id],
-      returning: true
-    )
+    if Repo.exists?(from(u in User, where: u.id == ^analysis.user_id and u.is_bot == false)) do
+      %PlayerReport{}
+      |> PlayerReport.changeset(attrs)
+      |> Repo.insert(
+        on_conflict: {:replace_all_except, [:id, :inserted_at]},
+        conflict_target: [:game_id, :user_id],
+        returning: true
+      )
+    else
+      {:ok, nil}
+    end
   end
+
+  defp ignored_player?(%{is_bot: true}), do: true
+  defp ignored_player?(%{is_guest: true}), do: true
+  defp ignored_player?(%{id: nil}), do: true
+  defp ignored_player?(_player), do: false
 
   @doc """
   Read all persisted reports for a game, ordered by user id.

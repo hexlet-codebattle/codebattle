@@ -13,15 +13,8 @@ defmodule CodebattleWeb.FallbackController do
   end
 
   def call(conn, {:error, reason}) do
-    message =
-      case reason do
-        :draining -> "Deployment in progress, try again in a few moments"
-        reason when is_binary(reason) -> reason
-        _ -> inspect(reason)
-      end
-
     conn
-    |> put_flash(:danger, message)
+    |> put_flash(:danger, error_message(reason))
     |> redirect(to: Routes.root_path(conn, :index))
   end
 
@@ -37,4 +30,12 @@ defmodule CodebattleWeb.FallbackController do
       "#{acc}#{k}: #{joined_errors}\n"
     end)
   end
+
+  defp error_message(:already_in_a_game) do
+    gettext("You are already in a game. Finish or cancel your current game before joining another one.")
+  end
+
+  defp error_message(:draining), do: gettext("Deployment in progress, try again in a few moments")
+  defp error_message(reason) when is_binary(reason), do: reason
+  defp error_message(reason), do: inspect(reason)
 end

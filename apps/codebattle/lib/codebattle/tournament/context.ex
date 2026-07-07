@@ -864,8 +864,12 @@ defmodule Codebattle.Tournament.Context do
 
   defp load_round_blueprints(tournament_id, round_position) do
     from(g in Game,
-      where: g.tournament_id == ^tournament_id and g.round_position == ^round_position,
-      order_by: [asc: g.ref]
+      where:
+        g.tournament_id == ^tournament_id and
+          g.round_position == ^round_position and
+          g.state == "playing",
+      distinct: g.ref,
+      order_by: [asc: g.ref, desc: g.id]
     )
     |> Repo.all()
     |> Enum.map(fn game ->

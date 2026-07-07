@@ -155,6 +155,11 @@ msgstr "Неверное имя пользователя или пароль"
 msgid "Failed to authenticate."
 msgstr "Ошибка аутентификации."
 
+#: lib/codebattle_web/controllers/fallback_controller.ex
+#: lib/codebattle_web/channels/lobby_channel.ex
+msgid "You are already in a game. Finish or cancel your current game before joining another one."
+msgstr "Вы уже в игре. Завершите или отмените текущую игру, прежде чем присоединиться к другой."
+
 #: lib/codebattle_web/controllers/auth_controller.ex:30
 msgid "Successfully authenticated"
 msgstr "Успешная аутентификация."

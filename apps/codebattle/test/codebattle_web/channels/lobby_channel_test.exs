@@ -4,6 +4,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
   import ExUnit.CaptureIO
 
   alias Codebattle.Game
+  alias CodebattleWeb.Api.LobbyView
   alias CodebattleWeb.LobbyChannel
   alias CodebattleWeb.UserSocket
   alias Phoenix.Socket.Message
@@ -48,6 +49,21 @@ defmodule CodebattleWeb.LobbyChannelTest do
     assert_receive %Message{
       event: "game:upsert"
     }
+  end
+
+  test "shows a user's own hidden active games" do
+    user = insert(:user)
+    insert(:task, level: "easy")
+
+    {:ok, game} =
+      Game.Context.create_game(%{
+        state: "waiting_opponent",
+        players: [user],
+        level: "easy",
+        visibility_type: "hidden"
+      })
+
+    assert Enum.any?(LobbyView.render_active_games(user), &(&1.id == game.id))
   end
 
   test "creates game with bot" do
