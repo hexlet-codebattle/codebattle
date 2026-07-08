@@ -138,7 +138,7 @@ defmodule Codebattle.Task do
           arguments_generator: Map.get(params, :arguments_generator, ""),
           asserts: params.asserts,
           asserts_examples: Map.get(params, :asserts_examples, []),
-          base_score: Map.get(params, :base_score),
+          base_score: Map.get(params, :base_score, 60),
           comment: Map.get(params, :comment),
           creator_id: params[:creator_id],
           description_en: params.description_en,
