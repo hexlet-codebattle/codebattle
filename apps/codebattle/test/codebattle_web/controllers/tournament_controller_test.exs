@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.LiveViewTournamentControllerTest do
+defmodule CodebattleWeb.TournamentControllerTest do
   use CodebattleWeb.ConnCase
 
   alias Codebattle.Tournament

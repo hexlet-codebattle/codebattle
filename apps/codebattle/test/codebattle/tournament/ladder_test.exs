@@ -132,21 +132,75 @@ defmodule Codebattle.Tournament.LadderTest do
     end
   end
 
+  describe "round timeout" do
+    test "uses current task base_score as the next matchmaking tick timeout" do
+      task0 = insert(:task, base_score: 90, time_to_solve_sec: 70)
+      task1 = insert(:task, base_score: 150, time_to_solve_sec: 120)
+
+      tournament =
+        build_live_tournament(%{
+          current_round_position: 0,
+          round_timeout_seconds: 60,
+          timeout_mode: "per_task",
+          task_ids: [task0.id, task1.id]
+        })
+
+      Tournament.Tasks.put_tasks(tournament, [task0, task1])
+
+      assert Ladder.round_timeout_seconds(tournament) == 90
+      assert Ladder.round_timeout_seconds(%{tournament | current_round_position: 1}) == 150
+    end
+
+    test "uses 3/4 of configured round_timeout_seconds when timeout mode is not per_task" do
+      task = insert(:task, base_score: 90, time_to_solve_sec: 70)
+
+      tournament =
+        build_live_tournament(%{
+          current_round_position: 0,
+          round_timeout_seconds: 60,
+          timeout_mode: "per_round_fixed",
+          task_ids: [task.id]
+        })
+
+      Tournament.Tasks.put_task(tournament, task)
+
+      assert Ladder.round_timeout_seconds(tournament) == 45
+    end
+
+    test "falls back to configured round_timeout_seconds in per_task when the current task is missing" do
+      tournament =
+        build_live_tournament(%{
+          current_round_position: 0,
+          round_timeout_seconds: 60,
+          timeout_mode: "per_task",
+          task_ids: []
+        })
+
+      assert Ladder.round_timeout_seconds(tournament) == 60
+    end
+  end
+
   describe "server matchmaking tick" do
     test "re-arms the next tick while the tournament is active" do
+      task = insert(:task, base_score: 2, time_to_solve_sec: 1)
+
       tournament =
         build_live_tournament(%{
           players_count: 0,
           rounds_limit: 3,
-          round_timeout_seconds: 1
+          round_timeout_seconds: 60,
+          timeout_mode: "per_task",
+          task_ids: [task.id]
         })
+
+      Tournament.Tasks.put_task(tournament, task)
 
       state = %{tournament: tournament, frozen: false, break_timer_expired: false}
 
       assert {:noreply, %{tournament: %{state: "active"}}} =
                Server.handle_info(:matchmaking_tick, state)
 
-      assert_receive :matchmaking_tick, 1_500
+      assert_receive :matchmaking_tick, 2_500
     end
 
     test "does nothing for a non-ladder tournament" do
@@ -159,7 +213,7 @@ defmodule Codebattle.Tournament.LadderTest do
   end
 
   describe "config validation" do
-    test "coerces per_task / static_base_score / by_user and keeps round_timeout_seconds" do
+    test "coerces static_base_score / by_user and keeps timeout mode and round_timeout_seconds" do
       changeset =
         TournamentContext.validate(%{
           "name" => "ladder cfg",
@@ -173,7 +227,7 @@ defmodule Codebattle.Tournament.LadderTest do
           "rounds_limit" => 8
         })
 
-      assert Ecto.Changeset.get_field(changeset, :timeout_mode) == "per_task"
+      assert Ecto.Changeset.get_field(changeset, :timeout_mode) == "per_round_fixed"
       assert Ecto.Changeset.get_field(changeset, :score_strategy) == "static_base_score"
       assert Ecto.Changeset.get_field(changeset, :ranking_type) == "by_user"
       assert Ecto.Changeset.get_field(changeset, :round_timeout_seconds) == 60
@@ -191,6 +245,23 @@ defmodule Codebattle.Tournament.LadderTest do
 
       refute changeset.valid?
       assert %{round_timeout_seconds: _} = errors_on(changeset)
+    end
+
+    test "keeps round_timeout_seconds for ladder per_task payloads" do
+      changeset =
+        TournamentContext.validate(%{
+          "name" => "ladder cfg",
+          "description" => "ladder cfg",
+          "starts_at" => "2026-01-01T12:00",
+          "type" => "ladder",
+          "timeout_mode" => "per_task",
+          "round_timeout_seconds" => 60,
+          "rounds_limit" => 8
+        })
+
+      assert changeset.valid?
+      assert Ecto.Changeset.get_field(changeset, :timeout_mode) == "per_task"
+      assert Ecto.Changeset.get_field(changeset, :round_timeout_seconds) == 60
     end
 
     test "creates a ladder tournament end to end" do

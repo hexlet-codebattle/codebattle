@@ -13,11 +13,31 @@ defmodule CodebattleWeb.TournamentController do
   def index(conn, _params) do
     current_user = conn.assigns[:current_user]
 
-    live_render(conn, CodebattleWeb.Live.Tournament.IndexView,
-      session: %{
-        "current_user" => current_user,
-        "tournaments" => current_user |> Tournament.Context.list_live_and_finished() |> Enum.take(5)
-      }
+    user_timezone = get_in(conn.private, [:connect_params, "timezone"]) || "UTC"
+
+    task_pack_names =
+      current_user
+      |> Codebattle.TaskPack.list_visible()
+      |> Enum.map(& &1.name)
+
+    tournaments =
+      current_user
+      |> Tournament.Context.list_live_and_finished()
+      |> Enum.take(5)
+      |> Enum.map(&index_tournament_json/1)
+
+    conn
+    |> put_view(CodebattleWeb.TournamentView)
+    |> put_meta_tags(%{
+      title: "Hexlet Codebattle • Tournaments",
+      description:
+        "Create or join nice tournaments, have fun with your teammates! You can play `Frontend vs Backend` or `Ruby vs Js`",
+      url: Routes.tournament_url(conn, :index)
+    })
+    |> render("index.html",
+      tournaments: tournaments,
+      task_pack_names: task_pack_names,
+      user_timezone: user_timezone
     )
   end
 
@@ -117,5 +137,16 @@ defmodule CodebattleWeb.TournamentController do
     |> put_gon(event_id: tournament.event_id)
     |> put_gon(tournament_access_token: params["access_token"])
     |> render("show.html")
+  end
+
+  defp index_tournament_json(tournament) do
+    %{
+      id: tournament.id,
+      name: tournament.name,
+      type: tournament.type,
+      level: tournament.level,
+      state: tournament.state,
+      starts_at: tournament.starts_at
+    }
   end
 end

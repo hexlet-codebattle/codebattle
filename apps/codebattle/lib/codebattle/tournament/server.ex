@@ -681,7 +681,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   defp schedule_matchmaking_tick(tournament) do
-    interval = max(tournament.round_timeout_seconds || 60, 1)
+    interval = max(tournament.module.round_timeout_seconds(tournament) || 60, 1)
     Process.send_after(self(), :matchmaking_tick, to_timeout(second: interval))
   end
 

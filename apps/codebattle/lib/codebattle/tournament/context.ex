@@ -513,25 +513,25 @@ defmodule Codebattle.Tournament.Context do
       |> Map.put(:creator, params["creator"] || %{})
       |> normalize_moderator_ids()
 
-    timeout_mode =
-      params[:timeout_mode] ||
-        cond do
-          params[:tournament_timeout_seconds] not in [nil, ""] -> "per_tournament"
-          params[:round_timeout_seconds] not in [nil, ""] -> "per_round_fixed"
-          true -> "per_task"
-        end
+    timeout_mode = params[:timeout_mode] || default_timeout_mode(params)
 
     params =
-      case timeout_mode do
-        "per_task" ->
+      case {params[:type], timeout_mode} do
+        {"ladder", _mode} ->
+          Map.put(params, :tournament_timeout_seconds, nil)
+
+        {:ladder, _mode} ->
+          Map.put(params, :tournament_timeout_seconds, nil)
+
+        {_type, "per_task"} ->
           params
           |> Map.put(:round_timeout_seconds, nil)
           |> Map.put(:tournament_timeout_seconds, nil)
 
-        mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
+        {_type, mode} when mode in ["per_round_fixed", "per_round_with_rematch"] ->
           Map.put(params, :tournament_timeout_seconds, nil)
 
-        "per_tournament" ->
+        {_type, "per_tournament"} ->
           Map.put(params, :round_timeout_seconds, nil)
 
         # Pass through unknown modes — changeset validation will reject them
@@ -571,6 +571,16 @@ defmodule Codebattle.Tournament.Context do
       meta: parse_meta(params),
       show_results: show_results
     })
+  end
+
+  defp default_timeout_mode(%{type: type}) when type in ["ladder", :ladder], do: "per_task"
+
+  defp default_timeout_mode(params) do
+    cond do
+      params[:tournament_timeout_seconds] not in [nil, ""] -> "per_tournament"
+      params[:round_timeout_seconds] not in [nil, ""] -> "per_round_fixed"
+      true -> "per_task"
+    end
   end
 
   defp parse_meta(%{meta_json: meta_json}) when is_binary(meta_json) and meta_json != "" do

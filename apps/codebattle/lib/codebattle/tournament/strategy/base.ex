@@ -17,6 +17,7 @@ defmodule Codebattle.Tournament.Base do
   @callback finish_round_after_match?(Tournament.t()) :: boolean()
   @callback reset_meta(map()) :: map()
   @callback game_type() :: String.t()
+  @callback round_timeout_seconds(Tournament.t()) :: pos_integer() | nil
 
   # Optional: fired periodically by the server for continuous-matchmaking strategies
   # (e.g. Ladder). Default is a no-op so synchronized-round strategies are unaffected.
@@ -679,8 +680,14 @@ defmodule Codebattle.Tournament.Base do
       defp set_current_round_timeout_seconds(tournament, round_params) do
         task = get_task(tournament, get_task_id_by_params(round_params))
 
+        timeout_seconds =
+          case tournament.type do
+            "ladder" -> round_timeout_seconds(tournament)
+            _ -> get_round_game_timeout(tournament, task)
+          end
+
         update_struct(tournament, %{
-          current_round_timeout_seconds: get_round_game_timeout(tournament, task)
+          current_round_timeout_seconds: timeout_seconds
         })
       end
 
@@ -1185,18 +1192,21 @@ defmodule Codebattle.Tournament.Base do
       def matchmaking_tick(tournament), do: tournament
 
       defp get_round_game_timeout(tournament, task) do
-        case tournament.timeout_mode do
-          "per_tournament" ->
+        cond do
+          tournament.type == "ladder" and tournament.timeout_mode != "per_task" ->
+            tournament.round_timeout_seconds || 300
+
+          tournament.timeout_mode == "per_tournament" ->
             max(
               tournament.tournament_timeout_seconds -
                 DateTime.diff(DateTime.utc_now(), tournament.started_at),
               10
             )
 
-          mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
+          tournament.timeout_mode in ["per_round_fixed", "per_round_with_rematch"] ->
             round_timeout_seconds(tournament)
 
-          _per_task ->
+          true ->
             (task && task.time_to_solve_sec) || 300
         end
       end

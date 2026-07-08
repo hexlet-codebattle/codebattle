@@ -179,6 +179,39 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       assert current_round_timeout_seconds(%{tournament | task_ids: []}) == 300
     end
 
+    test "uses task base_score as current round timeout for ladder tournaments" do
+      task = insert(:task, base_score: 95, time_to_solve_sec: 45)
+
+      tournament =
+        build_ets_tournament(%{
+          type: "ladder",
+          timeout_mode: "per_task",
+          task_ids: [task.id],
+          current_round_position: 0
+        })
+
+      Tournament.Tasks.put_task(tournament, task)
+
+      assert current_round_timeout_seconds(tournament) == 95
+    end
+
+    test "uses 3/4 round_timeout_seconds as current round timeout for ladder when mode is not per_task" do
+      task = insert(:task, base_score: 95, time_to_solve_sec: 45)
+
+      tournament =
+        build_ets_tournament(%{
+          type: "ladder",
+          timeout_mode: "per_round_fixed",
+          round_timeout_seconds: 60,
+          task_ids: [task.id],
+          current_round_position: 0
+        })
+
+      Tournament.Tasks.put_task(tournament, task)
+
+      assert current_round_timeout_seconds(tournament) == 45
+    end
+
     test "builds json-safe tournament info, clan lookups, total games, and ranking stats" do
       clan = insert(:clan, name: "clan-a", long_name: "Clan A")
       task = insert(:task)

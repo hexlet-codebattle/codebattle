@@ -88,7 +88,7 @@ defmodule Codebattle.Task do
     field(:arguments_generator, :string, default: "")
     field(:generator_lang, :string, default: "js")
     field(:time_to_solve_sec, :integer, default: 180)
-    field(:base_score, :integer)
+    field(:base_score, :integer, default: 60)
 
     timestamps()
   end
@@ -120,7 +120,8 @@ defmodule Codebattle.Task do
       :type,
       :visibility
     ])
-    |> validate_required([:examples, :description_en, :name, :level, :asserts])
+    |> validate_required([:examples, :description_en, :name, :level, :asserts, :base_score])
+    |> validate_number(:base_score, greater_than: 0)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:level, @levels)
     |> validate_inclusion(:origin, @origin_types)

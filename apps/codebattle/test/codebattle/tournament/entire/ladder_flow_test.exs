@@ -9,7 +9,7 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
   alias Codebattle.Tournament.Server
 
   test "continuous matchmaking: finishing games triggers the next tick, no rematches, finishes" do
-    tasks = insert_list(3, :task, level: "easy", time_to_solve_sec: 70)
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
     insert(:task_pack, name: "ladder-flow", task_ids: Enum.map(tasks, & &1.id))
 
     creator = insert(:user)
@@ -72,8 +72,8 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert tournament.state == "finished"
   end
 
-  test "fast finishers get re-matched on the scheduled tick while a slow game is still playing" do
-    tasks = insert_list(3, :task, level: "easy", time_to_solve_sec: 70)
+  test "ladder tick timeout comes from task base_score while game timeout comes from time_to_solve_sec" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 90, time_to_solve_sec: 70)
     insert(:task_pack, name: "ladder-fast", task_ids: Enum.map(tasks, & &1.id))
 
     creator = insert(:user)
@@ -92,7 +92,7 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
         "task_strategy" => "sequential",
         "type" => "ladder",
         "state" => "waiting_participants",
-        "round_timeout_seconds" => 1,
+        "round_timeout_seconds" => 300,
         "rounds_limit" => "5",
         "players_limit" => 4
       })
@@ -101,20 +101,47 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     Server.handle_event(tournament.id, :start, %{user: creator})
 
     tournament = TournamentContext.get(tournament.id)
-    [fast_match, slow_match] = get_matches(tournament, "playing")
+    [match | _] = get_matches(tournament, "playing")
 
-    # Finish only ONE of the two round-0 games, leaving the other still "playing".
-    finish_match(tournament, fast_match)
-    # Wait past the 1s scheduled tick interval.
-    Process.sleep(1_500)
+    assert tournament.current_round_timeout_seconds == 90
+    assert GameContext.get_game!(match.game_id).timeout_seconds == 70
+  end
+
+  test "fixed-time ladder uses round timeout for games and 3/4 round timeout for ticks" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-fixed-time", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(4, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder fixed time",
+        "description" => "ladder fixed time",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-fixed-time",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "timeout_mode" => "per_round_fixed",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 80,
+        "rounds_limit" => "5",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
 
     tournament = TournamentContext.get(tournament.id)
+    [match | _] = get_matches(tournament, "playing")
 
-    # The scheduled tick re-matched the two idle finishers into a new round while the
-    # slow game keeps running untouched.
-    assert tournament.current_round_position >= 1
-    assert Enum.any?(get_matches(tournament), &(&1.game_id == slow_match.game_id and &1.state == "playing"))
-    assert get_matches(tournament, "playing") != []
+    assert tournament.timeout_mode == "per_round_fixed"
+    assert tournament.current_round_timeout_seconds == 60
+    assert GameContext.get_game!(match.game_id).timeout_seconds == 80
   end
 
   defp finish_all_playing_matches(tournament) do

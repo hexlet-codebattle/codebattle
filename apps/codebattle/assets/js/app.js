@@ -60,6 +60,7 @@ import {
   renderTournamentAdminPage,
   renderTournamentPage,
   renderTournamentEditPage,
+  renderTournamentIndexPage,
   renderTournamentPlayerPage,
   renderTournamentsSchedule,
   renderUserPage,
@@ -124,6 +125,7 @@ const registrationRoot = document.getElementById("registration");
 const settingsRoot = document.getElementById("settings");
 const stairwayGameRoot = document.getElementById("stairway-game-root");
 const tournamentPlayerRoot = document.getElementById("tournament-player-root");
+const tournamentIndexRoot = document.getElementById("tournament-index-root");
 const tournamentRoot = document.getElementById("tournament-root");
 const tournamentEditRoot = document.getElementById("tournament-edit-root");
 const adminTournamentRoot = document.getElementById("tournament-admin-root");
@@ -188,6 +190,10 @@ if (stairwayGameRoot) {
 
 if (tournamentPlayerRoot) {
   renderTournamentPlayerPage(tournamentPlayerRoot);
+}
+
+if (tournamentIndexRoot) {
+  renderTournamentIndexPage(tournamentIndexRoot);
 }
 
 if (tournamentRoot) {

@@ -389,11 +389,6 @@ defmodule CodebattleWeb.Router do
       get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)
     end
 
-    scope "/tournaments" do
-      pipe_through(:empty_layout)
-      get("/:id/timer", LiveViewTournamentController, :show_timer, as: :tournament_timer)
-    end
-
     resources("/clans", ClanController, only: [:index, :show, :delete])
 
     get("/e/:slug", PublicEventController, :show)

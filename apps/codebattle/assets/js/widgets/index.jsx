@@ -26,6 +26,7 @@ import {
   TournamentAdminPage,
   TournamentPage,
   TournamentEditPage,
+  TournamentIndexPage,
   TournamentPlayerPage,
   TournamentsSchedulePage,
   UserPage,
@@ -72,6 +73,8 @@ export const renderTournamentPage = (domElement) =>
   createRoot(domElement).render(<TournamentPage />);
 export const renderTournamentEditPage = (domElement) =>
   createRoot(domElement).render(<TournamentEditPage />);
+export const renderTournamentIndexPage = (domElement) =>
+  createRoot(domElement).render(<TournamentIndexPage />);
 export const renderTournamentPlayerPage = (domElement) =>
   createRoot(domElement).render(<TournamentPlayerPage />);
 export const renderTournamentsSchedule = (domElement) =>

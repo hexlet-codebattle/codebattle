@@ -313,32 +313,50 @@ defmodule Codebattle.Tournament.Helpers do
     |> Map.put(:current_round_timeout_seconds, current_round_timeout_seconds(tournament))
   end
 
-  def current_round_timeout_seconds(tournament) do
-    cond do
-      is_integer(Map.get(tournament, :current_round_timeout_seconds)) ->
-        tournament.current_round_timeout_seconds
+  def current_round_timeout_seconds(%{current_round_timeout_seconds: seconds}) when is_integer(seconds), do: seconds
 
-      tournament.tournament_timeout_seconds && tournament.started_at ->
-        max(
-          tournament.tournament_timeout_seconds -
-            DateTime.diff(DateTime.utc_now(), tournament.started_at),
-          10
-        )
+  def current_round_timeout_seconds(%{tournament_timeout_seconds: seconds, started_at: started_at})
+      when is_integer(seconds) and not is_nil(started_at) do
+    max(seconds - DateTime.diff(DateTime.utc_now(), started_at), 10)
+  end
 
-      tournament.timeout_mode in ["per_round_fixed", "per_round_with_rematch"] and
-          is_integer(tournament.round_timeout_seconds) ->
-        tournament.round_timeout_seconds
+  def current_round_timeout_seconds(%{type: "ladder", timeout_mode: "per_task"} = tournament),
+    do: ladder_per_task_timeout(tournament)
 
-      true ->
-        tournament
-        |> TaskProvider.get_task(nil)
-        |> case do
-          %{time_to_solve_sec: time_to_solve_sec} when is_integer(time_to_solve_sec) ->
-            time_to_solve_sec
+  def current_round_timeout_seconds(%{type: "ladder", round_timeout_seconds: seconds}),
+    do: fixed_ladder_tick_timeout(seconds)
 
-          _ ->
-            300
-        end
+  def current_round_timeout_seconds(%{timeout_mode: mode, round_timeout_seconds: seconds})
+      when mode in ["per_round_fixed", "per_round_with_rematch"] and is_integer(seconds), do: seconds
+
+  def current_round_timeout_seconds(tournament), do: task_time_to_solve(tournament)
+
+  defp ladder_per_task_timeout(tournament) do
+    case TaskProvider.get_task(tournament, nil) do
+      %{base_score: base_score} when is_integer(base_score) and base_score > 0 ->
+        base_score
+
+      _ ->
+        tournament.round_timeout_seconds || 300
+    end
+  end
+
+  defp fixed_ladder_tick_timeout(seconds) when is_integer(seconds) and seconds > 0 do
+    seconds
+    |> Kernel.*(3)
+    |> div(4)
+    |> max(1)
+  end
+
+  defp fixed_ladder_tick_timeout(_seconds), do: 300
+
+  defp task_time_to_solve(tournament) do
+    case TaskProvider.get_task(tournament, nil) do
+      %{time_to_solve_sec: time_to_solve_sec} when is_integer(time_to_solve_sec) ->
+        time_to_solve_sec
+
+      _ ->
+        300
     end
   end
 

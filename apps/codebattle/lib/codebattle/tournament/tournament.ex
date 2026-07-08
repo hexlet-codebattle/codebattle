@@ -219,13 +219,12 @@ defmodule Codebattle.Tournament do
     |> add_creator(params["creator"] || params[:creator])
   end
 
-  # Ladder is a continuous pool-matchmaking format: `round_timeout_seconds` is the
-  # matching-tick interval, games time out on the task clock (`per_task`), and ranking
-  # uses `static_base_score` by user. Coerce those before the inclusion checks run.
+  # Ladder is a continuous pool-matchmaking format. Games time out on the task clock
+  # (`per_task`) or fixed round timeouts, ranking uses `static_base_score` by user, and
+  # matchmaking ticks are derived from the selected timeout mode.
   defp apply_ladder_config(%Ecto.Changeset{} = changeset) do
     if get_field(changeset, :type) == "ladder" do
       changeset
-      |> put_change(:timeout_mode, "per_task")
       |> put_change(:score_strategy, "static_base_score")
       |> put_change(:ranking_type, "by_user")
       |> validate_required([:round_timeout_seconds])
@@ -236,11 +235,14 @@ defmodule Codebattle.Tournament do
   end
 
   defp validate_round_timeout_for_mode(%Ecto.Changeset{} = changeset) do
-    case get_field(changeset, :timeout_mode) do
-      mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
+    case {get_field(changeset, :type), get_field(changeset, :timeout_mode)} do
+      {"ladder", _mode} ->
+        changeset
+
+      {_type, mode} when mode in ["per_round_fixed", "per_round_with_rematch"] ->
         validate_required(changeset, [:round_timeout_seconds])
 
-      "per_tournament" ->
+      {_type, "per_tournament"} ->
         validate_required(changeset, [:tournament_timeout_seconds])
 
       _ ->

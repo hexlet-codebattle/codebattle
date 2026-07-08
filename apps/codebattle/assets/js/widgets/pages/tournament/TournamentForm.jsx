@@ -75,7 +75,7 @@ function TournamentForm({
   onCancel,
 }) {
   const [formData, setFormData] = useState({
-    type: initialValues.type || "swiss",
+    type: initialValues.type || "ladder",
     name: initialValues.name || "",
     description: initialValues.description || "",
     creator_id: initialValues.creator_id || "",
@@ -90,7 +90,7 @@ function TournamentForm({
     players_limit: initialValues.players_limit || 64,
     rounds_limit: initialValues.rounds_limit || 7,
     timeout_mode: initialValues.timeout_mode || "per_task",
-    round_timeout_seconds: initialValues.round_timeout_seconds ?? 177,
+    round_timeout_seconds: initialValues.round_timeout_seconds ?? 60,
     tournament_timeout_seconds: initialValues.tournament_timeout_seconds ?? 3600,
     break_duration_seconds: initialValues.break_duration_seconds || 42,
     use_chat: initialValues.use_chat !== undefined ? initialValues.use_chat : true,
@@ -115,6 +115,13 @@ function TournamentForm({
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+      ...(name === "type" && value === "ladder"
+        ? {
+            timeout_mode: "per_task",
+            score_strategy: "static_base_score",
+            ranking_type: "by_user",
+          }
+        : {}),
     }));
   }, []);
 
@@ -131,9 +138,8 @@ function TournamentForm({
       const isLadder = formData.type === "ladder";
 
       if (isLadder) {
-        // Ladder repurposes round_timeout_seconds as the matching-tick interval and
-        // forces per_task / static_base_score / by_user (the backend also coerces these).
-        payload.timeout_mode = "per_task";
+        // Ladder always scores by static task base score per user. Its timeout mode
+        // controls whether ticks use task base_score (`per_task`) or fixed round time.
         payload.score_strategy = "static_base_score";
         payload.ranking_type = "by_user";
         payload.round_timeout_seconds = formData.round_timeout_seconds;
@@ -604,6 +610,7 @@ function TournamentForm({
                 )}
                 value={formData.score_strategy}
                 onChange={handleChange}
+                disabled={isLadder}
               >
                 {SCORE_STRATEGIES.map((strategy) => (
                   <option key={strategy.value} value={strategy.value}>
@@ -720,8 +727,8 @@ function TournamentForm({
               <label
                 htmlFor="tournament_timeout_seconds"
                 className={cn("form-label", {
-                  "text-white": formData.timeout_mode === "per_tournament",
-                  "text-muted": formData.timeout_mode !== "per_tournament",
+                  "text-white": !isLadder && formData.timeout_mode === "per_tournament",
+                  "text-muted": isLadder || formData.timeout_mode !== "per_tournament",
                 })}
               >
                 Tournament Timeout (seconds)
@@ -735,14 +742,14 @@ function TournamentForm({
                   "is-invalid": errors.tournament_timeout_seconds,
                 })}
                 value={
-                  formData.timeout_mode === "per_tournament"
+                  !isLadder && formData.timeout_mode === "per_tournament"
                     ? formData.tournament_timeout_seconds
                     : ""
                 }
                 onChange={handleChange}
                 min={60}
                 max={36000}
-                disabled={formData.timeout_mode !== "per_tournament"}
+                disabled={isLadder || formData.timeout_mode !== "per_tournament"}
               />
               {renderError("tournament_timeout_seconds")}
             </div>
@@ -802,6 +809,7 @@ function TournamentForm({
 
 TournamentForm.propTypes = {
   initialValues: PropTypes.shape({
+    type: PropTypes.oneOf(["swiss", "ladder"]),
     name: PropTypes.string,
     description: PropTypes.string,
     creator_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

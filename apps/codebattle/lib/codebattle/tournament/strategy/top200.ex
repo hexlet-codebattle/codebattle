@@ -19,6 +19,7 @@ defmodule Codebattle.Tournament.Top200 do
   #   5 раундов марафона (позиции 0..4) — по 3.5 мин (210 c);
   #   3 раунда плей-офф QF/SF/финал (позиции 5..7) — по 5 мин (300 c).
   # Значение читают и таймаут каждой игры, и таймер авто-финиша раунда.
+  @impl Tournament.Base
   def round_timeout_seconds(%{current_round_position: pos}) when pos in 0..4, do: 210
   def round_timeout_seconds(_tournament), do: 300
 

@@ -83,6 +83,7 @@ defmodule CodebattleWeb.Factory do
       visibility: "public",
       origin: "user",
       disabled: false,
+      base_score: 60,
       examples: "asfd"
     }
   end

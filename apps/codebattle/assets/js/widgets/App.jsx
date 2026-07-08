@@ -12,6 +12,7 @@ import machines from "@/machines";
 import reducers from "@/slices";
 
 import PageNames from "./config/pageNames";
+import { readTournamentIndexProps } from "./pages/tournament/TournamentIndex";
 
 const {
   game: mainMachine,
@@ -80,6 +81,7 @@ const TournamentStreamAdmin = React.lazy(
   () => import("./pages/tournament/TournamentStreamAdminPage"),
 );
 const TournamentEdit = React.lazy(() => import("./pages/tournament/EditTournament"));
+const TournamentIndex = React.lazy(() => import("./pages/tournament/TournamentIndex"));
 const TournamentPlayer = React.lazy(() => import("./pages/tournamentPlayer"));
 const GroupTournament = React.lazy(() => import("./pages/groupTournament"));
 const TournamentsSchedule = React.lazy(() => import("./pages/schedule"));
@@ -310,6 +312,21 @@ export function TournamentEditPage() {
             taskPackNames={taskPackNames}
             userTimezone={userTimezone}
           />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
+
+export function TournamentIndexPage() {
+  const container = document.getElementById("tournament-index-root");
+  const props = readTournamentIndexProps(container);
+
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <TournamentIndex {...props} />
         </Suspense>
       </PersistGate>
     </Provider>

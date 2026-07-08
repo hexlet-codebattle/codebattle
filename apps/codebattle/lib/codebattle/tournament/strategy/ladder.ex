@@ -5,12 +5,13 @@ defmodule Codebattle.Tournament.Ladder do
   Unlike Swiss (synchronized rounds where everyone waits for the slowest player),
   players sit in a waiting pool and are paired on a fixed interval (a "tick"). Each
   game runs on the task's own clock (`time_to_solve_sec`, via `timeout_mode: "per_task"`),
-  so a slow game just spans several ticks while the fast finishers get re-matched on the
-  next tick instead of waiting.
+  while the next matchmaking tick is derived from the timeout mode. In `per_task`, the
+  tick uses the task's `base_score`; in fixed-time modes, games use `round_timeout_seconds`
+  and the tick fires at 3/4 of that value.
 
   Config:
     * `rounds_limit`         — total number of matching ticks (each player plays ≤ N games)
-    * `round_timeout_seconds` — the tick interval in seconds
+    * `round_timeout_seconds` — fixed game timeout for non-`per_task` modes, and fallback tick interval
 
   Matching is score-sorted with no human rematches (`played_pair_ids`); any player left
   unmatched on a tick (odd count, already faced everyone available, or churn) is paired
@@ -37,6 +38,28 @@ defmodule Codebattle.Tournament.Ladder do
   # false keeps the server out of the round-finish/break machinery entirely.
   @impl Tournament.Base
   def finish_round_after_match?(_tournament), do: false
+
+  @impl Tournament.Base
+  def round_timeout_seconds(%{timeout_mode: "per_task"} = tournament) do
+    case get_task(tournament, nil) do
+      %{base_score: base_score} when is_integer(base_score) and base_score > 0 ->
+        base_score
+
+      _ ->
+        tournament.round_timeout_seconds
+    end
+  end
+
+  def round_timeout_seconds(tournament), do: fixed_tick_timeout(tournament.round_timeout_seconds)
+
+  defp fixed_tick_timeout(seconds) when is_integer(seconds) and seconds > 0 do
+    seconds
+    |> Kernel.*(3)
+    |> div(4)
+    |> max(1)
+  end
+
+  defp fixed_tick_timeout(_seconds), do: nil
 
   # The tournament is over once all `rounds_limit` ticks are dispatched and their games
   # have drained. The playing-matches guard also protects the framework's finish path from
@@ -96,6 +119,7 @@ defmodule Codebattle.Tournament.Ladder do
   defp run_tick(tournament, idle) do
     tournament = increment_current_round(tournament)
     tournament = build_and_save_round!(tournament)
+    tournament = update_struct(tournament, %{current_round_timeout_seconds: round_timeout_seconds(tournament)})
     {tournament, pairs} = pair_and_bot_fill(tournament, idle)
 
     {tournament, pairs}
