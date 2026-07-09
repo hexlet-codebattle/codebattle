@@ -1,0 +1,5 @@
+[tools]
+elixir = "1.19.4-otp-28"
+erlang = "28.2"
+nodejs = "24.11.0"
+go = "1.26.1"

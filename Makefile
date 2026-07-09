@@ -133,9 +133,7 @@ ARS_BIN ?= $(CURDIR)/tmp/ars
 ars:
 	@command -v go >/dev/null 2>&1 || { \
 		echo "go is required for ars. Install it first, for example:"; \
-		echo "  asdf plugin add golang https://github.com/asdf-community/asdf-golang.git"; \
-		echo "  asdf install golang 1.22.12"; \
-		echo "  asdf global golang 1.22.12"; \
+		echo "  mise use -g go@1.26.1"; \
 		exit 127; \
 	}
 	@mkdir -p $(ARS_GOCACHE) $(ARS_GOPATH)
@@ -167,9 +165,7 @@ DIMA_BIN ?= $(CURDIR)/tmp/dima
 dima:
 	@command -v go >/dev/null 2>&1 || { \
 		echo "go is required for dima. Install it first, for example:"; \
-		echo "  asdf plugin add golang https://github.com/asdf-community/asdf-golang.git"; \
-		echo "  asdf install golang 1.22.12"; \
-		echo "  asdf global golang 1.22.12"; \
+		echo "  mise use -g go@1.26.1"; \
 		exit 127; \
 	}
 	@mkdir -p $(DIMA_GOCACHE) $(DIMA_GOPATH)

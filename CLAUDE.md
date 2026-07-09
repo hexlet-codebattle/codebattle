@@ -62,7 +62,7 @@ make lint-js-fix                # Auto-fix JS lint issues
 ### Setup
 ```bash
 make setup                      # Full first-time setup (Docker)
-make setup-env-local            # Local setup without Docker (requires asdf)
+make setup-env-local            # Local setup without Docker (requires mise)
 make compose-db-setup           # Create + migrate database
 make compose-db-migrate         # Apply pending migrations
 ```
