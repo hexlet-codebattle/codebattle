@@ -9,7 +9,7 @@ RUN npm install --global pnpm
 COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml ./
 RUN pnpm install
 
-COPY apps/codebattle/postcss.config.js apps/codebattle/.babelrc apps/codebattle/vite.config.js ./
+COPY apps/codebattle/postcss.config.js apps/codebattle/vite.config.js ./
 COPY apps/codebattle/assets ./assets
 COPY apps/codebattle/priv/gettext ./priv/gettext
 
