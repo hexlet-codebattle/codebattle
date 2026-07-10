@@ -1,24 +1,24 @@
-import React, { useCallback, useMemo, useState, memo, useContext } from "react";
+import React, { useCallback, useMemo, useState, memo, useContext } from 'react';
 
-import cn from "classnames";
-import Button from "react-bootstrap/Button";
-import moment from "moment";
+import cn from 'classnames';
+import Button from 'react-bootstrap/Button';
+import moment from 'moment';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import CustomEventStylesContext from "../../components/CustomEventStylesContext";
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 
 const formatValue = (value) => {
-  if (value === null || value === undefined || value === "") {
+  if (value === null || value === undefined || value === '') {
     return null;
   }
 
-  if (typeof value === "boolean") {
-    return value ? "Yes" : "No";
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
   }
 
   if (Array.isArray(value)) {
-    return value.length > 0 ? value.join(", ") : null;
+    return value.length > 0 ? value.join(', ') : null;
   }
 
   return String(value);
@@ -29,7 +29,7 @@ const formatDate = (value) => {
     return null;
   }
 
-  return moment.utc(value).format("YYYY-MM-DD HH:mm:ss [UTC]");
+  return moment.utc(value).format('YYYY-MM-DD HH:mm:ss [UTC]');
 };
 
 function DetailSection({ title, items }) {
@@ -61,7 +61,7 @@ function RawJsonSection({ tournament }) {
   return (
     <pre
       className="cb-bg-highlight-panel cb-rounded p-3 mb-0 small cb-text"
-      style={{ maxHeight: 400, overflow: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+      style={{ maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
     >
       {json}
     </pre>
@@ -72,75 +72,75 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }) {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   const [showRawJson, setShowRawJson] = useState(false);
 
-  const closeBtnClassName = cn("btn rounded-lg", {
-    "btn-secondary": !hasCustomEventStyles,
-    "cb-custome-event-btn-secondary": !hasCustomEventStyles,
+  const closeBtnClassName = cn('btn rounded-lg', {
+    'btn-secondary': !hasCustomEventStyles,
+    'cb-custome-event-btn-secondary': !hasCustomEventStyles,
   });
 
   const detailSections = useMemo(() => {
     const sections = [
       {
-        title: "Overview",
+        title: 'Overview',
         items: [
-          { label: "Name", value: formatValue(tournament.name) },
-          { label: "State", value: formatValue(tournament.state) },
-          { label: "Type", value: formatValue(tournament.type) },
-          { label: "Level", value: formatValue(tournament.level) },
-          { label: "Access", value: formatValue(tournament.accessType) },
-          { label: "Ranking type", value: formatValue(tournament.rankingType) },
+          { label: 'Name', value: formatValue(tournament.name) },
+          { label: 'State', value: formatValue(tournament.state) },
+          { label: 'Type', value: formatValue(tournament.type) },
+          { label: 'Level', value: formatValue(tournament.level) },
+          { label: 'Access', value: formatValue(tournament.accessType) },
+          { label: 'Ranking type', value: formatValue(tournament.rankingType) },
         ],
       },
       {
-        title: "Schedule",
+        title: 'Schedule',
         items: [
-          { label: "Starts at", value: formatDate(tournament.startsAt) },
-          { label: "Created at", value: formatDate(tournament.insertedAt) },
-          { label: "Updated at", value: formatDate(tournament.updatedAt) },
-          { label: "Rounds limit", value: formatValue(tournament.roundsLimit) },
-          { label: "Current round", value: formatValue(tournament.currentRoundPosition) },
+          { label: 'Starts at', value: formatDate(tournament.startsAt) },
+          { label: 'Created at', value: formatDate(tournament.insertedAt) },
+          { label: 'Updated at', value: formatDate(tournament.updatedAt) },
+          { label: 'Rounds limit', value: formatValue(tournament.roundsLimit) },
+          { label: 'Current round', value: formatValue(tournament.currentRoundPosition) },
         ],
       },
       {
-        title: "Timeouts",
+        title: 'Timeouts',
         items: [
-          { label: "Timeout mode", value: formatValue(tournament.timeoutMode) },
+          { label: 'Timeout mode', value: formatValue(tournament.timeoutMode) },
           {
-            label: "Round timeout",
+            label: 'Round timeout',
             value: formatValue(tournament.roundTimeoutSeconds),
           },
           {
-            label: "Current round timeout",
+            label: 'Current round timeout',
             value: formatValue(tournament.currentRoundTimeoutSeconds),
           },
           {
-            label: "Tournament timeout",
+            label: 'Tournament timeout',
             value: formatValue(tournament.tournamentTimeoutSeconds),
           },
           {
-            label: "Break duration",
+            label: 'Break duration',
             value: formatValue(tournament.breakDurationSeconds),
           },
         ],
       },
       {
-        title: "Participants",
+        title: 'Participants',
         items: [
-          { label: "Players", value: formatValue(tournament.playersCount) },
-          { label: "Players limit", value: formatValue(tournament.playersLimit) },
-          { label: "Bots visible", value: formatValue(tournament.showBots) },
-          { label: "Chat enabled", value: formatValue(tournament.useChat) },
-          { label: "Clan mode", value: formatValue(tournament.useClan) },
-          { label: "Live", value: formatValue(tournament.isLive) },
+          { label: 'Players', value: formatValue(tournament.playersCount) },
+          { label: 'Players limit', value: formatValue(tournament.playersLimit) },
+          { label: 'Bots visible', value: formatValue(tournament.showBots) },
+          { label: 'Chat enabled', value: formatValue(tournament.useChat) },
+          { label: 'Clan mode', value: formatValue(tournament.useClan) },
+          { label: 'Live', value: formatValue(tournament.isLive) },
         ],
       },
       {
-        title: "Task",
+        title: 'Task',
         items: [
-          { label: "Task provider", value: formatValue(tournament.taskProvider) },
-          { label: "Task pack", value: formatValue(tournament.taskPackName) },
-          { label: "Task strategy", value: formatValue(tournament.taskStrategy) },
-          { label: "Event ID", value: formatValue(tournament.eventId) },
-          { label: "Tournament ID", value: formatValue(tournament.id) },
+          { label: 'Task provider', value: formatValue(tournament.taskProvider) },
+          { label: 'Task pack', value: formatValue(tournament.taskPackName) },
+          { label: 'Task strategy', value: formatValue(tournament.taskStrategy) },
+          { label: 'Event ID', value: formatValue(tournament.eventId) },
+          { label: 'Tournament ID', value: formatValue(tournament.id) },
         ],
       },
     ];
@@ -181,7 +181,7 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }) {
           className="rounded-lg"
           onClick={() => setShowRawJson((v) => !v)}
         >
-          {showRawJson ? "Hide JSON" : "Raw JSON"}
+          {showRawJson ? 'Hide JSON' : 'Raw JSON'}
         </Button>
         <Button onClick={handleCancel} className={closeBtnClassName}>
           Close

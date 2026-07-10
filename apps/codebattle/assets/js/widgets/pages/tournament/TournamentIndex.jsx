@@ -1,29 +1,29 @@
-import React from "react";
+import React from 'react';
 
-import { camelizeKeys } from "humps";
-import PropTypes from "prop-types";
+import { camelizeKeys } from 'humps';
+import PropTypes from 'prop-types';
 
-import CreateTournament from "./CreateTournament";
+import CreateTournament from './CreateTournament';
 
 const formatStartsAt = (value, userTimezone) => {
   if (!value) {
-    return "none";
+    return 'none';
   }
 
   const options = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: userTimezone || "UTC",
-    timeZoneName: "short",
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: userTimezone || 'UTC',
+    timeZoneName: 'short',
   };
 
   try {
     return new Intl.DateTimeFormat(undefined, options).format(new Date(value));
   } catch (_error) {
-    return new Intl.DateTimeFormat(undefined, { ...options, timeZone: "UTC" }).format(
+    return new Intl.DateTimeFormat(undefined, { ...options, timeZone: 'UTC' }).format(
       new Date(value),
     );
   }
@@ -88,7 +88,7 @@ function TournamentsTable({ tournaments, userTimezone }) {
   );
 }
 
-function TournamentIndex({ tournaments = [], taskPackNames = [], userTimezone = "UTC" }) {
+function TournamentIndex({ tournaments = [], taskPackNames = [], userTimezone = 'UTC' }) {
   return (
     <>
       <TournamentsTable tournaments={tournaments} userTimezone={userTimezone} />
@@ -119,7 +119,7 @@ TournamentsTable.propTypes = {
 
 TournamentsTable.defaultProps = {
   tournaments: [],
-  userTimezone: "UTC",
+  userTimezone: 'UTC',
 };
 
 TournamentIndex.propTypes = {
@@ -131,13 +131,13 @@ TournamentIndex.propTypes = {
 TournamentIndex.defaultProps = {
   tournaments: [],
   taskPackNames: [],
-  userTimezone: "UTC",
+  userTimezone: 'UTC',
 };
 
 export const readTournamentIndexProps = (container) => ({
-  tournaments: camelizeKeys(JSON.parse(container?.dataset?.tournaments || "[]")),
-  taskPackNames: JSON.parse(container?.dataset?.taskPackNames || "[]"),
-  userTimezone: container?.dataset?.userTimezone || "UTC",
+  tournaments: camelizeKeys(JSON.parse(container?.dataset?.tournaments || '[]')),
+  taskPackNames: JSON.parse(container?.dataset?.taskPackNames || '[]'),
+  userTimezone: container?.dataset?.userTimezone || 'UTC',
 });
 
 export default TournamentIndex;

@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 
-import Split from "react-split";
+import Split from 'react-split';
 
-import { useWindowDimensions } from "@/utils/useWindowDimensions";
+import { useWindowDimensions } from '@/utils/useWindowDimensions';
 
 function PanelsSplitPane({ children, viewMode }) {
   const dimensions = useWindowDimensions();
 
-  if (viewMode !== "duel" || dimensions.width < 992) return children;
+  if (viewMode !== 'duel' || dimensions.width < 992) return children;
 
   return (
     <Split
-      style={{ maxHeight: "calc(100vh - 77px)" }}
+      style={{ maxHeight: 'calc(100vh - 77px)' }}
       sizes={[35, 60]}
       className="d-flex flex-column w-100"
       direction="vertical"

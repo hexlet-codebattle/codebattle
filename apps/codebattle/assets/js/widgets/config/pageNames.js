@@ -1,5 +1,5 @@
 const pageNames = {
-  game: "game",
+  game: 'game',
 };
 
 export default pageNames;

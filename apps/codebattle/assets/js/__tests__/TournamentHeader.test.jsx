@@ -1,17 +1,19 @@
-import React from "react";
+import React from 'react';
 
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom";
-import copy from "copy-to-clipboard";
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import copy from 'copy-to-clipboard';
 
-import TournamentHeader from "../widgets/pages/tournament/TournamentHeader";
+import TournamentHeader from '../widgets/pages/tournament/TournamentHeader';
 
-jest.mock("copy-to-clipboard", () => jest.fn());
-jest.mock("../widgets/pages/tournament/TournamentMainControlButtons", () => () => null);
-jest.mock("../widgets/pages/tournament/JoinButton", () => () => null);
+vi.mock('copy-to-clipboard', () => ({ default: vi.fn() }));
+vi.mock('../widgets/pages/tournament/TournamentMainControlButtons', () => ({
+  default: () => null,
+}));
+vi.mock('../widgets/pages/tournament/JoinButton', () => ({ default: () => null }));
 
-test("TournamentHeader copies full private tournament url", async () => {
+test('TournamentHeader copies full private tournament url', async () => {
   const user = userEvent.setup();
 
   render(
@@ -39,15 +41,15 @@ test("TournamentHeader copies full private tournament url", async () => {
       isOnline
       isOver
       canModerate
-      toggleShowBots={jest.fn()}
-      toggleStreamMode={jest.fn()}
-      handleStartRound={jest.fn()}
-      handleOpenDetails={jest.fn()}
+      toggleShowBots={vi.fn()}
+      toggleStreamMode={vi.fn()}
+      handleStartRound={vi.fn()}
+      handleOpenDetails={vi.fn()}
     />,
   );
 
-  const copyButton = screen.getByTestId("copy-button");
+  const copyButton = screen.getByTestId('copy-button');
   await user.click(copyButton);
 
-  expect(copy).toHaveBeenCalledWith("http://localhost/tournaments/42?access_token=secret-token");
+  expect(copy).toHaveBeenCalledWith('http://localhost/tournaments/42?access_token=secret-token');
 });

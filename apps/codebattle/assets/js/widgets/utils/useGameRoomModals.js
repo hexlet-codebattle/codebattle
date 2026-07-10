@@ -1,15 +1,15 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import NiceModal, { unregister } from "@ebay/nice-modal-react";
+import NiceModal, { unregister } from '@ebay/nice-modal-react';
 
-import AnimationModal from "@/pages/game/AnimationModal";
-import NextStageGroupTournamentModal from "@/pages/game/NextStageGroupTournamentModal";
-import PremiumRestrictionModal from "@/pages/game/PremiumRestrictionModal";
-import TaskDescriptionModal from "@/pages/game/TaskDescriptionModal";
-import TournamentAwardModal from "@/pages/game/TournamentAwardModal";
-import TournamentStatisticsModal from "@/pages/game/TournamentStatisticsModal";
+import AnimationModal from '@/pages/game/AnimationModal';
+import NextStageGroupTournamentModal from '@/pages/game/NextStageGroupTournamentModal';
+import PremiumRestrictionModal from '@/pages/game/PremiumRestrictionModal';
+import TaskDescriptionModal from '@/pages/game/TaskDescriptionModal';
+import TournamentAwardModal from '@/pages/game/TournamentAwardModal';
+import TournamentStatisticsModal from '@/pages/game/TournamentStatisticsModal';
 
-import ModalCodes from "../config/modalCodes";
+import ModalCodes from '../config/modalCodes';
 
 const useGameRoomModals = () => {
   useEffect(() => {

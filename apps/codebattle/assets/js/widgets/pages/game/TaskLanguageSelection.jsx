@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import Dropdown from "react-bootstrap/Dropdown";
+import Dropdown from 'react-bootstrap/Dropdown';
 
 function TaskLanguagesSelection({ avaibleLanguages, displayLanguage, handleSetLanguage }) {
   if (avaibleLanguages.length < 2) {

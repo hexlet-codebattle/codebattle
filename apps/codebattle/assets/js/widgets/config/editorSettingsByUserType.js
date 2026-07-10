@@ -1,10 +1,10 @@
-import editorUserTypes from "./editorUserTypes";
+import editorUserTypes from './editorUserTypes';
 
 export const editorBtnStatuses = {
-  enabled: "enabled",
-  disabled: "disabled",
-  checking: "checking",
-  charging: "charging",
+  enabled: 'enabled',
+  disabled: 'disabled',
+  checking: 'checking',
+  charging: 'charging',
 };
 
 const defaultSettings = {

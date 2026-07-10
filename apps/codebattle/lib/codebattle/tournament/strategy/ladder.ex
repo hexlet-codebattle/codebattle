@@ -39,6 +39,8 @@ defmodule Codebattle.Tournament.Ladder do
   @impl Tournament.Base
   def finish_round_after_match?(_tournament), do: false
 
+  def maybe_finish_round_after_finish_match(tournament), do: tournament
+
   @impl Tournament.Base
   def round_timeout_seconds(%{timeout_mode: "per_task"} = tournament) do
     case get_task(tournament, nil) do

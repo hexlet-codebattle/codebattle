@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
-import find from "lodash/find";
-import reject from "lodash/reject";
+import { createSlice } from '@reduxjs/toolkit';
+import find from 'lodash/find';
+import reject from 'lodash/reject';
 
-import dayjs from "../../i18n/dayjs";
+import dayjs from '../../i18n/dayjs';
 
-import initial from "./initial";
-import { actions as tournamentActions } from "./tournament";
+import initial from './initial';
+import { actions as tournamentActions } from './tournament';
 
-const sortByStartsAt = (a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), "millisecond");
+const sortByStartsAt = (a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond');
 
 const initialState = {
   activeGames: initial.activeGames,
@@ -35,7 +35,7 @@ const initialState = {
 };
 
 const lobby = createSlice({
-  name: "lobby",
+  name: 'lobby',
   initialState,
   reducers: {
     initGameList: (
@@ -114,7 +114,7 @@ const lobby = createSlice({
     },
     showCreateGameInviteModal: (state, { payload: { opponentInfo } }) => {
       state.createGameModal.show = true;
-      state.createGameModal.gameOptions = { type: "invite" };
+      state.createGameModal.gameOptions = { type: 'invite' };
       state.createGameModal.opponentInfo = opponentInfo;
     },
     updateLobbyChannelState: (state, { payload }) => {

@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from 'react';
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux';
 
-import * as selectors from "../selectors";
-import { actions } from "../slices";
+import * as selectors from '../selectors';
+import { actions } from '../slices';
 
 import {
   getPrivateRooms,
@@ -11,10 +11,10 @@ import {
   getStorageKey,
   clearExpiredPrivateRooms,
   updatePrivateRooms,
-} from "./chatRoom";
-import getChatTopic from "./names";
+} from './chatRoom';
+import getChatTopic from './names';
 
-const useChatRooms = (pageName = "channel", chatId) => {
+const useChatRooms = (pageName = 'channel', chatId) => {
   const dispatch = useDispatch();
   const page = getChatTopic(pageName, chatId);
   const rooms = useSelector(selectors.roomsSelector);

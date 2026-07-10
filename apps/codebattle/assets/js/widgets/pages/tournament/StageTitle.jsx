@@ -1,8 +1,8 @@
-import { memo } from "react";
+import { memo } from 'react';
 
-import capitalize from "lodash/capitalize";
+import capitalize from 'lodash/capitalize';
 
-import mapStagesToTitle from "../../config/mapStagesToTitle";
+import mapStagesToTitle from '../../config/mapStagesToTitle';
 
 function StageTitle({ stage, hideDescription = false }) {
   // TODO: fix tmp translation

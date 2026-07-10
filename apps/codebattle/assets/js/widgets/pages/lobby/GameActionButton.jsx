@@ -1,23 +1,23 @@
-import React from "react";
+import React from 'react';
 
-import copy from "copy-to-clipboard";
-import find from "lodash/find";
-import isEmpty from "lodash/isEmpty";
+import copy from 'copy-to-clipboard';
+import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
 
-import i18n from "../../../i18n";
-import gameStateCodes from "../../config/gameStateCodes";
-import * as lobbyMiddlewares from "../../middlewares/Lobby";
-import { getSignInGithubUrl, makeGameUrl } from "../../utils/urlBuilders";
+import i18n from '../../../i18n';
+import gameStateCodes from '../../config/gameStateCodes';
+import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import { getSignInGithubUrl, makeGameUrl } from '../../utils/urlBuilders';
 
-import ShowButton from "./ShowButton";
+import ShowButton from './ShowButton';
 
 const havePlayer = (userId, game) => !isEmpty(find(game.players, { id: userId }));
 
-function ContinueButton({ url, type = "table" }) {
+function ContinueButton({ url, type = 'table' }) {
   return (
     <a
       type="button"
-      className={`btn btn-success ${type === "table" ? "" : "w-100"} text-white btn-sm rounded-lg`}
+      className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`}
       href={url}
     >
       Continue
@@ -25,9 +25,9 @@ function ContinueButton({ url, type = "table" }) {
   );
 }
 
-function GameActionButton({ type = "table", game, currentUserId, isGuest, isOnline }) {
+function GameActionButton({ type = 'table', game, currentUserId, isGuest, isOnline }) {
   const gameUrl = makeGameUrl(game.id);
-  const gameUrlJoin = makeGameUrl(game.id, "join");
+  const gameUrlJoin = makeGameUrl(game.id, 'join');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
@@ -42,7 +42,7 @@ function GameActionButton({ type = "table", game, currentUserId, isGuest, isOnli
   if (gameState === gameStateCodes.waitingOpponent) {
     const playing = havePlayer(currentUserId, game);
 
-    if (playing && type === "table") {
+    if (playing && type === 'table') {
       return (
         <div className="d-flex justify-content-center">
           <div className="btn-group ml-5">
@@ -110,11 +110,11 @@ function GameActionButton({ type = "table", game, currentUserId, isGuest, isOnli
       return (
         <button
           type="button"
-          className={`btn ${type === "table" ? "w-100" : ""} btn-outline-success btn-sm rounded-lg`}
+          className={`btn ${type === 'table' ? 'w-100' : ''} btn-outline-success btn-sm rounded-lg`}
           data-method="get"
           data-to={signInUrl}
         >
-          {i18n.t("Sign in with %{name}", { name: "Github" })}
+          {i18n.t('Sign in with %{name}', { name: 'Github' })}
         </button>
       );
     }
@@ -122,12 +122,12 @@ function GameActionButton({ type = "table", game, currentUserId, isGuest, isOnli
     return (
       <button
         type="button"
-        className={`btn btn-orange btn-sm ${type === "table" ? "ml-1 px-4" : ""} rounded-lg`}
+        className={`btn btn-orange btn-sm ${type === 'table' ? 'ml-1 px-4' : ''} rounded-lg`}
         data-method="post"
         data-csrf={window.csrf_token}
         data-to={gameUrlJoin}
       >
-        {i18n.t("Fight")}
+        {i18n.t('Fight')}
       </button>
     );
   }

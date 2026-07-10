@@ -1,24 +1,24 @@
-import React from "react";
+import React from 'react';
 
-import "@testing-library/jest-dom";
-import { configureStore } from "@reduxjs/toolkit";
-import { render, screen } from "@testing-library/react";
-import { Provider } from "react-redux";
+import '@testing-library/jest-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
 
-import TournamentMainControlButtons from "../widgets/pages/tournament/TournamentMainControlButtons";
+import TournamentMainControlButtons from '../widgets/pages/tournament/TournamentMainControlButtons';
 
-jest.mock("@fortawesome/react-fontawesome", () => ({
-  FontAwesomeIcon: "img",
+vi.mock('@fortawesome/react-fontawesome', () => ({
+  FontAwesomeIcon: 'img',
 }));
 
-jest.mock("../widgets/middlewares/TournamentAdmin", () => ({
-  cancelTournament: jest.fn(),
-  finishTournament: jest.fn(),
-  restartTournament: jest.fn(),
-  retryTournament: jest.fn(),
-  finishRoundTournament: jest.fn(),
-  openUpTournament: jest.fn(),
-  showTournamentResults: jest.fn(),
+vi.mock('../widgets/middlewares/TournamentAdmin', () => ({
+  cancelTournament: vi.fn(),
+  finishTournament: vi.fn(),
+  restartTournament: vi.fn(),
+  retryTournament: vi.fn(),
+  finishRoundTournament: vi.fn(),
+  openUpTournament: vi.fn(),
+  showTournamentResults: vi.fn(),
 }));
 
 function renderComponent(props = {}) {
@@ -27,7 +27,7 @@ function renderComponent(props = {}) {
   });
 
   const defaultProps = {
-    accessType: "public",
+    accessType: 'public',
     streamMode: false,
     tournamentId: 42,
     canStart: false,
@@ -39,10 +39,10 @@ function renderComponent(props = {}) {
     showBots: true,
     hideResults: true,
     disabled: false,
-    toggleShowBots: jest.fn(),
-    handleStartRound: jest.fn(),
-    handleOpenDetails: jest.fn(),
-    toggleStreamMode: jest.fn(),
+    toggleShowBots: vi.fn(),
+    handleStartRound: vi.fn(),
+    handleOpenDetails: vi.fn(),
+    toggleStreamMode: vi.fn(),
   };
 
   return render(
@@ -52,21 +52,21 @@ function renderComponent(props = {}) {
   );
 }
 
-test("shows Finish button for an active tournament even when restart is unavailable", () => {
+test('shows Finish button for an active tournament even when restart is unavailable', () => {
   renderComponent();
 
-  expect(screen.getByRole("button", { name: /Finish Tournament/ })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Finish Round/ })).toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: /Restart/ })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Finish Tournament/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Finish Round/ })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Restart/ })).not.toBeInTheDocument();
 });
 
-test("does not show Finish button for a finished tournament", () => {
+test('does not show Finish button for a finished tournament', () => {
   renderComponent({
     canFinishRound: false,
     canFinishTournament: false,
     canRestart: true,
   });
 
-  expect(screen.queryByRole("button", { name: "Finish" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Restart" })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Finish' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Restart' })).toBeInTheDocument();
 });

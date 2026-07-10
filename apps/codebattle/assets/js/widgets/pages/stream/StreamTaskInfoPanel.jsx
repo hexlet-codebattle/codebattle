@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react';
 
-import upperCase from "lodash/upperCase";
-import { useSelector } from "react-redux";
+import upperCase from 'lodash/upperCase';
+import { useSelector } from 'react-redux';
 
 import {
   firstPlayerSelector,
   leftExecutionOutputSelector,
   rightExecutionOutputSelector,
   secondPlayerSelector,
-} from "@/selectors";
+} from '@/selectors';
 
-import TaskDescriptionMarkdown from "../game/TaskDescriptionMarkdown";
+import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
-function StreamTaskInfoPanel({ game, orientation, roomMachineState, fontSize, width = "40%" }) {
+function StreamTaskInfoPanel({ game, orientation, roomMachineState, fontSize, width = '40%' }) {
   const outputSelector =
-    orientation === "left" ? leftExecutionOutputSelector : rightExecutionOutputSelector;
-  const playerSelector = orientation === "left" ? firstPlayerSelector : secondPlayerSelector;
+    orientation === 'left' ? leftExecutionOutputSelector : rightExecutionOutputSelector;
+  const playerSelector = orientation === 'left' ? firstPlayerSelector : secondPlayerSelector;
 
   const output = useSelector(outputSelector(roomMachineState));
   const player = useSelector(playerSelector);
@@ -44,7 +44,7 @@ function StreamTaskInfoPanel({ game, orientation, roomMachineState, fontSize, wi
         {/*   <span>3 / 8 Задача</span> */}
         {/* </div> */}
         <div className="d-flex flex-column align-items-center cb-stream-name cb-stream-widget-text">
-          <div style={{ fontSize }}>{upperCase(player?.name || "Name")}</div>
+          <div style={{ fontSize }}>{upperCase(player?.name || 'Name')}</div>
         </div>
       </div>
       <div className="cb-stream-task-description h-100 py-5" style={{ fontSize }}>

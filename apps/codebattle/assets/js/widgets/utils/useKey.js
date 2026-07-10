@@ -1,21 +1,21 @@
 /* eslint-disable no-nested-ternary */
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import useEvent from "./useEvent";
+import useEvent from './useEvent';
 
 const noop = () => {};
 
 const createKeyPredicate = (keyFilter) =>
-  typeof keyFilter === "function"
+  typeof keyFilter === 'function'
     ? keyFilter
-    : typeof keyFilter === "string"
+    : typeof keyFilter === 'string'
       ? (event) => event.key === keyFilter
       : keyFilter
         ? () => true
         : () => false;
 
 const useKey = (key, fn = noop, opts = {}, deps = [key]) => {
-  const { event = "keydown", target, options } = opts;
+  const { event = 'keydown', target, options } = opts;
   const useMemoHandler = useMemo(() => {
     const predicate = createKeyPredicate(key);
     const handler = (handlerEvent) => {

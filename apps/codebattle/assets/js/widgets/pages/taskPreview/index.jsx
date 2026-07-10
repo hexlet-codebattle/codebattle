@@ -1,1 +1,1 @@
-export { default } from "./TaskPreviewWidget";
+export { default } from './TaskPreviewWidget';

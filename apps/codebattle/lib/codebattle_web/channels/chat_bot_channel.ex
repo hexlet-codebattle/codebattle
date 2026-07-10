@@ -3,8 +3,6 @@ defmodule CodebattleWeb.ChatBotChannel do
 
   use CodebattleWeb, :channel
 
-  require Logger
-
   def join("chat_bot:" <> _chat_type, _payload, socket) do
     {:ok, %{}, socket}
   end

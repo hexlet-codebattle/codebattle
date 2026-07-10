@@ -1,6 +1,6 @@
-import React, { useId } from "react";
+import React, { useId } from 'react';
 
-function KotlinOriginalIcon({ className, size = "1em" }) {
+function KotlinOriginalIcon({ className, size = '1em' }) {
   const uid = useId();
   const id = (name) => `kotlin-original-${uid}-${name}`;
 
@@ -12,7 +12,7 @@ function KotlinOriginalIcon({ className, size = "1em" }) {
       style={{ width: size, height: size }}
     >
       <linearGradient
-        id={id("a")}
+        id={id('a')}
         gradientUnits="userSpaceOnUse"
         x1="-11.899"
         y1="48.694"
@@ -26,7 +26,7 @@ function KotlinOriginalIcon({ className, size = "1em" }) {
         <stop offset=".995" stopColor="#7f6cb1" />
       </linearGradient>
       <linearGradient
-        id={id("b")}
+        id={id('b')}
         gradientUnits="userSpaceOnUse"
         x1="43.553"
         y1="149.174"
@@ -39,7 +39,7 @@ function KotlinOriginalIcon({ className, size = "1em" }) {
         <stop offset=".995" stopColor="#7f6cb1" />
       </linearGradient>
       <linearGradient
-        id={id("c")}
+        id={id('c')}
         gradientUnits="userSpaceOnUse"
         x1="3.24"
         y1="95.249"
@@ -55,9 +55,9 @@ function KotlinOriginalIcon({ className, size = "1em" }) {
         <stop offset=".888" stopColor="#f28817" />
         <stop offset=".982" stopColor="#f48912" />
       </linearGradient>
-      <path fill={`url(#${id("a")})`} d="M0 0h65.4L0 64.4z" />
-      <path fill={`url(#${id("b")})`} d="M128 128L64.6 62.6 0 128z" />
-      <path fill={`url(#${id("c")})`} d="M0 128L128 0H64.6L0 63.7z" />
+      <path fill={`url(#${id('a')})`} d="M0 0h65.4L0 64.4z" />
+      <path fill={`url(#${id('b')})`} d="M128 128L64.6 62.6 0 128z" />
+      <path fill={`url(#${id('c')})`} d="M0 128L128 0H64.6L0 63.7z" />
     </svg>
   );
 }

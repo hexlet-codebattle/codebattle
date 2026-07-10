@@ -1,13 +1,13 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice, current } from '@reduxjs/toolkit';
 
-import defaultRooms from "../config/rooms";
-import { isMessageForCurrentUser, isMessageForCurrentPrivateRoom } from "../utils/chat";
-import { ttl, filterPrivateRooms } from "../utils/chatRoom";
+import defaultRooms from '../config/rooms';
+import { isMessageForCurrentUser, isMessageForCurrentPrivateRoom } from '../utils/chat';
+import { ttl, filterPrivateRooms } from '../utils/chatRoom';
 
 const initialState = {
   users: [],
   messages: [],
-  page: "lobby",
+  page: 'lobby',
   activeRoom: defaultRooms.general,
   rooms: [defaultRooms.general, defaultRooms.system],
   history: {
@@ -19,7 +19,7 @@ const initialState = {
 };
 
 const chat = createSlice({
-  name: "chat",
+  name: 'chat',
   initialState,
   reducers: {
     updateChatData: (state, { payload }) => ({

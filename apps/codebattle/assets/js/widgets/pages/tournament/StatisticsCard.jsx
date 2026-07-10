@@ -1,12 +1,12 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo } from 'react';
 
-import cn from "classnames";
-import { useSelector } from "react-redux";
+import cn from 'classnames';
+import { useSelector } from 'react-redux';
 
-import { tournamentPlayerSelector } from "@/selectors";
-import useMatchesStatistics from "@/utils/useMatchesStatistics";
+import { tournamentPlayerSelector } from '@/selectors';
+import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
-import i18next from "../../../i18n";
+import i18next from '../../../i18n';
 
 function StatisticsCard({ playerId, matchList = [], compact = false }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
@@ -17,28 +17,28 @@ function StatisticsCard({ playerId, matchList = [], compact = false }) {
     () => matchList.filter((match) => !!match.playerResults?.[playerId]),
     [matchList, playerId],
   );
-  const avgResultPercent = finishedMatches.length ? playerStats.avgTests.toFixed(1) : "0.0";
+  const avgResultPercent = finishedMatches.length ? playerStats.avgTests.toFixed(1) : '0.0';
 
   return (
-    <div className={cn("cb-bg-highlight-panel cb-rounded px-3 py-2", compact && "w-100")}>
+    <div className={cn('cb-bg-highlight-panel cb-rounded px-3 py-2', compact && 'w-100')}>
       <div className="d-flex flex-wrap align-items-center small">
         <span className="mr-3 mb-1">
-          {i18next.t("Place")}: <span className="font-weight-bold">{player?.place ?? "?"}</span>
+          {i18next.t('Place')}: <span className="font-weight-bold">{player?.place ?? '?'}</span>
         </span>
         <span className="mr-3 mb-1">
-          {i18next.t("Score")}: <span className="font-weight-bold">{player?.score ?? 0}</span>
+          {i18next.t('Score')}: <span className="font-weight-bold">{player?.score ?? 0}</span>
         </span>
         <span className="mr-3 mb-1">
-          {i18next.t("Avg Result")}: <span className="font-weight-bold">{avgResultPercent}%</span>
+          {i18next.t('Avg Result')}: <span className="font-weight-bold">{avgResultPercent}%</span>
         </span>
         <span className="mb-1">
-          {i18next.t("Stats: ")}
+          {i18next.t('Stats: ')}
           <span className="font-weight-bold">
-            {i18next.t("Win")} {playerStats.winMatches.length}
-            {" / "}
-            {i18next.t("Lost")} {playerStats.lostMatches.length}
-            {" / "}
-            {i18next.t("Draw")} {noWinnerCount}
+            {i18next.t('Win')} {playerStats.winMatches.length}
+            {' / '}
+            {i18next.t('Lost')} {playerStats.lostMatches.length}
+            {' / '}
+            {i18next.t('Draw')} {noWinnerCount}
           </span>
         </span>
       </div>

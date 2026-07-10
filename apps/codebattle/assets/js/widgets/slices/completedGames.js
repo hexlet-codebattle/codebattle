@@ -1,19 +1,19 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { camelizeKeys } from "humps";
-import unionBy from "lodash/unionBy";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { camelizeKeys } from 'humps';
+import unionBy from 'lodash/unionBy';
 
-import fetchionStatuses from "../config/fetchionStatuses";
+import fetchionStatuses from '../config/fetchionStatuses';
 
-import initial from "./initial";
-import { actions as lobbyActions } from "./lobby";
+import initial from './initial';
+import { actions as lobbyActions } from './lobby';
 
 export const fetchCompletedGames = createAsyncThunk(
-  "completedGames/fetchCompletedGames",
+  'completedGames/fetchCompletedGames',
   async () => {
-    const userId = window.location.pathname.split("/").pop() || null;
+    const userId = window.location.pathname.split('/').pop() || null;
     const route = userId
       ? `/api/v1/games/completed?user_id=${userId}&page_size=20`
-      : "/api/v1/games/completed?page_size=20";
+      : '/api/v1/games/completed?page_size=20';
 
     const response = await fetch(route);
 
@@ -26,9 +26,9 @@ export const fetchCompletedGames = createAsyncThunk(
 );
 
 export const loadNextPage = createAsyncThunk(
-  "completedGames/loadNextPage",
+  'completedGames/loadNextPage',
   async (_, { getState }) => {
-    const userId = window.location.pathname.split("/").pop() || null;
+    const userId = window.location.pathname.split('/').pop() || null;
     const {
       completedGames: { currrentPage },
     } = getState();
@@ -56,7 +56,7 @@ export const loadNextPage = createAsyncThunk(
 );
 
 const completedGames = createSlice({
-  name: "completedGames",
+  name: 'completedGames',
   initialState: {
     completedGames: initial.completedGames,
     currrentPage: null,
@@ -90,7 +90,7 @@ const completedGames = createSlice({
       .addCase(loadNextPage.fulfilled, (state, { payload }) => {
         state.status = fetchionStatuses.loaded;
         state.currrentPage = payload.pageInfo.pageNumber;
-        state.completedGames = unionBy(state.completedGames, payload.games, "id");
+        state.completedGames = unionBy(state.completedGames, payload.games, 'id');
       })
       .addCase(loadNextPage.rejected, (state, action) => {
         state.status = fetchionStatuses.rejected;

@@ -1,22 +1,22 @@
-import React, { useEffect, useContext, useCallback, useRef } from "react";
+import React, { useEffect, useContext, useCallback, useRef } from 'react';
 
-import { useInterpret } from "@xstate/react";
-import cn from "classnames";
-import Gon from "gon";
-import i18next from "i18next";
-import noop from "lodash/noop";
-import { useDispatch, useSelector } from "react-redux";
+import { useInterpret } from '@xstate/react';
+import cn from 'classnames';
+import Gon from 'gon';
+import i18next from 'i18next';
+import noop from 'lodash/noop';
+import { useDispatch, useSelector } from 'react-redux';
 
-import RoomContext from "../../components/RoomContext";
-import editorModes from "../../config/editorModes";
-import { gameRoomEditorStyles } from "../../config/editorSettings";
+import RoomContext from '../../components/RoomContext';
+import editorModes from '../../config/editorModes';
+import { gameRoomEditorStyles } from '../../config/editorSettings';
 import {
   editorBtnStatuses as EditorBtnStatuses,
   editorSettingsByUserType,
-} from "../../config/editorSettingsByUserType";
+} from '../../config/editorSettingsByUserType';
 // import editorThemes from '../../config/editorThemes';
-import editorUserTypes from "../../config/editorUserTypes";
-import GameModeCodes from "../../config/gameModes";
+import editorUserTypes from '../../config/editorUserTypes';
+import GameModeCodes from '../../config/gameModes';
 import {
   editorStateSelector,
   inPreviewRoomSelector,
@@ -24,25 +24,25 @@ import {
   isGameActiveSelector,
   isGameOverSelector,
   openedReplayerSelector,
-} from "../../machines/selectors";
-import * as GameActions from "../../middlewares/Room";
-import * as selectors from "../../selectors";
-import { actions } from "../../slices";
+} from '../../machines/selectors';
+import * as GameActions from '../../middlewares/Room';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 import {
   createTelemetryWindow,
   editorSummaryConfig,
   finalizeTelemetryWindow,
   updateTelemetryWindow,
-} from "../../utils/editorSummary";
-import useMachineStateSelector from "../../utils/useMachineStateSelector";
+} from '../../utils/editorSummary';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-import EditorToolbar from "./EditorToolbar";
+import EditorToolbar from './EditorToolbar';
 
 const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
 
 // Default ON unless BE Gon flag explicitly disables it. Read at call time
 // so SPA navigation between pages can't latch a stale `false`.
-const isEditorSummaryEnabled = () => Gon.getAsset("editor_summary_enabled") !== false;
+const isEditorSummaryEnabled = () => Gon.getAsset('editor_summary_enabled') !== false;
 
 const useEditorChannelSubscription = (mainService, editorService, player) => {
   const dispatch = useDispatch();
@@ -127,7 +127,7 @@ function EditorContainer({
     id: `editor_${id}`,
     actions: {
       userSendSolution: (ctx) => {
-        if (ctx.editorState === "active") {
+        if (ctx.editorState === 'active') {
           dispatch(GameActions.checkGameSolution());
         }
       },
@@ -135,8 +135,8 @@ function EditorContainer({
         dispatch(
           actions.updateExecutionOutput({
             userId: ctx.userId,
-            status: "client_timeout",
-            output: "",
+            status: 'client_timeout',
+            output: '',
             result: {},
             asserts: [],
           }),
@@ -150,7 +150,7 @@ function EditorContainer({
   const editorCurrent = useMachineStateSelector(editorService, editorStateSelector);
 
   const checkActiveTaskSolution = useCallback(
-    () => editorService.send("user_check_solution"),
+    () => editorService.send('user_check_solution'),
     [editorService],
   );
   const checkResult = checkActiveTaskSolution;
@@ -162,17 +162,17 @@ function EditorContainer({
   useEffect(() => {
     /** @param {KeyboardEvent} e */
     const check = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         checkResult();
       }
     };
 
     if (isNeedHotKeys) {
-      window.addEventListener("keydown", check);
+      window.addEventListener('keydown', check);
 
       return () => {
-        window.removeEventListener("keydown", check);
+        window.removeEventListener('keydown', check);
       };
     }
 
@@ -211,7 +211,7 @@ function EditorContainer({
 
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
   const editable =
-    !openedReplayer && userSettings.editable && userSettings.editorState !== "banned";
+    !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned';
   const canSendCursor = canChange;
   const canCaptureEditorTelemetry =
     isEditorSummaryEnabled() &&
@@ -221,7 +221,7 @@ function EditorContainer({
     !isPreview &&
     !currentUserIsBot;
   const updateEditor =
-    editorCurrent.context.editorState === "testing" ? updateEditorValue : updateAndSendEditorValue;
+    editorCurrent.context.editorState === 'testing' ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
   const showBannedMessage = type === editorUserTypes.currentUser && player?.isBanned;
 
@@ -309,12 +309,12 @@ function EditorContainer({
   const editorParams = {
     roomMode: tournamentId ? GameModeCodes.tournament : gameMode,
     userId: id,
-    wordWrap: "off",
-    lineNumbers: "on",
+    wordWrap: 'off',
+    lineNumbers: 'on',
     fontSize: 16,
     hidingPanelControls: false,
     userType: type,
-    syntax: editorState?.currentLangSlug || "js",
+    syntax: editorState?.currentLangSlug || 'js',
     onChange,
     onTelemetryEvent,
     gameStartTimeMs: startsAt ? new Date(startsAt).getTime() : null,
@@ -328,14 +328,14 @@ function EditorContainer({
     ...userSettings,
     editable,
     allowClipboard: isAdmin,
-    loading: isPreview || editorCurrent.value === "loading",
+    loading: isPreview || editorCurrent.value === 'loading',
   };
 
-  const isWon = player?.result === "won";
+  const isWon = player?.result === 'won';
 
   const pannelBackground = cn(editorContainerClassName, {
-    "bg-warning": editorCurrent.matches("checking"),
-    "bg-winner": isGameOver && editorCurrent.matches("idle") && isWon,
+    'bg-warning': editorCurrent.matches('checking'),
+    'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
   });
 
   const gameRoomEditorStylesVersion2 = {
@@ -347,8 +347,8 @@ function EditorContainer({
       <div
         // className={`${editorParams.theme === editorThemes.dark ? 'bg-dark ' : 'bg-white '}${cardClassName}`}
         className={cardClassName}
-        style={orientation === "side" ? gameRoomEditorStylesVersion2 : gameRoomEditorStyles}
-        data-guide-id={orientation === "left" ? "LeftEditor" : ""}
+        style={orientation === 'side' ? gameRoomEditorStylesVersion2 : gameRoomEditorStyles}
+        data-guide-id={orientation === 'left' ? 'LeftEditor' : ''}
       >
         <EditorToolbar
           {...toolbarParams}
@@ -359,7 +359,7 @@ function EditorContainer({
         {showBannedMessage && (
           <div className="alert alert-warning mx-2 mb-2" role="alert">
             {i18next.t(
-              "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.",
+              'Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.',
             )}
           </div>
         )}

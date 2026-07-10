@@ -1,32 +1,28 @@
-import React from "react";
+import React from 'react';
 
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { render, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom";
-import noop from "lodash/noop";
-import omit from "lodash/omit";
-import { Provider } from "react-redux";
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import noop from 'lodash/noop';
+import omit from 'lodash/omit';
+import { Provider } from 'react-redux';
 
-import * as invitesMiddleware from "../widgets/middlewares/Invite";
-import * as lobbyMiddlewares from "../widgets/middlewares/Lobby";
-import CreateGameDialog from "../widgets/pages/lobby/CreateGameDialog";
-import reducers from "../widgets/slices";
+import * as invitesMiddleware from '../widgets/middlewares/Invite';
+import * as lobbyMiddlewares from '../widgets/middlewares/Lobby';
+import CreateGameDialog from '../widgets/pages/lobby/CreateGameDialog';
+import reducers from '../widgets/slices';
 
-import { getTestData } from "./helpers";
+import { getTestData } from './helpers';
 
-jest.mock(
-  "gon",
-  () => {
-    const gonParams = {
-      local: "en",
-      current_user: { id: 1, sound_settings: {} },
-      task_tags: ["math", "string", "asd", "rest"],
-    };
-    return { getAsset: (type) => gonParams[type] };
-  },
-  { virtual: true },
-);
+vi.mock('gon', () => {
+  const gonParams = {
+    local: 'en',
+    current_user: { id: 1, sound_settings: {} },
+    task_tags: ['math', 'string', 'asd', 'rest'],
+  };
+  return { default: { getAsset: (type) => gonParams[type] } };
+});
 
 const {
   elementaryTasksFromBackend,
@@ -41,16 +37,16 @@ const {
   tasksEliminatedByName,
   tasksFilteredByNameAndTag,
   tasksEliminatedByNameAndTag,
-} = getTestData("testData.json");
+} = getTestData('testData.json');
 
 const users = [
-  { name: "user1", id: -4 },
-  { name: "user2", id: -2 },
+  { name: 'user1', id: -4 },
+  { name: 'user2', id: -2 },
 ];
-const userData = { avatarUrl: "" };
+const userData = { avatarUrl: '' };
 
-jest.mock("react-select");
-jest.mock("react-select/async");
+vi.mock('react-select', async () => await import('../__mocks__/react-select.jsx'));
+vi.mock('react-select/async', async () => await import('../__mocks__/react-select/async.jsx'));
 /*
   AsyncSelect and Select component mock is made by means of the series of buttons.
   Each button represents one option.
@@ -58,23 +54,23 @@ jest.mock("react-select/async");
   Button "filter tasks by name" simulates a user to type 'name' into the Select
 */
 
-jest.mock("../widgets/middlewares/Lobby", () => {
-  const originalModule = jest.requireActual("../widgets/middlewares/Lobby");
+vi.mock('../widgets/middlewares/Lobby', async () => {
+  const originalModule = await vi.importActual('../widgets/middlewares/Lobby');
 
   return {
     __esModule: true,
     ...originalModule,
-    createGame: jest.fn(),
+    createGame: vi.fn(),
   };
 });
 
-jest.mock("../widgets/middlewares/Invite", () => {
-  const originalModule = jest.requireActual("../widgets/middlewares/Invite");
+vi.mock('../widgets/middlewares/Invite', async () => {
+  const originalModule = await vi.importActual('../widgets/middlewares/Invite');
 
   return {
     __esModule: true,
     ...originalModule,
-    createInvite: jest.fn(() => ({ type: "", payload: {} })),
+    createInvite: vi.fn(() => ({ type: '', payload: {} })),
   };
 });
 
@@ -97,8 +93,8 @@ const setup = (jsx) => ({
 });
 
 const defaultGameParams = {
-  level: "elementary",
-  opponent_type: "other_user",
+  level: 'elementary',
+  opponent_type: 'other_user',
   timeout_seconds: 480,
   task_id: null,
   task_tags: [],
@@ -107,8 +103,8 @@ const defaultGameParams = {
 let vdom;
 
 beforeAll(() => {
-  global.fetch = jest.fn((url) => {
-    if (String(url).includes("/api/v1/tasks")) {
+  global.fetch = vi.fn((url) => {
+    if (String(url).includes('/api/v1/tasks')) {
       return Promise.resolve({
         ok: true,
         json: async () => ({
@@ -133,72 +129,72 @@ beforeAll(() => {
   );
 });
 
-describe("test create game", () => {
-  test("with random task with default parameters", async () => {
+describe('test create game', () => {
+  test('with random task with default parameters', async () => {
     const { getByRole, user } = setup(vdom);
 
-    await user.click(getByRole("button", { name: "Create battle" }));
+    await user.click(getByRole('button', { name: 'Create battle' }));
 
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(defaultGameParams);
   });
 
-  test("with chosen task", async () => {
+  test('with chosen task', async () => {
     const { findByRole, getByRole, user } = setup(vdom);
     const paramsWithChosenTask = {
       ...defaultGameParams,
       task_id: 1,
     };
 
-    await user.click(await findByRole("button", { name: "task1 name" }));
-    await user.click(getByRole("button", { name: "Create battle" }));
+    await user.click(await findByRole('button', { name: 'task1 name' }));
+    await user.click(getByRole('button', { name: 'Create battle' }));
 
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTask);
   });
 
-  test("with random task with chosen tags", async () => {
+  test('with random task with chosen tags', async () => {
     const { findByRole, getByRole, user } = setup(vdom);
     const paramsWithChosenTags = {
       ...defaultGameParams,
-      task_tags: ["math", "string"],
+      task_tags: ['math', 'string'],
     };
 
-    await user.click(await findByRole("button", { name: "math" }));
-    await user.click(getByRole("button", { name: "string" }));
-    await user.click(getByRole("button", { name: "Create battle" }));
+    await user.click(await findByRole('button', { name: 'math' }));
+    await user.click(getByRole('button', { name: 'string' }));
+    await user.click(getByRole('button', { name: 'Create battle' }));
 
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTags);
   });
 
-  test("with chosen task and changed level", async () => {
+  test('with chosen task and changed level', async () => {
     const { findByRole, getByRole, getByTitle, user } = setup(vdom);
     const paramsWithChosenTaskAndChangedLevel = {
       ...defaultGameParams,
-      level: "easy",
+      level: 'easy',
       task_id: 7,
     };
 
-    await user.click(getByTitle("easy"));
-    await user.click(await findByRole("button", { name: "task7 name" }));
-    await user.click(getByRole("button", { name: "Create battle" }));
+    await user.click(getByTitle('easy'));
+    await user.click(await findByRole('button', { name: 'task7 name' }));
+    await user.click(getByRole('button', { name: 'Create battle' }));
 
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTaskAndChangedLevel);
   });
 
-  test("with opponent and random task", async () => {
+  test('with opponent and random task', async () => {
     const { findByRole, getByRole, user } = setup(vdom);
     const paramsWithOpponent = {
-      ...omit(defaultGameParams, ["opponent_type"]),
+      ...omit(defaultGameParams, ['opponent_type']),
       recipient_id: -4,
-      recipient_name: "user1",
+      recipient_name: 'user1',
     };
 
-    await user.click(getByRole("button", { name: "With a friend" }));
+    await user.click(getByRole('button', { name: 'With a friend' }));
 
-    const createInviteButton = getByRole("button", { name: "Create invite" });
+    const createInviteButton = getByRole('button', { name: 'Create invite' });
 
     expect(createInviteButton).toBeDisabled();
 
-    await user.click(await findByRole("button", { name: "user1" }));
+    await user.click(await findByRole('button', { name: 'user1' }));
 
     expect(createInviteButton).toBeEnabled();
 
@@ -207,54 +203,54 @@ describe("test create game", () => {
     expect(invitesMiddleware.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
   });
 
-  test("with opponent and chosen task", async () => {
+  test('with opponent and chosen task', async () => {
     const { findByRole, getByRole, user } = setup(vdom);
     const paramsWithOpponentAndChosenTask = {
-      ...omit(defaultGameParams, ["opponent_type"]),
+      ...omit(defaultGameParams, ['opponent_type']),
       recipient_id: -4,
-      recipient_name: "user1",
+      recipient_name: 'user1',
       task_id: 1,
     };
 
-    await user.click(getByRole("button", { name: "With a friend" }));
-    await user.click(await findByRole("button", { name: "user1" }));
-    await user.click(getByRole("button", { name: "task1 name" }));
-    await user.click(getByRole("button", { name: "Create invite" }));
+    await user.click(getByRole('button', { name: 'With a friend' }));
+    await user.click(await findByRole('button', { name: 'user1' }));
+    await user.click(getByRole('button', { name: 'task1 name' }));
+    await user.click(getByRole('button', { name: 'Create invite' }));
 
     expect(invitesMiddleware.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
   });
 });
 
-test("filter tasks by level", async () => {
+test('filter tasks by level', async () => {
   const { findByTitle, findByRole, queryByRole, user } = setup(vdom);
 
-  const easyLevelButton = await findByTitle("easy");
-  await findByRole("button", { name: elementaryTasksFromBackend[0].name });
+  const easyLevelButton = await findByTitle('easy');
+  await findByRole('button', { name: elementaryTasksFromBackend[0].name });
 
   elementaryTasksFromBackend.forEach((task) =>
-    expect(queryByRole("button", { name: task.name })).toBeInTheDocument(),
+    expect(queryByRole('button', { name: task.name })).toBeInTheDocument(),
   );
   easyTasksFromBackend.forEach((task) =>
-    expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+    expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
   );
 
   await user.click(easyLevelButton);
 
   easyTasksFromBackend.forEach((task) =>
-    expect(queryByRole("button", { name: task.name })).toBeInTheDocument(),
+    expect(queryByRole('button', { name: task.name })).toBeInTheDocument(),
   );
   elementaryTasksFromBackend.forEach((task) =>
-    expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+    expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
   );
 });
 
-test("filter tasks by tags", async () => {
+test('filter tasks by tags', async () => {
   const { findByRole, getByRole, queryByRole, user } = setup(vdom);
 
-  const mathTag = await findByRole("button", { name: "math" });
-  const stringTag = getByRole("button", { name: "string" });
-  const asdTag = getByRole("button", { name: "asd" });
-  const restTag = getByRole("button", { name: "rest" });
+  const mathTag = await findByRole('button', { name: 'math' });
+  const stringTag = getByRole('button', { name: 'string' });
+  const asdTag = getByRole('button', { name: 'asd' });
+  const restTag = getByRole('button', { name: 'rest' });
 
   expect(mathTag).toBeEnabled();
   expect(stringTag).toBeEnabled();
@@ -262,22 +258,22 @@ test("filter tasks by tags", async () => {
   expect(restTag).toBeEnabled();
 
   await user.click(restTag);
-  await user.click(await findByRole("button", { name: "task5 name" }));
+  await user.click(await findByRole('button', { name: 'task5 name' }));
 
   expect(mathTag).toBeDisabled();
   expect(stringTag).toBeDisabled();
   expect(asdTag).toBeDisabled();
   expect(restTag).toBeDisabled();
 
-  await user.click(await findByRole("button", { name: /random task/ }));
+  await user.click(await findByRole('button', { name: /random task/ }));
 
   await waitFor(() => {
     tasksMatchingRestTags.forEach((task) =>
-      expect(getByRole("button", { name: task.name })).toBeInTheDocument(),
+      expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
     );
 
     tasksUnsuitableForRestTags.forEach((task) =>
-      expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
     );
   });
 
@@ -285,7 +281,7 @@ test("filter tasks by tags", async () => {
 
   await waitFor(() => {
     elementaryTasksFromBackend.forEach((task) =>
-      expect(getByRole("button", { name: task.name })).toBeInTheDocument(),
+      expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
     );
   });
 
@@ -293,10 +289,10 @@ test("filter tasks by tags", async () => {
 
   await waitFor(() => {
     tasksMatchingMathTag.forEach((task) =>
-      expect(getByRole("button", { name: task.name })).toBeInTheDocument(),
+      expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
     );
     tasksUnsuitableForMathTag.forEach((task) =>
-      expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
     );
   });
 
@@ -304,10 +300,10 @@ test("filter tasks by tags", async () => {
 
   await waitFor(() => {
     tasksMatchingMathAndStringTags.forEach((task) =>
-      expect(getByRole("button", { name: task.name })).toBeInTheDocument(),
+      expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
     );
     tasksUnsuitableForMathAndStringTags.forEach((task) =>
-      expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
     );
   });
 
@@ -316,36 +312,36 @@ test("filter tasks by tags", async () => {
 
   await waitFor(() => {
     elementaryTasksFromBackend.forEach((task) =>
-      expect(getByRole("button", { name: task.name })).toBeInTheDocument(),
+      expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
     );
   });
 }, 6000);
 
-test("filter tasks by name", async () => {
+test('filter tasks by name', async () => {
   const { getByRole, findByRole, queryByRole, user } = setup(vdom);
 
-  await user.click(await findByRole("button", { name: "filter tasks by name" }));
+  await user.click(await findByRole('button', { name: 'filter tasks by name' }));
 
   await waitFor(() => {
     tasksFilteredByName.forEach((task) =>
-      expect(getByRole("button", { name: task.name })).toBeInTheDocument(),
+      expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
     );
     tasksEliminatedByName.forEach((task) =>
-      expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
     );
   });
 });
 
-test("filter tasks by name and tags", async () => {
+test('filter tasks by name and tags', async () => {
   const { getByRole, findByRole, queryByRole, user } = setup(vdom);
 
-  await user.click(await findByRole("button", { name: "filter tasks by name" }));
-  await user.click(getByRole("button", { name: "math" }));
+  await user.click(await findByRole('button', { name: 'filter tasks by name' }));
+  await user.click(getByRole('button', { name: 'math' }));
 
   tasksFilteredByNameAndTag.forEach((task) =>
-    expect(queryByRole("button", { name: task.name })).toBeInTheDocument(),
+    expect(queryByRole('button', { name: task.name })).toBeInTheDocument(),
   );
   tasksEliminatedByNameAndTag.forEach((task) =>
-    expect(queryByRole("button", { name: task.name })).not.toBeInTheDocument(),
+    expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
   );
 });

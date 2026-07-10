@@ -1,1 +1,1 @@
-export { default } from "./AdminWidget";
+export { default } from './AdminWidget';

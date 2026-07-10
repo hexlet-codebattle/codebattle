@@ -1,31 +1,31 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import NiceModal, { unregister } from "@ebay/nice-modal-react";
+import NiceModal, { unregister } from '@ebay/nice-modal-react';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useInterpret } from "@xstate/react";
-import cn from "classnames";
-import { useDispatch, useSelector } from "react-redux";
+import { useInterpret } from '@xstate/react';
+import cn from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { connectToEditor, connectToGame, setGameChannel } from "@/middlewares/Room";
-import { connectToSpectator } from "@/middlewares/Spectator";
-import { connectToTournament } from "@/middlewares/Tournament";
+import { connectToEditor, connectToGame, setGameChannel } from '@/middlewares/Room';
+import { connectToSpectator } from '@/middlewares/Spectator';
+import { connectToTournament } from '@/middlewares/Tournament';
 
-import CountdownTimer from "../../components/CountdownTimer";
-import EditorUserTypes from "../../config/editorUserTypes";
-import GameStateCodes from "../../config/gameStateCodes";
-import ModalCodes from "../../config/modalCodes";
+import CountdownTimer from '../../components/CountdownTimer';
+import EditorUserTypes from '../../config/editorUserTypes';
+import GameStateCodes from '../../config/gameStateCodes';
+import ModalCodes from '../../config/modalCodes';
 // import MatchStatesCodes from '../../config/matchStates';
-import TournamentStates from "../../config/tournament";
-import * as selectors from "../../selectors";
-import { actions } from "../../slices";
-import useSearchParams from "../../utils/useSearchParams";
+import TournamentStates from '../../config/tournament';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
+import useSearchParams from '../../utils/useSearchParams';
 // import useMatchesStatistics from '../../utils/useMatchesStatistics';
 // import Output from '../game/Output';
-import OutputTab from "../game/OutputTab";
-import TaskAssignment from "../game/TaskAssignment";
-import TournamentAwardModal from "../game/TournamentAwardModal";
+import OutputTab from '../game/OutputTab';
+import TaskAssignment from '../game/TaskAssignment';
+import TournamentAwardModal from '../game/TournamentAwardModal';
 
-import SpectatorEditor from "./SpectatorEditor";
+import SpectatorEditor from './SpectatorEditor';
 
 // const RoundStatus = ({ playerId, matches }) => {
 //   const [
@@ -116,25 +116,25 @@ import SpectatorEditor from "./SpectatorEditor";
 const getSpectatorStatus = (state, task, gameId) => {
   switch (state) {
     case TournamentStates.finished:
-      return "Tournament is finished";
+      return 'Tournament is finished';
     case TournamentStates.waitingParticipants:
-      return "Tournament is waiting to start";
+      return 'Tournament is waiting to start';
     case TournamentStates.canceled:
-      return "Tournament is canceled";
+      return 'Tournament is canceled';
     default:
       break;
   }
 
   if (!task || !gameId) {
-    return "Game is loading";
+    return 'Game is loading';
   }
 
-  return "";
+  return '';
 };
 
-const taskSizeDefault = Number(window.localStorage.getItem("CodebattleSpectatorTaskSize") || "0");
+const taskSizeDefault = Number(window.localStorage.getItem('CodebattleSpectatorTaskSize') || '0');
 const setTaskSizeDefault = (size) =>
-  window.localStorage.setItem("CodebattleSpectatorTaskSize", size);
+  window.localStorage.setItem('CodebattleSpectatorTaskSize', size);
 
 function GamePanel({
   spectatorStatus,
@@ -185,8 +185,8 @@ function TournamentPlayer({ spectatorMachine }) {
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
   const [taskSize, setTaskSize] = useState(taskSizeDefault);
 
-  const activeEditorMode = searchParams.has("editor");
-  const activeTimerMode = searchParams.has("timer");
+  const activeEditorMode = searchParams.has('editor');
+  const activeTimerMode = searchParams.has('timer');
 
   const changeTaskDescriptionSizes = useCallback(
     (size) => {
@@ -296,13 +296,13 @@ function TournamentPlayer({ spectatorMachine }) {
     return () => {};
   }, [gameId, spectatorService, dispatch]);
 
-  const spectatorDisplayClassName = cn("d-flex flex-column vh-100", "vh-100", {
+  const spectatorDisplayClassName = cn('d-flex flex-column vh-100', 'vh-100', {
     // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
     // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
   });
 
   const spectatorGameStatusClassName = cn(
-    "d-flex justify-content-around align-items-center w-100 p-2",
+    'd-flex justify-content-around align-items-center w-100 p-2',
     {
       // 'flex-row-reverse': switchedWidgetsStatus,
     },

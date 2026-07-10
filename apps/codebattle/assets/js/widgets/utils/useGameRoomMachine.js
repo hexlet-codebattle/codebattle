@@ -1,12 +1,12 @@
-import NiceModal from "@ebay/nice-modal-react";
-import { useInterpret } from "@xstate/react";
-import { useDispatch, useSelector } from "react-redux";
+import NiceModal from '@ebay/nice-modal-react';
+import { useInterpret } from '@xstate/react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { changePresenceState } from "@/middlewares/Main";
+import { changePresenceState } from '@/middlewares/Main';
 
-import ModalCodes from "../config/modalCodes";
-import speedModes from "../config/speedModes";
-import * as selectors from "../selectors";
+import ModalCodes from '../config/modalCodes';
+import speedModes from '../config/speedModes';
+import * as selectors from '../selectors';
 
 /**
  *
@@ -26,16 +26,16 @@ const useGameRoomMachine = ({ mainMachine, taskMachine }) => {
     devTools: true,
     context: {
       errorMessage: null,
-      holding: "none",
+      holding: 'none',
       speedMode: speedModes.normal,
       subscriptionType,
     },
     actions: {
       handleOpenHistory: () => {
-        dispatch(changePresenceState("watching"));
+        dispatch(changePresenceState('watching'));
       },
       handleOpenActiveGame: () => {
-        dispatch(changePresenceState("playing"));
+        dispatch(changePresenceState('playing'));
       },
       showGameResultModal: (_ctx, { payload }) => {
         if (!payload.award) {

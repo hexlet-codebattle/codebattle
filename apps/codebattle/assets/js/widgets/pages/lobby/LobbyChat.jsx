@@ -1,25 +1,25 @@
-import React, { memo, useEffect, useMemo, useCallback } from "react";
+import React, { memo, useEffect, useMemo, useCallback } from 'react';
 
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import groupBy from "lodash/groupBy";
-import { useDispatch, useSelector } from "react-redux";
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import groupBy from 'lodash/groupBy';
+import { useDispatch, useSelector } from 'react-redux';
 
-import i18n from "../../../i18n";
-import ChatContextMenu from "../../components/ChatContextMenu";
-import ChatHeader from "../../components/ChatHeader";
-import ChatInput from "../../components/ChatInput";
-import ChatUserInfo from "../../components/ChatUserInfo";
-import Loading from "../../components/Loading";
-import Messages from "../../components/Messages";
-import * as chatMiddlewares from "../../middlewares/Chat";
-import * as selectors from "../../selectors";
-import { shouldShowMessage } from "../../utils/chat";
-import useChatContextMenu from "../../utils/useChatContextMenu";
-import useChatRooms from "../../utils/useChatRooms";
+import i18n from '../../../i18n';
+import ChatContextMenu from '../../components/ChatContextMenu';
+import ChatHeader from '../../components/ChatHeader';
+import ChatInput from '../../components/ChatInput';
+import ChatUserInfo from '../../components/ChatUserInfo';
+import Loading from '../../components/Loading';
+import Messages from '../../components/Messages';
+import * as chatMiddlewares from '../../middlewares/Chat';
+import * as selectors from '../../selectors';
+import { shouldShowMessage } from '../../utils/chat';
+import useChatContextMenu from '../../utils/useChatContextMenu';
+import useChatRooms from '../../utils/useChatRooms';
 
-const fightSvg = "/assets/images/fight.svg";
+const fightSvg = '/assets/images/fight.svg';
 
 function UsersList({ list, title, displayMenu, mode }) {
   return (
@@ -45,7 +45,7 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }) {
     lobby: lobbyList = [],
     playing: playingList = [],
     task: builderList = [],
-  } = groupBy(players, "currentState");
+  } = groupBy(players, 'currentState');
 
   return (
     <>
@@ -59,12 +59,12 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }) {
 }
 
 const chatHeaderClassName = cn(
-  "d-flex flex-column position-relative",
-  "p-0 rounded-left h-sm-100 cb-lobby-widget-container w-100",
-  "cb-lobby-chat-main",
+  'd-flex flex-column position-relative',
+  'p-0 rounded-left h-sm-100 cb-lobby-widget-container w-100',
+  'cb-lobby-chat-main',
 );
 
-function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inputRef }) {
+function LobbyChat({ mode = 'dark', presenceList, setOpenActionModalShowing, inputRef }) {
   const dispatch = useDispatch();
 
   const messages = useSelector(selectors.chatMessagesSelector);
@@ -73,7 +73,7 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
   const users = useMemo(() => presenceList.map(({ user }) => user), [presenceList]);
 
   useEffect(() => {
-    const channel = dispatch(chatMiddlewares.connectToChat(true, "channel"));
+    const channel = dispatch(chatMiddlewares.connectToChat(true, 'channel'));
 
     return () => {
       if (channel) {
@@ -84,20 +84,20 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
   }, []);
 
   const { menuId, menuRequest, displayMenu } = useChatContextMenu({
-    type: "lobby",
+    type: 'lobby',
     users,
     canInvite: true,
   });
 
   const openSendMessageModal = useCallback(() => {
-    setOpenActionModalShowing({ opened: true, action: "sendMessage" });
+    setOpenActionModalShowing({ opened: true, action: 'sendMessage' });
   }, [setOpenActionModalShowing]);
 
   const openSendInviteModal = useCallback(() => {
-    setOpenActionModalShowing({ opened: true, action: "sendInvite" });
+    setOpenActionModalShowing({ opened: true, action: 'sendInvite' });
   }, [setOpenActionModalShowing]);
 
-  useChatRooms("page");
+  useChatRooms('page');
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const filteredMessages = messages.filter((message) => shouldShowMessage(message, activeRoom));
@@ -116,16 +116,16 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
         </div>
         <div
           className={cn(
-            "p-0 pb-3 pb-sm-4 cb-players-container",
-            "border-left cb-border-color rounded-right",
-            "cb-lobby-chat-sidebar",
+            'p-0 pb-3 pb-sm-4 cb-players-container',
+            'border-left cb-border-color rounded-right',
+            'cb-lobby-chat-sidebar',
           )}
         >
           <div className="d-flex flex-column h-100">
             <div className="d-flex justify-content-between">
               {isOnline ? (
                 <p className="px-3 pt-2 mb-2 text-nowrap">
-                  {i18n.t("Online players: %{count}", { count: presenceList.length })}
+                  {i18n.t('Online players: %{count}', { count: presenceList.length })}
                 </p>
               ) : (
                 <div className="px-3 pt-2 mb-2 text-nowrap">
@@ -140,7 +140,7 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
                   disabled={!isOnline || presenceList.length <= 1}
                 >
                   <FontAwesomeIcon
-                    title={i18n.t("Send message")}
+                    title={i18n.t('Send message')}
                     className="text-white"
                     icon={faEnvelope}
                   />
@@ -152,9 +152,9 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
                   disabled={!isOnline || presenceList.length <= 1}
                 >
                   <img
-                    title={i18n.t("Send fight invite")}
-                    alt={i18n.t("fight")}
-                    style={{ width: "16px", height: "16px" }}
+                    title={i18n.t('Send fight invite')}
+                    alt={i18n.t('fight')}
+                    style={{ width: '16px', height: '16px' }}
                     src={fightSvg}
                   />
                 </button>

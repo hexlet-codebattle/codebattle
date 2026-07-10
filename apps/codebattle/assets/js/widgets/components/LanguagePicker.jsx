@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 
-import { openedReplayerSelector } from "../machines/selectors";
-import { sendCurrentLangAndSetTemplate } from "../middlewares/Room";
-import useMachineStateSelector from "../utils/useMachineStateSelector";
+import { openedReplayerSelector } from '../machines/selectors';
+import { sendCurrentLangAndSetTemplate } from '../middlewares/Room';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 
-import LanguagePickerView from "./LanguagePickerView";
-import RoomContext from "./RoomContext";
+import LanguagePickerView from './LanguagePickerView';
+import RoomContext from './RoomContext';
 
 function LanguagePicker({ status, editor }) {
   const dispatch = useDispatch();
@@ -20,8 +20,8 @@ function LanguagePicker({ status, editor }) {
 
   return (
     <LanguagePickerView
-      isDisabled={isOpenedReplayer || status === "disabled"}
-      currentLangSlug={editor?.currentLangSlug || "js"}
+      isDisabled={isOpenedReplayer || status === 'disabled'}
+      currentLangSlug={editor?.currentLangSlug || 'js'}
       changeLang={changeLang}
     />
   );

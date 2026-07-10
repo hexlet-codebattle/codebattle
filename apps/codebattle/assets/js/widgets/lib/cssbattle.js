@@ -1,4 +1,4 @@
-import pixelmatch from "pixelmatch";
+import pixelmatch from 'pixelmatch';
 
 const diffThreshold = 0.1;
 
@@ -14,11 +14,11 @@ export const matchBattlePictures = (
   height,
 ) => {
   // 1: Prepare canvases for pixel matching
-  const firstImgCanvas = document.createElement("canvas");
-  const secondImgCanvas = document.createElement("canvas");
-  const targetImgCanvas = document.createElement("canvas");
-  const firstDiffCanvas = document.createElement("canvas");
-  const secondDiffCanvas = document.createElement("canvas");
+  const firstImgCanvas = document.createElement('canvas');
+  const secondImgCanvas = document.createElement('canvas');
+  const targetImgCanvas = document.createElement('canvas');
+  const firstDiffCanvas = document.createElement('canvas');
+  const secondDiffCanvas = document.createElement('canvas');
 
   firstImgCanvas.width = width;
   firstImgCanvas.height = height;
@@ -31,11 +31,11 @@ export const matchBattlePictures = (
   secondDiffCanvas.width = width;
   secondDiffCanvas.height = height;
 
-  const firstContext = firstImgCanvas.getContext("2d");
-  const secondContext = secondImgCanvas.getContext("2d");
-  const targetContext = targetImgCanvas.getContext("2d");
-  const firstDiffContext = firstDiffCanvas.getContext("2d");
-  const secondDiffContext = secondDiffCanvas.getContext("2d");
+  const firstContext = firstImgCanvas.getContext('2d');
+  const secondContext = secondImgCanvas.getContext('2d');
+  const targetContext = targetImgCanvas.getContext('2d');
+  const firstDiffContext = firstDiffCanvas.getContext('2d');
+  const secondDiffContext = secondDiffCanvas.getContext('2d');
 
   // 2: Create images from data urls and draw on canvases
 
@@ -88,8 +88,8 @@ export const matchBattlePictures = (
   firstDiffContext.save();
   secondDiffContext.save();
 
-  const firstDiffDataUrl = firstDiffCanvas.toDataURL("image/png");
-  const secondDiffDataUrl = secondDiffCanvas.toDataURL("image/png");
+  const firstDiffDataUrl = firstDiffCanvas.toDataURL('image/png');
+  const secondDiffDataUrl = secondDiffCanvas.toDataURL('image/png');
 
   // 4.3: Return final result
 

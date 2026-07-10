@@ -1,6 +1,6 @@
-import { networkMachineStates, replayerMachineStates, roomMachineStates } from "./game";
-import { spectatorEditorMachineStates } from "./spectator";
-import { taskMachineStates } from "./task";
+import { networkMachineStates, replayerMachineStates, roomMachineStates } from './game';
+import { spectatorEditorMachineStates } from './spectator';
+import { taskMachineStates } from './task';
 
 const stateSelector = (state) => state;
 
@@ -38,7 +38,7 @@ export const spectatorEditorIsLoading = (state) =>
 export const spectatorEditorIsChecking = (state) =>
   state.matches({ editor: spectatorEditorMachineStates.checking });
 
-export const gameRoomKeySelector = () => "game";
+export const gameRoomKeySelector = () => 'game';
 
 export const isInvalidTaskSelector = (state) => state.matches(taskMachineStates.invalid);
 

@@ -1,66 +1,66 @@
-import { currentUserIsAdminSelector, lobbyDataSelector } from "@/selectors";
-import React, { useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { currentUserIsAdminSelector, lobbyDataSelector } from '@/selectors';
+import React, { useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import { broadcastRedirect, fetchTournamentPlayerIds } from "../../middlewares/Main";
-import MainChannelContainer from "../../components/MainChannelContainer";
+import { broadcastRedirect, fetchTournamentPlayerIds } from '../../middlewares/Main';
+import MainChannelContainer from '../../components/MainChannelContainer';
 
 const getPageLabel = (path) => {
-  if (!path) return "Unknown";
-  const p = path.split("?")[0].replace(/\/+$/, "") || "/";
+  if (!path) return 'Unknown';
+  const p = path.split('?')[0].replace(/\/+$/, '') || '/';
 
-  if (p === "/") return "Lobby";
-  if (p === "/maintenance") return "Maintenance";
-  if (p === "/waiting") return "Waiting";
-  if (p === "/authorized") return "Authorized";
+  if (p === '/') return 'Lobby';
+  if (p === '/maintenance') return 'Maintenance';
+  if (p === '/waiting') return 'Waiting';
+  if (p === '/authorized') return 'Authorized';
 
-  if (/^\/games\/[^/]+\/threejs$/.test(p)) return "Game 3D";
-  if (/^\/games\/[^/]+\/ml$/.test(p)) return "Game ML";
-  if (/^\/games(\/|$)/.test(p)) return "Game";
+  if (/^\/games\/[^/]+\/threejs$/.test(p)) return 'Game 3D';
+  if (/^\/games\/[^/]+\/ml$/.test(p)) return 'Game ML';
+  if (/^\/games(\/|$)/.test(p)) return 'Game';
 
-  if (p === "/tasks") return "Tasks";
-  if (/^\/tasks\/[^/]+/.test(p)) return "Task";
-  if (/^\/task_packs/.test(p)) return "Task Packs";
+  if (p === '/tasks') return 'Tasks';
+  if (/^\/tasks\/[^/]+/.test(p)) return 'Task';
+  if (/^\/task_packs/.test(p)) return 'Task Packs';
 
-  if (/^\/tournaments\/[^/]+\/edit$/.test(p)) return "Tournament Edit";
-  if (/^\/tournaments\/[^/]+\/stream/.test(p)) return "Tournament Stream";
-  if (/^\/tournaments\/[^/]+\/player/.test(p)) return "Tournament Player";
-  if (p === "/tournaments") return "Tournaments";
-  if (/^\/tournaments\/[^/]+/.test(p)) return "Tournament";
+  if (/^\/tournaments\/[^/]+\/edit$/.test(p)) return 'Tournament Edit';
+  if (/^\/tournaments\/[^/]+\/stream/.test(p)) return 'Tournament Stream';
+  if (/^\/tournaments\/[^/]+\/player/.test(p)) return 'Tournament Player';
+  if (p === '/tournaments') return 'Tournaments';
+  if (/^\/tournaments\/[^/]+/.test(p)) return 'Tournament';
 
-  if (/^\/group_tournaments\/[^/]+\/admin/.test(p)) return "Group Admin";
-  if (/^\/group_tournaments/.test(p)) return "Group Tournament";
-  if (p === "/my-tournament") return "My Tournament";
+  if (/^\/group_tournaments\/[^/]+\/admin/.test(p)) return 'Group Admin';
+  if (/^\/group_tournaments/.test(p)) return 'Group Tournament';
+  if (p === '/my-tournament') return 'My Tournament';
 
-  if (p === "/schedule") return "Schedule";
-  if (/^\/stream/.test(p)) return "Stream";
-  if (p === "/hall_of_fame") return "Hall of Fame";
-  if (/^\/h2h\//.test(p)) return "Head to Head";
+  if (p === '/schedule') return 'Schedule';
+  if (/^\/stream/.test(p)) return 'Stream';
+  if (p === '/hall_of_fame') return 'Hall of Fame';
+  if (/^\/h2h\//.test(p)) return 'Head to Head';
 
-  if (p === "/seasons") return "Seasons";
-  if (/^\/seasons\/[^/]+/.test(p)) return "Season";
+  if (p === '/seasons') return 'Seasons';
+  if (/^\/seasons\/[^/]+/.test(p)) return 'Season';
 
-  if (p === "/clans") return "Clans";
-  if (/^\/clans\/[^/]+/.test(p)) return "Clan";
+  if (p === '/clans') return 'Clans';
+  if (/^\/clans\/[^/]+/.test(p)) return 'Clan';
 
-  if (/^\/e\//.test(p)) return "Event";
+  if (/^\/e\//.test(p)) return 'Event';
 
-  if (p === "/users") return "Rating";
-  if (p === "/users/new") return "Sign Up";
-  if (/^\/users\/[^/]+/.test(p)) return "Profile";
+  if (p === '/users') return 'Rating';
+  if (p === '/users/new') return 'Sign Up';
+  if (/^\/users\/[^/]+/.test(p)) return 'Profile';
 
-  if (p === "/settings") return "Settings";
-  if (p === "/session/new") return "Sign In";
-  if (p === "/remind_password") return "Password";
-  if (/^\/feedback/.test(p)) return "Feedback";
+  if (p === '/settings') return 'Settings';
+  if (p === '/session/new') return 'Sign In';
+  if (p === '/remind_password') return 'Password';
+  if (/^\/feedback/.test(p)) return 'Feedback';
 
-  if (/^\/admin\/connections/.test(p)) return "Admin Connections";
-  if (/^\/admin/.test(p)) return "Admin";
+  if (/^\/admin\/connections/.test(p)) return 'Admin Connections';
+  if (/^\/admin/.test(p)) return 'Admin';
 
-  if (/^\/cssbattle/.test(p)) return "CSS Battle";
-  if (/^\/broadcast-editor/.test(p)) return "Broadcast";
+  if (/^\/cssbattle/.test(p)) return 'CSS Battle';
+  if (/^\/broadcast-editor/.test(p)) return 'Broadcast';
 
   return p;
 };
@@ -80,26 +80,26 @@ const formatOnlineAt = (onlineAt) => {
 };
 
 const dotStyle = (color) => ({
-  width: "8px",
-  height: "8px",
-  borderRadius: "50%",
+  width: '8px',
+  height: '8px',
+  borderRadius: '50%',
   backgroundColor: color,
   boxShadow: `0 0 6px ${color}`,
   flexShrink: 0,
 });
 
 const userCardStyle = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "6px",
-  maxWidth: "220px",
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  maxWidth: '220px',
   minWidth: 0,
-  padding: "6px 10px",
-  borderRadius: "8px",
-  border: "1px solid rgba(255, 255, 255, 0.08)",
-  backgroundColor: "rgba(255, 255, 255, 0.04)",
-  fontSize: "13px",
-  cursor: "pointer",
+  padding: '6px 10px',
+  borderRadius: '8px',
+  border: '1px solid rgba(255, 255, 255, 0.08)',
+  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  fontSize: '13px',
+  cursor: 'pointer',
 };
 
 function UserCard({ connection, onSelect }) {
@@ -113,7 +113,7 @@ function UserCard({ connection, onSelect }) {
       onClick={handleSelect}
       onKeyPress={handleSelect}
     >
-      <i className="fas fa-user text-muted" style={{ fontSize: "11px" }} />
+      <i className="fas fa-user text-muted" style={{ fontSize: '11px' }} />
       <span className="text-truncate" style={{ fontWeight: 600 }}>
         {connection.name}
       </span>
@@ -126,14 +126,14 @@ function PageSection({ group, onSelect }) {
 
   return (
     <div className="mb-4">
-      <div className="d-flex align-items-center mb-2" style={{ gap: "8px" }}>
+      <div className="d-flex align-items-center mb-2" style={{ gap: '8px' }}>
         <span style={dotStyle(color)} />
         <span style={{ fontWeight: 700 }}>{group.label}</span>
-        <span className="text-muted" style={{ fontSize: "12px" }}>
+        <span className="text-muted" style={{ fontSize: '12px' }}>
           {group.users} · {group.connections.length}
         </span>
       </div>
-      <div className="d-flex flex-wrap" style={{ gap: "8px" }}>
+      <div className="d-flex flex-wrap" style={{ gap: '8px' }}>
         {group.connections.map((connection) => (
           <UserCard key={connection.key} connection={connection} onSelect={onSelect} />
         ))}
@@ -144,12 +144,12 @@ function PageSection({ group, onSelect }) {
 
 function ConnectionRow({ label, value }) {
   return (
-    <div className="d-flex" style={{ gap: "12px", padding: "4px 0" }}>
-      <span className="text-muted" style={{ minWidth: "110px", flexShrink: 0 }}>
+    <div className="d-flex" style={{ gap: '12px', padding: '4px 0' }}>
+      <span className="text-muted" style={{ minWidth: '110px', flexShrink: 0 }}>
         {label}
       </span>
-      <span className="text-break" style={{ fontFamily: "monospace" }}>
-        {value ?? "—"}
+      <span className="text-break" style={{ fontFamily: 'monospace' }}>
+        {value ?? '—'}
       </span>
     </div>
   );
@@ -180,40 +180,39 @@ function ConnectionModal({ connection, onHide }) {
 
 const REDIRECT_ROUTES = [
   {
-    label: "Group Tournament",
-    value: "group_tournaments",
-    placeholder: "ID",
+    label: 'Group Tournament',
+    value: 'group_tournaments',
+    placeholder: 'ID',
     build: (id) => `/group_tournaments/${id}`,
   },
   {
-    label: "Game",
-    value: "games",
-    placeholder: "Game ID",
+    label: 'Game',
+    value: 'games',
+    placeholder: 'Game ID',
     build: (id) => `/games/${id}`,
   },
   {
-    label: "Tournament",
-    value: "tournaments",
-    placeholder: "Tournament ID",
+    label: 'Tournament',
+    value: 'tournaments',
+    placeholder: 'Tournament ID',
     build: (id) => `/tournaments/${id}`,
   },
   {
-    label: "Event",
-    value: "events",
-    placeholder: "Event slug",
+    label: 'Event',
+    value: 'events',
+    placeholder: 'Event slug',
     build: (slug) => `/e/${slug}`,
   },
 ];
 
-const parseUserIds = (raw) =>
-  [...new Set((raw.match(/\d+/g) || []).map(Number))];
+const parseUserIds = (raw) => [...new Set((raw.match(/\d+/g) || []).map(Number))];
 
 function RedirectPanel({ allUserIds }) {
   const dispatch = useDispatch();
   const [route, setRoute] = useState(REDIRECT_ROUTES[0].value);
-  const [id, setId] = useState("");
-  const [userIdsRaw, setUserIdsRaw] = useState("");
-  const [tournamentId, setTournamentId] = useState("");
+  const [id, setId] = useState('');
+  const [userIdsRaw, setUserIdsRaw] = useState('');
+  const [tournamentId, setTournamentId] = useState('');
   const [status, setStatus] = useState(null);
 
   const userIds = useMemo(() => parseUserIds(userIdsRaw), [userIdsRaw]);
@@ -229,21 +228,21 @@ function RedirectPanel({ allUserIds }) {
     const trimmedTournamentId = tournamentId.trim();
     if (!trimmedTournamentId) return;
 
-    setStatus("fetching");
+    setStatus('fetching');
     dispatch(
       fetchTournamentPlayerIds(
         trimmedTournamentId,
         (ids) => {
-          setUserIdsRaw((prev) => parseUserIds(`${prev} ${ids.join(" ")}`).join(", "));
-          setStatus("fetched");
+          setUserIdsRaw((prev) => parseUserIds(`${prev} ${ids.join(' ')}`).join(', '));
+          setStatus('fetched');
         },
-        () => setStatus("fetch-error"),
+        () => setStatus('fetch-error'),
       ),
     );
   };
 
   const handleSelectAll = () => {
-    setUserIdsRaw((prev) => parseUserIds(`${prev} ${allUserIds.join(" ")}`).join(", "));
+    setUserIdsRaw((prev) => parseUserIds(`${prev} ${allUserIds.join(' ')}`).join(', '));
   };
 
   const handleSubmit = (event) => {
@@ -254,13 +253,13 @@ function RedirectPanel({ allUserIds }) {
 
     if (!target || !trimmedId || userIds.length === 0) return;
 
-    setStatus("sending");
+    setStatus('sending');
     dispatch(
       broadcastRedirect(
         target.build(trimmedId),
         userIds,
-        () => setStatus("sent"),
-        () => setStatus("error"),
+        () => setStatus('sent'),
+        () => setStatus('error'),
       ),
     );
   };
@@ -269,19 +268,23 @@ function RedirectPanel({ allUserIds }) {
     <div
       className="mb-4 p-3"
       style={{
-        borderRadius: "8px",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        backgroundColor: "rgba(255, 255, 255, 0.04)",
+        borderRadius: '8px',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(255, 255, 255, 0.04)',
       }}
     >
       <div className="mb-2" style={{ fontWeight: 700 }}>
         Redirect users
       </div>
 
-      <form className="d-flex flex-wrap align-items-center mb-2" style={{ gap: "8px" }} onSubmit={handleFetch}>
+      <form
+        className="d-flex flex-wrap align-items-center mb-2"
+        style={{ gap: '8px' }}
+        onSubmit={handleFetch}
+      >
         <input
           className="form-control"
-          style={{ maxWidth: "200px" }}
+          style={{ maxWidth: '200px' }}
           type="text"
           placeholder="Tournament ID"
           value={tournamentId}
@@ -308,10 +311,14 @@ function RedirectPanel({ allUserIds }) {
         onChange={(event) => setUserIdsRaw(event.target.value)}
       />
 
-      <form className="d-flex flex-wrap align-items-center" style={{ gap: "8px" }} onSubmit={handleSubmit}>
+      <form
+        className="d-flex flex-wrap align-items-center"
+        style={{ gap: '8px' }}
+        onSubmit={handleSubmit}
+      >
         <select
           className="form-control"
-          style={{ maxWidth: "220px" }}
+          style={{ maxWidth: '220px' }}
           value={route}
           onChange={(event) => setRoute(event.target.value)}
         >
@@ -323,7 +330,7 @@ function RedirectPanel({ allUserIds }) {
         </select>
         <input
           className="form-control"
-          style={{ maxWidth: "160px" }}
+          style={{ maxWidth: '160px' }}
           type="text"
           placeholder={selectedRoute.placeholder}
           value={id}
@@ -336,10 +343,10 @@ function RedirectPanel({ allUserIds }) {
         >
           Redirect {userIds.length} users
         </button>
-        {status === "fetched" && <span className="text-success">Fetched</span>}
-        {status === "fetch-error" && <span className="text-danger">Tournament not found</span>}
-        {status === "sent" && <span className="text-success">Sent</span>}
-        {status === "error" && <span className="text-danger">Failed</span>}
+        {status === 'fetched' && <span className="text-success">Fetched</span>}
+        {status === 'fetch-error' && <span className="text-danger">Tournament not found</span>}
+        {status === 'sent' && <span className="text-success">Sent</span>}
+        {status === 'error' && <span className="text-danger">Failed</span>}
       </form>
     </div>
   );

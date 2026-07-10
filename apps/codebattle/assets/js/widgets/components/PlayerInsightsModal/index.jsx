@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from 'react';
 
-import cn from "classnames";
-import Spinner from "react-bootstrap/Spinner";
+import cn from 'classnames';
+import Spinner from 'react-bootstrap/Spinner';
 import {
   ResponsiveContainer,
   BarChart,
@@ -22,11 +22,11 @@ import {
   PolarRadiusAxis,
   Radar,
   ReferenceLine,
-} from "recharts";
+} from 'recharts';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import LanguageIcon from "../LanguageIcon";
+import LanguageIcon from '../LanguageIcon';
 import {
   GRADE_COLORS,
   ALL_GRADES,
@@ -35,7 +35,7 @@ import {
   formatTime,
   formatGradeName,
   formatDate,
-} from "../SeasonLeaderboard";
+} from '../SeasonLeaderboard';
 
 // Grade Stats Chart Component - now shows all grades
 function GradeStatsChart({ gradeStats }) {
@@ -56,7 +56,7 @@ function GradeStatsChart({ gradeStats }) {
     points: gradeStatsMap[grade]?.total_points || 0,
     tournaments: gradeStatsMap[grade]?.tournaments_count || 0,
     wins: gradeStatsMap[grade]?.total_wins || 0,
-    fill: GRADE_COLORS[grade] || "#666",
+    fill: GRADE_COLORS[grade] || '#666',
   }));
 
   return (
@@ -68,8 +68,8 @@ function GradeStatsChart({ gradeStats }) {
           <XAxis type="number" stroke="#999" />
           <YAxis type="category" dataKey="name" stroke="#999" width={100} />
           <Tooltip
-            contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
-            labelStyle={{ color: "#fff" }}
+            contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}
+            labelStyle={{ color: '#fff' }}
           />
           <Bar dataKey="points" name="Points">
             {chartData.map((entry) => (
@@ -86,8 +86,8 @@ function GradeStatsChart({ gradeStats }) {
 function WinRateChart({ wins, total }) {
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
   const data = [
-    { name: "Wins", value: wins, fill: "#198754" },
-    { name: "Losses", value: total - wins, fill: "#2d2d2d" },
+    { name: 'Wins', value: wins, fill: '#198754' },
+    { name: 'Losses', value: total - wins, fill: '#2d2d2d' },
   ];
 
   return (
@@ -108,10 +108,10 @@ function WinRateChart({ wins, total }) {
               <Cell key={`cell-${entry.name}`} fill={entry.fill} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+          <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }} />
         </PieChart>
       </ResponsiveContainer>
-      <div style={{ marginTop: "-40px", position: "relative" }}>
+      <div style={{ marginTop: '-40px', position: 'relative' }}>
         <div className="fs-4 fw-bold text-success">{winRate}%</div>
         <div className="text-muted small">Win Rate</div>
       </div>
@@ -139,8 +139,8 @@ function PerformanceTrendChart({ trend }) {
           <XAxis dataKey="week" stroke="#999" />
           <YAxis stroke="#999" />
           <Tooltip
-            contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
-            labelStyle={{ color: "#fff" }}
+            contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}
+            labelStyle={{ color: '#fff' }}
           />
           <Legend />
           <Area
@@ -189,7 +189,7 @@ function GradeStatsTable({ gradeStats }) {
           {gradeStats.map((g) => (
             <tr key={g.grade}>
               <td>
-                <span className="fw-bold" style={{ color: GRADE_COLORS[g.grade] || "#666" }}>
+                <span className="fw-bold" style={{ color: GRADE_COLORS[g.grade] || '#666' }}>
                   {formatGradeName(g.grade)}
                 </span>
               </td>
@@ -198,19 +198,19 @@ function GradeStatsTable({ gradeStats }) {
               <td className="text-center text-success">{g.total_wins}</td>
               <td className="text-center">
                 {g.best_place ? (
-                  <span className={cn("badge badge-sm", getPlaceBadgeClass(g.best_place))}>
+                  <span className={cn('badge badge-sm', getPlaceBadgeClass(g.best_place))}>
                     {g.best_place}
                   </span>
                 ) : (
-                  "-"
+                  '-'
                 )}
               </td>
-              <td className="text-center">{g.avg_place?.toFixed(1) || "-"}</td>
+              <td className="text-center">{g.avg_place?.toFixed(1) || '-'}</td>
               <td className="text-center">
                 {g.podium_finishes && g.podium_finishes.length > 0 ? (
-                  <span>{g.podium_finishes.map((p) => getMedalEmoji(p)).join("")}</span>
+                  <span>{g.podium_finishes.map((p) => getMedalEmoji(p)).join('')}</span>
                 ) : (
-                  "-"
+                  '-'
                 )}
               </td>
             </tr>
@@ -252,12 +252,12 @@ function TournamentsTable({ tournaments }) {
                 </a>
               </td>
               <td className="text-center">
-                <span className="fw-bold" style={{ color: GRADE_COLORS[t.grade] || "#666" }}>
+                <span className="fw-bold" style={{ color: GRADE_COLORS[t.grade] || '#666' }}>
                   {formatGradeName(t.grade)}
                 </span>
               </td>
               <td className="text-center">
-                <span className={cn("badge badge-sm", getPlaceBadgeClass(t.place))}>
+                <span className={cn('badge badge-sm', getPlaceBadgeClass(t.place))}>
                   {t.place <= 3 ? getMedalEmoji(t.place) : `#${t.place}`}
                 </span>
                 <small className="text-muted ml-1">/{t.total_participants}</small>
@@ -279,7 +279,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
   const [loading, setLoading] = useState(false);
   const [detailedStats, setDetailedStats] = useState(null);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Fetch detailed stats when modal opens
   useEffect(() => {
@@ -298,8 +298,8 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
           setLoading(false);
         })
         .catch((err) => {
-          console.error("Failed to fetch player stats:", err);
-          setError("Failed to load detailed stats");
+          console.error('Failed to fetch player stats:', err);
+          setError('Failed to load detailed stats');
           setLoading(false);
         });
     }
@@ -309,7 +309,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
   useEffect(() => {
     if (!show) {
       setDetailedStats(null);
-      setActiveTab("overview");
+      setActiveTab('overview');
     }
   }, [show]);
 
@@ -388,8 +388,8 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
           <div className="d-flex align-items-center justify-content-between">
             {/* Left: Rank + Avatar + Name */}
             <div className="d-flex align-items-center">
-              <div className="text-center mr-3" style={{ minWidth: "60px" }}>
-                <div className={cn("badge fs-4 px-3 py-2", getPlaceBadgeClass(player.place))}>
+              <div className="text-center mr-3" style={{ minWidth: '60px' }}>
+                <div className={cn('badge fs-4 px-3 py-2', getPlaceBadgeClass(player.place))}>
                   {getMedalEmoji(player.place) || `#${player.place}`}
                 </div>
               </div>
@@ -398,7 +398,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                   src={player.avatar_url}
                   alt={player.user_name}
                   className="rounded mr-3"
-                  style={{ width: "48px", height: "48px" }}
+                  style={{ width: '48px', height: '48px' }}
                 />
               )}
               <div>
@@ -431,46 +431,46 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
         </div>
       </Modal.Header>
 
-      <Modal.Body className="p-0" style={{ maxHeight: "75vh", overflowY: "auto" }}>
+      <Modal.Body className="p-0" style={{ maxHeight: '75vh', overflowY: 'auto' }}>
         {/* Tabs */}
         <div className="d-flex justify-content-center p-3 border-bottom border-secondary sticky-top bg-dark">
           <button
             type="button"
-            className={cn("btn btn-sm mr-2", {
-              "btn-info": activeTab === "overview",
-              "btn-outline-secondary": activeTab !== "overview",
+            className={cn('btn btn-sm mr-2', {
+              'btn-info': activeTab === 'overview',
+              'btn-outline-secondary': activeTab !== 'overview',
             })}
-            onClick={() => setActiveTab("overview")}
+            onClick={() => setActiveTab('overview')}
           >
             Overview
           </button>
           <button
             type="button"
-            className={cn("btn btn-sm mr-2", {
-              "btn-info": activeTab === "grades",
-              "btn-outline-secondary": activeTab !== "grades",
+            className={cn('btn btn-sm mr-2', {
+              'btn-info': activeTab === 'grades',
+              'btn-outline-secondary': activeTab !== 'grades',
             })}
-            onClick={() => setActiveTab("grades")}
+            onClick={() => setActiveTab('grades')}
           >
             By Grade
           </button>
           <button
             type="button"
-            className={cn("btn btn-sm mr-2", {
-              "btn-info": activeTab === "tournaments",
-              "btn-outline-secondary": activeTab !== "tournaments",
+            className={cn('btn btn-sm mr-2', {
+              'btn-info': activeTab === 'tournaments',
+              'btn-outline-secondary': activeTab !== 'tournaments',
             })}
-            onClick={() => setActiveTab("tournaments")}
+            onClick={() => setActiveTab('tournaments')}
           >
             Tournaments
           </button>
           <button
             type="button"
-            className={cn("btn btn-sm", {
-              "btn-info": activeTab === "trends",
-              "btn-outline-secondary": activeTab !== "trends",
+            className={cn('btn btn-sm', {
+              'btn-info': activeTab === 'trends',
+              'btn-outline-secondary': activeTab !== 'trends',
             })}
-            onClick={() => setActiveTab("trends")}
+            onClick={() => setActiveTab('trends')}
           >
             Trends
           </button>
@@ -493,7 +493,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
         {!loading && (
           <div className="p-3">
             {/* Overview Tab */}
-            {activeTab === "overview" && (
+            {activeTab === 'overview' && (
               <div className="row">
                 {/* Left Column - Weapon + Stats */}
                 <div className="col-md-5">
@@ -503,7 +503,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                       <h6 className="text-muted text-uppercase mb-3">Weapon</h6>
                       <LanguageIcon
                         lang={player.user_lang}
-                        style={{ width: "80px", height: "80px" }}
+                        style={{ width: '80px', height: '80px' }}
                       />
                       <div className="fs-5 text-white text-capitalize mt-2">{player.user_lang}</div>
                     </div>
@@ -514,7 +514,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                     <div className="d-flex justify-content-between mb-2">
                       <span className="text-muted">Season Rank</span>
                       <span className="fw-bold text-warning">
-                        #{player.place}{" "}
+                        #{player.place}{' '}
                         <small className="text-muted">/ Top {100 - percentile}%</small>
                       </span>
                     </div>
@@ -546,18 +546,18 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                       <span className="text-muted">Best Finish</span>
                       <span>
                         {player.best_place ? (
-                          <span className={cn("badge", getPlaceBadgeClass(player.best_place))}>
+                          <span className={cn('badge', getPlaceBadgeClass(player.best_place))}>
                             #{player.best_place}
                           </span>
                         ) : (
-                          "-"
+                          '-'
                         )}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span className="text-muted">Avg Finish</span>
                       <span className="fw-bold">
-                        #{player.avg_place ? Number(player.avg_place).toFixed(1) : "-"}
+                        #{player.avg_place ? Number(player.avg_place).toFixed(1) : '-'}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
@@ -582,7 +582,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <div className="d-flex align-items-center">
                               <span
                                 className="fw-bold"
-                                style={{ color: GRADE_COLORS[grade], minWidth: "90px" }}
+                                style={{ color: GRADE_COLORS[grade], minWidth: '90px' }}
                               >
                                 {formatGradeName(grade)}
                               </span>
@@ -606,13 +606,13 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <span className="text-muted">Points: </span>
                             <span
                               className={cn(
-                                "fw-bold",
+                                'fw-bold',
                                 player.total_points >= medianStats.points
-                                  ? "text-success"
-                                  : "text-danger",
+                                  ? 'text-success'
+                                  : 'text-danger',
                               )}
                             >
-                              {player.total_points >= medianStats.points ? "+" : ""}
+                              {player.total_points >= medianStats.points ? '+' : ''}
                               {(player.total_points - medianStats.points).toLocaleString()}
                             </span>
                           </div>
@@ -620,13 +620,13 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <span className="text-muted">Win Rate: </span>
                             <span
                               className={cn(
-                                "fw-bold",
+                                'fw-bold',
                                 playerWinRate >= medianStats.winRate
-                                  ? "text-success"
-                                  : "text-danger",
+                                  ? 'text-success'
+                                  : 'text-danger',
                               )}
                             >
-                              {playerWinRate >= medianStats.winRate ? "+" : ""}
+                              {playerWinRate >= medianStats.winRate ? '+' : ''}
                               {(playerWinRate - medianStats.winRate).toFixed(1)}%
                             </span>
                           </div>
@@ -634,13 +634,13 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <span className="text-muted">Wins: </span>
                             <span
                               className={cn(
-                                "fw-bold",
+                                'fw-bold',
                                 player.total_wins_count >= medianStats.wins
-                                  ? "text-success"
-                                  : "text-danger",
+                                  ? 'text-success'
+                                  : 'text-danger',
                               )}
                             >
-                              {player.total_wins_count >= medianStats.wins ? "+" : ""}
+                              {player.total_wins_count >= medianStats.wins ? '+' : ''}
                               {player.total_wins_count - medianStats.wins}
                             </span>
                           </div>
@@ -648,13 +648,13 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <span className="text-muted">Tournaments: </span>
                             <span
                               className={cn(
-                                "fw-bold",
+                                'fw-bold',
                                 player.tournaments_count >= medianStats.tournaments
-                                  ? "text-success"
-                                  : "text-danger",
+                                  ? 'text-success'
+                                  : 'text-danger',
                               )}
                             >
-                              {player.tournaments_count >= medianStats.tournaments ? "+" : ""}
+                              {player.tournaments_count >= medianStats.tournaments ? '+' : ''}
                               {player.tournaments_count - medianStats.tournaments}
                             </span>
                           </div>
@@ -667,7 +667,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
             )}
 
             {/* Grades Tab */}
-            {activeTab === "grades" && (
+            {activeTab === 'grades' && (
               <>
                 <h6 className="text-muted text-uppercase mb-3">Tournament Performance by Grade</h6>
                 {detailedStats?.grade_stats ? (
@@ -679,35 +679,35 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                   </>
                 ) : (
                   <div className="text-center text-muted py-3">
-                    {loading ? "Loading..." : "No grade stats available"}
+                    {loading ? 'Loading...' : 'No grade stats available'}
                   </div>
                 )}
               </>
             )}
 
             {/* Tournaments Tab */}
-            {activeTab === "tournaments" && (
+            {activeTab === 'tournaments' && (
               <>
                 <h6 className="text-muted text-uppercase mb-3">Tournament Results</h6>
                 {detailedStats?.recent_tournaments ? (
                   <TournamentsTable tournaments={detailedStats.recent_tournaments} />
                 ) : (
                   <div className="text-center text-muted py-3">
-                    {loading ? "Loading..." : "No tournament data available"}
+                    {loading ? 'Loading...' : 'No tournament data available'}
                   </div>
                 )}
               </>
             )}
 
             {/* Trends Tab */}
-            {activeTab === "trends" && (
+            {activeTab === 'trends' && (
               <>
                 <h6 className="text-muted text-uppercase mb-3">Performance Over Time</h6>
                 {detailedStats?.performance_trend && detailedStats.performance_trend.length > 0 ? (
                   <PerformanceTrendChart trend={detailedStats.performance_trend} />
                 ) : (
                   <div className="text-center text-muted py-3">
-                    {loading ? "Loading..." : "Not enough data for trend analysis"}
+                    {loading ? 'Loading...' : 'Not enough data for trend analysis'}
                   </div>
                 )}
 
@@ -725,7 +725,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <RadarChart
                               data={[
                                 {
-                                  stat: "Points",
+                                  stat: 'Points',
                                   player: Math.min(
                                     (player.total_points / Math.max(medianStats.points, 1)) * 50,
                                     100,
@@ -733,7 +733,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                                   median: 50,
                                 },
                                 {
-                                  stat: "Wins",
+                                  stat: 'Wins',
                                   player: Math.min(
                                     (player.total_wins_count / Math.max(medianStats.wins, 1)) * 50,
                                     100,
@@ -741,7 +741,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                                   median: 50,
                                 },
                                 {
-                                  stat: "Win Rate",
+                                  stat: 'Win Rate',
                                   player: Math.min(
                                     (playerWinRate / Math.max(medianStats.winRate, 1)) * 50,
                                     100,
@@ -749,7 +749,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                                   median: 50,
                                 },
                                 {
-                                  stat: "Score",
+                                  stat: 'Score',
                                   player: Math.min(
                                     (player.total_score / Math.max(medianStats.score, 1)) * 50,
                                     100,
@@ -757,7 +757,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                                   median: 50,
                                 },
                                 {
-                                  stat: "Tournaments",
+                                  stat: 'Tournaments',
                                   player: Math.min(
                                     (player.tournaments_count /
                                       Math.max(medianStats.tournaments, 1)) *
@@ -810,22 +810,22 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <BarChart
                               data={[
                                 {
-                                  name: "Points",
+                                  name: 'Points',
                                   you: player.total_points,
                                   median: medianStats.points,
                                 },
                                 {
-                                  name: "Score",
+                                  name: 'Score',
                                   you: player.total_score,
                                   median: medianStats.score,
                                 },
                                 {
-                                  name: "Wins",
+                                  name: 'Wins',
                                   you: player.total_wins_count,
                                   median: medianStats.wins,
                                 },
                                 {
-                                  name: "Games",
+                                  name: 'Games',
                                   you: player.total_games_count,
                                   median: medianStats.games,
                                 },
@@ -837,8 +837,8 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                               <YAxis type="category" dataKey="name" stroke="#999" width={60} />
                               <Tooltip
                                 contentStyle={{
-                                  backgroundColor: "#1a1a1a",
-                                  border: "1px solid #333",
+                                  backgroundColor: '#1a1a1a',
+                                  border: '1px solid #333',
                                 }}
                               />
                               <Legend />
@@ -859,7 +859,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <BarChart
                               data={[
                                 {
-                                  name: "Win Rate %",
+                                  name: 'Win Rate %',
                                   you: playerWinRate,
                                   median: Math.round(medianStats.winRate),
                                 },
@@ -870,10 +870,10 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                               <YAxis stroke="#999" domain={[0, 100]} />
                               <Tooltip
                                 contentStyle={{
-                                  backgroundColor: "#1a1a1a",
-                                  border: "1px solid #333",
+                                  backgroundColor: '#1a1a1a',
+                                  border: '1px solid #333',
                                 }}
-                                formatter={(value) => [`${value}%`, ""]}
+                                formatter={(value) => [`${value}%`, '']}
                               />
                               <Legend />
                               <Bar dataKey="you" name="You" fill="#198754" />
@@ -882,7 +882,7 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                                 y={50}
                                 stroke="#ffc107"
                                 strokeDasharray="3 3"
-                                label={{ value: "50%", fill: "#ffc107", fontSize: 10 }}
+                                label={{ value: '50%', fill: '#ffc107', fontSize: 10 }}
                               />
                             </BarChart>
                           </ResponsiveContainer>
@@ -901,8 +901,8 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                             <PieChart>
                               <Pie
                                 data={[
-                                  { name: "Your Percentile", value: percentile, fill: "#0dcaf0" },
-                                  { name: "Above You", value: 100 - percentile, fill: "#2d2d2d" },
+                                  { name: 'Your Percentile', value: percentile, fill: '#0dcaf0' },
+                                  { name: 'Above You', value: 100 - percentile, fill: '#2d2d2d' },
                                 ]}
                                 cx="50%"
                                 cy="50%"
@@ -917,13 +917,13 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                               </Pie>
                               <Tooltip
                                 contentStyle={{
-                                  backgroundColor: "#1a1a1a",
-                                  border: "1px solid #333",
+                                  backgroundColor: '#1a1a1a',
+                                  border: '1px solid #333',
                                 }}
                               />
                             </PieChart>
                           </ResponsiveContainer>
-                          <div className="text-center" style={{ marginTop: "-60px" }}>
+                          <div className="text-center" style={{ marginTop: '-60px' }}>
                             <div className="fs-3 fw-bold text-info">Top {100 - percentile}%</div>
                             <div className="text-muted small">
                               Better than {percentile}% of players
@@ -962,10 +962,10 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                               <YAxis stroke="#999" />
                               <Tooltip
                                 contentStyle={{
-                                  backgroundColor: "#1a1a1a",
-                                  border: "1px solid #333",
+                                  backgroundColor: '#1a1a1a',
+                                  border: '1px solid #333',
                                 }}
-                                formatter={(value) => [value.toLocaleString(), "Points"]}
+                                formatter={(value) => [value.toLocaleString(), 'Points']}
                               />
                               <Bar dataKey="points" name="Points">
                                 {ALL_GRADES.map((grade) => (
@@ -995,8 +995,8 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
                               <YAxis stroke="#999" />
                               <Tooltip
                                 contentStyle={{
-                                  backgroundColor: "#1a1a1a",
-                                  border: "1px solid #333",
+                                  backgroundColor: '#1a1a1a',
+                                  border: '1px solid #333',
                                 }}
                               />
                               <Bar dataKey="wins" name="Wins" fill="#198754" />

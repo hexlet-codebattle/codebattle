@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import * as TournamentActions from "../middlewares/GroupTournament";
-import * as selectors from "../selectors";
+import * as TournamentActions from '../middlewares/GroupTournament';
+import * as selectors from '../selectors';
 
 const useGroupTournamentChannel = (tournamentId) => {
   const dispatch = useDispatch();

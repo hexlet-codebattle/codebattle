@@ -3,16 +3,16 @@ import {
   editorSummaryConfig,
   finalizeTelemetryWindow,
   updateTelemetryWindow,
-} from "../widgets/utils/editorSummary";
+} from '../widgets/utils/editorSummary';
 
-describe("editorSummary", () => {
-  test("starts a new window and aggregates keydown metrics", () => {
-    let windowSummary = createTelemetryWindow({ offsetMs: 0, textLength: 0, langSlug: "js" });
+describe('editorSummary', () => {
+  test('starts a new window and aggregates keydown metrics', () => {
+    let windowSummary = createTelemetryWindow({ offsetMs: 0, textLength: 0, langSlug: 'js' });
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "keydown",
-      key: "a",
-      code: "KeyA",
+      type: 'keydown',
+      key: 'a',
+      code: 'KeyA',
       offset_ms: 100,
       text_length: 1,
       ctrl_key: false,
@@ -21,9 +21,9 @@ describe("editorSummary", () => {
     });
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "keydown",
-      key: "Backspace",
-      code: "Backspace",
+      type: 'keydown',
+      key: 'Backspace',
+      code: 'Backspace',
       offset_ms: 2_300,
       text_length: 0,
       ctrl_key: false,
@@ -47,13 +47,13 @@ describe("editorSummary", () => {
     expect(summary.finalTextLength).toBe(0);
   });
 
-  test("tracks shortcuts and navigation keys", () => {
+  test('tracks shortcuts and navigation keys', () => {
     let windowSummary = null;
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "keydown",
-      key: "v",
-      code: "KeyV",
+      type: 'keydown',
+      key: 'v',
+      code: 'KeyV',
       offset_ms: 100,
       text_length: 10,
       ctrl_key: true,
@@ -62,9 +62,9 @@ describe("editorSummary", () => {
     });
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "keydown",
-      key: "ArrowLeft",
-      code: "ArrowLeft",
+      type: 'keydown',
+      key: 'ArrowLeft',
+      code: 'ArrowLeft',
       offset_ms: 150,
       text_length: 10,
       ctrl_key: false,
@@ -79,13 +79,13 @@ describe("editorSummary", () => {
     expect(summary.arrowKeyCount).toBe(1);
   });
 
-  test("aggregates content changes and large inserts", () => {
+  test('aggregates content changes and large inserts', () => {
     let windowSummary = null;
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "content_change",
+      type: 'content_change',
       offset_ms: 500,
-      lang_slug: "js",
+      lang_slug: 'js',
       text_length: 75,
       change_count: 2,
       inserted_chars: 84,
@@ -114,20 +114,20 @@ describe("editorSummary", () => {
     expect(summary.finalTextLength).toBe(75);
   });
 
-  test("counts blocked paste and drop attempts", () => {
+  test('counts blocked paste and drop attempts', () => {
     let windowSummary = null;
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "paste_blocked",
+      type: 'paste_blocked',
       offset_ms: 100,
-      lang_slug: "js",
+      lang_slug: 'js',
       text_length: 5,
     });
 
     windowSummary = updateTelemetryWindow(windowSummary, {
-      type: "drop_blocked",
+      type: 'drop_blocked',
       offset_ms: 120,
-      lang_slug: "js",
+      lang_slug: 'js',
       text_length: 5,
     });
 
@@ -137,12 +137,12 @@ describe("editorSummary", () => {
     expect(summary.dropBlockedCount).toBe(1);
   });
 
-  test("returns null when finalizing an empty window", () => {
+  test('returns null when finalizing an empty window', () => {
     expect(finalizeTelemetryWindow(null)).toBe(null);
     expect(finalizeTelemetryWindow(createTelemetryWindow())).toBe(null);
   });
 
-  test("exports the flush thresholds", () => {
+  test('exports the flush thresholds', () => {
     expect(editorSummaryConfig.windowMs).toBe(10_000);
     expect(editorSummaryConfig.eventLimit).toBe(100);
   });

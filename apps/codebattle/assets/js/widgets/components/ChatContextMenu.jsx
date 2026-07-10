@@ -1,21 +1,21 @@
-import React, { useState, useCallback, useMemo, memo } from "react";
+import React, { useState, useCallback, useMemo, memo } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import qs from "qs";
-import { Menu, Item, Separator } from "react-contexify";
-import { useSelector, useDispatch } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import qs from 'qs';
+import { Menu, Item, Separator } from 'react-contexify';
+import { useSelector, useDispatch } from 'react-redux';
 
-import i18n from "../../i18n";
-import { pushCommand } from "@/middlewares/Chat";
-import { openDirect } from "@/middlewares/Lobby";
-import { followUser } from "@/middlewares/Main";
-import { currentUserIsAdminSelector, currentUserIdSelector, lobbyDataSelector } from "@/selectors";
-import { actions } from "@/slices";
-import { getLobbyUrl, getUserProfileUrl } from "@/utils/urlBuilders";
+import i18n from '../../i18n';
+import { pushCommand } from '@/middlewares/Chat';
+import { openDirect } from '@/middlewares/Lobby';
+import { followUser } from '@/middlewares/Main';
+import { currentUserIsAdminSelector, currentUserIdSelector, lobbyDataSelector } from '@/selectors';
+import { actions } from '@/slices';
+import { getLobbyUrl, getUserProfileUrl } from '@/utils/urlBuilders';
 
-const blackSwordSrc = "/assets/images/fight-black.png";
-const whiteSwordSrc = "/assets/images/fight-white.png";
+const blackSwordSrc = '/assets/images/fight-black.png';
+const whiteSwordSrc = '/assets/images/fight-white.png';
 
 function ChatContextMenu({
   request = {
@@ -80,7 +80,7 @@ function ChatContextMenu({
   }, [userId, dispatch]);
 
   const handleShowGithubProfile = useCallback(() => {
-    window.open(`https://github.com/${githubName}`, "_blank");
+    window.open(`https://github.com/${githubName}`, '_blank');
   }, [githubName]);
 
   const handleCreateInviteModal = useCallback(() => {
@@ -111,7 +111,7 @@ function ChatContextMenu({
 
   const handleBanClick = () => {
     if (userId && name) {
-      pushCommand({ type: "ban", name, user_id: userId });
+      pushCommand({ type: 'ban', name, user_id: userId });
     }
   };
 
@@ -134,8 +134,8 @@ function ChatContextMenu({
             aria-label="Github account"
             onClick={handleShowGithubProfile}
           >
-            <FontAwesomeIcon className="mr-2 text-white" icon={["fab", "github"]} />
-            <span className="text-white">{i18n.t("Github account")}</span>
+            <FontAwesomeIcon className="mr-2 text-white" icon={['fab', 'github']} />
+            <span className="text-white">{i18n.t('Github account')}</span>
           </Item>
         )}
         {!isCurrentUser && (
@@ -170,8 +170,8 @@ function ChatContextMenu({
               alt="invite"
               src={whiteSwordSrc}
               style={{ width: 14, height: 16 }}
-              className={cn("mr-2", {
-                "text-muted": !inviteSendDisabled,
+              className={cn('mr-2', {
+                'text-muted': !inviteSendDisabled,
               })}
             />
             <span className="text-white">Send an invite</span>

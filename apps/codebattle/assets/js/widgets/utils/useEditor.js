@@ -1,15 +1,15 @@
 /* eslint-disable no-bitwise */
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
-import GameRoomModes from "../config/gameModes";
-import sound from "../lib/sound";
+import GameRoomModes from '../config/gameModes';
+import sound from '../lib/sound';
 
-import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from "./editor";
-import useCursorUpdates from "./useCursorUpdates";
-import useEditorCursor from "./useEditorCursor";
-import useResizeListener from "./useResizeListener";
+import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from './editor';
+import useCursorUpdates from './useCursorUpdates';
+import useEditorCursor from './useEditorCursor';
+import useResizeListener from './useResizeListener';
 
-const defaultEditorPlaceholder = "Please! Help me!!!";
+const defaultEditorPlaceholder = 'Please! Help me!!!';
 
 /**
  * A small helper to generate a random string for our prefix;
@@ -22,9 +22,9 @@ function generateRandomPrefix() {
 /**
  * Our in-memory clipboard storage
  */
-let editorClipboard = "";
-let currentClipboardPrefix = "";
-let selection = "";
+let editorClipboard = '';
+let currentClipboardPrefix = '';
+let selection = '';
 
 /**
  * @param {object} editor
@@ -83,8 +83,8 @@ const useOption = (
         useShadows: false,
         verticalHasArrows: true,
         horizontalHasArrows: true,
-        vertical: "visible",
-        horizontal: "visible",
+        vertical: 'visible',
+        horizontal: 'visible',
         verticalScrollbarSize: 17,
         horizontalScrollbarSize: 17,
         arrowSize: 30,
@@ -153,15 +153,15 @@ const useEditor = (props) => {
 
   // Prevent browser "Save Page" on Ctrl+S / Cmd+S
   const handleEnterCtrPlusS = useCallback((e) => {
-    if (e.key === "s" && (e.metaKey || e.ctrlKey)) {
+    if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
     }
   }, []);
 
   useEffect(() => {
-    window.addEventListener("keydown", handleEnterCtrPlusS);
+    window.addEventListener('keydown', handleEnterCtrPlusS);
     return () => {
-      window.removeEventListener("keydown", handleEnterCtrPlusS);
+      window.removeEventListener('keydown', handleEnterCtrPlusS);
     };
   }, [handleEnterCtrPlusS]);
 
@@ -171,19 +171,19 @@ const useEditor = (props) => {
     setEditor(currentEditor);
     setMonaco(currentMonaco);
 
-    currentMonaco.editor.defineTheme("code-theme-dark", {
-      base: "vs-dark",
+    currentMonaco.editor.defineTheme('code-theme-dark', {
+      base: 'vs-dark',
       inherit: true,
       colors: {
-        "editor.background": "#1f1313",
+        'editor.background': '#1f1313',
       },
       rules: [],
     });
-    currentMonaco.editor.defineTheme("db-theme-dark", {
-      base: "vs-dark",
+    currentMonaco.editor.defineTheme('db-theme-dark', {
+      base: 'vs-dark',
       inherit: true,
       colors: {
-        "editor.background": "#13181f",
+        'editor.background': '#13181f',
       },
       rules: [],
     });
@@ -202,7 +202,7 @@ const useEditor = (props) => {
 
     const emitTelemetry = (payload) => {
       const handler = onTelemetryEventRef.current;
-      if (typeof handler !== "function") {
+      if (typeof handler !== 'function') {
         return;
       }
 
@@ -236,7 +236,7 @@ const useEditor = (props) => {
         (acc, change) => {
           const insertedChars = change.text.length;
           const deletedChars = change.rangeLength;
-          const insertedLines = change.text ? change.text.split("\n").length - 1 : 0;
+          const insertedLines = change.text ? change.text.split('\n').length - 1 : 0;
 
           return {
             inserted_chars: acc.inserted_chars + insertedChars,
@@ -262,7 +262,7 @@ const useEditor = (props) => {
       );
 
       emitTelemetry({
-        type: "content_change",
+        type: 'content_change',
         change_count: event.changes.length,
         net_text_delta: contentMetrics.inserted_chars - contentMetrics.deleted_chars,
         ...contentMetrics,
@@ -276,7 +276,7 @@ const useEditor = (props) => {
         const browserEvent = e.browserEvent || {};
 
         emitTelemetry({
-          type: "keydown",
+          type: 'keydown',
           key: browserEvent.key,
           code: browserEvent.code,
           key_code: e.keyCode,
@@ -289,7 +289,7 @@ const useEditor = (props) => {
         });
 
         // COPY (Ctrl+C / Cmd+C)
-        if (isCtrlOrCmd && e.code === "KeyC") {
+        if (isCtrlOrCmd && e.code === 'KeyC') {
           e.preventDefault();
           if (!editable) return;
 
@@ -300,7 +300,7 @@ const useEditor = (props) => {
         }
 
         // CUT (Ctrl+X / Cmd+X)
-        if (isCtrlOrCmd && e.code === "KeyX") {
+        if (isCtrlOrCmd && e.code === 'KeyX') {
           e.preventDefault();
           if (!editable) return;
 
@@ -310,25 +310,25 @@ const useEditor = (props) => {
           editorClipboard = currentClipboardPrefix + selection;
 
           // Remove the selection from the editor
-          currentEditor.executeEdits("custom-cut", [
+          currentEditor.executeEdits('custom-cut', [
             {
               range: currentEditor.getSelection(),
-              text: "",
+              text: '',
               forceMoveMarkers: true,
             },
           ]);
         }
 
         // PASTE (Ctrl+V / Cmd+V)
-        if (isCtrlOrCmd && e.code === "KeyV") {
+        if (isCtrlOrCmd && e.code === 'KeyV') {
           e.preventDefault();
           e.stopPropagation();
 
           // Only allow paste if it matches the exact current prefix
           if (editorClipboard.startsWith(currentClipboardPrefix)) {
             // Remove the prefix before inserting
-            const customText = editorClipboard.replace(currentClipboardPrefix, "");
-            currentEditor.executeEdits("custom-paste", [
+            const customText = editorClipboard.replace(currentClipboardPrefix, '');
+            currentEditor.executeEdits('custom-paste', [
               {
                 range: currentEditor.getSelection(),
                 text: customText,
@@ -360,11 +360,11 @@ const useEditor = (props) => {
     const domNode = currentEditor.getDomNode();
     if (!allowClipboard)
       domNode.addEventListener(
-        "paste",
+        'paste',
         (e) => {
           emitTelemetry({
-            type: "paste_blocked",
-            clipboard_text_length: e.clipboardData?.getData("text")?.length,
+            type: 'paste_blocked',
+            clipboard_text_length: e.clipboardData?.getData('text')?.length,
             alt_key: !!e.altKey,
             ctrl_key: !!e.ctrlKey,
             meta_key: !!e.metaKey,
@@ -379,10 +379,10 @@ const useEditor = (props) => {
 
     if (!allowClipboard)
       domNode.addEventListener(
-        "drop",
+        'drop',
         (e) => {
           emitTelemetry({
-            type: "drop_blocked",
+            type: 'drop_blocked',
             alt_key: !!e.altKey,
             ctrl_key: !!e.ctrlKey,
             meta_key: !!e.metaKey,
@@ -402,8 +402,8 @@ const useEditor = (props) => {
     // Codebattle action: Check on Ctrl+Enter
     if (checkResult) {
       currentEditor.addAction({
-        id: "codebattle-check-keys",
-        label: "Codebattle check start",
+        id: 'codebattle-check-keys',
+        label: 'Codebattle check start',
         keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter],
         run: () => {
           if (!currentEditor.getOptions().readOnly) {
@@ -420,8 +420,8 @@ const useEditor = (props) => {
 
     // Codebattle action: toggle sound on Ctrl+M
     currentEditor.addAction({
-      id: "codebattle-mute-keys",
-      label: "Codebattle mute sound",
+      id: 'codebattle-mute-keys',
+      label: 'Codebattle mute sound',
       keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.KEY_M],
       run: () => {
         const { mute } = props;
@@ -431,7 +431,7 @@ const useEditor = (props) => {
     });
 
     domNode.addEventListener(
-      "wheel",
+      'wheel',
       (e) => {
         const scrollTop = currentEditor.getScrollTop();
         const scrollHeight = currentEditor.getScrollHeight();
@@ -455,7 +455,7 @@ const useEditor = (props) => {
           window.scrollBy({
             top: deltaY,
             left: 0,
-            behavior: "auto", // "smooth" breaks momentum feel from touchpad
+            behavior: 'auto', // "smooth" breaks momentum feel from touchpad
           });
         }
       },

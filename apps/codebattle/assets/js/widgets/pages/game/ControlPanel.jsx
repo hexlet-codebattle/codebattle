@@ -1,25 +1,25 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
-import copy from "copy-to-clipboard";
-import Gon from "gon";
-import { PlayerIcon } from "react-player-controls";
-import { useDispatch } from "react-redux";
+import cn from 'classnames';
+import copy from 'copy-to-clipboard';
+import Gon from 'gon';
+import { PlayerIcon } from 'react-player-controls';
+import { useDispatch } from 'react-redux';
 
-import speedModes from "../../config/speedModes";
-import playbackModes from "../../config/playbackModes";
-import { replayerMachineStates } from "../../machines/game";
-import { actions } from "../../slices";
+import speedModes from '../../config/speedModes';
+import playbackModes from '../../config/playbackModes';
+import { replayerMachineStates } from '../../machines/game';
+import { actions } from '../../slices';
 
-const gameId = Gon.getAsset("game_id");
+const gameId = Gon.getAsset('game_id');
 
 const formatDuration = (ms) => {
-  if (ms === null || ms === undefined || Number.isNaN(ms)) return "--:--";
+  if (ms === null || ms === undefined || Number.isNaN(ms)) return '--:--';
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  const pad = (n) => String(n).padStart(2, "0");
+  const pad = (n) => String(n).padStart(2, '0');
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
 };
 
@@ -42,14 +42,14 @@ function ControlPanel({
   const { speedMode } = roomMachineState.context;
   const isPaused = !roomMachineState.matches({ replayer: replayerMachineStates.playing });
 
-  const speedControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
-    "btn-light": speedMode === speedModes.normal,
-    "btn-secondary cb-btn-secondary": speedMode !== speedModes.normal,
+  const speedControlClassNames = cn('btn btn-sm cb-rounded ml-2 border cb-border-color', {
+    'btn-light': speedMode === speedModes.normal,
+    'btn-secondary cb-btn-secondary': speedMode !== speedModes.normal,
   });
 
-  const playbackControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
-    "btn-light": playbackMode === playbackModes.standard,
-    "btn-secondary cb-btn-secondary": playbackMode === playbackModes.realtime,
+  const playbackControlClassNames = cn('btn btn-sm cb-rounded ml-2 border cb-border-color', {
+    'btn-light': playbackMode === playbackModes.standard,
+    'btn-secondary cb-btn-secondary': playbackMode === playbackModes.realtime,
   });
 
   const onControlButtonClick = () => {
@@ -62,7 +62,7 @@ function ControlPanel({
         onPauseClick();
         break;
       default:
-        dispatch(actions.setError(new Error("unexpected game state [players ControlPanel]")));
+        dispatch(actions.setError(new Error('unexpected game state [players ControlPanel]')));
     }
   };
 
@@ -120,12 +120,12 @@ function ControlPanel({
                 onClick={onChangePlaybackMode}
                 title={
                   playbackMode === playbackModes.realtime
-                    ? "Standard playback mode"
-                    : "Real-time playback mode"
+                    ? 'Standard playback mode'
+                    : 'Real-time playback mode'
                 }
                 aria-label="Toggle playback mode"
               >
-                {playbackMode === playbackModes.realtime ? "RT" : "ST"}
+                {playbackMode === playbackModes.realtime ? 'RT' : 'ST'}
               </button>
             )}
             <button

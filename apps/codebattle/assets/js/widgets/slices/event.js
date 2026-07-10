@@ -1,16 +1,16 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { camelizeKeys, decamelizeKeys } from "humps";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { camelizeKeys, decamelizeKeys } from 'humps';
 
-import { currentUserClanIdSelector, currentUserIdSelector } from "@/selectors";
+import { currentUserClanIdSelector, currentUserIdSelector } from '@/selectors';
 
-import loadingStatuses from "../config/loadingStatuses";
+import loadingStatuses from '../config/loadingStatuses';
 
-import initial from "./initial";
+import initial from './initial';
 
 const defaultPageSize = 15;
 
 const fetchCommonLeaderboard = createAsyncThunk(
-  "events/fetchLeaderboard",
+  'events/fetchLeaderboard',
   async (params, { getState }) => {
     const state = getState();
 
@@ -18,7 +18,7 @@ const fetchCommonLeaderboard = createAsyncThunk(
     params.clanId = params.clanId || currentUserClanIdSelector(state);
     params.userId = params.userId || currentUserIdSelector(state);
 
-    const query = new URLSearchParams(decamelizeKeys(params, { separator: "_" })).toString();
+    const query = new URLSearchParams(decamelizeKeys(params, { separator: '_' })).toString();
     const response = await fetch(`/api/v1/events/${params.eventId}/leaderboard?${query}`);
 
     if (!response.ok) {
@@ -70,7 +70,7 @@ const fetchCommonLeaderboard = createAsyncThunk(
 );
 
 const eventSlice = createSlice({
-  name: "event",
+  name: 'event',
   initialState: initial.event,
   reducers: {
     initEvent: (_state, { payload }) => ({

@@ -1,23 +1,23 @@
-import React, { memo, useEffect, useRef, useCallback } from "react";
+import React, { memo, useEffect, useRef, useCallback } from 'react';
 
-import cn from "classnames";
-import moment from "moment";
-import { useDispatch, useSelector } from "react-redux";
+import cn from 'classnames';
+import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
 
-import GameLevelBadge from "../../components/GameLevelBadge";
-import Loading from "../../components/Loading";
-import ResultIcon from "../../components/ResultIcon";
-import HorizontalScrollControls from "../../components/SideScrollControls";
-import UserInfo from "../../components/UserInfo";
-import fetchionStatuses from "../../config/fetchionStatuses";
-import { completedGamesSelector } from "../../selectors";
-import { fetchCompletedGames, loadNextPage } from "../../slices/completedGames";
-import getGamePlayersData from "../../utils/gamePlayers";
+import GameLevelBadge from '../../components/GameLevelBadge';
+import Loading from '../../components/Loading';
+import ResultIcon from '../../components/ResultIcon';
+import HorizontalScrollControls from '../../components/SideScrollControls';
+import UserInfo from '../../components/UserInfo';
+import fetchionStatuses from '../../config/fetchionStatuses';
+import { completedGamesSelector } from '../../selectors';
+import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
+import getGamePlayersData from '../../utils/gamePlayers';
 
-import GameCard from "./GameCard";
+import GameCard from './GameCard';
 
-const commonTableClassName = "table table-striped mb-0";
-const commonClassName = "table-responsive d-none d-md-block mvh-100 cb-overflow-y-scroll";
+const commonTableClassName = 'table table-striped mb-0';
+const commonClassName = 'table-responsive d-none d-md-block mvh-100 cb-overflow-y-scroll';
 
 const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
   const dispatch = useDispatch();
@@ -36,10 +36,10 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
       }
     };
 
-    observableTable.addEventListener("scroll", onTableScroll);
+    observableTable.addEventListener('scroll', onTableScroll);
 
     return () => {
-      observableTable.removeEventListener("scroll", onTableScroll);
+      observableTable.removeEventListener('scroll', onTableScroll);
     };
   }, [dispatch]);
 
@@ -82,7 +82,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
                     <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
                       <div
                         className="d-flex align-items-center justify-content-center mr-2"
-                        style={{ width: "1rem" }}
+                        style={{ width: '1rem' }}
                       >
                         <ResultIcon icon={player1.icon} />
                       </div>
@@ -93,7 +93,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
                     <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
                       <div
                         className="d-flex align-items-center justify-content-center mr-2"
-                        style={{ width: "1rem" }}
+                        style={{ width: '1rem' }}
                       >
                         <ResultIcon icon={player2.icon} />
                       </div>
@@ -101,7 +101,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
                     </div>
                   </td>
                   <td className="px-1 py-3 align-middle text-nowrap text-white cb-border-color">
-                    {moment.utc(game.finishesAt).local().format("MM.DD HH:mm")}
+                    {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
                   </td>
                   <td className="px-1 py-3 align-middle cb-border-color">
                     <a
@@ -127,7 +127,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
   );
 });
 
-function CompletedGames({ className, tableClassName = "" }) {
+function CompletedGames({ className, tableClassName = '' }) {
   const dispatch = useDispatch();
   const { completedGames, totalGames, status } = useSelector(completedGamesSelector);
 

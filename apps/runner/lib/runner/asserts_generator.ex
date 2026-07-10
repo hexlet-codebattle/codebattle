@@ -1,8 +1,6 @@
 defmodule Runner.AssertsGenerator do
   @moduledoc false
 
-  require Logger
-
   @max_asserts 30
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t()) :: String.t()

@@ -1,24 +1,24 @@
-import { createDraftSafeSelector } from "@reduxjs/toolkit";
-import find from "lodash/find";
-import get from "lodash/get";
-import isUndefined from "lodash/isUndefined";
+import { createDraftSafeSelector } from '@reduxjs/toolkit';
+import find from 'lodash/find';
+import get from 'lodash/get';
+import isUndefined from 'lodash/isUndefined';
 
-import moment from "moment";
+import moment from 'moment';
 
-import i18n from "../../i18n";
-import BattleRoomViewModes from "../config/battleRoomViewModes";
-import editorModes from "../config/editorModes";
-import defaultEditorHeight from "../config/editorSettings";
-import editorThemes from "../config/editorThemes";
-import editorUserTypes from "../config/editorUserTypes";
-import GameStateCodes from "../config/gameStateCodes";
-import SubscriptionTypeCodes from "../config/subscriptionTypes";
+import i18n from '../../i18n';
+import BattleRoomViewModes from '../config/battleRoomViewModes';
+import editorModes from '../config/editorModes';
+import defaultEditorHeight from '../config/editorSettings';
+import editorThemes from '../config/editorThemes';
+import editorUserTypes from '../config/editorUserTypes';
+import GameStateCodes from '../config/gameStateCodes';
+import SubscriptionTypeCodes from '../config/subscriptionTypes';
 
-import userTypes from "../config/userTypes";
-import { replayerMachineStates } from "../machines/game";
-import { makeEditorTextKey } from "../utils/gameRoom";
+import userTypes from '../config/userTypes';
+import { replayerMachineStates } from '../machines/game';
+import { makeEditorTextKey } from '../utils/gameRoom';
 
-const logoSvg = "/assets/images/logo.svg";
+const logoSvg = '/assets/images/logo.svg';
 
 export const currentUserIdSelector = (state) => state.user.currentUserId;
 
@@ -148,7 +148,7 @@ export const editorDataSelector = (playerId, roomMachineState) => (state) => {
 
 export const editorHeightSelector = (roomMachineState, playerId) => (state) => {
   const editorData = editorDataSelector(playerId, roomMachineState)(state);
-  return get(editorData, "editorHeight", defaultEditorHeight);
+  return get(editorData, 'editorHeight', defaultEditorHeight);
 };
 
 export const editorTextHistorySelector = (state, { userId }) => state.editor.textHistory[userId];
@@ -202,7 +202,7 @@ export const currentPlayerTextByLangSelector = (lang) => (state) => {
 };
 
 export const userLangSelector = (userId) => (state) =>
-  get(editorsMetaSelector(state)[userId], "currentLangSlug", null);
+  get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
 
 export const userGameHeadToHeadSelector = createDraftSafeSelector(
   (state) => state.game.gameStatus.headToHead,
@@ -216,13 +216,13 @@ export const gameStatusTitleSelector = (state) => {
   const gameStatus = gameStatusSelector(state);
   switch (gameStatus.state) {
     case GameStateCodes.waitingOpponent:
-      return i18n.t("%{state}", { state: i18n.t("Waiting for an opponent") });
+      return i18n.t('%{state}', { state: i18n.t('Waiting for an opponent') });
     case GameStateCodes.playing:
-      return i18n.t("%{state}", { state: i18n.t("Playing") });
+      return i18n.t('%{state}', { state: i18n.t('Playing') });
     case GameStateCodes.gameOver:
-      return i18n.t("%{state}", { state: gameStatus.msg });
+      return i18n.t('%{state}', { state: gameStatus.msg });
     default:
-      return "";
+      return '';
   }
 };
 
@@ -284,7 +284,7 @@ export const infoPanelExecutionOutputSelector = (viewMode, roomMachineState) => 
     return singlePlayerExecutionOutputSelector(roomMachineState)(state);
   }
 
-  throw new Error("Invalid view mode for battle room");
+  throw new Error('Invalid view mode for battle room');
 };
 
 export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => (state) => {
@@ -352,7 +352,7 @@ export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => (stat
     return [editorParams];
   }
 
-  throw new Error("Invalid view mode for battle room");
+  throw new Error('Invalid view mode for battle room');
 };
 
 export const userRankingSelector = (userId) => (state) =>
@@ -436,7 +436,7 @@ export const isOpponentInGameSelector = (state) => {
 export const currentUserNameSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   if (!currentUserId) {
-    return "Anonymous user";
+    return 'Anonymous user';
   }
   return state.user.users[currentUserId].name;
 };
@@ -474,26 +474,26 @@ export const reportsSelector = createDraftSafeSelector(
   (state) => state.reports.showOnlyPendingReports,
   (list, showOnlyPendingReports) => {
     const sortedList = [...(list || [])].sort((r1, r2) => {
-      if (r1.state === "pending" && r2.state === "pending") {
+      if (r1.state === 'pending' && r2.state === 'pending') {
         return moment(r1.insertedAt).diff(moment(r2.insertedAt));
       }
-      if (r1.state === "pending") {
+      if (r1.state === 'pending') {
         return -1;
       }
-      if (r2.state === "pending") {
+      if (r2.state === 'pending') {
         return 1;
       }
       return 0;
     });
 
-    return showOnlyPendingReports ? sortedList.filter((r) => r.state === "pending") : sortedList;
+    return showOnlyPendingReports ? sortedList.filter((r) => r.state === 'pending') : sortedList;
   },
 );
 
 export const selectDefaultAvatarUrl = () => logoSvg;
 
 const formatDuration = (seconds) =>
-  seconds > 0 ? moment.utc(seconds * 1000).format("HH:mm:ss") : "-";
+  seconds > 0 ? moment.utc(seconds * 1000).format('HH:mm:ss') : '-';
 
 // Participant data selector
 export const participantDataSelector = (state) => {
@@ -510,15 +510,15 @@ export const participantDataSelector = (state) => {
       // we keep showing Passed/Not passed; tournament stages hide their CTA
       // once the user is done.
       const allowedUserStatuses =
-        eventStage.type === "entrance"
-          ? ["pending", "started", "completed", null]
-          : ["pending", "started", null];
+        eventStage.type === 'entrance'
+          ? ['pending', 'started', 'completed', null]
+          : ['pending', 'started', null];
       const isStageAvailableForUser = !!(
-        eventStage.status === "active" && allowedUserStatuses.includes(userStage?.status)
+        eventStage.status === 'active' && allowedUserStatuses.includes(userStage?.status)
       );
-      const isUserPassedStage = userStage?.entranceResult === "passed";
-      const gamesCount = userStage?.gamesCount ? userStage.gamesCount : "-";
-      const zeroWinsCount = gamesCount === "-" ? "-" : "0";
+      const isUserPassedStage = userStage?.entranceResult === 'passed';
+      const gamesCount = userStage?.gamesCount ? userStage.gamesCount : '-';
+      const zeroWinsCount = gamesCount === '-' ? '-' : '0';
       const winsCount = userStage?.winsCount ? userStage.winsCount : zeroWinsCount;
       const tournamentSeconds = userStage?.timeSpentInSeconds || 0;
       const groupTournamentSeconds = userStage?.groupTournamentTimeSpentInSeconds || 0;
@@ -527,7 +527,7 @@ export const participantDataSelector = (state) => {
       const tournamentId = userStage?.tournamentId || eventStage.tournamentId;
       const groupTournamentId = userStage?.groupTournamentId || eventStage.groupTournamentId;
       const isGlobalTournamentStage =
-        eventStage.type === "tournament" && eventStage.playingType === "global";
+        eventStage.type === 'tournament' && eventStage.playingType === 'global';
       const hasConfiguredTournament = !isGlobalTournamentStage || !!tournamentId;
 
       return {
@@ -542,12 +542,12 @@ export const participantDataSelector = (state) => {
         isStageAvailableForUser: isStageAvailableForUser && hasConfiguredTournament,
         isUserPassedStage,
         slug: eventStage.slug,
-        placeInTotalRank: userStage?.placeInTotalRank ? userStage.placeInTotalRank : "-",
-        placeInCategoryRank: userStage?.placeInCategoryRank ? userStage.placeInCategoryRank : "-",
+        placeInTotalRank: userStage?.placeInTotalRank ? userStage.placeInTotalRank : '-',
+        placeInCategoryRank: userStage?.placeInCategoryRank ? userStage.placeInCategoryRank : '-',
         gamesCount,
         winsCount,
-        aiScore: typeof aiScoreRaw === "number" ? aiScoreRaw : "-",
-        maxScore: typeof totalScoreRaw === "number" ? totalScoreRaw : null,
+        aiScore: typeof aiScoreRaw === 'number' ? aiScoreRaw : '-',
+        maxScore: typeof totalScoreRaw === 'number' ? totalScoreRaw : null,
         tournamentTimeSpent: formatDuration(tournamentSeconds),
         groupTournamentTimeSpent: formatDuration(groupTournamentSeconds),
         timeSpent: formatDuration(tournamentSeconds + groupTournamentSeconds),

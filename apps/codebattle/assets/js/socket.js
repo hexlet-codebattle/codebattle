@@ -1,130 +1,130 @@
-import Gon from "gon";
-import { Socket } from "phoenix";
+import Gon from 'gon';
+import { Socket } from 'phoenix';
 
 const getAccessToken = () => {
-  const tokenFromQuery = new URLSearchParams(window.location.search).get("access_token");
-  const tokenFromGon = Gon.getAsset("tournament_access_token");
+  const tokenFromQuery = new URLSearchParams(window.location.search).get('access_token');
+  const tokenFromGon = Gon.getAsset('tournament_access_token');
 
-  return tokenFromQuery || tokenFromGon || "";
+  return tokenFromQuery || tokenFromGon || '';
 };
 
-const socketParams = { token: Gon.getAsset("user_token") };
+const socketParams = { token: Gon.getAsset('user_token') };
 const accessToken = getAccessToken();
 
 if (accessToken) {
   socketParams.access_token = accessToken;
 }
 
-const socket = new Socket("/ws", {
+const socket = new Socket('/ws', {
   params: socketParams,
 });
 
 export const channelTopics = {
-  editorDataTopic: "editor:data",
-  userStartCheckTopic: "user:start_check",
-  userCheckCompleteTopic: "user:check_complete",
-  userWonTopic: "user:won",
-  userGiveUpTopic: "user:give_up",
-  userBanned: "user:banned",
-  userUnbanned: "user:unbanned",
+  editorDataTopic: 'editor:data',
+  userStartCheckTopic: 'user:start_check',
+  userCheckCompleteTopic: 'user:check_complete',
+  userWonTopic: 'user:won',
+  userGiveUpTopic: 'user:give_up',
+  userBanned: 'user:banned',
+  userUnbanned: 'user:unbanned',
 
-  editorCursorPositionTopic: "editor:cursor_position",
-  editorCursorSelectionTopic: "editor:cursor_selection",
-  editorScrollPositionTopic: "editor:scroll_position",
-  editorSummaryTopic: "editor:summary",
+  editorCursorPositionTopic: 'editor:cursor_position',
+  editorCursorSelectionTopic: 'editor:cursor_selection',
+  editorScrollPositionTopic: 'editor:scroll_position',
+  editorSummaryTopic: 'editor:summary',
 
-  rematchStatusUpdatedTopic: "rematch:status_updated",
-  rematchAcceptedTopic: "rematch:accepted",
+  rematchStatusUpdatedTopic: 'rematch:status_updated',
+  rematchAcceptedTopic: 'rematch:accepted',
 
-  gameCreatedTopic: "game:created",
-  gameUserJoinedTopic: "game:user_joined",
-  gameTimeoutTopic: "game:timeout",
-  gameToggleVisibleTopic: "game:toggle_visible",
-  gameUnlockedTopic: "game:unlocked",
-  gameHeadToHead: "game:head_to_head",
+  gameCreatedTopic: 'game:created',
+  gameUserJoinedTopic: 'game:user_joined',
+  gameTimeoutTopic: 'game:timeout',
+  gameToggleVisibleTopic: 'game:toggle_visible',
+  gameUnlockedTopic: 'game:unlocked',
+  gameHeadToHead: 'game:head_to_head',
 
-  chatUserJoinedTopic: "chat:user_joined",
-  chatUserLeftTopic: "chat:user_left",
-  chatUserNewMsgTopic: "chat:new_msg",
-  chatUserBannedTopic: "chat:user_banned",
+  chatUserJoinedTopic: 'chat:user_joined',
+  chatUserLeftTopic: 'chat:user_left',
+  chatUserNewMsgTopic: 'chat:new_msg',
+  chatUserBannedTopic: 'chat:user_banned',
 
-  lobbyGameUpsertTopic: "game:upsert",
-  lobbyGameEditorLangChangedTopic: "game:editor_lang_changed",
-  lobbyGameCheckStartedTopic: "game:check_started",
-  lobbyGameCheckCompletedTopic: "game:check_completed",
-  lobbyGameRemoveTopic: "game:remove",
-  lobbyGameFinishedTopic: "game:finished",
+  lobbyGameUpsertTopic: 'game:upsert',
+  lobbyGameEditorLangChangedTopic: 'game:editor_lang_changed',
+  lobbyGameCheckStartedTopic: 'game:check_started',
+  lobbyGameCheckCompletedTopic: 'game:check_completed',
+  lobbyGameRemoveTopic: 'game:remove',
+  lobbyGameFinishedTopic: 'game:finished',
 
-  invitesInitTopic: "invites:init",
-  invitesCreatedTopic: "invites:created",
-  invitesCanceledTopic: "invites:canceled",
-  invitesAcceptedTopic: "invites:accepted",
-  invitesExpiredTopic: "invites:expired",
-  invitesDroppedTopic: "invites:dropped",
+  invitesInitTopic: 'invites:init',
+  invitesCreatedTopic: 'invites:created',
+  invitesCanceledTopic: 'invites:canceled',
+  invitesAcceptedTopic: 'invites:accepted',
+  invitesExpiredTopic: 'invites:expired',
+  invitesDroppedTopic: 'invites:dropped',
 
-  tournamentUpdateTopic: "tournament:update",
-  tournamentGameCreatedTopic: "tournament:game:created",
-  tournamentRoundCreatedTopic: "tournament:round_created",
-  tournamentRoundFinishedTopic: "tournament:round_finished",
-  tournamentFinishedTopic: "tournament:finished",
-  tournamentRankingUpdate: "tournament:ranking_update",
-  tournamentResultsUpdated: "tournament:results_updated",
-  tournamentGameWaitTopic: "tournament:game:wait",
-  tournamentPlayerFinishedRoundTopic: "tournament:player:finished_round",
-  tournamentPlayerFinishedTopic: "tournament:player:finished",
-  tournamentActivated: "tournament:activated",
-  tournamentCanceled: "tournament:canceled",
-  groupTournamentRunUpdated: "group_tournament:run_updated",
-  deployHandoffStarted: "deploy:handoff_started",
-  deployHandoffDone: "deploy:handoff_done",
-  deployHandoffFailed: "deploy:handoff_failed",
-  mainRedirect: "main:redirect",
+  tournamentUpdateTopic: 'tournament:update',
+  tournamentGameCreatedTopic: 'tournament:game:created',
+  tournamentRoundCreatedTopic: 'tournament:round_created',
+  tournamentRoundFinishedTopic: 'tournament:round_finished',
+  tournamentFinishedTopic: 'tournament:finished',
+  tournamentRankingUpdate: 'tournament:ranking_update',
+  tournamentResultsUpdated: 'tournament:results_updated',
+  tournamentGameWaitTopic: 'tournament:game:wait',
+  tournamentPlayerFinishedRoundTopic: 'tournament:player:finished_round',
+  tournamentPlayerFinishedTopic: 'tournament:player:finished',
+  tournamentActivated: 'tournament:activated',
+  tournamentCanceled: 'tournament:canceled',
+  groupTournamentRunUpdated: 'group_tournament:run_updated',
+  deployHandoffStarted: 'deploy:handoff_started',
+  deployHandoffDone: 'deploy:handoff_done',
+  deployHandoffFailed: 'deploy:handoff_failed',
+  mainRedirect: 'main:redirect',
 
-  roundCreatedTopic: "round:created",
+  roundCreatedTopic: 'round:created',
 
-  streamActiveGameSelectedTopic: "stream:active_game_selected",
+  streamActiveGameSelectedTopic: 'stream:active_game_selected',
 };
 
 export const channelMethods = {
-  gameHeadToHead: "game:head_to_head",
-  gameCancel: "game:cancel",
-  gameCreate: "game:create",
-  experimentGameCreate: "game:experiment:create",
-  gameCreateInvite: "game:create_invite",
-  gameAcceptInvite: "game:accept_invite",
-  gameDeclineInvite: "game:decline_invite",
-  gameCancelInvite: "game:cancel_invite",
+  gameHeadToHead: 'game:head_to_head',
+  gameCancel: 'game:cancel',
+  gameCreate: 'game:create',
+  experimentGameCreate: 'game:experiment:create',
+  gameCreateInvite: 'game:create_invite',
+  gameAcceptInvite: 'game:accept_invite',
+  gameDeclineInvite: 'game:decline_invite',
+  gameCancelInvite: 'game:cancel_invite',
 
-  reportOnPlayer: "game:report",
-  gameTaskChangeTarget: "game:task:change_target",
+  reportOnPlayer: 'game:report',
+  gameTaskChangeTarget: 'game:task:change_target',
 
-  chatAddMsg: "chat:add_msg",
-  chatCommand: "chat:command",
+  chatAddMsg: 'chat:add_msg',
+  chatCommand: 'chat:command',
 
-  checkResult: "check_result",
-  giveUp: "give_up",
+  checkResult: 'check_result',
+  giveUp: 'give_up',
 
-  editorData: "editor:data",
+  editorData: 'editor:data',
   editorSummary: channelTopics.editorSummaryTopic,
-  editorLang: "editor:lang",
+  editorLang: 'editor:lang',
   editorCursorPosition: channelTopics.editorCursorPositionTopic,
   editorCursorSelection: channelTopics.editorCursorSelectionTopic,
   editorScrollPosition: channelTopics.editorScrollPositionTopic,
 
-  enterPassCode: "enter_pass_code",
-  requestInviteUpdate: "request_invite_update",
+  enterPassCode: 'enter_pass_code',
+  requestInviteUpdate: 'request_invite_update',
 
-  rematchSendOffer: "rematch:send_offer",
-  rematchRejectOffer: "rematch:reject_offer",
-  rematchAcceptOffer: "rematch:accept_offer",
+  rematchSendOffer: 'rematch:send_offer',
+  rematchRejectOffer: 'rematch:reject_offer',
+  rematchAcceptOffer: 'rematch:accept_offer',
 
-  invitesCreate: "invites:create",
-  invitesAccept: "invites:accept",
-  invitesCancel: "invites:cancel",
+  invitesCreate: 'invites:create',
+  invitesAccept: 'invites:accept',
+  invitesCancel: 'invites:cancel',
 
-  matchmakingPause: "matchmaking:pause",
-  matchmakingResume: "matchmaking:resume",
-  matchmakingRestart: "matchmaking:restart",
+  matchmakingPause: 'matchmaking:pause',
+  matchmakingResume: 'matchmaking:resume',
+  matchmakingRestart: 'matchmaking:restart',
 };
 
 socket.connect();

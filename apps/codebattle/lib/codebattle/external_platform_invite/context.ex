@@ -26,8 +26,6 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   alias Codebattle.Repo
   alias Codebattle.User
 
-  require Logger
-
   @spec get_invite(pos_integer(), pos_integer() | nil) :: ExternalPlatformInvite.t() | nil
   def get_invite(user_id, group_tournament_id \\ nil) do
     ExternalPlatformInvite

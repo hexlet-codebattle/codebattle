@@ -1,14 +1,14 @@
-import React from "react";
+import React from 'react';
 
-import Loading from "@/components/Loading";
-import useGroupTournamentPage from "@/utils/useGroupTournamentPage";
-import EditorPanel from "./EditorPanel";
-import EvolutionPanel from "./EvolutionPanel";
-import ExternalPlatformErrorPanel from "./ExternalPlatformErrorPanel";
-import FullscreenGroupBattleViewer from "./FullscreenGroupBattleViewer";
-import Header from "./Header";
-import InvitationPanel from "./InvitationPanel";
-import MainPanel from "./MainPanel";
+import Loading from '@/components/Loading';
+import useGroupTournamentPage from '@/utils/useGroupTournamentPage';
+import EditorPanel from './EditorPanel';
+import EvolutionPanel from './EvolutionPanel';
+import ExternalPlatformErrorPanel from './ExternalPlatformErrorPanel';
+import FullscreenGroupBattleViewer from './FullscreenGroupBattleViewer';
+import Header from './Header';
+import InvitationPanel from './InvitationPanel';
+import MainPanel from './MainPanel';
 
 function GroupTournamentPage({
   tournamentId,
@@ -43,11 +43,11 @@ function GroupTournamentPage({
     setActiveTab,
   } = useGroupTournamentPage(tournamentId);
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return <Loading />;
   }
 
-  if (!isAdmin && requireInvitation && status === "waiting_participants") {
+  if (!isAdmin && requireInvitation && status === 'waiting_participants') {
     return (
       <InvitationPanel
         name={tournamentName}
@@ -77,7 +77,7 @@ function GroupTournamentPage({
             setRunId={handleSelectRun}
             repoUrl={externalSetup?.repoUrl}
             onAddSolution={
-              runOnExternalPlatform || status === "waiting_participants"
+              runOnExternalPlatform || status === 'waiting_participants'
                 ? null
                 : () => setEditorFullscreen(true)
             }

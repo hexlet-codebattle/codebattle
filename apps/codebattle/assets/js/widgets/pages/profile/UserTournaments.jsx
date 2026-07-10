@@ -1,37 +1,37 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { camelizeKeys } from "humps";
-import unionBy from "lodash/unionBy";
-import moment from "moment";
+import { camelizeKeys } from 'humps';
+import unionBy from 'lodash/unionBy';
+import moment from 'moment';
 
-import i18n from "../../../i18n";
-import Loading from "../../components/Loading";
+import i18n from '../../../i18n';
+import Loading from '../../components/Loading';
 
 const gradeColors = {
-  grand_slam: "#e0bf7a",
-  masters: "#c2c9d6",
-  elite: "#c48a57",
-  pro: "#a4aab3",
-  challenger: "#8a919c",
-  rookie: "#6f7782",
-  open: "#8a919c",
+  grand_slam: '#e0bf7a',
+  masters: '#c2c9d6',
+  elite: '#c48a57',
+  pro: '#a4aab3',
+  challenger: '#8a919c',
+  rookie: '#6f7782',
+  open: '#8a919c',
 };
 
 const formatGrade = (grade) =>
-  grade.replaceAll("_", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  grade.replaceAll('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
 
 const formatTime = (seconds) => {
   const total = Number(seconds || 0);
 
   if (total < 3600) {
-    const mm = String(Math.floor(total / 60)).padStart(2, "0");
-    const ss = String(total % 60).padStart(2, "0");
+    const mm = String(Math.floor(total / 60)).padStart(2, '0');
+    const ss = String(total % 60).padStart(2, '0');
     return `${mm}:${ss}`;
   }
 
-  const hh = String(Math.floor(total / 3600)).padStart(2, "0");
-  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
-  const ss = String(total % 60).padStart(2, "0");
+  const hh = String(Math.floor(total / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+  const ss = String(total % 60).padStart(2, '0');
   return `${hh}:${mm}:${ss}`;
 };
 
@@ -40,7 +40,7 @@ const navigateToTournament = (tournamentId) => {
 };
 
 function UserTournaments({ isActive = false }) {
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState('idle');
   const [tournaments, setTournaments] = useState([]);
   const [pageInfo, setPageInfo] = useState({
     pageNumber: 1,
@@ -52,7 +52,7 @@ function UserTournaments({ isActive = false }) {
   const tableRef = useRef(null);
   const statusRef = useRef(status);
   const pageInfoRef = useRef(pageInfo);
-  const userId = useMemo(() => window.location.pathname.split("/").pop(), []);
+  const userId = useMemo(() => window.location.pathname.split('/').pop(), []);
 
   useEffect(() => {
     statusRef.current = status;
@@ -64,7 +64,7 @@ function UserTournaments({ isActive = false }) {
 
   const fetchPage = useCallback(
     async (page, append = false) => {
-      if (statusRef.current === "loading") {
+      if (statusRef.current === 'loading') {
         return;
       }
 
@@ -72,7 +72,7 @@ function UserTournaments({ isActive = false }) {
         return;
       }
 
-      setStatus("loading");
+      setStatus('loading');
 
       try {
         const nextPageSize = pageInfoRef.current.pageSize;
@@ -91,18 +91,18 @@ function UserTournaments({ isActive = false }) {
         setPageInfo(payload.pageInfo || pageInfoRef.current);
         setTournaments((prev) => {
           const incoming = payload.tournaments || [];
-          return append ? unionBy(prev, incoming, "tournamentId") : incoming;
+          return append ? unionBy(prev, incoming, 'tournamentId') : incoming;
         });
-        setStatus("loaded");
+        setStatus('loaded');
       } catch (_error) {
-        setStatus("error");
+        setStatus('error');
       }
     },
     [userId],
   );
 
   useEffect(() => {
-    if (!isActive || tournaments.length > 0 || status !== "idle") {
+    if (!isActive || tournaments.length > 0 || status !== 'idle') {
       return;
     }
 
@@ -121,7 +121,7 @@ function UserTournaments({ isActive = false }) {
     }
 
     const onTableScroll = () => {
-      if (statusRef.current === "loading") {
+      if (statusRef.current === 'loading') {
         return;
       }
 
@@ -139,25 +139,25 @@ function UserTournaments({ isActive = false }) {
       }
     };
 
-    observableTable.addEventListener("scroll", onTableScroll);
+    observableTable.addEventListener('scroll', onTableScroll);
 
     return () => {
-      observableTable.removeEventListener("scroll", onTableScroll);
+      observableTable.removeEventListener('scroll', onTableScroll);
     };
   }, [fetchPage, isActive]);
 
   if (tournaments.length === 0) {
-    if (status === "loading") {
+    if (status === 'loading') {
       return <Loading />;
     }
 
-    if (status === "error") {
+    if (status === 'error') {
       return (
-        <div className="py-5 text-center text-muted">{i18n.t("Failed to load tournaments")}</div>
+        <div className="py-5 text-center text-muted">{i18n.t('Failed to load tournaments')}</div>
       );
     }
 
-    return <div className="py-5 text-center text-muted">{i18n.t("No tournaments played yet")}</div>;
+    return <div className="py-5 text-center text-muted">{i18n.t('No tournaments played yet')}</div>;
   }
 
   return (
@@ -166,15 +166,15 @@ function UserTournaments({ isActive = false }) {
         <table className="table table-striped mb-0">
           <thead className="cb-text sticky-top">
             <tr>
-              <th className="p-3 border-0">{i18n.t("Grade")}</th>
-              <th className="p-3 border-0">{i18n.t("Place")}</th>
-              <th className="p-3 border-0">{i18n.t("Points")}</th>
-              <th className="p-3 border-0">{i18n.t("Score")}</th>
-              <th className="p-3 border-0">{i18n.t("Games")}</th>
-              <th className="p-3 border-0">{i18n.t("Wins")}</th>
-              <th className="p-3 border-0">{i18n.t("Time")}</th>
-              <th className="p-3 border-0">{i18n.t("Lang")}</th>
-              <th className="p-3 border-0">{i18n.t("Date")}</th>
+              <th className="p-3 border-0">{i18n.t('Grade')}</th>
+              <th className="p-3 border-0">{i18n.t('Place')}</th>
+              <th className="p-3 border-0">{i18n.t('Points')}</th>
+              <th className="p-3 border-0">{i18n.t('Score')}</th>
+              <th className="p-3 border-0">{i18n.t('Games')}</th>
+              <th className="p-3 border-0">{i18n.t('Wins')}</th>
+              <th className="p-3 border-0">{i18n.t('Time')}</th>
+              <th className="p-3 border-0">{i18n.t('Lang')}</th>
+              <th className="p-3 border-0">{i18n.t('Date')}</th>
             </tr>
           </thead>
           <tbody className="cb-text">
@@ -183,10 +183,10 @@ function UserTournaments({ isActive = false }) {
                 key={item.tournamentId}
                 role="link"
                 tabIndex={0}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
                 onClick={() => navigateToTournament(item.tournamentId)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
+                  if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     navigateToTournament(item.tournamentId);
                   }
@@ -196,12 +196,12 @@ function UserTournaments({ isActive = false }) {
                   <span
                     className="px-2 py-1 cb-rounded"
                     style={{
-                      backgroundColor: gradeColors[item.tournamentGrade] || "#8a919c",
-                      color: "#1f2530",
+                      backgroundColor: gradeColors[item.tournamentGrade] || '#8a919c',
+                      color: '#1f2530',
                       fontWeight: 700,
                     }}
                   >
-                    {formatGrade(item.tournamentGrade || "open")}
+                    {formatGrade(item.tournamentGrade || 'open')}
                   </span>
                 </td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">{`#${item.place}`}</td>
@@ -213,10 +213,10 @@ function UserTournaments({ isActive = false }) {
                   {formatTime(item.totalTime)}
                 </td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">
-                  {item.userLang || "-"}
+                  {item.userLang || '-'}
                 </td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">
-                  {moment.utc(item.tournamentStartedAt).local().format("MM.DD HH:mm")}
+                  {moment.utc(item.tournamentStartedAt).local().format('MM.DD HH:mm')}
                 </td>
               </tr>
             ))}
@@ -224,7 +224,7 @@ function UserTournaments({ isActive = false }) {
         </table>
       </div>
       <div className="mt-auto border-top cb-border-color py-2 px-3 font-weight-bold text-muted rounded-bottom">
-        {i18n.t("Total tournaments: %{count}", { count: pageInfo.totalEntries })}
+        {i18n.t('Total tournaments: %{count}', { count: pageInfo.totalEntries })}
       </div>
     </div>
   );

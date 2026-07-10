@@ -1,31 +1,31 @@
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
-import { useDispatch, useSelector } from "react-redux";
+import cn from 'classnames';
+import i18next from 'i18next';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { currentUserClanIdSelector, currentUserIdSelector } from "@/selectors";
+import { currentUserClanIdSelector, currentUserIdSelector } from '@/selectors';
 
-import LanguageIcon from "../../components/LanguageIcon";
-import { requestNearestRankingPage, requestRankingPage } from "../../middlewares/Tournament";
-import { kickTournamentPlayer } from "../../middlewares/TournamentAdmin";
+import LanguageIcon from '../../components/LanguageIcon';
+import { requestNearestRankingPage, requestRankingPage } from '../../middlewares/Tournament';
+import { kickTournamentPlayer } from '../../middlewares/TournamentAdmin';
 
 const getCustomEventTrClassName = (item, selectedId) =>
   cn(
-    "font-weight-bold cb-custom-event-tr-border",
+    'font-weight-bold cb-custom-event-tr-border',
     {
-      "cb-gold-place-bg": item?.place === 1,
-      "cb-silver-place-bg": item?.place === 2,
-      "cb-bronze-place-bg": item?.place === 3,
-      "cb-bg-panel": !item?.place || item?.place > 3,
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
+      'cb-bg-panel': !item?.place || item?.place > 3,
     },
     {
-      "cb-custom-event-tr-brown-border": item?.clanId === selectedId,
+      'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
     },
   );
 
 const tableDataCellClassName = cn(
-  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
@@ -130,7 +130,7 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
   };
 
   const handleKickPlayer = (player) => {
-    if (!window.confirm(i18next.t("Kick {{name}} from tournament?", { name: player.name }))) {
+    if (!window.confirm(i18next.t('Kick {{name}} from tournament?', { name: player.name }))) {
       return;
     }
 
@@ -143,37 +143,37 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
     <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
       <div className="my-2">
         {playersCount === 0 ? (
-          <p className="text-nowrap text-muted">{i18next.t("No players yet")}.</p>
+          <p className="text-nowrap text-muted">{i18next.t('No players yet')}.</p>
         ) : (
           <div
             className={cn(
-              "d-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left",
+              'd-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left',
             )}
           >
             <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
-              <span className="font-weight-bold">{i18next.t("Ranking")}</span>
+              <span className="font-weight-bold">{i18next.t('Ranking')}</span>
               <span className="text-muted small">
-                {i18next.t("Page")} {effectivePageNumber} {i18next.t("of")} {totalPages}
+                {i18next.t('Page')} {effectivePageNumber} {i18next.t('of')} {totalPages}
               </span>
             </div>
             <div className="d-flex cb-overflow-x-auto">
               <table className="table cb-text-light table-striped cb-custom-event-table m-1">
                 <colgroup>
-                  <col style={{ width: "12%" }} />
-                  <col style={{ width: canModerate ? "36%" : "40%" }} />
-                  <col style={{ width: canModerate ? "26%" : "30%" }} />
-                  <col style={{ width: canModerate ? "14%" : "18%" }} />
-                  <col style={{ width: canModerate ? "12%" : "0%" }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: canModerate ? '36%' : '40%' }} />
+                  <col style={{ width: canModerate ? '26%' : '30%' }} />
+                  <col style={{ width: canModerate ? '14%' : '18%' }} />
+                  <col style={{ width: canModerate ? '12%' : '0%' }} />
                 </colgroup>
                 <thead>
                   <tr>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Player')}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
                     <th
                       className="p-1 pl-4 font-weight-light border-0"
-                      aria-label={i18next.t("Actions")}
+                      aria-label={i18next.t('Actions')}
                     />
                   </tr>
                 </thead>
@@ -184,8 +184,8 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
                       <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                         <td
                           style={{
-                            borderTopLeftRadius: "0.5rem",
-                            borderBottomLeftRadius: "0.5rem",
+                            borderTopLeftRadius: '0.5rem',
+                            borderBottomLeftRadius: '0.5rem',
                           }}
                           className={tableDataCellClassName}
                         >
@@ -196,15 +196,15 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
                             title={item?.name}
                             className="cb-custom-event-name"
                             style={{
-                              textOverflow: "ellipsis",
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              maxWidth: "20ch",
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              maxWidth: '20ch',
                             }}
                           >
                             {item?.lang && <LanguageIcon className="mr-1" lang={item.lang} />}
-                            {(item?.name ?? "").slice(0, 10) +
-                              ((item?.name?.length ?? 0) > 10 ? ".." : "")}
+                            {(item?.name ?? '').slice(0, 10) +
+                              ((item?.name?.length ?? 0) > 10 ? '..' : '')}
                           </div>
                         </td>
                         <td className={tableDataCellClassName}>
@@ -212,31 +212,31 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
                             title={item?.clan}
                             className="cb-custom-event-name"
                             style={{
-                              textOverflow: "ellipsis",
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              maxWidth: "20ch",
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              maxWidth: '20ch',
                             }}
                           >
-                            {(item?.clan ?? "").slice(0, 10) +
-                              ((item?.clan?.length ?? 0) > 10 ? "..." : "")}
+                            {(item?.clan ?? '').slice(0, 10) +
+                              ((item?.clan?.length ?? 0) > 10 ? '...' : '')}
                           </div>
                         </td>
                         <td className={tableDataCellClassName}>{item.score}</td>
                         <td
                           style={{
-                            borderTopRightRadius: "0.5rem",
-                            borderBottomRightRadius: "0.5rem",
+                            borderTopRightRadius: '0.5rem',
+                            borderBottomRightRadius: '0.5rem',
                           }}
                           className={tableDataCellClassName}
-                          aria-label={canModerate ? i18next.t("Actions") : i18next.t("Row spacer")}
+                          aria-label={canModerate ? i18next.t('Actions') : i18next.t('Row spacer')}
                         >
                           {canModerate && (
                             <button
                               type="button"
                               className="btn btn-sm btn-outline-danger py-0 px-2"
-                              title={i18next.t("Kick player")}
-                              aria-label={i18next.t("Kick player")}
+                              title={i18next.t('Kick player')}
+                              aria-label={i18next.t('Kick player')}
                               onClick={() => handleKickPlayer(item)}
                             >
                               ×
@@ -254,7 +254,7 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
       </div>
       <div className="d-flex align-items-center flex-wrap justify-content-start">
         <h6 className="mb-2 mr-5 text-nowrap">
-          {`${i18next.t("Total players")}: ${playersCount}`}
+          {`${i18next.t('Total players')}: ${playersCount}`}
         </h6>
         {playersCount > 0 && (
           <div className="d-flex align-items-center mb-2 cb-ranking-pagination">
@@ -263,7 +263,7 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
               className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
               disabled={!canGoPrev}
               onClick={() => handlePageChange(1)}
-              aria-label={i18next.t("First page")}
+              aria-label={i18next.t('First page')}
             >
               «
             </button>
@@ -272,7 +272,7 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
               className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
               disabled={!canGoPrev}
               onClick={() => handlePageChange(effectivePageNumber - 1)}
-              aria-label={i18next.t("Previous page")}
+              aria-label={i18next.t('Previous page')}
             >
               ‹
             </button>
@@ -281,9 +281,9 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
                 <button
                   type="button"
                   key={`ranking-page-${page}`}
-                  className={cn("btn btn-sm cb-ranking-page-btn", {
-                    "btn-secondary": page === effectivePageNumber,
-                    "btn-outline-secondary": page !== effectivePageNumber,
+                  className={cn('btn btn-sm cb-ranking-page-btn', {
+                    'btn-secondary': page === effectivePageNumber,
+                    'btn-outline-secondary': page !== effectivePageNumber,
                   })}
                   onClick={() => handlePageChange(page)}
                   disabled={page === effectivePageNumber}
@@ -297,7 +297,7 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
               className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
               disabled={!canGoNext}
               onClick={() => handlePageChange(effectivePageNumber + 1)}
-              aria-label={i18next.t("Next page")}
+              aria-label={i18next.t('Next page')}
             >
               ›
             </button>
@@ -306,7 +306,7 @@ function PlayersRankingPanel({ canModerate = false, playersCount, ranking }) {
               className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
               disabled={!canGoNext}
               onClick={() => handlePageChange(totalPages)}
-              aria-label={i18next.t("Last page")}
+              aria-label={i18next.t('Last page')}
             >
               »
             </button>

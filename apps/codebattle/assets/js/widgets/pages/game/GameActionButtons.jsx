@@ -1,25 +1,25 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dropdown } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Dropdown } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import { useDispatch } from 'react-redux';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import i18next from "../../../i18n";
-import { sendGiveUp, resetTextToTemplateAndSend } from "../../middlewares/Room";
-import { actions } from "../../slices";
+import i18next from '../../../i18n';
+import { sendGiveUp, resetTextToTemplateAndSend } from '../../middlewares/Room';
+import { actions } from '../../slices';
 
 function CheckResultButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
-    type: "button",
-    className: "btn btn-sm btn-outline-success cb-btn-outline-success btn-check cb-rounded",
-    title: `${i18next.t("Check solution")}&#013;Ctrl + Enter`,
-    "data-toggle": "tooltip",
-    "data-guide-id": "CheckResultButton",
-    "data-placement": "top",
+    type: 'button',
+    className: 'btn btn-sm btn-outline-success cb-btn-outline-success btn-check cb-rounded',
+    title: `${i18next.t('Check solution')}&#013;Ctrl + Enter`,
+    'data-toggle': 'tooltip',
+    'data-guide-id': 'CheckResultButton',
+    'data-placement': 'top',
   };
 
   const commonEnabledProps = {
@@ -28,36 +28,36 @@ function CheckResultButton({ onClick, status }) {
   };
 
   switch (status) {
-    case "enabled":
+    case 'enabled':
       return (
         <button type="button" {...commonEnabledProps}>
-          <FontAwesomeIcon icon={["fas", "play-circle"]} className="mr-2 success" />
-          {i18next.t("Run")}
+          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
+          {i18next.t('Run')}
         </button>
       );
-    case "charging":
+    case 'charging':
       return (
         <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
-          {i18next.t("Charging...")}
+          {i18next.t('Charging...')}
         </button>
       );
-    case "checking":
+    case 'checking':
       return (
         <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
-          {i18next.t("Running...")}
+          {i18next.t('Running...')}
         </button>
       );
-    case "disabled":
+    case 'disabled':
       return (
         <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon={["fas", "play-circle"]} className="mr-2 success" />
-          {i18next.t("Run")}
+          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
+          {i18next.t('Run')}
         </button>
       );
     default: {
-      dispatch(actions.setError(new Error("unnexpected check status")));
+      dispatch(actions.setError(new Error('unnexpected check status')));
       return null;
     }
   }
@@ -67,7 +67,7 @@ const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) =>
   <button
     type="button"
     ref={ref}
-    className={className.replace("dropdown-toggle", "")}
+    className={className.replace('dropdown-toggle', '')}
     onClick={onClick}
     disabled={disabled}
   >
@@ -77,19 +77,19 @@ const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) =>
 
 function GiveUpButtonDropdownItem({ onSelect, status }) {
   const commonProps = {
-    as: "a",
-    href: "#",
-    title: i18next.t("Give Up"),
+    as: 'a',
+    href: '#',
+    title: i18next.t('Give Up'),
     onSelect,
-    disabled: status === "disabled",
-    className: "cb-dropdown-item",
+    disabled: status === 'disabled',
+    className: 'cb-dropdown-item',
   };
 
   return (
     <Dropdown.Item key="giveUp" {...commonProps}>
-      <span className={status === "disabled" ? "text-muted" : "text-danger"}>
-        <FontAwesomeIcon icon={["far", "flag"]} className="mr-1" />
-        {i18next.t("Give up")}
+      <span className={status === 'disabled' ? 'text-muted' : 'text-danger'}>
+        <FontAwesomeIcon icon={['far', 'flag']} className="mr-1" />
+        {i18next.t('Give up')}
       </span>
     </Dropdown.Item>
   );
@@ -97,19 +97,19 @@ function GiveUpButtonDropdownItem({ onSelect, status }) {
 
 function ResetButtonDropDownItem({ onSelect, status }) {
   const commonProps = {
-    as: "a",
-    href: "#",
-    title: i18next.t("Reset solution"),
+    as: 'a',
+    href: '#',
+    title: i18next.t('Reset solution'),
     onSelect,
-    disabled: status === "disabled",
-    className: "cb-dropdown-item",
+    disabled: status === 'disabled',
+    className: 'cb-dropdown-item',
   };
 
   return (
     <Dropdown.Item key="reset" {...commonProps}>
       <span className="text-white">
-        <FontAwesomeIcon icon={["fas", "sync"]} className="mr-1" />
-        {i18next.t("Reset solution")}
+        <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
+        {i18next.t('Reset solution')}
       </span>
     </Dropdown.Item>
   );
@@ -147,14 +147,14 @@ function GameActionButtons({
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide} contentClassName="cb-bg-panel cb-text">
       <Modal.Body className="text-center cb-bg-panel">
-        {i18next.t("Are you sure you want to give up?")}
+        {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>
       <Modal.Footer className="mx-auto border-0">
         <Button onClick={handleGiveUp} className="btn-danger cb-rounded">
-          {i18next.t("Give up")}
+          {i18next.t('Give up')}
         </Button>
         <Button onClick={modalHide} className="btn-secondary cb-btn-secondary cb-rounded">
-          {i18next.t("Cancel")}
+          {i18next.t('Cancel')}
         </Button>
       </Modal.Footer>
     </Modal>

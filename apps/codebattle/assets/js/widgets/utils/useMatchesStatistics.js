@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import sum from "lodash/sum";
+import sum from 'lodash/sum';
 
 const emptyStats = {
   playerId: null,

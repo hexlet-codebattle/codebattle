@@ -1,21 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 
-import hasIn from "lodash/hasIn";
-import { useSelector } from "react-redux";
+import hasIn from 'lodash/hasIn';
+import { useSelector } from 'react-redux';
 
-import RoomContext from "../../components/RoomContext";
-import { roomMachineStates, replayerMachineStates } from "../../machines/game";
-import { roomStateSelector } from "../../machines/selectors";
-import * as selectors from "../../selectors";
-import useMachineStateSelector from "../../utils/useMachineStateSelector";
-import ActionsAfterGame from "./ActionsAfterGame";
-import ApprovePlaybookButtons from "./ApprovePlaybookButtons";
-import BackToEventButton from "./BackToEventButton";
-import BackToHomeButton from "./BackToHomeButton";
-import BackToTournamentButton from "./BackToTournamentButton";
-import GameResult from "./GameResult";
-import GoToNextGame from "./GoToNextGame";
-import ReplayerControlButton from "./ReplayerControlButton";
+import RoomContext from '../../components/RoomContext';
+import { roomMachineStates, replayerMachineStates } from '../../machines/game';
+import { roomStateSelector } from '../../machines/selectors';
+import * as selectors from '../../selectors';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
+import ActionsAfterGame from './ActionsAfterGame';
+import ApprovePlaybookButtons from './ApprovePlaybookButtons';
+import BackToEventButton from './BackToEventButton';
+import BackToHomeButton from './BackToHomeButton';
+import BackToTournamentButton from './BackToTournamentButton';
+import GameResult from './GameResult';
+import GoToNextGame from './GoToNextGame';
+import ReplayerControlButton from './ReplayerControlButton';
 
 function Notifications() {
   const { mainService } = useContext(RoomContext);
@@ -31,7 +31,7 @@ function Notifications() {
   const isCurrentUserPlayer = hasIn(players, currentUserId);
   const isTournamentGame = !!tournamentId;
   const isEventTournament = !!tournament?.eventId;
-  const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === "active";
+  const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === 'active';
 
   return (
     <>

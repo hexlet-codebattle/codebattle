@@ -1,7 +1,7 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 
-import Notifications from "./Notifications";
-import TournamentRankingTable from "./TournamentRankingTable";
+import Notifications from './Notifications';
+import TournamentRankingTable from './TournamentRankingTable';
 
 function TournamentCurrentPlayerRankingPanel() {
   return (

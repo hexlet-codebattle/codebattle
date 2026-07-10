@@ -1,28 +1,28 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import moment from "moment";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import moment from 'moment';
 
-import loadingStatuses from "../config/loadingStatuses";
-import periodTypes from "../config/periodTypes";
+import loadingStatuses from '../config/loadingStatuses';
+import periodTypes from '../config/periodTypes';
 
-import initial from "./initial";
+import initial from './initial';
 
 const periodMapping = {
-  [periodTypes.ALL]: "all",
-  [periodTypes.MONTHLY]: "month",
-  [periodTypes.WEEKLY]: "week",
+  [periodTypes.ALL]: 'all',
+  [periodTypes.MONTHLY]: 'month',
+  [periodTypes.WEEKLY]: 'week',
 };
 
 export const leaderboardSelector = (state) => state.leaderboard;
 
-const fetchUsers = createAsyncThunk("users/fetchUsers", async ({ periodType }, { getState }) => {
+const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ periodType }, { getState }) => {
   const { loading } = getState().leaderboard;
   if (loading !== loadingStatuses.PENDING) {
     return [];
   }
 
   const baseParams = {
-    s: "rating+desc",
-    page_size: "7",
+    s: 'rating+desc',
+    page_size: '7',
     with_bots: false,
   };
 
@@ -31,7 +31,7 @@ const fetchUsers = createAsyncThunk("users/fetchUsers", async ({ periodType }, {
       ? baseParams
       : {
           ...baseParams,
-          date_from: moment().startOf(periodMapping[periodType]).utc().format("YYYY-MM-DD"),
+          date_from: moment().startOf(periodMapping[periodType]).utc().format('YYYY-MM-DD'),
         };
 
   const query = new URLSearchParams(params).toString();
@@ -45,7 +45,7 @@ const fetchUsers = createAsyncThunk("users/fetchUsers", async ({ periodType }, {
 });
 
 const leaderboardSlice = createSlice({
-  name: "leaderboard",
+  name: 'leaderboard',
   initialState: initial.leaderboard,
   reducers: {
     changePeriod(state, action) {

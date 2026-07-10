@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   load,
   requestInviteUpdate,
   startGroupTournament,
   submitSolution,
-} from "@/middlewares/GroupTournament";
-import useGroupBattleRun from "@/utils/useGroupBattleRun";
-import useGroupTournamentChannel from "@/utils/useGroupTournamentChannel";
-import * as selectors from "../selectors";
+} from '@/middlewares/GroupTournament';
+import useGroupBattleRun from '@/utils/useGroupBattleRun';
+import useGroupTournamentChannel from '@/utils/useGroupTournamentChannel';
+import * as selectors from '../selectors';
 
 const useGroupTournamentPage = (tournamentId) => {
   const dispatch = useDispatch();
@@ -35,7 +35,7 @@ const useGroupTournamentPage = (tournamentId) => {
 
   const handleSelectRun = (id) => {
     setSelectedRunId(id);
-    setActiveTab("run");
+    setActiveTab('run');
   };
 
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);

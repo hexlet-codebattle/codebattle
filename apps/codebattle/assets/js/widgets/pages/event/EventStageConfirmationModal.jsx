@@ -1,10 +1,10 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import ModalCodes from "../../config/modalCodes";
+import ModalCodes from '../../config/modalCodes';
 
 const EventStageConfirmationModal = NiceModal.create(
   ({ titleModal, buttonText, bodyText, url }) => {

@@ -1,12 +1,12 @@
-import Gon from "gon";
-import { camelizeKeys } from "humps";
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
 
-import GameRoomModes from "../config/gameModes";
-import GameStateCodes from "../config/gameStateCodes";
-import loadingStatuses from "../config/loadingStatuses";
-import periodTypes from "../config/periodTypes";
-import tournamentStates from "../config/tournament";
-import userTypes from "../config/userTypes";
+import GameRoomModes from '../config/gameModes';
+import GameStateCodes from '../config/gameStateCodes';
+import loadingStatuses from '../config/loadingStatuses';
+import periodTypes from '../config/periodTypes';
+import tournamentStates from '../config/tournament';
+import userTypes from '../config/userTypes';
 import {
   getGamePlayers,
   getGameStatus,
@@ -14,7 +14,7 @@ import {
   getPlayersText,
   makeEditorTextKey,
   setPlayerToSliceState,
-} from "../utils/gameRoom";
+} from '../utils/gameRoom';
 
 // ******************************
 //
@@ -22,21 +22,21 @@ import {
 //
 // ******************************
 
-const activeGamesData = Gon.getAsset("active_games");
-const completedGamesData = Gon.getAsset("completed_games");
-const currentUserData = Gon.getAsset("current_user");
-const gameData = Gon.getAsset("game");
-const isRecord = Gon.getAsset("is_record") || false;
-const playerId = Gon.getAsset("player_id");
-const tournamentData = Gon.getAsset("tournament");
-const tournamentId = Gon.getAsset("tournament_id");
-const tournamentsData = Gon.getAsset("tournaments");
-const usersRatingData = Gon.getAsset("users_rating");
-const langsData = Gon.getAsset("langs");
-const leaderboardUsersData = Gon.getAsset("leaderboard_users");
-const eventData = Gon.getAsset("event");
-const reportsData = Gon.getAsset("reports");
-const seasonProfileData = Gon.getAsset("season_profile");
+const activeGamesData = Gon.getAsset('active_games');
+const completedGamesData = Gon.getAsset('completed_games');
+const currentUserData = Gon.getAsset('current_user');
+const gameData = Gon.getAsset('game');
+const isRecord = Gon.getAsset('is_record') || false;
+const playerId = Gon.getAsset('player_id');
+const tournamentData = Gon.getAsset('tournament');
+const tournamentId = Gon.getAsset('tournament_id');
+const tournamentsData = Gon.getAsset('tournaments');
+const usersRatingData = Gon.getAsset('users_rating');
+const langsData = Gon.getAsset('langs');
+const leaderboardUsersData = Gon.getAsset('leaderboard_users');
+const eventData = Gon.getAsset('event');
+const reportsData = Gon.getAsset('reports');
+const seasonProfileData = Gon.getAsset('season_profile');
 
 // ******************************
 //
@@ -88,7 +88,7 @@ const seasonProfileParams = seasonProfileData
 
 export const defaultGameStatusState = {
   state: GameStateCodes.initial,
-  msg: "",
+  msg: '',
   type: null,
   mode: GameRoomModes.none,
   startsAt: null,
@@ -177,35 +177,35 @@ const defaultTournamentParams = {
   id: undefined,
   clans: {},
   creator: {},
-  grade: "",
+  grade: '',
   creatorId: null,
   roundsLimit: 3,
   gameResults: {},
   insertedAt: null,
   isLive: false,
-  level: "elementary",
+  level: 'elementary',
   matches: {},
-  name: "",
+  name: '',
   players: {},
   playersCount: 0,
   playersLimit: 128,
   ranking: { entries: [] },
   startsAt: null,
-  state: "loading",
+  state: 'loading',
   type: null,
-  accessType: "token",
+  accessType: 'token',
   accessToken: null,
   currentRoundPosition: null,
-  defaultLanguage: "js",
+  defaultLanguage: 'js',
   lastRoundStartedAt: null,
   matchTimeoutSeconds: 0,
   playedPairIds: [],
 
-  breakState: "off",
+  breakState: 'off',
   breakDurationSeconds: 60,
 
-  taskStrategy: "game",
-  taskProvider: "level",
+  taskStrategy: 'game',
+  taskProvider: 'level',
   taskPackName: null,
 
   playersPageNumber: 1,
@@ -419,7 +419,7 @@ export default {
     id: null,
     gameStatus: initialGameStatus,
     award: initialGameAward,
-    awardStatus: "idle",
+    awardStatus: 'idle',
     locked: initialGameLocked,
     task: initialGameTask,
     players: initialPlayers,
@@ -461,9 +461,9 @@ export default {
     },
     settings: {
       ...(currentUserParams || {}),
-      mute: JSON.parse(localStorage.getItem("ui_mute_sound") || false),
+      mute: JSON.parse(localStorage.getItem('ui_mute_sound') || false),
       alreadySendPremiumRequest: JSON.parse(
-        localStorage.getItem("already_send_premium_request") || false,
+        localStorage.getItem('already_send_premium_request') || false,
       ),
     },
   },

@@ -1,17 +1,17 @@
 /* eslint-disable */
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { actions } from "../../slices";
+import { actions } from '../../slices';
 
-import { connectToActiveMatch, connectToStairwayTournament } from "../../middlewares/StairwayGame";
+import { connectToActiveMatch, connectToStairwayTournament } from '../../middlewares/StairwayGame';
 
 // import ChatWidget from './ChatWidget';
-import StairwayGameInfo from "./StairwayGameInfo";
-import StairwayOutputTab from "./StairwayOutputTab";
-import StairwayEditorContainer from "./StairwayEditorContainer";
-import StairwayEditorToolbar from "./StairwayEditorToolbar";
-import Loading from "../../components/Loading";
+import StairwayGameInfo from './StairwayGameInfo';
+import StairwayOutputTab from './StairwayOutputTab';
+import StairwayEditorContainer from './StairwayEditorContainer';
+import StairwayEditorToolbar from './StairwayEditorToolbar';
+import Loading from '../../components/Loading';
 // import StairwayRounds from './StairwayRounds';
 
 function StairwayGameContainer() {

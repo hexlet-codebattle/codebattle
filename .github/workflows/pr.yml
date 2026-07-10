@@ -17,13 +17,13 @@ jobs:
     env:
       MIX_ENV: test
       POSTGRES_PASSWORD: postgres
-      OTP_VERSION: "28.2"
-      ELIXIR_VERSION: "1.19.4"
+      OTP_VERSION: '29.0.3'
+      ELIXIR_VERSION: '1.20.2'
 
     services:
       db:
         image: postgres:16-alpine
-        ports: ["5432:5432"]
+        ports: ['5432:5432']
         env:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
@@ -99,14 +99,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
-          cache: "pnpm"
+          node-version: '24'
+          cache: 'pnpm'
           cache-dependency-path: ./apps/codebattle/pnpm-lock.yaml
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11.11.0
           run_install: false
 
       - name: Install pnpm dependencies

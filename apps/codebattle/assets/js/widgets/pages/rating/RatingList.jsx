@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import moment from "moment";
-import ReactPaginate from "react-paginate";
-import { useSelector, useDispatch } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import moment from 'moment';
+import ReactPaginate from 'react-paginate';
+import { useSelector, useDispatch } from 'react-redux';
 
-import i18n from "../../../i18n";
-import UserInfo from "../../components/UserInfo";
-import { getUsersRatingPage } from "../../middlewares/Users";
-import { usersListSelector } from "../../selectors";
+import i18n from '../../../i18n';
+import UserInfo from '../../components/UserInfo';
+import { getUsersRatingPage } from '../../middlewares/Users';
+import { usersListSelector } from '../../selectors';
 
-const decorateJoinedDate = (str) => moment.utc(str).format("LL");
+const decorateJoinedDate = (str) => moment.utc(str).format('LL');
 
 const renderSortArrow = (attribute, sortParams) => {
   const { attribute: currentAttribute, direction } = sortParams;
-  const classes = attribute === currentAttribute ? `cb-sort-arrow ${direction}` : "sort-arrows";
+  const classes = attribute === currentAttribute ? `cb-sort-arrow ${direction}` : 'sort-arrows';
 
   return <span className={`d-inline-block ${classes}`} />;
 };
@@ -69,7 +69,7 @@ const renderPagination = ({ pageInfo: { pageNumber, pageSize, totalEntries } }, 
       breakLabel="..."
       onPageChange={({ selected }) => {
         setPage(selected + 1);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }}
       pageClassName="page-item"
       pageLinkClassName="page-link"
@@ -86,8 +86,8 @@ const renderPagination = ({ pageInfo: { pageNumber, pageSize, totalEntries } }, 
 
 const renderFilterPeriodButtons = (period, filterParams, setFilterParams, setPage) => {
   const classes = cn(
-    "mr-1 btn nav-link",
-    filterParams.period === period ? "nav-link active" : "btn-link",
+    'mr-1 btn nav-link',
+    filterParams.period === period ? 'nav-link active' : 'btn-link',
   );
 
   return (
@@ -106,7 +106,7 @@ const renderFilterPeriodButtons = (period, filterParams, setFilterParams, setPag
   );
 };
 
-const periods = ["weekly", "monthly", "total"];
+const periods = ['weekly', 'monthly', 'total'];
 
 function UsersRating() {
   const usersRatingPage = useSelector(usersListSelector);
@@ -119,17 +119,17 @@ function UsersRating() {
   } = usersRatingPage;
 
   const [sortParams, setSortParams] = useState({
-    attribute: "rank",
-    direction: "asc",
+    attribute: 'rank',
+    direction: 'asc',
   });
 
   const [filterParams, setFilterParams] = useState({
-    name: "",
-    period: "total",
+    name: '',
+    period: 'total',
     withBots: false,
   });
 
-  const [pageSize, setPageSize] = useState("20");
+  const [pageSize, setPageSize] = useState('20');
 
   const [page, setPage] = useState(1);
 
@@ -139,7 +139,7 @@ function UsersRating() {
   }, [filterParams, sortParams, page, pageSize]);
 
   const triggerSort = (attribute) => {
-    const direction = sortParams.direction === "desc" ? "asc" : "desc";
+    const direction = sortParams.direction === 'desc' ? 'asc' : 'desc';
 
     setSortParams({
       attribute,
@@ -150,8 +150,8 @@ function UsersRating() {
 
   return (
     <div className="text-center cb-bg-panel cb-rounded p-3">
-      <h2 className="font-weight-normal">{i18n.t("Users rating")}</h2>
-      <p>{i18n.t("Total entries: %{count}", { count: totalEntries })}</p>
+      <h2 className="font-weight-normal">{i18n.t('Users rating')}</h2>
+      <p>{i18n.t('Total entries: %{count}', { count: totalEntries })}</p>
 
       <ul className="nav nav-pills justify-content-center mb-3">
         {periods.map((period) =>
@@ -172,8 +172,8 @@ function UsersRating() {
           <input
             type="text"
             className="form-control cb-bg-panel cb-border-color text-white"
-            placeholder={i18n.t("Username contains...")}
-            aria-label={i18n.t("Username")}
+            placeholder={i18n.t('Username contains...')}
+            aria-label={i18n.t('Username')}
             aria-describedby="basic-addon1"
             value={filterParams.name}
             onChange={(e) => {
@@ -199,7 +199,7 @@ function UsersRating() {
                 <option>40</option>
                 <option>50</option>
               </select>
-              <span className="ml-2 text-nowrap">{i18n.t("Users per page")}</span>
+              <span className="ml-2 text-nowrap">{i18n.t('Users per page')}</span>
             </label>
           </div>
           {/** end select */}
@@ -207,7 +207,7 @@ function UsersRating() {
             <label className="form-check-label" htmlFor="withBots">
               <input
                 id="withBots"
-                aria-label={i18n.t("With bots")}
+                aria-label={i18n.t('With bots')}
                 className="form-check-input"
                 type="checkbox"
                 name="with_bots"
@@ -220,7 +220,7 @@ function UsersRating() {
                 }}
                 defaultChecked={withBots}
               />
-              {i18n.t("With bots")}
+              {i18n.t('With bots')}
             </label>
           </div>
         </div>
@@ -230,41 +230,41 @@ function UsersRating() {
           <thead className="text-left cb-text-light">
             <tr>
               <th className="p-3 text-nowrap border-0">№</th>
-              <th className="p-3 text-nowrap border-0">{i18n.t("User")}</th>
+              <th className="p-3 text-nowrap border-0">{i18n.t('User')}</th>
               <th
                 className="p-3 border-0 text-nowrap cursor-pointer"
-                onClick={() => triggerSort("rank")}
+                onClick={() => triggerSort('rank')}
               >
-                {i18n.t("Rank")} &nbsp;
-                {renderSortArrow("rank", sortParams)}
+                {i18n.t('Rank')} &nbsp;
+                {renderSortArrow('rank', sortParams)}
               </th>
               <th
                 className="p-3 border-0 text-nowrap cursor-pointer"
-                onClick={() => triggerSort("points")}
+                onClick={() => triggerSort('points')}
               >
-                {i18n.t("Points")} &nbsp;
-                {renderSortArrow("points", sortParams)}
+                {i18n.t('Points')} &nbsp;
+                {renderSortArrow('points', sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
-                onClick={() => triggerSort("rating")}
+                onClick={() => triggerSort('rating')}
               >
-                {i18n.t("Rating")} &nbsp;
-                {renderSortArrow("rating", sortParams)}
+                {i18n.t('Rating')} &nbsp;
+                {renderSortArrow('rating', sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
-                onClick={() => triggerSort("games_played")}
+                onClick={() => triggerSort('games_played')}
               >
-                {i18n.t("Games played")} &nbsp;
-                {renderSortArrow("games_played", sortParams)}
+                {i18n.t('Games played')} &nbsp;
+                {renderSortArrow('games_played', sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
-                onClick={() => triggerSort("id")}
+                onClick={() => triggerSort('id')}
               >
-                {i18n.t("Joined")} &nbsp;
-                {renderSortArrow("id", sortParams)}
+                {i18n.t('Joined')} &nbsp;
+                {renderSortArrow('id', sortParams)}
               </th>
               <th className="p-3 text-nowrap border-0">Github</th>
             </tr>

@@ -1,9 +1,9 @@
-import React, { memo, useCallback, useContext } from "react";
+import React, { memo, useCallback, useContext } from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
+import cn from 'classnames';
+import i18next from 'i18next';
 
-import CustomEventStylesContext from "../../components/CustomEventStylesContext";
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 
 // %{"type" => "top_users_by_clan_ranking"} ->
 // %{"type" => "tasks_ranking"} ->
@@ -12,31 +12,31 @@ import CustomEventStylesContext from "../../components/CustomEventStylesContext"
 // %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
 //
 export const PanelModeCodes = {
-  ratingMode: "ratingMode",
-  reportsMode: "reportsMode",
-  cheatersMode: "cheatersMode",
-  leaderboardMode: "leaderboardMode",
-  playerMode: "playerMode",
-  topUserByClansMode: "top_users_by_clan_ranking",
-  taskRatingMode: "tasks_ranking",
-  clansBubbleDistributionMode: "clans_bubble_distribution",
-  taskRatingAdvanced: "task_rating_advanced",
-  taskDurationDistributionMode: "task_duration_distribution",
-  topUserByTasksMode: "top_user_by_task_ranking",
+  ratingMode: 'ratingMode',
+  reportsMode: 'reportsMode',
+  cheatersMode: 'cheatersMode',
+  leaderboardMode: 'leaderboardMode',
+  playerMode: 'playerMode',
+  topUserByClansMode: 'top_users_by_clan_ranking',
+  taskRatingMode: 'tasks_ranking',
+  clansBubbleDistributionMode: 'clans_bubble_distribution',
+  taskRatingAdvanced: 'task_rating_advanced',
+  taskDurationDistributionMode: 'task_duration_distribution',
+  topUserByTasksMode: 'top_user_by_task_ranking',
 };
 
 export const mapPanelModeToTitle = {
-  [PanelModeCodes.ratingMode]: i18next.t("Players & Matches"),
-  [PanelModeCodes.reportsMode]: i18next.t("Reports Panel"),
-  [PanelModeCodes.cheatersMode]: i18next.t("Cheaters Panel"),
-  [PanelModeCodes.playerMode]: i18next.t("Player Panel"),
-  [PanelModeCodes.leaderboardMode]: i18next.t("Leaderboard"),
-  [PanelModeCodes.topUserByClansMode]: i18next.t("Top users by clan ranking"),
-  [PanelModeCodes.taskRatingMode]: i18next.t("Tasks ranking"),
-  [PanelModeCodes.clansBubbleDistributionMode]: i18next.t("Clans bubble distribution"),
-  [PanelModeCodes.taskRatingAdvanced]: i18next.t("Duration distribution and top users by task"),
-  [PanelModeCodes.taskDurationDistributionMode]: i18next.t("task duration distribution"),
-  [PanelModeCodes.topUserByTasksMode]: i18next.t("Top user by task ranking"),
+  [PanelModeCodes.ratingMode]: i18next.t('Players & Matches'),
+  [PanelModeCodes.reportsMode]: i18next.t('Reports Panel'),
+  [PanelModeCodes.cheatersMode]: i18next.t('Cheaters Panel'),
+  [PanelModeCodes.playerMode]: i18next.t('Player Panel'),
+  [PanelModeCodes.leaderboardMode]: i18next.t('Leaderboard'),
+  [PanelModeCodes.topUserByClansMode]: i18next.t('Top users by clan ranking'),
+  [PanelModeCodes.taskRatingMode]: i18next.t('Tasks ranking'),
+  [PanelModeCodes.clansBubbleDistributionMode]: i18next.t('Clans bubble distribution'),
+  [PanelModeCodes.taskRatingAdvanced]: i18next.t('Duration distribution and top users by task'),
+  [PanelModeCodes.taskDurationDistributionMode]: i18next.t('task duration distribution'),
+  [PanelModeCodes.topUserByTasksMode]: i18next.t('Top user by task ranking'),
 };
 
 function ControlPanel({
@@ -59,8 +59,8 @@ function ControlPanel({
       <div className="d-flex align-items-start flex-grow-1 min-w-0 mb-2 mb-md-0">{leftContent}</div>
       <div
         className={cn(
-          "d-flex text-nowrap justify-content-end ml-md-3",
-          hasCustomEventStyles && "cb-custom-event-text",
+          'd-flex text-nowrap justify-content-end ml-md-3',
+          hasCustomEventStyles && 'cb-custom-event-text',
         )}
       >
         <select
@@ -73,10 +73,10 @@ function ControlPanel({
               "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath " +
               "fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' " +
               "stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\")",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right 0.75rem center",
-            backgroundSize: "16px 12px",
-            paddingRight: "2.25rem",
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 0.75rem center',
+            backgroundSize: '16px 12px',
+            paddingRight: '2.25rem',
           }}
         >
           {allowedPanelModes.map(

@@ -1,19 +1,19 @@
-import React, { memo, useState, useCallback, useEffect } from "react";
+import React, { memo, useState, useCallback, useEffect } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip } from "chart.js";
-import cn from "classnames";
-import { Bar } from "react-chartjs-2";
-import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip } from 'chart.js';
+import cn from 'classnames';
+import { Bar } from 'react-chartjs-2';
+import { useDispatch } from 'react-redux';
 
-import { PanelModeCodes } from "@/pages/tournament/ControlPanel";
+import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
-import i18next from "../../../i18n";
-import UserInfo from "../../components/UserInfo";
-import { getResults, getTask } from "../../middlewares/Tournament";
-import TaskDescriptionMarkdown from "../game/TaskDescriptionMarkdown";
+import i18next from '../../../i18n';
+import UserInfo from '../../components/UserInfo';
+import { getResults, getTask } from '../../middlewares/Tournament';
+import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
-import useTournamentPanel from "./useTournamentPanel";
+import useTournamentPanel from './useTournamentPanel';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -23,38 +23,38 @@ const options = {
     legend: false,
     title: {
       display: true,
-      text: i18next.t("Task duration distribution"),
-      color: "#cbd5e1",
+      text: i18next.t('Task duration distribution'),
+      color: '#cbd5e1',
       font: {
         size: 13,
-        weight: "600",
+        weight: '600',
       },
     },
     tooltip: {
-      backgroundColor: "rgba(15, 23, 42, 0.95)",
-      titleColor: "#e2e8f0",
-      bodyColor: "#cbd5e1",
-      borderColor: "rgba(148, 163, 184, 0.2)",
+      backgroundColor: 'rgba(15, 23, 42, 0.95)',
+      titleColor: '#e2e8f0',
+      bodyColor: '#cbd5e1',
+      borderColor: 'rgba(148, 163, 184, 0.2)',
       borderWidth: 1,
     },
   },
   scales: {
     x: {
-      ticks: { color: "#94a3b8" },
-      grid: { color: "rgba(148, 163, 184, 0.08)" },
+      ticks: { color: '#94a3b8' },
+      grid: { color: 'rgba(148, 163, 184, 0.08)' },
     },
     y: {
-      ticks: { color: "#94a3b8" },
-      grid: { color: "rgba(148, 163, 184, 0.08)" },
+      ticks: { color: '#94a3b8' },
+      grid: { color: 'rgba(148, 163, 184, 0.08)' },
     },
   },
 };
 
 const getCustomEventTrClassName = () =>
-  cn("cb-text-light font-weight-bold cb-custom-event-tr cb-bg-panel");
+  cn('cb-text-light font-weight-bold cb-custom-event-tr cb-bg-panel');
 
 const tableDataCellClassName = cn(
-  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0 cb-text",
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0 cb-text',
 );
 
 function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
@@ -91,8 +91,8 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
     datasets: [
       {
         data: lineData,
-        borderColor: "#60a5fa",
-        backgroundColor: "rgba(96, 165, 250, 0.45)",
+        borderColor: '#60a5fa',
+        backgroundColor: 'rgba(96, 165, 250, 0.45)',
       },
     ],
   };
@@ -101,7 +101,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
     <div className="d-flex flex-column h-100 cb-task-advanced-panel">
       <div className="p-2">
         <div className="cb-task-advanced-card cb-task-advanced-chart">
-          <div className="cb-task-advanced-card-title">{i18next.t("Duration distribution")}</div>
+          <div className="cb-task-advanced-card-title">{i18next.t('Duration distribution')}</div>
           <Bar options={options} data={taskChartData} />
         </div>
       </div>
@@ -109,20 +109,20 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
         <div className="cb-task-advanced-card cb-overflow-x-auto cb-overflow-y-auto">
           <div className="d-flex align-items-center justify-content-between mb-2">
             <div className="cb-task-advanced-card-title">
-              {i18next.t("Top users by task")}
-              {task?.name ? `, ${task.name}` : ""}
+              {i18next.t('Top users by task')}
+              {task?.name ? `, ${task.name}` : ''}
             </div>
             <div className="custom-control custom-switch">
               <input
                 id="task-params-view"
-                aria-label={i18next.t("Show task description")}
+                aria-label={i18next.t('Show task description')}
                 type="checkbox"
                 className="custom-control-input"
                 checked={mode}
                 onChange={handleChangeMode}
               />
               <label className="custom-control-label" htmlFor="task-params-view">
-                {i18next.t("Show task description")}
+                {i18next.t('Show task description')}
               </label>
             </div>
           </div>
@@ -135,13 +135,13 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
             <table className="table cb-custom-event-table cb-task-advanced-table">
               <thead className="text-muted">
                 <tr>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Player')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">
-                    {i18next.t("Duration (sec)")}
+                    {i18next.t('Duration (sec)')}
                   </th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Link")}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Link')}</th>
                 </tr>
               </thead>
               <tbody>

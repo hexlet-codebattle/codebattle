@@ -49,7 +49,8 @@ defmodule Codebattle.MixProject do
       {:cowboy, "~> 2.8"},
       {:delta, github: "slab/delta-elixir"},
       {:diff_match_patch, "~> 0.3.0"},
-      {:earmark, "~> 1.4"},
+      {:hackney, "~> 4.5", override: true},
+      {:mdex, "~> 0.13.3"},
       {:ecto_psql_extras, "~> 0.2"},
       {:ecto_sql, "~> 3.6"},
       {:envy, "~> 1.1.1"},
@@ -72,7 +73,7 @@ defmodule Codebattle.MixProject do
       {:plug_cowboy, "~> 2.7"},
       {:postgrex, ">= 0.0.0"},
       {:recon, "~> 2.5"},
-      {:req, "~> 0.5.0"},
+      {:req, "~> 0.5"},
       {:sentry, "~> 13.0"},
       {:statistics, "~> 0.6"},
       {:telemetry_metrics, "~> 1.1"},
@@ -93,7 +94,7 @@ defmodule Codebattle.MixProject do
       {:excoveralls, "~> 0.13", only: :test},
       {:floki, "~> 0.29", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
-      {:mock, "~> 0.3.5", only: :test},
+      {:mimic, "~> 2.3", only: :test},
       {:phoenix_integration, github: "jaimeiniesta/phoenix_integration", branch: "relax-phoenix-html", only: :test}
     ]
   end

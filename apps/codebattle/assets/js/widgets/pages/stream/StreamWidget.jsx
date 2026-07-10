@@ -1,43 +1,43 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
-import { connectToGame, setGameChannel } from "@/middlewares/Room";
-import useGameRoomMachine from "@/utils/useGameRoomMachine";
-import useMachineStateSelector from "@/utils/useMachineStateSelector";
-import useSearchParams from "@/utils/useSearchParams";
+import { connectToGame, setGameChannel } from '@/middlewares/Room';
+import useGameRoomMachine from '@/utils/useGameRoomMachine';
+import useMachineStateSelector from '@/utils/useMachineStateSelector';
+import useSearchParams from '@/utils/useSearchParams';
 
-import * as machineSelectors from "../../machines/selectors";
-import connectToStream from "../../middlewares/Stream";
+import * as machineSelectors from '../../machines/selectors';
+import connectToStream from '../../middlewares/Stream';
 
-import StreamEditorPanel from "./StreamEditorPanel";
-import StreamFullPanel from "./StreamFullPanel";
-import StreamTaskInfoPanel from "./StreamTaskInfoPanel";
+import StreamEditorPanel from './StreamEditorPanel';
+import StreamFullPanel from './StreamFullPanel';
+import StreamTaskInfoPanel from './StreamTaskInfoPanel';
 
 const orientations = {
-  NONE: "none",
-  LEFT: "left",
-  RIGHT: "right",
+  NONE: 'none',
+  LEFT: 'left',
+  RIGHT: 'right',
 };
 
 function StreamWidget({ mainMachine, taskMachine }) {
   const dispatch = useDispatch();
   const game = useSelector((state) => state.game);
   const searchParams = useSearchParams();
-  const orientation = searchParams.has("orientation")
-    ? searchParams.get("orientation")
+  const orientation = searchParams.has('orientation')
+    ? searchParams.get('orientation')
     : orientations.NONE;
 
-  const fontSize = searchParams.has("fontSize") ? searchParams.get("fontSize") : 16;
-  const codeFontSize = searchParams.has("codeFontSize") ? searchParams.get("codeFontSize") : 16;
-  const headerFontSize = searchParams.has("headerFontSize")
-    ? searchParams.get("headerFontSize")
+  const fontSize = searchParams.has('fontSize') ? searchParams.get('fontSize') : 16;
+  const codeFontSize = searchParams.has('codeFontSize') ? searchParams.get('codeFontSize') : 16;
+  const headerFontSize = searchParams.has('headerFontSize')
+    ? searchParams.get('headerFontSize')
     : 16;
-  const widthInfoPanelPercentage = searchParams.has("widthInfoPanel")
-    ? searchParams.get("widthInfoPanel")
+  const widthInfoPanelPercentage = searchParams.has('widthInfoPanel')
+    ? searchParams.get('widthInfoPanel')
     : 40;
-  const widthEditorPanelPercentage = searchParams.has("widthEditorPanel")
-    ? searchParams.get("widthEditorPanel")
+  const widthEditorPanelPercentage = searchParams.has('widthEditorPanel')
+    ? searchParams.get('widthEditorPanel')
     : 60;
 
   const { mainService } = useGameRoomMachine({

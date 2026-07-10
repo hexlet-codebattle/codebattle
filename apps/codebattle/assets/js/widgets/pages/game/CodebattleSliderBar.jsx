@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
-import Tooltip from "react-bootstrap/Tooltip";
+import cn from 'classnames';
+import Tooltip from 'react-bootstrap/Tooltip';
 
-import OverlayTrigger from "@/components/OverlayTriggerCompat";
+import OverlayTrigger from '@/components/OverlayTriggerCompat';
 
-import { formatDuration } from "./ControlPanel";
+import { formatDuration } from './ControlPanel';
 
-const handleClassnames = "cb-slider-handle position-absolute rounded-circle";
-const buttonClassnames = "cb-slider-handle-button position-absolute rounded-circle bg-danger";
-const sliderBarClassnames = "cb-slider-bar position-absolute cb-rounded";
+const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
+const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
+const sliderBarClassnames = 'cb-slider-bar position-absolute cb-rounded';
 
 function SliderBar({ value, className }) {
   return (
@@ -23,7 +23,7 @@ function SliderBar({ value, className }) {
 }
 
 function SliderAction({ value, className, event, setGameState, startTime }) {
-  const hasDuration = typeof event.time === "number" && typeof startTime === "number";
+  const hasDuration = typeof event.time === 'number' && typeof startTime === 'number';
   const durationLabel = hasDuration ? formatDuration(event.time - startTime) : null;
 
   return (
@@ -33,7 +33,7 @@ function SliderAction({ value, className, event, setGameState, startTime }) {
         overlay={
           <Tooltip id="tooltip-top">
             {`Check started by ${event.userName}`}
-            {durationLabel ? ` · ${durationLabel}` : ""}
+            {durationLabel ? ` · ${durationLabel}` : ''}
           </Tooltip>
         }
       >
@@ -80,8 +80,8 @@ function CodebattleSliderBar({
       <div className="cb-slider-timeline position-absolute cb-rounded w-100 cb-bg-panel">
         <SliderBar
           className={cn(sliderBarClassnames, {
-            "x-intent-background": holded,
-            "bg-danger": !holded,
+            'x-intent-background': holded,
+            'bg-danger': !holded,
           })}
           value={holded ? lastIntent : handlerPosition}
         />

@@ -1,6 +1,6 @@
-import React from "react";
-import i18n from "../../../i18n";
-import { tabBtnClass, tabBtnStyle } from "../../utils/groupTournament";
+import React from 'react';
+import i18n from '../../../i18n';
+import { tabBtnClass, tabBtnStyle } from '../../utils/groupTournament';
 
 const MainPanelTabs = ({
   activeTab,
@@ -13,11 +13,11 @@ const MainPanelTabs = ({
 }) => (
   <div className="d-flex align-items-center flex-wrap mr-3">
     {[
-      "description",
-      hasTaskDescription && "task_description",
-      !isWaiting && "run",
-      !isWaiting && hasLeaderboard && "leaderboard",
-      !isWaiting && isAdmin && externalSetup && "settings",
+      'description',
+      hasTaskDescription && 'task_description',
+      !isWaiting && 'run',
+      !isWaiting && hasLeaderboard && 'leaderboard',
+      !isWaiting && isAdmin && externalSetup && 'settings',
     ]
       .filter(Boolean)
       .map((tab) => (
@@ -28,11 +28,11 @@ const MainPanelTabs = ({
           style={tabBtnStyle(activeTab === tab)}
           onClick={() => setActiveTab(tab)}
         >
-          {tab === "settings" ? (
+          {tab === 'settings' ? (
             <>
-              {i18n.t("External Setup")}
+              {i18n.t('External Setup')}
               <span
-                className={`badge ml-2 ${externalSetup.state === "ready" ? "badge-success" : "badge-warning"}`}
+                className={`badge ml-2 ${externalSetup.state === 'ready' ? 'badge-success' : 'badge-warning'}`}
               >
                 {externalSetup.state}
               </span>
@@ -40,10 +40,10 @@ const MainPanelTabs = ({
           ) : (
             i18n.t(
               {
-                description: "Description",
-                task_description: "Task",
-                run: "Run Viewer",
-                leaderboard: "Leaderboard",
+                description: 'Description',
+                task_description: 'Task',
+                run: 'Run Viewer',
+                leaderboard: 'Leaderboard',
               }[tab],
             )
           )}

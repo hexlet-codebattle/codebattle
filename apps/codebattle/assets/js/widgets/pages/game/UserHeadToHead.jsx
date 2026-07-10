@@ -1,9 +1,9 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo } from 'react';
 
-import cn from "classnames";
-import { useSelector } from "react-redux";
+import cn from 'classnames';
+import { useSelector } from 'react-redux';
 
-import { gamePlayersSelector, userGameHeadToHeadSelector } from "../../selectors";
+import { gamePlayersSelector, userGameHeadToHeadSelector } from '../../selectors';
 
 function UserHeadToHead({ userId }) {
   const { winnerId, players } = useSelector(userGameHeadToHeadSelector);
@@ -23,10 +23,10 @@ function UserHeadToHead({ userId }) {
   }
 
   const wins = players.find((player) => player.id === userId)?.wins ?? 0;
-  const headToHeadClassName = cn("d-flex flex-nowrap ml-2 text-center", {
-    "cb-game-score-won": winnerId === userId,
-    "cb-game-score-lost": winnerId !== null && winnerId !== userId,
-    "cb-game-score-draw": winnerId === null,
+  const headToHeadClassName = cn('d-flex flex-nowrap ml-2 text-center', {
+    'cb-game-score-won': winnerId === userId,
+    'cb-game-score-lost': winnerId !== null && winnerId !== userId,
+    'cb-game-score-draw': winnerId === null,
   });
   const href = opponentId ? `/h2h/${userId}/${opponentId}` : null;
   const content = (
@@ -41,7 +41,7 @@ function UserHeadToHead({ userId }) {
   }
 
   return (
-    <a href={href} className={cn(headToHeadClassName, "text-decoration-none")} title="Open H2H">
+    <a href={href} className={cn(headToHeadClassName, 'text-decoration-none')} title="Open H2H">
       {content}
     </a>
   );

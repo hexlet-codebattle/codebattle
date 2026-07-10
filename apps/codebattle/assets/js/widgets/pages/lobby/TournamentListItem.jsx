@@ -1,38 +1,46 @@
-import React from "react";
+import React from 'react';
 
-import NiceModal from "@ebay/nice-modal-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
+import NiceModal from '@ebay/nice-modal-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 
-import getIconForGrade from "@/components/icons/Grades";
-import TournamentTimer from "@/components/TournamentTimer";
-import { getRankingPoints, grades } from "@/config/grades";
-import ModalCodes from "@/config/modalCodes";
-import { getTournamentUrl } from "@/utils/urlBuilders";
+import getIconForGrade from '@/components/icons/Grades';
+import TournamentTimer from '@/components/TournamentTimer';
+import { getRankingPoints, grades } from '@/config/grades';
+import ModalCodes from '@/config/modalCodes';
+import { getTournamentUrl } from '@/utils/urlBuilders';
 
-import i18n from "../../../i18n";
-import dayjs from "../../../i18n/dayjs";
-import tournamentStates from "../../config/tournament";
+import i18n from '../../../i18n';
+import dayjs from '../../../i18n/dayjs';
+import tournamentStates from '../../config/tournament';
 
-const iconSize = { width: "22px", height: "22px" };
+const iconSize = { width: '22px', height: '22px' };
 
 const mapTournamentTitleByState = {
-  [tournamentStates.waitingParticipants]: "Waiting Players",
-  [tournamentStates.active]: "Playing",
-  [tournamentStates.canceled]: "Canceled",
-  [tournamentStates.finished]: "Finished",
+  [tournamentStates.waitingParticipants]: 'Waiting Players',
+  [tournamentStates.active]: 'Playing',
+  [tournamentStates.canceled]: 'Canceled',
+  [tournamentStates.finished]: 'Finished',
 };
 
 const getDateFormat = (grade) => {
   switch (grade) {
     case grades.open:
-      return "MMM D, YYYY [at] h:mma";
+      return 'MMM D, YYYY [at] h:mma';
     default:
-      return "[at] h:mma";
+      return '[at] h:mma';
   }
 };
 
-const getActionText = () => i18n.t("Show");
+const getActionText = () => i18n.t('Show');
+
+const formatDate = (date, format) => {
+  const parsedDate = dayjs(date);
+
+  return parsedDate.isValid() ? parsedDate.format(format) : null;
+};
+
+const formatTournamentDate = (date, grade) => formatDate(date, getDateFormat(grade));
 
 function TournamentTitle({ tournament }) {
   if (tournament.grade === grades.open) {
@@ -46,7 +54,7 @@ function TournamentTitle({ tournament }) {
     );
   }
 
-  const subtitle = dayjs(tournament.startsAt).format("MMM D, YYYY [at] HH:mm");
+  const subtitle = formatDate(tournament.startsAt, 'MMM D, YYYY [at] HH:mm');
 
   return (
     <div className="d-flex flex-column align-items-baseline">
@@ -67,13 +75,13 @@ function TournamentAction({ tournament, isAdmin = false }) {
   };
 
   const infoClassName = cn(
-    "btn btn-outline-secondary cb-btn-outline-secondary cb-tournament-info-icon-btn",
-    "px-2 cb-rounded border-0",
+    'btn btn-outline-secondary cb-btn-outline-secondary cb-tournament-info-icon-btn',
+    'px-2 cb-rounded border-0',
   );
 
   const actionClassName = cn(
-    "btn btn-secondary cb-btn-secondary cb-tournament-main-action",
-    "text-nowrap px-2 cb-rounded",
+    'btn btn-secondary cb-btn-secondary cb-tournament-main-action',
+    'text-nowrap px-2 cb-rounded',
   );
 
   return (
@@ -106,6 +114,11 @@ const showStartsAt = (state) =>
   ].includes(state);
 
 function TournamentListItem({ tournament, isAdmin = false }) {
+  const finishedAt = formatTournamentDate(
+    tournament.finishedAt || tournament.lastRoundEndedAt || tournament.startsAt,
+    tournament.grade,
+  );
+
   return (
     <div className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2 cb-tournament-card">
       <div className="d-flex flex-column p-3 align-content-center align-items-baseline cb-tournament-card-body">
@@ -127,7 +140,7 @@ function TournamentListItem({ tournament, isAdmin = false }) {
               </span>
             )}
             <span className="d-flex flex-wrap">
-              {tournament.state !== "upcoming" && (
+              {tournament.state !== 'upcoming' && (
                 <span className="mr-2 d-inline-flex mt-2 text-white text-nowrap">
                   <FontAwesomeIcon
                     icon="flag-checkered"
@@ -138,7 +151,7 @@ function TournamentListItem({ tournament, isAdmin = false }) {
                 </span>
               )}
               {tournamentStates.canceled !== tournament.state &&
-                tournament.state !== "upcoming" && (
+                tournament.state !== 'upcoming' && (
                   <span className="d-inline-flex mt-2 text-white text-nowrap">
                     <FontAwesomeIcon icon="user" className="mr-2 text-warning" style={iconSize} />
                     {tournament.playersCount}
@@ -147,7 +160,7 @@ function TournamentListItem({ tournament, isAdmin = false }) {
             </span>
             {showStartsAt(tournament.state) && (
               <>
-                {dayjs(tournament.startsAt).diff(dayjs(), "hours") <= 24 && (
+                {dayjs(tournament.startsAt).diff(dayjs(), 'hours') <= 24 && (
                   <span className="d-inline-flex mt-2 text-nowrap cb-tournament-starts-in">
                     <FontAwesomeIcon
                       icon="clock"
@@ -155,16 +168,16 @@ function TournamentListItem({ tournament, isAdmin = false }) {
                       style={iconSize}
                     />
                     <TournamentTimer label="starts in" date={tournament.startsAt}>
-                      {dayjs(tournament.startsAt).format(getDateFormat(tournament.grade))}
+                      {formatTournamentDate(tournament.startsAt, tournament.grade)}
                     </TournamentTimer>
                   </span>
                 )}
               </>
             )}
-            {tournament.state === tournamentStates.finished && (
+            {tournament.state === tournamentStates.finished && finishedAt && (
               <span className="d-none d-lg-inline-flex d-md-inline-flex d-sm-inline-flex pr-2 mt-2 text-white text-nowrap">
                 <FontAwesomeIcon icon="clock" className="mr-2 text-warning" style={iconSize} />
-                {dayjs(tournament.lastRoundEndedAt).format(getDateFormat(tournament.grade))}
+                {finishedAt}
               </span>
             )}
           </div>

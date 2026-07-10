@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import Gon from "gon";
-import { useDispatch, useSelector } from "react-redux";
+import Gon from 'gon';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   connectToTournament,
   requestMatchesForRound,
   pushActiveMatchToStream,
-} from "../../middlewares/TournamentAdmin";
-import * as selectors from "../../selectors";
+} from '../../middlewares/TournamentAdmin';
+import * as selectors from '../../selectors';
 
 // Define CSS for active game animation
 const activeGameStyles = `
@@ -39,7 +39,7 @@ const activeGameStyles = `
 function TournamentAdminWidget() {
   // Add style element for animations
   useEffect(() => {
-    const styleElement = document.createElement("style");
+    const styleElement = document.createElement('style');
     styleElement.textContent = activeGameStyles;
     document.head.appendChild(styleElement);
 
@@ -47,7 +47,7 @@ function TournamentAdminWidget() {
       document.head.removeChild(styleElement);
     };
   }, []);
-  const tournamentId = Gon.getAsset("tournament_id");
+  const tournamentId = Gon.getAsset('tournament_id');
   const dispatch = useDispatch();
 
   const tournament = useSelector(selectors.tournamentSelector);
@@ -66,13 +66,13 @@ function TournamentAdminWidget() {
       <div className="d-flex flex-wrap gap-1">
         {allMatches.map((match) => {
           // Determine button color based on match state
-          let buttonClass = "btn-outline-secondary";
-          if (match.state === "finished") {
-            buttonClass = match.winnerId === playerId ? "btn-success" : "btn-danger";
-          } else if (match.state === "playing") {
-            buttonClass = "btn-primary";
-          } else if (match.state === "timeout") {
-            buttonClass = "btn-warning";
+          let buttonClass = 'btn-outline-secondary';
+          if (match.state === 'finished') {
+            buttonClass = match.winnerId === playerId ? 'btn-success' : 'btn-danger';
+          } else if (match.state === 'playing') {
+            buttonClass = 'btn-primary';
+          } else if (match.state === 'timeout') {
+            buttonClass = 'btn-warning';
           }
 
           // Check if this is the active game
@@ -80,19 +80,19 @@ function TournamentAdminWidget() {
             tournamentAdmin.activeGameId && match.gameId === tournamentAdmin.activeGameId;
           // No need for inline styles as we're using CSS animations
           const buttonStyle = {};
-          const title = isActiveGame ? "⭐ ACTIVE GAME - " : "";
+          const title = isActiveGame ? '⭐ ACTIVE GAME - ' : '';
 
           return (
             <button
               type="button"
               key={match.id}
               onClick={() => dispatch(pushActiveMatchToStream(match.gameId))}
-              className={`btn ${buttonClass} btn-sm me-1 mb-1 ${isActiveGame ? "active-game" : ""}`}
+              className={`btn ${buttonClass} btn-sm me-1 mb-1 ${isActiveGame ? 'active-game' : ''}`}
               title={`${title}Match ID: ${match.id}, State: ${match.state}, Started: ${new Date(match.startedAt).toLocaleTimeString()}`}
               style={buttonStyle}
             >
               #{match.gameId}
-              {isActiveGame ? <span className="active-game-indicator">🔄</span> : ""}
+              {isActiveGame ? <span className="active-game-indicator">🔄</span> : ''}
             </button>
           );
         })}
@@ -156,12 +156,12 @@ function TournamentAdminWidget() {
                 <td>
                   {tournament.players[rankingPlayer.id]?.drawIndex ===
                   tournament.players[rankingPlayer.id]?.maxDrawIndex
-                    ? "Active"
-                    : "InActive"}
+                    ? 'Active'
+                    : 'InActive'}
                 </td>
                 <td>{rankingPlayer.place}</td>
                 <td>{rankingPlayer.name}</td>
-                <td>{rankingPlayer.clan || "-"}</td>
+                <td>{rankingPlayer.clan || '-'}</td>
                 <td>{rankingPlayer.score}</td>
                 <td>{renderPlayerMatchButtons(rankingPlayer.id)}</td>
               </tr>
@@ -169,8 +169,8 @@ function TournamentAdminWidget() {
           </tbody>
         </table>
         <div className="text-muted small text-center">
-          Page {tournament.ranking.pageNumber} of{" "}
-          {Math.ceil(tournament.ranking.totalEntries / tournament.ranking.pageSize)}• Total players:{" "}
+          Page {tournament.ranking.pageNumber} of{' '}
+          {Math.ceil(tournament.ranking.totalEntries / tournament.ranking.pageSize)}• Total players:{' '}
           {tournament.ranking.totalEntries}
         </div>
       </div>

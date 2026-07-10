@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import { useFormik } from "formik";
-import { Button } from "react-bootstrap";
-import * as Yup from "yup";
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import { useFormik } from 'formik';
+import { Button } from 'react-bootstrap';
+import * as Yup from 'yup';
 
-import i18n from "../../../i18n";
-import schemas from "../../formik";
+import i18n from '../../../i18n';
+import schemas from '../../formik';
 
 const getCsrfToken = () =>
-  document.querySelector("meta[name='csrf-token']").getAttribute("content"); // validation token
+  document.querySelector("meta[name='csrf-token']").getAttribute('content'); // validation token
 const postJson = async (url, payload) => {
   const response = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": getCsrfToken(),
+      'Content-Type': 'application/json',
+      'x-csrf-token': getCsrfToken(),
     },
     body: JSON.stringify(payload),
   });
@@ -36,8 +36,8 @@ const isShowInvalidMessage = (formik, typeValue) =>
   formik.submitCount !== 0 && !!formik.errors[typeValue];
 
 const getInputClassName = (isInvalid) =>
-  cn("form-control custom-control cb-bg-panel cb-border-color text-white", {
-    "is-invalid": isInvalid,
+  cn('form-control custom-control cb-bg-panel cb-border-color text-white', {
+    'is-invalid': isInvalid,
   });
 
 function Container({ children }) {
@@ -106,7 +106,7 @@ function PasswordInput({ id, title, formik }) {
       <span className="text-white">{title}</span>
       <div className="position-relative">
         <input
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           id={id}
           aria-label={id}
           className={inputClassName}
@@ -114,7 +114,7 @@ function PasswordInput({ id, title, formik }) {
         />
         <Button
           variant="link"
-          className={`position-absolute end-0 top-0 h-100 ${isInvalid ? "mr-4" : ""}`}
+          className={`position-absolute end-0 top-0 h-100 ${isInvalid ? 'mr-4' : ''}`}
           onClick={togglePasswordVisibility}
         >
           {/* <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} /> */}
@@ -139,12 +139,12 @@ function Footer({ children }) {
 }
 
 const searchParams = new URLSearchParams(window.location.search);
-const getNextLocation = () => (searchParams.has("next") ? searchParams.get("next") : "/");
+const getNextLocation = () => (searchParams.has('next') ? searchParams.get('next') : '/');
 const getLinkWithNext = (link) =>
-  searchParams.has("next") ? `${link}?next=${searchParams.get("next")}` : link;
+  searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link;
 const redirectTo = (path) => {
-  if (window.navigator.userAgent.includes("jsdom")) {
-    window.history.replaceState({}, "", path);
+  if (window.navigator.userAgent.includes('jsdom')) {
+    window.history.replaceState({}, '', path);
     return;
   }
 
@@ -157,21 +157,21 @@ function SocialLinks({ isSignUp }) {
       <div className="mt-1">
         <a
           type="button"
-          aria-label={isSignUp ? "signUpWithGithub" : "signInWithGithub"}
-          href={getLinkWithNext("/auth/github")}
+          aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
+          href={getLinkWithNext('/auth/github')}
           className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
         >
-          {isSignUp ? i18n.t("Sign up with Github") : i18n.t("Sign in with Github")}
+          {isSignUp ? i18n.t('Sign up with Github') : i18n.t('Sign in with Github')}
         </a>
       </div>
       <div className="mt-1">
         <a
           type="button"
-          aria-label={isSignUp ? "signUpWithDiscord" : "signInWithDiscord"}
-          href={getLinkWithNext("/auth/discord")}
+          aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
+          href={getLinkWithNext('/auth/discord')}
           className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
         >
-          {isSignUp ? i18n.t("Sign up with Discord") : i18n.t("Sign in with Discord")}
+          {isSignUp ? i18n.t('Sign up with Discord') : i18n.t('Sign in with Discord')}
         </a>
       </div>
     </>
@@ -181,9 +181,9 @@ function SocialLinks({ isSignUp }) {
 function SignInInvitation() {
   return (
     <div className="small">
-      <span className="cb-text">{i18n.t("If you have an account")}</span>
-      <a href={getLinkWithNext("/session/new")} role="button" className="btn-link text-white ml-3">
-        {i18n.t("Sign In")}
+      <span className="cb-text">{i18n.t('If you have an account')}</span>
+      <a href={getLinkWithNext('/session/new')} role="button" className="btn-link text-white ml-3">
+        {i18n.t('Sign In')}
       </a>
     </div>
   );
@@ -192,9 +192,9 @@ function SignInInvitation() {
 function SignUpInvitation() {
   return (
     <div className="small">
-      <span className="cb-text">{i18n.t("Have not an account?")}</span>
-      <a href={getLinkWithNext("/users/new")} role="button" className="btn-link text-primary ml-3">
-        {i18n.t("Sign Up")}
+      <span className="cb-text">{i18n.t('Have not an account?')}</span>
+      <a href={getLinkWithNext('/users/new')} role="button" className="btn-link text-primary ml-3">
+        {i18n.t('Sign Up')}
       </a>
     </div>
   );
@@ -203,14 +203,14 @@ function SignUpInvitation() {
 function SignIn() {
   const formik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     validationSchema: Yup.object().shape(schemas.signIn),
     onSubmit: ({ email, password }) => {
       const data = { email, password };
 
-      postJson("/api/v1/session", data)
+      postJson('/api/v1/session', data)
         .then(() => {
           redirectTo(getNextLocation());
         })
@@ -219,14 +219,14 @@ function SignIn() {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email === "EMAIL_NOT_FOUND") {
-              formik.errors.email = "Invalid email";
+            if (errors.email === 'EMAIL_NOT_FOUND') {
+              formik.errors.email = 'Invalid email';
             }
-            if (errors.email && errors.email !== "EMAIL_NOT_FOUND") {
-              formik.setFieldError("email", errors.email);
+            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') {
+              formik.setFieldError('email', errors.email);
             }
             if (errors.base) {
-              formik.setFieldError("base", errors.base);
+              formik.setFieldError('base', errors.base);
             }
           }
         });
@@ -259,14 +259,14 @@ function SignIn() {
 function SignUp() {
   const formik = useFormik({
     initialValues: {
-      name: "",
-      email: "",
-      password: "",
-      passwordConfirmation: "",
+      name: '',
+      email: '',
+      password: '',
+      passwordConfirmation: '',
     },
     validationSchema: Yup.object().shape(schemas.signUp),
     onSubmit: (formData) => {
-      postJson("/api/v1/users", formData)
+      postJson('/api/v1/users', formData)
         .then(() => {
           redirectTo(getNextLocation());
         })
@@ -275,13 +275,13 @@ function SignUp() {
           if (error.response.data.errors) {
             const { errors } = error.response.data;
             if (errors.name) {
-              formik.setFieldError("name", errors.name);
+              formik.setFieldError('name', errors.name);
             }
             if (errors.email) {
-              formik.setFieldError("email", errors.email);
+              formik.setFieldError('email', errors.email);
             }
             if (errors.base) {
-              formik.setFieldError("base", errors.base);
+              formik.setFieldError('base', errors.base);
             }
           }
         });
@@ -313,11 +313,11 @@ function ResetPassword() {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
+      email: '',
     },
     validationSchema: Yup.object().shape(schemas.resetPassword),
     onSubmit: ({ email }) => {
-      postJson("/api/v1/reset_password", { email })
+      postJson('/api/v1/reset_password', { email })
         .then(() => {
           setIsSend(true);
         })
@@ -327,10 +327,10 @@ function ResetPassword() {
           if (error.response.data.errors) {
             const { errors } = error.response.data;
             if (errors.email) {
-              formik.setFieldError("email", errors.email);
+              formik.setFieldError('email', errors.email);
             }
             if (errors.base) {
-              formik.setFieldError("base", errors.base);
+              formik.setFieldError('base', errors.base);
             }
           }
         });
@@ -366,14 +366,14 @@ function Registration() {
   const { pathname } = window.location;
 
   switch (pathname) {
-    case "/session/new":
+    case '/session/new':
       return <SignIn />;
-    case "/users/new":
+    case '/users/new':
       return <SignUp />;
-    case "/remind_password":
+    case '/remind_password':
       return <ResetPassword />;
     default:
-      throw new Error("Unexpected Registration page route");
+      throw new Error('Unexpected Registration page route');
   }
 }
 

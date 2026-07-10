@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from "react";
-import i18n from "../../../i18n";
-import { LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT } from "../../config/groupTournament";
-import LeaderboardSliceItem from "./LeaderboardSliceItem";
+import React, { useMemo, useState } from 'react';
+import i18n from '../../../i18n';
+import { LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT } from '../../config/groupTournament';
+import LeaderboardSliceItem from './LeaderboardSliceItem';
 
 function LeaderboardSliceRoundView({ leaderboard, roundNumber, currentUserId }) {
   const [showAll, setShowAll] = useState(false);
@@ -47,7 +47,7 @@ function LeaderboardSliceRoundView({ leaderboard, roundNumber, currentUserId }) 
   }, [leaderboard, roundNumber, currentUserId]);
 
   if (slices.length === 0) {
-    return <div className="text-muted p-3">{i18n.t("No round data yet")}</div>;
+    return <div className="text-muted p-3">{i18n.t('No round data yet')}</div>;
   }
 
   const overLimit = slices.length > LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT;
@@ -60,8 +60,8 @@ function LeaderboardSliceRoundView({ leaderboard, roundNumber, currentUserId }) 
         <div className="mb-2 d-flex align-items-center">
           <span className="text-muted small mr-2">
             {showAll
-              ? i18n.t("%{count} slices", { count: slices.length })
-              : i18n.t("%{visible} / %{total} slices", {
+              ? i18n.t('%{count} slices', { count: slices.length })
+              : i18n.t('%{visible} / %{total} slices', {
                   visible: visibleSlices.length,
                   total: slices.length,
                 })}
@@ -71,11 +71,11 @@ function LeaderboardSliceRoundView({ leaderboard, roundNumber, currentUserId }) 
             className="btn btn-sm btn-outline-light"
             onClick={() => setShowAll((v) => !v)}
           >
-            {showAll ? i18n.t("Show less") : i18n.t("Show all")}
+            {showAll ? i18n.t('Show less') : i18n.t('Show all')}
           </button>
         </div>
       )}
-      <div className="d-flex flex-wrap" style={{ gap: "1rem" }}>
+      <div className="d-flex flex-wrap" style={{ gap: '1rem' }}>
         {visibleSlices.map(({ sliceIndex, players, hasCurrentUser }) => (
           <LeaderboardSliceItem
             key={sliceIndex}

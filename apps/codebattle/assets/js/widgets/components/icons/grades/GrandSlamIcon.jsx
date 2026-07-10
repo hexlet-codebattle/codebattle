@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
-import React from "react";
+import React from 'react';
 
 const GrandSlamIcon = React.forwardRef((props, ref) => {
   const {
-    color = "gold",
-    glowColor = "gold",
+    color = 'gold',
+    glowColor = 'gold',
     size = 80,
     title,
     animate = true,

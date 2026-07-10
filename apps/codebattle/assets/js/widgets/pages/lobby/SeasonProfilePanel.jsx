@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import cn from "classnames";
-import Gon from "gon";
-import { useDispatch, useSelector } from "react-redux";
+import cn from 'classnames';
+import Gon from 'gon';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { loadNearbyUsers } from "@/middlewares/Users";
-import { selectDefaultAvatarUrl, currentUserIsAdminSelector, userByIdSelector } from "@/selectors";
+import { loadNearbyUsers } from '@/middlewares/Users';
+import { selectDefaultAvatarUrl, currentUserIsAdminSelector, userByIdSelector } from '@/selectors';
 
-import i18n from "../../../i18n";
-import dayjs from "../../../i18n/dayjs";
-import UserInfo from "../../components/UserInfo";
-import { actions } from "../../slices";
+import i18n from '../../../i18n';
+import dayjs from '../../../i18n/dayjs';
+import UserInfo from '../../components/UserInfo';
+import { actions } from '../../slices';
 
-import CodebattleLeagueDescription from "./CodebattleLeagueDescription";
-import TournamentListItem from "./TournamentListItem";
+import CodebattleLeagueDescription from './CodebattleLeagueDescription';
+import TournamentListItem from './TournamentListItem';
 
-const currentSeason = Gon.getAsset("current_season");
+const currentSeason = Gon.getAsset('current_season');
 const contestDatesText = currentSeason
-  ? i18n.t("Season %{name} %{year}: %{start} - %{end}", {
+  ? i18n.t('Season %{name} %{year}: %{start} - %{end}', {
       name: currentSeason.name,
       year: currentSeason.year,
-      start: dayjs(currentSeason.starts_at).format("MMM D"),
-      end: dayjs(currentSeason.ends_at).format("MMM D"),
+      start: dayjs(currentSeason.starts_at).format('MMM D'),
+      end: dayjs(currentSeason.ends_at).format('MMM D'),
     })
   : null;
 
@@ -53,25 +53,25 @@ function OpponentInfo({ id }) {
       <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
         <a href="/hall_of_fame" className="stat-item py-1 w-100">
           <span
-            className={cn("stat-value d-block cb-text-danger", {
-              "d-inline cb-text-skeleton w-25 mx-auto": !user,
+            className={cn('stat-value d-block cb-text-danger', {
+              'd-inline cb-text-skeleton w-25 mx-auto': !user,
             })}
           >
-            #{user ? user.rank : ""}
+            #{user ? user.rank : ''}
           </span>
-          <span className="stat-label text-uppercase">{i18n.t("Place")}</span>
+          <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
         </a>
       </div>
       <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
         <div className="stat-item py-1 w-100">
           <span
-            className={cn("stat-value d-block cb-text-danger", {
-              "d-inline cb-text-skeleton w-25 mx-auto": !user,
+            className={cn('stat-value d-block cb-text-danger', {
+              'd-inline cb-text-skeleton w-25 mx-auto': !user,
             })}
           >
-            {user ? user.points : ""}
+            {user ? user.points : ''}
           </span>
-          <span className="stat-label text-uppercase">{i18n.t("Points")}</span>
+          <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
       <div className="d-flex flex-column">
         <div className="cb-bg-highlight-panel text-center cb-rounded-top px-2">
           <span className="text-white text-uppercase py-2 d-block">
-            {i18n.t("Closest Opponents")}
+            {i18n.t('Closest Opponents')}
           </span>
         </div>
         <div className="px-1 pb-1">
@@ -133,14 +133,14 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
   );
 }
 
-function UserLogo({ user, size = "70px" }) {
+function UserLogo({ user, size = '70px' }) {
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
   const avatarUrl = user?.avatarUrl || defaultAvatarUrl;
 
   return (
     <img
       style={{ width: size, height: size }}
-      alt={i18n.t("Avatar Logo")}
+      alt={i18n.t('Avatar Logo')}
       className="rounded-circle"
       src={avatarUrl}
     />
@@ -167,7 +167,7 @@ function SeasonProfilePanel({
                 <>
                   <div className="d-flex justify-content-center align-items-center pt-2 cb-season-section-title">
                     <span className="text-white text-uppercase h4">
-                      {i18n.t("Live Tournaments")}
+                      {i18n.t('Live Tournaments')}
                     </span>
                   </div>
                   <div className="d-flex flex-wrap cb-tournament-grid">
@@ -185,7 +185,7 @@ function SeasonProfilePanel({
                 <>
                   <div className="d-flex justify-content-center pt-2 cb-season-section-title">
                     <span className="text-white text-uppercase h4">
-                      {i18n.t("Upcoming Tournaments")}
+                      {i18n.t('Upcoming Tournaments')}
                     </span>
                   </div>
                   <div className="d-flex flex-wrap cb-tournament-grid">
@@ -201,7 +201,7 @@ function SeasonProfilePanel({
               )}
             </div>
           ) : (
-            <div className="pt-2 mt-2">{i18n.t("Competition not started yet")}</div>
+            <div className="pt-2 mt-2">{i18n.t('Competition not started yet')}</div>
           )}
           <div className="d-flex flex-column flex-lg-row w-100 pt-2 mt-2 cb-season-actions">
             <a
@@ -209,21 +209,21 @@ function SeasonProfilePanel({
               type="button"
               className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
             >
-              {i18n.t("Contests History")}
+              {i18n.t('Contests History')}
             </a>
             <a
               href="/schedule#my"
               type="button"
               className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
             >
-              {i18n.t("My Tournaments")}
+              {i18n.t('My Tournaments')}
             </a>
             <a
               href="/tournaments"
               type="button"
               className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
             >
-              {i18n.t("Create a Tournament")}
+              {i18n.t('Create a Tournament')}
             </a>
           </div>
         </div>
@@ -234,13 +234,13 @@ function SeasonProfilePanel({
             <UserLogo user={user} />
             <span className="clan-tag mt-2">{user.name}</span>
             <span className="h1 clan-title m-0 text-white text-uppercase">
-              {i18n.t("Clan")}
-              {": "}
+              {i18n.t('Clan')}
+              {': '}
               {user.clanId ? (
                 user.clan
               ) : (
                 <a href="/settings" className="text-lowercase text-primary">
-                  <small>{i18n.t("add clan")}</small>
+                  <small>{i18n.t('add clan')}</small>
                 </a>
               )}
             </span>
@@ -249,7 +249,7 @@ function SeasonProfilePanel({
           <div className="cb-bg-highlight-panel d-flex py-2 px-1 cb-season-stats">
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">{user.rating}</span>
-              <span className="stat-label text-uppercase">{i18n.t("(Elo Rating)")}</span>
+              <span className="stat-label text-uppercase">{i18n.t('(Elo Rating)')}</span>
             </div>
             <a href="/hall_of_fame" className="stat-item py-1 w-100">
               {user.points ? (
@@ -257,11 +257,11 @@ function SeasonProfilePanel({
               ) : (
                 <span className="stat-value d-block cb-text-danger">#0</span>
               )}
-              <span className="stat-label text-uppercase">{i18n.t("Place")}</span>
+              <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
             </a>
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">{user.points || 0}</span>
-              <span className="stat-label text-uppercase">{i18n.t("Points")}</span>
+              <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
             </div>
           </div>
 
@@ -274,7 +274,7 @@ function SeasonProfilePanel({
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
         <div className="text-center mt-2 cb-hof-link">
           <a href="/hall_of_fame" className="text-uppercase stat-label cb-rounded">
-            {i18n.t("View Hall of Fame")}
+            {i18n.t('View Hall of Fame')}
           </a>
         </div>
         {controls}

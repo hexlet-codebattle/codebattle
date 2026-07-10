@@ -1,20 +1,20 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
-import Gon from "gon";
+import Gon from 'gon';
 
-import socket from "../../../socket";
+import socket from '../../../socket';
 
 const WIDGETS = [
-  { key: "leftEditor", label: "Left editor", params: "font_size=24&editor_theme=cb-stream" },
-  { key: "rightEditor", label: "Right editor", params: "font_size=24&editor_theme=cb-stream" },
-  { key: "timer", label: "Timer", params: "" },
-  { key: "task", label: "Task", params: "font_size=22" },
-  { key: "examples", label: "Examples", params: "font_size=20" },
-  { key: "leftTests", label: "Left tests", params: "" },
-  { key: "rightTests", label: "Right tests", params: "" },
+  { key: 'leftEditor', label: 'Left editor', params: 'font_size=24&editor_theme=cb-stream' },
+  { key: 'rightEditor', label: 'Right editor', params: 'font_size=24&editor_theme=cb-stream' },
+  { key: 'timer', label: 'Timer', params: '' },
+  { key: 'task', label: 'Task', params: 'font_size=22' },
+  { key: 'examples', label: 'Examples', params: 'font_size=20' },
+  { key: 'leftTests', label: 'Left tests', params: '' },
+  { key: 'rightTests', label: 'Right tests', params: '' },
 ];
 
-const MATCH_STATE_ORDER = ["playing", "pending", "game_over", "timeout", "canceled", "finished"];
+const MATCH_STATE_ORDER = ['playing', 'pending', 'game_over', 'timeout', 'canceled', 'finished'];
 
 const matchSorter = (a, b) => {
   const ai = MATCH_STATE_ORDER.indexOf(a.state);
@@ -25,25 +25,25 @@ const matchSorter = (a, b) => {
 
 const stateColor = (state) => {
   switch (state) {
-    case "playing":
-      return "#22c55e";
-    case "pending":
-      return "#94a3b8";
-    case "timeout":
-      return "#f59e0b";
-    case "canceled":
-      return "#64748b";
+    case 'playing':
+      return '#22c55e';
+    case 'pending':
+      return '#94a3b8';
+    case 'timeout':
+      return '#f59e0b';
+    case 'canceled':
+      return '#64748b';
     default:
-      return "#a4aab3";
+      return '#a4aab3';
   }
 };
 
 function StreamLinksPanel({ tournamentId }) {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const base = `${origin}/tournaments/${tournamentId}/stream?fullscreen=true`;
 
   const copy = (url) => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(url).catch(() => {});
     }
   };
@@ -55,7 +55,7 @@ function StreamLinksPanel({ tournamentId }) {
       </div>
       <ul className="list-group list-group-flush">
         {WIDGETS.map((w) => {
-          const url = `${base}&widget=${w.key}${w.params ? `&${w.params}` : ""}`;
+          const url = `${base}&widget=${w.key}${w.params ? `&${w.params}` : ''}`;
           return (
             <li
               key={w.key}
@@ -63,7 +63,7 @@ function StreamLinksPanel({ tournamentId }) {
             >
               <div className="text-truncate mr-2" style={{ minWidth: 0 }}>
                 <strong className="mr-2">{w.label}</strong>
-                <code className="text-muted" style={{ fontSize: "12px" }}>
+                <code className="text-muted" style={{ fontSize: '12px' }}>
                   {url}
                 </code>
               </div>
@@ -105,8 +105,8 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }) {
     <li
       className="list-group-item d-flex align-items-center justify-content-between"
       style={{
-        background: isActive ? "rgba(34,197,94,0.12)" : undefined,
-        borderLeft: isActive ? "4px solid #22c55e" : "4px solid transparent",
+        background: isActive ? 'rgba(34,197,94,0.12)' : undefined,
+        borderLeft: isActive ? '4px solid #22c55e' : '4px solid transparent',
       }}
     >
       <div style={{ minWidth: 0 }}>
@@ -115,14 +115,14 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }) {
             className="badge text-uppercase"
             style={{
               background: stateColor(match.state),
-              color: "#0b1220",
+              color: '#0b1220',
               fontWeight: 700,
             }}
           >
             {match.state}
           </span>
-          <span style={{ fontFamily: "Menlo, Monaco, Consolas, monospace", fontSize: 13 }}>
-            round {match.round_id ?? match.round_position ?? "?"} · match #{match.id}
+          <span style={{ fontFamily: 'Menlo, Monaco, Consolas, monospace', fontSize: 13 }}>
+            round {match.round_id ?? match.round_position ?? '?'} · match #{match.id}
           </span>
           {match.game_id ? (
             <span className="text-muted" style={{ fontSize: 12 }}>
@@ -161,12 +161,12 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }) {
         ) : null}
         <button
           type="button"
-          className={`btn btn-sm ${isActive ? "btn-success" : "btn-outline-success"}`}
+          className={`btn btn-sm ${isActive ? 'btn-success' : 'btn-outline-success'}`}
           onClick={() => onSetActive(match.game_id)}
           disabled={disabled || !match.game_id}
-          title={!match.game_id ? "match has no game yet" : "show on stream"}
+          title={!match.game_id ? 'match has no game yet' : 'show on stream'}
         >
-          {isActive ? "✓ Live" : "Set Live"}
+          {isActive ? '✓ Live' : 'Set Live'}
         </button>
       </div>
     </li>
@@ -174,15 +174,15 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }) {
 }
 
 function TournamentStreamAdminPage() {
-  const tournamentId = Gon.getAsset("tournament_id");
-  const tournamentName = Gon.getAsset("tournament_name") || `Tournament #${tournamentId}`;
+  const tournamentId = Gon.getAsset('tournament_id');
+  const tournamentName = Gon.getAsset('tournament_name') || `Tournament #${tournamentId}`;
 
   const [matches, setMatches] = useState({});
   const [playersById, setPlayersById] = useState({});
   const [activeGameId, setActiveGameId] = useState(null);
   const [channel, setChannel] = useState(null);
-  const [status, setStatus] = useState("connecting");
-  const [filter, setFilter] = useState("playing");
+  const [status, setStatus] = useState('connecting');
+  const [filter, setFilter] = useState('playing');
 
   useEffect(() => {
     if (!tournamentId) return () => {};
@@ -215,44 +215,44 @@ function TournamentStreamAdminPage() {
     const refs = [];
 
     refs.push(
-      ch.on("tournament:match:upserted", (payload) => {
+      ch.on('tournament:match:upserted', (payload) => {
         if (payload?.match) upsertMatches([payload.match]);
         if (payload?.players) mergePlayers(payload.players);
       }),
     );
 
     refs.push(
-      ch.on("tournament:stream:active_game", (payload) => {
-        if (payload && "game_id" in payload) {
+      ch.on('tournament:stream:active_game', (payload) => {
+        if (payload && 'game_id' in payload) {
           setActiveGameId(payload.game_id || null);
         }
       }),
     );
 
     refs.push(
-      ch.on("tournament:round_created", () => {
+      ch.on('tournament:round_created', () => {
         setMatches({});
       }),
     );
 
     ch.join()
-      .receive("ok", (resp) => {
-        setStatus("connected");
+      .receive('ok', (resp) => {
+        setStatus('connected');
         upsertMatches(resp?.matches || []);
         mergePlayers(resp?.players || []);
         if (resp?.active_game_id) setActiveGameId(resp.active_game_id);
       })
-      .receive("error", (err) => {
-        console.error("admin join error", err);
-        setStatus("error");
+      .receive('error', (err) => {
+        console.error('admin join error', err);
+        setStatus('error');
       });
 
     return () => {
       refs.forEach((ref, i) => {
         const events = [
-          "tournament:match:upserted",
-          "tournament:stream:active_game",
-          "tournament:round_created",
+          'tournament:match:upserted',
+          'tournament:stream:active_game',
+          'tournament:round_created',
         ];
         ch.off(events[i], ref);
       });
@@ -263,10 +263,10 @@ function TournamentStreamAdminPage() {
   const matchList = useMemo(() => {
     const arr = Object.values(matches);
     arr.sort(matchSorter);
-    if (filter === "all") return arr;
-    if (filter === "playing") return arr.filter((m) => m.state === "playing");
-    if (filter === "live") {
-      return arr.filter((m) => m.state === "playing" || m.game_id === activeGameId);
+    if (filter === 'all') return arr;
+    if (filter === 'playing') return arr.filter((m) => m.state === 'playing');
+    if (filter === 'live') {
+      return arr.filter((m) => m.state === 'playing' || m.game_id === activeGameId);
     }
     return arr;
   }, [matches, filter, activeGameId]);
@@ -275,19 +275,19 @@ function TournamentStreamAdminPage() {
     if (!channel || !gameId) return;
     setActiveGameId(gameId);
     channel
-      .push("tournament:stream:active_game", { game_id: gameId, gameId })
-      .receive("error", (err) => console.error("set active error", err));
+      .push('tournament:stream:active_game', { game_id: gameId, gameId })
+      .receive('error', (err) => console.error('set active error', err));
   };
 
   const clearActive = () => {
     if (!channel) return;
     setActiveGameId(null);
     channel
-      .push("tournament:stream:active_game", { game_id: null, gameId: null })
-      .receive("error", (err) => console.error("clear active error", err));
+      .push('tournament:stream:active_game', { game_id: null, gameId: null })
+      .receive('error', (err) => console.error('clear active error', err));
   };
 
-  const playingCount = matchList.filter((m) => m.state === "playing").length;
+  const playingCount = matchList.filter((m) => m.state === 'playing').length;
 
   return (
     <div>
@@ -295,8 +295,8 @@ function TournamentStreamAdminPage() {
         <div>
           <h3 className="mb-0">Stream Admin · {tournamentName}</h3>
           <small className="text-muted">
-            Status: {status} · playing matches: {playingCount} · active game:{" "}
-            {activeGameId ? `#${activeGameId}` : "—"}
+            Status: {status} · playing matches: {playingCount} · active game:{' '}
+            {activeGameId ? `#${activeGameId}` : '—'}
           </small>
         </div>
         <div className="d-flex align-items-center" style={{ gap: 8 }}>
@@ -321,14 +321,14 @@ function TournamentStreamAdminPage() {
           <strong>Matches</strong>
           <div className="btn-group btn-group-sm" role="group">
             {[
-              ["playing", "Playing"],
-              ["live", "Live + Active"],
-              ["all", "All"],
+              ['playing', 'Playing'],
+              ['live', 'Live + Active'],
+              ['all', 'All'],
             ].map(([key, label]) => (
               <button
                 key={key}
                 type="button"
-                className={`btn ${filter === key ? "btn-primary" : "btn-outline-primary"}`}
+                className={`btn ${filter === key ? 'btn-primary' : 'btn-outline-primary'}`}
                 onClick={() => setFilter(key)}
               >
                 {label}
@@ -347,7 +347,7 @@ function TournamentStreamAdminPage() {
                 playersById={playersById}
                 isActive={m.game_id && m.game_id === activeGameId}
                 onSetActive={setActive}
-                disabled={status !== "connected"}
+                disabled={status !== 'connected'}
               />
             ))}
           </ul>

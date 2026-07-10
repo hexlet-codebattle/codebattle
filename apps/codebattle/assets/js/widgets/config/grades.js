@@ -1,11 +1,11 @@
 export const grades = {
-  open: "open",
-  rookie: "rookie",
-  challenger: "challenger",
-  pro: "pro",
-  elite: "elite",
-  masters: "masters",
-  grandSlam: "grand_slam",
+  open: 'open',
+  rookie: 'rookie',
+  challenger: 'challenger',
+  pro: 'pro',
+  elite: 'elite',
+  masters: 'masters',
+  grandSlam: 'grand_slam',
 };
 
 export const getRankingPoints = (grade) => {

@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from 'react';
 
-import { decamelizeKeys, camelizeKeys } from "humps";
+import { decamelizeKeys, camelizeKeys } from 'humps';
 
-import TournamentForm from "./TournamentForm";
+import TournamentForm from './TournamentForm';
 
-function CreateTournament({ taskPackNames = [], userTimezone = "UTC", onSuccess }) {
+function CreateTournament({ taskPackNames = [], userTimezone = 'UTC', onSuccess }) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,11 +21,11 @@ function CreateTournament({ taskPackNames = [], userTimezone = "UTC", onSuccess 
           },
         };
 
-        const response = await fetch("/api/v1/tournaments", {
-          method: "POST",
+        const response = await fetch('/api/v1/tournaments', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": window.csrf_token,
+            'Content-Type': 'application/json',
+            'x-csrf-token': window.csrf_token,
           },
           body: JSON.stringify(decamelizeKeys(payload)),
         });
@@ -56,10 +56,10 @@ function CreateTournament({ taskPackNames = [], userTimezone = "UTC", onSuccess 
           if (errorData.errors) {
             setErrors(errorData.errors);
           } else {
-            setErrors({ base: "An error occurred while creating the tournament" });
+            setErrors({ base: 'An error occurred while creating the tournament' });
           }
         } else {
-          setErrors({ base: "Network error. Please try again." });
+          setErrors({ base: 'Network error. Please try again.' });
         }
       }
     },
@@ -87,7 +87,7 @@ function CreateTournament({ taskPackNames = [], userTimezone = "UTC", onSuccess 
             showCancelButton
             cancelButtonText="Back"
             onCancel={() => {
-              window.location.href = "/tournaments";
+              window.location.href = '/tournaments';
             }}
           />
         </div>

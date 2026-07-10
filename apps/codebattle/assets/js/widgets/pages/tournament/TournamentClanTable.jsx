@@ -1,27 +1,27 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
-import { useSelector } from "react-redux";
+import cn from 'classnames';
+import i18next from 'i18next';
+import { useSelector } from 'react-redux';
 
-import { currentUserClanIdSelector, tournamentSelector } from "@/selectors";
+import { currentUserClanIdSelector, tournamentSelector } from '@/selectors';
 
 const getCustomEventTrClassName = (item, selectedId) =>
   cn(
-    "font-weight-bold cb-custom-event-tr",
+    'font-weight-bold cb-custom-event-tr',
     {
-      "text-dark cb-gold-place-bg": item?.place === 1,
-      "text-dark cb-silver-place-bg": item?.place === 2,
-      "text-dark cb-bronze-place-bg": item?.place === 3,
-      "cb-bg-panel": !item?.place || item.place > 3,
+      'text-dark cb-gold-place-bg': item?.place === 1,
+      'text-dark cb-silver-place-bg': item?.place === 2,
+      'text-dark cb-bronze-place-bg': item?.place === 3,
+      'cb-bg-panel': !item?.place || item.place > 3,
     },
     {
-      "cb-custom-event-tr-brown-border": item.id === selectedId,
+      'cb-custom-event-tr-brown-border': item.id === selectedId,
     },
   );
 
 const tableDataCellClassName = cn(
-  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 function TournamentClanTable() {
@@ -39,12 +39,12 @@ function TournamentClanTable() {
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>
-            {rankingType !== "byClan" && (
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("User")}</th>
+            {rankingType !== 'byClan' && (
+              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('User')}</th>
             )}
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
           </tr>
         </thead>
         <tbody>
@@ -52,7 +52,7 @@ function TournamentClanTable() {
             <React.Fragment key={item.id}>
               <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
               <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
-                {rankingType !== "byClan" && (
+                {rankingType !== 'byClan' && (
                   <>
                     <td width="120" className={tableDataCellClassName}>
                       <div className="cb-custom-event-name" style={{ maxWidth: 120 }}>
@@ -66,7 +66,7 @@ function TournamentClanTable() {
                     </td>
                   </>
                 )}
-                {rankingType === "byClan" && (
+                {rankingType === 'byClan' && (
                   <td title={clans[item.id]?.longName} className={tableDataCellClassName}>
                     <div className="cb-custom-event-name mr-1" style={{ maxWidth: 120 }}>
                       {clans[item.id]?.name}

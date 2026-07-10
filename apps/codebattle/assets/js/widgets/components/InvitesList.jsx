@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 
-import { acceptInvite, declineInvite, cancelInvite } from "../middlewares/Invite";
+import { acceptInvite, declineInvite, cancelInvite } from '../middlewares/Invite';
 
-import GameLevelBadge from "./GameLevelBadge";
+import GameLevelBadge from './GameLevelBadge';
 
 function NoInvites() {
   return <div className="p-2 text-center">No Invites</div>;
@@ -53,7 +53,7 @@ function InvitesList({ list, followId, currentUserId }) {
         {currentUserId === creatorId && (
           <>
             <span className="text-truncate small ml-2 mr-auto">
-              {"You invited "}
+              {'You invited '}
               <span className="font-weight-bold mr-2">{recipient.name}</span>
             </span>
             <button

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { SearchIndex } from "emoji-mart";
-import isEmpty from "lodash/isEmpty";
+import { SearchIndex } from 'emoji-mart';
+import isEmpty from 'lodash/isEmpty';
 
-import useKey from "../utils/useKey";
+import useKey from '../utils/useKey';
 
 export default function EmojiTooltip({ colons, handleSelect, hide }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,10 +37,10 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
     });
   };
 
-  useKey("Escape", () => hide());
+  useKey('Escape', () => hide());
 
   useKey(
-    "Enter",
+    'Enter',
     (e) => {
       e.preventDefault();
       handleSelect(emojis[activeIndex]);
@@ -49,8 +49,8 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
     [activeIndex, emojis],
   );
 
-  useKey("ArrowUp", () => decreaseIndex(), {}, [emojis]);
-  useKey("ArrowDown", () => increaseIndex(), {}, [emojis]);
+  useKey('ArrowUp', () => decreaseIndex(), {}, [emojis]);
+  useKey('ArrowDown', () => increaseIndex(), {}, [emojis]);
 
   return (
     <select

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import dayjs from "../../i18n/dayjs";
+import dayjs from '../../i18n/dayjs';
 
 function ScheduleNavigationTab({ className, events, event, setEvent }) {
   const [prev, setPrevEvent] = useState();
@@ -45,7 +45,7 @@ function ScheduleNavigationTab({ className, events, event, setEvent }) {
             className="btn-link"
             tabIndex="0"
           >
-            <span className="pr-2">{"<<"}</span>
+            <span className="pr-2">{'<<'}</span>
             {prev.title}
           </div>
         )}
@@ -60,7 +60,7 @@ function ScheduleNavigationTab({ className, events, event, setEvent }) {
             tabIndex="0"
           >
             {next.title}
-            <span className="pl-2">{">>"}</span>
+            <span className="pl-2">{'>>'}</span>
           </div>
         )}
       </div>

@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
-import GameRoomModes from "../../config/gameModes";
-import * as selectors from "../../selectors";
+import GameRoomModes from '../../config/gameModes';
+import * as selectors from '../../selectors';
 
-import RematchButton from "./RematchButton";
-import SignUpButton from "./SignUpButton";
-import StartTrainingButton from "./StartTrainingButton";
+import RematchButton from './RematchButton';
+import SignUpButton from './SignUpButton';
+import StartTrainingButton from './StartTrainingButton';
 
 function ActionsAfterGame() {
   const { tournamentId } = useSelector(selectors.gameStatusSelector);

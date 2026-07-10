@@ -11,8 +11,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   alias Codebattle.Bot.PlaybookPlayer.Params
   alias Codebattle.Game
 
-  require Logger
-
   defmodule Params do
     @moduledoc false
     # `steps` is the precomputed list of actions the bot performs, each shaped as:

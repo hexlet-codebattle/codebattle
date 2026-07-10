@@ -1,52 +1,52 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
-import Gon from "gon";
+import Gon from 'gon';
 
-import socket from "../../../socket";
+import socket from '../../../socket';
 
-import ThreejsGamePage from "./ThreejsGamePage";
+import ThreejsGamePage from './ThreejsGamePage';
 
 const ALLOWED_WIDGETS = new Set([
-  "task",
-  "examples",
-  "timer",
-  "leftEditor",
-  "rightEditor",
-  "leftTests",
-  "rightTests",
+  'task',
+  'examples',
+  'timer',
+  'leftEditor',
+  'rightEditor',
+  'leftTests',
+  'rightTests',
 ]);
 
-const ALLOWED_THEMES = new Set(["vs", "vs-dark", "hc-black", "hc-light", "cb-stream"]);
+const ALLOWED_THEMES = new Set(['vs', 'vs-dark', 'hc-black', 'hc-light', 'cb-stream']);
 
-const TRUTHY = new Set(["1", "true", "yes", "on"]);
+const TRUTHY = new Set(['1', 'true', 'yes', 'on']);
 
 function parseStreamParams(search) {
-  const p = new URLSearchParams(search || "");
-  const widgetRaw = (p.get("widget") || "").trim();
-  const themeRaw = (p.get("editor_theme") || p.get("theme") || "").trim();
-  const fontRaw = parseInt(p.get("font_size") || p.get("fontSize") || "", 10);
-  const cupXRaw = parseInt(p.get("cup_x") || p.get("cupX") || "", 10);
-  const cupYRaw = parseInt(p.get("cup_y") || p.get("cupY") || "", 10);
+  const p = new URLSearchParams(search || '');
+  const widgetRaw = (p.get('widget') || '').trim();
+  const themeRaw = (p.get('editor_theme') || p.get('theme') || '').trim();
+  const fontRaw = parseInt(p.get('font_size') || p.get('fontSize') || '', 10);
+  const cupXRaw = parseInt(p.get('cup_x') || p.get('cupX') || '', 10);
+  const cupYRaw = parseInt(p.get('cup_y') || p.get('cupY') || '', 10);
 
   return {
-    fullscreen: TRUTHY.has((p.get("fullscreen") || "").toLowerCase()),
+    fullscreen: TRUTHY.has((p.get('fullscreen') || '').toLowerCase()),
     widget: widgetRaw || null,
     widgetValid: widgetRaw ? ALLOWED_WIDGETS.has(widgetRaw) : true,
     fontSize: Number.isFinite(fontRaw) && fontRaw >= 8 && fontRaw <= 200 ? fontRaw : null,
     editorTheme: ALLOWED_THEMES.has(themeRaw) ? themeRaw : null,
-    hideCup: TRUTHY.has((p.get("hide_cup") || "").toLowerCase()),
+    hideCup: TRUTHY.has((p.get('hide_cup') || '').toLowerCase()),
     cupX: Number.isFinite(cupXRaw) ? cupXRaw : null,
     cupY: Number.isFinite(cupYRaw) ? cupYRaw : null,
   };
 }
 
 function TournamentThreejsStreamPage() {
-  const tournamentId = Gon.getAsset("tournament_id");
-  const initialGameId = Gon.getAsset("game_id") || null;
-  const initialGame = Gon.getAsset("game") || null;
+  const tournamentId = Gon.getAsset('tournament_id');
+  const initialGameId = Gon.getAsset('game_id') || null;
+  const initialGame = Gon.getAsset('game') || null;
 
   const streamParams = useMemo(
-    () => parseStreamParams(typeof window !== "undefined" ? window.location.search : ""),
+    () => parseStreamParams(typeof window !== 'undefined' ? window.location.search : ''),
     [],
   );
 
@@ -64,22 +64,22 @@ function TournamentThreejsStreamPage() {
       }
     };
 
-    const ref = channel.on("stream:active_game_selected", handleActiveGame);
+    const ref = channel.on('stream:active_game_selected', handleActiveGame);
 
     channel
       .join()
-      .receive("ok", (resp) => {
+      .receive('ok', (resp) => {
         if (resp?.active_game_id) {
           setActiveGameId((prev) => (prev === resp.active_game_id ? prev : resp.active_game_id));
         }
       })
-      .receive("error", (err) => {
+      .receive('error', (err) => {
         // eslint-disable-next-line no-console
-        console.error("Failed to join tournament stream channel", err);
+        console.error('Failed to join tournament stream channel', err);
       });
 
     return () => {
-      channel.off("stream:active_game_selected", ref);
+      channel.off('stream:active_game_selected', ref);
       channel.leave();
     };
   }, [tournamentId]);
@@ -88,17 +88,17 @@ function TournamentThreejsStreamPage() {
     return (
       <div
         style={{
-          width: "100%",
-          height: "100vh",
-          background: "#000",
-          color: "#e0bf7a",
-          fontFamily: "Menlo, Monaco, Consolas, monospace",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "26px",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
+          width: '100%',
+          height: '100vh',
+          background: '#000',
+          color: '#e0bf7a',
+          fontFamily: 'Menlo, Monaco, Consolas, monospace',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '26px',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
         }}
       >
         Waiting for the next match...

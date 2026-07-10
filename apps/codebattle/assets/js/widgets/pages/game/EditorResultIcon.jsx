@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react';
 
-function EditorResultIcon({ children, mode = "default" }) {
+function EditorResultIcon({ children, mode = 'default' }) {
   const style =
-    mode === "default"
+    mode === 'default'
       ? {
-          bottom: "11%",
-          right: "5%",
-          opacity: "0.5",
-          zIndex: "100",
+          bottom: '11%',
+          right: '5%',
+          opacity: '0.5',
+          zIndex: '100',
         }
       : {
-          bottom: "11%",
-          right: "5%",
-          opacity: "0.5",
-          zIndex: "100",
+          bottom: '11%',
+          right: '5%',
+          opacity: '0.5',
+          zIndex: '100',
         };
 
   return (

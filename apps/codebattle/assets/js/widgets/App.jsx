@@ -1,18 +1,18 @@
-import React, { Suspense } from "react";
+import React, { Suspense } from 'react';
 
-import NiceModal from "@ebay/nice-modal-react";
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { camelizeKeys } from "humps";
-import { Provider } from "react-redux";
-import { persistStore, persistReducer, PERSIST } from "redux-persist";
-import { PersistGate } from "redux-persist/integration/react";
-import storage from "redux-persist/lib/storage";
+import NiceModal from '@ebay/nice-modal-react';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { camelizeKeys } from 'humps';
+import { Provider } from 'react-redux';
+import { persistStore, persistReducer, PERSIST } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import storage from 'redux-persist/lib/storage';
 
-import machines from "@/machines";
-import reducers from "@/slices";
+import machines from '@/machines';
+import reducers from '@/slices';
 
-import PageNames from "./config/pageNames";
-import { readTournamentIndexProps } from "./pages/tournament/TournamentIndex";
+import PageNames from './config/pageNames';
+import { readTournamentIndexProps } from './pages/tournament/TournamentIndex';
 
 const {
   game: mainMachine,
@@ -23,19 +23,19 @@ const {
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
 const gameUIPersistWhitelist = [
-  "audioMuted",
-  "videoMuted",
-  "editorMode",
-  "editorTheme",
-  "streamMode",
-  "followId",
-  "followPaused",
-  "taskDescriptionLanguage",
-  "tournamentVisibleMode",
+  'audioMuted',
+  'videoMuted',
+  'editorMode',
+  'editorTheme',
+  'streamMode',
+  'followId',
+  'followPaused',
+  'taskDescriptionLanguage',
+  'tournamentVisibleMode',
 ];
 
 const gameUIPersistConfig = {
-  key: "gameUI",
+  key: 'gameUI',
   whitelist: gameUIPersistWhitelist,
   storage,
 };
@@ -50,44 +50,44 @@ const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: { ignoredActions: ["ERROR", PERSIST] },
+      serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
     }),
 });
 
 const persistor = persistStore(store);
 
-const EventWidget = React.lazy(() => import("./pages/event"));
-const HallOfFame = React.lazy(() => import("./pages/hallOfFamePage"));
-const HeadToHead = React.lazy(() => import("./pages/headToHeadPage"));
-const GameMl = React.lazy(() => import("./pages/gameMl/GameMlPage"));
-const Seasons = React.lazy(() => import("./pages/seasonsPage"));
-const SeasonShow = React.lazy(() => import("./pages/seasonsPage/SeasonShowPage"));
-const AdminContainer = React.lazy(() => import("./pages/admin"));
-const InvitesContainer = React.lazy(() => import("./components/InvitesContainer"));
-const MainChannelContainer = React.lazy(() => import("./components/MainChannelContainer"));
-const LobbyWidget = React.lazy(() => import("./pages/lobby"));
-const OnlineContainer = React.lazy(() => import("./components/OnlineContainer"));
-const RatingList = React.lazy(() => import("./pages/rating"));
-const Registration = React.lazy(() => import("./pages/registration"));
-const RoomWidget = React.lazy(() => import("./pages/RoomWidget"));
-const ThreejsGamePage = React.lazy(() => import("./pages/game/ThreejsGamePage"));
+const EventWidget = React.lazy(() => import('./pages/event'));
+const HallOfFame = React.lazy(() => import('./pages/hallOfFamePage'));
+const HeadToHead = React.lazy(() => import('./pages/headToHeadPage'));
+const GameMl = React.lazy(() => import('./pages/gameMl/GameMlPage'));
+const Seasons = React.lazy(() => import('./pages/seasonsPage'));
+const SeasonShow = React.lazy(() => import('./pages/seasonsPage/SeasonShowPage'));
+const AdminContainer = React.lazy(() => import('./pages/admin'));
+const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'));
+const MainChannelContainer = React.lazy(() => import('./components/MainChannelContainer'));
+const LobbyWidget = React.lazy(() => import('./pages/lobby'));
+const OnlineContainer = React.lazy(() => import('./components/OnlineContainer'));
+const RatingList = React.lazy(() => import('./pages/rating'));
+const Registration = React.lazy(() => import('./pages/registration'));
+const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
+const ThreejsGamePage = React.lazy(() => import('./pages/game/ThreejsGamePage'));
 const TournamentThreejsStreamWidget = React.lazy(
-  () => import("./pages/game/TournamentThreejsStreamPage"),
+  () => import('./pages/game/TournamentThreejsStreamPage'),
 );
-const Stream = React.lazy(() => import("./pages/stream/StreamWidget"));
-const Tournament = React.lazy(() => import("./pages/tournament"));
-const TournamentAdmin = React.lazy(() => import("./pages/tournament/TournamentAdminWidget"));
+const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
+const Tournament = React.lazy(() => import('./pages/tournament'));
+const TournamentAdmin = React.lazy(() => import('./pages/tournament/TournamentAdminWidget'));
 const TournamentStreamAdmin = React.lazy(
-  () => import("./pages/tournament/TournamentStreamAdminPage"),
+  () => import('./pages/tournament/TournamentStreamAdminPage'),
 );
-const TournamentEdit = React.lazy(() => import("./pages/tournament/EditTournament"));
-const TournamentIndex = React.lazy(() => import("./pages/tournament/TournamentIndex"));
-const TournamentPlayer = React.lazy(() => import("./pages/tournamentPlayer"));
-const GroupTournament = React.lazy(() => import("./pages/groupTournament"));
-const TournamentsSchedule = React.lazy(() => import("./pages/schedule"));
-const TaskPreview = React.lazy(() => import("./pages/taskPreview"));
-const UserProfile = React.lazy(() => import("./pages/profile"));
-const UserSettings = React.lazy(() => import("./pages/settings"));
+const TournamentEdit = React.lazy(() => import('./pages/tournament/EditTournament'));
+const TournamentIndex = React.lazy(() => import('./pages/tournament/TournamentIndex'));
+const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
+const GroupTournament = React.lazy(() => import('./pages/groupTournament'));
+const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
+const TaskPreview = React.lazy(() => import('./pages/taskPreview'));
+const UserProfile = React.lazy(() => import('./pages/profile'));
+const UserSettings = React.lazy(() => import('./pages/settings'));
 
 export function Online() {
   return (
@@ -266,15 +266,15 @@ export function TournamentPage() {
 
 export function GroupTournamentPage() {
   const container =
-    document.getElementById("group-tournament-root") ||
-    document.getElementById("group-tournament-admin-root");
+    document.getElementById('group-tournament-root') ||
+    document.getElementById('group-tournament-admin-root');
   const tournamentId = container?.dataset?.groupTournamentId;
   const tournamentName = container?.dataset?.groupTournamentName;
   const tournamentDescription = container?.dataset?.groupTournamentDescription;
   const tournamentTaskDescription = container?.dataset?.groupTournamentTaskDescription;
   const tournamentMeta = (() => {
     try {
-      return camelizeKeys(JSON.parse(container?.dataset?.groupTournamentMeta || "{}"));
+      return camelizeKeys(JSON.parse(container?.dataset?.groupTournamentMeta || '{}'));
     } catch {
       return {};
     }
@@ -298,10 +298,10 @@ export function GroupTournamentPage() {
 }
 
 export function TournamentEditPage() {
-  const container = document.getElementById("tournament-edit-root");
+  const container = document.getElementById('tournament-edit-root');
   const tournamentId = container?.dataset?.tournamentId;
-  const taskPackNames = JSON.parse(container?.dataset?.taskPackNames || "[]");
-  const userTimezone = container?.dataset?.userTimezone || "UTC";
+  const taskPackNames = JSON.parse(container?.dataset?.taskPackNames || '[]');
+  const userTimezone = container?.dataset?.userTimezone || 'UTC';
 
   return (
     <Provider store={store}>
@@ -319,7 +319,7 @@ export function TournamentEditPage() {
 }
 
 export function TournamentIndexPage() {
-  const container = document.getElementById("tournament-index-root");
+  const container = document.getElementById('tournament-index-root');
   const props = readTournamentIndexProps(container);
 
   return (

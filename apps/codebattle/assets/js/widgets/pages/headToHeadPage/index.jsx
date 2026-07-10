@@ -1,3 +1,3 @@
-import HeadToHeadPage from "./HeadToHeadPage";
+import HeadToHeadPage from './HeadToHeadPage';
 
 export default HeadToHeadPage;

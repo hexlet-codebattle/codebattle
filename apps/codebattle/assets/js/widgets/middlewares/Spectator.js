@@ -1,13 +1,13 @@
-import Gon from "gon";
-import { camelizeKeys } from "humps";
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
 
-import { channelTopics } from "../../socket";
-import { actions } from "../slices";
+import { channelTopics } from '../../socket';
+import { actions } from '../slices';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
-const playerId = Gon.getAsset("player_id");
-const tournamentId = Gon.getAsset("tournament_id");
+const playerId = Gon.getAsset('player_id');
+const tournamentId = Gon.getAsset('tournament_id');
 
 const channel = new Channel();
 
@@ -40,7 +40,7 @@ const initSpectatorChannel = (dispatch, spectatorChannel) => {
     dispatch(actions.updateTournamentPlayerChannelState(true));
   };
 
-  spectatorChannel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+  spectatorChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   spectatorChannel.onError(() => {
     dispatch(actions.updateTournamentChannelState(false));

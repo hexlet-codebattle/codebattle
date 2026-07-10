@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import ReactPaginate from "react-paginate";
+import ReactPaginate from 'react-paginate';
 
 function LeaderboardPagination({ pageInfo: { pageNumber, pageSize, totalEntries }, setPage }) {
   const pageCount = Math.ceil(totalEntries / pageSize);

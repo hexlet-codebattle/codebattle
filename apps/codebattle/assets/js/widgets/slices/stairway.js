@@ -1,8 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   gameStatus: {
-    status: "active",
+    status: 'active',
     roundsStartsAt: null,
     timeoutSeconds: 0,
     tournamentId: null,
@@ -13,7 +13,7 @@ const initialState = {
 };
 
 const stairwayGame = createSlice({
-  name: "stairwayGame",
+  name: 'stairwayGame',
   initialState,
   reducers: {
     handleNextRound: () => {},

@@ -1,16 +1,16 @@
-export const makeGameUrl = (...paths) => `/games/${paths.join("/")}/`;
-export const getSignInGithubUrl = () => "/auth/github";
-export const getCreateTrainingGameUrl = () => "/games/training";
-export const getLobbyUrl = (params) => (params ? `/?${params}` : "/#lobby");
+export const makeGameUrl = (...paths) => `/games/${paths.join('/')}/`;
+export const getSignInGithubUrl = () => '/auth/github';
+export const getCreateTrainingGameUrl = () => '/games/training';
+export const getLobbyUrl = (params) => (params ? `/?${params}` : '/#lobby');
 export const getUserProfileUrl = (userId) => `/users/${userId}`;
 export const getTournamentUrl = (tournamentId, params = {}) =>
   `/tournaments/${tournamentId}?${Object.keys(params)
     .map((key) => `${key}=${params[key]}`)
-    .join("&")}`;
+    .join('&')}`;
 export const getTournamentSpectatorUrl = (tournamentId, playerId) =>
   `/tournaments/${tournamentId}/player/${playerId}`;
 
-const colors = ["2AE881", "73CCFE", "B6A4FF", "FF621E", "FF9C41", "FFE500"];
+const colors = ['2AE881', '73CCFE', 'B6A4FF', 'FF621E', 'FF9C41', 'FFE500'];
 
 const getBackgroundColor = (name) => {
   const index = name.length % colors.length;
@@ -18,8 +18,8 @@ const getBackgroundColor = (name) => {
 };
 
 const normalizeName = (name) => {
-  const trimmedName = (name || "").trim();
-  return trimmedName || "?";
+  const trimmedName = (name || '').trim();
+  return trimmedName || '?';
 };
 
 const getInitials = (name) => {
@@ -31,13 +31,13 @@ const getInitials = (name) => {
 
   return nameParts
     .slice(0, 2)
-    .map((part) => part[0] || "")
-    .join("")
+    .map((part) => part[0] || '')
+    .join('')
     .toUpperCase();
 };
 
 const escapeXmlText = (value) =>
-  value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
 export const getCustomEventPlayerDefaultImgUrl = (user) => {
   const normalizedName = normalizeName(user.name);
@@ -47,4 +47,4 @@ export const getCustomEventPlayerDefaultImgUrl = (user) => {
 
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
-export const tournamentEmptyPlayerUrl = "/assets/images/question-mark-50.png";
+export const tournamentEmptyPlayerUrl = '/assets/images/question-mark-50.png';

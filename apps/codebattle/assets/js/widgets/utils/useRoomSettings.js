@@ -1,10 +1,10 @@
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
-import BattleRoomViewModesCodes from "../config/battleRoomViewModes";
-import GameStateCodes from "../config/gameStateCodes";
-import GameTypeCodes from "../config/gameTypeCodes";
-import * as machineSelectors from "../machines/selectors";
-import * as selectors from "../selectors";
+import BattleRoomViewModesCodes from '../config/battleRoomViewModes';
+import GameStateCodes from '../config/gameStateCodes';
+import GameTypeCodes from '../config/gameTypeCodes';
+import * as machineSelectors from '../machines/selectors';
+import * as selectors from '../selectors';
 
 const mapGameTypeOnViewMode = {
   [GameTypeCodes.duo]: BattleRoomViewModesCodes.duel,

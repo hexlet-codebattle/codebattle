@@ -1,68 +1,68 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
-import groupBy from "lodash/groupBy";
-import { useDispatch } from "react-redux";
+import cn from 'classnames';
+import i18next from 'i18next';
+import groupBy from 'lodash/groupBy';
+import { useDispatch } from 'react-redux';
 
-import { actions } from "../../slices";
+import { actions } from '../../slices';
 
-import LeaderboardPagination from "./LeaderboardPagination";
+import LeaderboardPagination from './LeaderboardPagination';
 
 const getCustomEventTrClassNamePersonal = (type, muted, isUser) =>
-  cn("text-dark font-weight-bold cb-custom-event-tr", {
-    "cb-custom-event-bg-success": type === "clan" && !muted,
-    "cb-custom-event-bg-muted-success": type === "clan" && muted,
-    "cb-custom-event-bg-purple": type === "user" && !muted,
-    "cb-custom-event-bg-muted-purple": type === "user" && muted,
-    "cb-custom-event-tr-brown-border": isUser,
+  cn('text-dark font-weight-bold cb-custom-event-tr', {
+    'cb-custom-event-bg-success': type === 'clan' && !muted,
+    'cb-custom-event-bg-muted-success': type === 'clan' && muted,
+    'cb-custom-event-bg-purple': type === 'user' && !muted,
+    'cb-custom-event-bg-muted-purple': type === 'user' && muted,
+    'cb-custom-event-tr-brown-border': isUser,
   });
 
 const tableDataCellClassNamePersonal = (hideSeparator) =>
-  cn("p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0", {
-    "hide-separator": hideSeparator,
+  cn('p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0', {
+    'hide-separator': hideSeparator,
   });
 
 const tableDataCellClassName = cn(
-  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 const navTabsClassName = cn(
-  "nab nab-tabs d-flex flex-nowrap cb-overflow-x-auto cb-overlfow-y-hidden",
-  "rounded-top",
+  'nab nab-tabs d-flex flex-nowrap cb-overflow-x-auto cb-overlfow-y-hidden',
+  'rounded-top',
 );
 
 const getTabLinkClassName = (isActive) =>
   cn(
-    "nav-item nav-link cb-custom-event-nav-item position-relative",
-    "text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray",
+    'nav-item nav-link cb-custom-event-nav-item position-relative',
+    'text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray',
     {
       active: isActive,
-      "cb-custom-event-common-leaderboard-bg text-dark font-weight-bold": isActive,
+      'cb-custom-event-common-leaderboard-bg text-dark font-weight-bold': isActive,
     },
   );
 
 const getCustomEventTrClassName = (item, selectedId) =>
   cn(
-    "text-dark font-weight-bold cb-custom-event-tr",
+    'text-dark font-weight-bold cb-custom-event-tr',
     {
-      "cb-gold-place-bg": item?.place === 1,
-      "cb-silver-place-bg": item?.place === 2,
-      "cb-bronze-place-bg": item?.place === 3,
-      "bg-white": !item?.place || item.place > 3,
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
+      'bg-white': !item?.place || item.place > 3,
     },
     {
-      "cb-custom-event-tr-brown-border": item.userId
+      'cb-custom-event-tr-brown-border': item.userId
         ? item.userId === selectedId
         : item.clanId === selectedId,
     },
   );
 
 const commonRatingTypes = {
-  personal: "personal",
-  clan: "clan",
-  player: "player",
-  playerClan: "player_clan",
+  personal: 'personal',
+  clan: 'clan',
+  player: 'player',
+  playerClan: 'player_clan',
 };
 
 const maxTopClansCount = 4;
@@ -76,11 +76,11 @@ function PersonalEventTable({ currentUserId, currentUserClanId, items, type }) {
       <thead className="text-muted">
         <tr>
           <th className="p-1 pl-4 font-weight-light border-0">{}</th>
-          <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-          <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
-          <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Wins count")}</th>
+          <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+          <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
+          <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Wins count')}</th>
           <th className="p-1 pl-4 font-weight-light border-0">
-            {i18next.t("Total time for solving task")}
+            {i18next.t('Total time for solving task')}
           </th>
         </tr>
       </thead>
@@ -90,7 +90,7 @@ function PersonalEventTable({ currentUserId, currentUserClanId, items, type }) {
             <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
             <tr
               className={getCustomEventTrClassNamePersonal(
-                "clan",
+                'clan',
                 clanIndex > maxTopClansCount - 1,
                 users[0].clanId === currentUserClanId,
               )}
@@ -120,7 +120,7 @@ function PersonalEventTable({ currentUserId, currentUserClanId, items, type }) {
                 <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                 <tr
                   className={getCustomEventTrClassNamePersonal(
-                    "user",
+                    'user',
                     clanIndex > maxTopClansCount - 1 || userIndex > maxTopPlayersCount - 1,
                     user.userId === currentUserId,
                   )}
@@ -208,7 +208,7 @@ function EventRatingPanel({
   return (
     <div className="d-flex flex-column">
       <div className="d-flex w-100 justify-content-starts border-bottom border-dark pb-2">
-        <span className="font-weight-bold">{i18next.t("Event rating")}</span>
+        <span className="font-weight-bold">{i18next.t('Event rating')}</span>
       </div>
       <div className="d-flex flex-column w-100 mt-3 cb-custom-event-common-leaderboard-bg cb-rounded">
         <nav className="pb-2">
@@ -221,7 +221,7 @@ function EventRatingPanel({
               data-tab-name="personal"
               onClick={handleChangePanelTypeClick}
             >
-              {i18next.t("Clans rating")}
+              {i18next.t('Clans rating')}
             </button>
             <button
               type="button"
@@ -231,7 +231,7 @@ function EventRatingPanel({
               data-tab-name="player"
               onClick={handleChangePanelTypeClick}
             >
-              {i18next.t("Players rating")}
+              {i18next.t('Players rating')}
             </button>
             <button
               type="button"
@@ -241,7 +241,7 @@ function EventRatingPanel({
               data-tab-name="player_clan"
               onClick={handleChangePanelTypeClick}
             >
-              {i18next.t("Clan players rating")}
+              {i18next.t('Clan players rating')}
             </button>
           </div>
         </nav>
@@ -257,16 +257,16 @@ function EventRatingPanel({
             <table className="table table-striped cb-custom-event-table mt-3">
               <thead className="text-muted">
                 <tr>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
                   {type === commonRatingTypes.clan && (
                     <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t("Clan players_count/registrations")}
+                      {i18next.t('Clan players_count/registrations')}
                     </th>
                   )}
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
                   {type !== commonRatingTypes.clan && (
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Login")}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Login')}</th>
                   )}
                 </tr>
               </thead>
@@ -276,10 +276,10 @@ function EventRatingPanel({
                     <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                     <tr className={getCustomEventTrClassName(item, selectedId)}>
                       <td width="110" className={tableDataCellClassName}>
-                        {item.place || "-"}
+                        {item.place || '-'}
                       </td>
                       <td width="120" className={tableDataCellClassName}>
-                        {item.score || "-"}
+                        {item.score || '-'}
                       </td>
                       {item.eventPlayersCount !== undefined && (
                         <td className={tableDataCellClassName}>
@@ -311,7 +311,7 @@ function EventRatingPanel({
           {totalEntries > 0 && (
             <>
               <div className="pl-2">
-                <span>{i18next.t("Total entries: %{totalEntries}", { totalEntries })}</span>
+                <span>{i18next.t('Total entries: %{totalEntries}', { totalEntries })}</span>
               </div>
               <LeaderboardPagination
                 pageInfo={{ pageNumber, pageSize, totalEntries }}

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { vi } from 'vitest';
 
-const { createFilter } = jest.requireActual("react-select");
+const { createFilter } = await vi.importActual('react-select');
 
 function Select({ options, onChange, filterOption }) {
-  const [selectInput, setSelectInput] = useState("task");
+  const [selectInput, setSelectInput] = useState('task');
 
   return (
     <div>
@@ -14,7 +15,7 @@ function Select({ options, onChange, filterOption }) {
             {option.name}
           </button>
         ))}
-      <button type="button" onClick={() => setSelectInput("nAme")} key="filterOption">
+      <button type="button" onClick={() => setSelectInput('nAme')} key="filterOption">
         filter tasks by name
       </button>
     </div>

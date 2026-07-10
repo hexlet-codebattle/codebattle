@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import moment from "moment";
+import moment from 'moment';
 
-import TournamentType from "../../components/TournamentType";
+import TournamentType from '../../components/TournamentType';
 // import UserInfo from '../../components/UserInfo';
 
-import ShowButton from "./ShowButton";
+import ShowButton from './ShowButton';
 
 function TournamentCard({ tournament }) {
   return (
@@ -13,12 +13,12 @@ function TournamentCard({ tournament }) {
       <div className="d-flex flex-column mb-2 h-100">
         <h4 className="p-1 text-nowrap">{tournament.name}</h4>
         <h5 className="p-1 text-nowrap">
-          {"Mode: "}
+          {'Mode: '}
           <TournamentType type={tournament.type} />
           {` ${tournament.type}`}
         </h5>
         <span className="p-1 text-nowrap">
-          {`Starts at ${moment.utc(tournament.startsAt).local().format("YYYY-MM-DD HH:mm")}`}
+          {`Starts at ${moment.utc(tournament.startsAt).local().format('YYYY-MM-DD HH:mm')}`}
         </span>
         {/* <span className="d-flex p-1 text-nowrap"> */}
         {/*   <span className="mr-2">Creator:</span> */}

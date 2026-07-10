@@ -1,3 +1,3 @@
-import GroupTournamentPage from "./GroupTournamentPage";
+import GroupTournamentPage from './GroupTournamentPage';
 
 export default GroupTournamentPage;

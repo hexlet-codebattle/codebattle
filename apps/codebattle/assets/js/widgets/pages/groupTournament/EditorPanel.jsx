@@ -1,8 +1,8 @@
-import MonacoEditor from "@monaco-editor/react";
-import React, { useEffect, useMemo, useState } from "react";
-import i18n from "../../../i18n";
-import languages from "../../config/languages";
-import useEditor from "../../utils/useEditor";
+import MonacoEditor from '@monaco-editor/react';
+import React, { useEffect, useMemo, useState } from 'react';
+import i18n from '../../../i18n';
+import languages from '../../config/languages';
+import useEditor from '../../utils/useEditor';
 
 function EditorPanel({
   text,
@@ -15,13 +15,13 @@ function EditorPanel({
   currentLang,
   inlineHidden = false,
 }) {
-  const [selectedLang, setSelectedLang] = useState(currentLang || lang || "js");
-  const [draft, setDraft] = useState(text || "");
+  const [selectedLang, setSelectedLang] = useState(currentLang || lang || 'js');
+  const [draft, setDraft] = useState(text || '');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
-    setDraft(text || "");
+    setDraft(text || '');
   }, [text]);
 
   useEffect(() => {
@@ -33,22 +33,22 @@ function EditorPanel({
   }, [lang, currentLang, editable]);
 
   const displayLang = editable ? selectedLang : lang;
-  const mappedSyntax = displayLang ? languages[displayLang] || displayLang : "javascript";
+  const mappedSyntax = displayLang ? languages[displayLang] || displayLang : 'javascript';
 
   const editorProps = {
-    wordWrap: "on",
-    placeholder: "",
-    lineNumbers: (editable ? draft : text) ? "on" : "off",
+    wordWrap: 'on',
+    placeholder: '',
+    lineNumbers: (editable ? draft : text) ? 'on' : 'off',
     fontSize: 14,
     editable,
-    renderLineHighlight: editable ? "line" : "none",
+    renderLineHighlight: editable ? 'line' : 'none',
     hideCursorInOverviewRuler: !editable,
     overviewRulerBorder: false,
-    roomMode: "group_tournament",
+    roomMode: 'group_tournament',
     checkResult: () => {},
     toggleMuteSound: () => {},
     mute: false,
-    userType: editable ? "player" : "spectator",
+    userType: editable ? 'player' : 'spectator',
     userId: 0,
     onChangeCursorSelection: () => {},
     onChangeCursorPosition: () => {},
@@ -66,7 +66,7 @@ function EditorPanel({
     () =>
       (langs || []).map((l) => ({
         slug: l.slug,
-        label: `${l.name}${l.version ? ` ${l.version}` : ""}`,
+        label: `${l.name}${l.version ? ` ${l.version}` : ''}`,
       })),
     [langs],
   );
@@ -78,15 +78,15 @@ function EditorPanel({
     try {
       await onSubmit(draft, selectedLang);
     } catch (err) {
-      setSubmitError(err?.reason || err?.message || "submit_failed");
+      setSubmitError(err?.reason || err?.message || 'submit_failed');
     } finally {
       setSubmitting(false);
     }
   };
 
   const titleText = editable
-    ? ""
-    : `${i18n.t("Solution")}${displayLang ? ` — ${displayLang}` : ""}`;
+    ? ''
+    : `${i18n.t('Solution')}${displayLang ? ` — ${displayLang}` : ''}`;
 
   const langSelector = editable && langOptions.length > 0 && (
     <select
@@ -95,16 +95,16 @@ function EditorPanel({
       onChange={(e) => setSelectedLang(e.target.value)}
       disabled={submitting}
       style={{
-        backgroundColor: "#2a2a35",
-        color: "#fff",
-        border: "1px solid #3a3f50",
+        backgroundColor: '#2a2a35',
+        color: '#fff',
+        border: '1px solid #3a3f50',
       }}
     >
       {langOptions.map((opt) => (
         <option
           key={opt.slug}
           value={opt.slug}
-          style={{ backgroundColor: "#2a2a35", color: "#fff" }}
+          style={{ backgroundColor: '#2a2a35', color: '#fff' }}
         >
           {opt.label}
         </option>
@@ -116,11 +116,11 @@ function EditorPanel({
     <MonacoEditor
       theme="vs-dark"
       language={mappedSyntax}
-      value={editable ? draft : text || ""}
+      value={editable ? draft : text || ''}
       options={options}
       beforeMount={handleEditorWillMount}
       onMount={handleEditorDidMount}
-      onChange={editable ? (value) => setDraft(value ?? "") : undefined}
+      onChange={editable ? (value) => setDraft(value ?? '') : undefined}
       width="100%"
       height="100%"
     />
@@ -144,24 +144,24 @@ function EditorPanel({
                     onClick={handleSubmit}
                     disabled={submitting || !draft || !selectedLang}
                   >
-                    {submitting ? i18n.t("Sending...") : i18n.t("Submit")}
+                    {submitting ? i18n.t('Sending...') : i18n.t('Submit')}
                   </button>
                 )}
                 <span
                   role="button"
                   tabIndex={0}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
                   onClick={() => setEditorFullscreen(true)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") setEditorFullscreen(true);
+                    if (e.key === 'Enter' || e.key === ' ') setEditorFullscreen(true);
                   }}
                 >
-                  {i18n.t("Fullscreen")}
+                  {i18n.t('Fullscreen')}
                 </span>
               </span>
             </h6>
           </div>
-          <div className="card-body p-0 border-top cb-border-color" style={{ height: "80vh" }}>
+          <div className="card-body p-0 border-top cb-border-color" style={{ height: '80vh' }}>
             {editor}
           </div>
           {editable && submitError && (
@@ -175,11 +175,11 @@ function EditorPanel({
       {editorFullscreen && (
         <div
           className="position-fixed d-flex flex-column"
-          style={{ top: 0, left: 0, right: 0, bottom: 0, zIndex: 1050, background: "#1e1e1e" }}
+          style={{ top: 0, left: 0, right: 0, bottom: 0, zIndex: 1050, background: '#1e1e1e' }}
         >
           <div
             className="d-flex justify-content-between align-items-center px-3 py-2"
-            style={{ background: "#252526" }}
+            style={{ background: '#252526' }}
           >
             <h6 className="text-white mb-0 d-flex align-items-center">
               {titleText}
@@ -193,7 +193,7 @@ function EditorPanel({
                   onClick={handleSubmit}
                   disabled={submitting || !draft || !selectedLang}
                 >
-                  {submitting ? i18n.t("Sending...") : i18n.t("Submit")}
+                  {submitting ? i18n.t('Sending...') : i18n.t('Submit')}
                 </button>
               )}
               <button
@@ -201,7 +201,7 @@ function EditorPanel({
                 className="btn btn-sm btn-outline-light"
                 onClick={() => setEditorFullscreen(false)}
               >
-                {i18n.t("Close")}
+                {i18n.t('Close')}
               </button>
             </div>
           </div>

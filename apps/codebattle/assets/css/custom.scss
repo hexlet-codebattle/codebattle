@@ -288,6 +288,7 @@
 .cb-seasons-action {
   min-width: 148px;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .cb-seasons-card {
@@ -298,6 +299,7 @@
       rgba(26, 26, 26, 0.98) 0%,
       rgba(10, 10, 10, 0.98) 100%
     );
+  min-height: 100%;
 }
 
 .cb-seasons-card-header {
@@ -318,11 +320,12 @@
 }
 
 .cb-seasons-card-body {
-  min-height: 250px;
+  padding-top: 1.5rem;
 }
 
 .cb-seasons-podium-row {
-  margin-bottom: -4px;
+  min-height: 212px;
+  margin-bottom: 0;
 }
 
 .cb-seasons-podium-offset-second {
@@ -334,7 +337,56 @@
 }
 
 .cb-seasons-podium-card {
-  min-height: 176px;
+  min-height: 172px;
+}
+
+.cb-seasons-podium-card .card-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-seasons-podium-card-large {
+  min-height: 196px;
+}
+
+.cb-seasons-podium-medal {
+  line-height: 1;
+}
+
+.cb-seasons-podium-name,
+.cb-seasons-podium-clan {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.cb-seasons-podium-name {
+  display: -webkit-box;
+  min-height: 2.4em;
+  overflow: hidden;
+  line-height: 1.2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cb-seasons-podium-clan-wrap {
+  display: flex;
+  min-height: 2.6em;
+  align-items: center;
+}
+
+.cb-seasons-podium-clan {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cb-seasons-podium-points {
+  line-height: 1.2;
 }
 
 .cb-seasons-empty {
@@ -482,10 +534,11 @@
   }
 
   .cb-seasons-card-body {
-    min-height: 0;
+    padding-top: 1rem;
   }
 
   .cb-seasons-podium-row {
+    min-height: 178px;
     margin-left: -0.25rem;
     margin-right: -0.25rem;
   }
@@ -496,7 +549,32 @@
   }
 
   .cb-seasons-podium-card {
-    min-height: 148px;
+    min-height: 154px;
+  }
+
+  .cb-seasons-podium-card-large {
+    min-height: 166px;
+  }
+
+  .cb-seasons-podium-card .card-body {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .cb-seasons-podium-name {
+    font-size: 0.88rem;
+  }
+
+  .cb-seasons-podium-clan {
+    font-size: 0.75rem;
+  }
+
+  .cb-seasons-podium-clan-wrap {
+    min-height: 2.4em;
+  }
+
+  .cb-seasons-podium-points {
+    font-size: 1rem !important;
   }
 
   .cb-seasons-podium-offset-second {

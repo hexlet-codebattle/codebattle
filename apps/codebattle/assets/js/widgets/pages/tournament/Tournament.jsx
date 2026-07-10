@@ -1,37 +1,37 @@
-import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
-import cn from "classnames";
-import has from "lodash/has";
-import isEmpty from "lodash/isEmpty";
-import i18next from "i18next";
-import Markdown from "react-markdown";
-import { useDispatch, useSelector } from "react-redux";
+import cn from 'classnames';
+import has from 'lodash/has';
+import isEmpty from 'lodash/isEmpty';
+import i18next from 'i18next';
+import Markdown from 'react-markdown';
+import { useDispatch, useSelector } from 'react-redux';
 
-import CustomEventStylesContext from "../../components/CustomEventStylesContext";
-import TournamentStates from "../../config/tournament";
-import { connectToChat } from "../../middlewares/Chat";
-import { connectToTournament, joinTournament } from "../../middlewares/Tournament";
-import { connectToTournament as connectToTournamentAdmin } from "../../middlewares/TournamentAdmin";
-import * as selectors from "../../selectors";
-import { actions } from "../../slices";
-import useSearchParams from "../../utils/useSearchParams";
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
+import TournamentStates from '../../config/tournament';
+import { connectToChat } from '../../middlewares/Chat';
+import { connectToTournament, joinTournament } from '../../middlewares/Tournament';
+import { connectToTournament as connectToTournamentAdmin } from '../../middlewares/TournamentAdmin';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
+import useSearchParams from '../../utils/useSearchParams';
 
-import CustomTournamentInfoPanel from "./CustomTournamentInfoPanel";
-import DetailsModal from "./DetailsModal";
-import JoinButton from "./JoinButton";
-import MatchConfirmationModal from "./MatchConfirmationModal";
-import PlayersRankingPanel from "./PlayersRankingPanel";
-import StartRoundConfirmationModal from "./StartRoundConfirmationModal";
-import TournamentChat from "./TournamentChat";
-import TournamentClanTable from "./TournamentClanTable";
-import TournamentHeader from "./TournamentHeader";
+import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
+import DetailsModal from './DetailsModal';
+import JoinButton from './JoinButton';
+import MatchConfirmationModal from './MatchConfirmationModal';
+import PlayersRankingPanel from './PlayersRankingPanel';
+import StartRoundConfirmationModal from './StartRoundConfirmationModal';
+import TournamentChat from './TournamentChat';
+import TournamentClanTable from './TournamentClanTable';
+import TournamentHeader from './TournamentHeader';
 
 const getTournamentPresentationStatus = (state) => {
   switch (state) {
     case TournamentStates.finished:
-      return "Tournament finished";
+      return 'Tournament finished';
     default:
-      return "Waiting";
+      return 'Waiting';
   }
 };
 
@@ -46,8 +46,8 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
       <div className="mb-3 pb-2 border-bottom cb-border-color">
         <p className="mb-2 text-muted">
           {isParticipant
-            ? i18next.t("You are registered for this tournament. You can leave before it starts.")
-            : i18next.t("Join this tournament to take part in the matches.")}
+            ? i18next.t('You are registered for this tournament. You can leave before it starts.')
+            : i18next.t('Join this tournament to take part in the matches.')}
         </p>
         <JoinButton
           isShow
@@ -102,7 +102,7 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
         type={tournament.type}
         playersRedirectUrl={tournament.meta?.playersRedirectUrl}
         hideCustomGameConsole={
-          tournament.type !== "versus" || tournament.state !== TournamentStates.active
+          tournament.type !== 'versus' || tournament.state !== TournamentStates.active
         }
       />
     </>
@@ -114,8 +114,8 @@ function Tournament() {
 
   const searchParams = useSearchParams();
 
-  const activePresentationMode = searchParams.has("presentation");
-  const activeStreamMode = searchParams.has("stream");
+  const activePresentationMode = searchParams.has('presentation');
+  const activeStreamMode = searchParams.has('stream');
 
   const streamMode = useSelector((state) => state.gameUI.streamMode);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -147,8 +147,8 @@ function Tournament() {
     streamMode ||
     (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
 
-  const panelClassName = cn("mb-2", {
-    "container-fluid": !streamMode,
+  const panelClassName = cn('mb-2', {
+    'container-fluid': !streamMode,
   });
 
   const handleOpenDetails = useCallback(() => {
@@ -163,7 +163,7 @@ function Tournament() {
   const toggleStreamMode = useCallback(() => {
     if (streamMode) {
       // document.getElementsByTagName('main')[0].style.zoom = '100%';
-      document.body.style.zoom = "100%";
+      document.body.style.zoom = '100%';
     }
     dispatch(actions.toggleStreamMode());
   }, [dispatch, streamMode]);
@@ -183,7 +183,7 @@ function Tournament() {
   const autoJoinAttemptedRef = useRef(false);
   useEffect(() => {
     if (autoJoinAttemptedRef.current) return;
-    if (!searchParams.has("auto_join")) return;
+    if (!searchParams.has('auto_join')) return;
     if (!tournament?.channel?.online) return;
     if (!tournament?.id || !currentUserId || isGuest) return;
     const joinable = [TournamentStates.waitingParticipants, TournamentStates.active].includes(
@@ -199,8 +199,8 @@ function Tournament() {
     joinTournament();
 
     const url = new URL(window.location.href);
-    url.searchParams.delete("auto_join");
-    window.history.replaceState({}, "", url.toString());
+    url.searchParams.delete('auto_join');
+    window.history.replaceState({}, '', url.toString());
   }, [
     tournament?.id,
     tournament.state,
@@ -226,7 +226,7 @@ function Tournament() {
 
   useEffect(() => {
     if (tournament.isLive) {
-      const channel = connectToChat(tournament.useChat, "channel")(dispatch);
+      const channel = connectToChat(tournament.useChat, 'channel')(dispatch);
       return () => {
         if (channel) {
           channel.leave();
@@ -256,7 +256,7 @@ function Tournament() {
 
     if (activeStreamMode || streamMode) {
       // document.getElementsByTagName('main')[0].style.zoom = '130%';
-      document.body.style.zoom = "130%";
+      document.body.style.zoom = '130%';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -370,8 +370,8 @@ function Tournament() {
           )}
           <div className="row flex-lg-row-reverse">
             <div
-              className={cn("col-12 mb-2 mb-lg-0", {
-                "col-lg-8": !hiddenSidePanel,
+              className={cn('col-12 mb-2 mb-lg-0', {
+                'col-lg-8': !hiddenSidePanel,
               })}
             >
               {canModerate && (

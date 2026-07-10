@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const getSize = ({ small = false, large = false, adaptive = false }) => {
   switch (true) {

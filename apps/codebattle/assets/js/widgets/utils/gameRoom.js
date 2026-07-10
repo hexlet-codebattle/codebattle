@@ -1,6 +1,6 @@
-import sortBy from "lodash/sortBy";
+import sortBy from 'lodash/sortBy';
 
-import userTypes from "../config/userTypes";
+import userTypes from '../config/userTypes';
 
 export const getGameStatus = ({
   id,

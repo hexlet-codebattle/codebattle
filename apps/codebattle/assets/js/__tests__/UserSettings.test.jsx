@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react';
 
-import "@testing-library/jest-dom";
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { render, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Provider } from "react-redux";
+import '@testing-library/jest-dom';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
 
-import UserSettings from "../widgets/pages/settings";
-import reducers from "../widgets/slices";
+import UserSettings from '../widgets/pages/settings';
+import reducers from '../widgets/slices';
 
-jest.mock("@fortawesome/react-fontawesome", () => ({
-  FontAwesomeIcon: "img",
+vi.mock('@fortawesome/react-fontawesome', () => ({
+  FontAwesomeIcon: 'img',
 }));
 
-jest.mock("calcite-react/Slider", () => "input");
-jest.mock("../widgets/components/LanguageIcon", () => () => null);
-jest.mock("react-bootstrap/Alert", () => ({
+vi.mock('calcite-react/Slider', () => ({ default: 'input' }));
+vi.mock('../widgets/components/LanguageIcon', () => ({ default: () => null }));
+vi.mock('react-bootstrap/Alert', () => ({
   __esModule: true,
   default: ({ children, variant, show }) =>
     show ? (
@@ -25,13 +25,13 @@ jest.mock("react-bootstrap/Alert", () => ({
     ) : null,
 }));
 
-jest.mock("../i18n", () => ({
+vi.mock('../i18n', () => ({
   __esModule: true,
-  getLocale: jest.fn(() => "en"),
-  getSupportedLocale: jest.fn((locale) => (["en", "ru"].includes(locale) ? locale : "en")),
+  getLocale: vi.fn(() => 'en'),
+  getSupportedLocale: vi.fn((locale) => (['en', 'ru'].includes(locale) ? locale : 'en')),
   default: {
-    t: jest.fn((key) => key),
-    changeLanguage: jest.fn(() => Promise.resolve()),
+    t: vi.fn((key) => key),
+    changeLanguage: vi.fn(() => Promise.resolve()),
   },
 }));
 
@@ -41,18 +41,18 @@ const preloadedState = {
   user: {
     settings: {
       soundSettings: {
-        type: "standard",
+        type: 'standard',
         level: 6,
         tournamentLevel: 4,
       },
       id: 11,
-      name: "Diman",
-      lang: "ts",
-      avatarUrl: "/assets/images/logo.svg",
+      name: 'Diman',
+      lang: 'ts',
+      avatarUrl: '/assets/images/logo.svg',
       canUnlinkSocial: false,
       discordName: null,
       discordId: null,
-      error: "",
+      error: '',
     },
   },
 };
@@ -60,20 +60,16 @@ const store = configureStore({
   reducer,
   preloadedState,
 });
-jest.mock(
-  "gon",
-  () => {
-    const gonParams = {
-      local: "en",
-      current_user: { sound_settings: {} },
-      game_id: 10,
-    };
-    return { getAsset: (type) => gonParams[type] };
-  },
-  { virtual: true },
-);
+vi.mock('gon', () => {
+  const gonParams = {
+    local: 'en',
+    current_user: { sound_settings: {} },
+    game_id: 10,
+  };
+  return { default: { getAsset: (type) => gonParams[type] } };
+});
 
-describe("UserSettings test cases", () => {
+describe('UserSettings test cases', () => {
   function setup(jsx) {
     return {
       user: userEvent.setup(),
@@ -82,10 +78,10 @@ describe("UserSettings test cases", () => {
   }
 
   beforeEach(() => {
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
-  test("render main component", () => {
+  test('render main component', () => {
     const { getByText } = setup(
       <Provider store={store}>
         <UserSettings />
@@ -94,7 +90,7 @@ describe("UserSettings test cases", () => {
     expect(getByText(/settings/i)).toBeInTheDocument();
   });
 
-  test("successfull user settings update", async () => {
+  test('successfull user settings update', async () => {
     const settingUpdaterSpy = global.fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({}),
@@ -104,84 +100,84 @@ describe("UserSettings test cases", () => {
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText("SubmitForm");
-    const nameInput = getByTestId("nameInput");
-    const codeLangSelect = getByTestId("code-langSelect");
+    const submitButton = getByLabelText('SubmitForm');
+    const nameInput = getByTestId('nameInput');
+    const codeLangSelect = getByTestId('code-langSelect');
 
     await user.clear(nameInput);
-    await user.type(nameInput, "Dmitry");
-    await user.selectOptions(codeLangSelect, "Javascript");
+    await user.type(nameInput, 'Dmitry');
+    await user.selectOptions(codeLangSelect, 'Javascript');
     await user.click(submitButton);
 
     await waitFor(() => {
       expect(settingUpdaterSpy).toHaveBeenCalledWith(
-        "/api/v1/settings",
+        '/api/v1/settings',
         expect.objectContaining({
-          method: "PATCH",
+          method: 'PATCH',
         }),
       );
 
       const [, requestOptions] = settingUpdaterSpy.mock.calls[0];
       expect(JSON.parse(requestOptions.body)).toEqual({
-        clan: "",
-        name: "Dmitry",
-        lang: "js",
-        lang_view: "code",
-        db_type: "",
-        style_lang: "",
+        clan: '',
+        name: 'Dmitry',
+        lang: 'js',
+        lang_view: 'code',
+        db_type: '',
+        style_lang: '',
         sound_settings: {
           level: 6,
           tournament_level: 4,
-          type: "standard",
+          type: 'standard',
         },
       });
-      expect(getByRole("alert")).toHaveClass("alert-success");
+      expect(getByRole('alert')).toHaveClass('alert-success');
     });
   });
 
-  test("successfull locale change", async () => {
+  test('successfull locale change', async () => {
     const settingUpdaterSpy = global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ locale: "ru" }),
+      json: async () => ({ locale: 'ru' }),
     });
     const { getByLabelText, getByTestId, findByText, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText("SubmitForm");
-    const localeSelect = getByTestId("localeSelect");
+    const submitButton = getByLabelText('SubmitForm');
+    const localeSelect = getByTestId('localeSelect');
 
     await user.click(localeSelect);
-    await user.click(await findByText("Ru"));
+    await user.click(await findByText('Ru'));
     await user.click(submitButton);
 
     await waitFor(() => {
       const [, requestOptions] = settingUpdaterSpy.mock.calls[0];
       expect(JSON.parse(requestOptions.body)).toMatchObject({
-        locale: "ru",
+        locale: 'ru',
       });
     });
 
-    const i18n = jest.requireMock("../i18n").default;
-    expect(i18n.changeLanguage).toHaveBeenCalledWith("ru");
+    const i18n = (await vi.importMock('../i18n')).default;
+    expect(i18n.changeLanguage).toHaveBeenCalledWith('ru');
   });
 
-  test("failed user settings update", async () => {
+  test('failed user settings update', async () => {
     const { getByTestId, getByLabelText, findByRole, findByText, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText("SubmitForm");
-    const nameInput = getByTestId("nameInput");
+    const submitButton = getByLabelText('SubmitForm');
+    const nameInput = getByTestId('nameInput');
 
     await user.clear(nameInput);
 
     expect(await findByText(/Field can't be empty/i)).toBeInTheDocument();
     expect(submitButton).toBeDisabled();
 
-    await user.type(nameInput, "   ");
+    await user.type(nameInput, '   ');
 
     expect(
       await findByText(
@@ -195,13 +191,13 @@ describe("UserSettings test cases", () => {
       status: 422,
       json: async () => ({
         errors: {
-          name: ["has already been taken"],
+          name: ['has already been taken'],
         },
       }),
     });
 
     await user.clear(nameInput);
-    await user.type(nameInput, "ExistingUserName");
+    await user.type(nameInput, 'ExistingUserName');
 
     expect(submitButton).toBeEnabled();
 
@@ -209,16 +205,16 @@ describe("UserSettings test cases", () => {
 
     expect(await findByText(/Has already been taken/i)).toBeInTheDocument();
 
-    global.fetch.mockRejectedValueOnce(new Error("Network Error"));
+    global.fetch.mockRejectedValueOnce(new Error('Network Error'));
 
     await user.clear(nameInput);
-    await user.type(nameInput, "CoolUserName");
+    await user.type(nameInput, 'CoolUserName');
     await user.click(submitButton);
 
-    expect(await findByRole("alert")).toHaveClass("alert-danger");
+    expect(await findByRole('alert')).toHaveClass('alert-danger');
   });
 
-  test("unlink button is disabled when it is the last sign-in method", () => {
+  test('unlink button is disabled when it is the last sign-in method', () => {
     const customStore = configureStore({
       reducer,
       preloadedState: {
@@ -226,7 +222,7 @@ describe("UserSettings test cases", () => {
           settings: {
             ...preloadedState.user.settings,
             githubId: 19,
-            githubName: "octocat",
+            githubName: 'octocat',
             canUnlinkSocial: false,
             discordId: null,
             discordName: null,
@@ -241,10 +237,10 @@ describe("UserSettings test cases", () => {
       </Provider>,
     );
 
-    expect(getByRole("button", { name: "Unlink Github" })).toBeDisabled();
+    expect(getByRole('button', { name: 'Unlink Github' })).toBeDisabled();
   });
 
-  test("unlink button stays enabled when another sign-in method exists", () => {
+  test('unlink button stays enabled when another sign-in method exists', () => {
     const customStore = configureStore({
       reducer,
       preloadedState: {
@@ -252,7 +248,7 @@ describe("UserSettings test cases", () => {
           settings: {
             ...preloadedState.user.settings,
             githubId: 19,
-            githubName: "octocat",
+            githubName: 'octocat',
             canUnlinkSocial: true,
             discordId: null,
             discordName: null,
@@ -267,6 +263,6 @@ describe("UserSettings test cases", () => {
       </Provider>,
     );
 
-    expect(getByRole("button", { name: "Unlink Github" })).toBeEnabled();
+    expect(getByRole('button', { name: 'Unlink Github' })).toBeEnabled();
   });
 });

@@ -42,8 +42,6 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   alias Codebattle.Repo
   alias Codebattle.UserGroupTournamentRun
 
-  require Logger
-
   @slice_run_task_timeout_ms 200_000
   @default_max_concurrency 30
   @default_top_n 8

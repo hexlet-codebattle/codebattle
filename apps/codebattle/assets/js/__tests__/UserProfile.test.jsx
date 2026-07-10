@@ -1,52 +1,51 @@
-/**
- * @jest-environment jsdom
- * @jest-environment-options {"url": "http://localhost/users/42"}
- */
-import React from "react";
+import React from 'react';
 
-import "@testing-library/jest-dom";
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { render, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
+import '@testing-library/jest-dom';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { render, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
 
-import UserProfile from "../widgets/pages/profile";
-import reducers from "../widgets/slices";
+import UserProfile from '../widgets/pages/profile';
+import reducers from '../widgets/slices';
 
-jest.mock(
-  "gon",
-  () => {
-    const gonParams = { local: "en", current_user: { sound_settings: {} } };
-    return { getAsset: (type) => gonParams[type] };
-  },
-  { virtual: true },
-);
+// jsdom URL the profile page reads the user id from (was @jest-environment-options).
+window.history.pushState({}, '', '/users/42');
 
-jest.mock("../i18n", () => ({
+vi.mock('gon', () => {
+  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
+  return { default: { getAsset: (type) => gonParams[type] } };
+});
+
+vi.mock('../i18n', () => ({
   __esModule: true,
-  getLocale: jest.fn(() => "en"),
-  getSupportedLocale: jest.fn((locale) => locale || "en"),
+  getLocale: vi.fn(() => 'en'),
+  getSupportedLocale: vi.fn((locale) => locale || 'en'),
   default: {
-    language: "en",
-    t: jest.fn((key, params = {}) =>
+    language: 'en',
+    t: vi.fn((key, params = {}) =>
       key.replace(/%\{(\w+)\}/g, (_, name) => String(params[name] ?? `%{${name}}`)),
     ),
   },
 }));
 
-jest.mock("../widgets/components/LanguageIcon", () => () => <span>lang-icon</span>);
-jest.mock("../widgets/components/Loading", () => ({ small }) => (
-  <div>{small ? "loading-small" : "loading"}</div>
-));
-jest.mock("../widgets/pages/profile/Heatmap", () => () => <div>heatmap</div>);
-jest.mock("../widgets/pages/profile/UserStatCharts", () => () => <div>charts</div>);
-jest.mock("../widgets/pages/profile/UserTournaments", () => () => <div>tournaments</div>);
-jest.mock("../widgets/pages/lobby/CompletedGames", () => () => <div>completed-games</div>);
+vi.mock('../widgets/components/LanguageIcon', () => ({ default: () => <span>lang-icon</span> }));
+vi.mock('../widgets/components/Loading', () => ({
+  default: ({ small }) => <div>{small ? 'loading-small' : 'loading'}</div>,
+}));
+vi.mock('../widgets/pages/profile/Heatmap', () => ({ default: () => <div>heatmap</div> }));
+vi.mock('../widgets/pages/profile/UserStatCharts', () => ({ default: () => <div>charts</div> }));
+vi.mock('../widgets/pages/profile/UserTournaments', () => ({
+  default: () => <div>tournaments</div>,
+}));
+vi.mock('../widgets/pages/lobby/CompletedGames', () => ({
+  default: () => <div>completed-games</div>,
+}));
 
 const reducer = combineReducers(reducers);
 
-describe("UserProfile", () => {
+describe('UserProfile', () => {
   beforeEach(() => {
-    global.fetch = jest
+    global.fetch = vi
       .fn()
       .mockResolvedValueOnce({
         ok: true,
@@ -69,13 +68,13 @@ describe("UserProfile", () => {
           stats: { games: { won: 3, lost: 1, gave_up: 0 }, all: [] },
           user: {
             id: 42,
-            name: "Kleria",
-            avatar_url: "/assets/images/logo.svg",
-            lang: "js",
-            clan: "",
+            name: 'Kleria',
+            avatar_url: '/assets/images/logo.svg',
+            lang: 'js',
+            clan: '',
             clan_id: null,
-            github_name: "Kleria",
-            inserted_at: "2026-01-01T12:00:00Z",
+            github_name: 'Kleria',
+            inserted_at: '2026-01-01T12:00:00Z',
             rating: 1500,
             rank: 10,
             points: 100,
@@ -91,7 +90,7 @@ describe("UserProfile", () => {
       });
   });
 
-  test("does not render or request holopin resources on the profile page", async () => {
+  test('does not render or request holopin resources on the profile page', async () => {
     const store = configureStore({ reducer });
     const { container, getByLabelText, queryByText } = render(
       <Provider store={store}>
@@ -100,12 +99,12 @@ describe("UserProfile", () => {
     );
 
     await waitFor(() => {
-      expect(getByLabelText("Github account")).toHaveAttribute("href", "https://github.com/Kleria");
+      expect(getByLabelText('Github account')).toHaveAttribute('href', 'https://github.com/Kleria');
     });
 
-    expect(global.fetch).toHaveBeenNthCalledWith(1, "/api/v1/user/42/stats");
-    expect(global.fetch).toHaveBeenNthCalledWith(2, "/api/v1/user/42/rivals");
-    expect(queryByText("Holopins")).not.toBeInTheDocument();
+    expect(global.fetch).toHaveBeenNthCalledWith(1, '/api/v1/user/42/stats');
+    expect(global.fetch).toHaveBeenNthCalledWith(2, '/api/v1/user/42/rivals');
+    expect(queryByText('Holopins')).not.toBeInTheDocument();
     expect(container.querySelector('a[href^="https://holopin.io/@"]')).not.toBeInTheDocument();
     expect(container.querySelector('img[src^="https://holopin.me/@"]')).not.toBeInTheDocument();
   });

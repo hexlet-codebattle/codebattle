@@ -1,29 +1,29 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
-import { useSelector } from "react-redux";
+import cn from 'classnames';
+import i18next from 'i18next';
+import { useSelector } from 'react-redux';
 
-import { currentUserClanIdSelector } from "@/selectors";
+import { currentUserClanIdSelector } from '@/selectors';
 
-import LanguageIcon from "../../components/LanguageIcon";
+import LanguageIcon from '../../components/LanguageIcon';
 
 const getCustomEventTrClassName = (item, selectedId) =>
   cn(
-    "font-weight-bold cb-custom-event-tr-border",
+    'font-weight-bold cb-custom-event-tr-border',
     {
-      "cb-gold-place-bg": item?.place === 1,
-      "cb-silver-place-bg": item?.place === 2,
-      "cb-bronze-place-bg": item?.place === 3,
-      "cb-bg-panel": !item?.place || item?.place > 3,
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
+      'cb-bg-panel': !item?.place || item?.place > 3,
     },
     {
-      "cb-custom-event-tr-brown-border": item?.clanId === selectedId,
+      'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
     },
   );
 
 const tableDataCellClassName = cn(
-  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 function FinishedLeaderboard({ leaderboard }) {
@@ -67,23 +67,23 @@ function FinishedLeaderboard({ leaderboard }) {
     <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
       <div className="my-2">
         <div
-          className={cn("d-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left")}
+          className={cn('d-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left')}
         >
           <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
-            <span className="font-weight-bold">{i18next.t("Leaderboard")}</span>
+            <span className="font-weight-bold">{i18next.t('Leaderboard')}</span>
           </div>
           <div className="d-flex cb-overflow-x-auto">
             <table className="table cb-text-light table-striped cb-custom-event-table m-1">
               <thead>
                 <tr>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Wins")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Games")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Avg Result")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Total Time")}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Player')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Wins')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Games')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Avg Result')}</th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Total Time')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,8 +93,8 @@ function FinishedLeaderboard({ leaderboard }) {
                     <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                       <td
                         style={{
-                          borderTopLeftRadius: "0.5rem",
-                          borderBottomLeftRadius: "0.5rem",
+                          borderTopLeftRadius: '0.5rem',
+                          borderBottomLeftRadius: '0.5rem',
                         }}
                         className={tableDataCellClassName}
                       >
@@ -105,10 +105,10 @@ function FinishedLeaderboard({ leaderboard }) {
                           title={item?.userName}
                           className="cb-custom-event-name"
                           style={{
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            maxWidth: "13ch",
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            maxWidth: '13ch',
                           }}
                         >
                           {(item?.userLang || item?.user_lang || item?.lang) && (
@@ -117,18 +117,18 @@ function FinishedLeaderboard({ leaderboard }) {
                               lang={item?.userLang || item?.user_lang || item?.lang}
                             />
                           )}
-                          {(item?.userName ?? "").slice(0, 9) +
-                            ((item?.userName?.length ?? 0) > 11 ? "..." : "")}
+                          {(item?.userName ?? '').slice(0, 9) +
+                            ((item?.userName?.length ?? 0) > 11 ? '...' : '')}
                         </div>
                       </td>
                       <td title={item?.clanLongName} className={tableDataCellClassName}>
                         <div
                           className="cb-custom-event-name"
                           style={{
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            maxWidth: "13ch",
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            maxWidth: '13ch',
                           }}
                         >
                           {item?.clanName}
@@ -142,8 +142,8 @@ function FinishedLeaderboard({ leaderboard }) {
                       </td>
                       <td
                         style={{
-                          borderTopRightRadius: "0.5rem",
-                          borderBottomRightRadius: "0.5rem",
+                          borderTopRightRadius: '0.5rem',
+                          borderBottomRightRadius: '0.5rem',
                         }}
                         className={tableDataCellClassName}
                       >
@@ -159,7 +159,7 @@ function FinishedLeaderboard({ leaderboard }) {
       </div>
       <div className="d-flex align-items-center flex-wrap justify-content-start">
         <h6 className="mb-2 mr-5 text-nowrap">
-          {`${i18next.t("Total players")}: ${totalEntries}`}
+          {`${i18next.t('Total players')}: ${totalEntries}`}
         </h6>
         {totalPages > 1 && (
           <div className="d-flex align-items-center mb-2 cb-ranking-pagination">
@@ -184,9 +184,9 @@ function FinishedLeaderboard({ leaderboard }) {
                 <button
                   type="button"
                   key={`leaderboard-page-${page}`}
-                  className={cn("btn btn-sm cb-ranking-page-btn", {
-                    "btn-secondary": page === safePageNumber,
-                    "btn-outline-secondary": page !== safePageNumber,
+                  className={cn('btn btn-sm cb-ranking-page-btn', {
+                    'btn-secondary': page === safePageNumber,
+                    'btn-outline-secondary': page !== safePageNumber,
                   })}
                   onClick={() => handlePageChange(page)}
                   disabled={page === safePageNumber}

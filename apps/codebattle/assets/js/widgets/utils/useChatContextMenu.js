@@ -1,6 +1,6 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from 'react';
 
-import { useContextMenu } from "react-contexify";
+import { useContextMenu } from 'react-contexify';
 
 /**
  * @typedef {{ user: {name: string, isBot: boolean, userId: number, canInvite: boolean}}} MenuRequest

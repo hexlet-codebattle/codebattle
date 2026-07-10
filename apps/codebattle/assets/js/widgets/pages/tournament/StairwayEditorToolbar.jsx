@@ -1,20 +1,20 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from 'react';
 
-import find from "lodash/find";
-import { useDispatch, useSelector } from "react-redux";
+import find from 'lodash/find';
+import { useDispatch, useSelector } from 'react-redux';
 
-import LanguagePickerView from "../../components/LanguagePickerView";
-import { currentUserIdSelector } from "../../selectors";
-import { actions } from "../../slices";
-import DarkModeButton from "../game/DarkModeButton";
-import GameActionButtons from "../game/GameActionButtons";
+import LanguagePickerView from '../../components/LanguagePickerView';
+import { currentUserIdSelector } from '../../selectors';
+import { actions } from '../../slices';
+import DarkModeButton from '../game/DarkModeButton';
+import GameActionButtons from '../game/GameActionButtons';
 
-import PlayerPicker from "./PlayerPicker";
+import PlayerPicker from './PlayerPicker';
 
-const type = "stairway";
-const toolbarClassNames = "btn-toolbar justify-content-between align-items-center m-1";
-const editorSettingClassNames = "btn-group align-items-center m-1";
-const userInfoClassNames = "btn-group align-items-center justify-content-end m-1";
+const type = 'stairway';
+const toolbarClassNames = 'btn-toolbar justify-content-between align-items-center m-1';
+const editorSettingClassNames = 'btn-group align-items-center m-1';
+const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
 
 function ModeButtons({ player }) {
   return (
@@ -47,9 +47,9 @@ function StairwayEditorToolbar({ activePlayer, setActivePlayerId, players }) {
   const actionBtnsProps = {
     currentEditorLangSlug: playerData?.editorLang,
     checkResult: () => {},
-    checkBtnStatus: "disabled",
-    resetBtnStatus: "disabled",
-    giveUpBtnStatus: "disabled",
+    checkBtnStatus: 'disabled',
+    resetBtnStatus: 'disabled',
+    giveUpBtnStatus: 'disabled',
   };
 
   return (

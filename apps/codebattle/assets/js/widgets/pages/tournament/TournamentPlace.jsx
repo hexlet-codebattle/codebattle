@@ -1,23 +1,23 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import i18next from "i18next";
-import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import i18next from 'i18next';
+import { useSelector } from 'react-redux';
 
-import { currentUserCanModerateTournament, tournamentHideResultsSelector } from "@/selectors";
+import { currentUserCanModerateTournament, tournamentHideResultsSelector } from '@/selectors';
 
-function TournamentPlace({ place, title = "", withIcon = false }) {
+function TournamentPlace({ place, title = '', withIcon = false }) {
   const hideResults = useSelector(tournamentHideResultsSelector);
   const canModerate = useSelector(currentUserCanModerateTournament);
 
-  const text = !hideResults || canModerate ? place : "?";
-  const prefix = title.length > 0 || withIcon ? ": " : "";
+  const text = !hideResults || canModerate ? place : '?';
+  const prefix = title.length > 0 || withIcon ? ': ' : '';
   const muteResults = canModerate && hideResults;
 
-  const className = cn({ "p-1 bg-light rounded-lg": muteResults });
-  const iconClassName = "text-warninG";
-  const textClassName = cn({ "text-muted": muteResults });
+  const className = cn({ 'p-1 bg-light rounded-lg': muteResults });
+  const iconClassName = 'text-warninG';
+  const textClassName = cn({ 'text-muted': muteResults });
 
   return (
     <span className={className}>

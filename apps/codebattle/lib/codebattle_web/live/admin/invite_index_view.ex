@@ -8,8 +8,6 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
   alias Codebattle.Repo
   alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
-  require Logger
-
   @non_terminal_states ~w(pending creating invited)
   @valid_states ~w(pending creating invited accepted failed expired)
   @valid_sorts ~w(updated_at state user_id)

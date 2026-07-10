@@ -1,23 +1,23 @@
-import React, { memo, useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { memo, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import TournamentStates from "../../config/tournament";
-import { currentUserIsAdminSelector, tournamentPlayersSelector } from "../../selectors";
+import TournamentStates from '../../config/tournament';
+import { currentUserIsAdminSelector, tournamentPlayersSelector } from '../../selectors';
 
-import ClansChartPanel from "./ClansChartPanel";
-import CheatersPanel from "./CheatersPanel";
-import ControlPanel, { PanelModeCodes } from "./ControlPanel";
-import LeaderboardPanel from "./LeaderboardPanel";
-import PlayersMatchesPanel from "./PlayersMatchesPanel";
-import PlayerStatsPanel from "./PlayerStatsPanel";
-import RatingClansPanel from "./RatingClansPanel";
-import ReportsPanel from "./ReportsPanel";
-import StatisticsCard from "./StatisticsCard";
-import TaskRankingAdvancedPanel from "./TaskRankingAdvancedPanel";
-import TaskRankingPanel from "./TaskRankingPanel";
-import TournamentGameCreatePanel from "./TournamentGameCreatePanel";
+import ClansChartPanel from './ClansChartPanel';
+import CheatersPanel from './CheatersPanel';
+import ControlPanel, { PanelModeCodes } from './ControlPanel';
+import LeaderboardPanel from './LeaderboardPanel';
+import PlayersMatchesPanel from './PlayersMatchesPanel';
+import PlayerStatsPanel from './PlayerStatsPanel';
+import RatingClansPanel from './RatingClansPanel';
+import ReportsPanel from './ReportsPanel';
+import StatisticsCard from './StatisticsCard';
+import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
+import TaskRankingPanel from './TaskRankingPanel';
+import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 
 const basePanelModes = [PanelModeCodes.playerMode, PanelModeCodes.leaderboardMode];
 const finishedPanelModes = [
@@ -39,7 +39,7 @@ const replacePanelHash = (panel) => {
 
   window.history.replaceState(
     null,
-    "",
+    '',
     `${window.location.pathname}${window.location.search}${nextHash}`,
   );
 };
@@ -140,7 +140,7 @@ function CustomTournamentInfoPanel({
   }, [canModerate, isAdmin, state]);
 
   const getPanelModeFromHash = useCallback(() => {
-    const panel = window.location.hash.replace(/^#/, "");
+    const panel = window.location.hash.replace(/^#/, '');
 
     if (allowedPanelModes.includes(panel)) {
       return { panel };
@@ -165,10 +165,10 @@ function CustomTournamentInfoPanel({
     };
 
     syncPanelModeFromHash();
-    window.addEventListener("hashchange", syncPanelModeFromHash);
+    window.addEventListener('hashchange', syncPanelModeFromHash);
 
     return () => {
-      window.removeEventListener("hashchange", syncPanelModeFromHash);
+      window.removeEventListener('hashchange', syncPanelModeFromHash);
     };
   }, [getPanelModeFromHash]);
 

@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import Dropdown from "react-bootstrap/Dropdown";
-import { useDispatch, useSelector } from "react-redux";
+import cn from 'classnames';
+import i18next from 'i18next';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { useDispatch, useSelector } from 'react-redux';
 
-import * as selectors from "../selectors";
-import { actions } from "../slices";
+import * as selectors from '../selectors';
+import { actions } from '../slices';
 
 export default function Rooms({ disabled }) {
   const dispatch = useDispatch();
@@ -16,7 +16,7 @@ export default function Rooms({ disabled }) {
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
   const dropdownClassName = cn(
-    "h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel",
+    'h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel',
   );
 
   return (

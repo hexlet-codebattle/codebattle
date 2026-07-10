@@ -5,8 +5,6 @@ defmodule CodebattleWeb.ChatChannel do
   alias Codebattle.Chat
   alias Codebattle.Game
 
-  require Logger
-
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
     user = socket.assigns.current_user

@@ -12,7 +12,7 @@ defmodule CodebattleWeb.TaskView do
 
   def render_markdown(nil), do: ""
   def render_markdown(""), do: ""
-  def render_markdown(text), do: Earmark.as_html!(text, compact_output: true)
+  def render_markdown(text), do: MDEx.to_html!(text)
 
   def csrf_token do
     Plug.CSRFProtection.get_csrf_token()

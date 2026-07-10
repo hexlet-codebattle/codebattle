@@ -1,10 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
-import isEmpty from "lodash/isEmpty";
+import { createSlice } from '@reduxjs/toolkit';
+import isEmpty from 'lodash/isEmpty';
 
-import initial from "./initial";
+import initial from './initial';
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState: initial.user,
   reducers: {
     setCurrentUser: (state, { payload }) => {
@@ -38,19 +38,19 @@ const userSlice = createSlice({
         users,
         pageInfo,
         dateFrom,
-        withBots: withBots === "true",
+        withBots: withBots === 'true',
       };
     },
     updateUserSettings: (state, { payload }) => {
       Object.assign(state.settings, payload);
     },
     toggleMuteSound: (state) => {
-      localStorage.setItem("ui_mute_sound", !state.settings.mute);
+      localStorage.setItem('ui_mute_sound', !state.settings.mute);
       state.settings.mute = !state.settings.mute;
     },
     togglePremiumRequestStatus: (state) => {
       localStorage.setItem(
-        "already_send_premium_request",
+        'already_send_premium_request',
         !state.settings.alreadySendPremiumRequest,
       );
       state.settings.alreadySendPremiumRequest = !state.settings.alreadySendPremiumRequest;

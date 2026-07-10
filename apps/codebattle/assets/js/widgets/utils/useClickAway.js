@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 const on = (obj, ...args) => obj.addEventListener(...args);
 const off = (obj, ...args) => obj.removeEventListener(...args);
 
-const defaultEvents = ["mousedown", "touchstart"];
+const defaultEvents = ['mousedown', 'touchstart'];
 const useClickAway = (ref, onClickAway, events = defaultEvents) => {
   const savedCallback = useRef(onClickAway);
   useEffect(() => {

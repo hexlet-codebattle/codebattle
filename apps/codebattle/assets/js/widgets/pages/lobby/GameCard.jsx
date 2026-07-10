@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import GameLevelBadge from "../../components/GameLevelBadge";
-import ResultIcon from "../../components/ResultIcon";
-import UserInfo from "../../components/UserInfo";
-import { loadSimpleUserStats } from "../../middlewares/Users";
-import getGamePlayersData from "../../utils/gamePlayers";
+import GameLevelBadge from '../../components/GameLevelBadge';
+import ResultIcon from '../../components/ResultIcon';
+import UserInfo from '../../components/UserInfo';
+import { loadSimpleUserStats } from '../../middlewares/Users';
+import getGamePlayersData from '../../utils/gamePlayers';
 
-import GameActionButton from "./GameActionButton";
-import GameProgressBar from "./GameProgressBar";
-import GameStateBadge from "./GameStateBadge";
+import GameActionButton from './GameActionButton';
+import GameProgressBar from './GameProgressBar';
+import GameStateBadge from './GameStateBadge';
 
 const getPerfomance = (won, lost) => {
   if (lost === 0) {
@@ -21,7 +21,7 @@ const getPerfomance = (won, lost) => {
 
   const diff = won / lost;
 
-  const [int, rest] = String(diff).split(".");
+  const [int, rest] = String(diff).split('.');
 
   if (!rest) {
     return int;
@@ -31,25 +31,25 @@ const getPerfomance = (won, lost) => {
 };
 
 function UserSimpleStats({ user }) {
-  const [state, setState] = useState("closed");
+  const [state, setState] = useState('closed');
   const [data, setData] = useState();
 
   const load = () => {
     const onSuccess = (payload) => {
       setData(payload.stats.games);
-      setState("opened");
+      setState('opened');
     };
     const onFailure = () => {
-      setState("error");
+      setState('error');
     };
 
-    setState("loading");
+    setState('loading');
     loadSimpleUserStats(onSuccess, onFailure)(user);
   };
 
   return (
     <>
-      {state === "loading" && (
+      {state === 'loading' && (
         <button
           type="button"
           className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
@@ -58,7 +58,7 @@ function UserSimpleStats({ user }) {
           Loading...
         </button>
       )}
-      {state === "closed" && (
+      {state === 'closed' && (
         <button
           type="button"
           className="btn btn-sm btn-success cb-btn-success cb-btn-success text-nowrap text-white cb-rounded"
@@ -67,10 +67,10 @@ function UserSimpleStats({ user }) {
           Show stats
         </button>
       )}
-      {state === "opened" && (
+      {state === 'opened' && (
         <span className="text-nowrap">{`Won/Lost: ${getPerfomance(data.won, data.lost)}`}</span>
       )}
-      {state === "error" && (
+      {state === 'error' && (
         <button type="button" className="btn btn-sm btn-danger cb-rounded" onClick={load}>
           Reload
         </button>
@@ -107,7 +107,7 @@ function GameCard({ type, game, currentUserId = null, isGuest = true, isOnline =
                   <ResultIcon icon={player1.icon} />
                   <UserInfo user={player1.data} mode="dark" lang={player1.data.editorLang} />
                 </div>
-                {type === "active" && <GameProgressBar player={player1.data} position="left" />}
+                {type === 'active' && <GameProgressBar player={player1.data} position="left" />}
               </div>
               <span className="text-center">VS</span>
               <div className="d-flex flex-column align-items-center position-relative">
@@ -115,13 +115,13 @@ function GameCard({ type, game, currentUserId = null, isGuest = true, isOnline =
                   <ResultIcon icon={player2.icon} />
                   <UserInfo user={player2.data} mode="dark" lang={player2.data.editorLang} />
                 </div>
-                {type === "active" && <GameProgressBar player={player2.data} position="left" />}
+                {type === 'active' && <GameProgressBar player={player2.data} position="left" />}
               </div>
             </>
           )}
         </div>
       </div>
-      {type === "active" && (
+      {type === 'active' && (
         <GameActionButton
           type="card"
           game={game}
@@ -130,7 +130,7 @@ function GameCard({ type, game, currentUserId = null, isGuest = true, isOnline =
           isOnline={isOnline}
         />
       )}
-      {type === "completed" && (
+      {type === 'completed' && (
         <a
           type="button"
           className="btn btn-secondary cb-btn-secondary btn-sm cb-rounded"

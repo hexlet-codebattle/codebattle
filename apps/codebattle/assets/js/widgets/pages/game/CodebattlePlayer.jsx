@@ -1,21 +1,21 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import qs from "qs";
-import { Slider } from "react-player-controls";
-import { Direction } from "react-player-controls/dist/constants";
-import { connect } from "react-redux";
+import qs from 'qs';
+import { Slider } from 'react-player-controls';
+import { Direction } from 'react-player-controls/dist/constants';
+import { connect } from 'react-redux';
 
-import RoomContext from "../../components/RoomContext";
-import speedModes from "../../config/speedModes";
-import playbackModes from "../../config/playbackModes";
-import { replayerMachineStates } from "../../machines/game";
-import * as GameActions from "../../middlewares/Room";
-import { parse } from "../../lib/player";
-import { playbookRecordsSelector } from "../../selectors";
-import { actions } from "../../slices";
+import RoomContext from '../../components/RoomContext';
+import speedModes from '../../config/speedModes';
+import playbackModes from '../../config/playbackModes';
+import { replayerMachineStates } from '../../machines/game';
+import * as GameActions from '../../middlewares/Room';
+import { parse } from '../../lib/player';
+import { playbookRecordsSelector } from '../../selectors';
+import { actions } from '../../slices';
 
-import CodebattleSliderBar from "./CodebattleSliderBar";
-import ControlPanel from "./ControlPanel";
+import CodebattleSliderBar from './CodebattleSliderBar';
+import ControlPanel from './ControlPanel';
 
 const playDelays = {
   [speedModes.normal]: 100,
@@ -38,7 +38,7 @@ const getRecordTime = (records, index) => {
   if (!records || index < 0 || index >= records.length) return null;
   try {
     const parsed = parse(records[index]);
-    return typeof parsed.time === "number" ? parsed.time : null;
+    return typeof parsed.time === 'number' ? parsed.time : null;
   } catch (e) {
     return null;
   }
@@ -49,11 +49,11 @@ class CodebattlePlayer extends Component {
     super(props);
     const { stepCoefficient } = props;
 
-    const getParams = window.location.href.split("?")[1];
+    const getParams = window.location.href.split('?')[1];
     const parsedParams = getParams ? qs.parse(getParams) : {};
     const nextRecordId = parsedParams.t ? Number(parsedParams.t) : 0;
     const playbackMode =
-      parsedParams.realtime === "false" ? playbackModes.standard : playbackModes.realtime;
+      parsedParams.realtime === 'false' ? playbackModes.standard : playbackModes.realtime;
 
     this.state = {
       isEnabled: true,
@@ -110,12 +110,12 @@ class CodebattlePlayer extends Component {
 
     if (roomMachineState.matches({ replayer: replayerMachineStates.ended })) {
       this.setGameState(0.0);
-      mainService.send("PLAY");
+      mainService.send('PLAY');
       this.play(0.0);
     }
 
     if (roomMachineState.matches({ replayer: replayerMachineStates.paused })) {
-      mainService.send("PLAY");
+      mainService.send('PLAY');
       this.play(handlerPosition);
     }
   };
@@ -125,12 +125,12 @@ class CodebattlePlayer extends Component {
       cancelAnimationFrame(this.animationFrameId);
     }
     const { mainService } = this.context;
-    mainService.send("PAUSE");
+    mainService.send('PAUSE');
   };
 
   onChangeSpeed = () => {
     const { mainService } = this.context;
-    mainService.send("TOGGLE_SPEED_MODE");
+    mainService.send('TOGGLE_SPEED_MODE');
   };
 
   onChangePlaybackMode = () => {
@@ -163,7 +163,7 @@ class CodebattlePlayer extends Component {
       cancelAnimationFrame(this.animationFrameId);
     }
     const { mainService } = this.context;
-    mainService.send("HOLD");
+    mainService.send('HOLD');
   };
 
   onSliderHandleChangeEnd = (handlerPosition) => {
@@ -172,15 +172,15 @@ class CodebattlePlayer extends Component {
     const { holding } = roomMachineState.context;
 
     switch (holding) {
-      case "play":
-        mainService.send("RELEASE_AND_PLAY");
+      case 'play':
+        mainService.send('RELEASE_AND_PLAY');
         this.play(handlerPosition);
         break;
-      case "pause":
-        mainService.send("RELEASE_AND_PAUSE");
+      case 'pause':
+        mainService.send('RELEASE_AND_PAUSE');
         break;
       default:
-        setError(new Error("Unexpected holding state [replayer machine]"));
+        setError(new Error('Unexpected holding state [replayer machine]'));
     }
   };
 
@@ -207,7 +207,7 @@ class CodebattlePlayer extends Component {
     setGameStateByRecordId(nextRecordId);
 
     if (nextRecordId + 1 >= recordsCount) {
-      mainService.send("END");
+      mainService.send('END');
     }
 
     this.setState({ handlerPosition, smoothHandlerPosition: handlerPosition, nextRecordId });
@@ -222,7 +222,7 @@ class CodebattlePlayer extends Component {
     updateGameStateByRecordId(recordId);
 
     if (nextRecordId >= recordsCount) {
-      mainService.send("END");
+      mainService.send('END');
       this.setState({ handlerPosition: 1.0, smoothHandlerPosition: 1.0 });
     }
 

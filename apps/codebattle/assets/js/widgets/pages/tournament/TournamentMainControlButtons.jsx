@@ -1,12 +1,12 @@
-import React, { memo, useCallback, useContext, useRef, useState } from "react";
+import React, { memo, useCallback, useContext, useRef, useState } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import Button from "react-bootstrap/Button";
-import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import Button from 'react-bootstrap/Button';
+import { useDispatch } from 'react-redux';
 
-import Modal from "@/components/BootstrapModal";
-import CustomEventStylesContext from "@/components/CustomEventStylesContext";
+import Modal from '@/components/BootstrapModal';
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
 import {
   cancelTournament,
@@ -16,7 +16,7 @@ import {
   finishRoundTournament as handleFinishRoundTournament,
   openUpTournament as handleOpenUpTournament,
   showTournamentResults as handleShowResults,
-} from "../../middlewares/TournamentAdmin";
+} from '../../middlewares/TournamentAdmin';
 
 function TournamentMainControlButtons({
   accessType,
@@ -44,13 +44,13 @@ function TournamentMainControlButtons({
   const [finishConfirmationModalShowing, setFinishConfirmationModalShowing] = useState(false);
 
   const handleStartTournament = useCallback(() => {
-    handleStartRound("firstRound");
+    handleStartRound('firstRound');
   }, [handleStartRound]);
   const handleCancelTournament = useCallback(() => {
     dispatch(cancelTournament());
   }, [dispatch]);
   const handleStartRoundTournament = useCallback(() => {
-    handleStartRound("nextRound");
+    handleStartRound('nextRound');
   }, [handleStartRound]);
   const openRestartConfirmationModal = useCallback(() => {
     setRestartConfirmationModalShowing(true);
@@ -83,33 +83,33 @@ function TournamentMainControlButtons({
     closeFinishConfirmationModal();
   }, [closeFinishConfirmationModal]);
 
-  const cancelBtnClassName = cn("btn cb-rounded", {
-    "btn-secondary cb-btn-secondary": !hasCustomEventStyle,
-    "cb-custom-event-btn-secondary": hasCustomEventStyle,
+  const cancelBtnClassName = cn('btn cb-rounded', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
-  const confirmBtnClassName = cn("btn text-white cb-rounded", {
-    "btn-danger": !hasCustomEventStyle,
-    "cb-custom-event-btn-danger": hasCustomEventStyle,
+  const confirmBtnClassName = cn('btn text-white cb-rounded', {
+    'btn-danger': !hasCustomEventStyle,
+    'cb-custom-event-btn-danger': hasCustomEventStyle,
   });
-  const actionBtnClassName = cn("btn btn-sm text-nowrap cb-rounded mr-2 mb-2", {
-    "btn-secondary cb-btn-secondary": !hasCustomEventStyle,
-    "cb-custom-event-btn-secondary": hasCustomEventStyle,
+  const actionBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
-  const flowBtnClassName = cn("btn btn-sm text-nowrap cb-rounded mr-2 mb-2 text-white", {
-    "btn-success cb-btn-success": !hasCustomEventStyle,
-    "cb-custom-event-btn-success": hasCustomEventStyle,
+  const flowBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2 text-white', {
+    'btn-success cb-btn-success': !hasCustomEventStyle,
+    'cb-custom-event-btn-success': hasCustomEventStyle,
   });
-  const subtleBtnClassName = cn("btn btn-sm text-nowrap cb-rounded mr-2 mb-2", {
-    "btn-outline-secondary": !hasCustomEventStyle,
-    "cb-custom-event-btn-secondary": hasCustomEventStyle,
+  const subtleBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2', {
+    'btn-outline-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
-  const destructiveBtnClassName = cn("btn btn-sm text-nowrap cb-rounded mr-2 mb-2 text-white", {
-    "btn-danger": !hasCustomEventStyle,
-    "cb-custom-event-btn-danger": hasCustomEventStyle,
+  const destructiveBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2 text-white', {
+    'btn-danger': !hasCustomEventStyle,
+    'cb-custom-event-btn-danger': hasCustomEventStyle,
   });
-  const settingsColClassName = cn("px-2 mb-3 mb-xl-0", {
-    "col-12": streamMode,
-    "col-12 col-xl-6": !streamMode,
+  const settingsColClassName = cn('px-2 mb-3 mb-xl-0', {
+    'col-12': streamMode,
+    'col-12 col-xl-6': !streamMode,
   });
 
   return (
@@ -320,9 +320,9 @@ function TournamentMainControlButtons({
                 disabled={disabled || !canToggleShowBots}
               >
                 <FontAwesomeIcon className="mr-2" icon="robot" />
-                {showBots ? "Hide bots" : "Show bots"}
+                {showBots ? 'Hide bots' : 'Show bots'}
               </button>
-              {accessType === "token" && (
+              {accessType === 'token' && (
                 <button
                   type="button"
                   className={subtleBtnClassName}

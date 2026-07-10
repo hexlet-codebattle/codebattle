@@ -1,6 +1,6 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from 'react';
 
-import * as GameActions from "../middlewares/Room";
+import * as GameActions from '../middlewares/Room';
 
 /**
  * @param {object} editor

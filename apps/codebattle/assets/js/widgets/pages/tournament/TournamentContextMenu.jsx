@@ -1,13 +1,13 @@
-import React, { memo, useMemo, useState, useCallback } from "react";
+import React, { memo, useMemo, useState, useCallback } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   Menu,
   Item,
   // Separator,
   useContextMenu,
-} from "react-contexify";
-import { /* useSelector, */ useDispatch } from "react-redux";
+} from 'react-contexify';
+import { /* useSelector, */ useDispatch } from 'react-redux';
 
 export const useTournamentContextMenu = ({ type }) => {
   const menuConf = useMemo(() => ({ id: `${type}-chat` }), [type]);

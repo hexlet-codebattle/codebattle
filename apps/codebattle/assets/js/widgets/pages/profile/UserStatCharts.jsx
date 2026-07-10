@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   BarChart,
@@ -9,24 +9,24 @@ import {
   ResponsiveContainer,
   Tooltip,
   Cell,
-} from "recharts";
+} from 'recharts';
 
-import i18n from "../../../i18n";
+import i18n from '../../../i18n';
 
 const chartColors = {
-  gold: "#e0bf7a",
-  silver: "#c2c9d6",
-  bronze: "#c48a57",
-  platinum: "#a4aab3",
-  steel: "#8a919c",
-  iron: "#6f7782",
+  gold: '#e0bf7a',
+  silver: '#c2c9d6',
+  bronze: '#c48a57',
+  platinum: '#a4aab3',
+  steel: '#8a919c',
+  iron: '#6f7782',
 };
 
 const gameResultNames = {
-  won: i18n.t("Won"),
-  lost: i18n.t("Lost"),
-  gaveUp: i18n.t("Gave up"),
-  gave_up: i18n.t("Gave up"),
+  won: i18n.t('Won'),
+  lost: i18n.t('Lost'),
+  gaveUp: i18n.t('Gave up'),
+  gave_up: i18n.t('Gave up'),
 };
 
 const gameResultColorByKey = {
@@ -37,18 +37,18 @@ const gameResultColorByKey = {
 };
 
 const tournamentLabels = {
-  rookieWins: i18n.t("Rookie"),
-  challengerWins: i18n.t("Challenger"),
-  proWins: i18n.t("Pro"),
-  eliteWins: i18n.t("Elite"),
-  mastersWins: i18n.t("Masters"),
-  grandSlamWins: i18n.t("Grand Slam"),
-  rookie_wins: i18n.t("Rookie"),
-  challenger_wins: i18n.t("Challenger"),
-  pro_wins: i18n.t("Pro"),
-  elite_wins: i18n.t("Elite"),
-  masters_wins: i18n.t("Masters"),
-  grand_slam_wins: i18n.t("Grand Slam"),
+  rookieWins: i18n.t('Rookie'),
+  challengerWins: i18n.t('Challenger'),
+  proWins: i18n.t('Pro'),
+  eliteWins: i18n.t('Elite'),
+  mastersWins: i18n.t('Masters'),
+  grandSlamWins: i18n.t('Grand Slam'),
+  rookie_wins: i18n.t('Rookie'),
+  challenger_wins: i18n.t('Challenger'),
+  pro_wins: i18n.t('Pro'),
+  elite_wins: i18n.t('Elite'),
+  masters_wins: i18n.t('Masters'),
+  grand_slam_wins: i18n.t('Grand Slam'),
 };
 
 const tournamentColorByKey = {
@@ -67,34 +67,34 @@ const tournamentColorByKey = {
 };
 
 const tournamentOrder = [
-  "rookieWins",
-  "challengerWins",
-  "proWins",
-  "eliteWins",
-  "mastersWins",
-  "grandSlamWins",
-  "rookie_wins",
-  "challenger_wins",
-  "pro_wins",
-  "elite_wins",
-  "masters_wins",
-  "grand_slam_wins",
+  'rookieWins',
+  'challengerWins',
+  'proWins',
+  'eliteWins',
+  'mastersWins',
+  'grandSlamWins',
+  'rookie_wins',
+  'challenger_wins',
+  'pro_wins',
+  'elite_wins',
+  'masters_wins',
+  'grand_slam_wins',
 ];
 
 function UserStatCharts({ gameStats, tournamentStats }) {
   const tooltipStyle = {
-    backgroundColor: "#1c1c24",
-    border: "1px solid #4c4c5a",
-    borderRadius: "8px",
-    color: "#d7dbe6",
+    backgroundColor: '#1c1c24',
+    border: '1px solid #4c4c5a',
+    borderRadius: '8px',
+    color: '#d7dbe6',
   };
 
   const tooltipLabelStyle = {
-    color: "#d7dbe6",
+    color: '#d7dbe6',
   };
 
   const tooltipItemStyle = {
-    color: "#d7dbe6",
+    color: '#d7dbe6',
   };
 
   const resultDataForGameBar = Object.entries(gameStats)
@@ -105,8 +105,8 @@ function UserStatCharts({ gameStats, tournamentStats }) {
       fill: gameResultColorByKey[key] || chartColors.steel,
     }))
     .sort((a, b) => {
-      if (a.key === "won") return -1;
-      if (b.key === "won") return 1;
+      if (a.key === 'won') return -1;
+      if (b.key === 'won') return 1;
       return a.name.localeCompare(b.name);
     });
 
@@ -126,7 +126,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
     <div className="row justify-content-center pb-4 px-3">
       <div className="col-12 col-lg-6 mt-4 mb-4 mb-lg-0">
         <div className="small text-center text-muted mb-2">
-          {i18n.t("Total games: %{count}", { count: totalGames })}
+          {i18n.t('Total games: %{count}', { count: totalGames })}
         </div>
         <ResponsiveContainer
           className="text-white"
@@ -149,14 +149,14 @@ function UserStatCharts({ gameStats, tournamentStats }) {
               contentStyle={tooltipStyle}
               labelStyle={tooltipLabelStyle}
               itemStyle={tooltipItemStyle}
-              cursor={{ fill: "transparent" }}
+              cursor={{ fill: 'transparent' }}
             />
             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" allowDecimals={false} />
             <YAxis type="category" dataKey="name" width={100} />
             <Bar
               dataKey="value"
-              name={i18n.t("Total games")}
+              name={i18n.t('Total games')}
               radius={[0, 8, 8, 0]}
               isAnimationActive
               animationDuration={900}
@@ -173,7 +173,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
 
       <div className="col-12 col-lg-6 mt-4">
         <div className="small text-center text-muted mb-2">
-          {i18n.t("Total tournament wins: %{count}", { count: totalTournamentWins })}
+          {i18n.t('Total tournament wins: %{count}', { count: totalTournamentWins })}
         </div>
         <ResponsiveContainer width="100%" height={320} minWidth={1} minHeight={320}>
           <BarChart
@@ -190,14 +190,14 @@ function UserStatCharts({ gameStats, tournamentStats }) {
               contentStyle={tooltipStyle}
               labelStyle={tooltipLabelStyle}
               itemStyle={tooltipItemStyle}
-              cursor={{ fill: "transparent" }}
+              cursor={{ fill: 'transparent' }}
             />
             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" allowDecimals={false} />
             <YAxis type="category" dataKey="name" width={95} />
             <Bar
               dataKey="value"
-              name={i18n.t("Total tournament wins")}
+              name={i18n.t('Total tournament wins')}
               radius={[0, 8, 8, 0]}
               isAnimationActive
               animationDuration={900}

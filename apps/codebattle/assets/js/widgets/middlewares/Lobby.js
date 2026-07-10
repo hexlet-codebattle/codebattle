@@ -1,23 +1,23 @@
-import { camelizeKeys } from "humps";
-import some from "lodash/some";
+import { camelizeKeys } from 'humps';
+import some from 'lodash/some';
 
-import { channelMethods, channelTopics } from "../../socket";
-import { actions } from "../slices";
-import { getSystemMessage } from "../utils/chat";
-import { calculateExpireDate } from "../utils/chatRoom";
+import { channelMethods, channelTopics } from '../../socket';
+import { actions } from '../slices';
+import { getSystemMessage } from '../utils/chat';
+import { calculateExpireDate } from '../utils/chatRoom';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
 const channel = new Channel();
 
 export const fetchState = (currentUserId) => (dispatch) => {
-  const channelName = "lobby";
+  const channelName = 'lobby';
   channel.setupChannel(channelName);
 
   const camelizeKeysAndDispatch = (actionCreator) => (data) =>
     dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive("ok", camelizeKeysAndDispatch(actions.initGameList));
+  channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
   channel.onError(() => {
     dispatch(actions.updateLobbyChannelState(false));
@@ -28,7 +28,7 @@ export const fetchState = (currentUserId) => (dispatch) => {
       game: { players, id, state: gameState },
     } = data;
     const currentPlayerId = currentUserId;
-    const isGameStarted = gameState === "playing";
+    const isGameStarted = gameState === 'playing';
     const isCurrentUserInGame = some(players, ({ id: playerId }) => playerId === currentPlayerId);
 
     if (isGameStarted && isCurrentUserInGame) {
@@ -44,7 +44,7 @@ export const fetchState = (currentUserId) => (dispatch) => {
 
   const handleGameCheckStarted = (data) => {
     const { gameId, userId } = data;
-    const payload = { gameId, userId, checkResult: { status: "started" } };
+    const payload = { gameId, userId, checkResult: { status: 'started' } };
 
     dispatch(actions.updateCheckResult(payload));
   };
@@ -91,7 +91,7 @@ export const createGame = (params) => {
 export const createExperimentGame = (params) => {
   channel
     .push(channelMethods.experimentGameCreate, params)
-    .receive("error", (error) => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
 export const createInvite = (invite) => {

@@ -1,7 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 
-import Gon from "gon";
-import { camelizeKeys } from "humps";
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
 import {
   Bar,
   BarChart,
@@ -13,24 +13,24 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 
-const PLAYER_COLORS = ["#60a5fa", "#f472b6"];
+const PLAYER_COLORS = ['#60a5fa', '#f472b6'];
 
 const RISK_BADGE = {
-  none: { label: "Looks human", className: "badge badge-success" },
-  low: { label: "Low risk", className: "badge badge-info" },
-  medium: { label: "Suspicious", className: "badge badge-warning" },
-  high: { label: "Likely bot", className: "badge badge-danger" },
+  none: { label: 'Looks human', className: 'badge badge-success' },
+  low: { label: 'Low risk', className: 'badge badge-info' },
+  medium: { label: 'Suspicious', className: 'badge badge-warning' },
+  high: { label: 'Likely bot', className: 'badge badge-danger' },
 };
 
 const formatMs = (ms) => {
-  if (!Number.isFinite(ms)) return "—";
+  if (!Number.isFinite(ms)) return '—';
   if (ms < 1000) return `${Math.round(ms)} ms`;
   return `${(ms / 1000).toFixed(2)} s`;
 };
 
-const formatNumber = (n) => (Number.isFinite(n) ? n.toLocaleString() : "—");
+const formatNumber = (n) => (Number.isFinite(n) ? n.toLocaleString() : '—');
 
 function StatRow({ label, value, hint }) {
   return (
@@ -48,12 +48,12 @@ function PlayerCard({ player, batches, color }) {
   const report = player?.report || null;
   const stats = report?.stats || null;
   const codeAnalysis = report?.codeAnalysis || null;
-  const finalText = player?.editorText || "";
+  const finalText = player?.editorText || '';
   const finalLength = report?.finalLength ?? finalText.length;
   const templateLength = report?.templateLength ?? 0;
   const effectiveAddedLength = report?.effectiveAddedLength ?? 0;
   const score = report?.score ?? 0;
-  const level = report?.level || "none";
+  const level = report?.level || 'none';
   const signals = report?.signals || [];
   const badge = RISK_BADGE[level] || RISK_BADGE.none;
 
@@ -92,7 +92,7 @@ function PlayerCard({ player, batches, color }) {
               {player?.isBot ? <span className="badge badge-secondary ml-2">bot</span> : null}
             </h6>
             <small className="text-muted">
-              id={player?.id} · rating={player?.rating ?? "—"} · lang={player?.lang ?? "—"}
+              id={player?.id} · rating={player?.rating ?? '—'} · lang={player?.lang ?? '—'}
             </small>
           </div>
         </div>
@@ -135,8 +135,8 @@ function PlayerCard({ player, batches, color }) {
                 value={codeAnalysis.gptPhraseHits || 0}
                 hint={
                   codeAnalysis.gptPhraseMatches?.length > 0
-                    ? `“${codeAnalysis.gptPhraseMatches.slice(0, 2).join("”, “")}”${
-                        codeAnalysis.gptPhraseMatches.length > 2 ? ", …" : ""
+                    ? `“${codeAnalysis.gptPhraseMatches.slice(0, 2).join('”, “')}”${
+                        codeAnalysis.gptPhraseMatches.length > 2 ? ', …' : ''
                       }`
                     : null
                 }
@@ -160,12 +160,12 @@ function PlayerCard({ player, batches, color }) {
                 value={
                   effectiveAddedLength > 0
                     ? `${(((stats?.totalCharsInserted || 0) / effectiveAddedLength) * 100).toFixed(0)}%`
-                    : "—"
+                    : '—'
                 }
                 hint={
                   effectiveAddedLength >= 60 &&
                   (stats?.totalCharsInserted || 0) / effectiveAddedLength < 0.6
-                    ? "low → likely injected/pasted"
+                    ? 'low → likely injected/pasted'
                     : null
                 }
               />
@@ -186,18 +186,18 @@ function PlayerCard({ player, batches, color }) {
 
         {finalText && (
           <details className="mb-3">
-            <summary className="text-muted small" style={{ cursor: "pointer" }}>
-              Show final submitted code ({finalLength} chars, lang={player?.editorLang || "?"})
+            <summary className="text-muted small" style={{ cursor: 'pointer' }}>
+              Show final submitted code ({finalLength} chars, lang={player?.editorLang || '?'})
             </summary>
             <pre
               className="mt-2 p-2 small text-white"
               style={{
-                background: "#0b1220",
-                border: "1px solid #3a3f50",
+                background: '#0b1220',
+                border: '1px solid #3a3f50',
                 borderRadius: 4,
                 maxHeight: 360,
-                overflow: "auto",
-                whiteSpace: "pre-wrap",
+                overflow: 'auto',
+                whiteSpace: 'pre-wrap',
               }}
             >
               {finalText}
@@ -251,7 +251,7 @@ function PlayerCard({ player, batches, color }) {
                 <StatRow
                   label="Largest single insert / delete"
                   value={`${stats.maxSingleInsertLen} / ${stats.maxSingleDeleteLen}`}
-                  hint={stats.maxSingleInsertLen >= 8 ? "≥8 → likely paste" : null}
+                  hint={stats.maxSingleInsertLen >= 8 ? '≥8 → likely paste' : null}
                 />
                 <StatRow
                   label="Large inserts (≥50)"
@@ -262,7 +262,7 @@ function PlayerCard({ player, batches, color }) {
                   value={`${stats.totalContentChanges} / ${stats.totalPrintableKeys}`}
                   hint={
                     stats.totalContentChanges > stats.totalPrintableKeys + 1
-                      ? "more changes than keys → programmatic"
+                      ? 'more changes than keys → programmatic'
                       : null
                   }
                 />
@@ -280,11 +280,11 @@ function PlayerCard({ player, batches, color }) {
                 <ResponsiveContainer>
                   <BarChart data={series} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                     <CartesianGrid stroke="#3a3f50" strokeDasharray="3 3" />
-                    <XAxis dataKey="startSec" tick={{ fill: "#9ca3af", fontSize: 11 }} />
-                    <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} />
+                    <XAxis dataKey="startSec" tick={{ fill: '#9ca3af', fontSize: 11 }} />
+                    <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{ background: "#1f2937", border: "1px solid #3a3f50" }}
-                      labelStyle={{ color: "#e5e7eb" }}
+                      contentStyle={{ background: '#1f2937', border: '1px solid #3a3f50' }}
+                      labelStyle={{ color: '#e5e7eb' }}
                     />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Bar dataKey="events" fill={color} name="events" />
@@ -297,11 +297,11 @@ function PlayerCard({ player, batches, color }) {
                 <ResponsiveContainer>
                   <LineChart data={series} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                     <CartesianGrid stroke="#3a3f50" strokeDasharray="3 3" />
-                    <XAxis dataKey="startSec" tick={{ fill: "#9ca3af", fontSize: 11 }} />
-                    <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} />
+                    <XAxis dataKey="startSec" tick={{ fill: '#9ca3af', fontSize: 11 }} />
+                    <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{ background: "#1f2937", border: "1px solid #3a3f50" }}
-                      labelStyle={{ color: "#e5e7eb" }}
+                      contentStyle={{ background: '#1f2937', border: '1px solid #3a3f50' }}
+                      labelStyle={{ color: '#e5e7eb' }}
                     />
                     <Line
                       type="monotone"
@@ -322,9 +322,9 @@ function PlayerCard({ player, batches, color }) {
 }
 
 function GameMlPage() {
-  const gameId = Gon.getAsset("game_id");
-  const players = (Gon.getAsset("players") || []).map((p) => camelizeKeys(p));
-  const batches = (Gon.getAsset("batches") || []).map((b) => camelizeKeys(b));
+  const gameId = Gon.getAsset('game_id');
+  const players = (Gon.getAsset('players') || []).map((p) => camelizeKeys(p));
+  const batches = (Gon.getAsset('batches') || []).map((b) => camelizeKeys(b));
 
   const batchesByUser = useMemo(() => {
     const map = new Map();
@@ -342,7 +342,7 @@ function GameMlPage() {
   return (
     <div
       className="container-fluid py-3 cb-text"
-      style={{ background: "#0f172a", minHeight: "100vh" }}
+      style={{ background: '#0f172a', minHeight: '100vh' }}
     >
       <div className="d-flex align-items-center justify-content-between mb-3">
         <h4 className="mb-0">Game #{gameId} — bot/human signal review</h4>

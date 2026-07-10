@@ -1,13 +1,13 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import isArray from "lodash/isArray";
-import isBoolean from "lodash/isBoolean";
-import isEmpty from "lodash/isEmpty";
-import isNumber from "lodash/isNumber";
-import isObject from "lodash/isObject";
-import isString from "lodash/isString";
+import isArray from 'lodash/isArray';
+import isBoolean from 'lodash/isBoolean';
+import isEmpty from 'lodash/isEmpty';
+import isNumber from 'lodash/isNumber';
+import isObject from 'lodash/isObject';
+import isString from 'lodash/isString';
 
-import { argumentTypes } from "./builder";
+import { argumentTypes } from './builder';
 
 const isValidValueToSignature = (value, signature) => {
   if (!signature) {
@@ -50,17 +50,17 @@ const useValidationExample = ({ suggest, inputSignature, outputSignature }) => {
   const [validArguments, reasonInvalidArguments] = useMemo(() => {
     try {
       if (!suggest) {
-        return [false, ""];
+        return [false, ''];
       }
 
       if (isEmpty(suggest.arguments)) {
-        return [false, ""];
+        return [false, ''];
       }
 
       const data = JSON.parse(suggest.arguments);
 
       if (!isArray(data)) {
-        return [false, "Must be array"];
+        return [false, 'Must be array'];
       }
 
       if (inputSignature.length !== data.length) {
@@ -73,17 +73,17 @@ const useValidationExample = ({ suggest, inputSignature, outputSignature }) => {
 
       return [true];
     } catch (_error) {
-      return [false, "Not valid arguments"];
+      return [false, 'Not valid arguments'];
     }
   }, [suggest, inputSignature]);
   const [validExpected, reasonInvalidExpected] = useMemo(() => {
     try {
       if (!suggest) {
-        return [false, ""];
+        return [false, ''];
       }
 
       if (isEmpty(suggest.expected)) {
-        return [false, ""];
+        return [false, ''];
       }
 
       const data = JSON.parse(suggest.expected);
@@ -94,7 +94,7 @@ const useValidationExample = ({ suggest, inputSignature, outputSignature }) => {
 
       return [true];
     } catch (_error) {
-      return [false, "Not valid expected"];
+      return [false, 'Not valid expected'];
     }
   }, [suggest, outputSignature]);
 

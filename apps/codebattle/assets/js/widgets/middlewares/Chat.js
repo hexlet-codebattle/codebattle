@@ -1,29 +1,29 @@
-import Gon from "gon";
-import capitalize from "lodash/capitalize";
+import Gon from 'gon';
+import capitalize from 'lodash/capitalize';
 
-import i18n from "../../i18n";
-import { channelMethods, channelTopics } from "../../socket";
-import { actions } from "../slices";
-import { getSystemMessage } from "../utils/chat";
-import getChatTopic from "../utils/names";
+import i18n from '../../i18n';
+import { channelMethods, channelTopics } from '../../socket';
+import { actions } from '../slices';
+import { getSystemMessage } from '../utils/chat';
+import getChatTopic from '../utils/names';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
-const isRecord = Gon.getAsset("is_record");
+const isRecord = Gon.getAsset('is_record');
 
 const channel = new Channel();
 
 export const pushCommandTypes = {
-  cleanBanned: "clead_banned",
+  cleanBanned: 'clead_banned',
 };
 
 const establishChat = (page) => (dispatch) => {
   const getDispatchActionHandler = (actionCreator) => (data) => dispatch(actionCreator(data));
 
-  channel.join().receive("ok", (data) => {
+  channel.join().receive('ok', (data) => {
     const greetingMessage = getSystemMessage({
-      text: i18n.t("Joined channel: %{name}", { name: capitalize(page) }),
-      status: "success",
+      text: i18n.t('Joined channel: %{name}', { name: capitalize(page) }),
+      status: 'success',
     });
     const messages = [greetingMessage, ...data.messages];
     const updatedData = { ...data, page, messages };
@@ -46,7 +46,7 @@ const establishChat = (page) => (dispatch) => {
 };
 
 export const connectToChat =
-  (useChat = true, chatPage = "channel", chatId) =>
+  (useChat = true, chatPage = 'channel', chatId) =>
   (dispatch) => {
     if (!isRecord && useChat) {
       const page = getChatTopic(chatPage, chatId);

@@ -1,47 +1,47 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import i18next from "i18next";
-import moment from "moment";
-import Tooltip from "react-bootstrap/Tooltip";
-import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import i18next from 'i18next';
+import moment from 'moment';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { useSelector } from 'react-redux';
 
-import OverlayTrigger from "@/components/OverlayTriggerCompat";
-import useMatchesStatistics from "@/utils/useMatchesStatistics";
+import OverlayTrigger from '@/components/OverlayTriggerCompat';
+import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
-import Loading from "../../components/Loading";
-import UserInfo from "../../components/UserInfo";
+import Loading from '../../components/Loading';
+import UserInfo from '../../components/UserInfo';
 
-import MatchAction from "./MatchAction";
-import TournamentMatchBadge from "./TournamentMatchBadge";
+import MatchAction from './MatchAction';
+import TournamentMatchBadge from './TournamentMatchBadge';
 
-export const toLocalTime = (time) => moment.utc(time).local().format("HH:mm:ss");
+export const toLocalTime = (time) => moment.utc(time).local().format('HH:mm:ss');
 
 const matchClassName = cn(
-  "d-flex flex-column flex-lg-row align-items-lg-center justify-content-between",
-  "border-bottom cb-border-color px-3 py-3",
+  'd-flex flex-column flex-lg-row align-items-lg-center justify-content-between',
+  'border-bottom cb-border-color px-3 py-3',
 );
 const matchBodyClassName = cn(
-  "d-flex flex-column flex-lg-row flex-lg-wrap align-items-start align-items-lg-center flex-grow-1",
+  'd-flex flex-column flex-lg-row flex-lg-wrap align-items-start align-items-lg-center flex-grow-1',
 );
-const matchHeaderClassName = cn("d-flex align-items-center mb-2 mb-lg-0");
-const matchPlayersClassName = cn("d-flex flex-wrap align-items-center mb-1 mb-lg-0");
-const playerSlotClassName = cn("d-flex align-items-center text-nowrap");
+const matchHeaderClassName = cn('d-flex align-items-center mb-2 mb-lg-0');
+const matchPlayersClassName = cn('d-flex flex-wrap align-items-center mb-1 mb-lg-0');
+const playerSlotClassName = cn('d-flex align-items-center text-nowrap');
 const matchMetaClassName = cn(
-  "d-flex flex-wrap align-items-center text-nowrap small",
-  "mt-1 mt-lg-0 ml-lg-auto",
+  'd-flex flex-wrap align-items-center text-nowrap small',
+  'mt-1 mt-lg-0 ml-lg-auto',
 );
-const metaItemClassName = "d-inline-flex align-items-center mr-3";
-const metaIconClassName = "d-inline-flex align-items-center justify-content-center mr-2";
+const metaItemClassName = 'd-inline-flex align-items-center mr-3';
+const metaIconClassName = 'd-inline-flex align-items-center justify-content-center mr-2';
 const actionClassName = cn(
-  "d-flex justify-content-start justify-content-lg-center align-items-center",
-  "mt-3 mt-lg-0 ml-lg-3",
+  'd-flex justify-content-start justify-content-lg-center align-items-center',
+  'mt-3 mt-lg-0 ml-lg-3',
 );
 const roundBadgeClassName = cn(
-  "cb-text text-nowrap d-inline-flex align-items-center justify-content-center mr-2 small font-weight-bold",
+  'cb-text text-nowrap d-inline-flex align-items-center justify-content-center mr-2 small font-weight-bold',
 );
-const resultBadgeWrapClassName = "d-inline-flex align-items-center justify-content-start";
+const resultBadgeWrapClassName = 'd-inline-flex align-items-center justify-content-start';
 
 const orderMatchPlayerIds = (playerIds, playerId) => {
   if (!playerIds.includes(playerId)) {
@@ -92,17 +92,17 @@ function UsersMatchList({
       {!hideStats && matches.length > 0 && (
         <div className="d-flex py-2 border-bottom cb-border-color align-items-center overflow-auto">
           <span className="ml-2">
-            {"Wins: "}
+            {'Wins: '}
             {player.winMatches.length}
           </span>
           <span className="ml-1 pl-1 border-left cb-border-color">
-            {"AVG Tests: "}
+            {'AVG Tests: '}
             {Math.ceil(player.avgTests)}%
           </span>
           <span className="ml-1 pl-1 border-left cb-border-color">
-            {"AVG Duration: "}
+            {'AVG Duration: '}
             {Math.ceil(player.avgDuration)}
-            {" sec"}
+            {' sec'}
           </span>
         </div>
       )}
@@ -140,12 +140,12 @@ function UsersMatchList({
                   </>
                 )}
               </div>
-              {matchResult && matchResult.result !== "undefined" && (
+              {matchResult && matchResult.result !== 'undefined' && (
                 <div className={matchMetaClassName}>
                   <OverlayTrigger
                     placement="top"
                     overlay={
-                      <Tooltip id={`tests-${match.id}`}>{i18next.t("Tests percent")}</Tooltip>
+                      <Tooltip id={`tests-${match.id}`}>{i18next.t('Tests percent')}</Tooltip>
                     }
                   >
                     <span className={metaItemClassName} style={{ minWidth: 48 }}>
@@ -159,7 +159,7 @@ function UsersMatchList({
                     <OverlayTrigger
                       placement="top"
                       overlay={
-                        <Tooltip id={`duration-${match.id}`}>{i18next.t("Duration (sec)")}</Tooltip>
+                        <Tooltip id={`duration-${match.id}`}>{i18next.t('Duration (sec)')}</Tooltip>
                       }
                     >
                       <span className={metaItemClassName} style={{ minWidth: 56 }}>
@@ -173,16 +173,16 @@ function UsersMatchList({
                   <OverlayTrigger
                     placement="top"
                     overlay={
-                      <Tooltip id={`time-${match.id}`}>{i18next.t("Started - Finished")}</Tooltip>
+                      <Tooltip id={`time-${match.id}`}>{i18next.t('Started - Finished')}</Tooltip>
                     }
                   >
                     <span className={metaItemClassName}>
                       <span className={metaIconClassName}>
                         <FontAwesomeIcon className="text-primary" icon="flag-checkered" />
                       </span>
-                      {match.startedAt ? toLocalTime(match.startedAt) : "-"}
+                      {match.startedAt ? toLocalTime(match.startedAt) : '-'}
                       <span className="mx-1">-</span>
-                      {match.finishedAt ? toLocalTime(match.finishedAt) : "-"}
+                      {match.finishedAt ? toLocalTime(match.finishedAt) : '-'}
                     </span>
                   </OverlayTrigger>
                 </div>

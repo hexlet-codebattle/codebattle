@@ -1,15 +1,15 @@
-import React, { useState, useCallback, memo } from "react";
+import React, { useState, useCallback, memo } from 'react';
 
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "react-bootstrap/Button";
-import { useDispatch, useSelector } from "react-redux";
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from "@/components/BootstrapModal";
-import { sendPremiumRequest } from "@/middlewares/Users";
-import { currentUserIdSelector, userSettingsSelector } from "@/selectors";
+import Modal from '@/components/BootstrapModal';
+import { sendPremiumRequest } from '@/middlewares/Users';
+import { currentUserIdSelector, userSettingsSelector } from '@/selectors';
 
-import ModalCodes from "../../config/modalCodes";
+import ModalCodes from '../../config/modalCodes';
 
 const PremiumRestrictionModal = NiceModal.create(() => {
   const dispatch = useDispatch();

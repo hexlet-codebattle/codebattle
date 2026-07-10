@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
 
 import {
   EventPage,
@@ -32,9 +32,9 @@ import {
   UserPage,
   UsersRating,
   AdminPage,
-} from "./App";
+} from './App';
 
-const Heatmap = React.lazy(() => import("./pages/profile/Heatmap"));
+const Heatmap = React.lazy(() => import('./pages/profile/Heatmap'));
 
 export const renderEventPage = (domElement) => createRoot(domElement).render(<EventPage />);
 export const renderGroupTournamentPage = (domElement) =>

@@ -1,26 +1,26 @@
-import React, { memo, useState, useCallback } from "react";
+import React, { memo, useState, useCallback } from 'react';
 
-import cn from "classnames";
-import i18next from "i18next";
-import { useDispatch } from "react-redux";
+import cn from 'classnames';
+import i18next from 'i18next';
+import { useDispatch } from 'react-redux';
 
-import UserInfo from "../../components/UserInfo";
-import { getResults } from "../../middlewares/Tournament";
+import UserInfo from '../../components/UserInfo';
+import { getResults } from '../../middlewares/Tournament';
 
-import TournamentContextMenu, { useTournamentContextMenu } from "./TournamentContextMenu";
-import useTournamentPanel from "./useTournamentPanel";
+import TournamentContextMenu, { useTournamentContextMenu } from './TournamentContextMenu';
+import useTournamentPanel from './useTournamentPanel';
 
 const getCustomEventTrClassName = (type, muted) =>
-  cn("cb-text-light font-weight-bold cb-custom-event-tr", {
-    "cb-custom-event-bg-success": type === "clan" && !muted,
-    "cb-custom-event-bg-muted-success": type === "clan" && muted,
-    "cb-custom-event-bg-purple cursor-pointer": type === "user" && !muted,
-    "cb-custom-event-bg-muted-purple cursor-pointer": type === "user" && muted,
+  cn('cb-text-light font-weight-bold cb-custom-event-tr', {
+    'cb-custom-event-bg-success': type === 'clan' && !muted,
+    'cb-custom-event-bg-muted-success': type === 'clan' && muted,
+    'cb-custom-event-bg-purple cursor-pointer': type === 'user' && !muted,
+    'cb-custom-event-bg-muted-purple cursor-pointer': type === 'user' && muted,
   });
 
 const tableDataCellClassName = (hideSeparator) =>
-  cn("p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0", {
-    "hide-separator": hideSeparator,
+  cn('p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0', {
+    'hide-separator': hideSeparator,
   });
 
 function RatingClansPanel({ type, state, handleUserSelectClick }) {
@@ -36,7 +36,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
   useTournamentPanel(fetchData, state);
 
   const { menuId, menuRequest } = useTournamentContextMenu({
-    type: "user",
+    type: 'user',
   });
 
   return (
@@ -46,11 +46,11 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
           <thead className="text-muted">
             <tr>
               <th className="p-1 pl-4 font-weight-light border-0">{}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Wins count")}</th>
+              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
+              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Wins count')}</th>
               <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t("Total time for solving task")}
+                {i18next.t('Total time for solving task')}
               </th>
             </tr>
           </thead>
@@ -58,7 +58,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
             {items?.map((users, index) => (
               <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
                 <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                <tr className={getCustomEventTrClassName("clan", index > 3)}>
+                <tr className={getCustomEventTrClassName('clan', index > 3)}>
                   <td className={tableDataCellClassName(true)}>{users[0].clanRank}</td>
                   <td title={users[0].clanLongName} className={tableDataCellClassName()}>
                     <div className="cb-custom-event-name mr-1">{users[0].clanName}</div>
@@ -76,7 +76,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                 {users.map((user) => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                    <tr className={getCustomEventTrClassName("user", index > 3)}>
+                    <tr className={getCustomEventTrClassName('user', index > 3)}>
                       <td className={tableDataCellClassName(true)} aria-label="User row" />
                       <td className={tableDataCellClassName()}>
                         <div

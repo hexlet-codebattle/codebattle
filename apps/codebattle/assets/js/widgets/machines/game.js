@@ -1,47 +1,47 @@
-import { assign, actions } from "xstate";
+import { assign, actions } from 'xstate';
 
-import { channelTopics } from "../../socket";
-import GameStateCodes from "../config/gameStateCodes";
-import speedModes from "../config/speedModes";
-import subscriptionTypes from "../config/subscriptionTypes";
-import tournamentSounds from "../config/tournamentSounds";
-import sound from "../lib/sound";
+import { channelTopics } from '../../socket';
+import GameStateCodes from '../config/gameStateCodes';
+import speedModes from '../config/speedModes';
+import subscriptionTypes from '../config/subscriptionTypes';
+import tournamentSounds from '../config/tournamentSounds';
+import sound from '../lib/sound';
 
 const { send } = actions;
 
 const states = {
   room: {
-    preview: "preview",
+    preview: 'preview',
 
-    restricted: "restricted",
+    restricted: 'restricted',
 
-    failure: "failure",
+    failure: 'failure',
 
-    waiting: "waiting",
-    active: "active",
-    gameOver: "game_over",
+    waiting: 'waiting',
+    active: 'active',
+    gameOver: 'game_over',
 
-    stored: "stored",
+    stored: 'stored',
   },
   replayer: {
-    empty: "empty",
-    loading: "loading",
+    empty: 'empty',
+    loading: 'loading',
 
-    failure: "failure",
+    failure: 'failure',
 
-    on: "on",
-    paused: "on.paused",
-    playing: "on.playing",
-    holded: "on.holded",
-    ended: "on.ended",
+    on: 'on',
+    paused: 'on.paused',
+    playing: 'on.playing',
+    holded: 'on.holded',
+    ended: 'on.ended',
 
-    off: "off",
+    off: 'off',
   },
   network: {
-    none: "none",
-    disconnected: "disconnected",
-    disconnectedWithMessage: "disconnectedWithMessage",
-    connected: "connected",
+    none: 'none',
+    disconnected: 'disconnected',
+    disconnectedWithMessage: 'disconnectedWithMessage',
+    connected: 'connected',
   },
 };
 
@@ -50,28 +50,28 @@ export const replayerMachineStates = states.replayer;
 export const networkMachineStates = states.network;
 
 const recordMachine = {
-  initial: "ended",
+  initial: 'ended',
   states: {
     paused: {
       on: {
-        PLAY: "playing",
-        END: "ended",
+        PLAY: 'playing',
+        END: 'ended',
         HOLD: {
-          target: "holded",
+          target: 'holded',
           actions: assign({
-            holding: "pause",
+            holding: 'pause',
           }),
         },
       },
     },
     playing: {
       on: {
-        PAUSE: "paused",
-        END: "ended",
+        PAUSE: 'paused',
+        END: 'ended',
         HOLD: {
-          target: "holded",
+          target: 'holded',
           actions: assign({
-            holding: "play",
+            holding: 'play',
           }),
         },
       },
@@ -79,26 +79,26 @@ const recordMachine = {
     holded: {
       on: {
         RELEASE_AND_PLAY: {
-          target: "playing",
+          target: 'playing',
           actions: assign({
-            holding: "none",
+            holding: 'none',
           }),
         },
         RELEASE_AND_PAUSE: {
-          target: "paused",
+          target: 'paused',
           actions: assign({
-            holding: "none",
+            holding: 'none',
           }),
         },
       },
     },
     ended: {
       on: {
-        PLAY: "playing",
+        PLAY: 'playing',
         HOLD: {
-          target: "holded",
+          target: 'holded',
           actions: assign({
-            holding: "pause",
+            holding: 'pause',
           }),
         },
       },
@@ -107,163 +107,163 @@ const recordMachine = {
 };
 
 const machine = {
-  id: "main",
-  type: "parallel",
+  id: 'main',
+  type: 'parallel',
   context: {
     // common context
     errorMessage: null,
     // context for replayer
-    holding: "none", // ['none', 'play', 'pause']
+    holding: 'none', // ['none', 'play', 'pause']
     speedMode: speedModes.normal,
     subscriptionType: subscriptionTypes.free, // ['free', 'premium', 'admin'],
   },
   states: {
     network: {
-      initial: "none",
+      initial: 'none',
       states: {
         none: {
           on: {
-            JOIN: { target: "connected" },
+            JOIN: { target: 'connected' },
             FAILURE_JOIN: {
-              target: "disconnected",
-              actions: ["handleFailureJoin"],
+              target: 'disconnected',
+              actions: ['handleFailureJoin'],
             },
-            FAILURE: { target: "disconnected" },
+            FAILURE: { target: 'disconnected' },
           },
         },
         disconnected: {
           entry: send(
-            { type: "SHOW_ERROR_MESSAGE" },
+            { type: 'SHOW_ERROR_MESSAGE' },
             {
               delay: 2000,
             },
           ),
           on: {
             JOIN: {
-              target: "connected",
-              actions: ["handleReconnection"],
+              target: 'connected',
+              actions: ['handleReconnection'],
             },
             SHOW_ERROR_MESSAGE: {
-              target: "disconnectedWithMessage",
-              actions: ["handleDisconnection"],
+              target: 'disconnectedWithMessage',
+              actions: ['handleDisconnection'],
             },
           },
         },
         disconnectedWithMessage: {
           on: {
             JOIN: {
-              target: "connected",
-              actions: ["handleReconnection"],
+              target: 'connected',
+              actions: ['handleReconnection'],
             },
           },
         },
         connected: {
           on: {
-            FAILURE: { target: "disconnected" },
+            FAILURE: { target: 'disconnected' },
           },
         },
       },
     },
     room: {
-      initial: "preview",
+      initial: 'preview',
       states: {
         preview: {
           on: {
             LOAD_GAME: [
-              { target: "waiting", cond: "isWaitingGame" },
-              { target: "active", cond: "isActiveGame" },
+              { target: 'waiting', cond: 'isWaitingGame' },
+              { target: 'active', cond: 'isActiveGame' },
               {
-                target: "game_over",
-                cond: "isGameOver",
+                target: 'game_over',
+                cond: 'isGameOver',
               },
               {
-                target: "game_over",
-                cond: "isTimeout",
+                target: 'game_over',
+                cond: 'isTimeout',
               },
-              { target: "failure", action: "throwError" },
+              { target: 'failure', action: 'throwError' },
             ],
 
             REJECT_LOADING_GAME: {
-              target: "failure",
-              actions: ["handleError", "throwError"],
+              target: 'failure',
+              actions: ['handleError', 'throwError'],
             },
             START_LOADING_PLAYBOOK: [
-              { target: "restricted", cond: "haveOnlyFreeAccess" },
-              { target: "stored" },
+              { target: 'restricted', cond: 'haveOnlyFreeAccess' },
+              { target: 'stored' },
             ],
           },
         },
-        restricted: { type: "final" },
+        restricted: { type: 'final' },
         waiting: {
           on: {
-            "game:user_joined": "active",
+            'game:user_joined': 'active',
           },
         },
         active: {
           on: {
             [channelTopics.userCheckCompleteTopic]: [
               {
-                target: "game_over",
-                cond: (_ctx, { payload }) => payload.state === "game_over",
+                target: 'game_over',
+                cond: (_ctx, { payload }) => payload.state === 'game_over',
                 // TODO: figureOut why soundWin doesn't work
-                actions: ["soundWin", "blockGameRoomAfterCheck", "showGameResultModal"],
+                actions: ['soundWin', 'blockGameRoomAfterCheck', 'showGameResultModal'],
               },
               {
-                target: "active",
+                target: 'active',
               },
             ],
             [channelTopics.userGiveUpTopic]: {
-              target: "game_over",
-              actions: ["soundGiveUp", "showGameResultModal"],
+              target: 'game_over',
+              actions: ['soundGiveUp', 'showGameResultModal'],
             },
             [channelTopics.gameTimeoutTopic]: {
-              target: "game_over",
-              actions: ["soundTimeIsOver"],
+              target: 'game_over',
+              actions: ['soundTimeIsOver'],
             },
             [channelTopics.tournamentGameCreatedTopic]: {
-              target: "active",
-              actions: ["soundTournamentGameCreated"],
+              target: 'active',
+              actions: ['soundTournamentGameCreated'],
             },
             [channelTopics.tournamentRoundFinishedTopic]: {
-              target: "game_over",
+              target: 'game_over',
             },
             check_result: {
-              target: "active",
-              actions: ["soundStartChecking"],
+              target: 'active',
+              actions: ['soundStartChecking'],
             },
           },
         },
         game_over: {
           on: {
             [channelTopics.rematchStatusUpdatedTopic]: {
-              target: "game_over",
-              actions: ["soundRematchUpdateStatus"],
+              target: 'game_over',
+              actions: ['soundRematchUpdateStatus'],
             },
             [channelTopics.tournamentGameCreatedTopic]: {
-              target: "game_over",
+              target: 'game_over',
             },
           },
         },
         stored: {
-          type: "final",
+          type: 'final',
         },
         failure: {
-          type: "final",
+          type: 'final',
         },
       },
     },
     replayer: {
-      initial: "empty",
+      initial: 'empty',
       states: {
         empty: {
           on: {
             START_LOADING_PLAYBOOK: [
               {
-                target: "empty",
-                cond: "haveOnlyFreeAccess",
-                actions: ["showPremiumSubscribeRequestModal"],
+                target: 'empty',
+                cond: 'haveOnlyFreeAccess',
+                actions: ['showPremiumSubscribeRequestModal'],
               },
-              { target: "loading" },
+              { target: 'loading' },
             ],
           },
         },
@@ -271,29 +271,29 @@ const machine = {
           on: {
             LOAD_PLAYBOOK: [
               {
-                target: "empty",
-                cond: "haveOnlyFreeAccess",
-                actions: ["showPremiumSubscribeRequestModal"],
+                target: 'empty',
+                cond: 'haveOnlyFreeAccess',
+                actions: ['showPremiumSubscribeRequestModal'],
               },
               {
-                target: "on",
-                actions: ["handleOpenHistory"],
+                target: 'on',
+                actions: ['handleOpenHistory'],
               },
             ],
             REJECT_LOADING_PLAYBOOK: {
-              target: "failure",
-              actions: ["handleError", "throwError"],
+              target: 'failure',
+              actions: ['handleError', 'throwError'],
             },
           },
         },
         on: {
           on: {
             CLOSE_REPLAYER: {
-              target: "off",
-              actions: ["handleOpenActiveGame"],
+              target: 'off',
+              actions: ['handleOpenActiveGame'],
             },
             TOGGLE_SPEED_MODE: {
-              actions: ["toggleSpeedMode"],
+              actions: ['toggleSpeedMode'],
             },
           },
           ...recordMachine,
@@ -302,19 +302,19 @@ const machine = {
           on: {
             OPEN_REPLAYER: [
               {
-                target: "off",
-                cond: "haveOnlyFreeAccess",
-                actions: ["showPremiumSubscribeRequestModal"],
+                target: 'off',
+                cond: 'haveOnlyFreeAccess',
+                actions: ['showPremiumSubscribeRequestModal'],
               },
               {
-                target: "on",
-                actions: ["handleOpenHistory"],
+                target: 'on',
+                actions: ['handleOpenHistory'],
               },
             ],
           },
         },
         failure: {
-          type: "final",
+          type: 'final',
         },
       },
       stored: {},
@@ -327,7 +327,7 @@ export const config = {
     // game guards
     isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
     isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
-    haveOnlyFreeAccess: (ctx) => ctx.subscriptionType === "free",
+    haveOnlyFreeAccess: (ctx) => ctx.subscriptionType === 'free',
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
     isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
   },
@@ -346,13 +346,13 @@ export const config = {
 
     // game actions
     soundWin: () => {
-      sound.play("win");
+      sound.play('win');
     },
     soundGiveUp: () => {
-      sound.play("give_up");
+      sound.play('give_up');
     },
     soundTimeIsOver: () => {
-      sound.play("time_is_over");
+      sound.play('time_is_over');
     },
     soundTournamentRoundCreated: (_ctx, { payload }) => {
       if (payload?.tournament?.currentRoundPosition === 0) {
@@ -377,7 +377,7 @@ export const config = {
           case speedModes.faster:
             return speedModes.normal;
           default:
-            throw new Error("Unexpected speedMode [replayer machine]");
+            throw new Error('Unexpected speedMode [replayer machine]');
         }
       },
     }),

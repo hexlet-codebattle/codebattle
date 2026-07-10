@@ -1,25 +1,25 @@
-import Gon from "gon";
-import { camelizeKeys } from "humps";
-import compact from "lodash/compact";
-import groupBy from "lodash/groupBy";
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
+import compact from 'lodash/compact';
+import groupBy from 'lodash/groupBy';
 
-import { PanelModeCodes } from "@/pages/tournament/ControlPanel";
+import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
-import TournamentStates from "../config/tournament";
-import tournamentSounds from "../config/tournamentSounds";
-import TournamentTypes from "../config/tournamentTypes";
-import sound from "../lib/sound";
-import { actions } from "../slices";
-import { getTournamentJoinPayload } from "../utils/tournamentAccess";
+import TournamentStates from '../config/tournament';
+import tournamentSounds from '../config/tournamentSounds';
+import TournamentTypes from '../config/tournamentTypes';
+import sound from '../lib/sound';
+import { actions } from '../slices';
+import { getTournamentJoinPayload } from '../utils/tournamentAccess';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
-const tournamentId = Gon.getAsset("tournament_id");
+const tournamentId = Gon.getAsset('tournament_id');
 const channel = new Channel();
 if (tournamentId) {
   channel.setupChannel(
     `tournament:${tournamentId}`,
-    getTournamentJoinPayload(window.location.search, Gon.getAsset("tournament_access_token")),
+    getTournamentJoinPayload(window.location.search, Gon.getAsset('tournament_access_token')),
   );
 }
 const requestJson = async (url, options = {}) => {
@@ -39,7 +39,7 @@ export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament:${newTournamentId}`;
   channel.setupChannel(
     newChannelName,
-    getTournamentJoinPayload(window.location.search, Gon.getAsset("tournament_access_token")),
+    getTournamentJoinPayload(window.location.search, Gon.getAsset('tournament_access_token')),
   );
   return channel;
 };
@@ -73,7 +73,7 @@ const initTournamentChannel = (currentChannel) => (dispatch) => {
 
   currentChannel.onMessage((_event, payload) => camelizeKeys(payload));
 
-  currentChannel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+  currentChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   currentChannel.onError(() => {
     dispatch(actions.updateTournamentChannelState(false));
@@ -172,7 +172,7 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
 
   const handleRedirect = (response) => {
     const { url } = response || {};
-    if (typeof url === "string" && url.length > 0) {
+    if (typeof url === 'string' && url.length > 0) {
       window.location.href = url;
     }
   };
@@ -187,25 +187,25 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
   };
 
   return channel
-    .addListener("tournament:update", handleUpdate)
-    .addListener("tournament:matches:update", handleMatchesUpdate)
-    .addListener("tournament:players:update", handlePlayersUpdate)
-    .addListener("tournament:round_created", handleTournamentRoundCreated)
-    .addListener("tournament:round_finished", handleRoundFinished)
-    .addListener("tournament:player:joined", handlePlayerJoined)
-    .addListener("tournament:player:left", handlePlayerLeft)
-    .addListener("tournament:match:upserted", handleMatchUpserted)
-    .addListener("tournament:restarted", handleTournamentRestarted)
-    .addListener("tournament:finished", handleTournamentFinished)
-    .addListener("tournament:ranking_update", handleTournamentRankingUpdate)
-    .addListener("tournament:redirect", handleRedirect);
+    .addListener('tournament:update', handleUpdate)
+    .addListener('tournament:matches:update', handleMatchesUpdate)
+    .addListener('tournament:players:update', handlePlayersUpdate)
+    .addListener('tournament:round_created', handleTournamentRoundCreated)
+    .addListener('tournament:round_finished', handleRoundFinished)
+    .addListener('tournament:player:joined', handlePlayerJoined)
+    .addListener('tournament:player:left', handlePlayerLeft)
+    .addListener('tournament:match:upserted', handleMatchUpserted)
+    .addListener('tournament:restarted', handleTournamentRestarted)
+    .addListener('tournament:finished', handleTournamentFinished)
+    .addListener('tournament:ranking_update', handleTournamentRankingUpdate)
+    .addListener('tournament:redirect', handleRedirect);
 };
 
 export const uploadTournamentsByFilter = (from, to) =>
   requestJson(`api/v1/tournaments?from=${from}&to=${to}`, {
     headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
+      'Content-Type': 'application/json',
+      'x-csrf-token': window.csrf_token,
     },
   }).then((response) => {
     const data = camelizeKeys(response);
@@ -220,16 +220,16 @@ export const uploadPlayers = (playerIds) => (dispatch, getState) => {
   const { isLive, id } = state.tournament;
 
   if (isLive) {
-    channel.push("tournament:players:request", { playerIds }).receive("ok", (response) => {
+    channel.push('tournament:players:request', { playerIds }).receive('ok', (response) => {
       dispatch(actions.updateTournamentPlayers(response.players));
     });
   } else {
-    const playerIdsStr = playerIds.join(",");
+    const playerIdsStr = playerIds.join(',');
 
     requestJson(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
       headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
       },
     })
       .then((response) => {
@@ -240,7 +240,7 @@ export const uploadPlayers = (playerIds) => (dispatch, getState) => {
 };
 
 export const getTask = (taskId, onSuccess) => () => {
-  channel.push("tournament:get_task", { taskId }).receive("ok", (payload) => {
+  channel.push('tournament:get_task', { taskId }).receive('ok', (payload) => {
     const data = camelizeKeys(payload);
 
     onSuccess(data);
@@ -249,8 +249,8 @@ export const getTask = (taskId, onSuccess) => () => {
 
 export const getResults = (type, params, onSuccess) => () => {
   channel
-    .push("tournament:get_results", { params: { type, ...params } })
-    .receive("ok", (payload) => {
+    .push('tournament:get_results', { params: { type, ...params } })
+    .receive('ok', (payload) => {
       const data = camelizeKeys(payload);
       console.log(data);
 
@@ -264,20 +264,20 @@ export const getResults = (type, params, onSuccess) => () => {
 };
 
 export const requestMatchesByPlayerId = (userId) => (dispatch) => {
-  channel.push("tournament:matches:request", { playerId: userId }).receive("ok", (data) => {
+  channel.push('tournament:matches:request', { playerId: userId }).receive('ok', (data) => {
     dispatch(actions.updateTournamentMatches(data.matches));
     dispatch(actions.updateTournamentPlayers(data.players));
   });
 };
 
 export const requestMatchesForRound = () => (dispatch) => {
-  channel.push("tournament:matches:request_for_round", {}).receive("ok", (data) => {
+  channel.push('tournament:matches:request_for_round', {}).receive('ok', (data) => {
     dispatch(actions.updateTournamentMatches(data.matches));
   });
 };
 
 export const requestRankingPage = (page, pageSize) => (dispatch) => {
-  channel.push("tournament:ranking:request", { page, pageSize }).receive("ok", (payload) => {
+  channel.push('tournament:ranking:request', { page, pageSize }).receive('ok', (payload) => {
     const data = camelizeKeys(payload);
     dispatch(actions.updateTournamentRanking(data.ranking));
   });
@@ -285,8 +285,8 @@ export const requestRankingPage = (page, pageSize) => (dispatch) => {
 
 export const requestNearestRankingPage = (userId, pageSize) => (dispatch) => {
   channel
-    .push("tournament:ranking:request", { nearest: true, userId, pageSize })
-    .receive("ok", (payload) => {
+    .push('tournament:ranking:request', { nearest: true, userId, pageSize })
+    .receive('ok', (payload) => {
       const data = camelizeKeys(payload);
       dispatch(actions.updateTournamentRanking(data.ranking));
     });
@@ -298,10 +298,10 @@ export const uploadPlayersMatches = (playerId) => (dispatch) => {
 
 export const joinTournament = (teamId) => {
   const params = teamId !== undefined ? { teamId } : {};
-  channel.push("tournament:join", params);
+  channel.push('tournament:join', params);
 };
 
 export const leaveTournament = (teamId) => {
   const params = teamId !== undefined ? { teamId } : {};
-  channel.push("tournament:leave", params);
+  channel.push('tournament:leave', params);
 };

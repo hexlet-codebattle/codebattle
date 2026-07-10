@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
-import { useSelector } from "react-redux";
+import cn from 'classnames';
+import { useSelector } from 'react-redux';
 
-import i18n from "../../../i18n";
-import { currentUserIsAdminSelector } from "@/selectors";
+import i18n from '../../../i18n';
+import { currentUserIsAdminSelector } from '@/selectors';
 
 export const states = {
-  contest: "#contest",
-  my: "#my",
-  all: "#all",
+  contest: '#contest',
+  my: '#my',
+  all: '#all',
 };
 
-const sectionBtnClassName = cn("btn btn-secondary cb-btn-secondary cb-rounded w-100 m-2");
+const sectionBtnClassName = cn('btn btn-secondary cb-btn-secondary cb-rounded w-100 m-2');
 
 function ScheduleLegend({ onChangeContext, loading, context }) {
   const isAdmin = useSelector(currentUserIsAdminSelector);
@@ -20,8 +20,8 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
   return (
     <div
       className={cn(
-        "align-items-center justify-content-center p-1 pb-4",
-        "d-flex flex-column flex-lg-row flex-md-row",
+        'align-items-center justify-content-center p-1 pb-4',
+        'd-flex flex-column flex-lg-row flex-md-row',
       )}
     >
       <button
@@ -33,7 +33,7 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
         onClick={onChangeContext}
         disabled={loading}
       >
-        {i18n.t("Contests History")}
+        {i18n.t('Contests History')}
       </button>
       <button
         type="button"
@@ -42,7 +42,7 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
         onClick={onChangeContext}
         disabled={loading}
       >
-        {i18n.t("My Tournaments")}
+        {i18n.t('My Tournaments')}
       </button>
       {isAdmin && (
         <button
@@ -54,7 +54,7 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
           onClick={onChangeContext}
           disabled={loading}
         >
-          {i18n.t("All Tournaments")}
+          {i18n.t('All Tournaments')}
         </button>
       )}
     </div>

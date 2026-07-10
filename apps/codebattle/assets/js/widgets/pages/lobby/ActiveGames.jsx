@@ -1,23 +1,23 @@
-import React from "react";
+import React from 'react';
 
-import find from "lodash/find";
-import groupBy from "lodash/groupBy";
-import isEmpty from "lodash/isEmpty";
-import sortBy from "lodash/sortBy";
+import find from 'lodash/find';
+import groupBy from 'lodash/groupBy';
+import isEmpty from 'lodash/isEmpty';
+import sortBy from 'lodash/sortBy';
 
-import GameLevelBadge from "../../components/GameLevelBadge";
-import HorizontalScrollControls from "../../components/SideScrollControls";
-import gameStateCodes from "../../config/gameStateCodes";
+import GameLevelBadge from '../../components/GameLevelBadge';
+import HorizontalScrollControls from '../../components/SideScrollControls';
+import gameStateCodes from '../../config/gameStateCodes';
 // import hashLinkNames from '../../config/hashLinkNames';
-import levelRatio from "../../config/levelRatio";
+import levelRatio from '../../config/levelRatio';
 
 // import CompletedGames from './CompletedGames';
 // import CompletedTournaments from './CompletedTournaments';
-import GameActionButton from "./GameActionButton";
-import GameCard from "./GameCard";
-import GameStateBadge from "./GameStateBadge";
+import GameActionButton from './GameActionButton';
+import GameCard from './GameCard';
+import GameStateBadge from './GameStateBadge';
 // import LiveTournaments from './LiveTournaments';
-import Players from "./Players";
+import Players from './Players';
 
 const isActiveGame = (game) =>
   [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
@@ -28,7 +28,7 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }) {
   }
 
   const filterGames = (game) => {
-    if (game.visibilityType === "hidden") {
+    if (game.visibilityType === 'hidden') {
       return !!find(game.players, { id: currentUserId });
     }
     return true;
@@ -48,12 +48,12 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }) {
   } = groupBy(gamesSortByLevel, (game) => {
     const isCurrentUserPlay = game.players.some(({ id }) => id === currentUserId);
     if (isCurrentUserPlay) {
-      return "gamesWithCurrentUser";
+      return 'gamesWithCurrentUser';
     }
     if (!game.isBot) {
-      return "gamesWithActiveUsers";
+      return 'gamesWithActiveUsers';
     }
-    return "gamesWithBots";
+    return 'gamesWithBots';
   });
 
   const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];

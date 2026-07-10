@@ -13,8 +13,6 @@ defmodule Codebattle.Workers.SaveTournamentResultsWorker do
   alias Codebattle.UserEvent.Stage, as: UserEventStage
   alias Codebattle.UserEvent.Stage.Context, as: StageContext
 
-  require Logger
-
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"tournament_id" => tournament_id}}) do
     tournament = Tournament.Context.get!(tournament_id)

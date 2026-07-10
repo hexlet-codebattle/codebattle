@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { currentUserIdSelector, groupTournamentSelector } from "../../selectors";
-import { actions } from "../../slices";
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { currentUserIdSelector, groupTournamentSelector } from '../../selectors';
+import { actions } from '../../slices';
 
-function RunIframe({ title = "Run Viewer", ...props }) {
+function RunIframe({ title = 'Run Viewer', ...props }) {
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const currentUserId = useSelector(currentUserIdSelector);
@@ -19,15 +19,15 @@ function RunIframe({ title = "Run Viewer", ...props }) {
     const iframe = iframeRef.current;
     if (iframe && currentUserId) {
       const handleLoad = () => {
-        iframe.contentWindow.postMessage({ type: "set_current_user_id", currentUserId }, "*");
+        iframe.contentWindow.postMessage({ type: 'set_current_user_id', currentUserId }, '*');
       };
 
-      iframe.addEventListener("load", handleLoad);
+      iframe.addEventListener('load', handleLoad);
       // Also try to send it immediately in case it's already loaded
-      iframe.contentWindow.postMessage({ type: "set_current_user_id", currentUserId }, "*");
+      iframe.contentWindow.postMessage({ type: 'set_current_user_id', currentUserId }, '*');
 
       return () => {
-        iframe.removeEventListener("load", handleLoad);
+        iframe.removeEventListener('load', handleLoad);
       };
     }
 
@@ -38,8 +38,8 @@ function RunIframe({ title = "Run Viewer", ...props }) {
     const handleMessage = (event) => {
       if (
         event.data &&
-        typeof event.data === "object" &&
-        event.data.type === "set_current_user_id_result"
+        typeof event.data === 'object' &&
+        event.data.type === 'set_current_user_id_result'
       ) {
         const { place, runId } = event.data;
         const hasRun = (runsRef.current || []).some((run) => run.id === runId);
@@ -50,10 +50,10 @@ function RunIframe({ title = "Run Viewer", ...props }) {
       }
     };
 
-    window.addEventListener("message", handleMessage);
+    window.addEventListener('message', handleMessage);
 
     return () => {
-      window.removeEventListener("message", handleMessage);
+      window.removeEventListener('message', handleMessage);
     };
   }, [dispatch]);
 

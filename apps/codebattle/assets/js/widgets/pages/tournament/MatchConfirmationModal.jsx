@@ -1,14 +1,14 @@
-import React, { useState, useCallback, useRef, useEffect, useMemo, memo, useContext } from "react";
+import React, { useState, useCallback, useRef, useEffect, useMemo, memo, useContext } from 'react';
 
-import cn from "classnames";
-import Button from "react-bootstrap/Button";
+import cn from 'classnames';
+import Button from 'react-bootstrap/Button';
 
-import Modal from "@/components/BootstrapModal";
-import CustomEventStylesContext from "@/components/CustomEventStylesContext";
-import getOpponentId from "@/utils/matches";
-import { makeGameUrl } from "@/utils/urlBuilders";
+import Modal from '@/components/BootstrapModal';
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
+import getOpponentId from '@/utils/matches';
+import { makeGameUrl } from '@/utils/urlBuilders';
 
-import i18next from "../../../i18n";
+import i18next from '../../../i18n';
 
 const openNextMatch = (nextMatch) => {
   window.location.replace(makeGameUrl(nextMatch.gameId));
@@ -44,7 +44,7 @@ function MatchConfirmationModal({
         .sort((a, b) => b.id - a.id)
         .find(
           (match) =>
-            match.state === "playing" &&
+            match.state === 'playing' &&
             match.playerIds.includes(currentUserId) &&
             currentRoundPosition === match.roundPosition,
         ),
@@ -128,14 +128,14 @@ function MatchConfirmationModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openMatch]);
 
-  const title = i18next.t("Next match will be opened. Show now?");
-  const closeBtnClassName = cn("btn cb-rounded", {
-    "btn-secondary cb-btn-secondary": !hasCustomEventStyles,
-    "cb-custom-event-btn-info": hasCustomEventStyles,
+  const title = i18next.t('Next match will be opened. Show now?');
+  const closeBtnClassName = cn('btn cb-rounded', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
+    'cb-custom-event-btn-info': hasCustomEventStyles,
   });
-  const openBtnClassName = cn("btn cb-rounded", {
-    "btn-secondary cb-btn-secondary": !hasCustomEventStyles,
-    "cb-custom-event-btn-primary": hasCustomEventStyles,
+  const openBtnClassName = cn('btn cb-rounded', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
+    'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
 
   return (
@@ -150,7 +150,7 @@ function MatchConfirmationModal({
       <Modal.Body>
         {opponentId && (
           <span className="d-flex justify-content-center text-center mb-2">
-            {i18next.t("Your opponent is waiting: %{name}", { name: players[opponentId]?.name })}
+            {i18next.t('Your opponent is waiting: %{name}', { name: players[opponentId]?.name })}
           </span>
         )}
         {remainingTime !== null && (
@@ -170,11 +170,11 @@ function MatchConfirmationModal({
       <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-between w-100">
           <Button onClick={handleCancel} className={closeBtnClassName}>
-            {i18next.t("Cancel")}
+            {i18next.t('Cancel')}
           </Button>
           <div className="d-flex">
             <Button ref={confirmBtnRef} onClick={handleConfirmation} className={openBtnClassName}>
-              {i18next.t("Open")}
+              {i18next.t('Open')}
             </Button>
           </div>
         </div>

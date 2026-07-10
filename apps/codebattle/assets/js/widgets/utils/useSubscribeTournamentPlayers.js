@@ -1,6 +1,6 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect } from 'react';
 
-import TournamentStateCodes from "../config/tournament";
+import TournamentStateCodes from '../config/tournament';
 // import { subscribePlayers } from '../middlewares/Tournament';
 
 export default (players, tournamentState) => {
@@ -10,7 +10,7 @@ export default (players, tournamentState) => {
         players
           .map((p) => p.id)
           .sort()
-          .join("") || "0",
+          .join('') || '0',
       ),
     [players],
   );

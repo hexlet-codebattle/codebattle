@@ -1,40 +1,40 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from 'react';
 
-import cn from "classnames";
-import Gon from "gon";
-import { camelizeKeys, decamelizeKeys } from "humps";
+import cn from 'classnames';
+import Gon from 'gon';
+import { camelizeKeys, decamelizeKeys } from 'humps';
 
-import GameLevelBadge from "../../components/GameLevelBadge";
-import TaskDescriptionMarkdown from "../game/TaskDescriptionMarkdown";
+import GameLevelBadge from '../../components/GameLevelBadge';
+import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
-const taskData = Gon.getAsset("task");
-const taskStatsData = Gon.getAsset("task_stats");
-const canEditTask = Gon.getAsset("can_edit_task") || false;
+const taskData = Gon.getAsset('task');
+const taskStatsData = Gon.getAsset('task_stats');
+const canEditTask = Gon.getAsset('can_edit_task') || false;
 
 const initialTask = taskData ? camelizeKeys(taskData) : null;
 const taskStats = taskStatsData ? camelizeKeys(taskStatsData) : null;
 
-const levelOptions = ["elementary", "easy", "medium", "hard"];
-const visibilityOptions = ["public", "hidden"];
-const stateOptions = ["blank", "draft", "on_moderation", "active", "disabled"];
+const levelOptions = ['elementary', 'easy', 'medium', 'hard'];
+const visibilityOptions = ['public', 'hidden'];
+const stateOptions = ['blank', 'draft', 'on_moderation', 'active', 'disabled'];
 
 const levelBadgeClasses = {
-  elementary: "badge-success",
-  easy: "badge-info",
-  medium: "badge-warning",
-  hard: "badge-danger",
+  elementary: 'badge-success',
+  easy: 'badge-info',
+  medium: 'badge-warning',
+  hard: 'badge-danger',
 };
 
 const stateLabels = {
-  blank: { label: "Blank", cls: "badge-secondary" },
-  draft: { label: "Draft", cls: "badge-secondary" },
-  on_moderation: { label: "On Moderation", cls: "badge-warning" },
-  active: { label: "Active", cls: "badge-success" },
-  disabled: { label: "Disabled", cls: "badge-danger" },
+  blank: { label: 'Blank', cls: 'badge-secondary' },
+  draft: { label: 'Draft', cls: 'badge-secondary' },
+  on_moderation: { label: 'On Moderation', cls: 'badge-warning' },
+  active: { label: 'Active', cls: 'badge-success' },
+  disabled: { label: 'Disabled', cls: 'badge-danger' },
 };
 
 function formatDuration(seconds) {
-  if (seconds == null) return "-";
+  if (seconds == null) return '-';
   const s = Math.round(seconds);
   if (s < 60) return `${s}s`;
   const m = Math.floor(s / 60);
@@ -44,21 +44,21 @@ function formatDuration(seconds) {
 
 function getCsrfToken() {
   return (
-    window.csrf_token || document.querySelector("meta[name='csrf-token']")?.getAttribute("content")
+    window.csrf_token || document.querySelector("meta[name='csrf-token']")?.getAttribute('content')
   );
 }
 
 async function patchTask(taskId, params) {
   const response = await fetch(`/api/v1/tasks/${taskId}`, {
-    method: "PATCH",
+    method: 'PATCH',
     headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": getCsrfToken(),
+      'Content-Type': 'application/json',
+      'x-csrf-token': getCsrfToken(),
     },
-    body: JSON.stringify({ task: decamelizeKeys(params, { separator: "_" }) }),
+    body: JSON.stringify({ task: decamelizeKeys(params, { separator: '_' }) }),
   });
 
-  if (!response.ok) throw new Error("Failed to update task");
+  if (!response.ok) throw new Error('Failed to update task');
   const data = await response.json();
   return camelizeKeys(data.task);
 }
@@ -81,16 +81,16 @@ function EditableSelect({ value, options, onChange, disabled }) {
 }
 
 function EditableTagsInput({ value, onChange, disabled, inputId }) {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
 
   const handleKeyDown = (e) => {
-    if ((e.key === "Enter" || e.key === ",") && inputValue.trim()) {
+    if ((e.key === 'Enter' || e.key === ',') && inputValue.trim()) {
       e.preventDefault();
       const tag = inputValue.trim().toLowerCase();
       if (!value.includes(tag)) {
         onChange([...value, tag]);
       }
-      setInputValue("");
+      setInputValue('');
     }
   };
 
@@ -108,7 +108,7 @@ function EditableTagsInput({ value, onChange, disabled, inputId }) {
               <button
                 type="button"
                 className="close ml-1 text-white"
-                style={{ fontSize: "0.8rem", lineHeight: 1 }}
+                style={{ fontSize: '0.8rem', lineHeight: 1 }}
                 onClick={() => removeTag(tag)}
               >
                 &times;
@@ -150,11 +150,11 @@ function PercentileBar({ percentiles }) {
   }
 
   const entries = [
-    { key: "p10", label: "P10", cls: "bg-success" },
-    { key: "p30", label: "P30", cls: "bg-success" },
-    { key: "p50", label: "P50 (median)", cls: "bg-warning" },
-    { key: "p75", label: "P75", cls: "bg-warning" },
-    { key: "p95", label: "P95", cls: "bg-danger" },
+    { key: 'p10', label: 'P10', cls: 'bg-success' },
+    { key: 'p30', label: 'P30', cls: 'bg-success' },
+    { key: 'p50', label: 'P50 (median)', cls: 'bg-warning' },
+    { key: 'p75', label: 'P75', cls: 'bg-warning' },
+    { key: 'p95', label: 'P95', cls: 'bg-danger' },
   ];
 
   const maxVal = percentiles.p95 || 1;
@@ -175,8 +175,8 @@ function PercentileBar({ percentiles }) {
               style={{ height: 24 }}
             >
               <div
-                className={cn("h-100 rounded", cls)}
-                style={{ width: `${pct}%`, minWidth: 2, transition: "width 0.5s ease" }}
+                className={cn('h-100 rounded', cls)}
+                style={{ width: `${pct}%`, minWidth: 2, transition: 'width 0.5s ease' }}
               />
             </div>
             <span
@@ -196,7 +196,7 @@ function SignatureDisplay({ inputSignature, outputSignature }) {
   if ((!inputSignature || inputSignature.length === 0) && !outputSignature) return null;
 
   const formatType = (sig) => {
-    if (!sig || !sig.type) return "unknown";
+    if (!sig || !sig.type) return 'unknown';
     const t = sig.type;
     if (t.nested) return `${t.name}<${formatType({ type: t.nested })}>`;
     return t.name;
@@ -205,18 +205,18 @@ function SignatureDisplay({ inputSignature, outputSignature }) {
   return (
     <div className="cb-bg-highlight-panel cb-rounded p-3 font-monospace small">
       <span className="text-info">function</span>
-      {" solution("}
+      {' solution('}
       {inputSignature &&
         inputSignature.map((sig, i) => (
           <span key={sig.argumentName || i}>
-            {i > 0 && ", "}
+            {i > 0 && ', '}
             <span className="text-white">{sig.argumentName}</span>
             <span className="cb-text">: </span>
             <span className="text-warning">{formatType(sig)}</span>
           </span>
         ))}
-      {") -> "}
-      <span className="text-success">{outputSignature ? formatType(outputSignature) : "void"}</span>
+      {') -> '}
+      <span className="text-success">{outputSignature ? formatType(outputSignature) : 'void'}</span>
     </div>
   );
 }
@@ -328,7 +328,7 @@ function AssertsSection({ asserts }) {
               className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
               onClick={() => setExpanded(!expanded)}
             >
-              {expanded ? "Show less" : `Show all ${asserts.length}`}
+              {expanded ? 'Show less' : `Show all ${asserts.length}`}
             </button>
           )}
         </div>
@@ -342,13 +342,13 @@ function TaskPreviewWidget() {
   const [task, setTask] = useState(initialTask);
   const [isCreating, setIsCreating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [descLang, setDescLang] = useState("en");
+  const [descLang, setDescLang] = useState('en');
   const [editingDesc, setEditingDesc] = useState(false);
-  const [descDraft, setDescDraft] = useState("");
+  const [descDraft, setDescDraft] = useState('');
 
   const description = useMemo(() => {
-    if (!task) return "";
-    return descLang === "ru" && task.descriptionRu ? task.descriptionRu : task.descriptionEn || "";
+    if (!task) return '';
+    return descLang === 'ru' && task.descriptionRu ? task.descriptionRu : task.descriptionEn || '';
   }, [task, descLang]);
 
   const hasRuDescription = task && task.descriptionRu && task.descriptionRu.length > 0;
@@ -362,7 +362,7 @@ function TaskPreviewWidget() {
         setTask(updated);
       } catch (e) {
         // eslint-disable-next-line no-console
-        console.error("Failed to update:", e);
+        console.error('Failed to update:', e);
       } finally {
         setIsSaving(false);
       }
@@ -373,34 +373,34 @@ function TaskPreviewWidget() {
   const handlePlayTask = useCallback(async () => {
     setIsCreating(true);
     try {
-      const response = await fetch("/games/create_by_task", {
-        method: "POST",
+      const response = await fetch('/games/create_by_task', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": getCsrfToken(),
+          'Content-Type': 'application/json',
+          'x-csrf-token': getCsrfToken(),
         },
         body: JSON.stringify({ task_id: task.id }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        window.open(`/games/${data.game_id}`, "_blank");
+        window.open(`/games/${data.game_id}`, '_blank');
       }
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("Failed to create game:", e);
+      console.error('Failed to create game:', e);
     } finally {
       setIsCreating(false);
     }
   }, [task]);
 
   const startEditDesc = useCallback(() => {
-    setDescDraft(descLang === "ru" ? task.descriptionRu || "" : task.descriptionEn || "");
+    setDescDraft(descLang === 'ru' ? task.descriptionRu || '' : task.descriptionEn || '');
     setEditingDesc(true);
   }, [task, descLang]);
 
   const saveDesc = useCallback(async () => {
-    const field = descLang === "ru" ? "descriptionRu" : "descriptionEn";
+    const field = descLang === 'ru' ? 'descriptionRu' : 'descriptionEn';
     await updateField(field, descDraft);
     setEditingDesc(false);
   }, [descLang, descDraft, updateField]);
@@ -409,7 +409,7 @@ function TaskPreviewWidget() {
     return (
       <div
         className="d-flex justify-content-center align-items-center cb-text"
-        style={{ minHeight: "50vh" }}
+        style={{ minHeight: '50vh' }}
       >
         Task not found
       </div>
@@ -443,16 +443,16 @@ function TaskPreviewWidget() {
           </div>
 
           <div className="d-flex flex-wrap align-items-center">
-            <span className={cn("badge mr-2 mb-1", levelBadgeClasses[task.level])}>
+            <span className={cn('badge mr-2 mb-1', levelBadgeClasses[task.level])}>
               {task.level}
             </span>
-            <span className={cn("badge mr-2 mb-1", stateInfo.cls)}>{stateInfo.label}</span>
+            <span className={cn('badge mr-2 mb-1', stateInfo.cls)}>{stateInfo.label}</span>
             {task.origin && <span className="badge badge-dark mr-2 mb-1">{task.origin}</span>}
             {task.visibility && (
               <span
                 className={cn(
-                  "badge mr-2 mb-1",
-                  task.visibility === "public" ? "badge-success" : "badge-secondary",
+                  'badge mr-2 mb-1',
+                  task.visibility === 'public' ? 'badge-success' : 'badge-secondary',
                 )}
               >
                 {task.visibility}
@@ -483,13 +483,13 @@ function TaskPreviewWidget() {
                         <button
                           type="button"
                           className={cn(
-                            "btn btn-sm",
-                            descLang === "en"
-                              ? "btn-primary"
-                              : "btn-outline-secondary cb-btn-outline-secondary",
+                            'btn btn-sm',
+                            descLang === 'en'
+                              ? 'btn-primary'
+                              : 'btn-outline-secondary cb-btn-outline-secondary',
                           )}
                           onClick={() => {
-                            setDescLang("en");
+                            setDescLang('en');
                             setEditingDesc(false);
                           }}
                         >
@@ -498,13 +498,13 @@ function TaskPreviewWidget() {
                         <button
                           type="button"
                           className={cn(
-                            "btn btn-sm",
-                            descLang === "ru"
-                              ? "btn-primary"
-                              : "btn-outline-secondary cb-btn-outline-secondary",
+                            'btn btn-sm',
+                            descLang === 'ru'
+                              ? 'btn-primary'
+                              : 'btn-outline-secondary cb-btn-outline-secondary',
                           )}
                           onClick={() => {
-                            setDescLang("ru");
+                            setDescLang('ru');
                             setEditingDesc(false);
                           }}
                         >
@@ -616,7 +616,7 @@ function TaskPreviewWidget() {
                   type="button"
                   className="btn btn-success btn-lg btn-block cb-rounded font-weight-bold"
                   onClick={handlePlayTask}
-                  disabled={isCreating || task.state !== "active"}
+                  disabled={isCreating || task.state !== 'active'}
                 >
                   {isCreating ? (
                     <>
@@ -624,10 +624,10 @@ function TaskPreviewWidget() {
                       Creating game...
                     </>
                   ) : (
-                    "Play this task"
+                    'Play this task'
                   )}
                 </button>
-                {task.state !== "active" && (
+                {task.state !== 'active' && (
                   <small className="d-block text-center mt-2 cb-text">
                     Task must be active to play
                   </small>
@@ -647,7 +647,7 @@ function TaskPreviewWidget() {
                       <EditableSelect
                         value={task.level}
                         options={levelOptions}
-                        onChange={(v) => updateField("level", v)}
+                        onChange={(v) => updateField('level', v)}
                         disabled={isSaving}
                       />
                     ) : (
@@ -660,7 +660,7 @@ function TaskPreviewWidget() {
                       <EditableSelect
                         value={task.state}
                         options={stateOptions}
-                        onChange={(v) => updateField("state", v)}
+                        onChange={(v) => updateField('state', v)}
                         disabled={isSaving}
                       />
                     ) : (
@@ -673,7 +673,7 @@ function TaskPreviewWidget() {
                       <EditableSelect
                         value={task.visibility}
                         options={visibilityOptions}
-                        onChange={(v) => updateField("visibility", v)}
+                        onChange={(v) => updateField('visibility', v)}
                         disabled={isSaving}
                       />
                     ) : (
@@ -681,7 +681,7 @@ function TaskPreviewWidget() {
                     )}
                   </MetaRow>
 
-                  <MetaRow label="Type">{task.type || "algorithms"}</MetaRow>
+                  <MetaRow label="Type">{task.type || 'algorithms'}</MetaRow>
                   <MetaRow label="Origin">{task.origin}</MetaRow>
                   {task.timeToSolveSec && (
                     <MetaRow label="Time to solve">{formatDuration(task.timeToSolveSec)}</MetaRow>
@@ -707,7 +707,7 @@ function TaskPreviewWidget() {
                     <EditableTagsInput
                       inputId="task-preview-tags-input"
                       value={task.tags || []}
-                      onChange={(v) => updateField("tags", v)}
+                      onChange={(v) => updateField('tags', v)}
                       disabled={isSaving}
                     />
                   </div>

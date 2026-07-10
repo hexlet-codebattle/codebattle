@@ -77,7 +77,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
   end
 
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(%{type: "swiss", ranking_type: "by_user"} = tournament) do
+  def upsert_results(%{type: type, ranking_type: "by_user"} = tournament) when type in ["swiss", "ladder"] do
     clean_results(tournament.id)
 
     timestamp = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)

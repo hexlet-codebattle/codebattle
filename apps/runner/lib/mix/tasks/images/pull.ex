@@ -5,8 +5,6 @@ defmodule Mix.Tasks.Images.Pull do
 
   use Mix.Task
 
-  require Logger
-
   def run([slug]) do
     {:ok, _started} = Application.ensure_all_started(:porcelain)
     slug |> Runner.Languages.meta() |> pull()

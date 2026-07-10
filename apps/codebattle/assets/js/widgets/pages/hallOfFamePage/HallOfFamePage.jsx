@@ -1,23 +1,23 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from 'react';
 
-import cn from "classnames";
-import Gon from "gon";
+import cn from 'classnames';
+import Gon from 'gon';
 
-import i18n from "../../../i18n";
-import LanguageIcon from "../../components/LanguageIcon";
-import PlayerInsightsModal from "../../components/PlayerInsightsModal";
+import i18n from '../../../i18n';
+import LanguageIcon from '../../components/LanguageIcon';
+import PlayerInsightsModal from '../../components/PlayerInsightsModal';
 import {
   LeaderboardTable,
   useLeaderboardState,
   getPlaceBadgeClass,
   getMedalEmoji,
-} from "../../components/SeasonLeaderboard";
-import UserInfo from "../../components/UserInfo";
+} from '../../components/SeasonLeaderboard';
+import UserInfo from '../../components/UserInfo';
 
 function StatBox({ label, value, highlight = false }) {
   return (
     <div className="text-center">
-      <div className={cn("fw-bold", highlight ? "fs-3 text-warning" : "fs-5 text-white")}>
+      <div className={cn('fw-bold', highlight ? 'fs-3 text-warning' : 'fs-5 text-white')}>
         {value}
       </div>
       <div className="text-muted small text-uppercase">{label}</div>
@@ -43,23 +43,23 @@ function PodiumCard({ result, isFirst = false }) {
 
   return (
     <div
-      className={cn("card h-100 border-0 shadow-lg cb-hof-podium-card", {
-        "cb-gold-place-bg": result.place === 1,
-        "cb-silver-place-bg": result.place === 2,
-        "cb-bronze-place-bg": result.place === 3,
+      className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
+        'cb-gold-place-bg': result.place === 1,
+        'cb-silver-place-bg': result.place === 2,
+        'cb-bronze-place-bg': result.place === 3,
       })}
     >
-      <div className={cn("card-body text-center", isFirst ? "py-4" : "py-3")}>
-        <div className={cn("mb-2", isFirst ? "fs-1" : "fs-2")}>{getMedalEmoji(result.place)}</div>
+      <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
+        <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>{getMedalEmoji(result.place)}</div>
         {result.avatar_url && (
           <img
             src={result.avatar_url}
             alt={result.user_name}
             className="rounded-circle mb-2"
-            style={{ width: isFirst ? "64px" : "48px", height: isFirst ? "64px" : "48px" }}
+            style={{ width: isFirst ? '64px' : '48px', height: isFirst ? '64px' : '48px' }}
           />
         )}
-        <div className={cn("card-title text-white mb-2", isFirst && "fs-3")}>
+        <div className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>
           <div className="d-flex justify-content-center">
             <UserInfo
               user={user}
@@ -75,7 +75,7 @@ function PodiumCard({ result, isFirst = false }) {
         <div className="mb-3">
           {result.user_lang && (
             <span className="mr-2">
-              <LanguageIcon lang={result.user_lang} style={{ width: "20px", height: "20px" }} />
+              <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
             </span>
           )}
           {result.clan_name && (
@@ -84,20 +84,20 @@ function PodiumCard({ result, isFirst = false }) {
             </span>
           )}
         </div>
-        <div className={cn("d-flex justify-content-center", isFirst ? "mt-4" : "mt-3")}>
+        <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
           <div className="px-3">
-            <StatBox label={i18n.t("Points")} value={result.total_points} highlight={isFirst} />
+            <StatBox label={i18n.t('Points')} value={result.total_points} highlight={isFirst} />
           </div>
           <div className="px-3">
-            <StatBox label={i18n.t("Wins")} value={result.total_wins_count} />
+            <StatBox label={i18n.t('Wins')} value={result.total_wins_count} />
           </div>
         </div>
         <div className="d-flex justify-content-center mt-3">
           <div className="px-3">
-            <StatBox label={i18n.t("Score")} value={result.total_score} />
+            <StatBox label={i18n.t('Score')} value={result.total_score} />
           </div>
           <div className="px-3">
-            <StatBox label={i18n.t("Tournaments")} value={result.tournaments_count} />
+            <StatBox label={i18n.t('Tournaments')} value={result.tournaments_count} />
           </div>
         </div>
       </div>
@@ -114,12 +114,12 @@ function ChampionsPodium({ top3 }) {
 
   return (
     <div className="mb-5">
-      <h2 className="text-gold mb-4 text-center">{i18n.t("Top 3")}</h2>
+      <h2 className="text-gold mb-4 text-center">{i18n.t('Top 3')}</h2>
       <div className="row align-items-end justify-content-center">
         {/* Second place - left */}
         <div className="col-md-4 col-lg-3">
           {second && (
-            <div style={{ marginTop: "2rem" }}>
+            <div style={{ marginTop: '2rem' }}>
               <PodiumCard result={second} />
             </div>
           )}
@@ -131,7 +131,7 @@ function ChampionsPodium({ top3 }) {
         {/* Third place - right */}
         <div className="col-md-4 col-lg-3">
           {third && (
-            <div style={{ marginTop: "3rem" }}>
+            <div style={{ marginTop: '3rem' }}>
               <PodiumCard result={third} />
             </div>
           )}
@@ -147,9 +147,9 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
   return (
     <div className="mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="text-gold">{i18n.t("Previous Seasons Champions")}</h2>
+        <h2 className="text-gold">{i18n.t('Previous Seasons Champions')}</h2>
         <a href="/seasons" className="btn btn-outline-gold btn-sm">
-          {i18n.t("View All Seasons")}
+          {i18n.t('View All Seasons')}
         </a>
       </div>
 
@@ -158,7 +158,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
           key={season.id}
           className="card cb-bg-panel cb-border-color cb-rounded shadow-lg border-0 text-light mb-4"
           style={{
-            background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)",
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
           }}
         >
           <div className="card-body">
@@ -167,7 +167,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                 {season.name} {season.year}
               </h4>
               <a href={`/seasons/${season.id}`} className="btn btn-sm btn-outline-gold">
-                {i18n.t("Full Results")}
+                {i18n.t('Full Results')}
               </a>
             </div>
 
@@ -188,15 +188,15 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                 return (
                   <div key={winner.user_id} className="col-md-4 mb-3">
                     <div
-                      className={cn("card h-100 border-0 cb-hof-podium-card", {
-                        "cb-gold-place-bg": winner.place === 1,
-                        "cb-silver-place-bg": winner.place === 2,
-                        "cb-bronze-place-bg": winner.place === 3,
+                      className={cn('card h-100 border-0 cb-hof-podium-card', {
+                        'cb-gold-place-bg': winner.place === 1,
+                        'cb-silver-place-bg': winner.place === 2,
+                        'cb-bronze-place-bg': winner.place === 3,
                       })}
                     >
                       <div className="card-body">
                         <div className="d-flex align-items-center mb-2">
-                          <span className={cn("badge mr-2", getPlaceBadgeClass(winner.place))}>
+                          <span className={cn('badge mr-2', getPlaceBadgeClass(winner.place))}>
                             {getMedalEmoji(winner.place)}
                           </span>
                           {winner.avatar_url && (
@@ -204,7 +204,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                               src={winner.avatar_url}
                               alt={winner.user_name}
                               className="rounded-circle mr-2"
-                              style={{ width: "32px", height: "32px" }}
+                              style={{ width: '32px', height: '32px' }}
                             />
                           )}
                           <UserInfo
@@ -223,7 +223,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                               <span className="mr-2">
                                 <LanguageIcon
                                   lang={winner.user_lang}
-                                  style={{ width: "16px", height: "16px" }}
+                                  style={{ width: '16px', height: '16px' }}
                                 />
                               </span>
                             )}
@@ -234,7 +234,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                             )}
                           </div>
                           <div className="d-flex justify-content-between">
-                            <span className="text-muted">{i18n.t("Points")}:</span>
+                            <span className="text-muted">{i18n.t('Points')}:</span>
                             <span className="text-white fw-bold">{winner.total_points}</span>
                           </div>
                         </div>
@@ -252,13 +252,13 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
 }
 
 function HallOfFamePage() {
-  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset("current_season")) || null;
+  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset('current_season')) || null;
   const currentSeasonResults = useMemo(
-    () => (Gon && Gon.getAsset && Gon.getAsset("current_season_results")) || [],
+    () => (Gon && Gon.getAsset && Gon.getAsset('current_season_results')) || [],
     [],
   );
   const previousSeasonsWinners =
-    (Gon && Gon.getAsset && Gon.getAsset("previous_seasons_winners")) || [];
+    (Gon && Gon.getAsset && Gon.getAsset('previous_seasons_winners')) || [];
 
   // Use the shared leaderboard state hook
   const leaderboardState = useLeaderboardState(currentSeasonResults);
@@ -282,7 +282,7 @@ function HallOfFamePage() {
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5">
       <div className="container">
-        <h1 className="text-center text-gold mb-5 fw-bold">{i18n.t("Hall of Fame")}</h1>
+        <h1 className="text-center text-gold mb-5 fw-bold">{i18n.t('Hall of Fame')}</h1>
 
         {currentSeason && (
           <>
@@ -295,15 +295,15 @@ function HallOfFamePage() {
                     </h5>
                     <div className="d-flex flex-wrap small text-muted">
                       <span className="mr-3">
-                        <strong>{i18n.t("Starts")}:</strong> {currentSeason.starts_at}
+                        <strong>{i18n.t('Starts')}:</strong> {currentSeason.starts_at}
                       </span>
                       <span>
-                        <strong>{i18n.t("Ends")}:</strong> {currentSeason.ends_at}
+                        <strong>{i18n.t('Ends')}:</strong> {currentSeason.ends_at}
                       </span>
                     </div>
                   </div>
                   <a href="/seasons" className="btn btn-outline-gold">
-                    {i18n.t("View All Seasons")}
+                    {i18n.t('View All Seasons')}
                   </a>
                 </div>
               </div>
@@ -314,14 +314,14 @@ function HallOfFamePage() {
             {currentSeasonResults.length > 0 && (
               <div
                 className={cn(
-                  "card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light",
+                  'card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light',
                 )}
               >
                 <div className="card-header bg-transparent border-bottom border-secondary py-3">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="mb-0 text-gold fs-4">{i18n.t("Current Season Leaderboard")}</h2>
+                    <h2 className="mb-0 text-gold fs-4">{i18n.t('Current Season Leaderboard')}</h2>
                     <span className="badge bg-secondary">
-                      {i18n.t("%{count} players", { count: currentSeasonResults.length })}
+                      {i18n.t('%{count} players', { count: currentSeasonResults.length })}
                     </span>
                   </div>
                 </div>

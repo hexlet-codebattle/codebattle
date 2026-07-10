@@ -5,8 +5,6 @@ defmodule Codebattle.Game.Supervisor do
   alias Codebattle.Bot
   alias Codebattle.Game
 
-  require Logger
-
   def start_link(game) do
     Supervisor.start_link(__MODULE__, game, name: supervisor_name(game.id))
   end

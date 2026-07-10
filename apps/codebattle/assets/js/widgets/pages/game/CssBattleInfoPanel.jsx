@@ -1,13 +1,13 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback } from 'react';
 
-import cn from "classnames";
-import { compress } from "lz-string";
-import { useDispatch } from "react-redux";
+import cn from 'classnames';
+import { compress } from 'lz-string';
+import { useDispatch } from 'react-redux';
 
-import Loading from "@/components/Loading";
-import * as roomActions from "@/middlewares/Room";
-import useCssBattle from "@/utils/useCssBattle";
-import useHover from "@/utils/useHover";
+import Loading from '@/components/Loading';
+import * as roomActions from '@/middlewares/Room';
+import useCssBattle from '@/utils/useCssBattle';
+import useHover from '@/utils/useHover';
 
 const frameStyle = {
   minWidth: 300,
@@ -15,10 +15,10 @@ const frameStyle = {
 };
 
 const statusTitleMap = {
-  targetIsEmpty: "Create a new css task",
-  targetIsInvalid: "Error",
-  process: "Processing...",
-  loading: "Loading...",
+  targetIsEmpty: 'Create a new css task',
+  targetIsInvalid: 'Error',
+  process: 'Processing...',
+  loading: 'Loading...',
 };
 
 function CssBattleInfoPanel() {
@@ -42,9 +42,9 @@ function CssBattleInfoPanel() {
     dispatch(roomActions.changeTaskImgDataUrl(compressedDataUrl));
   }, [leftImgRef, dispatch]);
 
-  const isLoading = matchStats.status === "loading";
-  const showStats = hovered && matchStats.result[0]?.success && matchStats.status !== "process";
-  const showTargetControls = ["targetIsEmpty", "targetIsInvalid"].includes(matchStats.status);
+  const isLoading = matchStats.status === 'loading';
+  const showStats = hovered && matchStats.result[0]?.success && matchStats.status !== 'process';
+  const showTargetControls = ['targetIsEmpty', 'targetIsInvalid'].includes(matchStats.status);
 
   return (
     <div className="card cb-card border-0 h-100">
@@ -56,11 +56,11 @@ function CssBattleInfoPanel() {
                 <Loading size="adaptive" />
               </div>
             )}
-            <div className={cn("position-relative h-100 w-100", { "cb-opacity-25": isLoading })}>
+            <div className={cn('position-relative h-100 w-100', { 'cb-opacity-25': isLoading })}>
               <img
                 alt=""
                 title="Right editor solution picture"
-                className={cn("w-100 h-100 position-absolute", "cb-opacity-05", {
+                className={cn('w-100 h-100 position-absolute', 'cb-opacity-05', {
                   invisible: isLoading,
                 })}
                 ref={rightImgRef}
@@ -69,7 +69,7 @@ function CssBattleInfoPanel() {
                 alt=""
                 title="Left editor solution picture"
                 className={cn(
-                  "w-100 h-100 position-absolute",
+                  'w-100 h-100 position-absolute',
                   // 'cb-opacity-75',
                   { invisible: isLoading },
                 )}
@@ -96,7 +96,7 @@ function CssBattleInfoPanel() {
           <div className="h-100 position-relative">
             <div
               className={cn(
-                "h-100 w-100 d-flex position-absolute flex-column justify-content-center align-items-center",
+                'h-100 w-100 d-flex position-absolute flex-column justify-content-center align-items-center',
                 { invisible: !showTargetControls },
               )}
             >
@@ -111,19 +111,19 @@ function CssBattleInfoPanel() {
             </div>
             <div
               className={cn(
-                "h-100 w-100 d-flex position-absolute text-center",
-                "flex-column justify-content-center align-items-center",
-                "text-muted h1 cb-opacity-75",
+                'h-100 w-100 d-flex position-absolute text-center',
+                'flex-column justify-content-center align-items-center',
+                'text-muted h1 cb-opacity-75',
                 { invisible: !showStats || showTargetControls || isLoading },
               )}
             >
-              {matchStats.result[0]?.success ? "100%" : matchStats.result[0]?.matchPercentage}
+              {matchStats.result[0]?.success ? '100%' : matchStats.result[0]?.matchPercentage}
             </div>
             <img
               alt=""
               title="target solution picture"
-              className={cn("w-100 h-100 position-absolute", {
-                "cb-opacity-50 ": showStats,
+              className={cn('w-100 h-100 position-absolute', {
+                'cb-opacity-50 ': showStats,
                 invisible: showTargetControls || isLoading,
               })}
               ref={targetImgRef}

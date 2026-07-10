@@ -1,10 +1,10 @@
-import React, { memo, useMemo, useCallback, useEffect } from "react";
+import React, { memo, useMemo, useCallback, useEffect } from 'react';
 
-import ReactPaginate from "react-paginate";
-import { useDispatch, useSelector } from "react-redux";
+import ReactPaginate from 'react-paginate';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { currentUserCanModerateTournament, tournamentSelector } from "../../selectors";
-import { actions } from "../../slices";
+import { currentUserCanModerateTournament, tournamentSelector } from '../../selectors';
+import { actions } from '../../slices';
 
 function TournamentPlayersPagination({ pageNumber, pageSize, totalEntriesOverride }) {
   const dispatch = useDispatch();

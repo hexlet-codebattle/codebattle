@@ -1,62 +1,62 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import cn from "classnames";
-import PropTypes from "prop-types";
+import cn from 'classnames';
+import PropTypes from 'prop-types';
 
 const TASK_PROVIDERS = [
-  { value: "level", label: "Level" },
-  { value: "task_pack", label: "Task Pack" },
-  { value: "tags", label: "Tags" },
+  { value: 'level', label: 'Level' },
+  { value: 'task_pack', label: 'Task Pack' },
+  { value: 'tags', label: 'Tags' },
 ];
 
 const TASK_STRATEGIES = [
-  { value: "random", label: "Random" },
-  { value: "sequential", label: "Sequential" },
+  { value: 'random', label: 'Random' },
+  { value: 'sequential', label: 'Sequential' },
 ];
 
 const ACCESS_TYPES = [
-  { value: "public", label: "Public" },
-  { value: "token", label: "Token (Private)" },
+  { value: 'public', label: 'Public' },
+  { value: 'token', label: 'Token (Private)' },
 ];
 
 const LEVELS = [
-  { value: "elementary", label: "Elementary" },
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
+  { value: 'elementary', label: 'Elementary' },
+  { value: 'easy', label: 'Easy' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'hard', label: 'Hard' },
 ];
 
 const RANKING_TYPES = [
-  { value: "by_user", label: "By User" },
-  { value: "by_clan", label: "By Clan" },
+  { value: 'by_user', label: 'By User' },
+  { value: 'by_clan', label: 'By Clan' },
 ];
 
 const SCORE_STRATEGIES = [
-  { value: "75_percentile", label: "75 Percentile" },
-  { value: "static_base_score", label: "Static Base Score" },
-  { value: "win_loss", label: "Win/Loss" },
+  { value: '75_percentile', label: '75 Percentile' },
+  { value: 'static_base_score', label: 'Static Base Score' },
+  { value: 'win_loss', label: 'Win/Loss' },
 ];
 
 const TIMEOUT_MODES = [
-  { value: "per_task", label: "Per task timeout" },
-  { value: "per_round_fixed", label: "Per round (fixed)" },
-  { value: "per_round_with_rematch", label: "Per round (with rematch)" },
-  { value: "per_tournament", label: "Per tournament timeout" },
+  { value: 'per_task', label: 'Per task timeout' },
+  { value: 'per_round_fixed', label: 'Per round (fixed)' },
+  { value: 'per_round_with_rematch', label: 'Per round (with rematch)' },
+  { value: 'per_tournament', label: 'Per tournament timeout' },
 ];
 
 const TIMEOUT_DESCRIPTIONS = {
   per_task:
     "Each game uses the task's own time limit. Different tasks may have different timeouts.",
-  per_round_fixed: "All games in a round share a fixed timeout. One task per round.",
+  per_round_fixed: 'All games in a round share a fixed timeout. One task per round.',
   per_round_with_rematch:
-    "Each round has a fixed timeout. Players play multiple tasks (rematches) within the round until time runs out.",
+    'Each round has a fixed timeout. Players play multiple tasks (rematches) within the round until time runs out.',
   per_tournament:
-    "One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires.",
+    'One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires.',
 };
 
 const TOURNAMENT_TYPES = [
-  { value: "swiss", label: "Swiss" },
-  { value: "ladder", label: "Ladder (continuous matchmaking)" },
+  { value: 'swiss', label: 'Swiss' },
+  { value: 'ladder', label: 'Ladder (continuous matchmaking)' },
 ];
 
 const PLAYERS_LIMITS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384];
@@ -67,29 +67,29 @@ function TournamentForm({
   onValidate,
   errors = {},
   isSubmitting = false,
-  submitButtonText = "Create Tournament",
+  submitButtonText = 'Create Tournament',
   taskPackNames = [],
-  userTimezone = "UTC",
+  userTimezone = 'UTC',
   showCancelButton = false,
-  cancelButtonText = "Cancel",
+  cancelButtonText = 'Cancel',
   onCancel,
 }) {
   const [formData, setFormData] = useState({
-    type: initialValues.type || "ladder",
-    name: initialValues.name || "",
-    description: initialValues.description || "",
-    creator_id: initialValues.creator_id || "",
-    moderator_ids: initialValues.moderator_ids || "",
-    starts_at: initialValues.starts_at || "",
-    access_type: initialValues.access_type || "public",
-    task_provider: initialValues.task_provider || "level",
-    task_strategy: initialValues.task_strategy || "random",
-    level: initialValues.level || "easy",
-    task_pack_name: initialValues.task_pack_name || "",
-    tags: initialValues.tags || "",
+    type: initialValues.type || 'ladder',
+    name: initialValues.name || '',
+    description: initialValues.description || '',
+    creator_id: initialValues.creator_id || '',
+    moderator_ids: initialValues.moderator_ids || '',
+    starts_at: initialValues.starts_at || '',
+    access_type: initialValues.access_type || 'public',
+    task_provider: initialValues.task_provider || 'level',
+    task_strategy: initialValues.task_strategy || 'random',
+    level: initialValues.level || 'easy',
+    task_pack_name: initialValues.task_pack_name || '',
+    tags: initialValues.tags || '',
     players_limit: initialValues.players_limit || 64,
     rounds_limit: initialValues.rounds_limit || 7,
-    timeout_mode: initialValues.timeout_mode || "per_task",
+    timeout_mode: initialValues.timeout_mode || 'per_task',
     round_timeout_seconds: initialValues.round_timeout_seconds ?? 60,
     tournament_timeout_seconds: initialValues.tournament_timeout_seconds ?? 3600,
     break_duration_seconds: initialValues.break_duration_seconds || 42,
@@ -99,9 +99,9 @@ function TournamentForm({
       initialValues.exclude_banned_players !== undefined
         ? initialValues.exclude_banned_players
         : false,
-    ranking_type: initialValues.ranking_type || "by_user",
-    score_strategy: initialValues.score_strategy || "75_percentile",
-    meta_json: initialValues.meta_json || "{}",
+    ranking_type: initialValues.ranking_type || 'by_user',
+    score_strategy: initialValues.score_strategy || '75_percentile',
+    meta_json: initialValues.meta_json || '{}',
   });
 
   useEffect(() => {
@@ -114,12 +114,12 @@ function TournamentForm({
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
-      ...(name === "type" && value === "ladder"
+      [name]: type === 'checkbox' ? checked : value,
+      ...(name === 'type' && value === 'ladder'
         ? {
-            timeout_mode: "per_task",
-            score_strategy: "static_base_score",
-            ranking_type: "by_user",
+            timeout_mode: 'per_task',
+            score_strategy: 'static_base_score',
+            ranking_type: 'by_user',
           }
         : {}),
     }));
@@ -135,23 +135,23 @@ function TournamentForm({
         .map((id) => id.trim())
         .filter(Boolean);
 
-      const isLadder = formData.type === "ladder";
+      const isLadder = formData.type === 'ladder';
 
       if (isLadder) {
         // Ladder always scores by static task base score per user. Its timeout mode
         // controls whether ticks use task base_score (`per_task`) or fixed round time.
-        payload.score_strategy = "static_base_score";
-        payload.ranking_type = "by_user";
+        payload.score_strategy = 'static_base_score';
+        payload.ranking_type = 'by_user';
         payload.round_timeout_seconds = formData.round_timeout_seconds;
         payload.tournament_timeout_seconds = null;
       } else {
-        payload.round_timeout_seconds = ["per_round_fixed", "per_round_with_rematch"].includes(
+        payload.round_timeout_seconds = ['per_round_fixed', 'per_round_with_rematch'].includes(
           formData.timeout_mode,
         )
           ? formData.round_timeout_seconds
           : null;
         payload.tournament_timeout_seconds =
-          formData.timeout_mode === "per_tournament" ? formData.tournament_timeout_seconds : null;
+          formData.timeout_mode === 'per_tournament' ? formData.tournament_timeout_seconds : null;
       }
 
       onSubmit(payload);
@@ -163,16 +163,16 @@ function TournamentForm({
     if (errors[fieldName]) {
       return (
         <div className="invalid-feedback d-block">
-          {Array.isArray(errors[fieldName]) ? errors[fieldName].join(", ") : errors[fieldName]}
+          {Array.isArray(errors[fieldName]) ? errors[fieldName].join(', ') : errors[fieldName]}
         </div>
       );
     }
     return null;
   };
 
-  const isLadder = formData.type === "ladder";
+  const isLadder = formData.type === 'ladder';
   const roundTimeoutActive =
-    isLadder || ["per_round_fixed", "per_round_with_rematch"].includes(formData.timeout_mode);
+    isLadder || ['per_round_fixed', 'per_round_with_rematch'].includes(formData.timeout_mode);
 
   return (
     <form onSubmit={handleSubmit} className="w-100">
@@ -198,15 +198,15 @@ function TournamentForm({
               id="name"
               name="name"
               aria-label="Tournament Name"
-              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                "is-invalid": errors.name,
+              className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                'is-invalid': errors.name,
               })}
               value={formData.name}
               onChange={handleChange}
               maxLength={42}
               required
             />
-            {renderError("name")}
+            {renderError('name')}
           </div>
 
           <div className="form-group mb-3">
@@ -217,8 +217,8 @@ function TournamentForm({
               id="description"
               name="description"
               aria-label="Description"
-              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                "is-invalid": errors.description,
+              className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                'is-invalid': errors.description,
               })}
               value={formData.description}
               onChange={handleChange}
@@ -226,7 +226,7 @@ function TournamentForm({
               maxLength={7531}
               required
             />
-            {renderError("description")}
+            {renderError('description')}
           </div>
 
           <div className="form-group mb-3">
@@ -238,8 +238,8 @@ function TournamentForm({
               id="creator_id"
               name="creator_id"
               aria-label="Creator ID"
-              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                "is-invalid": errors.creator_id,
+              className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                'is-invalid': errors.creator_id,
               })}
               value={formData.creator_id}
               onChange={handleChange}
@@ -248,7 +248,7 @@ function TournamentForm({
             <div className="form-text text-muted">
               The user ID who owns this tournament. Changing this transfers ownership.
             </div>
-            {renderError("creator_id")}
+            {renderError('creator_id')}
           </div>
 
           <div className="form-group mb-0">
@@ -259,8 +259,8 @@ function TournamentForm({
               id="moderator_ids"
               name="moderator_ids"
               aria-label="Moderator IDs"
-              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                "is-invalid": errors.moderator_ids,
+              className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                'is-invalid': errors.moderator_ids,
               })}
               value={formData.moderator_ids}
               onChange={handleChange}
@@ -271,7 +271,7 @@ function TournamentForm({
               Enter user IDs separated by commas or spaces. The creator is always treated as a
               moderator and does not need to be listed here.
             </div>
-            {renderError("moderator_ids")}
+            {renderError('moderator_ids')}
           </div>
         </div>
       </div>
@@ -292,14 +292,14 @@ function TournamentForm({
                 id="starts_at"
                 name="starts_at"
                 aria-label="Starts at"
-                className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                  "is-invalid": errors.starts_at,
+                className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                  'is-invalid': errors.starts_at,
                 })}
                 value={formData.starts_at}
                 onChange={handleChange}
                 required
               />
-              {renderError("starts_at")}
+              {renderError('starts_at')}
             </div>
 
             <div className="col-md-6 mb-3">
@@ -310,8 +310,8 @@ function TournamentForm({
                 id="access_type"
                 name="access_type"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.access_type },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.access_type },
                 )}
                 value={formData.access_type}
                 onChange={handleChange}
@@ -322,7 +322,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("access_type")}
+              {renderError('access_type')}
             </div>
           </div>
         </div>
@@ -398,8 +398,8 @@ function TournamentForm({
                 id="task_provider"
                 name="task_provider"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.task_provider },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.task_provider },
                 )}
                 value={formData.task_provider}
                 onChange={handleChange}
@@ -410,7 +410,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("task_provider")}
+              {renderError('task_provider')}
             </div>
 
             <div className="col-md-6 mb-3">
@@ -421,8 +421,8 @@ function TournamentForm({
                 id="task_strategy"
                 name="task_strategy"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.task_strategy },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.task_strategy },
                 )}
                 value={formData.task_strategy}
                 onChange={handleChange}
@@ -433,12 +433,12 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("task_strategy")}
+              {renderError('task_strategy')}
             </div>
           </div>
 
           <div className="row">
-            {(formData.task_provider === "level" || formData.task_provider === "tags") && (
+            {(formData.task_provider === 'level' || formData.task_provider === 'tags') && (
               <div className="col-md-4 mb-3">
                 <label htmlFor="level" className="form-label text-white">
                   Level
@@ -447,8 +447,8 @@ function TournamentForm({
                   id="level"
                   name="level"
                   className={cn(
-                    "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                    { "is-invalid": errors.level },
+                    'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                    { 'is-invalid': errors.level },
                   )}
                   value={formData.level}
                   onChange={handleChange}
@@ -459,11 +459,11 @@ function TournamentForm({
                     </option>
                   ))}
                 </select>
-                {renderError("level")}
+                {renderError('level')}
               </div>
             )}
 
-            {formData.task_provider === "task_pack" && (
+            {formData.task_provider === 'task_pack' && (
               <div className="col-md-4 mb-3">
                 <label htmlFor="task_pack_name" className="form-label text-white">
                   Task Pack
@@ -472,8 +472,8 @@ function TournamentForm({
                   id="task_pack_name"
                   name="task_pack_name"
                   className={cn(
-                    "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                    { "is-invalid": errors.task_pack_name },
+                    'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                    { 'is-invalid': errors.task_pack_name },
                   )}
                   value={formData.task_pack_name}
                   onChange={handleChange}
@@ -485,11 +485,11 @@ function TournamentForm({
                     </option>
                   ))}
                 </select>
-                {renderError("task_pack_name")}
+                {renderError('task_pack_name')}
               </div>
             )}
 
-            {formData.task_provider === "tags" && (
+            {formData.task_provider === 'tags' && (
               <div className="col-md-8 mb-3">
                 <label htmlFor="tags" className="form-label text-white">
                   Tags (comma separated)
@@ -499,14 +499,14 @@ function TournamentForm({
                   id="tags"
                   name="tags"
                   aria-label="Tags"
-                  className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                    "is-invalid": errors.tags,
+                  className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                    'is-invalid': errors.tags,
                   })}
                   value={formData.tags}
                   onChange={handleChange}
                   placeholder="strings,math"
                 />
-                {renderError("tags")}
+                {renderError('tags')}
               </div>
             )}
           </div>
@@ -528,8 +528,8 @@ function TournamentForm({
                 id="type"
                 name="type"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.type },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.type },
                 )}
                 value={formData.type}
                 onChange={handleChange}
@@ -540,7 +540,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("type")}
+              {renderError('type')}
               {isLadder && (
                 <small className="text-muted d-block mt-1">
                   Continuous pool matchmaking. &quot;Rounds Limit&quot; is the number of matching
@@ -559,8 +559,8 @@ function TournamentForm({
                 id="players_limit"
                 name="players_limit"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.players_limit },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.players_limit },
                 )}
                 value={formData.players_limit}
                 onChange={handleChange}
@@ -571,7 +571,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("players_limit")}
+              {renderError('players_limit')}
             </div>
 
             <div className="col-md-4 mb-3">
@@ -582,8 +582,8 @@ function TournamentForm({
                 id="ranking_type"
                 name="ranking_type"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.ranking_type },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.ranking_type },
                 )}
                 value={formData.ranking_type}
                 onChange={handleChange}
@@ -594,7 +594,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("ranking_type")}
+              {renderError('ranking_type')}
             </div>
 
             <div className="col-md-4 mb-3">
@@ -605,8 +605,8 @@ function TournamentForm({
                 id="score_strategy"
                 name="score_strategy"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.score_strategy },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.score_strategy },
                 )}
                 value={formData.score_strategy}
                 onChange={handleChange}
@@ -618,7 +618,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("score_strategy")}
+              {renderError('score_strategy')}
             </div>
           </div>
 
@@ -631,8 +631,8 @@ function TournamentForm({
                 id="rounds_limit"
                 name="rounds_limit"
                 className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                  { "is-invalid": errors.rounds_limit },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
+                  { 'is-invalid': errors.rounds_limit },
                 )}
                 value={formData.rounds_limit}
                 onChange={handleChange}
@@ -643,7 +643,7 @@ function TournamentForm({
                   </option>
                 ))}
               </select>
-              {renderError("rounds_limit")}
+              {renderError('rounds_limit')}
             </div>
 
             <div className="col-md-4 mb-3">
@@ -655,15 +655,15 @@ function TournamentForm({
                 id="break_duration_seconds"
                 name="break_duration_seconds"
                 aria-label="Break Duration (seconds)"
-                className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                  "is-invalid": errors.break_duration_seconds,
+                className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                  'is-invalid': errors.break_duration_seconds,
                 })}
                 value={formData.break_duration_seconds}
                 onChange={handleChange}
                 min={0}
                 max={100000}
               />
-              {renderError("break_duration_seconds")}
+              {renderError('break_duration_seconds')}
             </div>
           </div>
         </div>
@@ -699,36 +699,36 @@ function TournamentForm({
             <div className="col-md-4 mb-3">
               <label
                 htmlFor="round_timeout_seconds"
-                className={cn("form-label", {
-                  "text-white": roundTimeoutActive,
-                  "text-muted": !roundTimeoutActive,
+                className={cn('form-label', {
+                  'text-white': roundTimeoutActive,
+                  'text-muted': !roundTimeoutActive,
                 })}
               >
-                {isLadder ? "Matching interval (sec)" : "Round Timeout (seconds)"}
+                {isLadder ? 'Matching interval (sec)' : 'Round Timeout (seconds)'}
               </label>
               <input
                 type="number"
                 id="round_timeout_seconds"
                 name="round_timeout_seconds"
                 aria-label="Round Timeout (seconds)"
-                className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                  "is-invalid": errors.round_timeout_seconds,
+                className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                  'is-invalid': errors.round_timeout_seconds,
                 })}
-                value={roundTimeoutActive ? formData.round_timeout_seconds : ""}
+                value={roundTimeoutActive ? formData.round_timeout_seconds : ''}
                 onChange={handleChange}
                 min={isLadder ? 1 : 10}
                 max={10000}
                 disabled={!roundTimeoutActive}
               />
-              {renderError("round_timeout_seconds")}
+              {renderError('round_timeout_seconds')}
             </div>
 
             <div className="col-md-4 mb-3">
               <label
                 htmlFor="tournament_timeout_seconds"
-                className={cn("form-label", {
-                  "text-white": !isLadder && formData.timeout_mode === "per_tournament",
-                  "text-muted": isLadder || formData.timeout_mode !== "per_tournament",
+                className={cn('form-label', {
+                  'text-white': !isLadder && formData.timeout_mode === 'per_tournament',
+                  'text-muted': isLadder || formData.timeout_mode !== 'per_tournament',
                 })}
               >
                 Tournament Timeout (seconds)
@@ -738,20 +738,20 @@ function TournamentForm({
                 id="tournament_timeout_seconds"
                 name="tournament_timeout_seconds"
                 aria-label="Tournament Timeout (seconds)"
-                className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                  "is-invalid": errors.tournament_timeout_seconds,
+                className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                  'is-invalid': errors.tournament_timeout_seconds,
                 })}
                 value={
-                  !isLadder && formData.timeout_mode === "per_tournament"
+                  !isLadder && formData.timeout_mode === 'per_tournament'
                     ? formData.tournament_timeout_seconds
-                    : ""
+                    : ''
                 }
                 onChange={handleChange}
                 min={60}
                 max={36000}
-                disabled={isLadder || formData.timeout_mode !== "per_tournament"}
+                disabled={isLadder || formData.timeout_mode !== 'per_tournament'}
               />
-              {renderError("tournament_timeout_seconds")}
+              {renderError('tournament_timeout_seconds')}
             </div>
           </div>
         </div>
@@ -771,14 +771,14 @@ function TournamentForm({
               id="meta_json"
               name="meta_json"
               aria-label="Meta JSON"
-              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                "is-invalid": errors.meta_json,
+              className={cn('form-control cb-bg-panel cb-border-color text-white cb-rounded', {
+                'is-invalid': errors.meta_json,
               })}
               value={formData.meta_json}
               onChange={handleChange}
               rows={4}
             />
-            {renderError("meta_json")}
+            {renderError('meta_json')}
           </div>
         </div>
       </div>
@@ -800,7 +800,7 @@ function TournamentForm({
           className="btn btn-secondary cb-btn-secondary cb-rounded px-4"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : submitButtonText}
+          {isSubmitting ? 'Submitting...' : submitButtonText}
         </button>
       </div>
     </form>
@@ -809,7 +809,7 @@ function TournamentForm({
 
 TournamentForm.propTypes = {
   initialValues: PropTypes.shape({
-    type: PropTypes.oneOf(["swiss", "ladder"]),
+    type: PropTypes.oneOf(['swiss', 'ladder']),
     name: PropTypes.string,
     description: PropTypes.string,
     creator_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -824,10 +824,10 @@ TournamentForm.propTypes = {
     players_limit: PropTypes.number,
     rounds_limit: PropTypes.number,
     timeout_mode: PropTypes.oneOf([
-      "per_task",
-      "per_round_fixed",
-      "per_round_with_rematch",
-      "per_tournament",
+      'per_task',
+      'per_round_fixed',
+      'per_round_with_rematch',
+      'per_tournament',
     ]),
     round_timeout_seconds: PropTypes.number,
     tournament_timeout_seconds: PropTypes.number,
@@ -881,11 +881,11 @@ TournamentForm.defaultProps = {
   onValidate: null,
   errors: {},
   isSubmitting: false,
-  submitButtonText: "Create Tournament",
+  submitButtonText: 'Create Tournament',
   taskPackNames: [],
-  userTimezone: "UTC",
+  userTimezone: 'UTC',
   showCancelButton: false,
-  cancelButtonText: "Cancel",
+  cancelButtonText: 'Cancel',
   onCancel: null,
 };
 

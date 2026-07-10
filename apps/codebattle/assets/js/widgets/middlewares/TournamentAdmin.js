@@ -1,15 +1,15 @@
-import Gon from "gon";
-import { camelizeKeys } from "humps";
-import compact from "lodash/compact";
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
+import compact from 'lodash/compact';
 
-import TournamentStates from "../config/tournament";
-import tournamentSounds from "../config/tournamentSounds";
-import sound from "../lib/sound";
-import { actions } from "../slices";
+import TournamentStates from '../config/tournament';
+import tournamentSounds from '../config/tournamentSounds';
+import sound from '../lib/sound';
+import { actions } from '../slices';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
-const tournamentId = Gon.getAsset("tournament_id");
+const tournamentId = Gon.getAsset('tournament_id');
 const channel = new Channel();
 if (tournamentId) {
   channel.setupChannel(`tournament_admin:${tournamentId}`);
@@ -65,7 +65,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
     dispatch(actions.setReports(compact(response.reports)));
   };
 
-  channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   channel.onError(() => {
     dispatch(actions.updateTournamentChannelState(false));
@@ -176,18 +176,18 @@ export const connectToTournament =
     };
 
     return channel
-      .addListener("tournament:update", handleUpdate)
-      .addListener("tournament:report:pending", handleReportPending)
-      .addListener("tournament:report:updated", handleReportUpdated)
-      .addListener("tournament:matches:update", handleMatchesUpdate)
-      .addListener("tournament:players:update", handlePlayersUpdate)
-      .addListener("tournament:round_created", handleTournamentRoundCreated)
-      .addListener("tournament:round_finished", handleRoundFinished)
-      .addListener("tournament:player:joined", handlePlayerJoined)
-      .addListener("tournament:player:left", handlePlayerLeft)
-      .addListener("tournament:match:upserted", handleMatchUpserted)
-      .addListener("tournament:restarted", handleTournamentRestarted)
-      .addListener("tournament:finished", handleTournamentFinished);
+      .addListener('tournament:update', handleUpdate)
+      .addListener('tournament:report:pending', handleReportPending)
+      .addListener('tournament:report:updated', handleReportUpdated)
+      .addListener('tournament:matches:update', handleMatchesUpdate)
+      .addListener('tournament:players:update', handlePlayersUpdate)
+      .addListener('tournament:round_created', handleTournamentRoundCreated)
+      .addListener('tournament:round_finished', handleRoundFinished)
+      .addListener('tournament:player:joined', handlePlayerJoined)
+      .addListener('tournament:player:left', handlePlayerLeft)
+      .addListener('tournament:match:upserted', handleMatchUpserted)
+      .addListener('tournament:restarted', handleTournamentRestarted)
+      .addListener('tournament:finished', handleTournamentFinished);
   };
 
 // TODO (tournaments): request matches by searched player id
@@ -197,16 +197,16 @@ export const uploadPlayers = (playerIds) => (dispatch, getState) => {
   const { isLive, id } = state.tournament;
 
   if (isLive) {
-    channel.push("tournament:players:request", { playerIds }).receive("ok", (response) => {
+    channel.push('tournament:players:request', { playerIds }).receive('ok', (response) => {
       dispatch(actions.updateTournamentPlayers(response.players));
     });
   } else {
-    const playerIdsStr = playerIds.join(",");
+    const playerIdsStr = playerIds.join(',');
 
     requestJson(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
       headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
       },
     })
       .then((response) => {
@@ -218,23 +218,23 @@ export const uploadPlayers = (playerIds) => (dispatch, getState) => {
 
 export const requestMatchesForRound = () => (dispatch) => {
   channel
-    .push("tournament:matches:request_for_round", {})
-    .receive("ok", (data) => {
+    .push('tournament:matches:request_for_round', {})
+    .receive('ok', (data) => {
       dispatch(actions.updateTournamentMatches(data.matches));
     })
-    .receive("error", (error) => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
 export const requestAllPlayers = (onSuccess) => (dispatch) => {
   channel
-    .push("tournament:players:request_all", {})
-    .receive("ok", (data) => {
+    .push('tournament:players:request_all', {})
+    .receive('ok', (data) => {
       dispatch(actions.updateTournamentPlayers(data.players));
       if (onSuccess) {
         onSuccess(data);
       }
     })
-    .receive("error", (error) => {
+    .receive('error', (error) => {
       console.error(error);
       if (onSuccess) {
         onSuccess(null);
@@ -243,7 +243,7 @@ export const requestAllPlayers = (onSuccess) => (dispatch) => {
 };
 
 export const requestMatchesByPlayerId = (userId) => (dispatch) => {
-  channel.push("tournament:matches:request", { playerId: userId }).receive("ok", (data) => {
+  channel.push('tournament:matches:request', { playerId: userId }).receive('ok', (data) => {
     dispatch(actions.updateTournamentMatches(data.matches));
     dispatch(actions.updateTournamentPlayers(data.players));
   });
@@ -259,8 +259,8 @@ export const uploadPlayersMatches = (playerId) => (dispatch, getState) => {
   } else {
     requestJson(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
       headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
       },
     })
       .then((response) => {
@@ -271,70 +271,70 @@ export const uploadPlayersMatches = (playerId) => (dispatch, getState) => {
 };
 
 export const createCustomRound = (params) => {
-  channel.push("tournament:start_round", params);
+  channel.push('tournament:start_round', params);
 };
 
 export const startTournament = () => {
-  channel.push("tournament:start", {});
+  channel.push('tournament:start', {});
 };
 
 export const cancelTournament = () => (dispatch) => {
-  channel.push("tournament:cancel", {}).receive("ok", (response) => {
+  channel.push('tournament:cancel', {}).receive('ok', (response) => {
     dispatch(actions.updateTournamentData(response.tournament));
   });
 };
 
 export const restartTournament = () => {
-  channel.push("tournament:restart", {});
+  channel.push('tournament:restart', {});
 };
 
 export const retryTournament = () => {
-  channel.push("tournament:retry", {});
+  channel.push('tournament:retry', {});
 };
 
 export const kickTournamentPlayer = (userId, onSuccess) => {
   channel
-    .push("tournament:player:kick", { userId })
-    .receive("ok", (payload) => {
+    .push('tournament:player:kick', { userId })
+    .receive('ok', (payload) => {
       if (onSuccess) {
         onSuccess(camelizeKeys(payload));
       }
     })
-    .receive("error", (error) => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
 export const startRoundTournament = () => {
-  channel.push("tournament:start_round", {});
+  channel.push('tournament:start_round', {});
 };
 
 export const finishRoundTournament = () => {
-  channel.push("tournament:finish_round", {});
+  channel.push('tournament:finish_round', {});
 };
 
 export const finishTournament = () => {
-  channel.push("tournament:finish", {});
+  channel.push('tournament:finish', {});
 };
 
 export const toggleVisibleGameResult = (gameId) => {
-  channel.push("tournament:toggle_match_visible", { gameId });
+  channel.push('tournament:toggle_match_visible', { gameId });
 };
 
 export const openUpTournament = () => {
-  channel.push("tournament:open_up", {});
+  channel.push('tournament:open_up', {});
 };
 
 export const showTournamentResults = () => {
-  channel.push("tournament:toggle_show_results", {});
+  channel.push('tournament:toggle_show_results', {});
 };
 
 export const sendMatchGameOver = (matchId) => {
-  channel.push("tournament:match:game_over", { matchId });
+  channel.push('tournament:match:game_over', { matchId });
 };
 
 export const toggleBanUser = (userId, isBanned) => (dispatch) => {
   channel
-    .push("tournament:cheater:toggle", { userId })
-    .receive("ok", (payload) =>
+    .push('tournament:cheater:toggle', { userId })
+    .receive('ok', (payload) =>
       dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned, state: payload.state }])),
     );
 };
@@ -343,12 +343,12 @@ export const sendNewReportState = (reportId, state) => (dispatch) => {
   const params = { reportId, state };
 
   channel
-    .push("tournament:report:update", params)
-    .receive("ok", (payload) => {
+    .push('tournament:report:update', params)
+    .receive('ok', (payload) => {
       const report = camelizeKeys(payload.report);
       dispatch(actions.updateReport(report));
     })
-    .receive("error", (error) => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
 export const pushActiveMatchToStream = (gameId) => (dispatch) => {
@@ -357,6 +357,6 @@ export const pushActiveMatchToStream = (gameId) => (dispatch) => {
 
   // Send the update to the server
   channel
-    .push("tournament:stream:active_game", { gameId })
-    .receive("error", (error) => console.error(error));
+    .push('tournament:stream:active_game', { gameId })
+    .receive('error', (error) => console.error(error));
 };

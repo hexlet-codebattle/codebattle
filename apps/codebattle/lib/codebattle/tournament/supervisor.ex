@@ -2,8 +2,6 @@ defmodule Codebattle.Tournament.Supervisor do
   @moduledoc false
   use Supervisor
 
-  require Logger
-
   def start_link(tournament) do
     Supervisor.start_link(__MODULE__, [tournament], name: supervisor_name(tournament.id))
   end

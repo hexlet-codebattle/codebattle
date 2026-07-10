@@ -6,16 +6,16 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
-import Overlay from "react-bootstrap/Overlay";
+import Overlay from 'react-bootstrap/Overlay';
 
 const normalizeDelay = (delay) => {
   if (delay == null) {
     return { show: 0, hide: 0 };
   }
 
-  if (typeof delay === "number") {
+  if (typeof delay === 'number') {
     return { show: delay, hide: delay };
   }
 
@@ -35,8 +35,8 @@ const normalizeTriggers = (trigger) => {
 
 function OverlayTriggerCompat({
   children,
-  trigger = ["hover", "focus"],
-  placement = "right",
+  trigger = ['hover', 'focus'],
+  placement = 'right',
   overlay,
   show,
   delay,
@@ -99,16 +99,16 @@ function OverlayTriggerCompat({
 
   const childProps = {};
 
-  if (triggers.includes("click")) {
+  if (triggers.includes('click')) {
     childProps.onClick = handleToggle;
   }
 
-  if (triggers.includes("focus")) {
+  if (triggers.includes('focus')) {
     childProps.onFocus = handleShow;
     childProps.onBlur = handleHide;
   }
 
-  if (triggers.includes("hover")) {
+  if (triggers.includes('hover')) {
     childProps.onMouseOver = handleShow;
     childProps.onMouseOut = handleHide;
   }
@@ -118,11 +118,11 @@ function OverlayTriggerCompat({
   };
 
   const mergeHandlers = (childHandler, triggerHandler) => (event) => {
-    if (typeof childHandler === "function") {
+    if (typeof childHandler === 'function') {
       childHandler(event);
     }
 
-    if (typeof triggerHandler === "function") {
+    if (typeof triggerHandler === 'function') {
       triggerHandler(event);
     }
   };
@@ -132,13 +132,13 @@ function OverlayTriggerCompat({
   }
 
   const triggerChild =
-    typeof children === "function" ? children({ ...childProps, ref: setRef }) : children;
+    typeof children === 'function' ? children({ ...childProps, ref: setRef }) : children;
 
   if (!isValidElement(triggerChild)) {
     return triggerChild;
   }
 
-  const isHostElement = typeof triggerChild.type === "string";
+  const isHostElement = typeof triggerChild.type === 'string';
   const wrapperProps = {
     ref: setRef,
     onClick: childProps.onClick,
@@ -146,14 +146,14 @@ function OverlayTriggerCompat({
     onBlur: childProps.onBlur,
     onMouseOver: childProps.onMouseOver,
     onMouseOut: childProps.onMouseOut,
-    className: "d-inline-flex align-items-center",
+    className: 'd-inline-flex align-items-center',
   };
 
   if (childProps.onClick) {
-    wrapperProps.role = "button";
+    wrapperProps.role = 'button';
     wrapperProps.tabIndex = 0;
     wrapperProps.onKeyDown = (event) => {
-      if (event.key === "Enter" || event.key === " ") {
+      if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         childProps.onClick(event);
       }

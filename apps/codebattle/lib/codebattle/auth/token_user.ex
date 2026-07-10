@@ -5,8 +5,6 @@ defmodule Codebattle.Auth.User.TokenUser do
   alias Codebattle.Repo
   alias Codebattle.User
 
-  require Logger
-
   def find(nil), do: {:error, "lol"}
   def find(""), do: {:error, "kek"}
 

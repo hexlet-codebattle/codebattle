@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from 'react';
 
-import Table from "react-bootstrap/Table";
-import { useSelector, useDispatch } from "react-redux";
+import Table from 'react-bootstrap/Table';
+import { useSelector, useDispatch } from 'react-redux';
 
-import UserInfo from "../../components/UserInfo";
-import periodTypes from "../../config/periodTypes";
-import { actions } from "../../slices";
-import { leaderboardSelector } from "../../slices/leaderboard";
+import UserInfo from '../../components/UserInfo';
+import periodTypes from '../../config/periodTypes';
+import { actions } from '../../slices';
+import { leaderboardSelector } from '../../slices/leaderboard';
 
 function Leaderboard() {
   const dispatch = useDispatch();

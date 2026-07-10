@@ -1,8 +1,8 @@
-import { camelizeKeys } from "humps";
-import moment from "moment";
-import qs from "qs";
+import { camelizeKeys } from 'humps';
+import moment from 'moment';
+import qs from 'qs';
 
-import { actions } from "../slices";
+import { actions } from '../slices';
 
 const requestJson = async (url, options = {}) => {
   const response = await fetch(url, options);
@@ -38,7 +38,7 @@ export const loadUserStats = (dispatch) => async (user) => {
 };
 
 export const loadNearbyUsers = (abortController, onSuccess, onFailure) => {
-  requestJson("/api/v1/user/nearby_users", { signal: abortController.signal })
+  requestJson('/api/v1/user/nearby_users', { signal: abortController.signal })
     .then(camelizeKeys)
     .then(onSuccess)
     .catch(onFailure);
@@ -51,10 +51,10 @@ export const loadSimpleUserStats = (onSuccess, onFailure) => (user) => {
 export const sendPremiumRequest = (requestStatus, userId) => async (dispatch) => {
   try {
     await requestJson(`/api/v1/user/${userId}/send_premium_request`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
       },
       body: JSON.stringify({ status: requestStatus }),
     });
@@ -65,15 +65,15 @@ export const sendPremiumRequest = (requestStatus, userId) => async (dispatch) =>
 };
 
 const periodToTimeUnit = {
-  weekly: "week",
-  monthly: "month",
+  weekly: 'week',
+  monthly: 'month',
 };
 
 const getDateByPeriod = (period) => {
-  if (period === "total") {
+  if (period === 'total') {
     return null;
   }
-  return moment().startOf(periodToTimeUnit[period]).utc().format("YYYY-MM-DD");
+  return moment().startOf(periodToTimeUnit[period]).utc().format('YYYY-MM-DD');
 };
 
 export const getUsersRatingPage =

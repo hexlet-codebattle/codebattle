@@ -252,8 +252,6 @@ defmodule CodebattleWeb.TournamentStreamerChannel do
     Map.get(match, key) || Map.get(match, Atom.to_string(key))
   end
 
-  defp fetch_active_game(nil), do: nil
-
   defp fetch_active_game(game_id) do
     case GameContext.fetch_game(game_id) do
       {:ok, game} -> game

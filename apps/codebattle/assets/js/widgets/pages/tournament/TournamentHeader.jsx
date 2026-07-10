@@ -1,53 +1,53 @@
-import React, { memo, useContext, useMemo } from "react";
+import React, { memo, useContext, useMemo } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import i18next from "i18next";
-import moment from "moment";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import i18next from 'i18next';
+import moment from 'moment';
 
-import CustomEventStylesContext from "@/components/CustomEventStylesContext";
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
-import CopyButton from "../../components/CopyButton";
-import TournamentStates from "../../config/tournament";
-import TournamentTypes from "../../config/tournamentTypes";
-import useTimer from "../../utils/useTimer";
+import CopyButton from '../../components/CopyButton';
+import TournamentStates from '../../config/tournament';
+import TournamentTypes from '../../config/tournamentTypes';
+import useTimer from '../../utils/useTimer';
 
-import JoinButton from "./JoinButton";
-import TournamentMainControlButtons from "./TournamentMainControlButtons";
+import JoinButton from './JoinButton';
+import TournamentMainControlButtons from './TournamentMainControlButtons';
 export const buildTournamentAccessUrl = (tournamentId, accessToken) => {
   const url = new URL(`/tournaments/${tournamentId}`, window.location.origin);
-  url.searchParams.set("access_token", accessToken);
+  url.searchParams.set('access_token', accessToken);
 
   return url.toString();
 };
 
 const getBadgeTitle = (state, breakState, hideResults) => {
   if (hideResults && state === TournamentStates.finished) {
-    return "Waiting winner announcements";
+    return 'Waiting winner announcements';
   }
 
   switch (state) {
     case TournamentStates.active:
-      return breakState === "off" ? "Active" : "Round break";
+      return breakState === 'off' ? 'Active' : 'Round break';
     case TournamentStates.waitingParticipants:
-      return "Waiting Participants";
+      return 'Waiting Participants';
     case TournamentStates.canceled:
-      return "Canceled";
+      return 'Canceled';
     case TournamentStates.finished:
-      return "Finished";
+      return 'Finished';
     default:
-      return "Loading";
+      return 'Loading';
   }
 };
 
 const getDescriptionByState = (state) => {
   switch (state) {
     case TournamentStates.canceled:
-      return i18next.t("The tournament is canceled");
+      return i18next.t('The tournament is canceled');
     case TournamentStates.finished:
-      return i18next.t("The tournament is finished");
+      return i18next.t('The tournament is finished');
     default:
-      return "";
+      return '';
   }
 };
 
@@ -59,17 +59,17 @@ function TournamentTimer({ startsAt, isOnline }) {
   }
 
   return seconds > 0 ? (
-    <span>{i18next.t("The tournament will start: %{duration}", { duration })}</span>
+    <span>{i18next.t('The tournament will start: %{duration}', { duration })}</span>
   ) : (
-    <span>{i18next.t("The tournament will start soon")}</span>
+    <span>{i18next.t('The tournament will start soon')}</span>
   );
 }
 
 export function TournamentRemainingTimer({ startsAt, duration }) {
-  const endsAt = useMemo(() => moment.utc(startsAt).add(duration, "seconds"), [startsAt, duration]);
+  const endsAt = useMemo(() => moment.utc(startsAt).add(duration, 'seconds'), [startsAt, duration]);
   const [time, seconds] = useTimer(endsAt);
 
-  return seconds > 0 ? time : "";
+  return seconds > 0 ? time : '';
 }
 
 function TournamentStateDescription({
@@ -87,14 +87,14 @@ function TournamentStateDescription({
     return <TournamentTimer startsAt={startsAt} isOnline={isOnline} />;
   }
 
-  if (state === TournamentStates.active && breakState === "off") {
+  if (state === TournamentStates.active && breakState === 'off') {
     if (!Number.isInteger(currentRoundTimeoutSeconds)) {
       return null;
     }
 
     return (
       <span>
-        {i18next.t("Round ends in ")}
+        {i18next.t('Round ends in ')}
         <TournamentRemainingTimer
           key={lastRoundStartedAt}
           startsAt={lastRoundStartedAt}
@@ -104,14 +104,14 @@ function TournamentStateDescription({
     );
   }
 
-  if (state === TournamentStates.active && breakState === "on") {
+  if (state === TournamentStates.active && breakState === 'on') {
     if (!canModerate) {
-      return <span>{i18next.t("Next round will start soon")}</span>;
+      return <span>{i18next.t('Next round will start soon')}</span>;
     }
 
     return (
       <span>
-        {i18next.t("Next round will start in ")}
+        {i18next.t('Next round will start in ')}
         <TournamentRemainingTimer
           key={lastRoundEndedAt}
           startsAt={lastRoundEndedAt}
@@ -161,28 +161,28 @@ function TournamentHeader({
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
   const stateClassName = cn(
-    "badge mr-2",
+    'badge mr-2',
     hasCustomEventStyle
       ? {
-          "cb-custom-event-badge-warning": state === TournamentStates.waitingParticipants,
-          "cb-custom-event-badge-success":
-            !hideResults && (breakState === "off" || state === TournamentStates.finished),
-          "cb-custom-event-badge-light": state === TournamentStates.canceled,
-          "cb-custom-event-badge-danger": breakState === "on",
-          "cb-custom-event-badge-primary": hideResults && state === TournamentStates.finished,
+          'cb-custom-event-badge-warning': state === TournamentStates.waitingParticipants,
+          'cb-custom-event-badge-success':
+            !hideResults && (breakState === 'off' || state === TournamentStates.finished),
+          'cb-custom-event-badge-light': state === TournamentStates.canceled,
+          'cb-custom-event-badge-danger': breakState === 'on',
+          'cb-custom-event-badge-primary': hideResults && state === TournamentStates.finished,
         }
       : {
-          "badge-warning": state === TournamentStates.waitingParticipants,
-          "badge-success":
-            !hideResults && (breakState === "off" || state === TournamentStates.finished),
-          "badge-light": state === TournamentStates.canceled,
-          "badge-danger": breakState === "on",
-          "badge-primary": hideResults && state === TournamentStates.finished,
+          'badge-warning': state === TournamentStates.waitingParticipants,
+          'badge-success':
+            !hideResults && (breakState === 'off' || state === TournamentStates.finished),
+          'badge-light': state === TournamentStates.canceled,
+          'badge-danger': breakState === 'on',
+          'badge-primary': hideResults && state === TournamentStates.finished,
         },
   );
-  const copyBtnClassName = cn("btn btn-sm rounded-right", {
-    "btn-secondary cb-btn-secondary": !hasCustomEventStyle,
-    "cb-custom-event-btn-secondary": hasCustomEventStyle,
+  const copyBtnClassName = cn('btn btn-sm rounded-right', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
   // const backBtnClassName = cn('btn rounded-lg ml-lg-2 mr-2', {
   //   'btn-primary': !hasCustomEventStyle,
@@ -190,8 +190,8 @@ function TournamentHeader({
   // });
 
   const canStart = isLive && state === TournamentStates.waitingParticipants && playersCount > 0;
-  const canStartRound = isLive && state === TournamentStates.active && breakState === "on";
-  const canFinishRound = isLive && state === TournamentStates.active && breakState === "off";
+  const canStartRound = isLive && state === TournamentStates.active && breakState === 'on';
+  const canFinishRound = isLive && state === TournamentStates.active && breakState === 'off';
   const canFinishTournament = state === TournamentStates.active;
   const canRestart =
     !isLive ||
@@ -222,7 +222,7 @@ function TournamentHeader({
                   {name}
                 </h2>
               </div>
-              {accessType === "token" && (
+              {accessType === 'token' && (
                 <div title="Private tournament" className="text-center ml-2">
                   <FontAwesomeIcon icon="lock" />
                 </div>
@@ -286,11 +286,11 @@ function TournamentHeader({
                 </div>
               )}
             </div>
-            {canModerate && !streamMode && accessType === "token" && (
+            {canModerate && !streamMode && accessType === 'token' && (
               <div
                 className={cn(
-                  "d-flex justify-content-end mt-2 pt-2",
-                  "cb-grid-divider overflow-auto border-top cb-border-color",
+                  'd-flex justify-content-end mt-2 pt-2',
+                  'cb-grid-divider overflow-auto border-top cb-border-color',
                 )}
               >
                 <div className="d-flex input-group">
@@ -310,14 +310,14 @@ function TournamentHeader({
             {showDeadTournamentWarning && (
               <div
                 className={cn(
-                  "mt-2 px-3 py-2 rounded small font-weight-bold border",
+                  'mt-2 px-3 py-2 rounded small font-weight-bold border',
                   hasCustomEventStyle
-                    ? "cb-bg-highlight-panel cb-border-color cb-text"
-                    : "border-warning text-warning",
+                    ? 'cb-bg-highlight-panel cb-border-color cb-text'
+                    : 'border-warning text-warning',
                 )}
               >
                 {i18next.t(
-                  "Tournament process is dead. Click Restart to make it live again so users can join.",
+                  'Tournament process is dead. Click Restart to make it live again so users can join.',
                 )}
               </div>
             )}

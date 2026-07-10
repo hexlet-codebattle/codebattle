@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 function AsyncSelect({ loadOptions, onChange }) {
   const [entities, setEntities] = useState([]);
@@ -8,7 +8,7 @@ function AsyncSelect({ loadOptions, onChange }) {
       setEntities(options.map((option) => option.value));
     };
 
-    loadOptions("test", callback);
+    loadOptions('test', callback);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -1,32 +1,32 @@
-import NiceModal from "@ebay/nice-modal-react";
-import Gon from "gon";
-import { camelizeKeys } from "humps";
-import debounce from "lodash/debounce";
-import find from "lodash/find";
+import NiceModal from '@ebay/nice-modal-react';
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
+import debounce from 'lodash/debounce';
+import find from 'lodash/find';
 
-import ModalCodes from "@/config/modalCodes";
-import { makeGameUrl } from "@/utils/urlBuilders";
+import ModalCodes from '@/config/modalCodes';
+import { makeGameUrl } from '@/utils/urlBuilders';
 
-import { channelMethods, channelTopics } from "../../socket";
-import GameRoomModes from "../config/gameModes";
-import GameStateCodes from "../config/gameStateCodes";
-import PlaybookStatusCodes from "../config/playbookStatusCodes";
-import { parse, getFinalState, getText, resolveDiffs, resolveRealtimeDiffs } from "../lib/player";
-import * as selectors from "../selectors";
-import { actions, redirectToNewGame } from "../slices";
+import { channelMethods, channelTopics } from '../../socket';
+import GameRoomModes from '../config/gameModes';
+import GameStateCodes from '../config/gameStateCodes';
+import PlaybookStatusCodes from '../config/playbookStatusCodes';
+import { parse, getFinalState, getText, resolveDiffs, resolveRealtimeDiffs } from '../lib/player';
+import * as selectors from '../selectors';
+import { actions, redirectToNewGame } from '../slices';
 import {
   getGamePlayers,
   getGameStatus,
   getPlayersExecutionData,
   getPlayersText,
-} from "../utils/gameRoom";
-import notification from "../utils/notification";
+} from '../utils/gameRoom';
+import notification from '../utils/notification';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
-const defaultLanguages = Gon.getAsset("langs");
-const gameId = Gon.getAsset("game_id");
-const isRecord = Gon.getAsset("is_record");
+const defaultLanguages = Gon.getAsset('langs');
+const gameId = Gon.getAsset('game_id');
+const isRecord = Gon.getAsset('is_record');
 const channel = new Channel();
 const requestJson = async (url, options = {}) => {
   const response = await fetch(url, options);
@@ -116,7 +116,7 @@ const initStoredGame = (dispatch) => (data) => {
     locked: data.locked,
     visible: true,
     award: data.award,
-    awardStatus: "idle",
+    awardStatus: 'idle',
     playbookStatusCode: PlaybookStatusCodes.stored,
   });
 
@@ -132,13 +132,13 @@ const initPlaybook = (dispatch) => (data) => {
 
 const initGameChannel = (gameRoomService) => (dispatch) => {
   const onJoinFailure = (payload) => {
-    gameRoomService.send("REJECT_LOADING_GAME", { payload });
-    gameRoomService.send("FAILURE_JOIN", { payload });
+    gameRoomService.send('REJECT_LOADING_GAME', { payload });
+    gameRoomService.send('FAILURE_JOIN', { payload });
     window.location.reload();
   };
 
   channel.onError(() => {
-    gameRoomService.send("FAILURE");
+    gameRoomService.send('FAILURE');
   });
 
   const onJoinSuccess = (response) => {
@@ -163,7 +163,7 @@ const initGameChannel = (gameRoomService) => (dispatch) => {
 
     const gameStatus = getGameStatus(normalizedResponse.game);
 
-    gameRoomService.send("LOAD_GAME", { payload: gameStatus });
+    gameRoomService.send('LOAD_GAME', { payload: gameStatus });
 
     if (activeGameId) {
       dispatch(actions.setActiveGameId({ activeGameId }));
@@ -192,7 +192,7 @@ const initGameChannel = (gameRoomService) => (dispatch) => {
     });
   };
 
-  channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 };
 
 export const updateEditorText =
@@ -236,7 +236,7 @@ export const sendEditorText =
 export const sendEditorSummary =
   (summary, langSlug = null) =>
   (_dispatch, getState) => {
-    if (!summary || typeof summary !== "object") {
+    if (!summary || typeof summary !== 'object') {
       return;
     }
 
@@ -257,7 +257,7 @@ export const sendEditorSummary =
 
 // TODO: only for show tournament
 export const startRoundTournament = () => {
-  channel.push("tournament:start_round", {});
+  channel.push('tournament:start_round', {});
 };
 
 export const sendEditorCursorPosition = (offset) => {
@@ -281,10 +281,10 @@ export const sendEditorScrollPosition = (scrollTop, scrollLeft) => {
 export const sendPassCode = (passCode, onError) => (dispatch) => {
   channel
     .push(channelMethods.enterPassCode, { passCode })
-    .receive("ok", () => {
+    .receive('ok', () => {
       dispatch(actions.setLocked(false));
     })
-    .receive("error", (error) => {
+    .receive('error', (error) => {
       onError({ message: error.reason });
     });
 };
@@ -306,13 +306,13 @@ export const sendAcceptToRematch = () => {
 };
 
 export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
-  const payload = { user_id: userId, reason: "cheat", comment: "" };
+  const payload = { user_id: userId, reason: 'cheat', comment: '' };
 
   requestJson(`/api/v1/games/${gameId}/user_game_reports`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
+      'Content-Type': 'application/json',
+      'x-csrf-token': window.csrf_token,
     },
     body: JSON.stringify(payload),
   })
@@ -386,7 +386,7 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection, 
 
   const handleNewScrollPosition = debounce((data) => {
     const { scrollTop, scrollLeft } = data;
-    if (userId === data.userId && typeof onChangeScroll === "function") {
+    if (userId === data.userId && typeof onChangeScroll === 'function') {
       onChangeScroll(scrollTop, scrollLeft);
     }
   }, 80);
@@ -412,9 +412,9 @@ export const activeEditorReady = (service, isBanned) => {
   const listenerParams = { userId: service.machine.context.userId };
 
   if (isBanned) {
-    service.send("load_banned_editor");
+    service.send('load_banned_editor');
   } else {
-    service.send("load_active_editor");
+    service.send('load_active_editor');
   }
 
   // channel.on('editor:data', data => {
@@ -423,19 +423,19 @@ export const activeEditorReady = (service, isBanned) => {
   // });
 
   const handleUserBanned = (data) => {
-    service.send("banned_user", data);
+    service.send('banned_user', data);
   };
 
   const handleUserUnbanned = (data) => {
-    service.send("unbanned_user", data);
+    service.send('unbanned_user', data);
   };
 
   const handleStartsCheck = (data) => {
-    service.send("check_solution_received", data);
+    service.send('check_solution_received', data);
   };
 
   const handleNewCheckResult = (data) => {
-    service.send("receive_check_result", data);
+    service.send('receive_check_result', data);
   };
 
   channel
@@ -475,7 +475,7 @@ export const activeGameReady =
       if (solutionStatus) {
         channel
           .push(channelMethods.gameHeadToHead, {})
-          .receive("ok", (data) => dispatch(actions.setGameHeadToHead(data)));
+          .receive('ok', (data) => dispatch(actions.setGameHeadToHead(data)));
       }
       dispatch(actions.updateGamePlayers({ players }));
 
@@ -560,7 +560,7 @@ export const activeGameReady =
       dispatch(actions.updateGameStatus({ state, msg }));
       channel
         .push(channelMethods.gameHeadToHead, {})
-        .receive("ok", (response) => dispatch(actions.setGameHeadToHead(response)));
+        .receive('ok', (response) => dispatch(actions.setGameHeadToHead(response)));
       gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
     };
 
@@ -648,33 +648,33 @@ export const activeGameReady =
   };
 
 const fetchPlaybook = (service, init) => (dispatch) => {
-  service.send("START_LOADING_PLAYBOOK");
+  service.send('START_LOADING_PLAYBOOK');
 
   requestJson(`/api/v1/playbook/${gameId}`)
     .then((response) => {
       const data = camelizeKeys(response);
       const type = isRecord ? PlaybookStatusCodes.stored : PlaybookStatusCodes.active;
       const urlParams = new URLSearchParams(window.location.search);
-      const isRealtime = urlParams.get("realtime") !== "false";
+      const isRealtime = urlParams.get('realtime') !== 'false';
       const resolvedData = isRealtime ? resolveRealtimeDiffs(data, type) : resolveDiffs(data, type);
 
       init(dispatch)(resolvedData);
 
-      service.send("LOAD_PLAYBOOK", { payload: resolvedData });
+      service.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
     .catch((err) => {
       console.error(err);
       dispatch(actions.setError(err));
-      service.send("REJECT_LOADING_PLAYBOOK", { payload: err });
+      service.send('REJECT_LOADING_PLAYBOOK', { payload: err });
     });
 };
 
 export const changePlaybookSolution = (method) => (dispatch) => {
   requestJson(`/api/v1/playbooks/${method}`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-type": "application/json",
-      "x-csrf-token": window.csrf_token,
+      'Content-type': 'application/json',
+      'x-csrf-token': window.csrf_token,
     },
     body: JSON.stringify({
       game_id: gameId,
@@ -701,7 +701,7 @@ export const changePlaybookSolution = (method) => (dispatch) => {
 };
 
 export const storedEditorReady = (service) => {
-  service.send("load_stored_editor");
+  service.send('load_stored_editor');
 
   return () => {};
 };
@@ -711,7 +711,7 @@ export const downloadPlaybook = (service) => (dispatch) => {
 };
 
 export const openPlaybook = (service) => () => {
-  service.send("OPEN_REPLAYER");
+  service.send('OPEN_REPLAYER');
 };
 
 export const connectToGame = (gameRoomService, options) => (dispatch) => {
@@ -719,7 +719,7 @@ export const connectToGame = (gameRoomService, options) => (dispatch) => {
     return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
   }
 
-  gameRoomService.send("JOIN");
+  gameRoomService.send('JOIN');
 
   return activeGameReady(gameRoomService, options)(dispatch);
 };
@@ -791,7 +791,7 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
   const nextRecord = parse(records[nextRecordId]) || {};
 
   switch (nextRecord.type) {
-    case "update_editor_data": {
+    case 'update_editor_data': {
       const editorText = selectors.editorTextHistorySelector(state, nextRecord);
       const editorLang = selectors.editorLangHistorySelector(state, nextRecord);
       const newEditorText = getText(editorText, nextRecord.diff);
@@ -805,7 +805,7 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
       );
       break;
     }
-    case "check_complete":
+    case 'check_complete':
       dispatch(
         actions.updateExecutionOutputHistory({
           ...nextRecord.checkResult,
@@ -813,9 +813,9 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
         }),
       );
       break;
-    case "chat_message":
-    case "join_chat":
-    case "leave_chat":
+    case 'chat_message':
+    case 'join_chat':
+    case 'leave_chat':
       dispatch(actions.updateChatDataHistory(nextRecord.chat));
       break;
     default:
@@ -824,7 +824,7 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
 };
 
 export const changeTaskImgDataUrl = (imgDataUrl) => () => {
-  channel.push(channelMethods.gameTaskChangeTarget, { imgDataUrl }).receive("ok", () => {
+  channel.push(channelMethods.gameTaskChangeTarget, { imgDataUrl }).receive('ok', () => {
     window.location.reload();
   });
 };

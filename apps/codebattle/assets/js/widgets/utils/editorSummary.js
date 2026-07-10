@@ -93,14 +93,14 @@ export const finalizeTelemetryWindow = (windowSummary) => {
 };
 
 export const isPrintableKey = (event) =>
-  typeof event.key === "string" &&
+  typeof event.key === 'string' &&
   event.key.length === 1 &&
   !event.ctrl_key &&
   !event.meta_key &&
   !event.alt_key;
 
 export const isArrowKey = (key) =>
-  key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight";
+  key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight';
 
 export const updateTelemetryWindow = (windowSummary, event) => {
   const nextWindow = windowSummary || createTelemetryWindow(event);
@@ -109,12 +109,12 @@ export const updateTelemetryWindow = (windowSummary, event) => {
   nextWindow.windowEndOffsetMs = event.offset_ms ?? nextWindow.windowEndOffsetMs;
   nextWindow.langSlug = event.lang_slug || nextWindow.langSlug;
 
-  if (typeof event.text_length === "number") {
+  if (typeof event.text_length === 'number') {
     nextWindow.finalTextLength = event.text_length;
   }
 
   switch (event.type) {
-    case "keydown": {
+    case 'keydown': {
       nextWindow.keyEventCount += 1;
 
       if (isPrintableKey(event)) {
@@ -124,21 +124,21 @@ export const updateTelemetryWindow = (windowSummary, event) => {
       if (event.ctrl_key || event.meta_key) {
         nextWindow.modifierShortcutCount += 1;
 
-        if (event.code === "KeyC") nextWindow.copyShortcutCount += 1;
-        if (event.code === "KeyX") nextWindow.cutShortcutCount += 1;
-        if (event.code === "KeyV") nextWindow.pasteShortcutAttemptCount += 1;
-        if (event.code === "KeyZ") nextWindow.undoShortcutCount += 1;
-        if (event.code === "KeyY") nextWindow.redoShortcutCount += 1;
+        if (event.code === 'KeyC') nextWindow.copyShortcutCount += 1;
+        if (event.code === 'KeyX') nextWindow.cutShortcutCount += 1;
+        if (event.code === 'KeyV') nextWindow.pasteShortcutAttemptCount += 1;
+        if (event.code === 'KeyZ') nextWindow.undoShortcutCount += 1;
+        if (event.code === 'KeyY') nextWindow.redoShortcutCount += 1;
       }
 
-      if (event.key === "Backspace") nextWindow.backspaceCount += 1;
-      if (event.key === "Delete") nextWindow.deleteCount += 1;
-      if (event.key === "Enter") nextWindow.enterCount += 1;
-      if (event.key === "Tab") nextWindow.tabCount += 1;
+      if (event.key === 'Backspace') nextWindow.backspaceCount += 1;
+      if (event.key === 'Delete') nextWindow.deleteCount += 1;
+      if (event.key === 'Enter') nextWindow.enterCount += 1;
+      if (event.key === 'Tab') nextWindow.tabCount += 1;
       if (isArrowKey(event.key)) nextWindow.arrowKeyCount += 1;
 
-      if (typeof event.offset_ms === "number") {
-        if (typeof nextWindow.lastKeyOffsetMs === "number") {
+      if (typeof event.offset_ms === 'number') {
+        if (typeof nextWindow.lastKeyOffsetMs === 'number') {
           const deltaMs = Math.max(0, event.offset_ms - nextWindow.lastKeyOffsetMs);
           nextWindow.keyDeltaSampleCount += 1;
           nextWindow.keyDeltaTotalMs += deltaMs;
@@ -159,15 +159,15 @@ export const updateTelemetryWindow = (windowSummary, event) => {
       break;
     }
 
-    case "paste_blocked":
+    case 'paste_blocked':
       nextWindow.pasteBlockedCount += 1;
       break;
 
-    case "drop_blocked":
+    case 'drop_blocked':
       nextWindow.dropBlockedCount += 1;
       break;
 
-    case "content_change":
+    case 'content_change':
       nextWindow.contentChangeCount += event.change_count || 0;
       nextWindow.charsInserted += event.inserted_chars || 0;
       nextWindow.charsDeleted += event.deleted_chars || 0;

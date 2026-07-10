@@ -1,13 +1,13 @@
-import React, { useCallback } from "react";
+import React, { useCallback } from 'react';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import UserInfo from "../../components/UserInfo";
-import * as lobbyMiddlewares from "../../middlewares/Lobby";
-import * as selectors from "../../selectors";
-import { actions } from "../../slices";
+import UserInfo from '../../components/UserInfo';
+import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 
 function ChatActionModal({ presenceList, chatInputRef, modalShowing, setModalShowing }) {
   const dispatch = useDispatch();
@@ -48,9 +48,9 @@ function ChatActionModal({ presenceList, chatInputRef, modalShowing, setModalSho
   );
 
   const title =
-    modalShowing.action === "sendMessage" ? "Send private message" : "Send battle invite";
+    modalShowing.action === 'sendMessage' ? 'Send private message' : 'Send battle invite';
   const handleSelectPlayer =
-    modalShowing.action === "sendMessage" ? openDirect : createBattleInvite;
+    modalShowing.action === 'sendMessage' ? openDirect : createBattleInvite;
 
   return (
     <Modal

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import moment from "moment";
+import moment from 'moment';
 
 function useTimer(time) {
-  const [duration, setDuration] = useState("00:00:00");
+  const [duration, setDuration] = useState('00:00:00');
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function useTimer(time) {
         : moment.utc(time, moment.ISO_8601, true);
 
       if (!targetTime.isValid()) {
-        setDuration("00:00:00");
+        setDuration('00:00:00');
         setSeconds(0);
         return;
       }
@@ -21,7 +21,7 @@ function useTimer(time) {
       const diffMs = Math.max(targetTime.local().diff(moment()), 0);
       const diff = moment.utc(diffMs);
 
-      setDuration(diff.format("HH:mm:ss"));
+      setDuration(diff.format('HH:mm:ss'));
       setSeconds(moment.duration(diffMs).asSeconds());
     };
 

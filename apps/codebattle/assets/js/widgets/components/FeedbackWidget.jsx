@@ -1,34 +1,34 @@
-import React, { useCallback, memo, useMemo, useState } from "react";
+import React, { useCallback, memo, useMemo, useState } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "react-bootstrap/Button";
-import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
-import i18n from "../../i18n";
-import AlertCodes from "../config/alertCodes";
-import { currentUserNameSelector } from "../selectors/index";
-import { actions } from "../slices";
+import i18n from '../../i18n';
+import AlertCodes from '../config/alertCodes';
+import { currentUserNameSelector } from '../selectors/index';
+import { actions } from '../slices';
 
-import Modal from "./BootstrapModal";
+import Modal from './BootstrapModal';
 
 const sendToServer = (payload) =>
-  fetch("/api/v1/feedback", {
-    method: "POST",
+  fetch('/api/v1/feedback', {
+    method: 'POST',
     headers: {
-      "Content-type": "application/json",
-      "x-csrf-token": window.csrf_token,
+      'Content-type': 'application/json',
+      'x-csrf-token': window.csrf_token,
     },
     body: JSON.stringify(payload),
   });
 
-const STATUS_OPTIONS = ["Bug", "Suggestion", "Question"];
+const STATUS_OPTIONS = ['Bug', 'Suggestion', 'Question'];
 
 function FeedbackWidget() {
   const dispatch = useDispatch();
   const currentUserName = useSelector(currentUserNameSelector);
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState(STATUS_OPTIONS[0]);
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addAlert = useCallback(
@@ -53,7 +53,7 @@ function FeedbackWidget() {
       const payload = {
         attachments: [
           {
-            author_name: currentUserName || "Anonymous",
+            author_name: currentUserName || 'Anonymous',
             fallback: status,
             text: text.trim(),
             title_link: window.location.href,
@@ -64,11 +64,11 @@ function FeedbackWidget() {
       sendToServer(payload)
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Feedback request failed");
+            throw new Error('Feedback request failed');
           }
 
           addAlert(AlertCodes.feedbackSendSuccessful);
-          setText("");
+          setText('');
           setIsOpen(false);
         })
         .catch(() => {
@@ -88,30 +88,30 @@ function FeedbackWidget() {
         onClick={() => setIsOpen(true)}
         className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded d-flex align-items-center"
         style={{
-          position: "fixed",
-          right: "16px",
-          bottom: "16px",
+          position: 'fixed',
+          right: '16px',
+          bottom: '16px',
           zIndex: 1080,
-          gap: "8px",
+          gap: '8px',
         }}
       >
-        <FontAwesomeIcon icon={["fas", "rss"]} />
-        {i18n.t("Feedback")}
+        <FontAwesomeIcon icon={['fas', 'rss']} />
+        {i18n.t('Feedback')}
       </button>
       {isOpen && (
         <Modal centered show={isOpen} onHide={closeModal} contentClassName="cb-bg-panel cb-text">
           <form onSubmit={onSubmit}>
             <Modal.Header className="cb-border-color" closeButton>
-              <Modal.Title>{i18n.t("Send feedback")}</Modal.Title>
+              <Modal.Title>{i18n.t('Send feedback')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <div className="form-group">
-                <label htmlFor="feedback-status">{i18n.t("Type")}</label>
+                <label htmlFor="feedback-status">{i18n.t('Type')}</label>
                 <div
                   id="feedback-status"
                   className="d-flex flex-wrap"
                   role="radiogroup"
-                  aria-label={i18n.t("Type")}
+                  aria-label={i18n.t('Type')}
                 >
                   {STATUS_OPTIONS.map((option) => (
                     <button
@@ -119,8 +119,8 @@ function FeedbackWidget() {
                       type="button"
                       className={`btn btn-sm cb-rounded mr-2 mb-2 ${
                         status === option
-                          ? "btn-secondary cb-btn-secondary"
-                          : "btn-outline-secondary cb-btn-outline-secondary"
+                          ? 'btn-secondary cb-btn-secondary'
+                          : 'btn-outline-secondary cb-btn-outline-secondary'
                       }`}
                       role="radio"
                       aria-checked={status === option}
@@ -132,10 +132,10 @@ function FeedbackWidget() {
                 </div>
               </div>
               <div className="form-group mb-0">
-                <label htmlFor="feedback-text">{i18n.t("Message")}</label>
+                <label htmlFor="feedback-text">{i18n.t('Message')}</label>
                 <textarea
                   id="feedback-text"
-                  aria-label={i18n.t("Message")}
+                  aria-label={i18n.t('Message')}
                   className="form-control cb-bg-panel cb-border-color text-white cb-rounded"
                   rows="5"
                   value={text}
@@ -151,14 +151,14 @@ function FeedbackWidget() {
                 onClick={closeModal}
                 disabled={isSubmitting}
               >
-                {i18n.t("Cancel")}
+                {i18n.t('Cancel')}
               </Button>
               <Button
                 type="submit"
                 className="btn btn-secondary cb-btn-secondary cb-rounded"
                 disabled={isSubmitDisabled}
               >
-                {isSubmitting ? i18n.t("Sending...") : i18n.t("Send")}
+                {isSubmitting ? i18n.t('Sending...') : i18n.t('Send')}
               </Button>
             </Modal.Footer>
           </form>

@@ -1,46 +1,46 @@
-import React, { memo, useMemo, useCallback } from "react";
+import React, { memo, useMemo, useCallback } from 'react';
 
-import cn from "classnames";
+import cn from 'classnames';
 
-import i18n from "../../../i18n";
-import UserInfo from "../UserInfo";
+import i18n from '../../../i18n';
+import UserInfo from '../UserInfo';
 
 // Constants
 export const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100];
 export const DEFAULT_ITEMS_PER_PAGE = 25;
 
 export const GRADE_COLORS = {
-  grand_slam: "var(--cb-grade-grand_slam)",
-  masters: "var(--cb-grade-masters)",
-  elite: "var(--cb-grade-elite)",
-  pro: "var(--cb-grade-pro)",
-  challenger: "var(--cb-grade-challenger)",
-  rookie: "var(--cb-grade-rookie)",
+  grand_slam: 'var(--cb-grade-grand_slam)',
+  masters: 'var(--cb-grade-masters)',
+  elite: 'var(--cb-grade-elite)',
+  pro: 'var(--cb-grade-pro)',
+  challenger: 'var(--cb-grade-challenger)',
+  rookie: 'var(--cb-grade-rookie)',
 };
 
-export const ALL_GRADES = ["grand_slam", "masters", "elite", "pro", "challenger", "rookie"];
+export const ALL_GRADES = ['grand_slam', 'masters', 'elite', 'pro', 'challenger', 'rookie'];
 
 export const getPlaceBadgeClass = (place) => {
   switch (place) {
     case 1:
-      return "bg-warning text-dark";
+      return 'bg-warning text-dark';
     case 2:
-      return "bg-secondary";
+      return 'bg-secondary';
     case 3:
-      return "bg-bronze";
+      return 'bg-bronze';
     default:
-      return "bg-primary";
+      return 'bg-primary';
   }
 };
 
 export const getMedalEmoji = (place) => {
   switch (place) {
     case 1:
-      return "🥇";
+      return '🥇';
     case 2:
-      return "🥈";
+      return '🥈';
     case 3:
-      return "🥉";
+      return '🥉';
     default:
       return null;
   }
@@ -49,29 +49,29 @@ export const getMedalEmoji = (place) => {
 export const getRowBorderStyle = (place) => {
   switch (place) {
     case 1:
-      return { borderLeft: "3px solid #ffc107" };
+      return { borderLeft: '3px solid #ffc107' };
     case 2:
-      return { borderLeft: "3px solid #6c757d" };
+      return { borderLeft: '3px solid #6c757d' };
     case 3:
-      return { borderLeft: "3px solid #cd7f32" };
+      return { borderLeft: '3px solid #cd7f32' };
     default:
       return {};
   }
 };
 
 const getLeaderboardRowClassName = (place) =>
-  cn("font-weight-bold cb-custom-event-tr-border", {
-    "cb-gold-place-bg": place === 1,
-    "cb-silver-place-bg": place === 2,
-    "cb-bronze-place-bg": place === 3,
+  cn('font-weight-bold cb-custom-event-tr-border', {
+    'cb-gold-place-bg': place === 1,
+    'cb-silver-place-bg': place === 2,
+    'cb-bronze-place-bg': place === 3,
   });
 
 const tableDataCellClassName = cn(
-  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 export const formatTime = (seconds) => {
-  if (!seconds) return "0s";
+  if (!seconds) return '0s';
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
@@ -87,39 +87,39 @@ export const formatTime = (seconds) => {
 
 export const formatGradeName = (grade) => {
   const names = {
-    grand_slam: i18n.t("Grand Slam"),
-    masters: i18n.t("Masters"),
-    elite: i18n.t("Elite"),
-    pro: i18n.t("Pro"),
-    challenger: i18n.t("Challenger"),
-    rookie: i18n.t("Rookie"),
+    grand_slam: i18n.t('Grand Slam'),
+    masters: i18n.t('Masters'),
+    elite: i18n.t('Elite'),
+    pro: i18n.t('Pro'),
+    challenger: i18n.t('Challenger'),
+    rookie: i18n.t('Rookie'),
   };
   return names[grade] || grade;
 };
 
 export const formatDate = (dateStr) => {
-  if (!dateStr) return "";
+  if (!dateStr) return '';
   const date = new Date(dateStr);
-  return date.toLocaleDateString(i18n.language, { month: "short", day: "numeric" });
+  return date.toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
 };
 
 // Sortable column header component
 export function SortableHeader({ label, sortKey, currentSort, onSort }) {
   const isActive = currentSort.key === sortKey;
-  const nextDirection = isActive && currentSort.direction === "asc" ? "desc" : "asc";
+  const nextDirection = isActive && currentSort.direction === 'asc' ? 'desc' : 'asc';
 
   return (
     <th
       scope="col"
       className="cursor-pointer user-select-none"
-      style={{ cursor: "pointer" }}
+      style={{ cursor: 'pointer' }}
       onClick={() => onSort(sortKey, nextDirection)}
-      title={i18n.t("Sort by %{label}", { label })}
+      title={i18n.t('Sort by %{label}', { label })}
     >
       <div className="d-flex align-items-center">
         {label}
-        <span className={cn("ml-1", { "opacity-25": !isActive })}>
-          {isActive && currentSort.direction === "asc" ? "↑" : "↓"}
+        <span className={cn('ml-1', { 'opacity-25': !isActive })}>
+          {isActive && currentSort.direction === 'asc' ? '↑' : '↓'}
         </span>
       </div>
     </th>
@@ -158,10 +158,10 @@ export function Pagination({
   return (
     <div className="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top border-secondary">
       <div className="d-flex align-items-center mb-2 mb-md-0">
-        <span className="text-muted small mr-2">{i18n.t("Show")}</span>
+        <span className="text-muted small mr-2">{i18n.t('Show')}</span>
         <select
           className="form-select form-select-sm bg-dark text-light border-secondary mx-2"
-          style={{ width: "auto" }}
+          style={{ width: 'auto' }}
           value={itemsPerPage}
           onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
         >
@@ -172,14 +172,14 @@ export function Pagination({
           ))}
         </select>
         <span className="text-muted small">
-          {i18n.t("of %{count} players", { count: totalItems })}
+          {i18n.t('of %{count} players', { count: totalItems })}
         </span>
       </div>
 
       {totalPages > 1 && (
-        <nav aria-label={i18n.t("Leaderboard pagination")}>
+        <nav aria-label={i18n.t('Leaderboard pagination')}>
           <ul className="pagination pagination-sm mb-0">
-            <li className={cn("page-item", { disabled: currentPage === 1 })}>
+            <li className={cn('page-item', { disabled: currentPage === 1 })}>
               <button
                 type="button"
                 className="page-link bg-dark text-light border-secondary"
@@ -189,7 +189,7 @@ export function Pagination({
                 «
               </button>
             </li>
-            <li className={cn("page-item", { disabled: currentPage === 1 })}>
+            <li className={cn('page-item', { disabled: currentPage === 1 })}>
               <button
                 type="button"
                 className="page-link bg-dark text-light border-secondary"
@@ -205,12 +205,12 @@ export function Pagination({
               </li>
             )}
             {pages.map((page) => (
-              <li key={page} className={cn("page-item", { active: page === currentPage })}>
+              <li key={page} className={cn('page-item', { active: page === currentPage })}>
                 <button
                   type="button"
-                  className={cn("page-link border-secondary", {
-                    "bg-info text-dark": page === currentPage,
-                    "bg-dark text-light": page !== currentPage,
+                  className={cn('page-link border-secondary', {
+                    'bg-info text-dark': page === currentPage,
+                    'bg-dark text-light': page !== currentPage,
                   })}
                   onClick={() => onPageChange(page)}
                 >
@@ -223,7 +223,7 @@ export function Pagination({
                 <span className="page-link bg-dark text-light border-secondary">...</span>
               </li>
             )}
-            <li className={cn("page-item", { disabled: currentPage === totalPages })}>
+            <li className={cn('page-item', { disabled: currentPage === totalPages })}>
               <button
                 type="button"
                 className="page-link bg-dark text-light border-secondary"
@@ -233,7 +233,7 @@ export function Pagination({
                 ›
               </button>
             </li>
-            <li className={cn("page-item", { disabled: currentPage === totalPages })}>
+            <li className={cn('page-item', { disabled: currentPage === totalPages })}>
               <button
                 type="button"
                 className="page-link bg-dark text-light border-secondary"
@@ -275,9 +275,9 @@ export function SearchFilterBar({
             <input
               id="search-player"
               type="text"
-              aria-label={i18n.t("Search player")}
+              aria-label={i18n.t('Search player')}
               className="form-control bg-dark text-light border-secondary cb-season-filter-control"
-              placeholder={i18n.t("Search by name...")}
+              placeholder={i18n.t('Search by name...')}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
             />
@@ -285,7 +285,7 @@ export function SearchFilterBar({
               <button
                 type="button"
                 className="btn btn-outline-secondary cb-season-filter-clear-btn"
-                onClick={() => onSearchChange("")}
+                onClick={() => onSearchChange('')}
               >
                 ×
               </button>
@@ -295,12 +295,12 @@ export function SearchFilterBar({
         <div className="col-6 col-md-3">
           <select
             id="filter-clan"
-            aria-label={i18n.t("Filter by clan")}
+            aria-label={i18n.t('Filter by clan')}
             className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
             value={clanFilter}
             onChange={(e) => onClanFilterChange(e.target.value)}
           >
-            <option value="">{i18n.t("All Clans")}</option>
+            <option value="">{i18n.t('All Clans')}</option>
             {uniqueClans.map((clan) => (
               <option key={clan} value={clan}>
                 {clan}
@@ -311,12 +311,12 @@ export function SearchFilterBar({
         <div className="col-6 col-md-3">
           <select
             id="filter-lang"
-            aria-label={i18n.t("Filter by language")}
+            aria-label={i18n.t('Filter by language')}
             className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
             value={langFilter}
             onChange={(e) => onLangFilterChange(e.target.value)}
           >
-            <option value="">{i18n.t("All Languages")}</option>
+            <option value="">{i18n.t('All Languages')}</option>
             {uniqueLangs.map((lang) => (
               <option key={lang} value={lang}>
                 {lang}
@@ -331,7 +331,7 @@ export function SearchFilterBar({
               className="btn btn-sm btn-outline-secondary w-100 cb-season-filter-reset-btn"
               onClick={onReset}
             >
-              {i18n.t("Clear Filters")}
+              {i18n.t('Clear Filters')}
             </button>
           )}
         </div>
@@ -369,7 +369,7 @@ const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => 
               src={result.avatar_url}
               alt={result.user_name}
               className="rounded-circle mr-2"
-              style={{ width: "32px", height: "32px" }}
+              style={{ width: '32px', height: '32px' }}
             />
           )}
           <UserInfo
@@ -378,13 +378,13 @@ const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => 
             hideOnlineIndicator
             hideRank
             displayName={displayName}
-            className={cn("text-decoration-none", {
-              "fw-bold text-white": result.place <= 3,
-              "text-light": result.place > 3,
+            className={cn('text-decoration-none', {
+              'fw-bold text-white': result.place <= 3,
+              'text-light': result.place > 3,
             })}
-            linkClassName={cn("text-decoration-none", {
-              "fw-bold text-white": result.place <= 3,
-              "text-light": result.place > 3,
+            linkClassName={cn('text-decoration-none', {
+              'fw-bold text-white': result.place <= 3,
+              'text-light': result.place > 3,
             })}
           />
         </div>
@@ -398,22 +398,22 @@ const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => 
           <span className="text-muted">-</span>
         )}
       </td>
-      <td className={cn(tableDataCellClassName, "fw-bold text-white")}>{result.total_points}</td>
+      <td className={cn(tableDataCellClassName, 'fw-bold text-white')}>{result.total_points}</td>
       <td className={tableDataCellClassName}>{result.total_wins_count}</td>
       <td className={tableDataCellClassName}>{result.total_score}</td>
       <td className={tableDataCellClassName}>{result.tournaments_count}</td>
       <td className={tableDataCellClassName}>
-        {result.avg_place ? Number(result.avg_place).toFixed(1) : "-"}
+        {result.avg_place ? Number(result.avg_place).toFixed(1) : '-'}
       </td>
       {showInsightsButton && (
-        <td className={cn(tableDataCellClassName, "text-center")}>
+        <td className={cn(tableDataCellClassName, 'text-center')}>
           <button
             type="button"
             className="btn btn-sm btn-outline-light"
             onClick={() => onShowInsights(result)}
-            title={i18n.t("View player insights")}
+            title={i18n.t('View player insights')}
           >
-            <i className="bi bi-bar-chart-line" /> {i18n.t("Stats")}
+            <i className="bi bi-bar-chart-line" /> {i18n.t('Stats')}
           </button>
         </td>
       )}
@@ -421,7 +421,7 @@ const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => 
   );
 });
 
-LeaderboardRow.displayName = "LeaderboardRow";
+LeaderboardRow.displayName = 'LeaderboardRow';
 
 // Main Leaderboard Table Component
 export function LeaderboardTable({
@@ -450,7 +450,7 @@ export function LeaderboardTable({
   if (results.length === 0) {
     return (
       <div className="text-center py-5">
-        <p className="text-muted mb-0">{i18n.t("No results yet")}</p>
+        <p className="text-muted mb-0">{i18n.t('No results yet')}</p>
       </div>
     );
   }
@@ -471,13 +471,13 @@ export function LeaderboardTable({
 
       {displayedResults.length === 0 ? (
         <div className="text-center py-5">
-          <p className="text-muted mb-0">{i18n.t("No players match your filters")}</p>
+          <p className="text-muted mb-0">{i18n.t('No players match your filters')}</p>
           <button
             type="button"
             className="btn btn-sm btn-outline-secondary mt-2"
             onClick={onResetFilters}
           >
-            {i18n.t("Clear Filters")}
+            {i18n.t('Clear Filters')}
           </button>
         </div>
       ) : (
@@ -492,50 +492,50 @@ export function LeaderboardTable({
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Player")}
+                  label={i18n.t('Player')}
                   sortKey="user_name"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Clan")}
+                  label={i18n.t('Clan')}
                   sortKey="clan_name"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Points")}
+                  label={i18n.t('Points')}
                   sortKey="total_points"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Wins")}
+                  label={i18n.t('Wins')}
                   sortKey="total_wins_count"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Score")}
+                  label={i18n.t('Score')}
                   sortKey="total_score"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Tournaments")}
+                  label={i18n.t('Tournaments')}
                   sortKey="tournaments_count"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label={i18n.t("Avg Place")}
+                  label={i18n.t('Avg Place')}
                   sortKey="avg_place"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 {showInsightsButton && (
                   <th scope="col" className="text-center">
-                    {i18n.t("Insights")}
+                    {i18n.t('Insights')}
                   </th>
                 )}
               </tr>
@@ -568,10 +568,10 @@ export function LeaderboardTable({
 
 // Custom hook for leaderboard state management
 export const useLeaderboardState = (results) => {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [clanFilter, setClanFilter] = React.useState("");
-  const [langFilter, setLangFilter] = React.useState("");
-  const [sortConfig, setSortConfig] = React.useState({ key: "place", direction: "asc" });
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [clanFilter, setClanFilter] = React.useState('');
+  const [langFilter, setLangFilter] = React.useState('');
+  const [sortConfig, setSortConfig] = React.useState({ key: 'place', direction: 'asc' });
   const [currentPage, setCurrentPage] = React.useState(1);
   const [itemsPerPage, setItemsPerPage] = React.useState(DEFAULT_ITEMS_PER_PAGE);
 
@@ -616,17 +616,17 @@ export const useLeaderboardState = (results) => {
       let bValue = b[key];
 
       // Handle null/undefined values
-      if (aValue == null) aValue = key === "clan_name" || key === "user_lang" ? "" : Infinity;
-      if (bValue == null) bValue = key === "clan_name" || key === "user_lang" ? "" : Infinity;
+      if (aValue == null) aValue = key === 'clan_name' || key === 'user_lang' ? '' : Infinity;
+      if (bValue == null) bValue = key === 'clan_name' || key === 'user_lang' ? '' : Infinity;
 
       // String comparison for text fields
-      if (key === "user_name" || key === "clan_name" || key === "user_lang") {
+      if (key === 'user_name' || key === 'clan_name' || key === 'user_lang') {
         aValue = String(aValue).toLowerCase();
         bValue = String(bValue).toLowerCase();
       }
 
-      if (aValue < bValue) return direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return direction === "asc" ? 1 : -1;
+      if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return direction === 'asc' ? 1 : -1;
       return 0;
     });
 
@@ -657,10 +657,10 @@ export const useLeaderboardState = (results) => {
   }, []);
 
   const handleResetFilters = useCallback(() => {
-    setSearchQuery("");
-    setClanFilter("");
-    setLangFilter("");
-    setSortConfig({ key: "place", direction: "asc" });
+    setSearchQuery('');
+    setClanFilter('');
+    setLangFilter('');
+    setSortConfig({ key: 'place', direction: 'asc' });
     setCurrentPage(1);
   }, []);
 

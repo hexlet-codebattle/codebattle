@@ -1,13 +1,13 @@
-import { toPng } from "html-to-image";
+import { toPng } from 'html-to-image';
 
-const messageType = "cssbattle";
+const messageType = 'cssbattle';
 
 // if (event.origin.startsWith('https://codebattle.hexlet.io/games/')) {
 window.addEventListener(
-  "message",
+  'message',
   (event) => {
     try {
-      if (event.data.type !== "cssbattle") {
+      if (event.data.type !== 'cssbattle') {
         return;
       }
 

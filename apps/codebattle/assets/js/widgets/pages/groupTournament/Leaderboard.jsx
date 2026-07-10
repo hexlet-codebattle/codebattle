@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
-import LeaderboardHeader from "./LeaderboardHeader";
-import LeaderboardTabs from "./LeaderboardTabs";
-import LeaderboardRatingTable from "./LeaderboardRatingTable";
-import LeaderboardSliceRoundView from "./LeaderboardSliceRoundView";
+import React, { useMemo, useState } from 'react';
+import LeaderboardHeader from './LeaderboardHeader';
+import LeaderboardTabs from './LeaderboardTabs';
+import LeaderboardRatingTable from './LeaderboardRatingTable';
+import LeaderboardSliceRoundView from './LeaderboardSliceRoundView';
 
 function Leaderboard({
   leaderboard,
@@ -16,7 +16,7 @@ function Leaderboard({
     return Array.from({ length: roundsCount }, (_, i) => i + 1);
   }, [roundsCount]);
 
-  const [activeTab, setActiveTab] = useState("rating");
+  const [activeTab, setActiveTab] = useState('rating');
 
   if (!Array.isArray(leaderboard) || leaderboard.length === 0) {
     return null;
@@ -32,11 +32,11 @@ function Leaderboard({
               roundsCount={roundsCount}
             />
             <LeaderboardTabs activeTab={activeTab} setActiveTab={setActiveTab} rounds={rounds} />
-            {activeTab !== "rating" ? (
+            {activeTab !== 'rating' ? (
               <div className="px-3 py-2">
                 <LeaderboardSliceRoundView
                   leaderboard={leaderboard}
-                  roundNumber={Number(activeTab.replace("round-", ""))}
+                  roundNumber={Number(activeTab.replace('round-', ''))}
                   currentUserId={currentUserId}
                 />
               </div>

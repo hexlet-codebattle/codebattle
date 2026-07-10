@@ -1,15 +1,15 @@
-import { camelizeKeys } from "humps";
-import find from "lodash/find";
-import groupBy from "lodash/groupBy";
-import set from "lodash/set";
+import { camelizeKeys } from 'humps';
+import find from 'lodash/find';
+import groupBy from 'lodash/groupBy';
+import set from 'lodash/set';
 
-import { channelTopics } from "../../socket";
-import { actions } from "../slices";
+import { channelTopics } from '../../socket';
+import { actions } from '../slices';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 // import notification from '../utils/notification';
 
-const tournamentId = window.location.pathname.split("/").pop();
+const tournamentId = window.location.pathname.split('/').pop();
 const tournamentChannelName = `tournament:${tournamentId}`;
 const tournamentChannel = new Channel(tournamentChannelName);
 
@@ -25,7 +25,7 @@ const connectToStairwayGame = (gameId) => (dispatch) => {
     dispatch(actions.setGameTask(data));
   };
 
-  activeMatchChannel.join().receive("ok", onJoinSuccess);
+  activeMatchChannel.join().receive('ok', onJoinSuccess);
   // .receive('error', onJoinFailure);
 };
 
@@ -50,7 +50,7 @@ const initTournamentChannel = (dispatch) => {
     dispatch(connectToStairwayGame(gameId));
   };
 
-  tournamentChannel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+  tournamentChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 };
 
 export const connectToStairwayTournament = () => (dispatch) => {
@@ -58,8 +58,8 @@ export const connectToStairwayTournament = () => (dispatch) => {
 
   tournamentChannel.addListener(channelTopics.tournamentUpdateTopic, (response) => {
     const data = camelizeKeys(response);
-    const matches = groupBy(data.tournament.matches, "roundId");
-    set(data, "tournament.matches", matches);
+    const matches = groupBy(data.tournament.matches, 'roundId');
+    set(data, 'tournament.matches', matches);
 
     dispatch(actions.updateTournamentData(data));
   });
@@ -90,7 +90,7 @@ const initActiveMatchChannel = (dispatch, state) => {
       dispatch(actions.setNextRound(data));
     };
 
-    activeMatchChannel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+    activeMatchChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
   }
 };
 

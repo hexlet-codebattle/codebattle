@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
+import cn from 'classnames';
 
-import PlayerLoading from "../../components/PlayerLoading";
+import PlayerLoading from '../../components/PlayerLoading';
 
 export const getPregressbarClass = (player) =>
-  cn("cb-check-result-bar shadow-sm mt-1", player.checkResult.status);
+  cn('cb-check-result-bar shadow-sm mt-1', player.checkResult.status);
 
 export const getPregressbarWidth = (player) =>
   `${
@@ -14,7 +14,7 @@ export const getPregressbarWidth = (player) =>
   }%`;
 
 function GameProgressBar({ player, position }) {
-  const positionStyle = position === "right" ? { right: 0 } : {};
+  const positionStyle = position === 'right' ? { right: 0 } : {};
 
   return (
     <>
@@ -27,7 +27,7 @@ function GameProgressBar({ player, position }) {
           }}
         />
       </div>
-      <PlayerLoading show={player.checkResult.status === "started"} small />
+      <PlayerLoading show={player.checkResult.status === 'started'} small />
     </>
   );
 }

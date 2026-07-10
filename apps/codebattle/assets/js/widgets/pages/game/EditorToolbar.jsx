@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react';
 
-import LanguagePicker from "../../components/LanguagePicker";
-import UserInfo from "../../components/UserInfo";
-import GameRoomModes from "../../config/gameModes";
-import Placements from "../../config/placements";
+import LanguagePicker from '../../components/LanguagePicker';
+import UserInfo from '../../components/UserInfo';
+import GameRoomModes from '../../config/gameModes';
+import Placements from '../../config/placements';
 
 // import DarkModeButton from './DarkModeButton';
-import CopyEditorButton from "./CopyEditorButton";
-import EditorResultIcon from "./EditorResultIcon";
-import GameActionButtons from "./GameActionButtons";
-import GameBanPlayerButton from "./GameBanPlayerButton";
-import GameReportButton from "./GameReportButton";
-import GameResultIcon from "./GameResultIcon";
-import UserHeadToHead from "./UserHeadToHead";
-import VimModeButton from "./VimModeButton";
+import CopyEditorButton from './CopyEditorButton';
+import EditorResultIcon from './EditorResultIcon';
+import GameActionButtons from './GameActionButtons';
+import GameBanPlayerButton from './GameBanPlayerButton';
+import GameReportButton from './GameReportButton';
+import GameResultIcon from './GameResultIcon';
+import UserHeadToHead from './UserHeadToHead';
+import VimModeButton from './VimModeButton';
 
 function ModeButtons({ player }) {
   return (
@@ -60,7 +60,7 @@ function EditorToolbar({
           </div>
 
           <div className="d-flex justify-content-between">
-            {showControlBtns && !isHistory && editorState !== "banned" && (
+            {showControlBtns && !isHistory && editorState !== 'banned' && (
               <GameActionButtons {...actionBtnsProps} />
             )}
             {!showControlBtns && !hideToolbarControls && (

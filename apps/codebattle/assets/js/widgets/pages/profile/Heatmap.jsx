@@ -1,32 +1,32 @@
-import React, { cloneElement, useEffect, useMemo, useRef, useState } from "react";
+import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 
-import CalendarHeatmap from "react-calendar-heatmap";
-import { useDispatch } from "react-redux";
+import CalendarHeatmap from 'react-calendar-heatmap';
+import { useDispatch } from 'react-redux';
 
-import i18n from "../../../i18n";
-import dayjs from "../../../i18n/dayjs";
-import Loading from "../../components/Loading";
-import { actions } from "../../slices";
+import i18n from '../../../i18n';
+import dayjs from '../../../i18n/dayjs';
+import Loading from '../../components/Loading';
+import { actions } from '../../slices';
 
 const firstSupportedYear = 2017;
-const latestValue = "latest";
+const latestValue = 'latest';
 
 const getColorScale = (count) => {
   if (count >= 5) {
-    return "color-huge";
+    return 'color-huge';
   }
   if (count >= 3) {
-    return "color-large";
+    return 'color-large';
   }
   if (count >= 1) {
-    return "color-small";
+    return 'color-small';
   }
-  return "color-empty";
+  return 'color-empty';
 };
 
 function Heatmap() {
   const dispatch = useDispatch();
-  const userId = useMemo(() => window.location.pathname.split("/").pop(), []);
+  const userId = useMemo(() => window.location.pathname.split('/').pop(), []);
   const currentYear = dayjs().year();
   const gridWrapperRef = useRef(null);
   const [selectedPeriod, setSelectedPeriod] = useState(latestValue);
@@ -50,7 +50,7 @@ function Heatmap() {
       selectedPeriod === latestValue ? {} : { year: Number(selectedPeriod) },
     ).toString();
 
-    fetch(`/api/v1/${userId}/activity${query ? `?${query}` : ""}`)
+    fetch(`/api/v1/${userId}/activity${query ? `?${query}` : ''}`)
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);
@@ -76,9 +76,9 @@ function Heatmap() {
   const { activities, meta } = activityData;
   const totalGames = activities.reduce((sum, activity) => sum + activity.count, 0);
   const title = meta.year
-    ? i18n.t("%{count} games in %{year}", { count: totalGames, year: meta.year })
-    : i18n.t("%{count} games in the last 365 days", { count: totalGames });
-  const range = `${dayjs(meta.start_date).format("MMM D, YYYY")} - ${dayjs(meta.end_date).format("MMM D, YYYY")}`;
+    ? i18n.t('%{count} games in %{year}', { count: totalGames, year: meta.year })
+    : i18n.t('%{count} games in the last 365 days', { count: totalGames });
+  const range = `${dayjs(meta.start_date).format('MMM D, YYYY')} - ${dayjs(meta.end_date).format('MMM D, YYYY')}`;
 
   const showTooltip = (event, value) => {
     const wrapperRect = gridWrapperRef.current?.getBoundingClientRect();
@@ -90,8 +90,8 @@ function Heatmap() {
 
     setTooltip({
       text: value
-        ? i18n.t("%{count} games on %{date}", { count: value.count, date: value.date })
-        : i18n.t("No games"),
+        ? i18n.t('%{count} games on %{date}', { count: value.count, date: value.date })
+        : i18n.t('No games'),
       x: targetRect.left - wrapperRect.left + targetRect.width / 2,
       y: targetRect.top - wrapperRect.top - 8,
     });
@@ -102,7 +102,7 @@ function Heatmap() {
   return (
     <div className="cb-profile-heatmap">
       <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between mb-3">
-        <div className="d-none d-lg-block" style={{ width: "176px" }} aria-hidden="true" />
+        <div className="d-none d-lg-block" style={{ width: '176px' }} aria-hidden="true" />
         <div className="mb-3 mb-lg-0 cb-profile-heatmap-heading flex-grow-1">
           <div className="cb-profile-heatmap-title">
             <span>{title}</span>
@@ -118,7 +118,7 @@ function Heatmap() {
             onChange={(event) => setSelectedPeriod(event.target.value)}
             disabled={isLoading}
           >
-            <option value={latestValue}>{i18n.t("Last 365 days")}</option>
+            <option value={latestValue}>{i18n.t('Last 365 days')}</option>
             {years.map((year) => (
               <option key={year} value={String(year)}>
                 {year}
@@ -154,7 +154,7 @@ function Heatmap() {
             gutterSize={1}
             classForValue={(value) => {
               if (!value) {
-                return "color-empty";
+                return 'color-empty';
               }
 
               return getColorScale(value.count);

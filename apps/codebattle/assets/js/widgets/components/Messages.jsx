@@ -1,11 +1,11 @@
-import React, { useRef, useLayoutEffect, useState, useEffect, useMemo } from "react";
+import React, { useRef, useLayoutEffect, useState, useEffect, useMemo } from 'react';
 
-import cn from "classnames";
+import cn from 'classnames';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import useStayScrolled from "../utils/useStayScrolled";
+import useStayScrolled from '../utils/useStayScrolled';
 
-import Message from "./Message";
+import Message from './Message';
 
 const getKey = (id, time, name, index) => {
   if (!time || !name) {
@@ -15,7 +15,7 @@ const getKey = (id, time, name, index) => {
   return `${id}-${time}-${name}-${index}`;
 };
 
-function Messages({ messages, displayMenu = () => {}, disabled = false, className = "" }) {
+function Messages({ messages, displayMenu = () => {}, disabled = false, className = '' }) {
   const listRef = useRef();
   const minScrollHeight = 20;
   const [, setScrollHeight] = useState(0);
@@ -69,12 +69,12 @@ function Messages({ messages, displayMenu = () => {}, disabled = false, classNam
   }, []);
 
   const scrollButtonClass = cn(
-    "scroll-button",
-    "position-absolute",
-    "rounded-circle",
-    "cb-bg-secondary",
-    "p-0",
-    "border-0",
+    'scroll-button',
+    'position-absolute',
+    'rounded-circle',
+    'cb-bg-secondary',
+    'p-0',
+    'border-0',
     {
       invisible: !isScrollButtonVisible,
     },
@@ -82,8 +82,8 @@ function Messages({ messages, displayMenu = () => {}, disabled = false, classNam
 
   const messageClassName = cn(
     className,
-    "overflow-auto pt-0 pl-3 pr-2",
-    "position-relative cb-messages-list flex-grow-1",
+    'overflow-auto pt-0 pl-3 pr-2',
+    'position-relative cb-messages-list flex-grow-1',
   );
 
   if (disabled) {

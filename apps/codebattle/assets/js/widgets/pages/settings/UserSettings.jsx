@@ -1,37 +1,37 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import { camelizeKeys, decamelizeKeys } from "humps";
-import capitalize from "lodash/capitalize";
-import noop from "lodash/noop";
-import Alert from "react-bootstrap/Alert";
-import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import { camelizeKeys, decamelizeKeys } from 'humps';
+import capitalize from 'lodash/capitalize';
+import noop from 'lodash/noop';
+import Alert from 'react-bootstrap/Alert';
+import { useDispatch, useSelector } from 'react-redux';
 
-import i18n, { getSupportedLocale } from "../../../i18n";
-import { userSettingsSelector } from "../../selectors";
-import { actions } from "../../slices";
+import i18n, { getSupportedLocale } from '../../../i18n';
+import { userSettingsSelector } from '../../selectors';
+import { actions } from '../../slices';
 
-import UserSettingsForm from "./UserSettingsForm";
+import UserSettingsForm from './UserSettingsForm';
 
-const providers = ["github", "discord"];
+const providers = ['github', 'discord'];
 const mapUserPropNameByProviderName = {
-  github: "githubId",
-  discord: "discordId",
+  github: 'githubId',
+  discord: 'discordId',
 };
 const notifications = {
-  success: { variant: "success", message: i18n.t("Settings changed successfully") },
-  error: { variant: "danger", message: i18n.t("Something went wrong") },
+  success: { variant: 'success', message: i18n.t('Settings changed successfully') },
+  error: { variant: 'danger', message: i18n.t('Something went wrong') },
   empty: {},
 };
 
-const csrfToken = document?.querySelector("meta[name='csrf-token']")?.getAttribute("content");
+const csrfToken = document?.querySelector("meta[name='csrf-token']")?.getAttribute('content');
 const updateSettings = async (values) => {
-  const response = await fetch("/api/v1/settings", {
-    method: "PATCH",
+  const response = await fetch('/api/v1/settings', {
+    method: 'PATCH',
     headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": csrfToken,
+      'Content-Type': 'application/json',
+      'x-csrf-token': csrfToken,
     },
     body: JSON.stringify(decamelizeKeys(values)),
   });
@@ -73,8 +73,8 @@ function SocialButtons({ settings }) {
     return (
       <div key={provider} className="d-flex mb-2 align-items-center">
         <FontAwesomeIcon
-          className={cn("mr-2", { "text-muted": isLinked })}
-          icon={["fab", provider]}
+          className={cn('mr-2', { 'text-muted': isLinked })}
+          icon={['fab', provider]}
         />
         {isLinked ? (
           <button
@@ -117,7 +117,7 @@ function UserSettings() {
         }
 
         const { name: userNameErrors = [] } = error.response.data.errors;
-        setErrors({ name: userNameErrors.map(capitalize).join(", ") });
+        setErrors({ name: userNameErrors.map(capitalize).join(', ') });
       }
     },
     [dispatch],

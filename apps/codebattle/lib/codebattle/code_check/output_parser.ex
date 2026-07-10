@@ -3,8 +3,6 @@ defmodule Codebattle.CodeCheck.OutputParser do
 
   alias Codebattle.CodeCheck.Result
 
-  require Logger
-
   def call(%{lang_meta: %{output_version: 2}} = token) do
     Codebattle.CodeCheck.OutputParser.V2.call(token)
   end

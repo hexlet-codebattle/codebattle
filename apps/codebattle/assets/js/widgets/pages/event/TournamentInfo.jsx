@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import i18next from "i18next";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import i18next from 'i18next';
 
-import TournamentStatus from "./TournamentStatus";
+import TournamentStatus from './TournamentStatus';
 
 function TournamentInfo({
   id,
   type,
-  name = i18next.t("Stage %{name}", { name: 1 }),
-  nameClassName = "",
-  data = "##.##",
-  time = "##:##",
+  name = i18next.t('Stage %{name}', { name: 1 }),
+  nameClassName = '',
+  data = '##.##',
+  time = '##:##',
   handleOpenInstruction = () => {},
 }) {
   return (

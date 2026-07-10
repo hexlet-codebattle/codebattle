@@ -1,8 +1,8 @@
 // SEE: https://gist.github.com/lou/571b7c0e7797860d6c555a9fdc0496f9
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 
-import Overlay from "react-bootstrap/Overlay";
-import Popover from "react-bootstrap/Popover";
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
 
 function PopoverStickOnHover({
   id,
@@ -41,7 +41,7 @@ function PopoverStickOnHover({
       ref: (node) => {
         childNode.current = node;
         const { ref } = child;
-        if (typeof ref === "function") {
+        if (typeof ref === 'function') {
           ref(node);
         }
       },

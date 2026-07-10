@@ -1,14 +1,14 @@
-import React from "react";
+import React from 'react';
 
-import { faCircle, faRobot } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
+import { faCircle, faRobot } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 
-import LanguageIcon from "./LanguageIcon";
+import LanguageIcon from './LanguageIcon';
 
 function UserName({
-  className = "",
-  linkClassName = "",
+  className = '',
+  linkClassName = '',
   user,
   lang = user.lang,
   truncate,
@@ -18,18 +18,18 @@ function UserName({
   hideLink,
   displayName,
 }) {
-  const commonClassName = "d-flex align-items-center";
-  const onlineIndicatorClassName = cn("mr-1", {
-    "cb-user-online": isOnline,
-    "cb-user-dark-offline": !isOnline,
+  const commonClassName = 'd-flex align-items-center';
+  const onlineIndicatorClassName = cn('mr-1', {
+    'cb-user-online': isOnline,
+    'cb-user-dark-offline': !isOnline,
   });
-  const userClassName = cn("text-truncate", {
-    "x-username-truncated": truncate,
+  const userClassName = cn('text-truncate', {
+    'x-username-truncated': truncate,
   });
   const userNameClassName = cn(linkClassName, {
-    "text-primary": hovered,
+    'text-primary': hovered,
   });
-  const botImgClassName = cn("mr-1 cb-text", {});
+  const botImgClassName = cn('mr-1 cb-text', {});
 
   const shownName = displayName || user.name;
 

@@ -1,28 +1,28 @@
-import React from "react";
-import { render, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import PictureInPicture, { copyStyles } from "../widgets/components/PictureInPicture";
+import React from 'react';
+import { render, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import PictureInPicture, { copyStyles } from '../widgets/components/PictureInPicture';
 
-describe("PictureInPicture component", () => {
+describe('PictureInPicture component', () => {
   let mockPipWindow;
 
   beforeEach(() => {
     mockPipWindow = {
       document: {
         body: {
-          appendChild: jest.fn(),
+          appendChild: vi.fn(),
           style: {},
         },
-        createElement: jest.fn().mockImplementation((tag) => {
+        createElement: vi.fn().mockImplementation((tag) => {
           return document.createElement(tag);
         }),
       },
-      addEventListener: jest.fn(),
-      close: jest.fn(),
+      addEventListener: vi.fn(),
+      close: vi.fn(),
     };
 
     window.documentPictureInPicture = {
-      requestWindow: jest.fn().mockResolvedValue(mockPipWindow),
+      requestWindow: vi.fn().mockResolvedValue(mockPipWindow),
     };
   });
 
@@ -30,9 +30,9 @@ describe("PictureInPicture component", () => {
     delete window.documentPictureInPicture;
   });
 
-  test("does not render when isActive is false", () => {
+  test('does not render when isActive is false', () => {
     const { container } = render(
-      <PictureInPicture isActive={false} onClose={jest.fn()}>
+      <PictureInPicture isActive={false} onClose={vi.fn()}>
         <div>Timer Content</div>
       </PictureInPicture>,
     );
@@ -41,8 +41,8 @@ describe("PictureInPicture component", () => {
     expect(window.documentPictureInPicture.requestWindow).not.toHaveBeenCalled();
   });
 
-  test("opens pip window and renders children via portal when isActive is true", async () => {
-    const onCloseMock = jest.fn();
+  test('opens pip window and renders children via portal when isActive is true', async () => {
+    const onCloseMock = vi.fn();
 
     render(
       <PictureInPicture isActive={true} onClose={onCloseMock}>
@@ -57,9 +57,9 @@ describe("PictureInPicture component", () => {
     expect(mockPipWindow.document.body.appendChild).toHaveBeenCalled();
   });
 
-  test("closes pip window on unmount", async () => {
+  test('closes pip window on unmount', async () => {
     const { unmount } = render(
-      <PictureInPicture isActive={true} onClose={jest.fn()}>
+      <PictureInPicture isActive={true} onClose={vi.fn()}>
         <div>Timer Content</div>
       </PictureInPicture>,
     );
@@ -72,9 +72,9 @@ describe("PictureInPicture component", () => {
     expect(mockPipWindow.close).toHaveBeenCalled();
   });
 
-  test("calls onClose when requestWindow fails", async () => {
-    window.documentPictureInPicture.requestWindow.mockRejectedValue(new Error("Permission denied"));
-    const onCloseMock = jest.fn();
+  test('calls onClose when requestWindow fails', async () => {
+    window.documentPictureInPicture.requestWindow.mockRejectedValue(new Error('Permission denied'));
+    const onCloseMock = vi.fn();
 
     render(
       <PictureInPicture isActive={true} onClose={onCloseMock}>
@@ -87,35 +87,35 @@ describe("PictureInPicture component", () => {
     });
   });
 
-  test("copyStyles copies styleSheets correctly", () => {
+  test('copyStyles copies styleSheets correctly', () => {
     const sourceDoc = {
       styleSheets: [
         {
-          cssRules: [{ cssText: ".test-rule { color: red; }" }],
+          cssRules: [{ cssText: '.test-rule { color: red; }' }],
         },
         {
-          href: "http://example.com/styles.css",
+          href: 'http://example.com/styles.css',
         },
       ],
     };
 
     const targetDoc = {
-      createElement: jest.fn().mockImplementation((tag) => {
+      createElement: vi.fn().mockImplementation((tag) => {
         return {
-          appendChild: jest.fn(),
-          appendChildNode: jest.fn(),
+          appendChild: vi.fn(),
+          appendChildNode: vi.fn(),
         };
       }),
-      createTextNode: jest.fn().mockImplementation((text) => text),
+      createTextNode: vi.fn().mockImplementation((text) => text),
       head: {
-        appendChild: jest.fn(),
+        appendChild: vi.fn(),
       },
     };
 
     copyStyles(sourceDoc, targetDoc);
 
-    expect(targetDoc.createElement).toHaveBeenCalledWith("style");
-    expect(targetDoc.createElement).toHaveBeenCalledWith("link");
+    expect(targetDoc.createElement).toHaveBeenCalledWith('style');
+    expect(targetDoc.createElement).toHaveBeenCalledWith('link');
     expect(targetDoc.head.appendChild).toHaveBeenCalled();
   });
 });

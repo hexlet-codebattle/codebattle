@@ -3,8 +3,6 @@ defmodule CodebattleWeb.UserSocket do
 
   alias Codebattle.User
 
-  require Logger
-
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
   channel("tournament:*", CodebattleWeb.TournamentChannel)

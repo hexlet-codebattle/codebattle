@@ -1,25 +1,25 @@
-import React, { useContext, memo } from "react";
+import React, { useContext, memo } from 'react';
 
-import i18next from "i18next";
-import { useDispatch, useSelector } from "react-redux";
+import i18next from 'i18next';
+import { useDispatch, useSelector } from 'react-redux';
 
-import RoomContext from "../../components/RoomContext";
-import BattleRoomViewModes from "../../config/battleRoomViewModes";
-import { isRestrictedContentSelector, roomStateSelector } from "../../machines/selectors";
+import RoomContext from '../../components/RoomContext';
+import BattleRoomViewModes from '../../config/battleRoomViewModes';
+import { isRestrictedContentSelector, roomStateSelector } from '../../machines/selectors';
 import {
   gameTaskSelector,
   gameStatusSelector,
   taskDescriptionLanguageSelector,
-} from "../../selectors";
-import { actions } from "../../slices";
-import useMachineStateSelector from "../../utils/useMachineStateSelector";
-import usePlayerOutputForInfoPanel from "../../utils/usePlayerOutputForInfoPanel";
+} from '../../selectors';
+import { actions } from '../../slices';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
+import usePlayerOutputForInfoPanel from '../../utils/usePlayerOutputForInfoPanel';
 
-import ChatWidget from "./ChatWidget";
-import CssBattleInfoPanel from "./CssBattleInfoPanel";
-import InfoPanel from "./InfoPanel";
-import SideInfoPanel from "./SideInfoPanel";
-import TimerContainer from "./TimerContainer";
+import ChatWidget from './ChatWidget';
+import CssBattleInfoPanel from './CssBattleInfoPanel';
+import InfoPanel from './InfoPanel';
+import SideInfoPanel from './SideInfoPanel';
+import TimerContainer from './TimerContainer';
 
 function CommonBattleInfoWidget({ viewMode, task, outputData, canShowOutput }) {
   const dispatch = useDispatch();
@@ -63,7 +63,7 @@ function CommonBattleInfoWidget({ viewMode, task, outputData, canShowOutput }) {
 //   canShowOutputPanel,
 // }) {
 function CssBattleInfoWidget() {
-  const idOutput = "css-battle-output";
+  const idOutput = 'css-battle-output';
 
   return (
     <>
@@ -84,7 +84,7 @@ function CssBattleInfoWidget() {
                 aria-controls="task"
                 aria-selected="true"
               >
-                {i18next.t("Task")}
+                {i18next.t('Task')}
               </a>
               <a
                 className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
@@ -95,7 +95,7 @@ function CssBattleInfoWidget() {
                 aria-controls={`${idOutput}`}
                 aria-selected="false"
               >
-                {i18next.t("Output")}
+                {i18next.t('Output')}
               </a>
               <div className="rounded-0 text-center border-left col-6 px-1 py-2">
                 <TimerContainer />
@@ -144,7 +144,7 @@ function InfoWidget({ viewMode }) {
   const task = useSelector(gameTaskSelector);
   const { outputData, canShowOutput } = usePlayerOutputForInfoPanel(viewMode, roomMachineState);
 
-  if (task?.type === "css") {
+  if (task?.type === 'css') {
     return (
       <CssBattleInfoWidget
         viewMode={viewMode}

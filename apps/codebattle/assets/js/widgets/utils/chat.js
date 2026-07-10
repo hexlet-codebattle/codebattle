@@ -1,9 +1,9 @@
-import Gon from "gon";
+import Gon from 'gon';
 
-import messageTypes from "../config/messageTypes";
-import rooms from "../config/rooms";
+import messageTypes from '../config/messageTypes';
+import rooms from '../config/rooms';
 
-const currentUserId = Gon.getAsset("current_user")?.id;
+const currentUserId = Gon.getAsset('current_user')?.id;
 
 export const isGeneralRoom = (room) => room.name === rooms.general.name;
 
@@ -52,8 +52,8 @@ export const shouldShowMessage = (message, room) => {
 
 export const getSystemMessage = ({
   type = messageTypes.system,
-  text = "",
-  status = "event",
+  text = '',
+  status = 'event',
   userId,
   name,
   time,

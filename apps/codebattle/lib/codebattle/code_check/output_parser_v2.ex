@@ -205,7 +205,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
 
   # Helper functions to reduce cyclomatic complexity
   defp simple_type?(data) do
-    is_binary(data) || is_number(data) || is_atom(data) || is_boolean(data) || is_nil(data)
+    is_binary(data) || is_number(data) || is_atom(data)
   end
 
   defp collection?(data) do

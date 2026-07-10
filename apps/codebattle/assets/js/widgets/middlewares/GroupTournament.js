@@ -1,9 +1,9 @@
-import { camelizeKeys } from "humps";
+import { camelizeKeys } from 'humps';
 
-import { channelMethods, channelTopics } from "../../socket";
-import { actions } from "../slices";
+import { channelMethods, channelTopics } from '../../socket';
+import { actions } from '../slices';
 
-import Channel from "./Channel";
+import Channel from './Channel';
 
 const channel = new Channel();
 
@@ -30,41 +30,41 @@ const applyInviteUpdate = (dispatch, payload) => {
 export const submitSolution = (solution, lang) => (_dispatch) =>
   new Promise((resolve, reject) => {
     if (!channel) {
-      console.error("Channel not initialized");
-      reject(new Error("channel_not_initialized"));
+      console.error('Channel not initialized');
+      reject(new Error('channel_not_initialized'));
       return;
     }
 
     channel
-      .push("group_tournament:submit_solution", { solution, lang })
-      .receive("ok", (data) => resolve(camelizeKeys(data)))
-      .receive("error", (error) => {
-        console.error("Submit solution failed", error);
+      .push('group_tournament:submit_solution', { solution, lang })
+      .receive('ok', (data) => resolve(camelizeKeys(data)))
+      .receive('error', (error) => {
+        console.error('Submit solution failed', error);
         reject(error);
       })
-      .receive("timeout", () => reject(new Error("timeout")));
+      .receive('timeout', () => reject(new Error('timeout')));
   });
 
 export const requestRunDetails = (runId) => (dispatch) => {
   if (!channel) {
-    console.error("Channel not initialized");
+    console.error('Channel not initialized');
     return;
   }
 
   channel
-    .push("group_tournament:run:request", { runId })
-    .receive("ok", (data) => {
+    .push('group_tournament:run:request', { runId })
+    .receive('ok', (data) => {
       const normalizedData = camelizeKeys(data);
       dispatch(actions.applyRunDetails(normalizedData));
     })
-    .receive("error", (error) => {
-      console.error("Request run details failed", error);
+    .receive('error', (error) => {
+      console.error('Request run details failed', error);
     });
 };
 
 export const connectToTournament = (currentUserId) => (dispatch) => {
   if (!channel) {
-    console.error("Channel not initialized");
+    console.error('Channel not initialized');
     return;
   }
 
@@ -74,7 +74,7 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
   };
 
   channel.onError(() => {
-    console.error("Something wrong");
+    console.error('Something wrong');
   });
 
   const onJoinSuccess = (response) => {
@@ -116,7 +116,7 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
     }
   };
 
-  channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   const handleRunUpdated = (response) => {
     if (currentUserId == null || response.userId !== currentUserId) {
@@ -147,8 +147,8 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
     }
   };
 
-  channel.addListener("group_tournament:invite_updated", handleInviteUpdated);
-  channel.addListener("group_tournament:status_updated", handleStatusUpdated);
+  channel.addListener('group_tournament:invite_updated', handleInviteUpdated);
+  channel.addListener('group_tournament:status_updated', handleStatusUpdated);
   channel.addListener(channelTopics.groupTournamentRunUpdated, handleRunUpdated);
 
   return channel;
@@ -156,34 +156,34 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
 
 export const requestInviteUpdate = () => (dispatch) => {
   if (!channel) {
-    console.error("Channel not initialized");
+    console.error('Channel not initialized');
     return;
   }
 
   channel
     .push(channelMethods.requestInviteUpdate, {})
-    .receive("ok", (data) => {
+    .receive('ok', (data) => {
       applyInviteUpdate(dispatch, data);
     })
-    .receive("error", (error) => {
-      console.error("Request invite update failed", error);
+    .receive('error', (error) => {
+      console.error('Request invite update failed', error);
     });
 };
 
 export const startGroupTournament = () => (dispatch) => {
   if (!channel) {
-    console.error("Channel not initialized");
+    console.error('Channel not initialized');
     return;
   }
 
   channel
-    .push("start_group_tournament", {})
-    .receive("ok", (data) => {
+    .push('start_group_tournament', {})
+    .receive('ok', (data) => {
       const normalizedData = camelizeKeys(data);
-      dispatch(actions.updateGroupTournamentStatus(normalizedData.status || "active"));
+      dispatch(actions.updateGroupTournamentStatus(normalizedData.status || 'active'));
     })
-    .receive("error", (error) => {
-      console.error("Start group tournament failed", error);
+    .receive('error', (error) => {
+      console.error('Start group tournament failed', error);
     });
 };
 
@@ -204,13 +204,13 @@ export const load = (groupTournamentId) => async (dispatch) => {
   try {
     const response = await requestJson(`/api/v1/group_tournaments/${groupTournamentId}`, {
       headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token || "",
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token || '',
       },
     });
 
     dispatch(actions.setData(response));
   } catch (error) {
-    console.error("group_tournament:load failed", error);
+    console.error('group_tournament:load failed', error);
   }
 };

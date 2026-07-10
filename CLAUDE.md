@@ -8,7 +8,7 @@ Open-source competitive programming platform where users solve coding tasks head
 
 ## Tech Stack
 
-- **Backend:** Elixir 1.19.4 / OTP 28.2, Phoenix ~1.8 with LiveView
+- **Backend:** Elixir 1.20.2 / OTP 29.0.3, Phoenix ~1.8 with LiveView
 - **Frontend:** React + Redux Toolkit, Vite, Monaco Editor
 - **Database:** PostgreSQL
 - **Code Execution:** Docker/Podman containers per language (runner service)

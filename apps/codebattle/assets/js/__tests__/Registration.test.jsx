@@ -1,30 +1,25 @@
-/**
- * @jest-environment jsdom
- * @jest-environment-options {"url": "http://localhost/users/new"}
- */
-import React from "react";
+import React from 'react';
 
-import { render, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom";
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 
-import Registration from "../widgets/pages/registration";
+import Registration from '../widgets/pages/registration';
 
-import { getTestData } from "./helpers";
+import { getTestData } from './helpers';
 
-const { invalidData, validData } = getTestData("signUpData.json");
+// jsdom URL the registration page reads (was @jest-environment-options).
+window.history.pushState({}, '', '/users/new');
+
+const { invalidData, validData } = getTestData('signUpData.json');
 const { data, route, headers } = validData;
 
-jest.mock(
-  "gon",
-  () => {
-    const gonParams = { local: "en", current_user: { sound_settings: {} } };
-    return { getAsset: (type) => gonParams[type] };
-  },
-  { virtual: true },
-);
+vi.mock('gon', () => {
+  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
+  return { default: { getAsset: (type) => gonParams[type] } };
+});
 
-describe("sign up", () => {
+describe('sign up', () => {
   function setup(jsx) {
     return {
       user: userEvent.setup(),
@@ -37,16 +32,16 @@ describe("sign up", () => {
   });
 
   beforeEach(() => {
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
-  test("render", () => {
+  test('render', () => {
     const { getByText } = setup(<Registration />);
 
     expect(getByText(/Sign Up/)).toBeInTheDocument();
   });
 
-  test.each(invalidData)("%s", async (testName, value, validationMessage, inputName) => {
+  test.each(invalidData)('%s', async (testName, value, validationMessage, inputName) => {
     const { getByLabelText, findByText, user } = setup(<Registration />);
 
     const nameInput = getByLabelText(inputName);
@@ -54,32 +49,32 @@ describe("sign up", () => {
       await userEvent.type(nameInput, value);
     }
 
-    const submitButton = getByLabelText("SubmitForm");
+    const submitButton = getByLabelText('SubmitForm');
     await user.click(submitButton);
 
     expect(await findByText(validationMessage)).toBeInTheDocument();
   });
 
-  test("successful sign up", async () => {
+  test('successful sign up', async () => {
     const { getByLabelText, user } = setup(<Registration />);
 
-    const signUpSpy = jest.fn().mockResolvedValueOnce({
+    const signUpSpy = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({}),
     });
     global.fetch.mockImplementation(signUpSpy);
 
-    await userEvent.type(getByLabelText("name"), data.name);
-    await userEvent.type(getByLabelText("email"), data.email);
-    await userEvent.type(getByLabelText("password"), data.password);
-    await userEvent.type(getByLabelText("passwordConfirmation"), data.passwordConfirmation);
+    await userEvent.type(getByLabelText('name'), data.name);
+    await userEvent.type(getByLabelText('email'), data.email);
+    await userEvent.type(getByLabelText('password'), data.password);
+    await userEvent.type(getByLabelText('passwordConfirmation'), data.passwordConfirmation);
 
-    const submitButton = getByLabelText("SubmitForm");
+    const submitButton = getByLabelText('SubmitForm');
     await user.click(submitButton);
 
     await waitFor(() => {
       expect(signUpSpy).toHaveBeenCalledWith(route, {
-        method: "POST",
+        method: 'POST',
         headers: headers.headers,
         body: JSON.stringify(data),
       });

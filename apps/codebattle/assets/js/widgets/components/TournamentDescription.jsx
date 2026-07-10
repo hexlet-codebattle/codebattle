@@ -1,24 +1,24 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
-import capitalize from "lodash/capitalize";
+import cn from 'classnames';
+import capitalize from 'lodash/capitalize';
 
-import { getRankingPoints, getTasksCount, grades } from "@/config/grades";
+import { getRankingPoints, getTasksCount, grades } from '@/config/grades';
 
 const getGradeDescriptionClassName = (highlight) =>
-  cn("d-flex flex-column flex-lg-row flex-md-row flex-sm-row justify-content-between", {
-    "text-monospace": highlight,
+  cn('d-flex flex-column flex-lg-row flex-md-row flex-sm-row justify-content-between', {
+    'text-monospace': highlight,
   });
 
 function GradeInfo({ grade, selected }) {
   return (
     <div className={getGradeDescriptionClassName(grade === selected)}>
-      <span className={grade === selected ? "text-white" : ""}>
+      <span className={grade === selected ? 'text-white' : ''}>
         {capitalize(grade)}
-        {grade === selected && "(*)"}
+        {grade === selected && '(*)'}
       </span>
-      <span className={cn("pl-3", { "text-white": grade === selected })}>
-        [{getRankingPoints(grade).join(", ")}]
+      <span className={cn('pl-3', { 'text-white': grade === selected })}>
+        [{getRankingPoints(grade).join(', ')}]
       </span>
     </div>
   );

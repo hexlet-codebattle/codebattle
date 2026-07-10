@@ -1,12 +1,12 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect } from 'react';
 
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import i18n from "i18next";
-import Button from "react-bootstrap/Button";
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import i18n from 'i18next';
+import Button from 'react-bootstrap/Button';
 
-import Modal from "@/components/BootstrapModal";
+import Modal from '@/components/BootstrapModal';
 
-import ModalCodes from "../../config/modalCodes";
+import ModalCodes from '../../config/modalCodes';
 
 const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) => {
   const modal = useModal(ModalCodes.nextStageGroupTournamentModal);
@@ -26,9 +26,9 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) =
   }
 
   const href = `/group_tournaments/${groupTournamentId}`;
-  const headerText = i18n.t("First qualification round finished");
+  const headerText = i18n.t('First qualification round finished');
   const bodyText = i18n.t(
-    "Your next step is the AI-round group tournament. Click the button below to continue.",
+    'Your next step is the AI-round group tournament. Click the button below to continue.',
   );
 
   return (
@@ -50,7 +50,7 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) =
         {/*   {i18n.t("Later")} */}
         {/* </Button> */}
         <Button as="a" href={href} variant="primary">
-          {i18n.t("Go to AI-round group tournament")}
+          {i18n.t('Go to AI-round group tournament')}
         </Button>
       </Modal.Footer>
     </Modal>

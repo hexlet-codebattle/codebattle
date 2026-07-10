@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import Output from "./Output";
-import OutputTab from "./OutputTab";
-import TaskAssignment from "./TaskAssignment";
-import TimerContainer from "./TimerContainer";
+import Output from './Output';
+import OutputTab from './OutputTab';
+import TaskAssignment from './TaskAssignment';
+import TimerContainer from './TimerContainer';
 
 function SideInfoPanel({ taskPanelProps, outputData }) {
   return (
     <div
       className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1"
-      style={{ height: "calc(100vh - 92px)" }}
+      style={{ height: 'calc(100vh - 92px)' }}
     >
       <div>
         <TaskAssignment {...taskPanelProps} />

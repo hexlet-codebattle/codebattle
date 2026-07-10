@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { findSolutionForRun } from "../lib/groupBattle";
-import { requestRunDetails } from "@/middlewares/GroupTournament";
-import * as selectors from "../selectors";
+import { findSolutionForRun } from '../lib/groupBattle';
+import { requestRunDetails } from '@/middlewares/GroupTournament';
+import * as selectors from '../selectors';
 
 const useGroupBattleRun = (data) => {
   const dispatch = useDispatch();

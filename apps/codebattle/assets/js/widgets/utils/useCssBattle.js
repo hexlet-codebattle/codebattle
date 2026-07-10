@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 
-import { decompress } from "lz-string";
-import { useSelector } from "react-redux";
+import { decompress } from 'lz-string';
+import { useSelector } from 'react-redux';
 
-import { matchBattlePictures } from "../lib/cssbattle";
-import * as selectors from "../selectors";
+import { matchBattlePictures } from '../lib/cssbattle';
+import * as selectors from '../selectors';
 
 const getIframeHtmlContent = (text) => `<div></div><style>${text}</style>`;
 // const defaultText = '\ndiv {\n\tbackground: #F3AC3C;\n\twidth: 50px;\n\theight: 50px\n}';
@@ -49,11 +49,11 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
   const [rightDataUrl, setRightDataUrl] = useState();
 
   const [matchStats, setMatchStats] = useState({
-    status: "loading",
+    status: 'loading',
     result: [
       {
         match: 0,
-        matchPercentage: "0.00%",
+        matchPercentage: '0.00%',
         success: false,
         diffDataUrl: undefined,
       },
@@ -75,7 +75,7 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
   const receivedCssBattleIframeMessage = useCallback(
     (event) => {
       try {
-        if (event.data?.type !== "cssbattle" && !event.data?.dataUrl) {
+        if (event.data?.type !== 'cssbattle' && !event.data?.dataUrl) {
           return;
         }
 
@@ -96,13 +96,13 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
   useEffect(() => {
     if (isIframesLoaded) {
       leftSolutionIframe.current.contentWindow.postMessage({
-        type: "cssbattle",
+        type: 'cssbattle',
         userId: leftEditor.userId,
         bodyStr: getIframeHtmlContent(cssTextLeft),
       });
 
       rightSolutionIframe.current.contentWindow.postMessage({
-        type: "cssbattle",
+        type: 'cssbattle',
         userId: rightEditor.userId,
         bodyStr: getIframeHtmlContent(cssTextRight),
       });
@@ -119,7 +119,7 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
 
   useEffect(() => {
     if (leftDataUrl && rightDataUrl && targetDataUrl) {
-      setMatchStats((state) => ({ ...state, status: "process" }));
+      setMatchStats((state) => ({ ...state, status: 'process' }));
 
       const intervalId = setInterval(() => {
         try {
@@ -134,12 +134,12 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
             targetImgRef.current.naturalWidth,
             targetImgRef.current.naturalHeight,
           );
-          setMatchStats({ ...stats, status: "ready" });
+          setMatchStats({ ...stats, status: 'ready' });
           clearInterval(intervalId);
         } catch (e) {
           console.error(e);
-          setMatchStats((state) => ({ ...state, status: "loading" }));
-          console.warn("images not ready for pixel matching");
+          setMatchStats((state) => ({ ...state, status: 'loading' }));
+          console.warn('images not ready for pixel matching');
         }
       }, 1000);
 
@@ -149,7 +149,7 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
     }
 
     if (!targetDataUrl) {
-      setMatchStats((state) => ({ ...state, status: "targetIsEmpty" }));
+      setMatchStats((state) => ({ ...state, status: 'targetIsEmpty' }));
 
       return () => {};
     }
@@ -182,10 +182,10 @@ const useCssBattleStats = (isIframesLoaded, leftSolutionIframe, rightSolutionIfr
   }, [matchStats.diffDataUrl]);
 
   useEffect(() => {
-    window.addEventListener("message", receivedCssBattleIframeMessage, false);
+    window.addEventListener('message', receivedCssBattleIframeMessage, false);
 
     return () => {
-      window.removeEventListener("message", receivedCssBattleIframeMessage);
+      window.removeEventListener('message', receivedCssBattleIframeMessage);
     };
   }, [receivedCssBattleIframeMessage]);
 

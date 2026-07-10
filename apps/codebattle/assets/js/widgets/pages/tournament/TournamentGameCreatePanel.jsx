@@ -1,14 +1,14 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import shuffle from "lodash/shuffle";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import shuffle from 'lodash/shuffle';
 
-import MatchStates from "../../config/matchStates";
-import { createCustomRound } from "../../middlewares/TournamentAdmin";
+import MatchStates from '../../config/matchStates';
+import { createCustomRound } from '../../middlewares/TournamentAdmin';
 import {
   getCustomEventPlayerDefaultImgUrl,
   tournamentEmptyPlayerUrl,
-} from "../../utils/urlBuilders";
+} from '../../utils/urlBuilders';
 
 const emptyPlayer = {};
 
@@ -116,7 +116,7 @@ function TournamentGameCreatePanel({
         <>
           <div className="d-flex flex-column align-items-baseline flex-nowrap">
             <span className="h5">
-              {"Choose task level for "}
+              {'Choose task level for '}
               <span className="text-nowrap">{selectedPlayer.name}</span>
               {opponentPlayer?.name && (
                 <>
@@ -130,10 +130,10 @@ function TournamentGameCreatePanel({
               <button
                 type="button"
                 className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel("elementary")}
+                onClick={() => setSelectedTaskLevel('elementary')}
                 disabled={availableTasks.elementary.length < 1}
               >
-                Elementary{" "}
+                Elementary{' '}
                 <span className="text-nowrap">
                   {`(${availableTasks.elementary.length} available)`}
                 </span>
@@ -141,7 +141,7 @@ function TournamentGameCreatePanel({
               <button
                 type="button"
                 className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel("easy")}
+                onClick={() => setSelectedTaskLevel('easy')}
                 disabled={availableTasks.easy.length < 1}
               >
                 Easy {availableTasks.easy.length}
@@ -149,7 +149,7 @@ function TournamentGameCreatePanel({
               <button
                 type="button"
                 className="btn btn-sm btn-warning py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel("medium")}
+                onClick={() => setSelectedTaskLevel('medium')}
                 disabled={availableTasks.medium.length < 1}
               >
                 Medium {availableTasks.medium.length}
@@ -157,7 +157,7 @@ function TournamentGameCreatePanel({
               <button
                 type="button"
                 className="btn btn-sm btn-danger py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel("hard")}
+                onClick={() => setSelectedTaskLevel('hard')}
                 disabled={availableTasks.hard.length < 1}
               >
                 Hard {availableTasks.hard.length}

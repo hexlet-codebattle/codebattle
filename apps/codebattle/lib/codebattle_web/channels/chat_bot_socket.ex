@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.ChatBotSocket do
   use Phoenix.Socket
 
-  require Logger
-
   ## Channels
   channel("chat_bot:*", CodebattleWeb.ChatBotChannel)
 

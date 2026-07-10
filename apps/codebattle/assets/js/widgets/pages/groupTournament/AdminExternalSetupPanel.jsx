@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 function AdminExternalSetupPanel({ externalSetup }) {
   return (
@@ -14,20 +14,20 @@ function AdminExternalSetupPanel({ externalSetup }) {
           <strong>Secret:</strong> {externalSetup.secretState}
         </div>
         <div className="mb-1">
-          <strong>Repo slug:</strong> {externalSetup.repoSlug || "n/a"}
+          <strong>Repo slug:</strong> {externalSetup.repoSlug || 'n/a'}
         </div>
         <div className="mb-1">
-          <strong>Repo URL:</strong>{" "}
+          <strong>Repo URL:</strong>{' '}
           {externalSetup.repoUrl ? (
             <a href={externalSetup.repoUrl} target="_blank" rel="noreferrer">
               {externalSetup.repoUrl}
             </a>
           ) : (
-            "n/a"
+            'n/a'
           )}
         </div>
         {externalSetup.lastError && Object.keys(externalSetup.lastError).length > 0 && (
-          <pre className="mt-2 mb-0 text-danger" style={{ whiteSpace: "pre-wrap" }}>
+          <pre className="mt-2 mb-0 text-danger" style={{ whiteSpace: 'pre-wrap' }}>
             {JSON.stringify(externalSetup.lastError, null, 2)}
           </pre>
         )}

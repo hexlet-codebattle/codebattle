@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  status: "loading", // "loading" | "active" | "finished"
-  projectStatus: "loading", // "created" | "loading",
+  status: 'loading', // "loading" | "active" | "finished"
+  projectStatus: 'loading', // "created" | "loading",
   projectLink: null, // string | null
   invite: {
-    state: "loading", // "creating" | "pending" | "accepted" | "failed" | "loading"
+    state: 'loading', // "creating" | "pending" | "accepted" | "failed" | "loading"
     inviteLink: null,
   },
   requireInvitation: true,
@@ -13,15 +13,15 @@ const initialState = {
   platformError: null,
   externalSetup: null,
   solutionEvolution: [], // Array<{ id: string, status: "creating" | "finished" }>
-  code: "",
-  langSlug: "",
+  code: '',
+  langSlug: '',
   data: {},
   activeRunIdFromServer: null,
   activeRunFromServerTick: 0,
 };
 
 const groupTournament = createSlice({
-  name: "groupTournament",
+  name: 'groupTournament',
   initialState,
   reducers: {
     setGroupTournamentData: (state, { payload }) => ({

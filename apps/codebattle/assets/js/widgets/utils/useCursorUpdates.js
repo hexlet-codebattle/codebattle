@@ -1,13 +1,13 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import pick from "lodash/pick";
+import pick from 'lodash/pick';
 
-import editorUserTypes from "../config/editorUserTypes";
-import * as RoomActions from "../middlewares/Room";
+import editorUserTypes from '../config/editorUserTypes';
+import * as RoomActions from '../middlewares/Room';
 
 const useCursorUpdates = (editor, monaco, props) => {
   const params = useMemo(
-    () => pick(props, ["userId", "roomMode"]),
+    () => pick(props, ['userId', 'roomMode']),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.userId, props.roomMode],
@@ -24,7 +24,7 @@ const useCursorUpdates = (editor, monaco, props) => {
 
       const position = editor.getModel().getPositionAt(offset);
       const userClassName =
-        userType === editorUserTypes.opponent ? "cb-remote-opponent" : "cb-remote-player";
+        userType === editorUserTypes.opponent ? 'cb-remote-opponent' : 'cb-remote-player';
 
       if (readOnly) {
         const cursor = {
@@ -53,7 +53,7 @@ const useCursorUpdates = (editor, monaco, props) => {
       const { readOnly, userType } = editor.getRawOptions();
 
       const userClassName =
-        userType === editorUserTypes.opponent ? "cb-remote-opponent" : "cb-remote-player";
+        userType === editorUserTypes.opponent ? 'cb-remote-opponent' : 'cb-remote-player';
 
       if (readOnly) {
         const startPosition = editor.getModel().getPositionAt(startOffset);
@@ -85,11 +85,11 @@ const useCursorUpdates = (editor, monaco, props) => {
       const { readOnly } = editor.getRawOptions();
 
       if (readOnly) {
-        if (typeof scrollTop === "number") {
+        if (typeof scrollTop === 'number') {
           editor.setScrollTop(scrollTop);
         }
 
-        if (typeof scrollLeft === "number") {
+        if (typeof scrollLeft === 'number') {
           editor.setScrollLeft(scrollLeft);
         }
       }

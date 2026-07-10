@@ -7,6 +7,7 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
   alias Codebattle.Game.Context, as: GameContext
   alias Codebattle.Tournament.Context, as: TournamentContext
   alias Codebattle.Tournament.Server
+  alias Codebattle.Tournament.TournamentUserResult
 
   test "continuous matchmaking: finishing games triggers the next tick, no rematches, finishes" do
     tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
@@ -70,6 +71,18 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
 
     tournament = TournamentContext.get(tournament.id)
     assert tournament.state == "finished"
+
+    # The finished leaderboard is persisted to tournament_user_results (regression:
+    # ladder was missing from TournamentUserResult.upsert_results, so the leaderboard
+    # came back empty and sync_players zeroed every player's place/score).
+    leaderboard = TournamentUserResult.get_leaderboard(tournament.id)
+    assert length(leaderboard) == 4
+    assert Enum.map(leaderboard, & &1.place) == [1, 2, 3, 4]
+    assert MapSet.new(leaderboard, & &1.user_id) == MapSet.new(users, & &1.id)
+
+    # sync_players restores places/scores on the player structs from the leaderboard.
+    assert tournament |> get_players() |> Enum.reject(& &1.is_bot) |> Enum.map(& &1.place) |> Enum.sort() ==
+             [1, 2, 3, 4]
   end
 
   test "ladder tick timeout comes from task base_score while game timeout comes from time_to_solve_sec" do

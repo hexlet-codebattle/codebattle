@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
-import * as ChatActions from "../middlewares/Chat";
-import * as GameRoomActions from "../middlewares/Room";
-import * as selectors from "../selectors";
+import * as ChatActions from '../middlewares/Chat';
+import * as GameRoomActions from '../middlewares/Room';
+import * as selectors from '../selectors';
 
 const useGameRoomSocketChannel = (_pageName, machines) => {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const useGameRoomSocketChannel = (_pageName, machines) => {
     const options = { cancelRedirect: false };
 
     GameRoomActions.connectToGame(machines.mainService, options)(dispatch);
-    const chatChannel = ChatActions.connectToChat(useChat, "channel")(dispatch);
+    const chatChannel = ChatActions.connectToChat(useChat, 'channel')(dispatch);
 
     const clearChannels = () => {
       clearGameChannel();

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import i18n from "../../i18n";
-import levelToClass from "../config/levelToClass";
+import i18n from '../../i18n';
+import levelToClass from '../config/levelToClass';
 
 function DropdownItem({ level, setLevel, setLevelClass }) {
   return (
@@ -21,7 +21,7 @@ function DropdownItem({ level, setLevel, setLevelClass }) {
 }
 
 const DropdownMenuDefault = ({ currentLevel, setLevel, setLevelClass }) => {
-  const orderedLevels = ["random", "elementary", "easy", "medium", "hard"].filter(
+  const orderedLevels = ['random', 'elementary', 'easy', 'medium', 'hard'].filter(
     (level) => level !== currentLevel,
   );
 

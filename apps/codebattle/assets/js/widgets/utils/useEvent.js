@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-const isClient = typeof window === "object";
+const isClient = typeof window === 'object';
 const defaultTarget = isClient ? window : null;
 const isListenerType1 = (target) => !!target.addEventListener;
 const isListenerType2 = (target) => !!target.on;

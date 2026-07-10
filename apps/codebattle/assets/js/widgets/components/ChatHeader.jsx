@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import cn from "classnames";
-import { useSelector } from "react-redux";
+import cn from 'classnames';
+import { useSelector } from 'react-redux';
 
-import i18n from "../../i18n";
-import { pushCommand, pushCommandTypes } from "../middlewares/Chat";
-import * as selectors from "../selectors";
+import i18n from '../../i18n';
+import { pushCommand, pushCommandTypes } from '../middlewares/Chat';
+import * as selectors from '../selectors';
 
-import Rooms from "./Rooms";
+import Rooms from './Rooms';
 
 export default function ChatHeader({ showRooms = false, disabled = false }) {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
@@ -18,8 +18,8 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
 
   const showBorder = showRooms || (currentUserIsAdmin && !disabled);
 
-  const headerClassName = cn("d-flex align-items-center", {
-    "border-bottom cb-border-color": showBorder,
+  const headerClassName = cn('d-flex align-items-center', {
+    'border-bottom cb-border-color': showBorder,
   });
 
   return (
@@ -34,7 +34,7 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
           }}
           disabled={disabled}
         >
-          {i18n.t("Clean banned")}
+          {i18n.t('Clean banned')}
         </button>
       )}
     </div>

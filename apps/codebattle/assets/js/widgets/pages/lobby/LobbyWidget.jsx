@@ -1,39 +1,39 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import cn from "classnames";
-import Gon from "gon";
-import { useDispatch, useSelector } from "react-redux";
+import cn from 'classnames';
+import Gon from 'gon';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from "@/components/BootstrapModal";
-import * as lobbyMiddlewares from "@/middlewares/Lobby";
-import * as selectors from "@/selectors";
-import { actions } from "@/slices";
-import { getLobbyUrl, makeGameUrl } from "@/utils/urlBuilders";
-import useLobbyModals from "@/utils/useLobbyModals";
+import Modal from '@/components/BootstrapModal';
+import * as lobbyMiddlewares from '@/middlewares/Lobby';
+import * as selectors from '@/selectors';
+import { actions } from '@/slices';
+import { getLobbyUrl, makeGameUrl } from '@/utils/urlBuilders';
+import useLobbyModals from '@/utils/useLobbyModals';
 
-import i18n from "../../../i18n";
-import ActiveGames from "./ActiveGames";
-import Announcement from "./Announcement";
-import ChatActionModal from "./ChatActionModal";
-import CreateGameDialog from "./CreateGameDialog";
-import LobbyChat from "./LobbyChat";
-import SeasonProfilePanel from "./SeasonProfilePanel";
+import i18n from '../../../i18n';
+import ActiveGames from './ActiveGames';
+import Announcement from './Announcement';
+import ChatActionModal from './ChatActionModal';
+import CreateGameDialog from './CreateGameDialog';
+import LobbyChat from './LobbyChat';
+import SeasonProfilePanel from './SeasonProfilePanel';
 
-const createBtnClassName = cn("btn cb-rounded");
+const createBtnClassName = cn('btn cb-rounded');
 
 const createBasicGameBtnClassName = cn(
   createBtnClassName,
-  "btn-secondary cb-btn-secondary w-100 mr-2",
+  'btn-secondary cb-btn-secondary w-100 mr-2',
 );
 
-const joinGameBtnClassName = cn(createBtnClassName, "btn-secondary cb-btn-secondary w-100");
+const joinGameBtnClassName = cn(createBtnClassName, 'btn-secondary cb-btn-secondary w-100');
 
 const createExperementalGameBtnClassName = cn(
   createBtnClassName,
-  "btn-secondary cb-btn-secondary mt-2 pl-2",
+  'btn-secondary cb-btn-secondary mt-2 pl-2',
 );
 
-function CreateExperimentalGameButton({ onClick, isOnline, type = "css" }) {
+function CreateExperimentalGameButton({ onClick, isOnline, type = 'css' }) {
   return (
     <button
       type="button"
@@ -42,7 +42,7 @@ function CreateExperimentalGameButton({ onClick, isOnline, type = "css" }) {
       onClick={onClick}
       disabled={!isOnline}
     >
-      {type === "css" ? i18n.t("Create a CSS Game") : i18n.t("Create a SQL Game")}
+      {type === 'css' ? i18n.t('Create a CSS Game') : i18n.t('Create a SQL Game')}
     </button>
   );
 }
@@ -50,7 +50,7 @@ function CreateExperimentalGameButton({ onClick, isOnline, type = "css" }) {
 function JoinGameButton({ onClick }) {
   return (
     <button type="button" className={joinGameBtnClassName} onClick={onClick}>
-      {i18n.t("Join a battle")}
+      {i18n.t('Join a battle')}
     </button>
   );
 }
@@ -63,13 +63,13 @@ function CreateGameButton({ onClick, isOnline, isContinue }) {
       onClick={onClick}
       disabled={!isOnline}
     >
-      {isContinue ? i18n.t("Continue battle") : i18n.t("Create a battle")}
+      {isContinue ? i18n.t('Continue battle') : i18n.t('Create a battle')}
     </button>
   );
 }
 
 function LobbyWidget() {
-  const currentOpponent = Gon.getAsset("opponent");
+  const currentOpponent = Gon.getAsset('opponent');
 
   const dispatch = useDispatch();
 
@@ -125,7 +125,7 @@ function LobbyWidget() {
   }, [activeGame, handleShowCreateGameModal]);
   const handleExperimentalGameBtnClick = useCallback(
     (event) => {
-      const type = event.currentTarget.dataset.type || "css";
+      const type = event.currentTarget.dataset.type || 'css';
 
       if (isAdmin) {
         lobbyMiddlewares.createExperimentGame({ type });
@@ -164,7 +164,7 @@ function LobbyWidget() {
         contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
-          <Modal.Title className="w-100 text-center pr-4">{i18n.t("Create a game")}</Modal.Title>
+          <Modal.Title className="w-100 text-center pr-4">{i18n.t('Create a game')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
           <CreateGameDialog hideModal={handleCloseCreateGameModal} />
@@ -176,7 +176,7 @@ function LobbyWidget() {
         contentClassName="cb-bg-panel cb-join-game-modal"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
-          <Modal.Title>{i18n.t("Join a game")}</Modal.Title>
+          <Modal.Title>{i18n.t('Join a game')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
           <ActiveGames

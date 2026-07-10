@@ -2,8 +2,6 @@ defmodule Codebattle.Bot.ChatClient do
   @moduledoc """
   Process for playing playbooks of tasks
   """
-  require Logger
-
   def send(chat_channel, :greet_opponent, _params) do
     send_text(chat_channel, greet_opponent_text())
   end

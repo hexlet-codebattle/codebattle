@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 function GoToNextGame({ currentUserId, tournamentsInfo: { playerGames } }) {
   if (!playerGames) {

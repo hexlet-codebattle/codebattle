@@ -625,7 +625,6 @@ defmodule Codebattle.Game.Engine do
 
   defp put_task(params, %CssTask{} = task), do: Map.put(params, :css_task, task)
   defp put_task(params, %SqlTask{} = task), do: Map.put(params, :sql_task, task)
-  defp put_task(params, task), do: Map.put(params, task, task)
 
   defp get_game_task(%{task_type: "css"} = game), do: game.css_task
   defp get_game_task(%{task_type: "sql"} = game), do: game.sql_task

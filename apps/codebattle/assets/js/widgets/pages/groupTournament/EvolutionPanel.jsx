@@ -1,7 +1,7 @@
-import React from "react";
-import i18n from "../../../i18n";
-import RunItem from "./RunItem";
-import { buildVscodeFolderUrl, isOnBreak } from "../../utils/groupTournament";
+import React from 'react';
+import i18n from '../../../i18n';
+import RunItem from './RunItem';
+import { buildVscodeFolderUrl, isOnBreak } from '../../utils/groupTournament';
 
 const getStubRoundPosition = (groupTournament) => {
   const roundPosition = groupTournament?.currentRoundPosition;
@@ -40,8 +40,8 @@ function EvolutionPanel({
   leaderboard,
   currentUserId = 1,
 }) {
-  const isFinished = tournamentStatus === "finished";
-  const isWaiting = tournamentStatus === "waiting_participants";
+  const isFinished = tournamentStatus === 'finished';
+  const isWaiting = tournamentStatus === 'waiting_participants';
   const externalUrl = !isFinished && !isWaiting ? repoUrl : null;
   const vscodeUrl =
     !isFinished && !isWaiting && !externalUrl
@@ -54,7 +54,7 @@ function EvolutionPanel({
   return (
     <>
       <div className="cb-evolution-panel-header d-flex align-items-center justify-content-center w-100">
-        <h5 className="mb-0 text-white font-weight-bold">{i18n.t("Execution History")}</h5>
+        <h5 className="mb-0 text-white font-weight-bold">{i18n.t('Execution History')}</h5>
       </div>
       <div className="cb-evolution-panel-main mt-3 p-3 w-100">
         <div className="cb-evolution-panel-inner">
@@ -66,14 +66,14 @@ function EvolutionPanel({
               className="d-block text-decoration-none mb-3"
             >
               <div className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center">
-                {i18n.t("Add Solution +")}
+                {i18n.t('Add Solution +')}
               </div>
             </a>
           )}
           {vscodeUrl && (
             <a href={vscodeUrl} className="d-block text-decoration-none mb-3">
               <div className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center">
-                {i18n.t("Add Solution +")}
+                {i18n.t('Add Solution +')}
               </div>
             </a>
           )}
@@ -83,7 +83,7 @@ function EvolutionPanel({
               onClick={onAddSolution}
               className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center mb-3"
             >
-              {i18n.t("Add Solution +")}
+              {i18n.t('Add Solution +')}
             </button>
           )}
           {items?.length > 0 && (

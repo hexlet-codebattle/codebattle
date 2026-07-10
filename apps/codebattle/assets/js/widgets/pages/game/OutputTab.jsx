@@ -1,52 +1,52 @@
-import React from "react";
+import React from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 
-import i18n from "../../../i18n";
-import color from "../../config/statusColor";
+import i18n from '../../../i18n';
+import color from '../../config/statusColor';
 
 const getMessage = (status) => {
   switch (status) {
-    case "timeout":
+    case 'timeout':
       return i18n.t(
         "We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:",
       );
-    case "error":
-      return i18n.t("Solution cannot be executed");
-    case "failure":
-      return i18n.t("Tests failed");
-    case "ok":
-      return i18n.t("Yay! All tests passed!");
+    case 'error':
+      return i18n.t('Solution cannot be executed');
+    case 'failure':
+      return i18n.t('Tests failed');
+    case 'ok':
+      return i18n.t('Yay! All tests passed!');
     default:
-      return i18n.t("Opponent tests");
+      return i18n.t('Opponent tests');
   }
 };
 
 function OutputTab({ sideOutput, large = false }) {
   const { successCount, assertsCount, status } = sideOutput;
-  const isShowMessage = status === "failure";
+  const isShowMessage = status === 'failure';
   const statusColor = color[status];
   const message = getMessage(status);
   const percent = Math.ceil((100 * successCount) / assertsCount);
 
   const assertsStatusMessage = i18n.t(
-    "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)",
+    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
     { successCount, assertsCount, percent },
   );
 
   if (large) {
     const panelClassName = cn({
-      "text-danger": status === "error",
-      "text-primary": status === "failure",
-      "text-success": status === "ok",
+      'text-danger': status === 'error',
+      'text-primary': status === 'failure',
+      'text-success': status === 'ok',
     });
 
-    return status === "ok" ? (
+    return status === 'ok' ? (
       <FontAwesomeIcon className="h2 text-warning" icon="trophy" />
     ) : (
       <div title="Asserts status" className={panelClassName}>
-        <h2>{status === "error" ? "Error" : `${percent}%`}</h2>
+        <h2>{status === 'error' ? 'Error' : `${percent}%`}</h2>
       </div>
     );
   }

@@ -1,14 +1,14 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import dayjs from "dayjs";
-import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import dayjs from 'dayjs';
+import { useDispatch, useSelector } from 'react-redux';
 
-import UserInfo from "@/components/UserInfo";
-import { toggleBanUser } from "@/middlewares/TournamentAdmin";
-import { tournamentPlayersSelector } from "@/selectors";
+import UserInfo from '@/components/UserInfo';
+import { toggleBanUser } from '@/middlewares/TournamentAdmin';
+import { tournamentPlayersSelector } from '@/selectors';
 
-import i18next from "../../../i18n";
+import i18next from '../../../i18n';
 
 function CheatersPanel({ canModerate = false }) {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ function CheatersPanel({ canModerate = false }) {
   const cheaters = useMemo(
     () =>
       Object.values(players || {})
-        .filter((player) => player?.state === "banned")
+        .filter((player) => player?.state === 'banned')
         .sort((left, right) => left.name.localeCompare(right.name)),
     [players],
   );
@@ -58,23 +58,23 @@ function CheatersPanel({ canModerate = false }) {
     <div className="d-flex flex-column my-2">
       <div className="card cb-card border cb-border-color">
         <div className="card-header cb-bg-panel cb-text d-flex justify-content-between align-items-center">
-          <span>{i18next.t("Cheaters")}</span>
+          <span>{i18next.t('Cheaters')}</span>
           <span className="text-white-50 small">
-            {i18next.t("Total")}: {cheaters.length}
+            {i18next.t('Total')}: {cheaters.length}
           </span>
         </div>
         <div className="card-body p-0">
           {cheaters.length === 0 ? (
-            <div className="p-3 text-white-50">{i18next.t("No cheaters marked yet")}</div>
+            <div className="p-3 text-white-50">{i18next.t('No cheaters marked yet')}</div>
           ) : (
             <table className="table cb-text-light table-striped cb-custom-event-table mb-0">
               <thead>
                 <tr>
-                  <th className="border-0 cb-text-light">{i18next.t("Player")}</th>
-                  <th className="border-0 cb-text-light">{i18next.t("Clan")}</th>
-                  <th className="border-0 cb-text-light">{i18next.t("Games")}</th>
-                  <th className="border-0 cb-text-light">{i18next.t("Reports")}</th>
-                  <th className="border-0 cb-text-light">{i18next.t("Actions")}</th>
+                  <th className="border-0 cb-text-light">{i18next.t('Player')}</th>
+                  <th className="border-0 cb-text-light">{i18next.t('Clan')}</th>
+                  <th className="border-0 cb-text-light">{i18next.t('Games')}</th>
+                  <th className="border-0 cb-text-light">{i18next.t('Reports')}</th>
+                  <th className="border-0 cb-text-light">{i18next.t('Actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -88,13 +88,13 @@ function CheatersPanel({ canModerate = false }) {
                         <td className="align-middle cb-text-light">
                           <UserInfo user={player} banned hideOnlineIndicator hideLink />
                         </td>
-                        <td className="align-middle cb-text-light">{player.clan || "-"}</td>
+                        <td className="align-middle cb-text-light">{player.clan || '-'}</td>
                         <td className="align-middle cb-text-light">
                           {player.matchesIds?.length ?? player.matches_ids?.length ?? 0}
                         </td>
                         <td className="align-middle cb-text-light">
                           {playerReports.length === 0 ? (
-                            <span className="text-white-50">{i18next.t("No reports yet")}</span>
+                            <span className="text-white-50">{i18next.t('No reports yet')}</span>
                           ) : (
                             <button
                               type="button"
@@ -102,10 +102,10 @@ function CheatersPanel({ canModerate = false }) {
                               onClick={toggleReports(player.id)}
                             >
                               <FontAwesomeIcon
-                                icon={isExpanded ? "chevron-up" : "chevron-down"}
+                                icon={isExpanded ? 'chevron-up' : 'chevron-down'}
                                 className="mr-2"
                               />
-                              {i18next.t("Reports")} ({playerReports.length})
+                              {i18next.t('Reports')} ({playerReports.length})
                             </button>
                           )}
                         </td>
@@ -115,7 +115,7 @@ function CheatersPanel({ canModerate = false }) {
                             className="btn btn-sm btn-outline-success"
                             onClick={handleToggleCheater(player.id, true)}
                           >
-                            {i18next.t("Unban")}
+                            {i18next.t('Unban')}
                           </button>
                         </td>
                       </tr>
@@ -135,14 +135,14 @@ function CheatersPanel({ canModerate = false }) {
                                       <UserInfo user={reporter} hideOnlineIndicator hideLink />
                                     </span>
                                     <span className="mr-3 text-white-50">
-                                      {dayjs(report.insertedAt).format("YYYY-MM-DD HH:mm:ss")}
+                                      {dayjs(report.insertedAt).format('YYYY-MM-DD HH:mm:ss')}
                                     </span>
                                     <span className="mr-3 text-capitalize">{report.state}</span>
                                     <a
                                       href={`/games/${report.gameId}`}
                                       className="btn btn-sm btn-outline-secondary"
                                     >
-                                      {i18next.t("Game")} #{report.gameId}
+                                      {i18next.t('Game')} #{report.gameId}
                                     </a>
                                   </div>
                                 );

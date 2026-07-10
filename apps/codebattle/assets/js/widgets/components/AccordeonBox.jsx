@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
-import uniqueId from "lodash/uniqueId";
-import Tooltip from "react-bootstrap/Tooltip";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import uniqueId from 'lodash/uniqueId';
+import Tooltip from 'react-bootstrap/Tooltip';
 
-import OverlayTrigger from "@/components/OverlayTriggerCompat";
+import OverlayTrigger from '@/components/OverlayTriggerCompat';
 
-import i18n from "../../i18n";
-import color from "../config/statusColor";
+import i18n from '../../i18n';
+import color from '../config/statusColor';
 
 const getMessage = (status) => {
   switch (status) {
-    case "error":
-      return i18n.t("Solution cannot be executed");
-    case "failure":
-      return i18n.t("Test failed");
-    case "ok":
-      return i18n.t("Yay! All tests passed!");
+    case 'error':
+      return i18n.t('Solution cannot be executed');
+    case 'failure':
+      return i18n.t('Test failed');
+    case 'ok':
+      return i18n.t('Yay! All tests passed!');
     default:
-      return i18n.t("Opponent tests");
+      return i18n.t('Opponent tests');
   }
 };
 
@@ -43,17 +43,17 @@ const renderFirstAssert = (firstAssert) => (
 
 function Menu({ children, firstAssert, resultData, assertsCount, successCount }) {
   const [show, setShow] = useState(true);
-  const isSyntaxError = resultData.status === "error";
+  const isSyntaxError = resultData.status === 'error';
   const statusColor = color[resultData.status];
   const message = getMessage(resultData.status);
-  const classCollapse = cn("collapse", { show });
+  const classCollapse = cn('collapse', { show });
   const handleClick = () => {
     setShow(!show);
   };
-  const uniqIndex = uniqueId("heading");
+  const uniqIndex = uniqueId('heading');
   const percent = (100 * successCount) / assertsCount;
   const assertsStatusMessage = i18n.t(
-    "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)",
+    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
     {
       successCount,
       assertsCount,
@@ -67,7 +67,7 @@ function Menu({ children, firstAssert, resultData, assertsCount, successCount })
 
   return (
     <div className="card cb-card border-0 rounded-0">
-      {statusColor === "warning" || statusColor === "danger" ? (
+      {statusColor === 'warning' || statusColor === 'danger' ? (
         <>
           <div className="card-header" id={`heading${uniqIndex} `}>
             <button
@@ -107,7 +107,7 @@ function Menu({ children, firstAssert, resultData, assertsCount, successCount })
 
 function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executionTime, fontSize }) {
   const [isShowLog, setIsShowLog] = useState(true);
-  const classCollapse = cn("collapse", {
+  const classCollapse = cn('collapse', {
     show: isShowLog,
   });
 
@@ -120,14 +120,14 @@ function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executio
     h2: fontSize === 4,
     h1: fontSize > 4,
   });
-  const assertClassName = cn("d-block", fontClassName);
+  const assertClassName = cn('d-block', fontClassName);
 
   return (
     <div className="list-group-item border-left-0 cb-border-color border-right-0 cb-bg-highlight-panel text-white">
       <div id={`heading${uniqIndex}`}>
         <div>
           <div className="d-flex align-items-center">
-            {statusColor === "success" ? (
+            {statusColor === 'success' ? (
               <FontAwesomeIcon
                 className={`text-${statusColor} mr-2 ${fontClassName}`}
                 icon="check-circle"
@@ -164,10 +164,10 @@ function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executio
               >
                 <span className={fontClassName}>
                   <FontAwesomeIcon
-                    icon={isShowLog ? "arrow-circle-up" : "arrow-circle-down"}
+                    icon={isShowLog ? 'arrow-circle-up' : 'arrow-circle-down'}
                     className="mr-1"
                   />
-                  {i18n.t("STDOUT")}
+                  {i18n.t('STDOUT')}
                 </span>
               </button>
             )}
@@ -175,7 +175,7 @@ function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executio
         </div>
         <pre className="my-1">
           {(() => {
-            const labels = [i18n.t("Receive:"), i18n.t("Expected:"), i18n.t("Arguments:")];
+            const labels = [i18n.t('Receive:'), i18n.t('Expected:'), i18n.t('Arguments:')];
             const width = Math.max(...labels.map((l) => l.length));
             const [receiveLabel, expectedLabel, argumentsLabel] = labels.map((l) =>
               l.padEnd(width),
@@ -204,7 +204,7 @@ function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executio
 }
 
 function Item({ output, fontSize }) {
-  if (output === "") {
+  if (output === '') {
     return null;
   }
 

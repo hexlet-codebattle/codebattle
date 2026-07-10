@@ -1,41 +1,41 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
-import Gon from "gon";
-import { camelizeKeys } from "humps";
-import { useDispatch } from "react-redux";
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
+import { useDispatch } from 'react-redux';
 
-import i18n from "../../../i18n";
-import LanguageIcon from "../../components/LanguageIcon";
-import PopoverStickOnHover from "../../components/PopoverStickOnHover";
-import Placements from "../../config/placements";
-import { actions } from "../../slices";
-import UserStats from "../../components/UserStats";
+import i18n from '../../../i18n';
+import LanguageIcon from '../../components/LanguageIcon';
+import PopoverStickOnHover from '../../components/PopoverStickOnHover';
+import Placements from '../../config/placements';
+import { actions } from '../../slices';
+import UserStats from '../../components/UserStats';
 
 const colors = {
-  gold: "#e0bf7a",
-  silver: "#c2c9d6",
-  bronze: "#c48a57",
-  platinum: "#a4aab3",
-  steel: "#8a919c",
-  iron: "#6f7782",
-  ink: "#0f1218",
-  panel: "#171b22",
-  panelAlt: "#1e242d",
-  line: "#2b3340",
+  gold: '#e0bf7a',
+  silver: '#c2c9d6',
+  bronze: '#c48a57',
+  platinum: '#a4aab3',
+  steel: '#8a919c',
+  iron: '#6f7782',
+  ink: '#0f1218',
+  panel: '#171b22',
+  panelAlt: '#1e242d',
+  line: '#2b3340',
 };
 
 const formatDate = (value) =>
   new Intl.DateTimeFormat(i18n.language, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   }).format(new Date(value));
 
 const formatDuration = (seconds) => {
   if (!seconds) {
-    return i18n.t("n/a");
+    return i18n.t('n/a');
   }
 
   const minutes = Math.floor(seconds / 60);
@@ -83,7 +83,7 @@ function HeadToHeadUserPopover({ user }) {
   return <UserStats user={user} data={stats} />;
 }
 
-function HeadToHeadUserLink({ user, placement, className = "" }) {
+function HeadToHeadUserLink({ user, placement, className = '' }) {
   const content = useMemo(() => <HeadToHeadUserPopover user={user} />, [user]);
 
   return (
@@ -95,7 +95,7 @@ function HeadToHeadUserLink({ user, placement, className = "" }) {
       <a
         href={`/users/${user.id}`}
         className={className}
-        style={{ color: "#ffffff", textDecoration: "none" }}
+        style={{ color: '#ffffff', textDecoration: 'none' }}
       >
         {user.name}
       </a>
@@ -104,54 +104,54 @@ function HeadToHeadUserLink({ user, placement, className = "" }) {
 }
 
 const formatGameState = (state) => {
-  if (state === "game_over") {
-    return i18n.t("Finished");
+  if (state === 'game_over') {
+    return i18n.t('Finished');
   }
 
-  if (state === "waiting_opponent") {
-    return i18n.t("Waiting");
+  if (state === 'waiting_opponent') {
+    return i18n.t('Waiting');
   }
 
-  if (state === "timeout") {
-    return i18n.t("Timeout");
+  if (state === 'timeout') {
+    return i18n.t('Timeout');
   }
 
-  if (state === "playing") {
-    return i18n.t("Playing");
+  if (state === 'playing') {
+    return i18n.t('Playing');
   }
 
-  if (state === "canceled") {
-    return i18n.t("Canceled");
+  if (state === 'canceled') {
+    return i18n.t('Canceled');
   }
 
   if (!state) {
-    return i18n.t("Unknown");
+    return i18n.t('Unknown');
   }
 
-  return state.replaceAll("_", " ");
+  return state.replaceAll('_', ' ');
 };
 
 const getGameStateTone = (state) => {
-  if (state === "game_over") {
+  if (state === 'game_over') {
     return {
       color: colors.gold,
-      backgroundColor: "rgba(224, 191, 122, 0.08)",
-      border: "1px solid rgba(224, 191, 122, 0.2)",
+      backgroundColor: 'rgba(224, 191, 122, 0.08)',
+      border: '1px solid rgba(224, 191, 122, 0.2)',
     };
   }
 
-  if (state === "playing") {
+  if (state === 'playing') {
     return {
       color: colors.silver,
-      backgroundColor: "rgba(194, 201, 214, 0.08)",
-      border: "1px solid rgba(194, 201, 214, 0.18)",
+      backgroundColor: 'rgba(194, 201, 214, 0.08)',
+      border: '1px solid rgba(194, 201, 214, 0.18)',
     };
   }
 
   return {
     color: colors.steel,
-    backgroundColor: "rgba(138, 145, 156, 0.08)",
-    border: "1px solid rgba(138, 145, 156, 0.18)",
+    backgroundColor: 'rgba(138, 145, 156, 0.08)',
+    border: '1px solid rgba(138, 145, 156, 0.18)',
   };
 };
 
@@ -170,42 +170,42 @@ const getPlayerAccent = (winnerId, playerId, index) => {
 const getResultTone = (result) => {
   if (!result) {
     return {
-      label: i18n.t("Pending"),
-      background: "rgba(138, 145, 156, 0.14)",
+      label: i18n.t('Pending'),
+      background: 'rgba(138, 145, 156, 0.14)',
       color: colors.steel,
-      borderColor: "rgba(138, 145, 156, 0.3)",
+      borderColor: 'rgba(138, 145, 156, 0.3)',
     };
   }
 
-  if (result === "won") {
+  if (result === 'won') {
     return {
-      label: i18n.t("Won"),
-      background: "rgba(224, 191, 122, 0.18)",
+      label: i18n.t('Won'),
+      background: 'rgba(224, 191, 122, 0.18)',
       color: colors.gold,
-      borderColor: "rgba(224, 191, 122, 0.35)",
+      borderColor: 'rgba(224, 191, 122, 0.35)',
     };
   }
 
-  if (result === "lost") {
+  if (result === 'lost') {
     return {
-      label: i18n.t("Lost"),
-      background: "rgba(196, 138, 87, 0.18)",
+      label: i18n.t('Lost'),
+      background: 'rgba(196, 138, 87, 0.18)',
       color: colors.bronze,
-      borderColor: "rgba(196, 138, 87, 0.35)",
+      borderColor: 'rgba(196, 138, 87, 0.35)',
     };
   }
 
   return {
-    label: i18n.t("Draw"),
-    background: "rgba(162, 170, 179, 0.16)",
+    label: i18n.t('Draw'),
+    background: 'rgba(162, 170, 179, 0.16)',
     color: colors.platinum,
-    borderColor: "rgba(162, 170, 179, 0.28)",
+    borderColor: 'rgba(162, 170, 179, 0.28)',
   };
 };
 
 function PlayerCard({ player, winnerId, index }) {
   const accent = getPlayerAccent(winnerId, player.id, index);
-  const avatarUrl = player.avatar_url || "/assets/images/logo.svg";
+  const avatarUrl = player.avatar_url || '/assets/images/logo.svg';
   const metaItems = [];
 
   if (player.rank) {
@@ -217,7 +217,7 @@ function PlayerCard({ player, winnerId, index }) {
   }
 
   if (player.points || player.points === 0) {
-    metaItems.push(i18n.t("%{count} pts", { count: player.points }));
+    metaItems.push(i18n.t('%{count} pts', { count: player.points }));
   }
 
   return (
@@ -233,48 +233,48 @@ function PlayerCard({ player, winnerId, index }) {
         <div className="d-flex align-items-center justify-content-between mb-3">
           <span
             className="text-uppercase small font-weight-bold"
-            style={{ color: accent, letterSpacing: "0.12em" }}
+            style={{ color: accent, letterSpacing: '0.12em' }}
           >
-            {winnerId === player.id ? i18n.t("Leading") : i18n.t("Contender")}
+            {winnerId === player.id ? i18n.t('Leading') : i18n.t('Contender')}
           </span>
           <span
             className="px-2 py-1 cb-rounded small font-weight-bold"
             style={{
               border: `1px solid ${accent}`,
               color: accent,
-              backgroundColor: "rgba(255, 255, 255, 0.02)",
+              backgroundColor: 'rgba(255, 255, 255, 0.02)',
             }}
           >
-            {i18n.t("%{count} wins", { count: player.wins })}
+            {i18n.t('%{count} wins', { count: player.wins })}
           </span>
         </div>
         <div className="d-flex align-items-center">
           <div
             className="mr-4 d-flex align-items-center justify-content-center cb-rounded flex-shrink-0"
             style={{
-              width: "92px",
-              height: "92px",
+              width: '92px',
+              height: '92px',
               background:
-                "linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015))",
+                'linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015))',
               border: `1px solid rgba(255, 255, 255, 0.06)`,
-              boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.04)",
+              boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.04)',
             }}
           >
             <img
               src={avatarUrl}
               alt={player.name}
               className="cb-rounded"
-              style={{ width: "72px", height: "72px", objectFit: "cover" }}
+              style={{ width: '72px', height: '72px', objectFit: 'cover' }}
             />
           </div>
           <div className="min-w-0 flex-grow-1">
             <div
               className="mb-3"
               style={{
-                fontSize: "2rem",
+                fontSize: '2rem',
                 lineHeight: 1.1,
                 fontWeight: 600,
-                letterSpacing: "-0.03em",
+                letterSpacing: '-0.03em',
               }}
             >
               <HeadToHeadUserLink
@@ -287,11 +287,11 @@ function PlayerCard({ player, winnerId, index }) {
               <span
                 className="d-inline-flex align-items-center justify-content-center mr-3 mb-2 cb-rounded"
                 style={{
-                  width: "34px",
-                  height: "34px",
+                  width: '34px',
+                  height: '34px',
                   color: colors.silver,
-                  backgroundColor: "rgba(194, 201, 214, 0.08)",
-                  border: "1px solid rgba(194, 201, 214, 0.15)",
+                  backgroundColor: 'rgba(194, 201, 214, 0.08)',
+                  border: '1px solid rgba(194, 201, 214, 0.15)',
                 }}
               >
                 <LanguageIcon lang={player.lang} color={colors.silver} />
@@ -302,9 +302,9 @@ function PlayerCard({ player, winnerId, index }) {
                   className="mr-2 mb-2 px-3 py-2 cb-rounded"
                   style={{
                     color: colors.platinum,
-                    backgroundColor: "rgba(164, 170, 179, 0.08)",
-                    border: "1px solid rgba(164, 170, 179, 0.12)",
-                    fontSize: "1rem",
+                    backgroundColor: 'rgba(164, 170, 179, 0.08)',
+                    border: '1px solid rgba(164, 170, 179, 0.12)',
+                    fontSize: '1rem',
                   }}
                 >
                   {item}
@@ -340,16 +340,16 @@ function MatchRow({ game, players }) {
       style={{
         background: `linear-gradient(140deg, ${colors.panel} 0%, ${colors.ink} 100%)`,
         border: `1px solid ${colors.line}`,
-        boxShadow: "0 14px 30px rgba(0, 0, 0, 0.18)",
+        boxShadow: '0 14px 30px rgba(0, 0, 0, 0.18)',
       }}
     >
       <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3">
         <div className="mb-2 mb-lg-0">
           <div
             className="small text-uppercase font-weight-bold"
-            style={{ color: colors.steel, letterSpacing: "0.12em" }}
+            style={{ color: colors.steel, letterSpacing: '0.12em' }}
           >
-            {i18n.t("Game")} #{game.id}
+            {i18n.t('Game')} #{game.id}
           </div>
           <div className="h5 mb-0 text-white">
             {game.mode} • {game.level} • {game.task_type}
@@ -360,9 +360,9 @@ function MatchRow({ game, players }) {
           <a
             href={`/games/${game.id}`}
             className="small text-uppercase font-weight-bold text-decoration-none"
-            style={{ color: colors.gold, letterSpacing: "0.12em" }}
+            style={{ color: colors.gold, letterSpacing: '0.12em' }}
           >
-            {i18n.t("Open game")}
+            {i18n.t('Open game')}
           </a>
         </div>
       </div>
@@ -387,7 +387,7 @@ function MatchRow({ game, players }) {
             className="px-3 py-2 cb-rounded text-uppercase small font-weight-bold"
             style={{
               ...gameStateTone,
-              letterSpacing: "0.08em",
+              letterSpacing: '0.08em',
             }}
           >
             {formatGameState(game.state)}
@@ -414,14 +414,14 @@ function MatchRow({ game, players }) {
         style={{ borderTop: `1px solid ${colors.line}` }}
       >
         <span className="small" style={{ color: colors.platinum }}>
-          {i18n.t("Duration: %{duration}", {
+          {i18n.t('Duration: %{duration}', {
             duration: formatDuration(game.duration_sec || game.timeout_seconds),
           })}
         </span>
         <span className="small" style={{ color: colors.iron }}>
           {game.finishes_at
-            ? i18n.t("Finished %{date}", { date: formatDate(game.finishes_at) })
-            : i18n.t("Still in progress")}
+            ? i18n.t('Finished %{date}', { date: formatDate(game.finishes_at) })
+            : i18n.t('Still in progress')}
         </span>
       </div>
     </div>
@@ -439,7 +439,7 @@ function SummaryStat({ label, value, tone }) {
     >
       <div
         className="small text-uppercase font-weight-bold"
-        style={{ color: tone, letterSpacing: "0.1em" }}
+        style={{ color: tone, letterSpacing: '0.1em' }}
       >
         {label}
       </div>
@@ -450,7 +450,7 @@ function SummaryStat({ label, value, tone }) {
 
 function HeadToHeadPage() {
   const headToHead = useMemo(
-    () => (Gon && Gon.getAsset && Gon.getAsset("head_to_head")) || null,
+    () => (Gon && Gon.getAsset && Gon.getAsset('head_to_head')) || null,
     [],
   );
 
@@ -465,7 +465,7 @@ function HeadToHeadPage() {
       className="cb-bg-panel cb-text min-vh-100 py-5"
       style={{
         background:
-          "radial-gradient(circle at top, rgba(224, 191, 122, 0.08), transparent 30%), linear-gradient(180deg, #0b0e13 0%, #121720 40%, #0d1118 100%)",
+          'radial-gradient(circle at top, rgba(224, 191, 122, 0.08), transparent 30%), linear-gradient(180deg, #0b0e13 0%, #121720 40%, #0d1118 100%)',
       }}
     >
       <div className="container">
@@ -474,23 +474,23 @@ function HeadToHeadPage() {
           style={{
             background: `linear-gradient(135deg, ${colors.ink} 0%, ${colors.panel} 55%, ${colors.panelAlt} 100%)`,
             border: `1px solid ${colors.line}`,
-            boxShadow: "0 24px 60px rgba(0, 0, 0, 0.28)",
+            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.28)',
           }}
         >
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end mb-4">
             <div className="mb-3 mb-lg-0">
               <div
                 className="small text-uppercase font-weight-bold mb-2"
-                style={{ color: colors.gold, letterSpacing: "0.18em" }}
+                style={{ color: colors.gold, letterSpacing: '0.18em' }}
               >
-                {i18n.t("H2H Arena")}
+                {i18n.t('H2H Arena')}
               </div>
-              <h1 className="mb-2" style={{ color: "#fff" }}>
-                {players.map((player) => player.name).join(" vs ")}
+              <h1 className="mb-2" style={{ color: '#fff' }}>
+                {players.map((player) => player.name).join(' vs ')}
               </h1>
               <div style={{ color: colors.platinum }}>
                 {i18n.t(
-                  "Direct duel history with profile links, live status, and every shared game.",
+                  'Direct duel history with profile links, live status, and every shared game.',
                 )}
               </div>
             </div>
@@ -499,20 +499,20 @@ function HeadToHeadPage() {
           <div className="row mb-4">
             <div className="col-12 col-md-4 mb-3">
               <SummaryStat
-                label={i18n.t("Total games")}
+                label={i18n.t('Total games')}
                 value={headToHead.total_games}
                 tone={colors.gold}
               />
             </div>
             <div className="col-12 col-md-4 mb-3">
               <SummaryStat
-                label={i18n.t("Completed")}
+                label={i18n.t('Completed')}
                 value={headToHead.completed_games}
                 tone={colors.silver}
               />
             </div>
             <div className="col-12 col-md-4 mb-3">
-              <SummaryStat label={i18n.t("Draws")} value={headToHead.draws} tone={colors.bronze} />
+              <SummaryStat label={i18n.t('Draws')} value={headToHead.draws} tone={colors.bronze} />
             </div>
           </div>
 
@@ -527,10 +527,10 @@ function HeadToHeadPage() {
 
         <div className="mb-3 d-flex justify-content-between align-items-center">
           <h2 className="mb-0" style={{ color: colors.silver }}>
-            {i18n.t("All games")}
+            {i18n.t('All games')}
           </h2>
           <div className="small" style={{ color: colors.steel }}>
-            {i18n.t("%{count} records", { count: headToHead.games.length })}
+            {i18n.t('%{count} records', { count: headToHead.games.length })}
           </div>
         </div>
 
@@ -542,7 +542,7 @@ function HeadToHeadPage() {
               border: `1px solid ${colors.line}`,
             }}
           >
-            {i18n.t("No games found for this pair.")}
+            {i18n.t('No games found for this pair.')}
           </div>
         ) : (
           headToHead.games.map((game) => <MatchRow key={game.id} game={game} players={players} />)
