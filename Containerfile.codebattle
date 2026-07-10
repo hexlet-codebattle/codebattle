@@ -3,11 +3,11 @@ ENV MIX_ENV=prod
 
 WORKDIR /tmp/codebattle
 
-# Install pnpm globally
-RUN npm install --global pnpm
+# Install the same pnpm version declared in apps/codebattle/package.json.
+RUN npm install --global pnpm@11.11.0
 
-COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml ./
-RUN pnpm install
+COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml apps/codebattle/pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY apps/codebattle/postcss.config.js apps/codebattle/vite.config.js ./
 COPY apps/codebattle/assets ./assets
