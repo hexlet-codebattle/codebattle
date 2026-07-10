@@ -359,8 +359,6 @@ defmodule CodebattleWeb.GameChannelTest do
     } do
       FunWithFlags.enable(:editor_summary_disabled)
 
-      on_exit(fn -> FunWithFlags.disable(:editor_summary_disabled) end)
-
       {:ok, game} =
         Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 

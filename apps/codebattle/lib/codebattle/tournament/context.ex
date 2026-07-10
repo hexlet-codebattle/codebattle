@@ -732,7 +732,10 @@ defmodule Codebattle.Tournament.Context do
       played_pair_ids: played_pair_ids
     }
 
-    if tournament.break_state == "on" do
+    # Ladder breaks are ephemeral (never persisted) and use their own timer rather than the
+    # generic break machinery, so a ladder always restores as an active round — the break is
+    # dropped and the periodic matchmaking tick is re-armed (R1).
+    if tournament.break_state == "on" and tournament.type != "ladder" do
       restore_active_break(tournament, params)
     else
       restore_active_round(tournament, current_round_blueprints, params)

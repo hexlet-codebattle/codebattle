@@ -66,13 +66,31 @@ defmodule Codebattle.Tournament.LadderTest do
       assert b.is_bot
     end
 
-    test "never rematches humans; a player who has faced everyone is bot-filled" do
+    test "prefers a fresh opponent, but rematches humans rather than bot-filling both" do
+      # Two players who have already faced each other are the only ones available. Instead of
+      # giving each a bot, they are re-paired with each other (rematch preferred over a bot).
+      tournament =
+        build_live_tournament(%{
+          players_count: 2,
+          played_pair_ids: MapSet.new([[1, 2]])
+        })
+
+      put_players(tournament, 1..2)
+
+      {_tournament, pairs} = Ladder.build_round_pairs(tournament)
+
+      assert [[a, b]] = pairs
+      refute a.is_bot == true or b.is_bot == true
+      assert Enum.sort([a.id, b.id]) == [1, 2]
+    end
+
+    test "bot-fills only the genuinely-odd player when everyone has faced everyone" do
       insert(:user, is_bot: true)
 
       tournament =
         build_live_tournament(%{
           players_count: 3,
-          # players 2 and 3 have already played each other and player 1 has played both
+          # every pair among players 1..3 has already been played
           played_pair_ids: MapSet.new([[1, 2], [1, 3], [2, 3]])
         })
 
@@ -80,16 +98,18 @@ defmodule Codebattle.Tournament.LadderTest do
 
       {_tournament, pairs} = Ladder.build_round_pairs(tournament)
 
-      # No returned human-human pair may repeat a played pair.
-      human_keys =
-        pairs
-        |> Enum.reject(fn [a, b] -> a.is_bot == true or b.is_bot == true end)
-        |> Enum.map(fn [a, b] -> Enum.sort([a.id, b.id]) end)
+      # One human rematch pair + one bot pair; all three humans placed, exactly one bot used.
+      assert length(pairs) == 2
+      assert Enum.count(pairs, fn [_a, b] -> b.is_bot == true end) == 1
 
-      assert Enum.all?(human_keys, &(&1 not in [[1, 2], [1, 3], [2, 3]]))
-      # everyone got a game (bot-filled), nobody stranded
-      assert length(pairs) == 3
-      assert Enum.count(pairs, fn [_a, b] -> b.is_bot == true end) == 3
+      human_ids =
+        pairs
+        |> Enum.flat_map(fn [a, b] -> [a, b] end)
+        |> Enum.reject(& &1.is_bot)
+        |> Enum.map(& &1.id)
+        |> Enum.sort()
+
+      assert human_ids == [1, 2, 3]
     end
 
     test "records only human pairs in played_pair_ids" do
@@ -195,20 +215,57 @@ defmodule Codebattle.Tournament.LadderTest do
 
       Tournament.Tasks.put_task(tournament, task)
 
-      state = %{tournament: tournament, frozen: false, break_timer_expired: false}
+      state = %{
+        tournament: tournament,
+        frozen: false,
+        break_timer_expired: false,
+        next_matchmaking_tick_at: nil,
+        matchmaking_timer_ref: nil
+      }
 
       assert {:noreply, %{tournament: %{state: "active"}}} =
-               Server.handle_info(:matchmaking_tick, state)
+               Server.handle_info({:matchmaking_tick, tournament.current_round_position}, state)
 
-      assert_receive :matchmaking_tick, 2_500
+      # A fresh tick is re-armed for the current round.
+      assert_receive {:matchmaking_tick, _round_position}, 2_500
+    end
+
+    test "drops a stale tick tagged with an already-advanced round" do
+      tournament =
+        build_live_tournament(%{
+          players_count: 0,
+          rounds_limit: 3,
+          round_timeout_seconds: 60,
+          timeout_mode: "per_task",
+          current_round_position: 2
+        })
+
+      state = %{
+        tournament: tournament,
+        frozen: false,
+        break_timer_expired: false,
+        next_matchmaking_tick_at: nil,
+        matchmaking_timer_ref: nil
+      }
+
+      # Tick was armed under round 0 but the round has since advanced to 2 — drop it, no re-arm.
+      assert {:noreply, ^state} = Server.handle_info({:matchmaking_tick, 0}, state)
+      refute_receive {:matchmaking_tick, _}, 200
     end
 
     test "does nothing for a non-ladder tournament" do
       tournament = build_live_tournament(%{type: "swiss", module: Codebattle.Tournament.Swiss})
-      state = %{tournament: tournament, frozen: false, break_timer_expired: false}
 
-      assert {:noreply, ^state} = Server.handle_info(:matchmaking_tick, state)
-      refute_receive :matchmaking_tick, 200
+      state = %{
+        tournament: tournament,
+        frozen: false,
+        break_timer_expired: false,
+        next_matchmaking_tick_at: nil,
+        matchmaking_timer_ref: nil
+      }
+
+      assert {:noreply, ^state} = Server.handle_info({:matchmaking_tick, tournament.current_round_position}, state)
+      refute_receive {:matchmaking_tick, _}, 200
     end
   end
 

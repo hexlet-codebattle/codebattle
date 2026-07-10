@@ -30,6 +30,7 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
         "type" => "ladder",
         "state" => "waiting_participants",
         "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
         "rounds_limit" => "2",
         "players_limit" => 4
       })
@@ -83,6 +84,106 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     # sync_players restores places/scores on the player structs from the leaderboard.
     assert tournament |> get_players() |> Enum.reject(& &1.is_bot) |> Enum.map(& &1.place) |> Enum.sort() ==
              [1, 2, 3, 4]
+  end
+
+  test "draining a wave early inserts a break before the next tick, then opens the next round" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-break", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(4, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder break",
+        "description" => "ladder break",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-break",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        # Next scheduled tick is far away (300s), so the early empty-pool drain triggers a break.
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 2,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 0
+
+    # Finish both round-0 games: the pool drains while the next tick is 300s away, so instead
+    # of an immediate tick the tournament goes on break and does NOT open round 1 yet.
+    finish_all_playing_matches(tournament)
+    Process.sleep(400)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "on"
+    assert tournament.current_round_position == 0
+    assert get_matches(tournament, "playing") == []
+
+    # Once the break elapses, the tick opens round 1 and clears the break.
+    Process.sleep(2_000)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "off"
+    assert tournament.current_round_position == 1
+    assert length(get_matches(tournament, "playing")) == 2
+  end
+
+  test "the UI start_round event ends the break early and opens the next round" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-force", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(4, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder force",
+        "description" => "ladder force",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-force",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        # A long break so the test would never pass by waiting it out — only the forced tick advances.
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 600,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    finish_all_playing_matches(tournament)
+    Process.sleep(400)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "on"
+    assert tournament.current_round_position == 0
+
+    # The admin "Start round" button fires :start_round_force — it should skip the break.
+    Server.handle_event(tournament.id, :start_round_force, %{})
+    Process.sleep(200)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "off"
+    assert tournament.current_round_position == 1
+    assert length(get_matches(tournament, "playing")) == 2
   end
 
   test "ladder tick timeout comes from task base_score while game timeout comes from time_to_solve_sec" do

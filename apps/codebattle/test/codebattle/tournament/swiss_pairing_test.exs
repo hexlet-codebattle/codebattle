@@ -117,37 +117,32 @@ defmodule Codebattle.Tournament.SwissPairingTest do
         players: players_with_scores(Enum.map(1..players_count, &{&1, 0}))
       })
 
-    {elapsed_us, tournament} =
-      :timer.tc(fn ->
-        Enum.reduce(0..(rounds - 1), tournament, fn round_position, tournament ->
-          tournament = %{tournament | current_round_position: round_position}
-          {tournament, pairs} = Swiss.build_round_pairs(tournament)
+    tournament =
+      Enum.reduce(0..(rounds - 1), tournament, fn round_position, tournament ->
+        tournament = %{tournament | current_round_position: round_position}
+        {tournament, pairs} = Swiss.build_round_pairs(tournament)
 
-          assert length(pairs) == div(players_count, 2)
-          assert players_count == pairs |> List.flatten() |> Enum.map(& &1.id) |> Enum.uniq() |> length()
+        assert length(pairs) == div(players_count, 2)
+        assert players_count == pairs |> List.flatten() |> Enum.map(& &1.id) |> Enum.uniq() |> length()
 
-          updated_players =
-            pairs
-            |> Enum.with_index()
-            |> Enum.reduce(tournament.players, fn {[p1, p2], pair_index}, acc ->
-              winner_id =
-                if rem(round_position + pair_index, 2) == 0 do
-                  p1.id
-                else
-                  p2.id
-                end
+        updated_players =
+          pairs
+          |> Enum.with_index()
+          |> Enum.reduce(tournament.players, fn {[p1, p2], pair_index}, acc ->
+            winner_id =
+              if rem(round_position + pair_index, 2) == 0 do
+                p1.id
+              else
+                p2.id
+              end
 
-              Map.update!(acc, winner_id, fn player ->
-                %{player | score: player.score + 1}
-              end)
+            Map.update!(acc, winner_id, fn player ->
+              %{player | score: player.score + 1}
             end)
+          end)
 
-          %{tournament | players: updated_players}
-        end)
+        %{tournament | players: updated_players}
       end)
-
-    elapsed_ms = System.convert_time_unit(elapsed_us, :microsecond, :millisecond)
-    :erlang.display({:swiss_pairing_stress_test, players_count, :players, rounds, :rounds, elapsed_ms, :ms})
 
     assert map_size(tournament.players) == players_count
     assert MapSet.size(MapSet.new(tournament.played_pair_ids)) > players_count

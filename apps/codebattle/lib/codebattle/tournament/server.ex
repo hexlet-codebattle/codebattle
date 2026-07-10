@@ -11,6 +11,8 @@ defmodule Codebattle.Tournament.Server do
   @type tournament_id :: pos_integer()
   @tournament_info_table :tournament_info_cache
   @freeze_retry_ms 1_000
+  # Ladder: don't insert a pre-tick break if the next scheduled tick is already imminent.
+  @ladder_min_break_gap_ms 3_000
   @tournament_info_drop_fields [
     :__struct__,
     :__meta__,
@@ -194,7 +196,14 @@ defmodule Codebattle.Tournament.Server do
       Process.send_after(self(), :start_grade_tournament, max(time_diff_ms, 0))
     end
 
-    {:ok, %{tournament: tournament, frozen: false, break_timer_expired: false}}
+    {:ok,
+     %{
+       tournament: tournament,
+       frozen: false,
+       break_timer_expired: false,
+       next_matchmaking_tick_at: nil,
+       matchmaking_timer_ref: nil
+     }}
   end
 
   def handle_cast({:fire_event, event_type, params}, state) do
@@ -312,6 +321,31 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  # Ladder: the UI "Start round" button (tournament:start_round → :start_round_force) runs a
+  # matchmaking tick now instead of the generic round-start machinery ladder doesn't use.
+  # Clears any active break, opens the next round immediately, and re-arms the periodic tick.
+  def handle_call(
+        {:fire_event, :start_round_force, _params},
+        _from,
+        %{tournament: %{type: "ladder"} = tournament} = state
+      ) do
+    cond do
+      state.frozen ->
+        {:reply, {:error, :handoff_in_progress}, state}
+
+      finished?(tournament) ->
+        {:reply, tournament, state}
+
+      true ->
+        cleared = Map.merge(tournament, %{break_state: "off", round_state: "active"})
+        new_tournament = cleared.module.matchmaking_tick(cleared)
+        update_tournament_info_cache(new_tournament)
+        broadcast_tournament_update(new_tournament)
+        new_state = arm_matchmaking_tick(%{state | tournament: new_tournament})
+        {:reply, new_tournament, new_state}
+    end
+  end
+
   def handle_call({:fire_event, event_type, params}, _from, %{tournament: tournament} = state) do
     if state.frozen do
       {:reply, {:error, :handoff_in_progress}, state}
@@ -327,12 +361,12 @@ defmodule Codebattle.Tournament.Server do
 
       update_tournament_info_cache(new_tournament)
 
-      maybe_arm_matchmaking_tick(event_type, new_tournament)
+      new_state = maybe_arm_matchmaking_tick(event_type, %{state | tournament: new_tournament})
 
       # TODO: rethink broadcasting during applying event, maybe put inside tournament module
       broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
-      {:reply, new_tournament, Map.put(state, :tournament, new_tournament)}
+      {:reply, new_tournament, new_state}
     end
   end
 
@@ -394,16 +428,40 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def handle_info(:matchmaking_tick, %{tournament: tournament} = state) do
+  def handle_info({:matchmaking_tick, round_position}, %{tournament: tournament} = state) do
     cond do
       state.frozen ->
-        defer_message(:matchmaking_tick, "matchmaking_tick", state)
+        defer_message({:matchmaking_tick, round_position}, "matchmaking_tick", state)
 
-      tournament.type == "ladder" and tournament.state == "active" ->
-        run_matchmaking_tick(state)
+      tournament.type != "ladder" or tournament.state != "active" ->
+        {:noreply, state}
+
+      tournament.current_round_position != round_position ->
+        # Stale: a drain, break-over, or UI-forced tick already opened this round. Drop it —
+        # that path re-armed a fresh tick for the current round, so the cadence is intact.
+        {:noreply, state}
 
       true ->
-        {:noreply, state}
+        run_matchmaking_tick(state)
+    end
+  end
+
+  def handle_info({:ladder_break_over, round_position}, %{tournament: tournament} = state) do
+    if state.frozen do
+      defer_message({:ladder_break_over, round_position}, "ladder_break_over", state)
+    else
+      if tournament.current_round_position == round_position and
+           in_break?(tournament) and
+           tournament.state == "active" and
+           not finished?(tournament) do
+        cleared = Map.merge(tournament, %{break_state: "off", round_state: "active"})
+        new_tournament = cleared.module.matchmaking_tick(cleared)
+        update_tournament_info_cache(new_tournament)
+        broadcast_tournament_update(new_tournament)
+        {:noreply, arm_matchmaking_tick(%{state | tournament: new_tournament})}
+      else
+        {:noreply, %{state | tournament: tournament}}
+      end
     end
   end
 
@@ -661,29 +719,50 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, state}
   end
 
-  # Ladder only: arm the periodic matchmaking tick when the tournament (re)activates,
+  # Ladder only: (re)arm the periodic matchmaking tick when the tournament (re)activates,
   # including after a crash/restart restore (R1) — the generic restore path is a no-op
-  # under per_task, so without this the tick would be lost. Guarded by state so it fires
-  # once per activation (not on every event).
-  defp maybe_arm_matchmaking_tick(event_type, %{type: "ladder", state: "active"} = tournament)
+  # under per_task, so without this the tick would be lost. Guarded by event type so it
+  # only arms on (re)activation and on a UI-forced tick, not on every event (e.g. :join).
+  defp maybe_arm_matchmaking_tick(event_type, state)
        when event_type in [:start, :restart, :retry, :restore_active_round, :restore_active_break] do
-    schedule_matchmaking_tick(tournament)
+    arm_matchmaking_tick(state)
   end
 
-  defp maybe_arm_matchmaking_tick(_event_type, _tournament), do: :ok
+  defp maybe_arm_matchmaking_tick(_event_type, state), do: state
 
   defp run_matchmaking_tick(%{tournament: tournament} = state) do
     new_tournament = tournament.module.matchmaking_tick(tournament)
     update_tournament_info_cache(new_tournament)
-    # Re-arm the next tick only while the tournament is still running.
-    if new_tournament.state == "active", do: schedule_matchmaking_tick(new_tournament)
-    {:noreply, %{state | tournament: new_tournament}}
+    # Re-arm the next tick (for the possibly-advanced round) only while still running.
+    {:noreply, arm_matchmaking_tick(%{state | tournament: new_tournament})}
   end
 
-  defp schedule_matchmaking_tick(tournament) do
+  # Arm the periodic tick, cancelling any previous one so exactly one is ever pending. The
+  # message carries the round position it was armed under: a tick that fires after a drain,
+  # break-over, or UI-forced tick has already advanced the round is stale and dropped, so a
+  # single round can never be ticked twice. Records the monotonic fire time so the ladder
+  # wave-drain logic can tell how far away the next scheduled tick is. No-op unless the
+  # tournament is an active ladder.
+  defp arm_matchmaking_tick(%{tournament: %{type: "ladder", state: "active"} = tournament} = state) do
+    if state.matchmaking_timer_ref, do: Process.cancel_timer(state.matchmaking_timer_ref)
+
     interval = max(tournament.module.round_timeout_seconds(tournament) || 60, 1)
-    Process.send_after(self(), :matchmaking_tick, to_timeout(second: interval))
+
+    ref =
+      Process.send_after(
+        self(),
+        {:matchmaking_tick, tournament.current_round_position},
+        to_timeout(second: interval)
+      )
+
+    %{
+      state
+      | matchmaking_timer_ref: ref,
+        next_matchmaking_tick_at: System.monotonic_time(:millisecond) + interval * 1000
+    }
   end
+
+  defp arm_matchmaking_tick(state), do: state
 
   defp should_schedule_round_finish?(%{round_state: "round_finishing"}), do: false
 
@@ -752,15 +831,17 @@ defmodule Codebattle.Tournament.Server do
 
   # Ladder games from earlier ticks finish while a later tick is current, so the
   # round_position guard used by other types would silently drop them. Ladder has no
-  # break cycle and never auto-finishes a round, so just record the result (the strategy's
-  # maybe_create_rematch handles the empty-pool early tick and finish decision).
+  # break cycle and never auto-finishes a round, so just record the result; the server
+  # then decides what to do once the playing pool has drained (see maybe_drain_ladder_wave).
   defp maybe_finish_live_match(state, %{type: "ladder"} = tournament, match, payload) do
     if finished?(tournament) do
       {:noreply, %{state | tournament: tournament}}
     else
+      # finish_match records the result and broadcasts the wait overlay (maybe_create_rematch);
+      # the server drives what happens once the playing pool has drained.
       new_tournament = tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
       update_tournament_info_cache(new_tournament)
-      {:noreply, %{state | tournament: new_tournament}}
+      maybe_drain_ladder_wave(%{state | tournament: new_tournament})
     end
   end
 
@@ -783,5 +864,56 @@ defmodule Codebattle.Tournament.Server do
     else
       {:noreply, %{state | tournament: tournament}}
     end
+  end
+
+  # A wave has games still playing — nothing to do; wait for them to finish.
+  # Otherwise the pool has drained: insert a break before the next tick when the next
+  # scheduled tick is not imminent and the tournament defines a break, else tick now.
+  defp maybe_drain_ladder_wave(%{tournament: tournament} = state) do
+    cond do
+      get_matches(tournament, "playing") != [] ->
+        {:noreply, state}
+
+      not tournament.module.ticks_remaining?(tournament) ->
+        # Final drain — let the tick decide whether to finish the tournament.
+        run_ladder_tick_now(state)
+
+      break_before_next_tick?(state) ->
+        start_ladder_break(state)
+
+      true ->
+        run_ladder_tick_now(state)
+    end
+  end
+
+  defp break_before_next_tick?(%{tournament: tournament, next_matchmaking_tick_at: next_at}) do
+    break_seconds = tournament.break_duration_seconds || 0
+    gap_ms = if next_at, do: next_at - System.monotonic_time(:millisecond), else: 0
+
+    break_seconds > 0 and gap_ms > @ladder_min_break_gap_ms
+  end
+
+  defp run_ladder_tick_now(%{tournament: tournament} = state) do
+    new_tournament = tournament.module.matchmaking_tick(tournament)
+    update_tournament_info_cache(new_tournament)
+    # Re-arm the periodic tick for the (advanced) round, cancelling the previous round's
+    # pending tick so a stale timer can't tick this round a second time.
+    {:noreply, arm_matchmaking_tick(%{state | tournament: new_tournament})}
+  end
+
+  defp start_ladder_break(%{tournament: tournament} = state) do
+    break_seconds = tournament.break_duration_seconds
+
+    Process.send_after(
+      self(),
+      {:ladder_break_over, tournament.current_round_position},
+      to_timeout(second: break_seconds)
+    )
+
+    new_tournament = Map.merge(tournament, %{break_state: "on", round_state: "break"})
+    update_tournament_info_cache(new_tournament)
+    broadcast_tournament_update(new_tournament)
+
+    {:noreply, %{state | tournament: new_tournament}}
   end
 end

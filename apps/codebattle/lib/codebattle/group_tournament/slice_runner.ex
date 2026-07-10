@@ -76,18 +76,22 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     indices = list_slice_indices(group_tournament.id)
     max_concurrency = Keyword.get(opts, :max_concurrency, configured_max_concurrency())
 
-    indices
-    |> Task.async_stream(
-      fn slice_index -> run_slice_with_results(group_tournament, slice_index, opts) end,
-      max_concurrency: max_concurrency,
-      timeout: @slice_run_task_timeout_ms,
-      on_timeout: :kill_task,
-      ordered: false
-    )
-    |> Enum.map(fn
-      {:ok, result} -> result
-      {:exit, reason} -> {:unknown, {:error, {:exit, reason}}, []}
-    end)
+    if max_concurrency <= 1 do
+      Enum.map(indices, &run_slice_with_results(group_tournament, &1, opts))
+    else
+      indices
+      |> Task.async_stream(
+        fn slice_index -> run_slice_with_results(group_tournament, slice_index, opts) end,
+        max_concurrency: max_concurrency,
+        timeout: @slice_run_task_timeout_ms,
+        on_timeout: :kill_task,
+        ordered: false
+      )
+      |> Enum.map(fn
+        {:ok, result} -> result
+        {:exit, reason} -> {:unknown, {:error, {:exit, reason}}, []}
+      end)
+    end
   end
 
   @doc """

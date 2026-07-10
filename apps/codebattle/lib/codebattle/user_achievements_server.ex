@@ -52,7 +52,7 @@ defmodule Codebattle.UserAchievementsServer do
   end
 
   def handle_info(:flush, %{queue: queue} = state) do
-    if FunWithFlags.enabled?(:skip_achievements_server) do
+    if disabled?() do
       {:noreply, %{state | queue: MapSet.new()}}
     else
       {to_process, rest} = queue |> MapSet.to_list() |> Enum.split(@batch_size)
@@ -66,7 +66,7 @@ defmodule Codebattle.UserAchievementsServer do
 
   @impl true
   def handle_call(:recalculate_all_users, _from, state) do
-    if FunWithFlags.enabled?(:skip_achievements_server) do
+    if disabled?() do
       {:reply, :ok, state}
     else
       result = Achievements.recalculate_all_users()
@@ -95,5 +95,10 @@ defmodule Codebattle.UserAchievementsServer do
 
   defp schedule_flush do
     Process.send_after(self(), :flush, @flush_interval)
+  end
+
+  defp disabled? do
+    Application.get_env(:codebattle, :user_achievements_server_enabled, true) == false or
+      FunWithFlags.enabled?(:skip_achievements_server)
   end
 end

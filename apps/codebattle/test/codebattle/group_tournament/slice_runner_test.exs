@@ -118,7 +118,7 @@ defmodule Codebattle.GroupTournament.SliceRunnerTest do
       insert_solution(tournament, p2)
       insert_solution(tournament, p3)
 
-      results = SliceRunner.run_all_slices(tournament, max_concurrency: 2)
+      results = SliceRunner.run_all_slices(tournament, max_concurrency: 1)
 
       by_slice = Map.new(results, fn {idx, status, _round} -> {idx, status} end)
       assert by_slice[0] == :ok

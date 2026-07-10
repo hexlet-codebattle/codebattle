@@ -116,10 +116,6 @@ defmodule CodebattleWeb.TournamentControllerTest do
   test "renders tournament page when redirect-to-latest-game is enabled and user has no latest game", %{conn: conn} do
     FunWithFlags.enable(:tournament_redirect_to_latest_game)
 
-    on_exit(fn ->
-      FunWithFlags.disable(:tournament_redirect_to_latest_game)
-    end)
-
     creator = insert(:user)
 
     {:ok, tournament} =

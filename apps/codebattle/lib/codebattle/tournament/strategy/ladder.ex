@@ -13,9 +13,10 @@ defmodule Codebattle.Tournament.Ladder do
     * `rounds_limit`         — total number of matching ticks (each player plays ≤ N games)
     * `round_timeout_seconds` — fixed game timeout for non-`per_task` modes, and fallback tick interval
 
-  Matching is score-sorted with no human rematches (`played_pair_ids`); any player left
-  unmatched on a tick (odd count, already faced everyone available, or churn) is paired
-  with the tournament bot. Ranking is recomputed on every tick from all finished games.
+  Matching is score-sorted and prefers fresh (non-rematch) opponents (`played_pair_ids`),
+  but falls back to a human rematch rather than a bot when a player's only available
+  opponents are ones they've already faced. A bot is used only for a genuinely-odd final
+  player. Ranking is recomputed on every tick from all finished games.
   """
   use Codebattle.Tournament.Base
 
@@ -34,8 +35,9 @@ defmodule Codebattle.Tournament.Ladder do
   def calculate_round_results(tournament), do: tournament
 
   # Ladder never auto-finishes a round on a match completion: matching is driven purely
-  # by the tick timer (and the empty-pool early tick in `maybe_create_rematch`). Returning
-  # false keeps the server out of the round-finish/break machinery entirely.
+  # by the tick timer (and the server's empty-pool drain in `maybe_drain_ladder_wave`, which
+  # may insert a break first). Returning false keeps the server out of the generic
+  # round-finish machinery entirely.
   @impl Tournament.Base
   def finish_round_after_match?(_tournament), do: false
 
@@ -78,11 +80,9 @@ defmodule Codebattle.Tournament.Ladder do
     pair_and_bot_fill(tournament, idle_pool(tournament))
   end
 
-  # No rematch game. Broadcast the wait overlay, then — if this finish emptied the playing
-  # pool — run an early tick so idle players are re-matched (or the tournament finishes)
-  # without waiting for the next scheduled tick. Runs in the server process, so creating
-  # games synchronously here is safe (same pattern as Swiss finishing a round on its last
-  # match). Scoring is NOT done here; the tick recomputes ranking.
+  # No rematch game. Broadcast the wait overlay so the players' game UIs unblock. Whether
+  # to run an early tick (or insert a break first) once the playing pool drains is decided
+  # by the server, which owns the tick timer — see `maybe_drain_ladder_wave/1`.
   @impl Tournament.Base
   def maybe_create_rematch(tournament, game_params) do
     Codebattle.PubSub.broadcast("tournament:game:wait", %{
@@ -90,20 +90,19 @@ defmodule Codebattle.Tournament.Ladder do
       type: wait_type(tournament)
     })
 
-    if get_matches(tournament, "playing") == [] do
-      matchmaking_tick(tournament)
-    else
-      tournament
-    end
+    tournament
   end
 
-  # Fired by the server every `round_timeout_seconds` (and on the empty-pool early tick).
-  # Recompute the live ranking, then either finish or match the idle pool.
+  # Fired by the server every `round_timeout_seconds` (and on the empty-pool early tick /
+  # post-break tick). Recompute the live ranking, then either finish or match the idle pool.
+  # A periodic tick that fires mid-break is a no-op beyond ranking: the break-over message
+  # is the authoritative trigger for the next round, so it must not create games early.
   @impl Tournament.Base
   def matchmaking_tick(tournament) do
     tournament = recompute_ranking(tournament)
 
     cond do
+      in_break?(tournament) -> tournament
       finish_tournament?(tournament) -> maybe_finish_tournament(tournament)
       ticks_remaining?(tournament) -> match_idle_pool(tournament)
       true -> tournament
@@ -153,14 +152,18 @@ defmodule Codebattle.Tournament.Ladder do
     |> Enum.sort_by(& &1.score, :desc)
   end
 
-  # Pair score-sorted players avoiding human rematches; bot-fill anyone left over. Only
-  # human–human pairs are recorded in played_pair_ids (bot rematches are allowed).
+  # Pair score-sorted players, preferring fresh (non-rematch) opponents. Anyone the
+  # no-rematch pass can't place is then paired with another leftover — a human rematch is
+  # preferred over a bot — so a bot is used only for a genuinely-odd final player. All
+  # human–human pairs (fresh and rematch) are recorded in played_pair_ids.
   defp pair_and_bot_fill(tournament, players) do
     played = MapSet.new(tournament.played_pair_ids)
-    {human_pairs, unmatched, played} = pair_no_rematch(players, [], [], played)
+    {fresh_pairs, unmatched, played} = pair_no_rematch(players, [], [], played)
+    {rematch_pairs, leftovers, played} = pair_leftovers(unmatched, [], played)
+    human_pairs = fresh_pairs ++ rematch_pairs
 
     {tournament, pairs} =
-      case unmatched do
+      case leftovers do
         [] ->
           {tournament, human_pairs}
 
@@ -170,6 +173,18 @@ defmodule Codebattle.Tournament.Ladder do
       end
 
     {update_struct(tournament, %{played_pair_ids: played}), pairs}
+  end
+
+  # Fallback for players the no-rematch pass left unmatched (their only available opponents
+  # were ones they'd already faced): pair them off with each other rather than a bot. Only a
+  # genuinely-odd final player remains, to be bot-filled by the caller.
+  defp pair_leftovers([a, b | rest], pairs, played) do
+    key = Enum.sort([a.id, b.id])
+    pair_leftovers(rest, [[a, b] | pairs], MapSet.put(played, key))
+  end
+
+  defp pair_leftovers(leftovers, pairs, played) do
+    {Enum.reverse(pairs), leftovers, played}
   end
 
   defp pair_no_rematch([], pairs, leftovers, played) do
@@ -195,7 +210,8 @@ defmodule Codebattle.Tournament.Ladder do
     end
   end
 
-  defp ticks_remaining?(tournament) do
+  # Public: the server consults this on wave-drain to decide break-vs-finish.
+  def ticks_remaining?(tournament) do
     tournament.current_round_position < tournament.rounds_limit - 1
   end
 

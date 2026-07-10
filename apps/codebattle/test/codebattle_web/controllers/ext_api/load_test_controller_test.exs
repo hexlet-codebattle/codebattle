@@ -8,10 +8,6 @@ defmodule CodebattleWeb.ExtApi.LoadTestControllerTest do
   setup do
     FunWithFlags.disable(:allow_load_tests_ext_api)
 
-    on_exit(fn ->
-      FunWithFlags.disable(:allow_load_tests_ext_api)
-    end)
-
     :ok
   end
 

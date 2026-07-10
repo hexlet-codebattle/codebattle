@@ -52,7 +52,7 @@ defmodule CodebattleWeb.PublicEventController do
           redirect(conn, to: Routes.tournament_path(conn, :show, tournament_id))
 
         {:error, error} ->
-          Logger.error("Error starting stage: #{inspect(error)}")
+          Logger.debug("Error starting stage: #{inspect(error)}")
 
           conn
           |> put_flash(:error, error)

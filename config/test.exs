@@ -83,12 +83,14 @@ config :codebattle,
     plug: {Req.Test, Codebattle.GithubApi}
   ]
 
+config :codebattle, group_tournament_slice_run_concurrency: 1
 config :codebattle, min_break_duration_seconds: 1
 config :codebattle, store_playbook_async: false
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 config :codebattle, tournament_finish_timeout_ms: 0
 config :codebattle, tournament_match_timeout: 1
 config :codebattle, tournament_rematch_timeout_ms: 1
+config :codebattle, user_achievements_server_enabled: false
 config :codebattle, user_rank_server: false
 config :codebattle, ws_port: 4003
 

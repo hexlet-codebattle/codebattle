@@ -4,10 +4,6 @@ defmodule CodebattleWeb.Plugs.MaintenanceModeTest do
   setup do
     FunWithFlags.enable(:maintenance_mode)
 
-    on_exit(fn ->
-      FunWithFlags.disable(:maintenance_mode)
-    end)
-
     :ok
   end
 

@@ -4,10 +4,6 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
   setup do
     FunWithFlags.enable(:codebattle_mini_version)
 
-    on_exit(fn ->
-      FunWithFlags.disable(:codebattle_mini_version)
-    end)
-
     :ok
   end
 

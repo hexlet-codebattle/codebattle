@@ -16,7 +16,6 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
       Application.delete_env(:codebattle, :group_task_runner_response)
       Process.delete(:group_task_runner_last_request)
       Process.delete(:group_task_runner_response)
-      FunWithFlags.disable(:group_tasks_api)
     end)
 
     :ok

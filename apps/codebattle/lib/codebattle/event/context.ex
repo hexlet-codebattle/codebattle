@@ -228,7 +228,7 @@ defmodule Codebattle.Event.Context do
         group_tournament.id
 
       {:error, reason} ->
-        Logger.error(
+        Logger.warning(
           "Error creating individual group tournament for user #{user.id}, tournament #{tournament.id}: #{inspect(reason)}"
         )
 

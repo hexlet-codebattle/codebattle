@@ -24,8 +24,13 @@ defmodule Runner.MixProject do
   def application do
     [
       mod: {Runner.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon]
+      extra_applications: extra_applications()
     ]
+  end
+
+  defp extra_applications do
+    apps = [:logger, :runtime_tools]
+    if Mix.env() == :test, do: apps, else: [:os_mon | apps]
   end
 
   # Specifies which paths to compile per environment.

@@ -20,7 +20,7 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: "/")
 
       {:error, reason} ->
-        Logger.error("Failed to authenticate user with token: #{inspect(reason)}")
+        Logger.debug("Failed to authenticate user with token: #{inspect(reason)}")
 
         conn
         |> put_flash(:danger, reason)

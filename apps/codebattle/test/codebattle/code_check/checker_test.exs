@@ -22,8 +22,6 @@ defmodule Codebattle.CodeCheck.CheckerTest do
         nil -> Application.delete_env(:codebattle, :checker_executor)
         executor -> Application.put_env(:codebattle, :checker_executor, executor)
       end
-
-      FunWithFlags.disable(:use_remote_zig_executor)
     end)
 
     :ok

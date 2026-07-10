@@ -26,9 +26,14 @@ defmodule Codebattle.MixProject do
   def application do
     [
       mod: {Codebattle.Application, []},
-      extra_applications: [:runtime_tools, :logger, :os_mon],
+      extra_applications: extra_applications(),
       included_applications: [:runner, :phoenix_gon]
     ]
+  end
+
+  defp extra_applications do
+    apps = [:runtime_tools, :logger]
+    if Mix.env() == :test, do: apps, else: [:os_mon | apps]
   end
 
   # Specifies which paths to compile per environment.

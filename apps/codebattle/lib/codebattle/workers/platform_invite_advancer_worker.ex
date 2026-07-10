@@ -34,7 +34,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
 
   @spec enqueue(ExternalPlatformInvite.t()) :: :ok
   def enqueue(%ExternalPlatformInvite{state: state} = invite) when state in @terminal_states do
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] enqueue skipped: invite_id=#{invite.id} already in terminal state=#{state}"
     )
 
@@ -42,7 +42,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   end
 
   def enqueue(%ExternalPlatformInvite{id: invite_id, user_id: user_id, group_tournament_id: tournament_id}) do
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] enqueue: invite_id=#{invite_id} user_id=#{user_id} group_tournament_id=#{inspect(tournament_id)}"
     )
 
@@ -50,7 +50,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
          |> new(schedule_in: 5)
          |> Oban.insert() do
       {:ok, job} ->
-        Logger.error(
+        Logger.debug(
           "[PlatformInviteAdvancerWorker] enqueue inserted job_id=#{inspect(job.id)} conflict=#{inspect(job.conflict?)} for invite_id=#{invite_id}"
         )
 
@@ -63,7 +63,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"invite_id" => invite_id, "user_id" => user_id}, attempt: attempt}) do
-    Logger.error("[PlatformInviteAdvancerWorker] perform: invite_id=#{invite_id} user_id=#{user_id} attempt=#{attempt}")
+    Logger.debug("[PlatformInviteAdvancerWorker] perform: invite_id=#{invite_id} user_id=#{user_id} attempt=#{attempt}")
 
     with %ExternalPlatformInvite{} = invite <- Repo.get(ExternalPlatformInvite, invite_id),
          %User{} = user <- Repo.get(User, user_id) do
@@ -79,7 +79,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   end
 
   defp run(%ExternalPlatformInvite{state: state} = invite, _user, attempt) when state in @terminal_states do
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] run: invite_id=#{invite.id} already terminal state=#{state} attempt=#{attempt}"
     )
 
@@ -88,13 +88,13 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   end
 
   defp run(invite, user, attempt) do
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] run: advancing invite_id=#{invite.id} from state=#{invite.state} attempt=#{attempt}"
     )
 
     advanced = Advancer.advance(invite, user)
 
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] run: advanced invite_id=#{advanced.id} #{invite.state}->#{advanced.state} attempt=#{attempt}"
     )
 
@@ -104,7 +104,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
         :ok
 
       advanced.state in @terminal_states ->
-        Logger.error(
+        Logger.debug(
           "[PlatformInviteAdvancerWorker] run: invite_id=#{advanced.id} reached terminal state=#{advanced.state}, stopping"
         )
 
@@ -113,7 +113,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
       true ->
         snooze = snooze_seconds(attempt)
 
-        Logger.error(
+        Logger.debug(
           "[PlatformInviteAdvancerWorker] run: invite_id=#{advanced.id} state=#{advanced.state} snoozing for #{snooze}s (attempt=#{attempt})"
         )
 
@@ -122,7 +122,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   end
 
   defp broadcast_accepted(%ExternalPlatformInvite{group_tournament_id: nil} = invite) do
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] broadcast_accepted skipped: invite_id=#{invite.id} has no group_tournament_id"
     )
 
@@ -135,7 +135,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     user_topic = "group_tournament:#{invite.group_tournament_id}:user:#{invite.user_id}"
     tournament_topic = "group_tournament:#{invite.group_tournament_id}"
 
-    Logger.error(
+    Logger.debug(
       "[PlatformInviteAdvancerWorker] broadcast_accepted: invite_id=#{invite.id} topics=[#{user_topic}, #{tournament_topic}]"
     )
 
