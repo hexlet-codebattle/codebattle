@@ -52,6 +52,7 @@ function GroupTournamentPage({
       <InvitationPanel
         name={tournamentName}
         meta={tournamentMeta}
+        repoUrl={externalSetup?.repoUrl}
         invite={invite}
         onStart={handleStartTournament}
       />

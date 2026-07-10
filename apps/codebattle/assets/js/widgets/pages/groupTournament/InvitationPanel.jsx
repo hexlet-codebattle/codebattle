@@ -2,9 +2,11 @@ import React from 'react';
 
 import i18n from '../../../i18n';
 
-function InvitationPanel({ name, meta, invite, onStart }) {
+function InvitationPanel({ name, meta, repoUrl, invite, onStart }) {
   const isAccepted = invite?.state === 'accepted';
   const m = meta || {};
+  const tournamentDetailsUrl = m.tournamentDetailsUrl || repoUrl || null;
+  const tournamentDetailsLabel = m.tournamentDetailsLabel || i18n.t('tournament');
 
   const taskInfoLabel = m.taskInfoLabel || i18n.t('Task is solved in External Plaform');
   const taskInfoIconUrl = m.taskInfoIconUrl || null;
@@ -30,14 +32,18 @@ function InvitationPanel({ name, meta, invite, onStart }) {
           <div className="col-12 d-flex justify-content-center mt-3">
             <p className="text-white text-center mb-0">
               {i18n.t('Find tournament details at')}{' '}
-              <a
-                className="text-white text-decoration-underline"
-                href=""
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                tournament
-              </a>
+              {tournamentDetailsUrl ? (
+                <a
+                  className="text-white text-decoration-underline"
+                  href={tournamentDetailsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {tournamentDetailsLabel}
+                </a>
+              ) : (
+                tournamentDetailsLabel
+              )}
             </p>
           </div>
         </div>
