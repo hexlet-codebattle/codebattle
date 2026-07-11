@@ -6,6 +6,8 @@ defmodule Codebattle.TaskPackForm do
   alias Codebattle.Repo
   alias Codebattle.TaskPack
 
+  @task_id_range 1..2_147_483_647
+
   def create(params, user) do
     new_params = Map.merge(params, %{"state" => "draft", "creator_id" => user.id})
 
@@ -51,7 +53,15 @@ defmodule Codebattle.TaskPackForm do
       |> Enum.map(&String.trim/1)
       |> Enum.map(&String.to_integer/1)
 
-    put_change(changeset, :task_ids, task_ids)
+    if Enum.all?(task_ids, &(&1 in @task_id_range)) do
+      put_change(changeset, :task_ids, task_ids)
+    else
+      add_error(
+        changeset,
+        :task_ids,
+        "Please provide integers between 1 and 2147483647 with comma separated values"
+      )
+    end
   rescue
     _ ->
       add_error(changeset, :task_ids, "Please provide only integers with comma separated values")

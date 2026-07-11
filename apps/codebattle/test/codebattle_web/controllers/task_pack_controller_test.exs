@@ -113,6 +113,80 @@ defmodule CodebattleWeb.TaskPackControllerTest do
            } = task_pack
   end
 
+  test ".create with non-numeric task ids", %{conn: conn} do
+    user = insert(:user)
+
+    params = %{
+      "name" => "mega_pack",
+      "task_ids" => "It is string",
+      "visibility" => "public"
+    }
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> post(Routes.task_pack_path(conn, :create), task_pack: params)
+
+    response = html_response(conn, 200)
+
+    assert response =~ "Create your own task pack"
+    assert response =~ "Please provide only integers with comma separated values"
+  end
+
+  test ".create with out-of-range task ids", %{conn: conn} do
+    user = insert(:user)
+
+    params = %{
+      "name" => "mega_pack",
+      "task_ids" => "999999999999999999",
+      "visibility" => "public"
+    }
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> post(Routes.task_pack_path(conn, :create), task_pack: params)
+
+    response = html_response(conn, 200)
+
+    assert response =~ "Create your own task pack"
+
+    assert response =~
+             "Please provide integers between 1 and 2147483647 with comma separated values"
+  end
+
+  test ".create validates task id range boundaries", %{conn: conn} do
+    user = insert(:user)
+
+    conn = put_session(conn, :user_id, user.id)
+
+    valid_conn =
+      post(conn, Routes.task_pack_path(conn, :create),
+        task_pack: %{
+          "name" => "max_task_id_pack",
+          "task_ids" => "2147483647",
+          "visibility" => "public"
+        }
+      )
+
+    assert %{id: id} = redirected_params(valid_conn)
+    assert %{task_ids: [2_147_483_647]} = Codebattle.TaskPack.get!(id)
+
+    Enum.each(["0", "1,2147483648,3"], fn task_ids ->
+      invalid_conn =
+        post(conn, Routes.task_pack_path(conn, :create),
+          task_pack: %{
+            "name" => "invalid_task_id_pack",
+            "task_ids" => task_ids,
+            "visibility" => "public"
+          }
+        )
+
+      assert html_response(invalid_conn, 200) =~
+               "Please provide integers between 1 and 2147483647 with comma separated values"
+    end)
+  end
+
   test ".update", %{conn: conn} do
     user = insert(:user)
     task_pack = insert(:task_pack, creator_id: user.id)
@@ -134,6 +208,50 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     task_pack = Codebattle.TaskPack.get!(id)
 
     assert %{name: "new_mega_task_pack", task_ids: [22]} = task_pack
+  end
+
+  test ".update with non-numeric task ids", %{conn: conn} do
+    user = insert(:user)
+    task_pack = insert(:task_pack, creator_id: user.id)
+
+    params = %{
+      "name" => "new_mega_task_pack",
+      "task_ids" => "It is string",
+      "visibility" => "public"
+    }
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> patch(Routes.task_pack_path(conn, :update, task_pack), task_pack: params)
+
+    response = html_response(conn, 200)
+
+    assert response =~ "Edit task pack"
+    assert response =~ "Please provide only integers with comma separated values"
+  end
+
+  test ".update with out-of-range task ids", %{conn: conn} do
+    user = insert(:user)
+    task_pack = insert(:task_pack, creator_id: user.id)
+
+    params = %{
+      "name" => "new_mega_task_pack",
+      "task_ids" => "999999999999999999",
+      "visibility" => "public"
+    }
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> patch(Routes.task_pack_path(conn, :update, task_pack), task_pack: params)
+
+    response = html_response(conn, 200)
+
+    assert response =~ "Edit task pack"
+
+    assert response =~
+             "Please provide integers between 1 and 2147483647 with comma separated values"
   end
 
   test ".activate", %{conn: conn} do
