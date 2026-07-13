@@ -3,10 +3,14 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
 
   import Codebattle.Tournament.Helpers
   import Codebattle.TournamentTestHelpers
+  import Ecto.Query
 
   alias Codebattle.Game.Context, as: GameContext
+  alias Codebattle.PubSub.Message
+  alias Codebattle.Repo
   alias Codebattle.Tournament.Context, as: TournamentContext
   alias Codebattle.Tournament.Server
+  alias Codebattle.Tournament.TournamentResult
   alias Codebattle.Tournament.TournamentUserResult
 
   test "continuous matchmaking: finishing games triggers the next tick, no rematches, finishes" do
@@ -65,6 +69,14 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert length(keys) == length(Enum.uniq(keys))
     assert MapSet.size(MapSet.new(tournament.played_pair_ids)) == 4
 
+    # Finalization must rebuild every round, not trust a stale intermediate result.
+    {updated_count, _rows} =
+      TournamentResult
+      |> where([tr], tr.tournament_id == ^tournament.id and tr.round_position == 0)
+      |> Repo.update_all(set: [score: 999_999])
+
+    assert updated_count > 0
+
     # Finish round-1 games: ticks are exhausted (rounds_limit == 2) and the pool drains,
     # so the tournament finishes.
     finish_all_playing_matches(tournament)
@@ -80,6 +92,12 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert length(leaderboard) == 4
     assert Enum.map(leaderboard, & &1.place) == [1, 2, 3, 4]
     assert MapSet.new(leaderboard, & &1.user_id) == MapSet.new(users, & &1.id)
+
+    refute Repo.exists?(
+             from(tr in TournamentResult,
+               where: tr.tournament_id == ^tournament.id and tr.score == 999_999
+             )
+           )
 
     # sync_players restores places/scores on the player structs from the leaderboard.
     assert tournament |> get_players() |> Enum.reject(& &1.is_bot) |> Enum.map(& &1.place) |> Enum.sort() ==
@@ -119,13 +137,32 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     tournament = TournamentContext.get(tournament.id)
     assert tournament.current_round_position == 0
 
+    Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+    Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
+
     # Finish both round-0 games: the pool drains while the next tick is 300s away, so instead
     # of an immediate tick the tournament goes on break and does NOT open round 1 yet.
     finish_all_playing_matches(tournament)
+
+    assert_receive %Message{
+                     event: "tournament:round_finished",
+                     payload: %{tournament: %{break_state: "on", last_round_ended_at: last_round_ended_at}}
+                   },
+                   1_000
+
+    assert_receive %Message{
+                     event: "tournament:updated",
+                     payload: %{tournament: %{break_state: "on"}}
+                   },
+                   1_000
+
+    assert last_round_ended_at
+
     Process.sleep(400)
 
     tournament = TournamentContext.get(tournament.id)
     assert tournament.break_state == "on"
+    assert tournament.last_round_ended_at
     assert tournament.current_round_position == 0
     assert get_matches(tournament, "playing") == []
 
@@ -256,6 +293,60 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert tournament.timeout_mode == "per_round_fixed"
     assert tournament.current_round_timeout_seconds == 60
     assert GameContext.get_game!(match.game_id).timeout_seconds == 80
+  end
+
+  test "the final wave gets one game-time deadline that force-finishes stuck games" do
+    task = insert(:task, level: "easy", base_score: 10, time_to_solve_sec: 30)
+    insert(:task_pack, name: "ladder-final-deadline", task_ids: [task.id])
+
+    creator = insert(:user)
+    users = insert_list(2, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder final deadline",
+        "description" => "Ladder final deadline",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-final-deadline",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "1",
+        "players_limit" => 2
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    assert [%{state: "playing"}] = get_matches(tournament, "playing")
+
+    server_name = {:via, Registry, {Codebattle.Registry, "tournament_srv::#{tournament.id}"}}
+    server_pid = GenServer.whereis(server_name)
+    server_state = :sys.get_state(server_pid)
+
+    assert server_state.matchmaking_timer_kind == :final_deadline
+    assert Process.read_timer(server_state.matchmaking_timer_ref) in 30_000..32_000
+
+    # Fire the already-armed deadline now so the test verifies the force path without
+    # sleeping for a full task timeout.
+    Process.cancel_timer(server_state.matchmaking_timer_ref)
+    send(server_pid, {:ladder_final_deadline, tournament.current_round_position})
+    Process.sleep(500)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.state == "finished"
+    assert [%{state: "timeout"}] = get_matches(tournament, "timeout")
+
+    server_state = :sys.get_state(server_pid)
+    assert server_state.matchmaking_timer_ref == nil
+    assert server_state.matchmaking_timer_kind == nil
   end
 
   defp finish_all_playing_matches(tournament) do

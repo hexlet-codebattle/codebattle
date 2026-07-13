@@ -4,6 +4,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias Codebattle.Tournament.Matches
   alias Codebattle.Tournament.TournamentResult
   alias Codebattle.Tournament.TournamentUserResult
 
@@ -1221,32 +1222,45 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       assert scores[slow.id] == 100
     end
 
-    test "full-solver who lost on speed gets the 0.75 loss penalty, not the win bonus",
+    test "stores both calculated scores in the live match player results",
          %{tournament: tournament, task: task} do
       winner = insert(:user, name: "winner")
       loser = insert(:user, name: "loser")
+      game = insert_game(task, tournament, winner, loser, 20, 100.0, 80.0)
+      matches_table = Matches.create_table(tournament.id)
+      live_tournament = %{tournament | matches_table: matches_table}
 
-      # Both solved 100% but `loser` was slower -> result 'lost'. Crafted directly because the
-      # shared insert_game helper marks every 100% player as 'won'.
-      insert(:game,
-        state: "game_over",
-        level: task.level,
-        duration_sec: 25,
-        tournament_id: tournament.id,
-        task: task,
-        players: [
-          %{id: winner.id, name: winner.name, clan_id: nil, result_percent: 100.0, result: "won", is_bot: false},
-          %{id: loser.id, name: loser.name, clan_id: nil, result_percent: 100.0, result: "lost", is_bot: false}
-        ]
-      )
+      Matches.put_match(live_tournament, %Codebattle.Tournament.Match{
+        id: 7,
+        game_id: game.id,
+        player_ids: [winner.id, loser.id],
+        player_results: %{
+          winner.id => %{result: "won", result_percent: 100.0},
+          loser.id => %{result: "lost", result_percent: 80.0}
+        },
+        state: "game_over"
+      })
 
-      TournamentResult.upsert_results(tournament)
-      scores = score_by_user(tournament)
+      TournamentResult.upsert_results(live_tournament)
 
-      # winner (fastest, = min_winner_time): factor 2 -> 200
-      assert scores[winner.id] == 200
-      # loser despite 100% tests: 0.75 * 100 * 100/100 = 75
-      assert scores[loser.id] == 75
+      match = Matches.get_match(live_tournament, 7)
+      assert match.player_results[winner.id].score == 200
+      assert match.player_results[loser.id].score == 60
+    end
+
+    test "ladder winner score is match-local and matches the immediate formula",
+         %{tournament: tournament, task: task} do
+      winner = insert(:user, name: "ladder-winner")
+      loser = insert(:user, name: "ladder-loser")
+      ladder = %{tournament | type: "ladder"}
+
+      insert_game(task, ladder, winner, loser, 20, 100.0, 80.0)
+      TournamentResult.upsert_results(ladder)
+      scores = score_by_user(ladder)
+
+      # winner: 100 * (2 - 20/100) = 180; loser: 100 * 0.75 * 80% = 60
+      assert scores[winner.id] == 180
+      assert scores[loser.id] == 60
     end
 
     test "timeout (both lost) scores 0.5 * base_score * result_percent / 100",

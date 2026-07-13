@@ -43,6 +43,53 @@ const roundBadgeClassName = cn(
 );
 const resultBadgeWrapClassName = 'd-inline-flex align-items-center justify-content-start';
 
+const formatPercent = (value) => Number(value || 0).toFixed(Number(value || 0) % 1 ? 1 : 0);
+
+const getScoreRule = (match, result) => {
+  if (match.state === 'timeout') return '0.50 timeout factor';
+  if (result.result === 'won') return '1.00–2.00 speed bonus';
+  return '0.75 loss factor';
+};
+
+function ScoreFormula({ label, match, result }) {
+  if (!result) return null;
+
+  const hasScore = Number.isFinite(result.score);
+  const explanation = `${i18next.t('base score')} × ${getScoreRule(
+    match,
+    result,
+  )} × ${formatPercent(result.resultPercent)}% ${i18next.t('tests')}`;
+
+  return (
+    <div className="small cb-text-light">
+      <span className="font-weight-bold cb-text">{label}: </span>
+      {hasScore && (
+        <>
+          <span className="font-weight-bold text-warning">
+            {result.score} {i18next.t('pts')}
+          </span>
+          <span className="mx-1">=</span>
+        </>
+      )}
+      <span>{explanation}</span>
+    </div>
+  );
+}
+
+function MatchScoreBreakdown({ match, playerId, opponentId }) {
+  const playerResult = match.playerResults[playerId];
+  const opponentResult = match.playerResults[opponentId];
+
+  if (!playerResult || !Number.isFinite(playerResult.score)) return null;
+
+  return (
+    <div className="w-100 mt-2 pt-2 border-top cb-border-color">
+      <ScoreFormula label={i18next.t('You')} match={match} result={playerResult} />
+      <ScoreFormula label={i18next.t('Opponent')} match={match} result={opponentResult} />
+    </div>
+  );
+}
+
 const orderMatchPlayerIds = (playerIds, playerId) => {
   if (!playerIds.includes(playerId)) {
     return playerIds;
@@ -76,6 +123,7 @@ function UsersMatchList({
   matches,
   hideStats = false,
   hideBots = false,
+  showScoreFormula = false,
 }) {
   const [player] = useMatchesStatistics(playerId, matches);
 
@@ -186,6 +234,13 @@ function UsersMatchList({
                     </span>
                   </OverlayTrigger>
                 </div>
+              )}
+              {showScoreFormula && (
+                <MatchScoreBreakdown
+                  match={match}
+                  playerId={playerId}
+                  opponentId={matchPlayerIds[1]}
+                />
               )}
             </div>
             <div className={actionClassName}>

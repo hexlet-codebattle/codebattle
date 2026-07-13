@@ -13,6 +13,9 @@ defmodule Codebattle.Tournament.Server do
   @freeze_retry_ms 1_000
   # Ladder: don't insert a pre-tick break if the next scheduled tick is already imminent.
   @ladder_min_break_gap_ms 3_000
+  # Let the game's own timeout finish first; this deadline is the safety net for a stuck
+  # final wave, not a competing timeout clock.
+  @ladder_final_deadline_grace_seconds 2
   @tournament_info_drop_fields [
     :__struct__,
     :__meta__,
@@ -202,7 +205,8 @@ defmodule Codebattle.Tournament.Server do
        frozen: false,
        break_timer_expired: false,
        next_matchmaking_tick_at: nil,
-       matchmaking_timer_ref: nil
+       matchmaking_timer_ref: nil,
+       matchmaking_timer_kind: nil
      }}
   end
 
@@ -441,8 +445,45 @@ defmodule Codebattle.Tournament.Server do
         # that path re-armed a fresh tick for the current round, so the cadence is intact.
         {:noreply, state}
 
+      not tournament.module.ticks_remaining?(tournament) ->
+        # The final wave has its own one-shot deadline. A delayed regular tick must not
+        # replace it or move that deadline further into the future.
+        {:noreply, state}
+
       true ->
-        run_matchmaking_tick(state)
+        state
+        |> consume_matchmaking_timer()
+        |> run_matchmaking_tick()
+    end
+  end
+
+  def handle_info({:ladder_final_deadline, round_position}, %{tournament: tournament} = state) do
+    cond do
+      state.frozen ->
+        defer_message(
+          {:ladder_final_deadline, round_position},
+          "ladder_final_deadline",
+          state
+        )
+
+      tournament.type != "ladder" or tournament.state != "active" ->
+        {:noreply, state}
+
+      tournament.current_round_position != round_position ->
+        {:noreply, state}
+
+      tournament.module.ticks_remaining?(tournament) ->
+        # The tournament was restored or changed after this deadline was armed.
+        {:noreply, state}
+
+      true ->
+        new_tournament = tournament.module.finish_all_playing_matches(tournament)
+        update_tournament_info_cache(new_tournament)
+
+        state
+        |> consume_matchmaking_timer()
+        |> Map.put(:tournament, new_tournament)
+        |> run_matchmaking_tick()
     end
   end
 
@@ -737,32 +778,71 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, arm_matchmaking_tick(%{state | tournament: new_tournament})}
   end
 
-  # Arm the periodic tick, cancelling any previous one so exactly one is ever pending. The
-  # message carries the round position it was armed under: a tick that fires after a drain,
-  # break-over, or UI-forced tick has already advanced the round is stale and dropped, so a
-  # single round can never be ticked twice. Records the monotonic fire time so the ladder
-  # wave-drain logic can tell how far away the next scheduled tick is. No-op unless the
-  # tournament is an active ladder.
+  # Arm either the next matchmaking tick or, after the final tick has created its games,
+  # one safety deadline. The final deadline follows the actual game timeout rather than the
+  # matchmaking cadence and is not extended by repeated events in the same final wave.
   defp arm_matchmaking_tick(%{tournament: %{type: "ladder", state: "active"} = tournament} = state) do
-    if state.matchmaking_timer_ref, do: Process.cancel_timer(state.matchmaking_timer_ref)
+    if tournament.module.ticks_remaining?(tournament) do
+      interval = max(tournament.module.round_timeout_seconds(tournament) || 60, 1)
 
-    interval = max(tournament.module.round_timeout_seconds(tournament) || 60, 1)
-
-    ref =
-      Process.send_after(
-        self(),
+      arm_ladder_timer(
+        state,
+        :matchmaking_tick,
         {:matchmaking_tick, tournament.current_round_position},
-        to_timeout(second: interval)
+        interval
       )
+    else
+      arm_ladder_final_deadline(state, tournament)
+    end
+  end
 
-    %{
-      state
-      | matchmaking_timer_ref: ref,
-        next_matchmaking_tick_at: System.monotonic_time(:millisecond) + interval * 1000
-    }
+  defp arm_matchmaking_tick(%{tournament: %{type: "ladder"}} = state) do
+    clear_matchmaking_timer(state)
   end
 
   defp arm_matchmaking_tick(state), do: state
+
+  defp arm_ladder_final_deadline(state, tournament) do
+    if Map.get(state, :matchmaking_timer_kind) == :final_deadline and
+         Map.get(state, :matchmaking_timer_ref) do
+      state
+    else
+      interval =
+        tournament.module.final_deadline_seconds(tournament) +
+          @ladder_final_deadline_grace_seconds
+
+      arm_ladder_timer(
+        state,
+        :final_deadline,
+        {:ladder_final_deadline, tournament.current_round_position},
+        interval
+      )
+    end
+  end
+
+  defp arm_ladder_timer(state, kind, message, interval) do
+    state = clear_matchmaking_timer(state)
+    ref = Process.send_after(self(), message, to_timeout(second: interval))
+
+    Map.merge(state, %{
+      matchmaking_timer_ref: ref,
+      matchmaking_timer_kind: kind,
+      next_matchmaking_tick_at: System.monotonic_time(:millisecond) + interval * 1000
+    })
+  end
+
+  defp consume_matchmaking_timer(state) do
+    Map.merge(state, %{
+      matchmaking_timer_ref: nil,
+      matchmaking_timer_kind: nil,
+      next_matchmaking_tick_at: nil
+    })
+  end
+
+  defp clear_matchmaking_timer(state) do
+    if ref = Map.get(state, :matchmaking_timer_ref), do: Process.cancel_timer(ref)
+    consume_matchmaking_timer(state)
+  end
 
   defp should_schedule_round_finish?(%{round_state: "round_finishing"}), do: false
 
@@ -910,9 +990,15 @@ defmodule Codebattle.Tournament.Server do
       to_timeout(second: break_seconds)
     )
 
-    new_tournament = Map.merge(tournament, %{break_state: "on", round_state: "break"})
+    new_tournament =
+      Map.merge(tournament, %{
+        break_state: "on",
+        last_round_ended_at: NaiveDateTime.utc_now(:second),
+        round_state: "break"
+      })
+
     update_tournament_info_cache(new_tournament)
-    broadcast_tournament_update(new_tournament)
+    tournament.module.broadcast_round_finished(new_tournament)
 
     {:noreply, %{state | tournament: new_tournament}}
   end

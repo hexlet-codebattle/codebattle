@@ -205,6 +205,7 @@ defmodule CodebattleWeb.TournamentChannel do
             &Map.take(&1, [
               :avg_result_percent,
               :clan_id,
+              :clan_name,
               :games_count,
               :is_cheater,
               :place,
@@ -285,6 +286,12 @@ defmodule CodebattleWeb.TournamentChannel do
     push(socket, "tournament:finished", %{
       tournament: payload.tournament
     })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:results_updated", payload: payload}, socket) do
+    push(socket, "tournament:results_updated", payload)
 
     {:noreply, socket}
   end

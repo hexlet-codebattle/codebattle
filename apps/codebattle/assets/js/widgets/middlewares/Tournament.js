@@ -82,7 +82,7 @@ const initTournamentChannel = (currentChannel) => (dispatch) => {
 
 // export const soundNotification = notification();
 
-export const connectToTournament = (newTournamentId) => (dispatch) => {
+export const connectToTournament = (newTournamentId) => (dispatch, getState) => {
   setTournamentChannel(newTournamentId);
   initTournamentChannel(channel)(dispatch);
   let lastRoundPosition = 0;
@@ -186,6 +186,19 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     );
   };
 
+  const handleTournamentResultsUpdated = () => {
+    const state = getState();
+    const currentUserId = state.user.currentUserId;
+
+    if (
+      state.tournament.type === TournamentTypes.ladder &&
+      state.tournament.players[currentUserId]
+    ) {
+      dispatch(requestMatchesByPlayerId(currentUserId));
+      dispatch(requestNearestRankingPage(currentUserId, state.tournament.playersPageSize || 16));
+    }
+  };
+
   return channel
     .addListener('tournament:update', handleUpdate)
     .addListener('tournament:matches:update', handleMatchesUpdate)
@@ -198,6 +211,7 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     .addListener('tournament:restarted', handleTournamentRestarted)
     .addListener('tournament:finished', handleTournamentFinished)
     .addListener('tournament:ranking_update', handleTournamentRankingUpdate)
+    .addListener('tournament:results_updated', handleTournamentResultsUpdated)
     .addListener('tournament:redirect', handleRedirect);
 };
 
@@ -289,6 +303,7 @@ export const requestNearestRankingPage = (userId, pageSize) => (dispatch) => {
     .receive('ok', (payload) => {
       const data = camelizeKeys(payload);
       dispatch(actions.updateTournamentRanking(data.ranking));
+      dispatch(actions.updateTournamentPlayers(data.ranking?.entries || []));
     });
 };
 

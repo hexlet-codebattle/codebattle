@@ -466,12 +466,13 @@ defmodule Codebattle.Tournament.Base do
       def handle_game_result(tournament, params) do
         case get_match(tournament, params.ref) do
           %{state: "playing"} = match ->
-            winner_id = pick_game_winner_id(match.player_ids, params.player_results)
+            player_results = prepare_match_player_results(tournament, match, params)
+            winner_id = pick_game_winner_id(match.player_ids, player_results)
 
-            params.player_results
+            player_results
             |> Map.keys()
             |> Enum.each(fn player_id ->
-              maybe_update_player_result(tournament, player_id, params.player_results[player_id])
+              maybe_update_player_result(tournament, player_id, player_results[player_id])
             end)
 
             new_match = %{
@@ -479,7 +480,7 @@ defmodule Codebattle.Tournament.Base do
               | state: params.game_state,
                 winner_id: winner_id,
                 duration_sec: params.duration_sec,
-                player_results: params.player_results,
+                player_results: player_results,
                 finished_at: DateTime.utc_now(:second)
             }
 
@@ -1406,9 +1407,12 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      def prepare_match_player_results(_tournament, _match, params), do: params.player_results
+
       defoverridable maybe_finish_round_after_finish_match: 1,
                      compute_final_standings: 1,
                      matchmaking_tick: 1,
+                     prepare_match_player_results: 3,
                      round_timeout_seconds: 1,
                      setup_round_active_game: 1
     end

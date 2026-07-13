@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.LadderTest do
   use Codebattle.DataCase, async: false
 
+  alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Context, as: TournamentContext
   alias Codebattle.Tournament.Ladder
@@ -84,6 +85,23 @@ defmodule Codebattle.Tournament.LadderTest do
       assert Enum.sort([a.id, b.id]) == [1, 2]
     end
 
+    test "does not create an avoidable rematch when a constrained fresh pairing exists" do
+      tournament =
+        build_live_tournament(%{
+          players_count: 4,
+          played_pair_ids: MapSet.new([[1, 4], [2, 3], [3, 4]])
+        })
+
+      put_players(tournament, 1..4)
+
+      {_tournament, pairs} = Ladder.build_round_pairs(tournament)
+      pair_ids = pairs |> Enum.map(fn [a, b] -> Enum.sort([a.id, b.id]) end) |> Enum.sort()
+
+      # Picking player 2 for player 1 would strand 3 and 4 in a rematch. Player 3 has
+      # fewer alternatives, so pairing 1-3 leaves the fresh 2-4 pairing available.
+      assert pair_ids == [[1, 3], [2, 4]]
+    end
+
     test "bot-fills only the genuinely-odd player when everyone has faced everyone" do
       insert(:user, is_bot: true)
 
@@ -152,6 +170,45 @@ defmodule Codebattle.Tournament.LadderTest do
     end
   end
 
+  describe "match scoring" do
+    test "puts final static scores into the match as soon as the game finishes" do
+      task = insert(:task, base_score: 100, time_to_solve_sec: 100)
+
+      tournament =
+        build_live_tournament(%{
+          players_count: 2,
+          task_ids: [task.id]
+        })
+
+      put_players(tournament, 1..2)
+      Tournament.Tasks.put_task(tournament, task)
+
+      Tournament.Matches.put_match(tournament, %Match{
+        id: 0,
+        game_id: 123,
+        task_id: task.id,
+        player_ids: [1, 2],
+        round_position: 0,
+        state: "playing"
+      })
+
+      Ladder.finish_match(tournament, %{
+        ref: 0,
+        game_id: 123,
+        game_state: "game_over",
+        duration_sec: 20,
+        player_results: %{
+          1 => %{lang: "js", rating: 1200, result: "won", result_percent: 100.0},
+          2 => %{lang: "js", rating: 1200, result: "lost", result_percent: 80.0}
+        }
+      })
+
+      match = Tournament.Matches.get_match(tournament, 0)
+      assert match.player_results[1].score == 180
+      assert match.player_results[2].score == 60
+    end
+  end
+
   describe "round timeout" do
     test "uses current task base_score as the next matchmaking tick timeout" do
       task0 = insert(:task, base_score: 90, time_to_solve_sec: 70)
@@ -198,9 +255,46 @@ defmodule Codebattle.Tournament.LadderTest do
 
       assert Ladder.round_timeout_seconds(tournament) == 60
     end
+
+    test "uses the final task solve time for the per_task final deadline" do
+      task0 = insert(:task, base_score: 90, time_to_solve_sec: 70)
+      task1 = insert(:task, base_score: 150, time_to_solve_sec: 120)
+
+      tournament =
+        build_live_tournament(%{
+          current_round_position: 1,
+          round_timeout_seconds: 60,
+          timeout_mode: "per_task",
+          task_ids: [task0.id, task1.id]
+        })
+
+      Tournament.Tasks.put_tasks(tournament, [task0, task1])
+
+      assert Ladder.final_deadline_seconds(tournament) == 120
+    end
+
+    test "uses the configured round time for a fixed-time final deadline" do
+      tournament =
+        build_live_tournament(%{
+          round_timeout_seconds: 80,
+          timeout_mode: "per_round_fixed"
+        })
+
+      assert Ladder.round_timeout_seconds(tournament) == 60
+      assert Ladder.final_deadline_seconds(tournament) == 80
+    end
   end
 
   describe "server matchmaking tick" do
+    test "notifies player channels after ladder scores are recomputed" do
+      tournament = build_live_tournament(%{players_count: 0, rounds_limit: 3})
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+
+      Ladder.matchmaking_tick(tournament)
+
+      assert_receive %Message{event: "tournament:results_updated", payload: %{}}
+    end
+
     test "re-arms the next tick while the tournament is active" do
       task = insert(:task, base_score: 2, time_to_solve_sec: 1)
 
@@ -251,6 +345,32 @@ defmodule Codebattle.Tournament.LadderTest do
       # Tick was armed under round 0 but the round has since advanced to 2 — drop it, no re-arm.
       assert {:noreply, ^state} = Server.handle_info({:matchmaking_tick, 0}, state)
       refute_receive {:matchmaking_tick, _}, 200
+    end
+
+    test "does not run a regular matchmaking tick after the final wave was created" do
+      tournament =
+        build_live_tournament(%{
+          players_count: 0,
+          rounds_limit: 1,
+          current_round_position: 0
+        })
+
+      timer_ref = Process.send_after(self(), :existing_final_deadline, 10_000)
+
+      state = %{
+        tournament: tournament,
+        frozen: false,
+        break_timer_expired: false,
+        next_matchmaking_tick_at: System.monotonic_time(:millisecond) + 10_000,
+        matchmaking_timer_ref: timer_ref,
+        matchmaking_timer_kind: :final_deadline
+      }
+
+      assert {:noreply, ^state} =
+               Server.handle_info({:matchmaking_tick, tournament.current_round_position}, state)
+
+      assert Process.read_timer(timer_ref) > 0
+      Process.cancel_timer(timer_ref)
     end
 
     test "does nothing for a non-ladder tournament" do

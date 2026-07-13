@@ -56,6 +56,7 @@ function PlayerStatsPanel({
             canModerate={canModerate}
             hideStats
             hideBots={hideBots}
+            showScoreFormula={type === 'ladder'}
           />
         </div>
       </div>

@@ -182,6 +182,8 @@ defmodule Codebattle.Tournament.TournamentResult do
   # tts = COALESCE(task.time_to_solve_sec, round_timeout_seconds); min_winner_time is the fastest
   # winning solve for the task in this round. Assumes time_to_solve_sec is set above the fastest
   # solve; if not, clamp keeps the multiplier in [1, 2].
+  # Ladder is match-local so its final score can be shown immediately: its winner multiplier is
+  # clamp(2 - duration / time_to_solve_sec, 1, 2) and does not depend on other matches.
   #
   # Cheater handling matches "75_percentile": a cheater scores 0, and the honest opponent who
   # lost to a cheater is compensated with the full base_score.
@@ -189,11 +191,13 @@ defmodule Codebattle.Tournament.TournamentResult do
       when type in ["swiss", "top200", "ladder"] do
     round_position = tournament.current_round_position || 0
     round_timeout = max(round_timeout_seconds(tournament), 1)
+    winner_multiplier = static_winner_multiplier_sql(type, round_timeout)
     player_cheater_sql = player_cheater_sql(tournament)
     game_has_cheater_sql = game_has_cheater_sql("g", tournament)
     clean_results(tournament.id, round_position)
 
-    Repo.query!("""
+    result =
+      Repo.query!("""
       with min_winner_time as (
       select
       task_id,
@@ -232,10 +236,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       -- Winner: speed bonus scaled from fastest winner (x2) to time_to_solve_sec (x1)
       WHEN (p.player_info->>'result') = 'won' THEN
         COALESCE(t.base_score, 0)
-        * LEAST(2.0, GREATEST(1.0,
-            1.0 + (COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}) - g.duration_sec)::numeric
-                  / GREATEST(COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}) - COALESCE(mwt.min_duration, 0), 1)
-          ))
+        * #{winner_multiplier}
         * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
       -- Loser who solved some tests but lost the game — flat 0.75 penalty, no speed bonus
       ELSE
@@ -285,7 +286,10 @@ defmodule Codebattle.Tournament.TournamentResult do
       round_position,
       was_cheated
       from stats
-    """)
+      returning game_id, user_id, score
+      """)
+
+    sync_match_scores(tournament, result.rows)
 
     tournament
   end
@@ -364,6 +368,50 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def upsert_results(t), do: t
+
+  defp sync_match_scores(%{matches_table: nil}, _rows), do: :noop
+
+  defp sync_match_scores(tournament, rows) do
+    matches_by_game_id =
+      tournament
+      |> Tournament.Matches.get_matches()
+      |> Map.new(&{&1.game_id, &1})
+
+    rows
+    |> Enum.group_by(fn [game_id, _user_id, _score] -> game_id end)
+    |> Enum.each(fn {game_id, score_rows} ->
+      sync_match_score_rows(tournament, Map.get(matches_by_game_id, game_id), score_rows)
+    end)
+  end
+
+  defp sync_match_score_rows(_tournament, nil, _score_rows), do: :noop
+
+  defp sync_match_score_rows(tournament, match, score_rows) do
+    player_results = Enum.reduce(score_rows, match.player_results, &put_player_score/2)
+    Tournament.Matches.put_match(tournament, %{match | player_results: player_results})
+  end
+
+  defp put_player_score([_game_id, user_id, score], results) do
+    Map.update(results, user_id, %{score: score}, &Map.put(&1, :score, score))
+  end
+
+  defp static_winner_multiplier_sql("ladder", round_timeout) do
+    """
+    LEAST(2.0, GREATEST(1.0,
+      2.0 - g.duration_sec::numeric
+            / GREATEST(COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}), 1)
+    ))
+    """
+  end
+
+  defp static_winner_multiplier_sql(_type, round_timeout) do
+    """
+    LEAST(2.0, GREATEST(1.0,
+      1.0 + (COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}) - g.duration_sec)::numeric
+            / GREATEST(COALESCE(NULLIF(t.time_to_solve_sec, 0), #{round_timeout}) - COALESCE(mwt.min_duration, 0), 1)
+    ))
+    """
+  end
 
   # Round duration used as the speed-multiplier anchor in the static_base_score strategy.
   # Top200 hardcodes per-position timings, so delegate to its strategy; others use the
