@@ -205,7 +205,11 @@ defmodule Codebattle.Tournament.LadderTest do
 
       match = Tournament.Matches.get_match(tournament, 0)
       assert match.player_results[1].score == 180
+      assert match.player_results[1].base_score == 100
+      assert match.player_results[1].score_factor == 1.8
       assert match.player_results[2].score == 60
+      assert match.player_results[2].base_score == 100
+      assert match.player_results[2].score_factor == 0.75
     end
   end
 

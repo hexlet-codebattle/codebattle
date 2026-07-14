@@ -163,15 +163,15 @@ function copyKatexFonts() {
 
 // Re-use your multiple entry points
 const input = {
-  app: path.resolve(__dirname, "assets/js/app.js"),
-  cssbattle: path.resolve(__dirname, "assets/js/iframes/cssbattle/index.js"),
-  landing: path.resolve(__dirname, "assets/js/landing.js"),
-  external: path.resolve(__dirname, "assets/js/external.js"),
+  app: path.resolve(__dirname, "assets/js/app.ts"),
+  cssbattle: path.resolve(__dirname, "assets/js/iframes/cssbattle/index.ts"),
+  landing: path.resolve(__dirname, "assets/js/landing.ts"),
+  external: path.resolve(__dirname, "assets/js/external.ts"),
   styles: path.resolve(__dirname, "assets/css/style.scss"),
   landingStyles: path.resolve(__dirname, "assets/css/landing.scss"),
   externalStyles: path.resolve(__dirname, "assets/css/external.scss"),
-  // broadcast_editor: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/index.js"),
-  // stream: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/stream.js"),
+  // broadcast_editor: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/index.ts"),
+  // stream: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/stream.tsx"),
 };
 
 export default defineConfig(({ command, mode }) => ({
@@ -265,7 +265,7 @@ export default defineConfig(({ command, mode }) => ({
   resolve: {
     dedupe: ["react", "react-dom"],
     alias: {
-      gon: path.resolve(__dirname, "assets/js/shims/gon.js"),
+      gon: path.resolve(__dirname, "assets/js/shims/gon.ts"),
       "@/": path.resolve(__dirname, "assets/js/widgets"),
       "@/components": path.resolve(__dirname, "assets/js/widgets/components"),
       "@/lib": path.resolve(__dirname, "assets/js/widgets/lib"),

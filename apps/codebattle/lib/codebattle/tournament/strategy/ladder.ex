@@ -53,7 +53,7 @@ defmodule Codebattle.Tournament.Ladder do
     cheater_ids = tournament |> Map.get(:cheater_ids) |> List.wrap() |> MapSet.new()
 
     Map.new(params.player_results, fn {player_id, result} ->
-      score =
+      {score, score_factor} =
         calculate_match_score(
           player_id,
           result,
@@ -65,7 +65,7 @@ defmodule Codebattle.Tournament.Ladder do
           cheater_ids
         )
 
-      put_match_score(player_id, result, score)
+      put_match_score(player_id, result, score, base_score, score_factor)
     end)
   end
 
@@ -305,12 +305,20 @@ defmodule Codebattle.Tournament.Ladder do
     max(tournament.round_timeout_seconds || 1, 1)
   end
 
-  defp put_match_score(player_id, result, _score) when is_integer(player_id) and player_id < 0 do
+  defp put_match_score(player_id, result, _score, _base_score, _score_factor)
+       when is_integer(player_id) and player_id < 0 do
     {player_id, result}
   end
 
-  defp put_match_score(player_id, result, score) do
-    {player_id, Map.put(result, :score, score)}
+  defp put_match_score(player_id, result, score, base_score, score_factor) do
+    result =
+      Map.merge(result, %{
+        base_score: base_score,
+        score: score,
+        score_factor: score_factor
+      })
+
+    {player_id, result}
   end
 
   defp calculate_match_score(player_id, result, state, base_score, solve_time, duration, player_ids, cheater_ids) do
@@ -318,14 +326,14 @@ defmodule Codebattle.Tournament.Ladder do
 
     cond do
       MapSet.member?(cheater_ids, player_id) ->
-        0
+        {0, 0.0}
 
       full_score_for_cheating_opponent?(player_id, player_ids, cheater_ids, state, result_percent) ->
-        base_score
+        {base_score, 1.0}
 
       true ->
         factor = score_factor(state, result, solve_time, duration)
-        round(base_score * factor * result_percent / 100)
+        {round(base_score * factor * result_percent / 100), factor}
     end
   end
 

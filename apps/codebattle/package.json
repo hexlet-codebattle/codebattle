@@ -19,7 +19,7 @@
     "lint-fix": "pnpm run lint-fix:js && pnpm run lint-fix:scss",
     "lint-fix:js": "pnpm run format:js && (oxlint --fix ./assets/js || true)",
     "lint-fix:scss": "pnpm run format:scss && (stylelint --fix \"assets/css/**/*.scss\" || true)",
-    "check": "pnpm run check:js && pnpm run check:scss",
+    "check": "pnpm run typecheck && pnpm run check:js && pnpm run check:scss",
     "check:js": "pnpm run format:check:js && pnpm run lint:js",
     "check:scss": "pnpm run format:check:scss && pnpm run lint:scss",
     "format": "pnpm run format:js && pnpm run format:scss",
@@ -27,7 +27,8 @@
     "format:scss": "prettier --write \"assets/css/**/*.scss\"",
     "format:check": "pnpm run format:check:js && pnpm run format:check:scss",
     "format:check:js": "oxfmt --check \"assets/js/**/*.{js,jsx,ts,tsx}\"",
-    "format:check:scss": "prettier --check \"assets/css/**/*.scss\""
+    "format:check:scss": "prettier --check \"assets/css/**/*.scss\"",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -116,6 +117,9 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/lodash": "^4.17.24",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
     "baseline-browser-mapping": "^2.10.42",
     "gettext-parser": "^9.1.1",
@@ -130,6 +134,7 @@
     "react-refresh": "^0.18.0",
     "stylelint": "^17.14.0",
     "stylelint-config-standard-scss": "^17.0.0",
+    "typescript": "^7.0.2",
     "vite": "^8.1.4",
     "vite-plugin-environment": "^1.1.3",
     "vitest": "^4.1.10"

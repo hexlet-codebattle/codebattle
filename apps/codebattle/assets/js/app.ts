@@ -1,0 +1,266 @@
+/* eslint no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
+
+// Brunch automatically concatenates all files in your
+// watched paths. Those paths can be configured at
+// config.paths.watched in "brunch-config.js".
+//
+// However, those files will only be executed if
+// explicitly imported. The only exception are files
+// in vendor, which are never wrapped in imports and
+// therefore are always executed.
+
+// Import dependencies
+//
+// If you no longer want to use a dependency, remember
+// to also remove its path from "config.paths.watched".
+import 'core-js/stable';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import 'regenerator-runtime/runtime';
+import 'phoenix_html';
+import './fontawesome';
+// ../css/style.scss is imported via vite config entry points
+import 'bootstrap';
+
+// Import static assets for cache busting (adds them to Vite manifest)
+import './staticAssets';
+
+import { inspect } from '@xstate/inspect';
+import NProgress from 'nprogress';
+import { Socket } from 'phoenix';
+import { LiveSocket, type Hook } from 'phoenix_live_view';
+
+// Import local files
+//
+// Local files can be imported directly using relative
+// paths "./socket" or full ones "web/static/js/socket".
+
+import './widgets/lib/sentry';
+import {
+  renderEventPage,
+  renderGroupTournamentPage,
+  renderGameMlPage,
+  renderGameThreejsPage,
+  renderGameWidget,
+  renderHallOfFame,
+  renderHeadToHeadPage,
+  renderHeatmapWidget,
+  renderInvitesWidget,
+  renderMainChannelWidget,
+  renderLobby,
+  renderOnlineWidget,
+  renderRegistrationPage,
+  renderSeasonsPage,
+  renderSeasonShowPage,
+  renderSettingPage,
+  renderStairwayGamePage,
+  renderStreamPage,
+  renderTournamentThreejsStreamPage,
+  renderTournamentStreamAdminPage,
+  renderTaskPreviewPage,
+  renderTournamentAdminPage,
+  renderTournamentPage,
+  renderTournamentEditPage,
+  renderTournamentIndexPage,
+  renderTournamentPlayerPage,
+  renderTournamentsSchedule,
+  renderUserPage,
+  renderUsersRating,
+  renderAdminPage,
+} from './widgets';
+
+if (import.meta.env.DEV) {
+  const xstateIframe = document.querySelector<HTMLIFrameElement>('.xstate');
+  if (xstateIframe) {
+    inspect({
+      iframe: () => xstateIframe,
+    });
+  }
+}
+
+const Hooks: Record<string, Hook> = {
+  NewChatMessage: {
+    mounted() {
+      this.el.scrollTop = this.el.scrollHeight;
+    },
+    updated() {
+      this.el.scrollTop = this.el.scrollHeight;
+    },
+  },
+  TournamentChatInput: {
+    mounted() {
+      this.handleEvent('clear', ({ value }) => {
+        (this.el as HTMLInputElement).value = value;
+      });
+    },
+  },
+};
+const csrfToken = document.querySelector<HTMLMetaElement>("meta[name='csrf-token']")?.content;
+
+if (!csrfToken) {
+  throw new Error('CSRF token not found');
+}
+
+const liveSocket = new LiveSocket('/live', Socket, {
+  hooks: Hooks,
+  params: {
+    _csrf_token: csrfToken,
+    locale: Intl.NumberFormat().resolvedOptions().locale,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  },
+});
+
+window.addEventListener('phx:page-loading-start', (_info) => NProgress.start());
+window.addEventListener('phx:page-loading-stop', (_info) => NProgress.done());
+
+liveSocket.connect();
+
+const gameWidgetRoot = document.getElementById('game-widget-root');
+const gameMlRoot = document.getElementById('game-ml-root');
+const gameThreejsRoot = document.getElementById('game-threejs-root');
+const heatmapRoot = document.getElementById('heatmap-root');
+const onlineRoot = document.getElementById('online-root');
+const invitesRoot = document.getElementById('invites-root');
+const mainChannelRoot = document.getElementById('main-channel-root');
+const streamRoot = document.getElementById('stream-classic-root');
+const tournamentThreejsStreamRoot = document.getElementById('tournament-threejs-stream-root');
+const tournamentStreamAdminRoot = document.getElementById('tournament-stream-admin-root');
+const lobbyRoot = document.getElementById('lobby-root');
+const ratingList = document.getElementById('rating-list');
+const registrationRoot = document.getElementById('registration');
+const settingsRoot = document.getElementById('settings');
+const stairwayGameRoot = document.getElementById('stairway-game-root');
+const tournamentPlayerRoot = document.getElementById('tournament-player-root');
+const tournamentIndexRoot = document.getElementById('tournament-index-root');
+const tournamentRoot = document.getElementById('tournament-root');
+const tournamentEditRoot = document.getElementById('tournament-edit-root');
+const adminTournamentRoot = document.getElementById('tournament-admin-root');
+const eventWidgetRoot = document.getElementById('event-widget');
+const groupTournamentRoot = document.getElementById('group-tournament-root');
+const userPageRoot = document.getElementById('user-page-root');
+const tournamentsScheduleRoot = document.getElementById('tournaments-schedule-root');
+const hallOfFameRoot = document.getElementById('hall-of-fame-root');
+const headToHeadRoot = document.getElementById('head-to-head-root');
+const seasonsRoot = document.getElementById('seasons-root');
+const seasonShowRoot = document.getElementById('season-show-root');
+const taskPreviewRoot = document.getElementById('task-preview-root');
+const adminConnectionsRoot = document.getElementById('admin-connections-root');
+
+if (mainChannelRoot) {
+  renderMainChannelWidget(mainChannelRoot);
+}
+
+if (adminConnectionsRoot) {
+  renderAdminPage(adminConnectionsRoot);
+}
+
+if (gameWidgetRoot) {
+  renderGameWidget(gameWidgetRoot);
+}
+
+if (gameThreejsRoot) {
+  renderGameThreejsPage(gameThreejsRoot);
+}
+
+if (gameMlRoot) {
+  renderGameMlPage(gameMlRoot);
+}
+
+if (heatmapRoot) {
+  renderHeatmapWidget(heatmapRoot);
+}
+
+if (lobbyRoot) {
+  renderLobby(lobbyRoot);
+}
+
+if (ratingList) {
+  renderUsersRating(ratingList);
+}
+
+if (userPageRoot) {
+  renderUserPage(userPageRoot);
+}
+
+if (settingsRoot) {
+  renderSettingPage(settingsRoot);
+}
+
+if (registrationRoot) {
+  renderRegistrationPage(registrationRoot);
+}
+
+if (stairwayGameRoot) {
+  renderStairwayGamePage(stairwayGameRoot);
+}
+
+if (tournamentPlayerRoot) {
+  renderTournamentPlayerPage(tournamentPlayerRoot);
+}
+
+if (tournamentIndexRoot) {
+  renderTournamentIndexPage(tournamentIndexRoot);
+}
+
+if (tournamentRoot) {
+  renderTournamentPage(tournamentRoot);
+}
+
+if (tournamentEditRoot) {
+  renderTournamentEditPage(tournamentEditRoot);
+}
+
+if (adminTournamentRoot) {
+  renderTournamentAdminPage(adminTournamentRoot);
+}
+
+if (eventWidgetRoot) {
+  renderEventPage(eventWidgetRoot);
+}
+
+if (groupTournamentRoot) {
+  renderGroupTournamentPage(groupTournamentRoot);
+}
+
+if (onlineRoot) {
+  renderOnlineWidget(onlineRoot);
+}
+
+if (invitesRoot) {
+  renderInvitesWidget(invitesRoot);
+}
+
+if (streamRoot) {
+  renderStreamPage(streamRoot);
+}
+
+if (tournamentThreejsStreamRoot) {
+  renderTournamentThreejsStreamPage(tournamentThreejsStreamRoot);
+}
+
+if (tournamentStreamAdminRoot) {
+  renderTournamentStreamAdminPage(tournamentStreamAdminRoot);
+}
+
+if (tournamentsScheduleRoot) {
+  renderTournamentsSchedule(tournamentsScheduleRoot);
+}
+
+if (hallOfFameRoot) {
+  renderHallOfFame(hallOfFameRoot);
+}
+
+if (headToHeadRoot) {
+  renderHeadToHeadPage(headToHeadRoot);
+}
+
+if (seasonsRoot) {
+  renderSeasonsPage(seasonsRoot);
+}
+
+if (seasonShowRoot) {
+  renderSeasonShowPage(seasonShowRoot);
+}
+
+if (taskPreviewRoot) {
+  renderTaskPreviewPage(taskPreviewRoot);
+}

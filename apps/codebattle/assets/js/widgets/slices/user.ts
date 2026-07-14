@@ -1,0 +1,83 @@
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import isEmpty from 'lodash/isEmpty';
+
+import initial, { type UserSliceState } from './initial';
+
+interface UserRecord {
+  id: number;
+  [key: string]: unknown;
+}
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: initial.user,
+  reducers: {
+    setCurrentUser: (state, { payload }: PayloadAction<{ user: UserRecord }>) => {
+      const { user } = payload;
+      const currentUserId = user.id;
+      if (currentUserId || currentUserId === 0) {
+        state.currentUserId = currentUserId;
+        state.users[user.id] = user;
+      }
+    },
+    updateUsers: (state, { payload }: PayloadAction<{ users: UserRecord[] }>) => {
+      const { users: usersList } = payload;
+      const users = usersList.reduce<Record<number, Record<string, unknown>>>(
+        (acc, user) =>
+          state.users[user.id]
+            ? { ...acc, [user.id]: { ...state.users[user.id], ...user } }
+            : { ...acc, [user.id]: user },
+        {},
+      );
+      if (!isEmpty(users)) {
+        Object.assign(state.users, users);
+      }
+    },
+    updateUsersStats: (
+      state,
+      { payload }: PayloadAction<{ userId: number; stats: unknown; achievements: unknown }>,
+    ) => {
+      const { userId, stats, achievements } = payload;
+      state.usersStats[userId] = { stats, achievements };
+    },
+    updateUsersRatingPage: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        users: unknown[];
+        pageInfo: { totalEntries: number; [key: string]: unknown };
+        dateFrom: string | null;
+        withBots: string | boolean;
+      }>,
+    ) => {
+      const { users, pageInfo, dateFrom, withBots } = payload;
+      state.usersRatingPage = {
+        users,
+        pageInfo,
+        dateFrom,
+        withBots: withBots === 'true',
+      };
+    },
+    updateUserSettings: (state, { payload }: PayloadAction<Record<string, unknown>>) => {
+      Object.assign(state.settings, payload);
+    },
+    toggleMuteSound: (state) => {
+      localStorage.setItem('ui_mute_sound', String(!state.settings.mute));
+      state.settings.mute = !state.settings.mute;
+    },
+    togglePremiumRequestStatus: (state) => {
+      localStorage.setItem(
+        'already_send_premium_request',
+        String(!state.settings.alreadySendPremiumRequest),
+      );
+      state.settings.alreadySendPremiumRequest = !state.settings.alreadySendPremiumRequest;
+    },
+  },
+});
+
+const { actions, reducer } = userSlice;
+
+export { actions };
+
+export default reducer;

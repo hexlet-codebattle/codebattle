@@ -1,0 +1,100 @@
+import React from 'react';
+
+import upperCase from 'lodash/upperCase';
+import { useSelector } from 'react-redux';
+
+import {
+  firstPlayerSelector,
+  leftExecutionOutputSelector,
+  rightExecutionOutputSelector,
+  secondPlayerSelector,
+} from '@/selectors';
+
+import { type GameState } from '@/slices/initial';
+
+import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
+
+interface StreamTaskInfoPanelProps {
+  game: GameState;
+  orientation: string;
+  // xstate v4 machine state; typed loosely per migration conventions.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  roomMachineState: any;
+  fontSize: number | string;
+  width?: string;
+}
+
+function StreamTaskInfoPanel({
+  game,
+  orientation,
+  roomMachineState,
+  fontSize,
+  width = '40%',
+}: StreamTaskInfoPanelProps) {
+  const task = game?.task as { descriptionRu?: string } | null | undefined;
+  const outputSelector =
+    orientation === 'left' ? leftExecutionOutputSelector : rightExecutionOutputSelector;
+  const playerSelector = orientation === 'left' ? firstPlayerSelector : secondPlayerSelector;
+
+  // Execution output shape is `unknown` in the store; narrow locally.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const output = useSelector(outputSelector(roomMachineState)) as any;
+  const player = useSelector(playerSelector);
+
+  const assert = output?.asserts ? output.asserts[0] : {};
+
+  const args = assert?.arguments;
+  const expected = assert?.expected;
+  const result = assert?.result || assert?.value;
+
+  return (
+    <div
+      className="d-flex cb-stream-widget flex-column justify-content-between"
+      style={{ width, maxWidth: width, minWidth: width }}
+    >
+      <div className="d-flex pt-4 justify-content-between">
+        <div>
+          <div style={{ fontSize }} className="cb-stream-tasks-stats cb-stream-widget-text">
+            <span>3/8 ЗАДАЧ</span>
+          </div>
+        </div>
+        <div>
+          <div className="cb-stream-player-number">{player?.id || 0}</div>
+        </div>
+        {/* <div> */}
+        {/*   <span>3 / 8 Задача</span> */}
+        {/* </div> */}
+        <div className="d-flex flex-column align-items-center cb-stream-name cb-stream-widget-text">
+          <div style={{ fontSize }}>{upperCase(player?.name || 'Name')}</div>
+        </div>
+      </div>
+      <div className="cb-stream-task-description h-100 py-5" style={{ fontSize }}>
+        <TaskDescriptionMarkdown description={task?.descriptionRu ?? ''} />
+      </div>
+      <div className="d-flex flex-column">
+        <div className="d-flex flex-column pb-4" style={{ fontSize }}>
+          <div className="d-flex cb-stream-output mt-2 mb-1">
+            <div className="d-flex align-items-center cb-stream-output-title cb-stream-widget-text">
+              Входные данные
+            </div>
+            <div className="cb-stream-output-data align-content-around">{args}</div>
+          </div>
+          <div className="d-flex cb-stream-output mb-1">
+            <div className="d-flex align-items-center cb-stream-output-title cb-stream-widget-text">
+              Ожидаемый результат
+            </div>
+            <div className="cb-stream-output-data align-content-around">{expected}</div>
+          </div>
+          <div className="d-flex cb-stream-output mt-1 mb-2">
+            <div className="d-flex align-items-center cb-stream-output-title cb-stream-widget-text">
+              Полученный результат
+            </div>
+            <div className="cb-stream-output-data align-content-around">{result}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default StreamTaskInfoPanel;

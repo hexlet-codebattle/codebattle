@@ -1,0 +1,96 @@
+import type {
+  StateFromReducersMapObject,
+  ThunkDispatch,
+  UnknownAction,
+  Dispatch,
+} from '@reduxjs/toolkit';
+
+import chat, { actions as chatActions } from './chat';
+import completedGames, { actions as completedGamesActions } from './completedGames';
+import editor, { actions as editorActions } from './editor';
+import groupTournament, { actions as groupTournamentActions } from './groupTournament';
+import event, { actions as eventActions } from './event';
+import executionOutput, { actions as executionOutputActions } from './executionOutput';
+import game, { actions as gameActions } from './game';
+import gameUI, { actions as gameUIActions } from './gameUI';
+import invites, { actions as invitesActions } from './invites';
+import leaderboard, { actions as leaderboardActions } from './leaderboard';
+import lobby, { actions as lobbyActions } from './lobby';
+import playbook, { actions as playbookActions } from './playbook';
+import reports, { actions as reportsActions } from './reports';
+import stairwayGame, { actions as stairwayGameActions } from './stairway';
+import storeLoaded, { actions as storeLoadedActions } from './store';
+import tournament, { actions as tournamentActions } from './tournament';
+import tournamentAdmin, { actions as tournamentAdminActions } from './tournamentAdmin';
+import tournamentPlayer, { actions as tournamentPlayerActions } from './tournamentPlayer';
+import user, { actions as userActions } from './user';
+import usersInfo, { actions as usersInfoActions } from './usersInfo';
+
+const setError = (error: unknown) => ({
+  type: 'ERROR',
+  error: true,
+  payload: error,
+});
+
+export const actions = {
+  setError,
+  ...chatActions,
+  ...completedGamesActions,
+  ...editorActions,
+  ...executionOutputActions,
+  ...gameActions,
+  ...gameUIActions,
+  ...invitesActions,
+  ...leaderboardActions,
+  ...lobbyActions,
+  ...playbookActions,
+  ...stairwayGameActions,
+  ...storeLoadedActions,
+  ...tournamentActions,
+  ...tournamentAdminActions,
+  ...tournamentPlayerActions,
+  ...groupTournamentActions,
+  ...userActions,
+  ...usersInfoActions,
+  ...eventActions,
+  ...reportsActions,
+};
+
+export const redirectToNewGame = (gameId: number | string) => {
+  window.location.href = `/games/${gameId}`;
+};
+
+const reducers = {
+  chat,
+  completedGames,
+  editor,
+  executionOutput,
+  groupTournament,
+  game,
+  gameUI,
+  invites,
+  leaderboard,
+  lobby,
+  playbook,
+  stairwayGame,
+  storeLoaded,
+  tournament,
+  tournamentAdmin,
+  tournamentPlayer,
+  user,
+  usersInfo,
+  event,
+  reports,
+};
+
+/**
+ * Root Redux state, derived from the combined slice reducers map. The real
+ * store is configured in `widgets/App.jsx`; this type mirrors its shape so
+ * selectors and thunks across the app can consume a typed state.
+ */
+export type RootState = StateFromReducersMapObject<typeof reducers>;
+
+export type AppDispatch = ThunkDispatch<RootState, unknown, UnknownAction> &
+  Dispatch<UnknownAction>;
+
+export default reducers;

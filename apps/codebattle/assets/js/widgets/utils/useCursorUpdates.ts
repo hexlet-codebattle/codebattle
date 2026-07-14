@@ -1,0 +1,139 @@
+import { useMemo, useState, useEffect, useCallback } from 'react';
+
+import pick from 'lodash/pick';
+
+import editorUserTypes from '../config/editorUserTypes';
+import * as RoomActions from '../middlewares/Room';
+
+interface RemoteDecoration {
+  range?: unknown;
+  options?: { className: string };
+}
+
+interface RemoteState {
+  cursor: RemoteDecoration;
+  selection: RemoteDecoration;
+}
+
+// Monaco editor/monaco namespace and the cursor props are typed loosely: no
+// lightweight shared Monaco type is available in this module.
+const useCursorUpdates = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  editor: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  monaco: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: any,
+) => {
+  const params = useMemo(
+    () => pick(props, ['userId', 'roomMode']),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.userId, props.roomMode],
+  );
+  const [, setRemoteKeys] = useState<string[]>([]);
+  const [remote, setRemote] = useState<RemoteState>({
+    cursor: {},
+    selection: {},
+  });
+
+  const updateRemoteCursorPosition = useCallback(
+    (offset: number) => {
+      const { readOnly, userType } = editor.getRawOptions();
+
+      const position = editor.getModel().getPositionAt(offset);
+      const userClassName =
+        userType === editorUserTypes.opponent ? 'cb-remote-opponent' : 'cb-remote-player';
+
+      if (readOnly) {
+        const cursor = {
+          range: new monaco.Range(
+            position.lineNumber,
+            position.column,
+            position.lineNumber,
+            position.column,
+          ),
+          options: { className: `cb-editor-remote-cursor ${userClassName}` },
+        };
+
+        setRemote((oldRemote) => ({
+          ...oldRemote,
+          cursor,
+        }));
+
+        editor.revealPositionInCenterIfOutsideViewport(position);
+      }
+    },
+    [setRemote, editor, monaco],
+  );
+
+  const updateRemoteCursorSelection = useCallback(
+    (startOffset: number, endOffset: number) => {
+      const { readOnly, userType } = editor.getRawOptions();
+
+      const userClassName =
+        userType === editorUserTypes.opponent ? 'cb-remote-opponent' : 'cb-remote-player';
+
+      if (readOnly) {
+        const startPosition = editor.getModel().getPositionAt(startOffset);
+        const endPosition = editor.getModel().getPositionAt(endOffset);
+
+        const startColumn = startPosition.column;
+        const startLineNumber = startPosition.lineNumber;
+        const endColumn = endPosition.column;
+        const endLineNumber = endPosition.lineNumber;
+
+        const selection = {
+          range: new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn),
+          options: { className: `cb-editor-remote-selection ${userClassName}` },
+        };
+
+        setRemote((prevRemote) => ({
+          ...prevRemote,
+          selection,
+        }));
+
+        editor.revealRangeInCenterIfOutsideViewport(selection.range);
+      }
+    },
+    [setRemote, editor, monaco],
+  );
+
+  const updateRemoteScrollPosition = useCallback(
+    (scrollTop: number, scrollLeft: number) => {
+      const { readOnly } = editor.getRawOptions();
+
+      if (readOnly) {
+        if (typeof scrollTop === 'number') {
+          editor.setScrollTop(scrollTop);
+        }
+
+        if (typeof scrollLeft === 'number') {
+          editor.setScrollLeft(scrollLeft);
+        }
+      }
+    },
+    [editor],
+  );
+
+  useEffect(() => {
+    if (remote.cursor.range && remote.selection.range) {
+      setRemoteKeys((oldRemoteKeys) =>
+        editor.deltaDecorations(oldRemoteKeys, Object.values(remote)),
+      );
+    }
+  }, [editor, remote, setRemoteKeys]);
+
+  useEffect(() => {
+    const clearCursorListeners = RoomActions.addCursorListeners(
+      params,
+      updateRemoteCursorPosition,
+      updateRemoteCursorSelection,
+      updateRemoteScrollPosition,
+    );
+
+    return clearCursorListeners;
+  }, [params, updateRemoteCursorPosition, updateRemoteCursorSelection, updateRemoteScrollPosition]);
+};
+
+export default useCursorUpdates;

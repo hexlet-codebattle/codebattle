@@ -47,8 +47,7 @@ defmodule Runner.Languages do
       image: "ghcr.io/hexlet-codebattle/ruby:4.0.1",
       solution_template: """
       def solution(<%= arguments %>)
-        ans = <%= default_value %>
-        return ans
+        <%= default_value %>
       end
       # <%= comment %>
       """,

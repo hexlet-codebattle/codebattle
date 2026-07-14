@@ -1,0 +1,157 @@
+import cn from 'classnames';
+import moment from 'moment';
+import i18n from '../../i18n';
+import { LEADERBOARD_TRUNCATE_LEN } from '../config/groupTournament';
+
+interface RunItem {
+  kind?: string;
+  roundPosition?: number;
+  id?: number | string;
+}
+
+interface LeaderboardEntry {
+  rounds?: Record<string | number, { place?: number } | undefined>;
+}
+
+interface GroupTournamentLike {
+  lastRoundStartedAt?: string;
+  startedAt?: string;
+}
+
+export const trClassName = (place: number) =>
+  cn('font-weight-bold cb-custom-event-tr-border', {
+    'cb-gold-place-bg': place === 1,
+    'cb-silver-place-bg': place === 2,
+    'cb-bronze-place-bg': place === 3,
+    'cb-bg-panel': !place || place > 3,
+  });
+
+export const tdClassName =
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0';
+
+export const tabBtnClass = (active: boolean) =>
+  cn('btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn', {
+    'text-white cb-tab-btn--active': active,
+    'text-white-50': !active,
+  });
+
+export const tabBtnStyle = (active: boolean) => ({
+  borderBottom: active ? '3px solid #3182ce' : '3px solid transparent',
+  transition: 'all 0.2s ease-in-out',
+});
+
+export function roundLabel(roundNumber: number) {
+  if (roundNumber === 1) return i18n.t('Seed');
+  return i18n.t('Round %{n}', { n: roundNumber - 1 });
+}
+
+export function truncate(value: unknown) {
+  if (typeof value !== 'string') return value;
+  if (value.length <= LEADERBOARD_TRUNCATE_LEN) return value;
+  return `${value.slice(0, LEADERBOARD_TRUNCATE_LEN - 1)}…`;
+}
+
+export const formatDuration = (durationMs: number) => {
+  if (!Number.isFinite(durationMs) || durationMs < 0) {
+    return null;
+  }
+
+  const totalSeconds = Math.floor(durationMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+};
+
+export const isSeedRun = (item: RunItem | null | undefined) => item?.kind === 'seed';
+export const isSliceRun = (item: RunItem | null | undefined) => item?.kind === 'slice';
+export const isRoundRun = (item: RunItem | null | undefined) => isSeedRun(item) || isSliceRun(item);
+
+export const getPlaceFor = (
+  item: RunItem | null | undefined,
+  leaderboardEntry: LeaderboardEntry | null | undefined,
+) => {
+  if (!leaderboardEntry?.rounds) return null;
+  const key = isSeedRun(item) ? 1 : item?.roundPosition;
+  if (!Number.isInteger(key)) return null;
+  const cell = leaderboardEntry.rounds[key as number] || leaderboardEntry.rounds[String(key)];
+  return Number.isInteger(cell?.place) ? cell!.place : null;
+};
+
+export const getTitleForRun = (item: RunItem, allItems: RunItem[]) => {
+  if (isSeedRun(item)) {
+    return i18n.t('Qualification run');
+  }
+  if (isSliceRun(item)) {
+    const r = Number.isInteger(item.roundPosition) ? (item.roundPosition as number) - 1 : null;
+    return r ? `${i18n.t('Group run')} ${r}` : i18n.t('Group run');
+  }
+
+  const userRuns = allItems.filter((i) => !isRoundRun(i));
+  const myIndexInUserRuns = userRuns.findIndex((i) => i.id === item.id);
+
+  if (myIndexInUserRuns !== -1) {
+    const userTotal = userRuns.length;
+    return `${i18n.t('Test run')} v${userTotal - myIndexInUserRuns}`;
+  }
+
+  return i18n.t('Test run'); // Fallback
+};
+
+export const detectOS = () => {
+  const platform =
+    (typeof navigator !== 'undefined' &&
+      ((navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData
+        ?.platform ||
+        navigator.platform ||
+        navigator.userAgent)) ||
+    '';
+  const value = platform.toLowerCase();
+
+  if (value.includes('win')) return 'windows';
+  if (value.includes('mac') || value.includes('iphone') || value.includes('ipad')) return 'mac';
+  return 'linux';
+};
+
+// Builds a vscode://file/... deep link that opens <folder>. VS Code does not
+// expand env vars or `~` in file URIs, and the browser cannot know the player's
+// home directory — so we anchor the link at a fixed, username-independent shared
+// location that is identical on every machine. Players must extract the folder
+// into that location for the link to resolve:
+//   macOS:   /Users/Shared/<folder>
+//   Windows: C:\Users\Public\<folder>
+//   Linux:   /tmp/<folder> (world-writable; note: cleared on reboot)
+export const buildVscodeFolderUrl = (folderName: string | null | undefined, os = detectOS()) => {
+  if (!folderName) return null;
+
+  const safe = String(folderName)
+    .trim()
+    .replace(/^[/\\]+|[/\\]+$/g, '');
+
+  if (!safe) return null;
+
+  const encoded = safe
+    .split(/[/\\]+/)
+    .map(encodeURIComponent)
+    .join('/');
+
+  switch (os) {
+    case 'windows':
+      return `vscode://file/C:/Users/Public/${encoded}`;
+    case 'linux':
+      return `vscode://file//tmp/${encoded}`;
+    case 'mac':
+    default:
+      return `vscode://file//Users/Shared/${encoded}`;
+  }
+};
+
+export const isOnBreak = (groupTournament: GroupTournamentLike | null | undefined) => {
+  const roundStartedAt = groupTournament?.lastRoundStartedAt || groupTournament?.startedAt;
+  if (!roundStartedAt) return false;
+
+  const startMoment = moment.utc(roundStartedAt);
+  return startMoment.isAfter(moment());
+};

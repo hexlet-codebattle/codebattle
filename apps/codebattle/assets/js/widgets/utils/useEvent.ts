@@ -1,0 +1,40 @@
+import { useEffect } from 'react';
+
+// Targets can be a DOM EventTarget (addEventListener) or an emitter-style
+// object exposing on/off (e.g. a phoenix channel) — hence the loose typing.
+type ListenerTarget = any;
+
+const isClient = typeof window === 'object';
+const defaultTarget: ListenerTarget = isClient ? window : null;
+const isListenerType1 = (target: ListenerTarget) => !!target.addEventListener;
+const isListenerType2 = (target: ListenerTarget) => !!target.on;
+const useEvent = (
+  name: string,
+  handler: ((...args: any[]) => void) | null | undefined,
+  target: ListenerTarget = defaultTarget,
+  options?: boolean | AddEventListenerOptions,
+) => {
+  useEffect(() => {
+    if (!handler) {
+      return;
+    }
+    if (!target) {
+      return;
+    }
+    if (isListenerType1(target)) {
+      target.addEventListener(name, handler, options);
+    } else if (isListenerType2(target)) {
+      target.on(name, handler, options);
+    }
+    // eslint-disable-next-line consistent-return
+    return () => {
+      if (isListenerType1(target)) {
+        target?.removeEventListener(name, handler, options);
+      } else if (isListenerType2(target)) {
+        target.off(name, handler, options);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, handler, target, JSON.stringify(options)]);
+};
+export default useEvent;

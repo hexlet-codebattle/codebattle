@@ -1,0 +1,87 @@
+import React, { memo, useMemo } from 'react';
+
+import i18next from 'i18next';
+import reverse from 'lodash/reverse';
+
+import { type Player } from '@/slices/initial';
+
+import Loading from '../../components/Loading';
+import Top200RedirectButton from './Top200RedirectButton';
+import UsersMatchList from './UsersMatchList';
+
+interface PlayerStatsMatch {
+  playerIds: number[];
+  [key: string]: unknown;
+}
+
+interface PlayerStatsPanelProps {
+  currentRoundPosition: number;
+  matches: Record<number, PlayerStatsMatch>;
+  players: Record<number, Player>;
+  currentUserId: number;
+  hideBots?: boolean;
+  canModerate?: boolean;
+  playersRedirectUrl?: string;
+  type?: string;
+  // accepted for parity with the original JS call site; unused by this component
+  roundsLimit?: number;
+}
+
+function PlayerStatsPanel({
+  currentRoundPosition,
+  matches,
+  players,
+  currentUserId,
+  hideBots,
+  canModerate,
+  playersRedirectUrl,
+  type,
+}: PlayerStatsPanelProps) {
+  const currentPlayer = players[currentUserId];
+
+  const matchList = useMemo(
+    () =>
+      reverse(Object.values(matches)).filter((match) => match.playerIds.includes(currentUserId)),
+    [matches, currentUserId],
+  );
+
+  if (!currentPlayer) {
+    return <Loading />;
+  }
+
+  return (
+    <div className="d-flex flex-column cb-rounded shadow-sm cb-bg-panel">
+      <Top200RedirectButton
+        currentRoundPosition={currentRoundPosition}
+        player={currentPlayer}
+        playersRedirectUrl={playersRedirectUrl}
+        type={type}
+      />
+      {currentPlayer.state === 'banned' && (
+        <div className="alert alert-warning m-2 mb-0" role="alert">
+          {i18next.t(
+            'Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.',
+          )}
+        </div>
+      )}
+      <div className="d-flex flex-column">
+        <div>
+          <div className="d-flex justify-content-center border-bottom cb-border-color p-2 font-weight-bold text-uppercase">
+            {i18next.t('Matches')}
+          </div>
+          <UsersMatchList
+            currentUserId={currentUserId}
+            playerId={currentUserId}
+            matches={matchList as React.ComponentProps<typeof UsersMatchList>['matches']}
+            canModerate={canModerate ?? false}
+            hideStats
+            hideBots={hideBots}
+            showScoreFormula={type === 'ladder'}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default memo(PlayerStatsPanel);

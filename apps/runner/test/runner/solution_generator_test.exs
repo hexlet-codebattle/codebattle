@@ -124,8 +124,7 @@ defmodule Runner.SolutionGeneratorTest do
 
   @ruby_expected """
   def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)
-    ans = ["value"]
-    return ans
+    ["value"]
   end
   # use stdout to debug
   """

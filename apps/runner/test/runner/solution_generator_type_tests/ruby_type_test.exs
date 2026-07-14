@@ -26,8 +26,7 @@ defmodule Runner.SolutionGeneratorTypeTests.RubyTypeTest do
 
     expected = """
     def solution(input_string)
-      ans = "value"
-      return ans
+      "value"
     end
     # use stdout to debug
     """
@@ -58,8 +57,7 @@ defmodule Runner.SolutionGeneratorTypeTests.RubyTypeTest do
 
     expected = """
     def solution(input_integer)
-      ans = 0
-      return ans
+      0
     end
     # use stdout to debug
     """
@@ -90,8 +88,7 @@ defmodule Runner.SolutionGeneratorTypeTests.RubyTypeTest do
 
     expected = """
     def solution(input_array)
-      ans = ["value"]
-      return ans
+      ["value"]
     end
     # use stdout to debug
     """
@@ -122,8 +119,7 @@ defmodule Runner.SolutionGeneratorTypeTests.RubyTypeTest do
 
     expected = """
     def solution(input_hash)
-      ans = {"key" => "value"}
-      return ans
+      {"key" => "value"}
     end
     # use stdout to debug
     """
@@ -154,8 +150,7 @@ defmodule Runner.SolutionGeneratorTypeTests.RubyTypeTest do
 
     expected = """
     def solution(input_array)
-      ans = [["value"]]
-      return ans
+      [["value"]]
     end
     # use stdout to debug
     """
@@ -198,8 +193,7 @@ defmodule Runner.SolutionGeneratorTypeTests.RubyTypeTest do
 
     expected = """
     def solution(input_complex)
-      ans = [{"key" => {"key" => ["value"]}}]
-      return ans
+      [{"key" => {"key" => ["value"]}}]
     end
     # use stdout to debug
     """

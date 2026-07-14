@@ -1,0 +1,404 @@
+import React, { memo, useMemo, useState } from 'react';
+
+import cn from 'classnames';
+import Gon from 'gon';
+
+import i18n from '../../../i18n';
+import LanguageIcon from '../../components/LanguageIcon';
+import PlayerInsightsModal from '../../components/PlayerInsightsModal';
+import {
+  LeaderboardTable,
+  useLeaderboardState,
+  getPlaceBadgeClass,
+  getMedalEmoji,
+  type LeaderboardResult,
+} from '../../components/SeasonLeaderboard';
+import UserInfo from '../../components/UserInfo';
+
+type HofResult = LeaderboardResult;
+// Season payload is a snake_case Gon asset with a backend-defined shape;
+// typed loosely per migration conventions.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type HofSeason = Record<string, any>;
+
+interface PreviousSeasonWinnersEntry {
+  season: HofSeason;
+  winners: HofResult[];
+}
+
+interface StatBoxProps {
+  label: React.ReactNode;
+  value: React.ReactNode;
+  highlight?: boolean;
+}
+
+function StatBox({ label, value, highlight = false }: StatBoxProps) {
+  return (
+    <div className="text-center">
+      <div className={cn('fw-bold', highlight ? 'fs-3 text-warning' : 'fs-5 text-white')}>
+        {value}
+      </div>
+      <div className="text-muted small text-uppercase">{label}</div>
+    </div>
+  );
+}
+
+const truncateText = (text?: string, maxLength = 12) =>
+  text && text.length > maxLength ? text.slice(0, maxLength) : text;
+
+interface PodiumCardProps {
+  result: HofResult;
+  isFirst?: boolean;
+}
+
+function PodiumCard({ result, isFirst = false }: PodiumCardProps) {
+  const displayName = truncateText(result.user_name);
+  const displayClan = truncateText(result.clan_name);
+  const user = {
+    id: result.user_id,
+    name: result.user_name,
+    lang: result.user_lang,
+    avatarUrl: result.avatar_url,
+    clan: result.clan_name,
+    points: result.total_points,
+    rank: result.place,
+  };
+
+  return (
+    <div
+      className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
+        'cb-gold-place-bg': result.place === 1,
+        'cb-silver-place-bg': result.place === 2,
+        'cb-bronze-place-bg': result.place === 3,
+      })}
+    >
+      <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
+        <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>{getMedalEmoji(result.place)}</div>
+        {result.avatar_url && (
+          <img
+            src={result.avatar_url}
+            alt={result.user_name}
+            className="rounded-circle mb-2"
+            style={{ width: isFirst ? '64px' : '48px', height: isFirst ? '64px' : '48px' }}
+          />
+        )}
+        <div className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>
+          <div className="d-flex justify-content-center">
+            <UserInfo
+              user={user}
+              lang={undefined}
+              hideOnlineIndicator
+              hideRank
+              displayName={displayName}
+              className="text-white"
+              linkClassName="text-white"
+            />
+          </div>
+        </div>
+        <div className="mb-3">
+          {result.user_lang && (
+            <span className="mr-2">
+              <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
+            </span>
+          )}
+          {result.clan_name && (
+            <span className="text-muted" title={result.clan_name}>
+              {displayClan}
+            </span>
+          )}
+        </div>
+        <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
+          <div className="px-3">
+            <StatBox label={i18n.t('Points')} value={result.total_points} highlight={isFirst} />
+          </div>
+          <div className="px-3">
+            <StatBox label={i18n.t('Wins')} value={result.total_wins_count} />
+          </div>
+        </div>
+        <div className="d-flex justify-content-center mt-3">
+          <div className="px-3">
+            <StatBox label={i18n.t('Score')} value={result.total_score} />
+          </div>
+          <div className="px-3">
+            <StatBox label={i18n.t('Tournaments')} value={result.tournaments_count} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ChampionsPodiumProps {
+  top3: HofResult[];
+}
+
+function ChampionsPodium({ top3 }: ChampionsPodiumProps) {
+  if (!top3 || top3.length === 0) return null;
+
+  const first = top3.find((r) => r.place === 1);
+  const second = top3.find((r) => r.place === 2);
+  const third = top3.find((r) => r.place === 3);
+
+  return (
+    <div className="mb-5">
+      <h2 className="text-gold mb-4 text-center">{i18n.t('Top 3')}</h2>
+      <div className="row align-items-end justify-content-center">
+        {/* Second place - left */}
+        <div className="col-md-4 col-lg-3">
+          {second && (
+            <div style={{ marginTop: '2rem' }}>
+              <PodiumCard result={second} />
+            </div>
+          )}
+        </div>
+
+        {/* First place - center, elevated */}
+        <div className="col-md-4 col-lg-3">{first && <PodiumCard result={first} isFirst />}</div>
+
+        {/* Third place - right */}
+        <div className="col-md-4 col-lg-3">
+          {third && (
+            <div style={{ marginTop: '3rem' }}>
+              <PodiumCard result={third} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface PreviousSeasonWinnersProps {
+  previousSeasonsWinners: PreviousSeasonWinnersEntry[];
+}
+
+function PreviousSeasonWinners({ previousSeasonsWinners }: PreviousSeasonWinnersProps) {
+  if (!previousSeasonsWinners || previousSeasonsWinners.length === 0) return null;
+
+  return (
+    <div className="mt-5">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="text-gold">{i18n.t('Previous Seasons Champions')}</h2>
+        <a href="/seasons" className="btn btn-outline-gold btn-sm">
+          {i18n.t('View All Seasons')}
+        </a>
+      </div>
+
+      {previousSeasonsWinners.map(({ season, winners }) => (
+        <div
+          key={season.id}
+          className="card cb-bg-panel cb-border-color cb-rounded shadow-lg border-0 text-light mb-4"
+          style={{
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
+          }}
+        >
+          <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h4 className="card-title text-warning mb-0">
+                {season.name} {season.year}
+              </h4>
+              <a href={`/seasons/${season.id}`} className="btn btn-sm btn-outline-gold">
+                {i18n.t('Full Results')}
+              </a>
+            </div>
+
+            <div className="row">
+              {winners.map((winner) => {
+                const displayName = truncateText(winner.user_name);
+                const displayClan = truncateText(winner.clan_name);
+                const user = {
+                  id: winner.user_id,
+                  name: winner.user_name,
+                  lang: winner.user_lang,
+                  avatarUrl: winner.avatar_url,
+                  clan: winner.clan_name,
+                  points: winner.total_points,
+                  rank: winner.place,
+                };
+
+                return (
+                  <div key={winner.user_id} className="col-md-4 mb-3">
+                    <div
+                      className={cn('card h-100 border-0 cb-hof-podium-card', {
+                        'cb-gold-place-bg': winner.place === 1,
+                        'cb-silver-place-bg': winner.place === 2,
+                        'cb-bronze-place-bg': winner.place === 3,
+                      })}
+                    >
+                      <div className="card-body">
+                        <div className="d-flex align-items-center mb-2">
+                          <span className={cn('badge mr-2', getPlaceBadgeClass(winner.place))}>
+                            {getMedalEmoji(winner.place)}
+                          </span>
+                          {winner.avatar_url && (
+                            <img
+                              src={winner.avatar_url}
+                              alt={winner.user_name}
+                              className="rounded-circle mr-2"
+                              style={{ width: '32px', height: '32px' }}
+                            />
+                          )}
+                          <UserInfo
+                            user={user}
+                            lang={undefined}
+                            hideOnlineIndicator
+                            hideRank
+                            displayName={displayName}
+                            className="mb-0 text-white"
+                            linkClassName="text-white"
+                          />
+                        </div>
+                        <div className="small">
+                          <div className="d-flex align-items-center mb-1">
+                            {winner.user_lang && (
+                              <span className="mr-2">
+                                <LanguageIcon
+                                  lang={winner.user_lang}
+                                  style={{ width: '16px', height: '16px' }}
+                                />
+                              </span>
+                            )}
+                            {winner.clan_name && (
+                              <span className="text-muted" title={winner.clan_name}>
+                                {displayClan}
+                              </span>
+                            )}
+                          </div>
+                          <div className="d-flex justify-content-between">
+                            <span className="text-muted">{i18n.t('Points')}:</span>
+                            <span className="text-white fw-bold">{winner.total_points}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HallOfFamePage() {
+  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset('current_season')) || null;
+  const currentSeasonResults = useMemo(
+    () => (Gon && Gon.getAsset && Gon.getAsset('current_season_results')) || [],
+    [],
+  );
+  const previousSeasonsWinners =
+    (Gon && Gon.getAsset && Gon.getAsset('previous_seasons_winners')) || [];
+
+  // Use the shared leaderboard state hook
+  const leaderboardState = useLeaderboardState(currentSeasonResults);
+
+  // Modal state
+  const [selectedPlayer, setSelectedPlayer] = useState<HofResult | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleShowInsights = (player: HofResult) => {
+    setSelectedPlayer(player);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPlayer(null);
+  };
+
+  const top3 = currentSeasonResults.slice(0, 3);
+
+  return (
+    <div className="cb-bg-panel cb-text min-vh-100 py-5">
+      <div className="container">
+        <h1 className="text-center text-gold mb-5 fw-bold">{i18n.t('Hall of Fame')}</h1>
+
+        {currentSeason && (
+          <>
+            <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light mb-4">
+              <div className="card-body py-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 className="card-title mb-2 text-gold">
+                      {currentSeason.name} {currentSeason.year}
+                    </h5>
+                    <div className="d-flex flex-wrap small text-muted">
+                      <span className="mr-3">
+                        <strong>{i18n.t('Starts')}:</strong> {currentSeason.starts_at}
+                      </span>
+                      <span>
+                        <strong>{i18n.t('Ends')}:</strong> {currentSeason.ends_at}
+                      </span>
+                    </div>
+                  </div>
+                  <a href="/seasons" className="btn btn-outline-gold">
+                    {i18n.t('View All Seasons')}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <ChampionsPodium top3={top3} />
+
+            {currentSeasonResults.length > 0 && (
+              <div
+                className={cn(
+                  'card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light',
+                )}
+              >
+                <div className="card-header bg-transparent border-bottom border-secondary py-3">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h2 className="mb-0 text-gold fs-4">{i18n.t('Current Season Leaderboard')}</h2>
+                    <span className="badge bg-secondary">
+                      {i18n.t('%{count} players', { count: currentSeasonResults.length })}
+                    </span>
+                  </div>
+                </div>
+                <div className="card-body p-0">
+                  <LeaderboardTable
+                    results={currentSeasonResults}
+                    onShowInsights={handleShowInsights}
+                    searchQuery={leaderboardState.searchQuery}
+                    onSearchChange={leaderboardState.handleSearchChange}
+                    clanFilter={leaderboardState.clanFilter}
+                    onClanFilterChange={leaderboardState.handleClanFilterChange}
+                    langFilter={leaderboardState.langFilter}
+                    onLangFilterChange={leaderboardState.handleLangFilterChange}
+                    uniqueClans={leaderboardState.uniqueClans as string[]}
+                    uniqueLangs={leaderboardState.uniqueLangs as string[]}
+                    onResetFilters={leaderboardState.handleResetFilters}
+                    sortConfig={leaderboardState.sortConfig}
+                    onSort={leaderboardState.handleSort}
+                    currentPage={leaderboardState.currentPage}
+                    totalPages={leaderboardState.totalPages}
+                    onPageChange={leaderboardState.handlePageChange}
+                    totalItems={leaderboardState.sortedResults.length}
+                    itemsPerPage={leaderboardState.itemsPerPage}
+                    onItemsPerPageChange={leaderboardState.handleItemsPerPageChange}
+                    displayedResults={leaderboardState.displayedResults}
+                    showInsightsButton
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Player Insights Modal */}
+            <PlayerInsightsModal
+              show={showModal}
+              onHide={handleCloseModal}
+              player={selectedPlayer as React.ComponentProps<typeof PlayerInsightsModal>['player']}
+              allResults={currentSeasonResults}
+              season={currentSeason}
+            />
+          </>
+        )}
+
+        <PreviousSeasonWinners previousSeasonsWinners={previousSeasonsWinners} />
+      </div>
+    </div>
+  );
+}
+
+export default memo(HallOfFamePage);

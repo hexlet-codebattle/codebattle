@@ -1,0 +1,150 @@
+import React, { useEffect } from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
+
+import { type RootState, type AppDispatch } from '@/slices';
+import { connectToGame, setGameChannel } from '@/middlewares/Room';
+import useGameRoomMachine from '@/utils/useGameRoomMachine';
+import useMachineStateSelector from '@/utils/useMachineStateSelector';
+import useSearchParams from '@/utils/useSearchParams';
+
+import * as machineSelectors from '../../machines/selectors';
+import connectToStream from '../../middlewares/Stream';
+
+import StreamEditorPanel from './StreamEditorPanel';
+import StreamFullPanel from './StreamFullPanel';
+import StreamTaskInfoPanel from './StreamTaskInfoPanel';
+
+const orientations = {
+  NONE: 'none',
+  LEFT: 'left',
+  RIGHT: 'right',
+};
+
+interface StreamWidgetProps {
+  // xstate v4 machines; typed loosely per migration conventions.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  mainMachine: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  taskMachine: any;
+}
+
+function StreamWidget({ mainMachine, taskMachine }: StreamWidgetProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const game = useSelector((state: RootState) => state.game);
+  const searchParams = useSearchParams();
+  const orientation = searchParams.has('orientation')
+    ? (searchParams.get('orientation') ?? orientations.NONE)
+    : orientations.NONE;
+
+  const fontSize = searchParams.has('fontSize') ? (searchParams.get('fontSize') ?? 16) : 16;
+  const codeFontSize = searchParams.has('codeFontSize')
+    ? (searchParams.get('codeFontSize') ?? 16)
+    : 16;
+  const headerFontSize = searchParams.has('headerFontSize')
+    ? (searchParams.get('headerFontSize') ?? 16)
+    : 16;
+  const widthInfoPanelPercentage = searchParams.has('widthInfoPanel')
+    ? (searchParams.get('widthInfoPanel') ?? 40)
+    : 40;
+  const widthEditorPanelPercentage = searchParams.has('widthEditorPanel')
+    ? (searchParams.get('widthEditorPanel') ?? 60)
+    : 60;
+
+  const { mainService } = useGameRoomMachine({
+    mainMachine,
+    taskMachine,
+  });
+
+  const roomMachineState = useMachineStateSelector(mainService, machineSelectors.roomStateSelector);
+
+  useEffect(() => {
+    dispatch(connectToStream());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!game.id) {
+      return () => {};
+    }
+
+    const channel = setGameChannel(game.id);
+
+    const options = { cancelRedirect: true };
+    connectToGame(mainService, options)(dispatch);
+
+    const clearChannel = () => {
+      if (channel) {
+        channel.leave();
+      }
+    };
+
+    return clearChannel;
+  }, [game.id, mainService, dispatch]);
+
+  if (!game.id) {
+    return <div className="vh-100 overflow-hidden cb-stream-widget" />;
+  }
+
+  return (
+    <div className="vh-100 overflow-hidden cb-stream-widget">
+      <div className="d-flex flex-column w-100 h-100">
+        <div
+          className="cb-stream-widget-header cb-stream-widget-text d-flex"
+          style={{ fontSize: `${headerFontSize}px` }}
+        >
+          <div className="cb-stream-widget-header-img-left" />
+          <div className="cb-stream-widget-header-title text-center p-2 ">Баттл Вузов</div>
+          <div className="cb-stream-widget-header-img-right" />
+        </div>
+        <div className="flex-grow-1 d-flex flex-column h-100">
+          {orientations.NONE === orientation && (
+            <StreamFullPanel
+              game={game}
+              roomMachineState={roomMachineState}
+              fontSize={fontSize}
+              codeFontSize={codeFontSize}
+            />
+          )}
+          <div className="d-flex w-100 flex-grow-1 h-100" style={{ fontSize: `${fontSize}px` }}>
+            {orientations.LEFT === orientation && (
+              <>
+                <StreamTaskInfoPanel
+                  game={game}
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={fontSize}
+                  width={`${widthInfoPanelPercentage}%`}
+                />
+                <StreamEditorPanel
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={codeFontSize}
+                  width={`${widthEditorPanelPercentage}%`}
+                />
+              </>
+            )}
+            {orientations.RIGHT === orientation && (
+              <>
+                <StreamEditorPanel
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={codeFontSize}
+                  width={`${widthEditorPanelPercentage}%`}
+                />
+                <StreamTaskInfoPanel
+                  game={game}
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={fontSize}
+                  width={`${widthInfoPanelPercentage}%`}
+                />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default StreamWidget;
