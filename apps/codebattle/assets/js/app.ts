@@ -23,6 +23,8 @@ import 'bootstrap';
 
 // Import static assets for cache busting (adds them to Vite manifest)
 import './staticAssets';
+import './pwa';
+import { initializeInertiaApp } from './inertia';
 
 import { inspect } from '@xstate/inspect';
 import NProgress from 'nprogress';
@@ -41,28 +43,20 @@ import {
   renderGameMlPage,
   renderGameThreejsPage,
   renderGameWidget,
-  renderHallOfFame,
-  renderHeadToHeadPage,
   renderHeatmapWidget,
   renderInvitesWidget,
   renderMainChannelWidget,
   renderLobby,
   renderOnlineWidget,
   renderRegistrationPage,
-  renderSeasonsPage,
-  renderSeasonShowPage,
   renderSettingPage,
   renderStairwayGamePage,
   renderStreamPage,
   renderTournamentThreejsStreamPage,
   renderTournamentStreamAdminPage,
-  renderTaskPreviewPage,
   renderTournamentAdminPage,
   renderTournamentPage,
-  renderTournamentEditPage,
-  renderTournamentIndexPage,
   renderTournamentPlayerPage,
-  renderTournamentsSchedule,
   renderUserPage,
   renderUsersRating,
   renderAdminPage,
@@ -100,6 +94,11 @@ if (!csrfToken) {
   throw new Error('CSRF token not found');
 }
 
+// Legacy React actions use phoenix_html's `data-csrf` convention. Inertia pages
+// no longer render the old per-page script that populated this global, so keep
+// it synchronized with the token provided by the shared document layout.
+window.csrf_token = csrfToken;
+
 const liveSocket = new LiveSocket('/live', Socket, {
   hooks: Hooks,
   params: {
@@ -113,6 +112,8 @@ window.addEventListener('phx:page-loading-start', (_info) => NProgress.start());
 window.addEventListener('phx:page-loading-stop', (_info) => NProgress.done());
 
 liveSocket.connect();
+
+initializeInertiaApp();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const gameMlRoot = document.getElementById('game-ml-root');
@@ -130,19 +131,11 @@ const registrationRoot = document.getElementById('registration');
 const settingsRoot = document.getElementById('settings');
 const stairwayGameRoot = document.getElementById('stairway-game-root');
 const tournamentPlayerRoot = document.getElementById('tournament-player-root');
-const tournamentIndexRoot = document.getElementById('tournament-index-root');
 const tournamentRoot = document.getElementById('tournament-root');
-const tournamentEditRoot = document.getElementById('tournament-edit-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const groupTournamentRoot = document.getElementById('group-tournament-root');
 const userPageRoot = document.getElementById('user-page-root');
-const tournamentsScheduleRoot = document.getElementById('tournaments-schedule-root');
-const hallOfFameRoot = document.getElementById('hall-of-fame-root');
-const headToHeadRoot = document.getElementById('head-to-head-root');
-const seasonsRoot = document.getElementById('seasons-root');
-const seasonShowRoot = document.getElementById('season-show-root');
-const taskPreviewRoot = document.getElementById('task-preview-root');
 const adminConnectionsRoot = document.getElementById('admin-connections-root');
 
 if (mainChannelRoot) {
@@ -197,16 +190,8 @@ if (tournamentPlayerRoot) {
   renderTournamentPlayerPage(tournamentPlayerRoot);
 }
 
-if (tournamentIndexRoot) {
-  renderTournamentIndexPage(tournamentIndexRoot);
-}
-
 if (tournamentRoot) {
   renderTournamentPage(tournamentRoot);
-}
-
-if (tournamentEditRoot) {
-  renderTournamentEditPage(tournamentEditRoot);
 }
 
 if (adminTournamentRoot) {
@@ -239,28 +224,4 @@ if (tournamentThreejsStreamRoot) {
 
 if (tournamentStreamAdminRoot) {
   renderTournamentStreamAdminPage(tournamentStreamAdminRoot);
-}
-
-if (tournamentsScheduleRoot) {
-  renderTournamentsSchedule(tournamentsScheduleRoot);
-}
-
-if (hallOfFameRoot) {
-  renderHallOfFame(hallOfFameRoot);
-}
-
-if (headToHeadRoot) {
-  renderHeadToHeadPage(headToHeadRoot);
-}
-
-if (seasonsRoot) {
-  renderSeasonsPage(seasonsRoot);
-}
-
-if (seasonShowRoot) {
-  renderSeasonShowPage(seasonShowRoot);
-}
-
-if (taskPreviewRoot) {
-  renderTaskPreviewPage(taskPreviewRoot);
 }

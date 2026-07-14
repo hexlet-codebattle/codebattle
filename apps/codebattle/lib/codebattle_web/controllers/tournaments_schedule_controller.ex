@@ -4,10 +4,12 @@ defmodule CodebattleWeb.TournamentsScheduleController do
   require Logger
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index])
-  plug(:put_view, CodebattleWeb.TournamentsScheduleView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _) do
-    render(conn, "index.html")
+    conn
+    |> assign(:page_title, "Tournament schedule")
+    |> assign_prop("page_title", "Tournament schedule")
+    |> render_inertia("TournamentsSchedule")
   end
 end

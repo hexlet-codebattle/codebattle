@@ -243,7 +243,7 @@ function CustomTournamentInfoPanel({
         <ControlPanel
           isPlayer={!!players[currentUserId]}
           leftContent={
-            panelMode.panel === PanelModeCodes.playerMode ? (
+            players[currentUserId] ? (
               <StatisticsCard
                 playerId={currentUserId}
                 matchList={

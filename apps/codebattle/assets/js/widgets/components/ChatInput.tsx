@@ -45,9 +45,16 @@ interface ChatInputProps {
   inputRef: React.RefObject<HTMLInputElement>;
   disabled?: boolean;
   mode?: string;
+  variant?: 'default' | 'tournament';
+  forceGeneral?: boolean;
 }
 
-export default function ChatInput({ inputRef, disabled = false }: ChatInputProps) {
+export default function ChatInput({
+  inputRef,
+  disabled = false,
+  variant = 'default',
+  forceGeneral = false,
+}: ChatInputProps) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isMaxLengthExceeded, setMaxLengthExceeded] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
@@ -55,19 +62,29 @@ export default function ChatInput({ inputRef, disabled = false }: ChatInputProps
   const [badwordsReady, setBadwordsReady] = useState(false);
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const badwordsRef = useRef(new BadWordsNext());
+  const isTournament = variant === 'tournament';
 
   const sendBtnClassName = cn(
-    'btn btn-secondary cb-btn-secondary border-gray border-left rounded-right',
-    {
+    'btn',
+    isTournament
+      ? 'cb-tournament-chat-send'
+      : 'btn-secondary cb-btn-secondary border-gray border-left rounded-right',
+    !isTournament && {
       'cb-border-color': true,
     },
   );
-  const inputClassName = cn('form-control h-auto border-right-0 rounded-left', {
-    'bg-dark cb-border-color text-white': true,
+  const inputClassName = cn('form-control h-auto', {
+    'cb-tournament-chat-input': isTournament,
+    'border-right-0 rounded-left bg-dark cb-border-color text-white': !isTournament,
     'is-invalid': isMaxLengthExceeded,
   });
-  const emojiBtnClassName = cn('btn border-left-0 border-right-0 px-2 py-0', {
-    'cb-border-color border': true,
+  const emojiBtnClassName = cn('btn px-2 py-0', {
+    'cb-tournament-chat-emoji': isTournament,
+    'border-left-0 border-right-0 cb-border-color border': !isTournament,
+  });
+  const formClassName = cn('input-group mb-0', {
+    'cb-tournament-chat-form cb-tournament-chat-input-group': isTournament,
+    'border-top cb-border-color p-2': !isTournament,
   });
 
   useEffect(() => {
@@ -126,13 +143,14 @@ export default function ChatInput({ inputRef, disabled = false }: ChatInputProps
         }
       }
 
-      const message = {
-        text: filteredText,
-        meta: {
-          type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
-          targetUserId: activeRoom.targetUserId,
-        },
-      };
+      const meta = forceGeneral
+        ? { type: messageTypes.general }
+        : {
+            type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
+            targetUserId: activeRoom.targetUserId,
+          };
+
+      const message = { text: filteredText, meta };
 
       addMessage(message);
       setText('');
@@ -173,7 +191,7 @@ export default function ChatInput({ inputRef, disabled = false }: ChatInputProps
   }, []);
 
   return (
-    <form className="border-top cb-border-color input-group mb-0 p-2" onSubmit={handleSubmit}>
+    <form className={formClassName} onSubmit={handleSubmit}>
       <input
         className={inputClassName}
         aria-label={i18next.t('Chat message')}
@@ -200,7 +218,11 @@ export default function ChatInput({ inputRef, disabled = false }: ChatInputProps
       {isPickerVisible && (
         <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} disabled={disabled} />
       )}
-      <div className="input-group-append border-left rounded-right">
+      <div
+        className={cn('input-group-append', {
+          'border-left rounded-right': !isTournament,
+        })}
+      >
         <button
           type="button"
           className={emojiBtnClassName}

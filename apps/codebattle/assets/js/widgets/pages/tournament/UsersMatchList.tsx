@@ -206,10 +206,26 @@ function UserTournamentInfo({ userId }: UserTournamentInfoProps) {
   return <UserInfo user={user} hideOnlineIndicator hideLink />;
 }
 
-function MatchPlayer({ userId }: UserTournamentInfoProps) {
+interface MatchPlayerProps {
+  userId: number;
+  score?: number;
+  testPercent?: number;
+}
+
+function MatchPlayer({ userId, score, testPercent }: MatchPlayerProps) {
   return (
     <div className={playerSlotClassName}>
       <UserTournamentInfo userId={userId} />
+      {Number.isFinite(score) && (
+        <span className="cb-tournament-match-score" title={i18next.t('Score')}>
+          {score}
+        </span>
+      )}
+      {Number.isFinite(testPercent) && (
+        <span className="cb-tournament-match-pct" title={i18next.t('Tests percent')}>
+          {testPercent}%
+        </span>
+      )}
     </div>
   );
 }
@@ -222,6 +238,7 @@ interface UsersMatchListProps {
   hideStats?: boolean;
   hideBots?: boolean;
   showScoreFormula?: boolean;
+  showScore?: boolean;
 }
 
 function UsersMatchList({
@@ -232,6 +249,7 @@ function UsersMatchList({
   hideStats = false,
   hideBots = false,
   showScoreFormula = false,
+  showScore = false,
 }: UsersMatchListProps) {
   const [player] = useMatchesStatistics(
     playerId,
@@ -240,8 +258,14 @@ function UsersMatchList({
 
   if (matches.length === 0) {
     return (
-      <div className="d-flex flex-colum justify-content-center align-items-center p-2">
-        No Matches Yet
+      <div className="cb-empty-state">
+        <span className="cb-empty-state-icon">
+          <FontAwesomeIcon icon="chess-knight" />
+        </span>
+        <span className="cb-empty-state-title">{i18next.t('No matches yet')}</span>
+        <span className="cb-empty-state-text">
+          {i18next.t('Your games will appear here as soon as the round starts. Hang tight!')}
+        </span>
       </div>
     );
   }
@@ -274,6 +298,11 @@ function UsersMatchList({
           : match.playerIds;
         const matchPlayerIds = orderMatchPlayerIds(visiblePlayerIds, playerId);
         const matchResult = match.playerResults[playerId];
+        const showPlayerScores = showScore && !showScoreFormula;
+        const scoreOf = (id: number) =>
+          showPlayerScores ? match.playerResults[id]?.score : undefined;
+        const pctOf = (id: number) =>
+          showPlayerScores ? match.playerResults[id]?.resultPercent : undefined;
 
         return (
           <div
@@ -295,29 +324,41 @@ function UsersMatchList({
                   </span>
                 </div>
                 <div className={matchPlayersClassName}>
-                  {matchPlayerIds.length >= 1 && <MatchPlayer userId={matchPlayerIds[0]} />}
+                  {matchPlayerIds.length >= 1 && (
+                    <MatchPlayer
+                      userId={matchPlayerIds[0]}
+                      score={scoreOf(matchPlayerIds[0])}
+                      testPercent={pctOf(matchPlayerIds[0])}
+                    />
+                  )}
                   {matchPlayerIds.length >= 2 && (
                     <>
                       <span className="cb-tournament-match-vs">VS</span>
-                      <MatchPlayer userId={matchPlayerIds[1]} />
+                      <MatchPlayer
+                        userId={matchPlayerIds[1]}
+                        score={scoreOf(matchPlayerIds[1])}
+                        testPercent={pctOf(matchPlayerIds[1])}
+                      />
                     </>
                   )}
                 </div>
                 {matchResult && matchResult.result !== 'undefined' && (
                   <div className={matchMetaClassName}>
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`tests-${match.id}`}>{i18next.t('Tests percent')}</Tooltip>
-                      }
-                    >
-                      <span className={metaItemClassName}>
-                        <span className={metaIconClassName}>
-                          <FontAwesomeIcon className="text-success" icon="tasks" />
+                    {!showScore && (
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id={`tests-${match.id}`}>{i18next.t('Tests percent')}</Tooltip>
+                        }
+                      >
+                        <span className={metaItemClassName}>
+                          <span className={metaIconClassName}>
+                            <FontAwesomeIcon className="text-success" icon="tasks" />
+                          </span>
+                          {matchResult.resultPercent}
                         </span>
-                        {matchResult.resultPercent}
-                      </span>
-                    </OverlayTrigger>
+                      </OverlayTrigger>
+                    )}
                     {Number.isFinite(match.durationSec) && (
                       <OverlayTrigger
                         placement="top"
@@ -331,7 +372,7 @@ function UsersMatchList({
                           <span className={metaIconClassName}>
                             <FontAwesomeIcon className="text-primary" icon="stopwatch" />
                           </span>
-                          {match.durationSec}
+                          <span className="cb-tournament-match-duration">{match.durationSec}</span>
                         </span>
                       </OverlayTrigger>
                     )}

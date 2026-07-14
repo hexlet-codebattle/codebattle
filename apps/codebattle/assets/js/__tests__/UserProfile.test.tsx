@@ -10,9 +10,11 @@ import reducers from '../widgets/slices';
 // jsdom URL the profile page reads the user id from (was @jest-environment-options).
 window.history.pushState({}, '', '/users/42');
 
-vi.mock('gon', () => {
-  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
-  return { default: { getAsset: (type: keyof typeof gonParams) => gonParams[type] } };
+vi.mock('@/inertia/pageProps', () => {
+  const pageProps = { local: 'en', current_user: { sound_settings: {} } };
+  return {
+    getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
+  };
 });
 
 vi.mock('../i18n', () => ({

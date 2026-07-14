@@ -11,13 +11,11 @@ function MainChannelContainer() {
   const followId = useSelector((state: RootState) => state.gameUI.followId);
 
   useEffect(() => {
-    console.log('[main_channel] mounting, initPresence');
-    const channel = initPresence(followId)(dispatch);
-    console.log('[main_channel] channel', channel);
+    initPresence(followId)(dispatch);
 
-    return () => {
-      channel.leave();
-    };
+    // The main presence channel belongs to the browser session, not this React
+    // page. Phoenix reconnects and rejoins it after temporary network failures.
+    // A real document unload disposes the socket with the JavaScript context.
     // The channel handles follow/unfollow after initial join via explicit pushes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

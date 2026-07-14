@@ -1,7 +1,6 @@
 import React, { useMemo, type ReactNode } from 'react';
 
 import capitalize from 'lodash/capitalize';
-import partition from 'lodash/partition';
 import { useSelector } from 'react-redux';
 import Select, { type StylesConfig } from 'react-select';
 
@@ -102,8 +101,16 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }: Languag
   // Kotlin temporarily hidden — image runs but support is incomplete
   const langs = useMemo(() => allLangs.filter((lang) => lang.slug !== 'kotlin'), [allLangs]);
 
-  const [[currentLang], otherLangs] = useMemo(
-    () => partition(langs, (lang) => lang.slug === currentLangSlug),
+  const currentLang = useMemo(
+    () =>
+      allLangs.find((lang) => lang.slug === currentLangSlug) || {
+        slug: currentLangSlug,
+        name: currentLangSlug,
+      },
+    [allLangs, currentLangSlug],
+  );
+  const otherLangs = useMemo(
+    () => langs.filter((lang) => lang.slug !== currentLangSlug),
     [langs, currentLangSlug],
   );
   const options = useMemo(

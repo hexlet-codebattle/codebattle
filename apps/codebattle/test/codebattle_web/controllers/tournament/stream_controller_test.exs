@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.Tournament.StreamControllerTest do
   use CodebattleWeb.ConnCase
 
+  import Inertia.Testing
+
   alias Codebattle.Tournament
   alias CodebattleWeb.Tournament.StreamController
   alias CodebattleWeb.TournamentAdminChannel
@@ -34,7 +36,8 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
         |> get("/tournaments/#{tournament.id}/stream")
 
       assert conn.status == 200
-      assert html_response(conn, 200) =~ "tournament-threejs-stream-root"
+      assert html_response(conn, 200)
+      assert inertia_component(conn) == "TournamentThreejsStream"
     end
 
     test "returns 404 for non-moderator", %{conn: conn} do

@@ -18,6 +18,12 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     json(conn, %{season_tournaments: season_tournaments, user_tournaments: user_tournaments})
   end
 
+  def history(conn, _params) do
+    tournaments = Enum.map(Tournament.Context.get_finished_season_tournaments(), &history_item/1)
+
+    json(conn, %{tournaments: tournaments})
+  end
+
   def show(conn, %{"id" => id}) do
     tournament = Tournament.Context.get!(id)
 
@@ -76,6 +82,42 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
       |> put_status(:forbidden)
       |> json(%{error: "You don't have permission to update this tournament"})
     end
+  end
+
+  defp history_item(tournament) do
+    players = Map.values(tournament.players || %{})
+
+    %{
+      id: tournament.id,
+      name: tournament.name,
+      grade: tournament.grade,
+      type: tournament.type,
+      state: tournament.state,
+      starts_at: tournament.starts_at,
+      last_round_ended_at: tournament.last_round_ended_at,
+      players_count: tournament.players_count,
+      winner: find_winner(tournament, players)
+    }
+  end
+
+  defp find_winner(%{winner_ids: [winner_id | _]}, players) when is_integer(winner_id) do
+    case Enum.find(players, fn player -> player_field(player, :id) == winner_id end) do
+      nil ->
+        nil
+
+      player ->
+        %{
+          id: player_field(player, :id),
+          name: player_field(player, :name),
+          avatar_url: player_field(player, :avatar_url)
+        }
+    end
+  end
+
+  defp find_winner(_tournament, _players), do: nil
+
+  defp player_field(player, key) do
+    Map.get(player, key) || Map.get(player, to_string(key))
   end
 
   defp get_datetime(nil), do: nil

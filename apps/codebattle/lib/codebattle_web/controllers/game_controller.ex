@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.GameController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Game
   alias Codebattle.Game.BotDetection
   alias Codebattle.Game.Context
@@ -53,13 +51,12 @@ defmodule CodebattleWeb.GameController do
           game_params = GameView.render_game(game, head_to_head)
 
           conn
-          |> put_gon(
-            game: game_params,
-            game_id: game.id,
-            players: present_users_for_gon(Helpers.get_players(game))
-          )
           |> put_game_meta_tags(game)
-          |> render("threejs.html", %{game: game, user: user})
+          |> render_inertia("GameThreejs", %{
+            "game" => game_params,
+            "game_id" => game.id,
+            "players" => present_users(Helpers.get_players(game))
+          })
         else
           conn
           |> put_flash(:danger, gettext("You don't have access to this game"))
@@ -88,7 +85,7 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  defp render_ml_for_game(conn, game, user, params) do
+  defp render_ml_for_game(conn, game, _user, params) do
     if Map.get(params, "refresh") == "1" do
       {:ok, _} = BotDetection.analyze_and_persist(game.id)
     end
@@ -98,13 +95,11 @@ defmodule CodebattleWeb.GameController do
     analyses_by_user = Map.new(analyses, &{&1.user_id, &1})
     players = Helpers.get_players(game)
 
-    conn
-    |> put_gon(
-      game_id: game.id,
-      players: Enum.map(players, &serialize_ml_player(&1, analyses_by_user)),
-      batches: Enum.map(batches, &serialize_batch/1)
-    )
-    |> render("ml.html", %{game: game, user: user})
+    render_inertia(conn, "GameMl", %{
+      "game_id" => game.id,
+      "players" => Enum.map(players, &serialize_ml_player(&1, analyses_by_user)),
+      "batches" => Enum.map(batches, &serialize_batch/1)
+    })
   end
 
   defp render_ml_forbidden(conn) do
@@ -227,16 +222,15 @@ defmodule CodebattleWeb.GameController do
           |> GameView.render_game(head_to_head)
           |> maybe_put_tournament_player_restrictions(game, user)
 
-        conn =
-          put_gon(conn,
-            reports: maybe_get_reports(conn.assigns.current_user, game.id),
-            editor_summary_enabled: !FunWithFlags.enabled?(:editor_summary_disabled),
-            can_manage_game: User.admin_or_moderator?(user),
-            game: game_params,
-            game_id: game.id,
-            tournament_id: Helpers.get_tournament_id(game),
-            players: present_users_for_gon(Helpers.get_players(game))
-          )
+        page_props = %{
+          "reports" => maybe_get_reports(conn.assigns.current_user, game.id),
+          "editor_summary_enabled" => !FunWithFlags.enabled?(:editor_summary_disabled),
+          "can_manage_game" => User.admin_or_moderator?(user),
+          "game" => game_params,
+          "game_id" => game.id,
+          "tournament_id" => Helpers.get_tournament_id(game),
+          "players" => present_users(Helpers.get_players(game))
+        }
 
         is_player = Helpers.player?(game, user.id)
 
@@ -249,7 +243,7 @@ defmodule CodebattleWeb.GameController do
           _ ->
             conn
             |> put_game_meta_tags(game)
-            |> render("show.html", %{game: game, user: user})
+            |> render_inertia("GameRoom", page_props)
         end
 
       game ->
@@ -262,16 +256,15 @@ defmodule CodebattleWeb.GameController do
             |> Map.put(:mode, "history")
 
           conn
-          |> put_gon(
-            is_record: true,
-            game_id: game.id,
-            game: game_params,
-            tournament_id: game.tournament_id,
-            langs: Languages.get_langs(),
-            players: present_users_for_gon(game.users)
-          )
           |> put_game_meta_tags(game)
-          |> render("show.html", %{game: game, user: user})
+          |> render_inertia("GameRoom", %{
+            "is_record" => true,
+            "game_id" => game.id,
+            "game" => game_params,
+            "tournament_id" => game.tournament_id,
+            "langs" => Languages.get_langs(),
+            "players" => present_users(game.users)
+          })
         else
           conn
           |> put_game_meta_tags(game)
@@ -280,7 +273,7 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  defp present_users_for_gon(users) do
+  defp present_users(users) do
     Enum.map(
       users,
       &Map.take(&1, [

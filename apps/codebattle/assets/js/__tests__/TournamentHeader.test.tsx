@@ -52,3 +52,52 @@ test('TournamentHeader copies full private tournament url', async () => {
 
   expect(copy).toHaveBeenCalledWith('http://localhost/tournaments/42?access_token=secret-token');
 });
+
+test('TournamentHeader shows the grade icon and first-place ranking points', () => {
+  const { container } = render(
+    <TournamentHeader
+      id={42}
+      state="canceled"
+      breakState="off"
+      startsAt={new Date().toISOString()}
+      accessToken=""
+      name="Masters"
+      grade="masters"
+      players={{}}
+      playersCount={0}
+      currentUserId={1}
+      toggleShowBots={vi.fn()}
+      toggleStreamMode={vi.fn()}
+      handleStartRound={vi.fn()}
+      handleOpenDetails={vi.fn()}
+    />,
+  );
+
+  expect(screen.getByLabelText('masters grade')).toContainElement(container.querySelector('svg'));
+  expect(screen.getByText('1024')).toHaveClass('cb-tournament-points-value');
+  expect(screen.getByText('Ranking Points')).toBeInTheDocument();
+});
+
+test('TournamentHeader omits grade details for open tournaments', () => {
+  render(
+    <TournamentHeader
+      id={42}
+      state="canceled"
+      breakState="off"
+      startsAt={new Date().toISOString()}
+      accessToken=""
+      name="Open Arena"
+      grade="open"
+      players={{}}
+      playersCount={0}
+      currentUserId={1}
+      toggleShowBots={vi.fn()}
+      toggleStreamMode={vi.fn()}
+      handleStartRound={vi.fn()}
+      handleOpenDetails={vi.fn()}
+    />,
+  );
+
+  expect(screen.queryByText('Ranking Points')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('open grade')).not.toBeInTheDocument();
+});

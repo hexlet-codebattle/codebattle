@@ -93,7 +93,7 @@ interface Tournament {
   [key: string]: unknown;
 }
 
-interface EditTournamentProps {
+export interface EditTournamentProps {
   tournamentId: string | number;
   taskPackNames?: string[];
   userTimezone?: string;

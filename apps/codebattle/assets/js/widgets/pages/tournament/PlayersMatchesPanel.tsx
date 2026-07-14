@@ -44,6 +44,8 @@ interface MatchesPanelPlayer {
   name?: string;
   score?: number;
   place?: number;
+  winsCount?: number;
+  lang?: string;
   isBot?: boolean;
   isBanned?: boolean;
   [key: string]: unknown;
@@ -97,6 +99,8 @@ const PlayersList = memo(
           name={player.name}
           score={player.score}
           place={player.place}
+          winsCount={player.winsCount}
+          lang={player.lang}
           isBanned={player.isBanned}
           searchedUserId={searchedUserId}
           hideBots={hideBots}
@@ -128,6 +132,8 @@ const SearchedUserPanel = memo(
         name={searchedUser.name}
         score={searchedUser.score}
         place={searchedUser.place}
+        winsCount={searchedUser.winsCount}
+        lang={searchedUser.lang}
         isBanned={searchedUser.isBanned}
         searchedUserId={searchedUser.id}
       />

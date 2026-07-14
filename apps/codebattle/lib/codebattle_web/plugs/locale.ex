@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Plugs.Locale do
   @moduledoc """
     I18n configuration
   """
-  import PhoenixGon.Controller
   import Plug.Conn
 
   @valid_locales ~w(en ru)
@@ -14,9 +13,7 @@ defmodule CodebattleWeb.Plugs.Locale do
 
     Gettext.put_locale(CodebattleWeb.Gettext, locale)
 
-    conn
-    |> put_gon(locale: locale)
-    |> put_session(:locale, locale)
+    put_session(conn, :locale, locale)
   end
 
   defp get_forced_locale do

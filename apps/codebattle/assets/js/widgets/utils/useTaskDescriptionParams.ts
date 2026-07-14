@@ -47,7 +47,7 @@ const useTaskDescriptionParams = (task: Task | null | undefined, taskLanguage?: 
     const description =
       taskDescriptionMapping[displayLanguage as keyof typeof taskDescriptionMapping];
 
-    return [avaibleLanguages, displayLanguage, description];
+    return [avaibleLanguages, displayLanguage, description] as [string[], string, string];
   }, [task, taskLanguage]);
 
 export default useTaskDescriptionParams;

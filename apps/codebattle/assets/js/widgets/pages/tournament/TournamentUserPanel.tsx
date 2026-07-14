@@ -2,14 +2,15 @@ import React, { memo, useCallback, useEffect, useContext, useState } from 'react
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import i18next from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
+import LanguageIcon from '@/components/LanguageIcon';
 import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
 import { currentUserCanModerateTournament } from '@/selectors';
 import { type AppDispatch } from '@/slices/store';
 
-// import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
 
 interface TournamentUserPanelProps {
@@ -19,6 +20,8 @@ interface TournamentUserPanelProps {
   name?: string;
   score?: number;
   place?: number;
+  winsCount?: number;
+  lang?: string;
   isBanned?: boolean;
   searchedUserId?: number;
   hideBots?: boolean;
@@ -30,9 +33,10 @@ function TournamentUserPanel({
   userId,
   name,
   score,
-  // place,
+  place,
+  winsCount,
+  lang,
   isBanned = false,
-  // localPlace,
   searchedUserId = 0,
   hideBots,
 }: TournamentUserPanelProps) {
@@ -93,43 +97,29 @@ function TournamentUserPanel({
         aria-expanded={open}
         aria-controls={`collapse-matches-${userId}`}
       >
-        <div className="d-flex">
-          <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
-            <div>
-              <span className="text-nowrap" title={name}>
-                {searchedUserId === userId && <span className={searchBadge}>Search</span>}
-                {currentUserId === userId && <span className={playerBadge}>you</span>}
-                {name}
-              </span>
-              {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
-              <span className="d-none d-sm-inline d-md-inline d-lg-inline mx-1">|</span>
-            </div>
-            <div className="d-flex align-items-center text-nowrap">
-              <span title="Score" className="text-nowrap">
-                <FontAwesomeIcon className="text-warning" icon="star" />
-                {': '}
-                {score}
-              </span>
-              {/* {place !== undefined && ( */}
-              {/*   <> */}
-              {/*     <span className="mx-1">|</span> */}
-              {/*     <span title="Place on tournament"> */}
-              {/*       <TournamentPlace place={place + 1} withIcon /> */}
-              {/*     </span> */}
-              {/*   </> */}
-              {/* )} */}
-              {/* {localPlace && ( */}
-              {/*   <> */}
-              {/*     <span className="mx-1">|</span> */}
-              {/*     <span title="Place on local group"> */}
-              {/*       <FontAwesomeIcon className="text-secondary" icon="trophy" /> */}
-              {/*       {': '} */}
-              {/*       {localPlace} */}
-              {/*     </span> */}
-              {/*   </> */}
-              {/* )} */}
-            </div>
-          </div>
+        <div className="cb-user-panel-head flex-grow-1 min-w-0">
+          {place != null && place > 0 && (
+            <span className="cb-user-panel-place" title={i18next.t('Place')}>
+              {`#${place}`}
+            </span>
+          )}
+          <span className="cb-user-panel-name text-nowrap" title={name}>
+            {searchedUserId === userId && <span className={searchBadge}>Search</span>}
+            {currentUserId === userId && <span className={playerBadge}>you</span>}
+            <LanguageIcon className="mr-1" lang={lang} />
+            {name}
+            {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
+          </span>
+          <span className="cb-user-panel-stat text-nowrap">
+            {i18next.t('Score')}
+            {': '}
+            <strong className="cb-user-panel-stat-value">{score ?? 0}</strong>
+          </span>
+          <span className="cb-user-panel-stat text-nowrap">
+            {i18next.t('Wins')}
+            {': '}
+            <strong className="cb-user-panel-stat-value">{winsCount ?? 0}</strong>
+          </span>
         </div>
         <div className="d-flex ml-1">
           <button type="button" className="btn" onClick={handleOpenMatches}>
@@ -145,6 +135,8 @@ function TournamentUserPanel({
             matches={matches as React.ComponentProps<typeof UsersMatchList>['matches']}
             canModerate={canModerate}
             hideBots={hideBots}
+            hideStats
+            showScore
             // `isBanned`/`canBan` are ignored by UsersMatchList but passed for parity with the
             // original JS; spread to bypass JSX excess-property checks without changing runtime.
             {...({ isBanned, canBan: canModerate && userId !== currentUserId } as object)}

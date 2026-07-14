@@ -1,6 +1,6 @@
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 
+import { getPageProp } from '@/inertia/pageProps';
 import { makeGameUrl } from '@/utils/urlBuilders';
 
 import { channelMethods, channelTopics } from '../../socket';
@@ -8,8 +8,8 @@ import { actions } from '../slices';
 
 import Channel from './Channel';
 
-const players = Gon.getAsset('players') || [];
-const currentUser = Gon.getAsset('current_user') || {};
+const players = getPageProp<any[]>('players', []);
+const currentUser = getPageProp<{ id?: number }>('current_user', {});
 
 let channel: Channel;
 
@@ -105,6 +105,10 @@ const removeDeployBanner = () => {
 };
 
 const initPresence = (followId?: number) => (dispatch: any) => {
+  if (channel) {
+    return channel;
+  }
+
   channel = new Channel('main', {
     ...getUserStateByPath(),
     path: document.location.pathname,

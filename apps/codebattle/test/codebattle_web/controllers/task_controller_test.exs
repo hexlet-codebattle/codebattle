@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.TaskControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  import Inertia.Testing
+
   test ".index", %{conn: conn} do
     user = insert(:user)
     insert_list(3, :task)
@@ -32,6 +34,9 @@ defmodule CodebattleWeb.TaskControllerTest do
       |> get(Routes.task_path(conn, :show, visible_task.id))
 
     assert new_conn.status == 200
+    assert inertia_component(new_conn) == "TaskPreview"
+    assert %{"task" => %{id: task_id}, "can_edit_task" => false} = inertia_props(new_conn)
+    assert task_id == visible_task.id
 
     # user can't see hidden tasks
     new_conn =

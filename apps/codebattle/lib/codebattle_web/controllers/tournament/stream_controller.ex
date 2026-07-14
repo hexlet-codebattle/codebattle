@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.Tournament.StreamController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
@@ -22,12 +20,11 @@ defmodule CodebattleWeb.Tournament.StreamController do
       |> put_layout(html: {CodebattleWeb.LayoutView, :empty})
       |> assign(:body_class, "cb-stream-transparent-page")
       |> put_meta_tags(%{title: "Stream Tournament"})
-      |> put_gon(
-        tournament_id: tournament_id,
-        game_id: game_id,
-        game: game_params
-      )
-      |> render("threejs_stream.html")
+      |> render_inertia("TournamentThreejsStream", %{
+        "tournament_id" => tournament_id,
+        "game_id" => game_id,
+        "game" => game_params
+      })
     else
       conn
       |> put_status(:not_found)

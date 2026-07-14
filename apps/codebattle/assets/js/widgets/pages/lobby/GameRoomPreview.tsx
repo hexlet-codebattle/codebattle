@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 import { useSelector } from 'react-redux';
 
 import { selectDefaultAvatarUrl } from '@/selectors';
@@ -17,7 +17,7 @@ interface PreviewPlayer {
   rating: string;
 }
 
-const players = Gon.getAsset('players') as PreviewPlayer[];
+const players = getPageProp<PreviewPlayer[]>('players', []);
 
 interface GameRoomPreviewProps {
   pageName?: string;

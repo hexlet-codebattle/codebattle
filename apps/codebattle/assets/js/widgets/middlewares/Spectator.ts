@@ -1,13 +1,14 @@
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import { channelTopics } from '../../socket';
 import { actions } from '../slices';
 
 import Channel from './Channel';
 
-const playerId = Gon.getAsset('player_id');
-const tournamentId = Gon.getAsset('tournament_id');
+const playerId = getPageProp('player_id');
+const tournamentId = getPageProp('tournament_id');
 
 const channel = new Channel();
 

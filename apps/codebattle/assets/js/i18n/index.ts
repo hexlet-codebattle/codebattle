@@ -1,6 +1,7 @@
 // apps/codebattle/assets/js/i18n/index.ts
-import Gon from 'gon';
 import i18next from 'i18next';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 // ESM imports for translations (no require)
 import en from '../../../priv/gettext/en/LC_MESSAGES/default.po';
@@ -11,7 +12,7 @@ type SupportedLocale = (typeof supportedLocales)[number];
 
 const normalizeLocale = (locale: unknown): SupportedLocale =>
   supportedLocales.includes(locale as SupportedLocale) ? (locale as SupportedLocale) : 'en';
-const lng = normalizeLocale(Gon?.getAsset?.('locale'));
+const lng = normalizeLocale(getPageProp('locale'));
 // const lng = "ru";
 
 export const getLocale = () => lng;

@@ -36,6 +36,7 @@
     <meta content="/assets/images/favicons/browserconfig.xml" name="msapplication-config" />
     <meta content="#ffffff" name="theme-color" />
     {render_tags_all(assigns[:meta_tags] || %{})}
+    <.inertia_head content={@inertia_head} />
     <meta name="csrf-token" content={csrf_token_value()} />
     <%= if CodebattleWeb.Vite.dev?() do %>
       <script type="module" src="http://localhost:8080/@vite/client">
@@ -58,7 +59,9 @@
       </script>
     <% end %>
 
-    <title>{Application.get_env(:codebattle, :app_title)}</title>
+    <.inertia_title>
+      {assigns[:page_title] || Application.get_env(:codebattle, :app_title)}
+    </.inertia_title>
     <style>
       :root { --cup-background-url: url("<%= Application.get_env(:codebattle, :cup_background_url) %>"); }
     </style>
@@ -72,6 +75,7 @@
   </head>
 
   <body class="bg-dark position-relative h-100">
+    <div id="inertia-shared-props" data-props={inertia_shared_props_json(@conn)} hidden></div>
     <!--Google Tag Manager (noscript)-->
     <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <noscript>
@@ -408,6 +412,5 @@
         <% end %>
       </footer>
     </div>
-    {render_gon_script(@conn)}
   </body>
 </html>

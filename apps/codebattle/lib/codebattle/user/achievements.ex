@@ -234,6 +234,7 @@ defmodule Codebattle.User.Achievements do
         FROM users u
         INNER JOIN requested_users ru
           ON ru.user_id = u.id
+        WHERE u.is_bot = FALSE
       ),
       game_stats_raw AS (
         SELECT
@@ -561,7 +562,7 @@ defmodule Codebattle.User.Achievements do
         RETURNING user_id, type
       )
       DELETE FROM user_achievements ua
-      WHERE ua.user_id = ANY($1::bigint[])
+      WHERE ua.user_id IN (SELECT user_id FROM input_users)
         AND ua.type = ANY($2::text[])
         AND NOT EXISTS (
           SELECT 1
@@ -598,6 +599,7 @@ defmodule Codebattle.User.Achievements do
   defp do_recalculate_all_users(offset, batch_size, processed) do
     user_ids =
       User
+      |> where([u], u.is_bot == false)
       |> select([u], u.id)
       |> order_by([u], asc: u.id)
       |> limit(^batch_size)

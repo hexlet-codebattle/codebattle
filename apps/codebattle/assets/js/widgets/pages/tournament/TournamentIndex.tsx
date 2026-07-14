@@ -101,17 +101,19 @@ function TournamentsTable({ tournaments = [], userTimezone = 'UTC' }: Tournament
   );
 }
 
-interface TournamentIndexProps {
+export interface TournamentIndexProps {
   tournaments?: TournamentRow[];
   taskPackNames?: string[];
   userTimezone?: string;
 }
 
 function TournamentIndex({
-  tournaments = [],
+  tournaments: rawTournaments = [],
   taskPackNames = [],
   userTimezone = 'UTC',
 }: TournamentIndexProps) {
+  const tournaments = camelizeKeys(rawTournaments) as TournamentRow[];
+
   return (
     <>
       <TournamentsTable tournaments={tournaments} userTimezone={userTimezone} />
@@ -125,11 +127,5 @@ function TournamentIndex({
     </>
   );
 }
-
-export const readTournamentIndexProps = (container: HTMLElement | null) => ({
-  tournaments: camelizeKeys(JSON.parse(container?.dataset?.tournaments || '[]')),
-  taskPackNames: JSON.parse(container?.dataset?.taskPackNames || '[]'),
-  userTimezone: container?.dataset?.userTimezone || 'UTC',
-});
 
 export default TournamentIndex;

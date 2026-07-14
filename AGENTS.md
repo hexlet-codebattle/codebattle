@@ -4,7 +4,7 @@
 This is an Elixir umbrella app with multiple sub-apps under `apps/`.
 - `apps/codebattle/`: Phoenix app with Elixir code in `apps/codebattle/lib/`, tests in `apps/codebattle/test/`, and frontend assets in `apps/codebattle/assets/`.
 - `apps/runner/`: task runner service and language images under `apps/runner/images/`.
-- `apps/phoenix_gon/`, `config/`, `priv/`, and top-level `mix.exs` provide shared library/config and releases.
+- `config/`, `priv/`, and top-level `mix.exs` provide shared configuration and releases.
 
 ## Main Contexts & Helpers
 Core domains expose context modules for public APIs:

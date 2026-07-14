@@ -1,4 +1,4 @@
-// TODO: move to server and put it to GON
+// TODO: move these user type values to a shared server/client contract.
 export default {
   firstPlayer: 'FIRST_PLAYER',
   secondPlayer: 'SECOND_PLAYER',

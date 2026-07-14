@@ -89,6 +89,20 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      # Ladder is continuous pool-matchmaking: a player joining an in-progress tournament is
+      # added (to ETS) as an active player and gets picked up by `idle_pool/1` on the next
+      # matchmaking tick, which also persists the join via its own `db_save!`. No round
+      # synchronization or DB write needed here.
+      def join(%{state: "active", type: "ladder"} = tournament, params) do
+        player = Map.put(params.user, :lang, params.user.lang)
+
+        if player?(tournament, player.id) or players_count(tournament) >= tournament.players_limit do
+          tournament
+        else
+          add_player(tournament, player)
+        end
+      end
+
       def join(tournament, _), do: tournament
 
       def leave(tournament, %{user: user}) do

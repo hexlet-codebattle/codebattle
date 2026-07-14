@@ -12,8 +12,8 @@
     "moduleResolution": "Bundler",
     "noEmit": true,
     "paths": {
-      "@/*": ["./assets/js/widgets/*"],
-      "gon": ["./assets/js/shims/gon.ts"]
+      "@/inertia/*": ["./assets/js/inertia/*"],
+      "@/*": ["./assets/js/widgets/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,

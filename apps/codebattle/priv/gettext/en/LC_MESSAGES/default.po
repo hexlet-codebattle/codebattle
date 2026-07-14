@@ -1176,3 +1176,115 @@ msgstr "Group contest soon"
 
 msgid "Return to game"
 msgstr "Return to game"
+
+msgid "%{count} min"
+msgstr "%{count} min"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Base"
+msgstr "Base"
+
+msgid "First page"
+msgstr "First page"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Kick player"
+msgstr "Kick player"
+
+msgid "Kick {{name}} from tournament?"
+msgstr "Kick {{name}} from tournament?"
+
+msgid "Last page"
+msgstr "Last page"
+
+msgid "Level"
+msgstr "Level"
+
+msgid "Loss factor"
+msgstr "Loss factor"
+
+msgid "Match time"
+msgstr "Match time"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Next page"
+msgstr "Next page"
+
+msgid "No matches yet"
+msgstr "No matches yet"
+
+msgid "Players & Matches"
+msgstr "Players & Matches"
+
+msgid "Previous page"
+msgstr "Previous page"
+
+msgid "Record"
+msgstr "Record"
+
+msgid "Registration is open"
+msgstr "Registration is open"
+
+msgid "Rounds"
+msgstr "Rounds"
+
+msgid "Row spacer"
+msgstr "Row spacer"
+
+msgid "Show game history"
+msgstr "Show game history"
+
+msgid "Speed bonus"
+msgstr "Speed bonus"
+
+msgid "Tests"
+msgstr "Tests"
+
+msgid "The tournament continues for top 8 players."
+msgstr "The tournament continues for top 8 players."
+
+msgid "This tournament is live — join now to jump into the next round."
+msgstr "This tournament is live — join now to jump into the next round."
+
+msgid "Timeout factor"
+msgstr "Timeout factor"
+
+msgid "Top user by task ranking"
+msgstr "Top user by task ranking"
+
+msgid "Tournament in progress"
+msgstr "Tournament in progress"
+
+msgid "You're in — get ready to battle!"
+msgstr "You're in — get ready to battle!"
+
+msgid "Your games will appear here as soon as the round starts. Hang tight!"
+msgstr "Your games will appear here as soon as the round starts. Hang tight!"
+
+msgid "pts"
+msgstr "pts"
+
+msgid "task duration distribution"
+msgstr "task duration distribution"
+
+msgid "Please, be nice in chat"
+msgstr "Please, be nice in chat"
+
+msgid "Write message..."
+msgstr "Write message..."
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Chat message"
+msgstr "Chat message"
+
+msgid "Wins"
+msgstr "Wins"
+

@@ -2,7 +2,7 @@ defmodule CodebattleWeb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
-  import PhoenixGon.Controller
+  import Inertia.Testing
 
   alias Codebattle.Game
   alias Codebattle.Tournament.Player
@@ -25,9 +25,12 @@ defmodule CodebattleWeb.GameControllerTest do
       task = build(:task)
       {:ok, game} = Game.Context.create_game(%{state: "playing", players: users, task: task})
 
-      conn
-      |> get(Routes.game_path(conn, :show, game.id))
-      |> html_response(200)
+      conn = get(conn, Routes.game_path(conn, :show, game.id))
+
+      assert html_response(conn, 200)
+      assert inertia_component(conn) == "GameRoom"
+      assert %{"game_id" => game_id} = inertia_props(conn)
+      assert game_id == game.id
     end
 
     test "shows live game_over game", %{conn: conn} do
@@ -35,9 +38,10 @@ defmodule CodebattleWeb.GameControllerTest do
       task = build(:task)
       {:ok, game} = Game.Context.create_game(%{state: "game_over", players: users, task: task})
 
-      conn
-      |> get(Routes.game_path(conn, :show, game.id))
-      |> html_response(200)
+      conn = get(conn, Routes.game_path(conn, :show, game.id))
+
+      assert html_response(conn, 200)
+      assert inertia_component(conn) == "GameRoom"
     end
 
     test "marks game payload to hide controls for tournament games when tournament excludes banned players", %{
@@ -93,7 +97,7 @@ defmodule CodebattleWeb.GameControllerTest do
         |> get(Routes.game_path(conn, :show, game.id))
 
       assert html_response(conn, 200)
-      assert %{hide_banned_player_controls: true} = get_gon(conn, :game)
+      assert %{"game" => %{hide_banned_player_controls: true}} = inertia_props(conn)
     end
 
     test "return 200 when game is not live", %{conn: conn} do

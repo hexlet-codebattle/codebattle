@@ -7,9 +7,11 @@ import '@testing-library/jest-dom';
 // import ContributorsList from '../widgets/pages/game/ContributorsList';
 // import reducers from '../widgets/slices';
 
-vi.mock('gon', () => {
-  const gonParams = { local: 'en' };
-  return { default: { getAsset: (type: keyof typeof gonParams) => gonParams[type] } };
+vi.mock('@/inertia/pageProps', () => {
+  const pageProps = { local: 'en' };
+  return {
+    getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
+  };
 });
 
 const users: unknown[] = [];

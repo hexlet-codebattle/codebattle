@@ -65,8 +65,8 @@ const createPlayer = (params: Record<string, unknown>) => ({
   ...params,
 });
 
-vi.mock('gon', () => {
-  const gonParams = {
+vi.mock('@/inertia/pageProps', () => {
+  const pageProps = {
     local: 'en',
     current_user: { id: 1, sound_settings: {} },
     game_id: 10,
@@ -97,7 +97,9 @@ vi.mock('gon', () => {
     },
   };
 
-  return { default: { getAsset: (type: keyof typeof gonParams) => gonParams[type] } };
+  return {
+    getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
+  };
 });
 
 vi.mock('../widgets/pages/game/EditorContainer', () => ({

@@ -25,7 +25,7 @@ function MatchAction({ match, currentUserIsPlayer }: MatchActionProps) {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   // const streamMode = useSelector(state => state.gameUI.streamMode);
 
-  const showBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+  const showBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-2', {
     'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
@@ -41,10 +41,15 @@ function MatchAction({ match, currentUserIsPlayer }: MatchActionProps) {
   switch (match.state) {
     case MatchStatesCodes.pending:
       return (
-        // @ts-expect-error `disabled` is not a valid <a> attribute; preserved from original JS
-        <a href={href} title="Show match" className={showBtnClassName} disabled>
-          <FontAwesomeIcon className="mr-2" icon="eye" />
-          {i18next.t('Show')}
+        <a
+          href={href}
+          title={i18next.t('Show match')}
+          aria-label={i18next.t('Show')}
+          className={showBtnClassName}
+          // `disabled` is not a valid <a> attribute; preserved from original JS
+          {...({ disabled: true } as object)}
+        >
+          <FontAwesomeIcon icon="eye" />
         </a>
       );
     case MatchStatesCodes.playing: {
@@ -58,9 +63,13 @@ function MatchAction({ match, currentUserIsPlayer }: MatchActionProps) {
       }
 
       return (
-        <a href={href} title={i18next.t('Show match')} className={showBtnClassName}>
-          <FontAwesomeIcon className="mr-2" icon="eye" />
-          {i18next.t('Show')}
+        <a
+          href={href}
+          title={i18next.t('Show match')}
+          aria-label={i18next.t('Show')}
+          className={showBtnClassName}
+        >
+          <FontAwesomeIcon icon="eye" />
         </a>
       );
     }
@@ -68,9 +77,13 @@ function MatchAction({ match, currentUserIsPlayer }: MatchActionProps) {
     case MatchStatesCodes.timeout:
     case MatchStatesCodes.gameOver:
       return (
-        <a href={href} title={i18next.t('Show game history')} className={showBtnClassName}>
-          <FontAwesomeIcon className="mr-2" icon="eye" />
-          {i18next.t('Show')}
+        <a
+          href={href}
+          title={i18next.t('Show game history')}
+          aria-label={i18next.t('Show')}
+          className={showBtnClassName}
+        >
+          <FontAwesomeIcon icon="eye" />
         </a>
       );
     default:

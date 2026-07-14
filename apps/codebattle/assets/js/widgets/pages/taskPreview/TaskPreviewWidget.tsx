@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo, type ReactNode } from 'react';
 
 import cn from 'classnames';
-import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 
 import GameLevelBadge from '../../components/GameLevelBadge';
@@ -64,12 +63,11 @@ interface TaskStats {
   leaderboard: LeaderboardEntry[];
 }
 
-const taskData = Gon.getAsset('task');
-const taskStatsData = Gon.getAsset('task_stats');
-const canEditTask = Gon.getAsset('can_edit_task') || false;
-
-const initialTask = (taskData ? camelizeKeys(taskData) : null) as Task | null;
-const taskStats = (taskStatsData ? camelizeKeys(taskStatsData) : null) as TaskStats | null;
+export interface TaskPreviewWidgetProps {
+  task: unknown;
+  taskStats: unknown;
+  canEditTask?: boolean;
+}
 
 const levelOptions = ['elementary', 'easy', 'medium', 'hard'];
 const visibilityOptions = ['public', 'hidden'];
@@ -442,7 +440,19 @@ function AssertsSection({ asserts }: AssertsSectionProps) {
   );
 }
 
-function TaskPreviewWidget() {
+function TaskPreviewWidget({
+  task: taskData,
+  taskStats: taskStatsData,
+  canEditTask = false,
+}: TaskPreviewWidgetProps) {
+  const initialTask = useMemo(
+    () => (taskData ? (camelizeKeys(taskData) as Task) : null),
+    [taskData],
+  );
+  const taskStats = useMemo(
+    () => (taskStatsData ? (camelizeKeys(taskStatsData) as TaskStats) : null),
+    [taskStatsData],
+  );
   const [task, setTask] = useState(initialTask);
   const [isCreating, setIsCreating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);

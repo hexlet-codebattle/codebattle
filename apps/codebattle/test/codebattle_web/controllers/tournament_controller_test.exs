@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.TournamentControllerTest do
   use CodebattleWeb.ConnCase
 
+  import Inertia.Testing
+
   alias Codebattle.Tournament
 
   test "renders index for signed_user", %{conn: conn} do
@@ -12,6 +14,8 @@ defmodule CodebattleWeb.TournamentControllerTest do
       |> get(Routes.tournament_path(conn, :index))
 
     assert conn.status == 200
+    assert inertia_component(conn) == "TournamentIndex"
+    assert %{"tournaments" => [], "task_pack_names" => []} = inertia_props(conn)
   end
 
   test "authorizes to tournaments", %{conn: conn} do
@@ -43,6 +47,12 @@ defmodule CodebattleWeb.TournamentControllerTest do
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200
+    assert inertia_component(new_conn) == "TournamentRoom"
+
+    assert %{"tournament_id" => tournament_id, "tournament_access_token" => nil} =
+             inertia_props(new_conn)
+
+    assert tournament_id == tournament.id
 
     new_conn =
       conn

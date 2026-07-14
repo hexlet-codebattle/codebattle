@@ -1,6 +1,8 @@
 defmodule Codebattle.RootControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  import Inertia.Testing
+
   test "index", %{conn: conn} do
     conn = get(conn, "/")
     assert html_response(conn, 200)
@@ -15,6 +17,19 @@ defmodule Codebattle.RootControllerTest do
       |> get(Routes.user_path(conn, :index))
 
     assert conn.status == 200
+  end
+
+  test "renders the authenticated lobby through Inertia", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.root_path(conn, :index))
+
+    assert html_response(conn, 200)
+    assert inertia_component(conn) == "Lobby"
+    assert %{"active_games" => _, "task_tags" => _} = inertia_props(conn)
   end
 
   test "authorized page", %{conn: conn} do

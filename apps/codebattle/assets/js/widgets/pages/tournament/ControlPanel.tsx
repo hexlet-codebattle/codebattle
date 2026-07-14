@@ -67,11 +67,13 @@ function ControlPanel({
   );
 
   return (
-    <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between align-items-start gap-2">
-      <div className="d-flex align-items-start flex-grow-1 min-w-0 mb-2 mb-md-0">{leftContent}</div>
+    <div className="cb-tournament-control-panel d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between align-items-stretch gap-2">
+      <div className="d-flex align-items-stretch flex-grow-1 min-w-0 mb-2 mb-md-0">
+        {leftContent}
+      </div>
       <div
         className={cn(
-          'd-flex text-nowrap justify-content-end ml-md-3',
+          'd-flex align-items-center text-nowrap justify-content-end ml-md-3',
           hasCustomEventStyles && 'cb-custom-event-text',
         )}
       >

@@ -15,7 +15,10 @@
       </div>
       <div class="col-md-6">
         <h4>Creator</h4>
-        <p><strong>Name:</strong> <span class="cb-text">{@clan.creator.name}</span></p>
+        <p>
+          <strong>Name:</strong>
+          <span class="cb-text">{(@clan.creator && @clan.creator.name) || "–"}</span>
+        </p>
       </div>
     </div>
 

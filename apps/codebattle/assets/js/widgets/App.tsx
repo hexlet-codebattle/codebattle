@@ -12,7 +12,6 @@ import machines from '@/machines';
 import reducers from '@/slices';
 
 import PageNames from './config/pageNames';
-import { readTournamentIndexProps } from './pages/tournament/TournamentIndex';
 
 const {
   game: mainMachine,
@@ -45,7 +44,6 @@ const rootReducer = combineReducers({
   ...otherReducers,
 });
 
-// TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
@@ -297,35 +295,19 @@ export function GroupTournamentPage() {
   );
 }
 
-export function TournamentEditPage() {
-  const container = document.getElementById('tournament-edit-root');
-  const tournamentId = container?.dataset?.tournamentId;
-  const taskPackNames = JSON.parse(container?.dataset?.taskPackNames || '[]');
-  const userTimezone = container?.dataset?.userTimezone || 'UTC';
-
-  if (!tournamentId) {
-    return null;
-  }
-
+export function TournamentEditPage(props: React.ComponentProps<typeof TournamentEdit>) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <TournamentEdit
-            tournamentId={tournamentId}
-            taskPackNames={taskPackNames}
-            userTimezone={userTimezone}
-          />
+          <TournamentEdit {...props} />
         </Suspense>
       </PersistGate>
     </Provider>
   );
 }
 
-export function TournamentIndexPage() {
-  const container = document.getElementById('tournament-index-root');
-  const props = readTournamentIndexProps(container);
-
+export function TournamentIndexPage(props: React.ComponentProps<typeof TournamentIndex>) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -389,24 +371,24 @@ export function StreamPage() {
   );
 }
 
-export function HallOfFamePage() {
+export function HallOfFamePage(props: React.ComponentProps<typeof HallOfFame>) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <HallOfFame />
+          <HallOfFame {...props} />
         </Suspense>
       </PersistGate>
     </Provider>
   );
 }
 
-export function HeadToHeadPage() {
+export function HeadToHeadPage(props: React.ComponentProps<typeof HeadToHead>) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <HeadToHead />
+          <HeadToHead {...props} />
         </Suspense>
       </PersistGate>
     </Provider>
@@ -425,34 +407,34 @@ export function GameMlPage() {
   );
 }
 
-export function SeasonsPage() {
+export function SeasonsPage(props: React.ComponentProps<typeof Seasons>) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <Seasons />
+          <Seasons {...props} />
         </Suspense>
       </PersistGate>
     </Provider>
   );
 }
 
-export function TaskPreviewPage() {
+export function TaskPreviewPage(props: React.ComponentProps<typeof TaskPreview>) {
   return (
     <Provider store={store}>
       <Suspense>
-        <TaskPreview />
+        <TaskPreview {...props} />
       </Suspense>
     </Provider>
   );
 }
 
-export function SeasonShowPage() {
+export function SeasonShowPage(props: React.ComponentProps<typeof SeasonShow>) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <SeasonShow />
+          <SeasonShow {...props} />
         </Suspense>
       </PersistGate>
     </Provider>

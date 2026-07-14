@@ -29,6 +29,7 @@ interface ChatMessage {
 interface MessagesProps {
   messages: ChatMessage[];
   displayMenu?: (event: MouseEvent | KeyboardEvent) => void;
+  onBanUser?: (user: { userId: number; name: string }) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -48,7 +49,8 @@ const getKey = (
 
 function Messages({
   messages,
-  displayMenu = () => {},
+  displayMenu,
+  onBanUser,
   disabled = false,
   className = '',
 }: MessagesProps) {
@@ -160,6 +162,7 @@ function Messages({
               time={time}
               meta={meta}
               displayMenu={displayMenu}
+              onBanUser={onBanUser}
             />
           );
         })}

@@ -1,15 +1,16 @@
-import Gon from 'gon';
 import { Socket } from 'phoenix';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 const getAccessToken = () => {
   const tokenFromQuery = new URLSearchParams(window.location.search).get('access_token');
-  const tokenFromGon = Gon.getAsset('tournament_access_token');
+  const tokenFromPage = getPageProp<string>('tournament_access_token', '');
 
-  return tokenFromQuery || tokenFromGon || '';
+  return tokenFromQuery || tokenFromPage || '';
 };
 
 const socketParams: { token: unknown; access_token?: unknown } = {
-  token: Gon.getAsset('user_token'),
+  token: getPageProp('user_token'),
 };
 const accessToken = getAccessToken();
 

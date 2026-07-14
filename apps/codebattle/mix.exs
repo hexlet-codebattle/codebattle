@@ -27,7 +27,7 @@ defmodule Codebattle.MixProject do
     [
       mod: {Codebattle.Application, []},
       extra_applications: extra_applications(),
-      included_applications: [:runner, :phoenix_gon]
+      included_applications: [:runner]
     ]
   end
 
@@ -46,7 +46,6 @@ defmodule Codebattle.MixProject do
   defp deps do
     [
       {:runner, in_umbrella: true, runtime: false},
-      {:phoenix_gon, in_umbrella: true},
       {:bandit, "~> 1.0"},
       {:bcrypt_elixir, "~> 3.0"},
       {:cachex, "~> 4.1"},
@@ -63,6 +62,7 @@ defmodule Codebattle.MixProject do
       {:fun_with_flags, "~> 1.11"},
       {:fun_with_flags_ui, "~> 1.0"},
       {:gettext, "~> 0.18"},
+      {:inertia, "~> 2.6"},
       {:oban, "~> 2.19"},
       {:oban_web, "~> 2.11"},
       {:nimble_csv, "~> 1.1"},

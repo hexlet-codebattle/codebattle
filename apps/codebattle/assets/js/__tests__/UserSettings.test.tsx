@@ -67,13 +67,15 @@ const store = configureStore({
   reducer,
   preloadedState: preloadedState as never,
 });
-vi.mock('gon', () => {
-  const gonParams = {
+vi.mock('@/inertia/pageProps', () => {
+  const pageProps = {
     local: 'en',
     current_user: { sound_settings: {} },
     game_id: 10,
   };
-  return { default: { getAsset: (type: keyof typeof gonParams) => gonParams[type] } };
+  return {
+    getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
+  };
 });
 
 describe('UserSettings test cases', () => {

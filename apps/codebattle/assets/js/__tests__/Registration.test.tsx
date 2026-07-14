@@ -14,9 +14,11 @@ const { invalidData: fixtureInvalidData, validData } = getTestData('signUpData.j
 const invalidData = fixtureInvalidData as Array<[string, string, string, string]>;
 const { data, route, headers } = validData;
 
-vi.mock('gon', () => {
-  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
-  return { default: { getAsset: (type: keyof typeof gonParams) => gonParams[type] } };
+vi.mock('@/inertia/pageProps', () => {
+  const pageProps = { local: 'en', current_user: { sound_settings: {} } };
+  return {
+    getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
+  };
 });
 
 describe('sign up', () => {

@@ -31,14 +31,14 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:fetch_live_flash)
+    plug(Inertia.Plug)
     plug(AssignCurrentUser)
     plug(MaintenanceMode)
     plug(RescrictAccess)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
-    plug(PhoenixGon.Pipeline)
-    plug(CodebattleWeb.Plugs.AssignGon)
     plug(CodebattleWeb.Plugs.Locale)
+    plug(CodebattleWeb.Plugs.AssignInertiaProps)
   end
 
   pipeline :api do
@@ -316,6 +316,7 @@ defmodule CodebattleWeb.Router do
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController, only: [:index, :show, :update])
       get("/tasks/:id/stats", TaskController, :stats)
+      get("/tournaments/history", TournamentController, :history)
       resources("/tournaments", TournamentController, only: [:index, :show, :create, :update])
       get("/stream_configs", StreamConfigController, :index)
       put("/stream_configs", StreamConfigController, :put_all)

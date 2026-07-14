@@ -1,5 +1,6 @@
 import React, { type MouseEvent, type KeyboardEvent } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
 import useHover from '../utils/useHover';
@@ -18,12 +19,14 @@ interface MessageHeaderProps {
   name: string;
   time?: number;
   hovered: boolean;
+  interactive: boolean;
+  action?: React.ReactNode;
 }
 
-function MessageHeader({ name, time, hovered }: MessageHeaderProps) {
+function MessageHeader({ name, time, hovered, interactive, action }: MessageHeaderProps) {
   const playerClassName = cn(
     'd-inline-block text-truncate align-top text-nowrap cb-username-max-length mr-1',
-    { 'text-primary': hovered },
+    { 'text-primary': interactive && hovered },
   );
 
   return (
@@ -31,7 +34,10 @@ function MessageHeader({ name, time, hovered }: MessageHeaderProps) {
       <span className="font-weight-bold">
         <span className={playerClassName}>{name}</span>
       </span>
-      <MessageTimestamp time={time!} />
+      <span className="d-inline-flex align-items-center">
+        <MessageTimestamp time={time!} />
+        {action}
+      </span>
     </>
   );
 }
@@ -70,10 +76,36 @@ export interface MessageProps {
   time?: number;
   meta?: MessageMeta | null;
   displayMenu?: (event: MouseEvent | KeyboardEvent) => void;
+  onBanUser?: (user: { userId: number; name: string }) => void;
 }
 
-function Message({ text = '', name = '', userId, type, time, meta, displayMenu }: MessageProps) {
+function Message({
+  text = '',
+  name = '',
+  userId,
+  type,
+  time,
+  meta,
+  displayMenu,
+  onBanUser,
+}: MessageProps) {
   const [chatHeaderRef, hoveredChatHeader] = useHover();
+  const isInteractive = Boolean(userId && displayMenu);
+  const banAction =
+    userId && name && onBanUser ? (
+      <button
+        type="button"
+        className="btn cb-tournament-chat-ban"
+        title={`Ban ${name}`}
+        aria-label={`Ban ${name}`}
+        onClick={(event) => {
+          event.stopPropagation();
+          onBanUser({ userId, name });
+        }}
+      >
+        <FontAwesomeIcon icon="ban" />
+      </button>
+    ) : null;
 
   if (!text) {
     return null;
@@ -92,24 +124,39 @@ function Message({ text = '', name = '', userId, type, time, meta, displayMenu }
   const textPartsClassNames = cn('text-break', {
     'cb-private-text': meta?.type === 'private',
   });
+  const messageHeader = (
+    <MessageHeader
+      name={name}
+      time={time}
+      hovered={hoveredChatHeader}
+      interactive={isInteractive}
+      action={banAction}
+    />
+  );
 
   return (
     <div className="d-flex align-items-baseline flex-wrap mb-1">
       <span className="d-flex flex-column w-100">
-        <span
-          ref={chatHeaderRef}
-          role="button"
-          tabIndex={0}
-          title={`Message (${name})`}
-          className="d-flex justify-content-between"
-          data-user-id={userId}
-          data-user-name={name}
-          onContextMenu={displayMenu}
-          onClick={displayMenu}
-          onKeyPress={displayMenu}
-        >
-          <MessageHeader name={name} time={time} hovered={hoveredChatHeader} />
-        </span>
+        {isInteractive ? (
+          <span
+            ref={chatHeaderRef}
+            role="button"
+            tabIndex={0}
+            title={`Message (${name})`}
+            className="d-flex justify-content-between"
+            data-user-id={userId}
+            data-user-name={name}
+            onContextMenu={displayMenu}
+            onClick={displayMenu}
+            onKeyPress={displayMenu}
+          >
+            {messageHeader}
+          </span>
+        ) : (
+          <span ref={chatHeaderRef} className="d-flex justify-content-between">
+            {messageHeader}
+          </span>
+        )}
         <span>
           <MessageTag messageType={meta?.type} />
           <span className={textPartsClassNames}>

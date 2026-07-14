@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 
 import socket from '../../../socket';
 
@@ -204,8 +204,8 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }: Match
 }
 
 function TournamentStreamAdminPage() {
-  const tournamentId = Gon.getAsset('tournament_id');
-  const tournamentName = Gon.getAsset('tournament_name') || `Tournament #${tournamentId}`;
+  const tournamentId = getPageProp<number>('tournament_id');
+  const tournamentName = getPageProp('tournament_name', `Tournament #${tournamentId}`);
 
   const [matches, setMatches] = useState<Record<number, StreamMatch>>({});
   const [playersById, setPlayersById] = useState<Record<number, StreamPlayer>>({});

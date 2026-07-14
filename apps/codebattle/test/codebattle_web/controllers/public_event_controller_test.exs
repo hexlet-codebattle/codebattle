@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.PublicEventControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
+  import Inertia.Testing
+
   alias Codebattle.Tournament
   alias Codebattle.UserEvent
 
@@ -30,6 +32,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       response = html_response(conn, 200)
 
+      assert inertia_component(conn) == "PublicEvent"
       assert response =~ event.ticker_text
       assert response =~ event.title
       assert response =~ event.description

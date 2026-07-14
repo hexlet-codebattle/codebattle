@@ -1,9 +1,9 @@
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 import groupBy from 'lodash/groupBy';
 
 import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
+import { getPageProp } from '@/inertia/pageProps';
 
 import TournamentStates from '../config/tournament';
 import tournamentSounds from '../config/tournamentSounds';
@@ -14,12 +14,13 @@ import { getTournamentJoinPayload } from '../utils/tournamentAccess';
 
 import Channel from './Channel';
 
-const tournamentId = Gon.getAsset('tournament_id');
+const tournamentId = getPageProp<number | undefined>('tournament_id');
+const tournamentAccessToken = getPageProp<string | undefined>('tournament_access_token');
 const channel = new Channel();
 if (tournamentId) {
   channel.setupChannel(
     `tournament:${tournamentId}`,
-    getTournamentJoinPayload(window.location.search, Gon.getAsset('tournament_access_token')),
+    getTournamentJoinPayload(window.location.search, tournamentAccessToken),
   );
 }
 const requestJson = async (url: string, options: RequestInit = {}) => {
@@ -41,7 +42,7 @@ export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament:${newTournamentId}`;
   channel.setupChannel(
     newChannelName,
-    getTournamentJoinPayload(window.location.search, Gon.getAsset('tournament_access_token')),
+    getTournamentJoinPayload(window.location.search, tournamentAccessToken),
   );
   return channel;
 };
@@ -227,6 +228,18 @@ export const uploadTournamentsByFilter = (from: string, to: string) =>
     const data = camelizeKeys(response);
 
     return [data.seasonTournaments, data.userTournaments];
+  });
+
+export const uploadFinishedTournaments = () =>
+  requestJson('api/v1/tournaments/history', {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-csrf-token': window.csrf_token || '',
+    },
+  }).then((response) => {
+    const data = camelizeKeys(response);
+
+    return data.tournaments;
   });
 
 // TODO (tournaments): request matches by searched player id

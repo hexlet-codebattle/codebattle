@@ -1,5 +1,5 @@
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 
 export default {
-  default: Gon?.getAsset?.('locale') || 'en',
+  default: getPageProp('locale', 'en'),
 };

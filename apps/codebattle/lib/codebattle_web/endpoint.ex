@@ -44,7 +44,7 @@ defmodule CodebattleWeb.Endpoint do
     at: "/",
     from: :codebattle,
     gzip: false,
-    only: ~w(assets css fonts images js favicon.ico robots.txt)
+    only: ~w(assets css fonts images js favicon.ico robots.txt offline.html service-worker.js)
   )
 
   # Serve static files (images, fonts, audio) from assets/static in development
@@ -96,7 +96,7 @@ defmodule CodebattleWeb.Endpoint do
       at: "/",
       from: Path.expand("../../assets/static", __DIR__),
       gzip: false,
-      only: ~w(codicon.ttf)
+      only: ~w(codicon.ttf offline.html service-worker.js)
     )
   end
 

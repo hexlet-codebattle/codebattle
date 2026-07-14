@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.RootController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Season
   alias Codebattle.SeasonResult
   alias Codebattle.User
@@ -56,16 +54,14 @@ defmodule CodebattleWeb.RootController do
 
       # by default render index page with lobby view
       true ->
-        conn
-        |> maybe_put_opponent(params)
-        |> put_gon(
-          task_tags: ["strings", "math", "hash-maps", "collections", "rest"],
-          active_games: LobbyView.render_active_games(current_user),
-          tournaments: [],
-          completed_games: [],
-          leaderboard_users: []
-        )
-        |> render("index.html")
+        render_inertia(conn, "Lobby", %{
+          "task_tags" => ["strings", "math", "hash-maps", "collections", "rest"],
+          "active_games" => LobbyView.render_active_games(current_user),
+          "tournaments" => [],
+          "completed_games" => [],
+          "leaderboard_users" => [],
+          "opponent" => opponent(params)
+        })
     end
   end
 
@@ -93,14 +89,14 @@ defmodule CodebattleWeb.RootController do
     render(conn, "sitemap.xml")
   end
 
-  defp maybe_put_opponent(conn, %{"opponent_id" => id}) do
+  defp opponent(%{"opponent_id" => id}) do
     case User.get(id) do
-      nil -> conn
-      user -> put_gon(conn, opponent: Map.take(user, [:id, :name, :rating, :rank]))
+      nil -> nil
+      user -> Map.take(user, [:id, :name, :rating, :rank])
     end
   end
 
-  defp maybe_put_opponent(conn, _params), do: conn
+  defp opponent(_params), do: nil
 
   defp base_path_for(user) do
     cond do

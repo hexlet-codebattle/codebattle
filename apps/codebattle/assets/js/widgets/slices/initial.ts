@@ -1,5 +1,6 @@
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
@@ -18,25 +19,27 @@ import {
 
 // ******************************
 //
-// Stage 1: get all assets from Gon
+// Stage 1: read the server-provided Inertia page props
 //
 // ******************************
 
-const activeGamesData = Gon.getAsset('active_games');
-const completedGamesData = Gon.getAsset('completed_games');
-const currentUserData = Gon.getAsset('current_user');
-const gameData = Gon.getAsset('game');
-const isRecord = Gon.getAsset('is_record') || false;
-const playerId = Gon.getAsset('player_id');
-const tournamentData = Gon.getAsset('tournament');
-const tournamentId = Gon.getAsset('tournament_id');
-const tournamentsData = Gon.getAsset('tournaments');
-const usersRatingData = Gon.getAsset('users_rating');
-const langsData = Gon.getAsset('langs');
-const leaderboardUsersData = Gon.getAsset('leaderboard_users');
-const eventData = Gon.getAsset('event');
-const reportsData = Gon.getAsset('reports');
-const seasonProfileData = Gon.getAsset('season_profile');
+const activeGamesData = getPageProp('active_games');
+const completedGamesData = getPageProp('completed_games');
+const currentUserData = getPageProp('current_user');
+const gameData = getPageProp('game');
+const isRecord = getPageProp('is_record', false);
+const playerId = getPageProp<number | null>('player_id', null);
+const tournamentData = getPageProp('tournament');
+const tournamentId = getPageProp<number | null>('tournament_id', null);
+const tournamentsData = getPageProp('tournaments');
+const usersRatingData = getPageProp('users_rating');
+const langsData = getPageProp('langs');
+const leaderboardUsersData = getPageProp('leaderboard_users');
+const eventData = getPageProp('event');
+const reportsData = getPageProp('reports');
+const seasonProfileData = getPageProp<{ score: number; place: number; rating: number } | undefined>(
+  'season_profile',
+);
 
 // ******************************
 //

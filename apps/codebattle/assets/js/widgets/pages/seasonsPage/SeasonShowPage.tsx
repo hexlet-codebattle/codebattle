@@ -1,7 +1,7 @@
 import React, { memo, useState, useMemo } from 'react';
 
+import { Link } from '@inertiajs/react';
 import cn from 'classnames';
-import Gon from 'gon';
 
 import i18n from '../../../i18n';
 import LanguageIcon from '../../components/LanguageIcon';
@@ -15,13 +15,18 @@ import {
 
 type SeasonResult = LeaderboardResult;
 
-interface Season {
+export interface Season {
   id: number | string;
   name: string;
   year: number | string;
   starts_at?: string;
   ends_at?: string;
   [key: string]: unknown;
+}
+
+export interface SeasonShowPageProps {
+  season: Season | null;
+  results: SeasonResult[];
 }
 
 interface StatBoxProps {
@@ -135,14 +140,9 @@ function ChampionsPodium({ top3 }: ChampionsPodiumProps) {
   );
 }
 
-function SeasonShowPage() {
-  const season: Season | null = (Gon && Gon.getAsset && Gon.getAsset('season')) || null;
-
+function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps) {
   // Memoize results to ensure stable reference
-  const results = useMemo<SeasonResult[]>(
-    () => (Gon && Gon.getAsset && Gon.getAsset('results')) || [],
-    [],
-  );
+  const results = useMemo<SeasonResult[]>(() => initialResults, [initialResults]);
 
   // Modal state
   const [selectedPlayer, setSelectedPlayer] = useState<SeasonResult | null>(null);
@@ -215,9 +215,9 @@ function SeasonShowPage() {
             </div>
           </div>
           <div className="d-flex mt-3 mt-md-0">
-            <a href="/seasons" className="btn btn-outline-gold mr-2">
+            <Link href="/seasons" className="btn btn-outline-gold mr-2">
               {i18n.t('All Seasons')}
-            </a>
+            </Link>
             <a href="/hall_of_fame" className="btn btn-outline-gold">
               {i18n.t('Hall of Fame')}
             </a>

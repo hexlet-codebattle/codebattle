@@ -8,13 +8,14 @@ import { useSelector } from 'react-redux';
 
 import { grades } from '@/config/grades';
 import ModalCodes from '@/config/modalCodes';
-import { uploadTournamentsByFilter } from '@/middlewares/Tournament';
+import { uploadFinishedTournaments, uploadTournamentsByFilter } from '@/middlewares/Tournament';
 import { currentUserIdSelector, currentUserIsAdminSelector } from '@/selectors';
 import useTournamentScheduleModals from '@/utils/useTournamentScheduleModals';
 
 import dayjs from '../../../i18n/dayjs';
 
 import ScheduleLegend, { states, type ScheduleContext } from './ScheduleLegend';
+import TournamentHistoryList, { type HistoryTournament } from './TournamentHistoryList';
 
 const views = {
   month: 'month',
@@ -29,6 +30,7 @@ interface Tournament {
   id: number | string;
   name: string;
   grade?: string;
+  state?: string;
   startsAt: string;
   creatorId?: number | string;
   finished?: boolean;
@@ -50,6 +52,7 @@ interface TournamentsState {
 }
 
 const haveSeasonGrade = (t: Tournament) => t.grade !== grades.open;
+const notCancelled = (t: Tournament) => t.state !== 'canceled';
 const filterMyTournaments = (userId: number | string | null) => (t: Tournament) =>
   t.creatorId === userId;
 
@@ -122,6 +125,11 @@ function TournamentSchedule() {
     loading: true,
   });
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [history, setHistory] = useState<{ tournaments: HistoryTournament[]; loading: boolean }>({
+    tournaments: [],
+    loading: false,
+  });
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [date, setDate] = useState<string>(dayjs().format());
   const [view, setView] = useState<ScheduleView>(views.month);
   const isAdmin = useSelector(currentUserIsAdminSelector);
@@ -202,12 +210,15 @@ function TournamentSchedule() {
       const newEvents = uniqBy(
         [...tournaments.seasonTournaments, ...tournaments.userTournaments.filter(haveSeasonGrade)],
         'id',
-      ).map(getEventFromTournamentData);
+      )
+        .filter(notCancelled)
+        .map(getEventFromTournamentData);
 
       setEvents(newEvents);
     } else if (context === states.my) {
       const newEvents = tournaments.userTournaments
         .filter(filterMyTournaments(currentUserId))
+        .filter(notCancelled)
         .map(getEventFromTournamentData);
 
       setEvents(newEvents);
@@ -215,11 +226,32 @@ function TournamentSchedule() {
       const newEvents = uniqBy(
         [...tournaments.seasonTournaments, ...tournaments.userTournaments],
         'id',
-      ).map(getEventFromTournamentData);
+      )
+        .filter(notCancelled)
+        .map(getEventFromTournamentData);
 
       setEvents(newEvents);
     }
   }, [context, currentUserId, tournaments, isAdmin]);
+
+  useEffect(() => {
+    if (context !== states.list || historyLoaded) {
+      return;
+    }
+
+    setHistory((state) => ({ ...state, loading: true }));
+    setHistoryLoaded(true);
+
+    uploadFinishedTournaments()
+      .then((tournamentsList: HistoryTournament[]) => {
+        setHistory({ tournaments: tournamentsList, loading: false });
+      })
+      .catch((e) => {
+        console.error(e);
+        setHistory({ tournaments: [], loading: false });
+        setHistoryLoaded(false);
+      });
+  }, [context, historyLoaded]);
 
   useEffect(() => {
     if (event) {
@@ -242,31 +274,35 @@ function TournamentSchedule() {
         loading={tournaments.loading}
         onChangeContext={onChangeContext}
       />
-      <BigCalendar
-        localizer={codebattleLocalizer}
-        startAccessor="start"
-        endAccessor="end"
-        // events={view === views.month ? filteredEvents : events}
-        events={events}
-        view={view}
-        onView={onView}
-        date={date}
-        defaultDate={date}
-        onNavigate={onNavigate}
-        onSelectEvent={setSelectedEvent}
-        popup
-        style={{
-          minHeight: '400px',
-          height: '100%',
-        }}
-        views={[views.month, views.day, views.agenda]}
-        eventPropGetter={eventPropGetter}
-        className="cb-rbc-calendar"
-        formats={{
-          monthHeaderFormat: 'MMMM YYYY',
-          dayHeaderFormat: 'dddd MMMM DD',
-        }}
-      />
+      {context === states.list ? (
+        <TournamentHistoryList tournaments={history.tournaments} loading={history.loading} />
+      ) : (
+        <BigCalendar
+          localizer={codebattleLocalizer}
+          startAccessor="start"
+          endAccessor="end"
+          // events={view === views.month ? filteredEvents : events}
+          events={events}
+          view={view}
+          onView={onView}
+          date={date}
+          defaultDate={date}
+          onNavigate={onNavigate}
+          onSelectEvent={setSelectedEvent}
+          popup
+          style={{
+            minHeight: '650px',
+            height: '100%',
+          }}
+          views={[views.month, views.day, views.agenda]}
+          eventPropGetter={eventPropGetter}
+          className="cb-rbc-calendar"
+          formats={{
+            monthHeaderFormat: 'MMMM YYYY',
+            dayHeaderFormat: 'dddd MMMM DD',
+          }}
+        />
+      )}
     </div>
   );
 }

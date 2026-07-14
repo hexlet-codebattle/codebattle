@@ -16,10 +16,9 @@ Open-source competitive programming platform where users solve coding tasks head
 
 ## Project Structure
 
-Elixir umbrella project with three apps under `apps/`:
+Elixir umbrella project with two apps under `apps/`:
 - `codebattle` — Main Phoenix web app (backend + frontend assets)
 - `runner` — HTTP service that executes user code in isolated containers; language images in `apps/runner/images/`
-- `phoenix_gon` — Shared library for passing server data to frontend
 
 Frontend source lives in `apps/codebattle/assets/js/` with React widgets, Redux slices, and XState machines.
 

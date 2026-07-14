@@ -34,6 +34,7 @@ defmodule CodebattleWeb do
 
       import Ecto
       import Ecto.Query
+      import Inertia.Controller
       import Phoenix.LiveView.Controller, only: [live_render: 3]
 
       alias Codebattle.Repo

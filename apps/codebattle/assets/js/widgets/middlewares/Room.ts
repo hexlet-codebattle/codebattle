@@ -1,10 +1,9 @@
 import NiceModal from '@ebay/nice-modal-react';
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import debounce from 'lodash/debounce';
-import find from 'lodash/find';
 
 import ModalCodes from '@/config/modalCodes';
+import { getPageProp } from '@/inertia/pageProps';
 import { makeGameUrl } from '@/utils/urlBuilders';
 
 import { channelMethods, channelTopics } from '../../socket';
@@ -24,9 +23,12 @@ import notification from '../utils/notification';
 
 import Channel from './Channel';
 
-const defaultLanguages = Gon.getAsset('langs');
-const gameId = Gon.getAsset('game_id');
-const isRecord = Gon.getAsset('is_record');
+const defaultLanguages = getPageProp<Array<{ slug: string; solutionTemplate: string }>>(
+  'langs',
+  [],
+);
+const gameId = getPageProp<number | undefined>('game_id');
+const isRecord = getPageProp('is_record', false);
 const channel = new Channel();
 const requestJson = async (url: string, options: RequestInit = {}) => {
   const response = await fetch(url, options);
@@ -335,9 +337,12 @@ export const sendReportOnUser =
 export const sendCurrentLangAndSetTemplate =
   (langSlug: string) => (dispatch: any, getState: any) => {
     const state = getState();
-    const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-    const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
-    const { solutionTemplate: template } = find(langs, { slug: langSlug })!;
+    const langs = (selectors.editorLangsSelector(state) ||
+      defaultLanguages) as typeof defaultLanguages;
+    const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state) as
+      | string
+      | undefined;
+    const { solutionTemplate: template } = langs.find((lang) => lang.slug === langSlug)!;
     const textToSet = currentText || template;
 
     const userId: any = selectors.currentUserIdSelector(state);
@@ -357,8 +362,9 @@ export const sendCurrentLangAndSetTemplate =
 
 export const resetTextToTemplateAndSend = (langSlug: string) => (dispatch: any, getState: any) => {
   const state = getState();
-  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-  const { solutionTemplate: template } = find(langs, { slug: langSlug })!;
+  const langs = (selectors.editorLangsSelector(state) ||
+    defaultLanguages) as typeof defaultLanguages;
+  const { solutionTemplate: template } = langs.find((lang) => lang.slug === langSlug)!;
   dispatch(updateEditorText(template, langSlug));
   dispatch(sendEditorText(template, langSlug));
 };

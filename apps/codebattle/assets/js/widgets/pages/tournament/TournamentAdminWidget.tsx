@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import Gon from 'gon';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { getPageProp } from '@/inertia/pageProps';
 import { type AppDispatch } from '@/slices/store';
 
 import {
@@ -68,7 +68,7 @@ function TournamentAdminWidget() {
       document.head.removeChild(styleElement);
     };
   }, []);
-  const tournamentId = Gon.getAsset('tournament_id');
+  const tournamentId = getPageProp<number>('tournament_id');
   const dispatch = useDispatch<AppDispatch>();
 
   const tournament = useSelector(selectors.tournamentSelector);

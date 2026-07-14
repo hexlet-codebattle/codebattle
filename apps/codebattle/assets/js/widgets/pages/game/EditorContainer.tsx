@@ -2,10 +2,11 @@ import React, { useEffect, useContext, useCallback, useRef, type ReactNode } fro
 
 import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
-import Gon from 'gon';
 import i18next from 'i18next';
 import noop from 'lodash/noop';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import RoomContext from '../../components/RoomContext';
 import editorModes from '../../config/editorModes';
@@ -43,9 +44,9 @@ import EditorToolbar from './EditorToolbar';
 
 const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
 
-// Default ON unless BE Gon flag explicitly disables it. Read at call time
+// Default ON unless the server-provided Inertia flag explicitly disables it. Read at call time
 // so SPA navigation between pages can't latch a stale `false`.
-const isEditorSummaryEnabled = () => Gon.getAsset('editor_summary_enabled') !== false;
+const isEditorSummaryEnabled = () => getPageProp<boolean>('editor_summary_enabled', true);
 
 // xstate v4 interpreter/machine have no usable exported types here (rule 7)
 interface RoomContextValue {

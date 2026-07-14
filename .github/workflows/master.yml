@@ -36,7 +36,6 @@ jobs:
               - 'mix.lock'
               - 'apps/codebattle/**'
               - 'apps/runner/**'
-              - 'apps/phoenix_gon/**'
               - 'config/**'
             runner_image:
               - 'Containerfile.runner'

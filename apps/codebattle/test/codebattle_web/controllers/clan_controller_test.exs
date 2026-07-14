@@ -65,6 +65,20 @@ defmodule CodebattleWeb.ClanControllerTest do
     assert html =~ "Delete"
   end
 
+  test "show renders a clan without a creator", %{conn: conn} do
+    user = insert(:user)
+    clan = insert(:clan, name: "creatorless", creator_id: nil)
+
+    html =
+      conn
+      |> signed_conn(user)
+      |> get(Routes.clan_path(conn, :show, clan))
+      |> html_response(200)
+
+    assert html =~ "creatorless"
+    assert html =~ ~s(<span class="cb-text">–</span>)
+  end
+
   test "admin deletes clan from public list", %{conn: conn} do
     admin = insert(:admin)
     clan = insert(:clan, name: "delete-me")

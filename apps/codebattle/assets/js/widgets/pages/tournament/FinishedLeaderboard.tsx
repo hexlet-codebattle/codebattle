@@ -144,8 +144,10 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                               lang={item?.userLang || item?.user_lang || item?.lang}
                             />
                           )}
-                          {(item?.userName ?? '').slice(0, 9) +
-                            ((item?.userName?.length ?? 0) > 11 ? '...' : '')}
+                          <a href={`/users/${item.userId}`}>
+                            {(item?.userName ?? '').slice(0, 9) +
+                              ((item?.userName?.length ?? 0) > 11 ? '...' : '')}
+                          </a>
                         </div>
                       </td>
                       <td title={item?.clanLongName} className={tableDataCellClassName}>
@@ -158,7 +160,11 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                             maxWidth: '13ch',
                           }}
                         >
-                          {item?.clanName}
+                          {item.clanId ? (
+                            <a href={`/clans/${item.clanId}`}>{item?.clanName}</a>
+                          ) : (
+                            item?.clanName
+                          )}
                         </div>
                       </td>
                       <td className={tableDataCellClassName}>{item.score}</td>

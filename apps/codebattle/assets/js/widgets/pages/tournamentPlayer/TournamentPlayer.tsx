@@ -301,7 +301,7 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
   }, [tournament.id, dispatch]);
 
   useEffect(() => {
-    const channel = setGameChannel(gameId);
+    const channel = setGameChannel(gameId ?? undefined);
 
     if (gameId) {
       NiceModal.hide(ModalCodes.awardModal);

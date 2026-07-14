@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import {
   Bar,
@@ -14,6 +13,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 const PLAYER_COLORS = ['#60a5fa', '#f472b6'];
 
@@ -50,7 +51,7 @@ function StatRow({ label, value, hint }: StatRowProps) {
   );
 }
 
-// Player/batch payloads are camelized Gon assets with deep, backend-defined
+// Player/batch payloads are camelized Inertia props with deep, backend-defined
 // shapes; typed loosely per migration conventions.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type MlPlayer = Record<string, any>;
@@ -341,13 +342,9 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
 }
 
 function GameMlPage() {
-  const gameId = Gon.getAsset('game_id');
-  const players = ((Gon.getAsset('players') as MlPlayer[]) || []).map(
-    (p) => camelizeKeys(p) as MlPlayer,
-  );
-  const batches = ((Gon.getAsset('batches') as MlBatch[]) || []).map(
-    (b) => camelizeKeys(b) as MlBatch,
-  );
+  const gameId = getPageProp<string | number>('game_id', 'unknown');
+  const players = getPageProp<MlPlayer[]>('players', []).map((p) => camelizeKeys(p) as MlPlayer);
+  const batches = getPageProp<MlBatch[]>('batches', []).map((b) => camelizeKeys(b) as MlBatch);
 
   const batchesByUser = useMemo(() => {
     const map = new Map<number, MlBatch[]>();

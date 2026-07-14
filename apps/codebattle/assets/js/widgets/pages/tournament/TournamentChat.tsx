@@ -1,36 +1,26 @@
 import React, { memo, useCallback, useRef, useEffect } from 'react';
 
+import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
-import ChatContextMenu from '../../components/ChatContextMenu';
 import Messages from '../../components/Messages';
-import Rooms from '../../components/Rooms';
 import { pushCommand, pushCommandTypes } from '../../middlewares/Chat';
 import * as selectors from '../../selectors';
-import useChatContextMenu from '../../utils/useChatContextMenu';
-import useChatRooms from '../../utils/useChatRooms';
 
 import TournamentChatInput from './TournamentChatInput';
 
 function TournamentChat() {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const messages = useSelector(selectors.chatMessagesSelector);
-  const users = useSelector(selectors.chatUsersSelector);
   const isOnline = useSelector(selectors.chatChannelStateSelector);
 
   const handleCleanBanned = useCallback(() => {
     pushCommand({ type: pushCommandTypes.cleanBanned });
   }, []);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const { menuId, menuRequest, displayMenu } = useChatContextMenu({
-    type: 'tournament',
-    users,
-    canInvite: false,
-  });
-
-  useChatRooms('channel');
+  const handleBanUser = useCallback(({ userId, name }: { userId: number; name: string }) => {
+    pushCommand({ type: 'ban', name, user_id: userId });
+  }, []);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -43,51 +33,42 @@ function TournamentChat() {
   }, [messages]);
 
   return (
-    <ChatContextMenu
-      menuId={menuId}
-      inputRef={inputRef as React.RefObject<HTMLInputElement>}
-      request={menuRequest}
-    >
-      <div
-        className="my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column"
-        style={{ height: '450px' }}
-      >
-        <div className="d-flex border-bottom align-items-center cb-border-color">
-          <Rooms disabled={!isOnline} />
-          {currentUserIsAdmin && (
-            <button
-              type="button"
-              className="btn btn-sm btn-link text-danger"
-              onClick={handleCleanBanned}
-              disabled={!isOnline}
-            >
-              Clean banned
-            </button>
-          )}
+    <div className="cb-tournament-chat my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column shadow-sm">
+      <div className="cb-tournament-chat-header">
+        <div className="d-flex flex-column min-w-0">
+          <span className="cb-tournament-chat-title">{i18next.t('Tournament chat')}</span>
+          <small className="cb-tournament-chat-subtitle">
+            {i18next.t('Please, be nice in chat')}
+          </small>
         </div>
-        <div className="px-2">
-          <small className="text-muted text-nowrap">Please, be nice in chat</small>
-        </div>
-        <div className="flex-grow-1 overflow-hidden d-flex flex-column">
-          <div
-            ref={messagesContainerRef}
-            className="overflow-auto h-100"
-            id="new-chat-message"
-            style={{ scrollBehavior: 'smooth' }}
+        {currentUserIsAdmin && (
+          <button
+            type="button"
+            className="btn btn-sm cb-tournament-chat-clean"
+            onClick={handleCleanBanned}
+            disabled={!isOnline}
           >
-            <Messages
-              displayMenu={
-                displayMenu as unknown as React.ComponentProps<typeof Messages>['displayMenu']
-              }
-              messages={messages as unknown as React.ComponentProps<typeof Messages>['messages']}
-            />
-          </div>
-        </div>
-        <div className="border-top cb-border-color p-2">
-          <TournamentChatInput disabled={!isOnline} />
+            {i18next.t('Clean banned')}
+          </button>
+        )}
+      </div>
+      <div className="flex-grow-1 overflow-hidden d-flex flex-column">
+        <div
+          ref={messagesContainerRef}
+          className="cb-tournament-chat-messages overflow-auto h-100"
+          id="new-chat-message"
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          <Messages
+            messages={messages as unknown as React.ComponentProps<typeof Messages>['messages']}
+            onBanUser={currentUserIsAdmin ? handleBanUser : undefined}
+          />
         </div>
       </div>
-    </ChatContextMenu>
+      <div className="cb-tournament-chat-composer">
+        <TournamentChatInput disabled={!isOnline} />
+      </div>
+    </div>
   );
 }
 

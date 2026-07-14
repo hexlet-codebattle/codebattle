@@ -1864,3 +1864,109 @@ msgstr "Скоро баттл в группах"
 
 msgid "Return to game"
 msgstr "Вернуться к игре"
+
+msgid "%{count} min"
+msgstr "%{count} мин"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Base"
+msgstr "База"
+
+msgid "First page"
+msgstr "Первая страница"
+
+msgid "Format"
+msgstr "Формат"
+
+msgid "Kick player"
+msgstr "Исключить игрока"
+
+msgid "Kick {{name}} from tournament?"
+msgstr "Исключить {{name}} из турнира?"
+
+msgid "Last page"
+msgstr "Последняя страница"
+
+msgid "Level"
+msgstr "Уровень"
+
+msgid "Loss factor"
+msgstr "Коэффициент поражения"
+
+msgid "Match time"
+msgstr "Время матча"
+
+msgid "Next"
+msgstr "Далее"
+
+msgid "Next page"
+msgstr "Следующая страница"
+
+msgid "No matches yet"
+msgstr "Матчей пока нет"
+
+msgid "Players & Matches"
+msgstr "Игроки и матчи"
+
+msgid "Previous page"
+msgstr "Предыдущая страница"
+
+msgid "Record"
+msgstr "Рекорд"
+
+msgid "Registration is open"
+msgstr "Регистрация открыта"
+
+msgid "Rounds"
+msgstr "Раунды"
+
+msgid "Row spacer"
+msgstr "Разделитель строк"
+
+msgid "Show game history"
+msgstr "Показать историю игры"
+
+msgid "Speed bonus"
+msgstr "Бонус за скорость"
+
+msgid "Tests"
+msgstr "Тесты"
+
+msgid "The tournament continues for top 8 players."
+msgstr "Турнир продолжается для 8 лучших игроков."
+
+msgid "This tournament is live — join now to jump into the next round."
+msgstr "Турнир идёт прямо сейчас — присоединяйтесь, чтобы сыграть в следующем раунде."
+
+msgid "Timeout factor"
+msgstr "Коэффициент таймаута"
+
+msgid "Top user by task ranking"
+msgstr "Лучшие игроки по задачам"
+
+msgid "Tournament in progress"
+msgstr "Турнир идёт"
+
+msgid "You're in — get ready to battle!"
+msgstr "Вы в игре — готовьтесь к бою!"
+
+msgid "Your games will appear here as soon as the round starts. Hang tight!"
+msgstr "Ваши игры появятся здесь, как только начнётся раунд. Немного подождите!"
+
+msgid "pts"
+msgstr "очк."
+
+msgid "task duration distribution"
+msgstr "распределение времени решения задачи"
+
+msgid "Please, be nice in chat"
+msgstr "Пожалуйста, будьте вежливы в чате"
+
+msgid "Write message..."
+msgstr "Напишите сообщение..."
+
+msgid "Chat message"
+msgstr "Сообщение в чат"
+

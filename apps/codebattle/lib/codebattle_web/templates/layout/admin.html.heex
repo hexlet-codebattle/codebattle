@@ -132,6 +132,7 @@
     </style>
   </head>
   <body class="cb-bg-dark">
+    <div id="inertia-shared-props" data-props={inertia_shared_props_json(@conn)} hidden></div>
     <div class="container-fluid">
       <div class="admin-shell">
         <aside id="admin-sidebar" class="admin-sidebar px-0">
@@ -325,6 +326,5 @@
         });
       })();
     </script>
-    {render_gon_script(@conn)}
   </body>
 </html>

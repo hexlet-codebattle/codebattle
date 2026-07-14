@@ -1,12 +1,9 @@
 defmodule CodebattleWeb.HallOfFameController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Season
   alias Codebattle.SeasonResult
 
-  plug(:put_view, CodebattleWeb.HallOfFameView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
@@ -37,11 +34,12 @@ defmodule CodebattleWeb.HallOfFameController do
       title: "Codebattle Hall of Fame",
       description: "Hall of Fame for Codebattle League"
     })
-    |> put_gon(%{
-      current_season: current_season,
-      current_season_results: current_season_results,
-      previous_seasons_winners: previous_seasons_winners
+    |> assign(:page_title, "Codebattle Hall of Fame")
+    |> render_inertia("HallOfFame", %{
+      "page_title" => "Codebattle Hall of Fame",
+      "current_season" => current_season,
+      "current_season_results" => current_season_results,
+      "previous_seasons_winners" => previous_seasons_winners
     })
-    |> render("index.html")
   end
 end

@@ -2,7 +2,13 @@ defmodule CodebattleWeb.LayoutView do
   use CodebattleWeb, :view
 
   import CodebattleWeb.Router.Helpers
-  import PhoenixGon.View
+  import Inertia.HTML
+
+  def inertia_shared_props_json(conn) do
+    conn.assigns
+    |> Map.get(:frontend_shared_props, %{})
+    |> Jason.encode!()
+  end
 
   @colors [
     "2AE881",

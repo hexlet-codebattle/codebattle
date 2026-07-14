@@ -8,16 +8,11 @@ import {
   Game,
   GameMlPage,
   GameThreejsPage,
-  HallOfFamePage,
-  HeadToHeadPage,
   Invites,
   MainChannel,
   Lobby,
   Online,
   RegistrationPage,
-  SeasonsPage,
-  SeasonShowPage,
-  TaskPreviewPage,
   SettingsPage,
   StairwayGamePage,
   StreamPage,
@@ -25,10 +20,7 @@ import {
   TournamentStreamAdminPage,
   TournamentAdminPage,
   TournamentPage,
-  TournamentEditPage,
-  TournamentIndexPage,
   TournamentPlayerPage,
-  TournamentsSchedulePage,
   UserPage,
   UsersRating,
   AdminPage,
@@ -67,28 +59,12 @@ export const renderTournamentThreejsStreamPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentThreejsStreamPage />);
 export const renderTournamentStreamAdminPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentStreamAdminPage />);
-export const renderHallOfFame = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<HallOfFamePage />);
-export const renderHeadToHeadPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<HeadToHeadPage />);
-export const renderSeasonsPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<SeasonsPage />);
-export const renderSeasonShowPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<SeasonShowPage />);
-export const renderTaskPreviewPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TaskPreviewPage />);
 export const renderTournamentAdminPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentAdminPage />);
 export const renderTournamentPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentPage />);
-export const renderTournamentEditPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentEditPage />);
-export const renderTournamentIndexPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentIndexPage />);
 export const renderTournamentPlayerPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentPlayerPage />);
-export const renderTournamentsSchedule = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentsSchedulePage />);
 export const renderUserPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<UserPage />);
 export const renderUsersRating = (domElement: HTMLElement) =>

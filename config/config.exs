@@ -118,6 +118,13 @@ config :fun_with_flags, :persistence,
   repo: Codebattle.Repo,
   ecto_table_name: "feature_flags"
 
+config :inertia,
+  endpoint: CodebattleWeb.Endpoint,
+  static_paths: ["/assets/app.js"],
+  camelize_props: false,
+  history: [encrypt: true],
+  ssr: false
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

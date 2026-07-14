@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 
 import socket from '../../../socket';
 
@@ -41,9 +41,9 @@ function parseStreamParams(search: string) {
 }
 
 function TournamentThreejsStreamPage() {
-  const tournamentId = Gon.getAsset('tournament_id');
-  const initialGameId = Gon.getAsset('game_id') || null;
-  const initialGame = Gon.getAsset('game') || null;
+  const tournamentId = getPageProp('tournament_id');
+  const initialGameId = getPageProp('game_id', null);
+  const initialGame = getPageProp('game', null);
 
   const streamParams = useMemo(
     () => parseStreamParams(typeof window !== 'undefined' ? window.location.search : ''),

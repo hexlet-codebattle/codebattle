@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
+import { Link } from '@inertiajs/react';
 import cn from 'classnames';
-import Gon from 'gon';
 
 import i18n from '../../../i18n';
 import dayjs from '../../../i18n/dayjs';
@@ -13,13 +13,17 @@ interface SeasonResult {
   total_points: number;
 }
 
-interface Season {
+export interface Season {
   id: number | string;
   name: string;
   year: number | string;
   starts_at: string;
   ends_at: string;
   top3?: SeasonResult[];
+}
+
+export interface SeasonsPageProps {
+  seasons: Season[];
 }
 
 const getMedalEmoji = (place: number) => {
@@ -137,12 +141,12 @@ function SeasonCard({ season }: SeasonCardProps) {
               {formatSeasonDates(season)}
             </div>
           </div>
-          <a
+          <Link
             href={`/seasons/${season.id}`}
             className="btn btn-sm btn-outline-gold mt-3 mt-sm-0 cb-seasons-action"
           >
             {i18n.t('View Results')}
-          </a>
+          </Link>
         </div>
 
         <div className="cb-seasons-card-body">
@@ -153,9 +157,7 @@ function SeasonCard({ season }: SeasonCardProps) {
   );
 }
 
-function SeasonsPage() {
-  const seasons: Season[] = (Gon && Gon.getAsset && Gon.getAsset('seasons')) || [];
-
+function SeasonsPage({ seasons }: SeasonsPageProps) {
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5 cb-seasons-page">
       <div className="container">
@@ -171,9 +173,9 @@ function SeasonsPage() {
               </p>
             </div>
             <div className="mt-3 mt-md-0">
-              <a href="/hall_of_fame" className="btn btn-outline-gold cb-seasons-hero-action">
+              <Link href="/hall_of_fame" className="btn btn-outline-gold cb-seasons-hero-action">
                 {i18n.t('Hall of Fame')}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

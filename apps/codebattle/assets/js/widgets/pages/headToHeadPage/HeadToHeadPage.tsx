@@ -1,6 +1,5 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import { useDispatch } from 'react-redux';
 
@@ -13,12 +12,23 @@ import { actions } from '../../slices';
 import { type AppDispatch } from '../../slices';
 import UserStats from '../../components/UserStats';
 
-// Head-to-head payload is a snake_case Gon asset with a backend-defined shape;
+// Head-to-head payload is a snake_case Inertia prop with a backend-defined shape;
 // typed loosely per migration conventions.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type H2HPlayer = Record<string, any>;
 type H2HGame = Record<string, any>;
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+export interface HeadToHeadPageProps {
+  headToHead: {
+    players?: H2HPlayer[];
+    games?: H2HGame[];
+    total_games?: number;
+    completed_games?: number;
+    draws?: number;
+    winner_id?: number | null;
+  } | null;
+}
 
 type Placement = OverlayProps['placement'];
 
@@ -489,12 +499,7 @@ function SummaryStat({ label, value, tone }: SummaryStatProps) {
   );
 }
 
-function HeadToHeadPage() {
-  const headToHead = useMemo(
-    () => (Gon && Gon.getAsset && Gon.getAsset('head_to_head')) || null,
-    [],
-  );
-
+function HeadToHeadPage({ headToHead }: HeadToHeadPageProps) {
   if (!headToHead) {
     return null;
   }
@@ -561,7 +566,7 @@ function HeadToHeadPage() {
           <div className="row">
             {players.map((player, index) => (
               <div key={player.id} className="col-12 col-lg-6 mb-3">
-                <PlayerCard player={player} winnerId={headToHead.winner_id} index={index} />
+                <PlayerCard player={player} winnerId={headToHead.winner_id ?? null} index={index} />
               </div>
             ))}
           </div>

@@ -4,8 +4,8 @@ import React from 'react';
 
 import TournamentListItem from '../widgets/pages/lobby/TournamentListItem';
 
-vi.mock('gon', () => ({
-  default: { getAsset: (type: string) => (type === 'locale' ? 'en' : null) },
+vi.mock('@/inertia/pageProps', () => ({
+  getPageProp: (key: string, fallback?: unknown) => (key === 'locale' ? 'en' : fallback),
 }));
 
 vi.mock('@fortawesome/react-fontawesome', () => ({

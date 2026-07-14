@@ -14,13 +14,15 @@ import reducers from '../widgets/slices';
 
 import { getTestData } from './helpers';
 
-vi.mock('gon', () => {
-  const gonParams = {
+vi.mock('@/inertia/pageProps', () => {
+  const pageProps = {
     local: 'en',
     current_user: { id: 1, sound_settings: {} },
     task_tags: ['math', 'string', 'asd', 'rest'],
   };
-  return { default: { getAsset: (type: keyof typeof gonParams) => gonParams[type] } };
+  return {
+    getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
+  };
 });
 
 const {

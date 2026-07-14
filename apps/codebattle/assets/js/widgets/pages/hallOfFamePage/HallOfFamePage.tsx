@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useState } from 'react';
 
+import { Link } from '@inertiajs/react';
 import cn from 'classnames';
-import Gon from 'gon';
 
 import i18n from '../../../i18n';
 import LanguageIcon from '../../components/LanguageIcon';
@@ -16,14 +16,20 @@ import {
 import UserInfo from '../../components/UserInfo';
 
 type HofResult = LeaderboardResult;
-// Season payload is a snake_case Gon asset with a backend-defined shape;
+// Season payload is a snake_case Inertia prop with a backend-defined shape;
 // typed loosely per migration conventions.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type HofSeason = Record<string, any>;
+type HofSeason = Record<string, any> & { id: number };
 
-interface PreviousSeasonWinnersEntry {
+export interface PreviousSeasonWinnersEntry {
   season: HofSeason;
   winners: HofResult[];
+}
+
+export interface HallOfFamePageProps {
+  currentSeason: HofSeason | null;
+  currentSeasonResults: HofResult[];
+  previousSeasonsWinners: PreviousSeasonWinnersEntry[];
 }
 
 interface StatBoxProps {
@@ -282,14 +288,15 @@ function PreviousSeasonWinners({ previousSeasonsWinners }: PreviousSeasonWinners
   );
 }
 
-function HallOfFamePage() {
-  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset('current_season')) || null;
+function HallOfFamePage({
+  currentSeason,
+  currentSeasonResults: initialCurrentSeasonResults,
+  previousSeasonsWinners,
+}: HallOfFamePageProps) {
   const currentSeasonResults = useMemo(
-    () => (Gon && Gon.getAsset && Gon.getAsset('current_season_results')) || [],
-    [],
+    () => initialCurrentSeasonResults,
+    [initialCurrentSeasonResults],
   );
-  const previousSeasonsWinners =
-    (Gon && Gon.getAsset && Gon.getAsset('previous_seasons_winners')) || [];
 
   // Use the shared leaderboard state hook
   const leaderboardState = useLeaderboardState(currentSeasonResults);
@@ -333,9 +340,9 @@ function HallOfFamePage() {
                       </span>
                     </div>
                   </div>
-                  <a href="/seasons" className="btn btn-outline-gold">
+                  <Link href="/seasons" className="btn btn-outline-gold">
                     {i18n.t('View All Seasons')}
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

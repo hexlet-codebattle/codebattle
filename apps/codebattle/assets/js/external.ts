@@ -13,6 +13,7 @@
 import 'core-js/stable';
 import 'bootstrap';
 import 'phoenix_html';
+import './pwa';
 import { renderEventPage, renderMainChannelWidget } from './widgets';
 
 const eventWidgetRoot = document.getElementById('event-widget');

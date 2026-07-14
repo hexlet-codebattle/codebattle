@@ -1,6 +1,7 @@
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import TournamentStates from '../config/tournament';
 import tournamentSounds from '../config/tournamentSounds';
@@ -9,7 +10,7 @@ import { actions } from '../slices';
 
 import Channel from './Channel';
 
-const tournamentId = Gon.getAsset('tournament_id');
+const tournamentId = getPageProp('tournament_id');
 const channel = new Channel();
 if (tournamentId) {
   channel.setupChannel(`tournament_admin:${tournamentId}`);

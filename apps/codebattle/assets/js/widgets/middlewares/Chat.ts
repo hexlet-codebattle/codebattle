@@ -1,5 +1,6 @@
-import Gon from 'gon';
 import capitalize from 'lodash/capitalize';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import i18n from '../../i18n';
 import { channelMethods, channelTopics } from '../../socket';
@@ -9,12 +10,12 @@ import getChatTopic from '../utils/names';
 
 import Channel from './Channel';
 
-const isRecord = Gon.getAsset('is_record');
+const isRecord = getPageProp('is_record', false);
 
 const channel = new Channel();
 
 export const pushCommandTypes = {
-  cleanBanned: 'clead_banned',
+  cleanBanned: 'clean_banned',
 };
 
 const establishChat = (page: string) => (dispatch: any) => {

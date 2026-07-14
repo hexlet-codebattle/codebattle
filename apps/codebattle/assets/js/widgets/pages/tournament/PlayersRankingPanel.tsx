@@ -238,8 +238,10 @@ function PlayersRankingPanel({
                             }}
                           >
                             {item?.lang && <LanguageIcon className="mr-1" lang={item.lang} />}
-                            {(item?.name ?? '').slice(0, 10) +
-                              ((item?.name?.length ?? 0) > 10 ? '..' : '')}
+                            <a href={`/users/${item.id}`}>
+                              {(item?.name ?? '').slice(0, 10) +
+                                ((item?.name?.length ?? 0) > 10 ? '..' : '')}
+                            </a>
                           </div>
                         </td>
                         <td className={tableDataCellClassName}>
@@ -253,8 +255,15 @@ function PlayersRankingPanel({
                               maxWidth: '20ch',
                             }}
                           >
-                            {(item?.clan ?? '').slice(0, 10) +
-                              ((item?.clan?.length ?? 0) > 10 ? '...' : '')}
+                            {item.clanId ? (
+                              <a href={`/clans/${item.clanId}`}>
+                                {(item?.clan ?? '').slice(0, 10) +
+                                  ((item?.clan?.length ?? 0) > 10 ? '...' : '')}
+                              </a>
+                            ) : (
+                              (item?.clan ?? '').slice(0, 10) +
+                              ((item?.clan?.length ?? 0) > 10 ? '...' : '')
+                            )}
                           </div>
                         </td>
                         <td className={tableDataCellClassName}>{item.score}</td>

@@ -1,8 +1,9 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 
 import MonacoEditor from '@monaco-editor/react';
-import Gon from 'gon';
 import i18next from 'i18next';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import '../../initEditor';
 import socket from '../../../socket';
@@ -12,7 +13,7 @@ import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
 // The three.js module is loaded from a CDN at runtime and ships no local types here.
 type ThreeModule = any;
 
-// Player / game payloads come from the Phoenix channel and Gon as loosely-shaped
+// Player / game payloads come from the Phoenix channel and Inertia as loosely-shaped
 // snake_case-or-camelCase objects; model only the fields this page reads.
 interface StreamPlayer {
   id?: number | string;
@@ -1069,8 +1070,8 @@ function ThreejsGamePage({
   initialGame: initialGameProp,
   streamParams,
 }: ThreejsGamePageProps = {}) {
-  const gameId = gameIdProp ?? Gon.getAsset('game_id');
-  const initialGameSource: GamePayload = initialGameProp ?? Gon.getAsset('game') ?? {};
+  const gameId = gameIdProp ?? getPageProp('game_id');
+  const initialGameSource: GamePayload = initialGameProp ?? getPageProp('game', {});
   const [initialGame, setInitialGame] = useState<GamePayload>(initialGameSource);
   const forceFullscreen = Boolean(streamParams?.fullscreen);
   const kioskWidget = streamParams?.widget || null;

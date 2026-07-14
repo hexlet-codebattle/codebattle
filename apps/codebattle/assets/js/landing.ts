@@ -1,5 +1,6 @@
 import 'phoenix_html';
 import 'bootstrap';
+import './pwa';
 
 const revealItems = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
 const parallaxItems = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));

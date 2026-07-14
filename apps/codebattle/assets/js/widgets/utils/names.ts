@@ -1,7 +1,7 @@
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 
-const chatId = Gon.getAsset('game_id');
-const tournamentId = Gon.getAsset('tournament_id');
+const chatId = getPageProp('game_id');
+const tournamentId = getPageProp('tournament_id');
 
 const prefixes = {
   page: {

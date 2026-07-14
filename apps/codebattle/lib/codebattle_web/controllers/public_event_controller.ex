@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.PublicEventController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Event
   alias Codebattle.Tournament
   alias Codebattle.User
@@ -23,16 +21,17 @@ defmodule CodebattleWeb.PublicEventController do
       |> put_meta_tags(public_event_meta_tags(conn, event))
       |> assign(:ticker_text, event.ticker_text)
       |> assign(:show_header, true)
-      |> put_gon(
-        external_platform_login_url: Application.get_env(:codebattle, :external_platform_login_url),
-        external_platform_name: Application.get_env(:codebattle, :external_platform_name),
-        external_platform_profile_url_template: Application.get_env(:codebattle, :external_platform_profile_url_template),
-        event: %{
+      |> put_layout(html: {CodebattleWeb.LayoutView, :external})
+      |> render_inertia("PublicEvent", %{
+        "external_platform_login_url" => Application.get_env(:codebattle, :external_platform_login_url),
+        "external_platform_name" => Application.get_env(:codebattle, :external_platform_name),
+        "external_platform_profile_url_template" =>
+          Application.get_env(:codebattle, :external_platform_profile_url_template),
+        "event" => %{
           event: event,
           user_event: user_event
         }
-      )
-      |> render("show.html", layout: {CodebattleWeb.LayoutView, :external})
+      })
     else
       redirect(conn, to: Routes.root_path(conn, :index))
     end

@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.TaskController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Task
   alias Codebattle.Task.Stats
 
@@ -37,12 +35,13 @@ defmodule CodebattleWeb.TaskController do
         description: String.slice(task.description_en, 0..137),
         url: Routes.task_path(conn, :show, task)
       })
-      |> put_gon(
-        task: task,
-        task_stats: task_stats,
-        can_edit_task: Task.can_access_task?(task, conn.assigns.current_user)
-      )
-      |> render("show.html")
+      |> assign(:page_title, task.name)
+      |> render_inertia("TaskPreview", %{
+        "page_title" => task.name,
+        "task" => task,
+        "task_stats" => task_stats,
+        "can_edit_task" => Task.can_access_task?(task, conn.assigns.current_user)
+      })
     else
       conn
       |> put_status(:not_found)

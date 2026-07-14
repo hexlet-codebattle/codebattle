@@ -1,9 +1,9 @@
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 
 import messageTypes from '../config/messageTypes';
 import rooms from '../config/rooms';
 
-const currentUserId = Gon.getAsset('current_user')?.id;
+const currentUserId = getPageProp<{ id?: number }>('current_user', {})?.id;
 
 interface ChatMessageMeta {
   type?: string;

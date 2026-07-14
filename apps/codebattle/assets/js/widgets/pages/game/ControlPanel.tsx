@@ -2,16 +2,17 @@ import React, { type ReactNode } from 'react';
 
 import cn from 'classnames';
 import copy from 'copy-to-clipboard';
-import Gon from 'gon';
 import { PlayerIcon } from 'react-player-controls';
 import { useDispatch } from 'react-redux';
+
+import { getPageProp } from '@/inertia/pageProps';
 
 import speedModes from '../../config/speedModes';
 import playbackModes from '../../config/playbackModes';
 import { replayerMachineStates } from '../../machines/game';
 import { actions } from '../../slices';
 
-const gameId = Gon.getAsset('game_id');
+const gameId = getPageProp('game_id');
 
 const formatDuration = (ms: number | null | undefined) => {
   if (ms === null || ms === undefined || Number.isNaN(ms)) return '--:--';

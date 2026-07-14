@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import cn from 'classnames';
-import Gon from 'gon';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from '@/components/BootstrapModal';
+import { getPageProp } from '@/inertia/pageProps';
 import * as lobbyMiddlewares from '@/middlewares/Lobby';
 import * as selectors from '@/selectors';
 import { actions, type AppDispatch } from '@/slices';
@@ -101,7 +101,7 @@ interface ModalShowingState {
 }
 
 function LobbyWidget() {
-  const currentOpponent = Gon.getAsset('opponent') as CurrentOpponent | null;
+  const currentOpponent = getPageProp<CurrentOpponent | null>('opponent', null);
 
   const dispatch = useDispatch<AppDispatch>();
 

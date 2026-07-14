@@ -134,6 +134,22 @@ defmodule Codebattle.User.AchievementsTest do
   end
 
   describe "recalculate_user/1" do
+    test "does not recalculate achievements for bots" do
+      bot = insert(:user, is_bot: true)
+      insert_user_games(bot.id, 1)
+
+      achievement =
+        Repo.insert!(%UserAchievement{
+          user_id: bot.id,
+          type: :game_stats,
+          meta: %{"won" => 999, "lost" => 0, "gave_up" => 0}
+        })
+
+      :ok = Achievements.recalculate_user(bot.id)
+
+      assert Repo.get!(UserAchievement, achievement.id).meta == achievement.meta
+    end
+
     test "upserts by user and type and keeps highest milestone" do
       user = insert(:user)
 
@@ -211,6 +227,15 @@ defmodule Codebattle.User.AchievementsTest do
                "masters_wins" => 0,
                "grand_slam_wins" => 1
              }
+    end
+  end
+
+  describe "recalculate_all_users/1" do
+    test "does not process bots" do
+      insert(:user, is_bot: true)
+      insert(:user)
+
+      assert %{processed_users: 1} = Achievements.recalculate_all_users(1)
     end
   end
 

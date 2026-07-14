@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.TournamentController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
   alias Codebattle.User
@@ -27,18 +25,19 @@ defmodule CodebattleWeb.TournamentController do
       |> Enum.map(&index_tournament_json/1)
 
     conn
-    |> put_view(CodebattleWeb.TournamentView)
     |> put_meta_tags(%{
       title: "Hexlet Codebattle • Tournaments",
       description:
         "Create or join nice tournaments, have fun with your teammates! You can play `Frontend vs Backend` or `Ruby vs Js`",
       url: Routes.tournament_url(conn, :index)
     })
-    |> render("index.html",
-      tournaments: tournaments,
-      task_pack_names: task_pack_names,
-      user_timezone: user_timezone
-    )
+    |> assign(:page_title, "Tournaments")
+    |> render_inertia("TournamentIndex", %{
+      "page_title" => "Tournaments",
+      "tournaments" => tournaments,
+      "task_pack_names" => task_pack_names,
+      "user_timezone" => user_timezone
+    })
   end
 
   def show(conn, params) do
@@ -69,16 +68,17 @@ defmodule CodebattleWeb.TournamentController do
         |> Enum.map(& &1.name)
 
       conn
-      |> put_view(CodebattleWeb.TournamentView)
       |> put_meta_tags(%{
         title: "Edit #{tournament.name}",
         description: "Edit tournament settings"
       })
-      |> render("edit.html",
-        tournament: tournament,
-        task_pack_names: task_pack_names,
-        user_timezone: user_timezone
-      )
+      |> assign(:page_title, "Edit #{tournament.name}")
+      |> render_inertia("TournamentEdit", %{
+        "page_title" => "Edit #{tournament.name}",
+        "tournament_id" => tournament.id,
+        "task_pack_names" => task_pack_names,
+        "user_timezone" => user_timezone
+      })
     else
       conn
       |> put_flash(:error, gettext("You don't have permission to edit this tournament"))
@@ -133,10 +133,11 @@ defmodule CodebattleWeb.TournamentController do
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
-    |> put_gon(tournament_id: tournament.id)
-    |> put_gon(event_id: tournament.event_id)
-    |> put_gon(tournament_access_token: params["access_token"])
-    |> render("show.html")
+    |> render_inertia("TournamentRoom", %{
+      "tournament_id" => tournament.id,
+      "event_id" => tournament.event_id,
+      "tournament_access_token" => params["access_token"]
+    })
   end
 
   defp index_tournament_json(tournament) do

@@ -3,7 +3,7 @@ import React, { useState, useEffect, memo } from 'react';
 import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 import { camelizeKeys } from 'humps';
 import difference from 'lodash/difference';
 import get from 'lodash/get';
@@ -20,7 +20,7 @@ import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { actions, type AppDispatch } from '../../slices';
 
-const taskTags = Gon.getAsset('task_tags') as string[];
+const taskTags = getPageProp<string[]>('task_tags', []);
 
 interface Task {
   id: number | null;

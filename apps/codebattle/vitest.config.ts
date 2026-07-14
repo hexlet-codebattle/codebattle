@@ -19,10 +19,6 @@ function stubAssets(): Plugin {
 
 const baseConfig = viteConfig({ command: 'serve', mode: 'test' });
 
-// `define: { gon: "window.gon" }` references `window`, which breaks Vitest's
-// config evaluation in Node. Tests mock the `gon` module directly instead.
-delete baseConfig.define;
-
 // Drop dev-server / prod-only plugins that are irrelevant (and noisy) under test:
 // full-reload has no meaning, and the font copiers write to priv/static on every worker.
 const DROP_PLUGINS = new Set(['force-full-reload', 'copy-codicon-font', 'copy-katex-fonts']);

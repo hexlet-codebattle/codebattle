@@ -1,11 +1,11 @@
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 
 import { channelTopics } from '../../socket';
 import { actions } from '../slices';
 
 import Channel from './Channel';
 
-const tournamentId = Gon.getAsset('tournament_id');
+const tournamentId = getPageProp('tournament_id');
 
 const channel = new Channel();
 

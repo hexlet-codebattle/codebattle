@@ -161,6 +161,20 @@ function copyKatexFonts() {
   };
 }
 
+// Service workers must be served from the application root to control all routes.
+function copyPwaFiles() {
+  return {
+    name: "copy-pwa-files",
+    closeBundle() {
+      for (const file of ["offline.html", "service-worker.js"]) {
+        const src = path.resolve(__dirname, "assets/static", file);
+        const dest = path.resolve(__dirname, "priv/static", file);
+        fs.copyFileSync(src, dest);
+      }
+    },
+  };
+}
+
 // Re-use your multiple entry points
 const input = {
   app: path.resolve(__dirname, "assets/js/app.ts"),
@@ -175,7 +189,6 @@ const input = {
 };
 
 export default defineConfig(({ command, mode }) => ({
-  define: { gon: "window.gon" },
 
   css: {
     preprocessorOptions: {
@@ -198,6 +211,7 @@ export default defineConfig(({ command, mode }) => ({
     forceFullReload(), // always trigger full reload
     copyCodiconFont(), // copy codicon font for Phoenix to serve
     copyKatexFonts(), // copy KaTeX fonts for serving
+    copyPwaFiles(), // expose the offline fallback and root-scoped service worker
     environment(["NODE_ENV"]),
   ],
 
@@ -265,7 +279,7 @@ export default defineConfig(({ command, mode }) => ({
   resolve: {
     dedupe: ["react", "react-dom"],
     alias: {
-      gon: path.resolve(__dirname, "assets/js/shims/gon.ts"),
+      "@/inertia": path.resolve(__dirname, "assets/js/inertia"),
       "@/": path.resolve(__dirname, "assets/js/widgets"),
       "@/components": path.resolve(__dirname, "assets/js/widgets/components"),
       "@/lib": path.resolve(__dirname, "assets/js/widgets/lib"),

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import cn from 'classnames';
-import Gon from 'gon';
+import { getPageProp } from '@/inertia/pageProps';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { loadNearbyUsers } from '@/middlewares/Users';
@@ -24,7 +24,7 @@ interface CurrentSeason {
   ends_at: string;
 }
 
-const currentSeason = Gon.getAsset('current_season') as CurrentSeason | null;
+const currentSeason = getPageProp<CurrentSeason | null>('current_season', null);
 const contestDatesText = currentSeason
   ? i18n.t('Season %{name} %{year}: %{start} - %{end}', {
       name: currentSeason.name,
@@ -108,7 +108,7 @@ interface SeasonNearbyUsersProps {
   nearbyUsers: number[];
 }
 
-function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps) {
+export function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps) {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(!!user.points);
 
@@ -131,7 +131,7 @@ function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps) {
       setLoading(true);
       loadNearbyUsers(abortController, onSuccess, onError);
 
-      return abortController.abort;
+      return () => abortController.abort();
     }
 
     return () => {};

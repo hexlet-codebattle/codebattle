@@ -18,7 +18,6 @@ defmodule CodebattleUmbrella.MixProject do
       dialyzer: [
         paths: [
           Path.join(File.cwd!(), "_build/#{Mix.env()}/lib/codebattle/ebin"),
-          Path.join(File.cwd!(), "_build/#{Mix.env()}/lib/phoenix_gon/ebin"),
           Path.join(File.cwd!(), "_build/#{Mix.env()}/lib/runner/ebin")
         ],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},

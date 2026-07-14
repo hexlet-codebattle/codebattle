@@ -64,22 +64,15 @@ function PlayerStatsPanel({
           )}
         </div>
       )}
-      <div className="d-flex flex-column">
-        <div>
-          <div className="d-flex justify-content-center border-bottom cb-border-color p-2 font-weight-bold text-uppercase">
-            {i18next.t('Matches')}
-          </div>
-          <UsersMatchList
-            currentUserId={currentUserId}
-            playerId={currentUserId}
-            matches={matchList as React.ComponentProps<typeof UsersMatchList>['matches']}
-            canModerate={canModerate ?? false}
-            hideStats
-            hideBots={hideBots}
-            showScoreFormula={type === 'ladder'}
-          />
-        </div>
-      </div>
+      <UsersMatchList
+        currentUserId={currentUserId}
+        playerId={currentUserId}
+        matches={matchList as React.ComponentProps<typeof UsersMatchList>['matches']}
+        canModerate={canModerate ?? false}
+        hideStats
+        hideBots={hideBots}
+        showScoreFormula={type === 'ladder'}
+      />
     </div>
   );
 }

@@ -1,10 +1,10 @@
-import Gon from 'gon';
 import { Howl, Howler } from 'howler';
 import isUndefined from 'lodash/isUndefined';
 
 import cs from '../config/sound/cs';
 import dendy from '../config/sound/dendy';
 import standard from '../config/sound/standard';
+import { getPageProp } from '@/inertia/pageProps';
 
 const audioPaths = {
   standard: '/assets/audio/audioSprites/standardSpritesAudio.wav',
@@ -20,7 +20,15 @@ const audioConfigs = {
   silent: {},
 };
 
-const soundSettings = Gon.getAsset('current_user').sound_settings;
+interface SoundSettings {
+  type: string;
+  level: number;
+  tournament_level?: number;
+}
+
+const soundSettings = getPageProp<{ sound_settings: SoundSettings }>('current_user', {
+  sound_settings: { type: 'standard', level: 5 },
+}).sound_settings;
 const soundType = soundSettings.type;
 const defaultSoundLevel = soundSettings.level * 0.1;
 const tournamentSoundLevel = isUndefined(soundSettings.tournament_level)

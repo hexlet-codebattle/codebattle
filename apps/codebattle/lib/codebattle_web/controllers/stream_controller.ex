@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.StreamController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.StreamConfig
 
   require Logger
@@ -18,9 +16,7 @@ defmodule CodebattleWeb.StreamController do
       |> StreamConfig.get_all()
       |> Enum.map(& &1.config)
 
-    conn
-    |> put_gon(stream_configs: stream_configs)
-    |> render("index.html",
+    render(conn, "index.html",
       layout: {CodebattleWeb.LayoutView, :external},
       stream_configs: stream_configs
     )
@@ -28,10 +24,8 @@ defmodule CodebattleWeb.StreamController do
 
   def index(conn, params) do
     conn
-    |> put_gon(tournament_id: params["tournament_id"])
-    |> render("index_classic.html",
-      layout: {CodebattleWeb.LayoutView, :empty}
-    )
+    |> put_layout(html: {CodebattleWeb.LayoutView, :empty})
+    |> render_inertia("Stream", %{"tournament_id" => params["tournament_id"]})
   end
 
   def stream_preset(conn, _params) do

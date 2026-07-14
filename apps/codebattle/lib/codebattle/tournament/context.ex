@@ -149,6 +149,38 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
+  @finished_history_limit 200
+
+  @doc """
+  Returns finished, non-cancelled season tournaments (non-open grade) across all time,
+  newest first. The virtual `players_count` field is populated from the persisted
+  players map (bots excluded) so the schedule history list can show it without
+  shipping the whole players payload.
+  """
+  @spec get_finished_season_tournaments() :: list(Tournament.t())
+  def get_finished_season_tournaments do
+    from(t in Tournament,
+      order_by: [desc: t.starts_at],
+      where: t.state == "finished" and t.grade != "open",
+      limit: @finished_history_limit
+    )
+    |> Repo.all()
+    |> Enum.map(&put_human_players_count/1)
+  end
+
+  defp put_human_players_count(%Tournament{players: players} = tournament) do
+    count =
+      players
+      |> Map.values()
+      |> Enum.count(fn player -> !player_bot?(player) end)
+
+    %{tournament | players_count: count}
+  end
+
+  defp player_bot?(player) do
+    Map.get(player, :is_bot) == true || Map.get(player, "is_bot") == true
+  end
+
   @spec get_one_upcoming_tournament_for_each_grade() :: list(Tournament.t())
   def get_one_upcoming_tournament_for_each_grade do
     cte_query =
