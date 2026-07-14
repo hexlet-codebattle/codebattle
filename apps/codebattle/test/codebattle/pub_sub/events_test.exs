@@ -49,6 +49,11 @@ defmodule Codebattle.PubSub.EventsTest do
                game
                |> game_finished_messages()
                |> Enum.find(&(&1.topic == "game:tournament:99"))
+
+      assert %{payload: %{winner_id: 1}} =
+               game
+               |> game_finished_messages()
+               |> Enum.find(&(&1.topic == "game:123"))
     end
 
     test "includes nil tournament game winner_id when no player won" do
@@ -74,6 +79,11 @@ defmodule Codebattle.PubSub.EventsTest do
                game
                |> game_finished_messages()
                |> Enum.find(&(&1.topic == "game:tournament:99"))
+
+      assert %{payload: %{winner_id: nil}} =
+               game
+               |> game_finished_messages()
+               |> Enum.find(&(&1.topic == "game:123"))
     end
   end
 

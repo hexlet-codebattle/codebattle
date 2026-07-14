@@ -31,6 +31,7 @@ defmodule Codebattle.Bot.Server do
 
   @impl GenServer
   def init(params) do
+    Codebattle.PubSub.subscribe("game:#{params.game.id}")
     send(self(), :after_init)
 
     {:ok,
@@ -79,6 +80,15 @@ defmodule Codebattle.Bot.Server do
   @impl GenServer
   def handle_info(:next_bot_step, state), do: do_playbook_step(state)
 
+  @impl GenServer
+  def handle_info(%{event: "game:finished", payload: %{winner_id: winner_id}}, %{bot_id: bot_id} = state) do
+    if winner_id && winner_id != bot_id do
+      send_chat_message(state, :congratulate_opponent, %{game_mode: state.game.mode})
+    end
+
+    {:noreply, %{state | state: :finished}}
+  end
+
   # TODO: only for loadTests on prod
   # @impl GenServer
   # def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
@@ -98,9 +108,7 @@ defmodule Codebattle.Bot.Server do
 
   @impl GenServer
   def handle_info(%{event: "user:check_complete", payload: %{"solution_status" => true}}, state) do
-    send_chat_message(state, :advice_on_win)
-
-    {:noreply, state}
+    {:noreply, %{state | state: :finished}}
   end
 
   @impl GenServer
@@ -118,6 +126,9 @@ defmodule Codebattle.Bot.Server do
 
     {:noreply, state}
   end
+
+  @impl GenServer
+  def handle_info(:say_about_code, %{state: :finished} = state), do: {:noreply, state}
 
   @impl GenServer
   def handle_info(:say_about_code, state) do

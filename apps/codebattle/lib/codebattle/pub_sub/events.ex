@@ -534,7 +534,7 @@ defmodule Codebattle.PubSub.Events do
         %Message{
           topic: "game:#{game.id}",
           event: "game:finished",
-          payload: %{game_id: game.id, game_state: game.state}
+          payload: %{game_id: game.id, game_state: game.state, winner_id: winner_id(game)}
         },
         %Message{
           topic: "game:tournament:#{game.tournament_id}",
@@ -556,7 +556,7 @@ defmodule Codebattle.PubSub.Events do
         %Message{
           topic: "game:#{game.id}",
           event: "game:finished",
-          payload: %{game_id: game.id, game_state: game.state}
+          payload: %{game_id: game.id, game_state: game.state, winner_id: winner_id(game)}
         },
         %Message{
           topic: "games",
