@@ -16,7 +16,7 @@ import task from '../widgets/machines/task';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
-vi.mock('pixelmatch', () => ({ default: () => {} }));
+vi.mock('@blazediff/core', () => ({ default: () => {} }));
 
 vi.mock('monaco-editor', () => ({
   editor: {

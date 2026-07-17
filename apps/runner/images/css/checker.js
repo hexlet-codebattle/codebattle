@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import pixelmatch from 'pixelmatch';
+import blazediff from '@blazediff/core';
 import LZString from 'lz-string';
 import nodeHtmlToImage from 'node-html-to-image';
 import { PNG } from 'pngjs';
@@ -61,7 +61,7 @@ const run = function run(args = []) {
     const targetImgDataUri = `data:${mime};${encoding},${targetImageBuffer.toString(encoding)}`;
 
     try {
-      const stats = pixelmatch(solutionImg.data, targetImg.data, diff.data, width, height, { threshold: 0.1 });
+      const stats = blazediff(solutionImg.data, targetImg.data, diff.data, width, height, { threshold: 0.1 });
       const match = getMatchPoints(stats, width, height);
       const matchPercentage = getMatchPercentageText(match);
       const diffBuffer = PNG.sync.write(diff);

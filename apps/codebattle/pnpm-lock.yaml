@@ -25,6 +25,9 @@ importers:
 
   .:
     dependencies:
+      '@blazediff/core':
+        specifier: ^1.9.3
+        version: 1.9.3
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -54,7 +57,7 @@ importers:
         version: 3.4.0(@fortawesome/fontawesome-svg-core@7.3.0)(react@19.2.7)
       '@inertiajs/react':
         specifier: ^2.3.27
-        version: 2.3.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 2.3.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(supports-color@5.5.0)
       '@inline-svg-unique-id/react':
         specifier: ^1.2.3
         version: 1.2.3(react@19.2.7)
@@ -151,9 +154,6 @@ importers:
       phoenix_live_view:
         specifier: ^1.1.31
         version: 1.1.31
-      pixelmatch:
-        specifier: ^7.2.0
-        version: 7.2.0
       popper.js:
         specifier: ^1.16.1
         version: 1.16.1
@@ -449,6 +449,9 @@ packages:
   '@babel/types@7.29.7':
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
+
+  '@blazediff/core@1.9.3':
+    resolution: {integrity: sha512-4XGs39o9rkkBMgyr7QtI+IRIN78wZa2423C0EbSLvXK58A3WivQCwXICGbvEqBucpSdCK4re3ezQ9ko3IYQMHg==}
 
   '@bramus/specificity@2.4.2':
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
@@ -3410,14 +3413,6 @@ packages:
     resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
     engines: {node: '>=12'}
 
-  pixelmatch@7.2.0:
-    resolution: {integrity: sha512-xhcb4yHu9sM/G7foGzoLtXYcC0zHEaOXXjRKhGup0fw78Nf2Tkiapv4EQyMzrbcmQPsllAI7DbFY2UT7PlI9Pg==}
-    hasBin: true
-
-  pngjs@7.0.0:
-    resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
-    engines: {node: '>=14.19.0'}
-
   polished@2.3.3:
     resolution: {integrity: sha512-59V4fDbdxtH4I1m9TWxFsoGJbC8nnOpUYo5uFmvMfKp9Qh+6suo4VMUle1TGIIUZIGxfkW+Rs485zPk0wcwR2Q==}
     deprecated: polished@2.X is no longer supported. Please upgrade to @latest for important bug and security fixes.
@@ -4637,6 +4632,8 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
+  '@blazediff/core@1.9.3': {}
+
   '@bramus/specificity@2.4.2':
     dependencies:
       css-tree: 3.2.1
@@ -4954,10 +4951,10 @@ snapshots:
       react: 19.2.7
       warning: 4.0.3
 
-  '@inertiajs/core@2.3.27':
+  '@inertiajs/core@2.3.27(supports-color@5.5.0)':
     dependencies:
       '@types/lodash-es': 4.17.12
-      axios: 1.18.1
+      axios: 1.18.1(supports-color@5.5.0)
       laravel-precognition: 1.0.2
       lodash-es: 4.18.1
       qs: 6.15.3
@@ -4965,9 +4962,9 @@ snapshots:
       - debug
       - supports-color
 
-  '@inertiajs/react@2.3.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@inertiajs/react@2.3.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(supports-color@5.5.0)':
     dependencies:
-      '@inertiajs/core': 2.3.27
+      '@inertiajs/core': 2.3.27(supports-color@5.5.0)
       '@types/lodash-es': 4.17.12
       laravel-precognition: 1.0.2
       lodash-es: 4.18.1
@@ -5677,7 +5674,7 @@ snapshots:
   acorn@8.16.0:
     optional: true
 
-  agent-base@6.0.2:
+  agent-base@6.0.2(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
@@ -5765,11 +5762,11 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios@1.18.1:
+  axios@1.18.1(supports-color@5.5.0):
     dependencies:
       follow-redirects: 1.16.0
       form-data: 4.0.6
-      https-proxy-agent: 5.0.1
+      https-proxy-agent: 5.0.1(supports-color@5.5.0)
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
@@ -6658,9 +6655,9 @@ snapshots:
 
   html-url-attributes@3.0.1: {}
 
-  https-proxy-agent@5.0.1:
+  https-proxy-agent@5.0.1(supports-color@5.5.0):
     dependencies:
-      agent-base: 6.0.2
+      agent-base: 6.0.2(supports-color@5.5.0)
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
@@ -6921,7 +6918,7 @@ snapshots:
 
   laravel-precognition@1.0.2:
     dependencies:
-      axios: 1.18.1
+      axios: 1.18.1(supports-color@5.5.0)
       lodash-es: 4.18.1
     transitivePeerDependencies:
       - debug
@@ -7493,12 +7490,6 @@ snapshots:
   picomatch@4.0.4: {}
 
   picomatch@4.0.5: {}
-
-  pixelmatch@7.2.0:
-    dependencies:
-      pngjs: 7.0.0
-
-  pngjs@7.0.0: {}
 
   polished@2.3.3:
     dependencies:

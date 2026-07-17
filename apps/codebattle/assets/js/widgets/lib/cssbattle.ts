@@ -1,4 +1,4 @@
-import pixelmatch from 'pixelmatch';
+import blazediff from '@blazediff/core';
 
 const diffThreshold = 0.1;
 
@@ -74,7 +74,7 @@ export const matchBattlePictures = (
   const firstDiff = firstDiffContext.createImageData(width, height);
   const secondDiff = secondDiffContext.createImageData(width, height);
 
-  const firstStats = pixelmatch(
+  const firstStats = blazediff(
     firstDataImg.data,
     targetDataImg.data,
     firstDiff.data,
@@ -82,7 +82,7 @@ export const matchBattlePictures = (
     height,
     { threshold: diffThreshold },
   );
-  const secondStats = pixelmatch(
+  const secondStats = blazediff(
     secondDataImg.data,
     targetDataImg.data,
     secondDiff.data,
