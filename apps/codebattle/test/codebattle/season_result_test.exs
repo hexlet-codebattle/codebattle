@@ -150,6 +150,137 @@ defmodule Codebattle.SeasonResultTest do
       assert hd(history).season_name == season.name
     end
 
+    test "counts only each user's first rookie tournament result per UTC day" do
+      season = insert_season("Spring 2026", 2026, ~D[2026-01-01], ~D[2026-03-31])
+      user = insert(:user, name: "Rookie Regular")
+      other_user = insert(:user, name: "Late Rookie")
+
+      later_rookie =
+        insert_finished_tournament(%{
+          name: "Evening Rookie",
+          grade: "rookie",
+          started_at: ~U[2026-01-05 18:00:00Z]
+        })
+
+      first_rookie =
+        insert_finished_tournament(%{
+          name: "Morning Rookie",
+          grade: "rookie",
+          started_at: ~U[2026-01-05 09:00:00Z]
+        })
+
+      next_day_rookie =
+        insert_finished_tournament(%{
+          name: "Next Day Rookie",
+          grade: "rookie",
+          started_at: ~U[2026-01-06 09:00:00Z]
+        })
+
+      first_challenger =
+        insert_finished_tournament(%{
+          name: "Morning Challenger",
+          grade: "challenger",
+          started_at: ~U[2026-01-05 11:00:00Z]
+        })
+
+      later_challenger =
+        insert_finished_tournament(%{
+          name: "Evening Challenger",
+          grade: "challenger",
+          started_at: ~U[2026-01-05 17:00:00Z]
+        })
+
+      insert_tournament_user_result(later_rookie,
+        user: user,
+        place: 1,
+        points: 8,
+        score: 800,
+        games_count: 8,
+        wins_count: 8,
+        total_time: 80
+      )
+
+      insert_tournament_user_result(later_rookie,
+        user: other_user,
+        place: 1,
+        points: 8,
+        score: 80,
+        games_count: 2,
+        wins_count: 2,
+        total_time: 20
+      )
+
+      insert_tournament_user_result(first_rookie,
+        user: user,
+        place: 3,
+        points: 2,
+        score: 20,
+        games_count: 2,
+        wins_count: 1,
+        total_time: 20
+      )
+
+      insert_tournament_user_result(next_day_rookie,
+        user: user,
+        place: 2,
+        points: 4,
+        score: 40,
+        games_count: 3,
+        wins_count: 2,
+        total_time: 30
+      )
+
+      insert_tournament_user_result(first_challenger,
+        user: user,
+        place: 1,
+        points: 16,
+        score: 160,
+        games_count: 4,
+        wins_count: 3,
+        total_time: 40
+      )
+
+      insert_tournament_user_result(later_challenger,
+        user: user,
+        place: 2,
+        points: 8,
+        score: 80,
+        games_count: 2,
+        wins_count: 1,
+        total_time: 20
+      )
+
+      assert {:ok, 2} = SeasonResult.aggregate_season_results(season)
+
+      result = SeasonResult.get_by_user(season.id, user.id)
+      assert result.total_points == 30
+      assert result.total_score == 300
+      assert result.tournaments_count == 4
+      assert result.total_games_count == 11
+      assert result.total_wins_count == 7
+      assert result.total_time == 110
+      assert result.avg_place == Decimal.new("2.00")
+      assert result.best_place == 1
+
+      assert SeasonResult.get_by_user(season.id, other_user.id).total_points == 8
+
+      stats = SeasonResult.get_player_detailed_stats(season.id, user.id)
+
+      assert Enum.map(stats.grade_stats, &{&1.grade, &1.tournaments_count, &1.total_points}) == [
+               {"challenger", 2, 24},
+               {"rookie", 2, 6}
+             ]
+
+      assert Enum.map(stats.recent_tournaments, & &1.tournament_name) == [
+               "Next Day Rookie",
+               "Evening Challenger",
+               "Morning Challenger",
+               "Morning Rookie"
+             ]
+
+      assert [%{tournaments_count: 4, total_points: 30}] = stats.performance_trend
+    end
+
     test "returns detailed stats for a player and nil when the player has no season result" do
       season = insert_season("Spring 2026", 2026, ~D[2026-01-01], ~D[2026-03-31])
       user = insert(:user, name: "Detailed", avatar_url: "https://example.com/d.png")

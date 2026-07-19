@@ -180,30 +180,46 @@ defmodule Codebattle.SeasonResult do
     result =
       Repo.query!(
         """
-        WITH aggregated_data AS (
+        WITH ranked_results AS (
           SELECT
-            $1::bigint AS season_id,
-            tur.user_id,
-            MAX(tur.user_name) AS user_name,
-            MAX(tur.user_lang) AS user_lang,
-            MAX(tur.clan_id) AS clan_id,
-            MAX(c.name) AS clan_name,
-            SUM(tur.points)::integer AS total_points,
-            SUM(tur.score)::integer AS total_score,
-            COUNT(DISTINCT tur.tournament_id)::integer AS tournaments_count,
-            SUM(tur.games_count)::integer AS total_games_count,
-            SUM(tur.wins_count)::integer AS total_wins_count,
-            AVG(tur.place)::numeric(10,2) AS avg_place,
-            MIN(tur.place)::integer AS best_place,
-            SUM(tur.total_time)::integer AS total_time
+            tur.*,
+            t.grade,
+            t.started_at,
+            ROW_NUMBER() OVER (
+              PARTITION BY tur.user_id, t.grade, t.started_at::date
+              ORDER BY t.started_at, t.id
+            ) AS daily_grade_position
           FROM tournament_user_results tur
           INNER JOIN tournaments t ON t.id = tur.tournament_id
-          LEFT JOIN clans c ON c.id = tur.clan_id
           WHERE t.grade != 'open'
             AND t.state = 'finished'
             AND t.started_at::date >= $2::date
             AND t.started_at::date <= $3::date
-          GROUP BY tur.user_id
+        ),
+        qualified_results AS (
+          SELECT *
+          FROM ranked_results
+          WHERE grade != 'rookie' OR daily_grade_position = 1
+        ),
+        aggregated_data AS (
+          SELECT
+            $1::bigint AS season_id,
+            qr.user_id,
+            MAX(qr.user_name) AS user_name,
+            MAX(qr.user_lang) AS user_lang,
+            MAX(qr.clan_id) AS clan_id,
+            MAX(c.name) AS clan_name,
+            SUM(qr.points)::integer AS total_points,
+            SUM(qr.score)::integer AS total_score,
+            COUNT(DISTINCT qr.tournament_id)::integer AS tournaments_count,
+            SUM(qr.games_count)::integer AS total_games_count,
+            SUM(qr.wins_count)::integer AS total_wins_count,
+            AVG(qr.place)::numeric(10,2) AS avg_place,
+            MIN(qr.place)::integer AS best_place,
+            SUM(qr.total_time)::integer AS total_time
+          FROM qualified_results qr
+          LEFT JOIN clans c ON c.id = qr.clan_id
+          GROUP BY qr.user_id
         ),
         ranked_data AS (
           SELECT
@@ -333,27 +349,43 @@ defmodule Codebattle.SeasonResult do
     result =
       Repo.query!(
         """
+        WITH ranked_results AS (
+          SELECT
+            tur.*,
+            t.grade,
+            t.started_at,
+            ROW_NUMBER() OVER (
+              PARTITION BY tur.user_id, t.grade, t.started_at::date
+              ORDER BY t.started_at, t.id
+            ) AS daily_grade_position
+          FROM tournament_user_results tur
+          INNER JOIN tournaments t ON t.id = tur.tournament_id
+          WHERE tur.user_id = $1
+            AND t.grade != 'open'
+            AND t.state = 'finished'
+            AND t.started_at::date >= $2::date
+            AND t.started_at::date <= $3::date
+        ),
+        qualified_results AS (
+          SELECT *
+          FROM ranked_results
+          WHERE grade != 'rookie' OR daily_grade_position = 1
+        )
         SELECT
-          t.grade,
-          COUNT(DISTINCT tur.tournament_id)::integer AS tournaments_count,
-          SUM(tur.points)::integer AS total_points,
-          SUM(tur.score)::integer AS total_score,
-          SUM(tur.games_count)::integer AS total_games,
-          SUM(tur.wins_count)::integer AS total_wins,
-          MIN(tur.place)::integer AS best_place,
-          AVG(tur.place)::numeric(10,2) AS avg_place,
-          SUM(tur.total_time)::integer AS total_time,
-          ARRAY_AGG(DISTINCT tur.place ORDER BY tur.place) FILTER (WHERE tur.place <= 3) AS podium_finishes
-        FROM tournament_user_results tur
-        INNER JOIN tournaments t ON t.id = tur.tournament_id
-        WHERE tur.user_id = $1
-          AND t.grade != 'open'
-          AND t.state = 'finished'
-          AND t.started_at::date >= $2::date
-          AND t.started_at::date <= $3::date
-        GROUP BY t.grade
+          qr.grade,
+          COUNT(DISTINCT qr.tournament_id)::integer AS tournaments_count,
+          SUM(qr.points)::integer AS total_points,
+          SUM(qr.score)::integer AS total_score,
+          SUM(qr.games_count)::integer AS total_games,
+          SUM(qr.wins_count)::integer AS total_wins,
+          MIN(qr.place)::integer AS best_place,
+          AVG(qr.place)::numeric(10,2) AS avg_place,
+          SUM(qr.total_time)::integer AS total_time,
+          ARRAY_AGG(DISTINCT qr.place ORDER BY qr.place) FILTER (WHERE qr.place <= 3) AS podium_finishes
+        FROM qualified_results qr
+        GROUP BY qr.grade
         ORDER BY
-          CASE t.grade
+          CASE qr.grade
             WHEN 'grand_slam' THEN 1
             WHEN 'masters' THEN 2
             WHEN 'elite' THEN 3
@@ -387,26 +419,43 @@ defmodule Codebattle.SeasonResult do
     result =
       Repo.query!(
         """
+        WITH ranked_results AS (
+          SELECT
+            tur.*,
+            t.name AS tournament_name,
+            t.grade,
+            t.started_at,
+            ROW_NUMBER() OVER (
+              PARTITION BY tur.user_id, t.grade, t.started_at::date
+              ORDER BY t.started_at, t.id
+            ) AS daily_grade_position
+          FROM tournament_user_results tur
+          INNER JOIN tournaments t ON t.id = tur.tournament_id
+          WHERE tur.user_id = $1
+            AND t.grade != 'open'
+            AND t.state = 'finished'
+            AND t.started_at::date >= $2::date
+            AND t.started_at::date <= $3::date
+        ),
+        qualified_results AS (
+          SELECT *
+          FROM ranked_results
+          WHERE grade != 'rookie' OR daily_grade_position = 1
+        )
         SELECT
-          t.id AS tournament_id,
-          t.name AS tournament_name,
-          t.grade,
-          t.started_at,
-          tur.place,
-          tur.points,
-          tur.score,
-          tur.games_count,
-          tur.wins_count,
-          tur.total_time,
-          (SELECT COUNT(*) FROM tournament_user_results WHERE tournament_id = t.id)::integer AS total_participants
-        FROM tournament_user_results tur
-        INNER JOIN tournaments t ON t.id = tur.tournament_id
-        WHERE tur.user_id = $1
-          AND t.grade != 'open'
-          AND t.state = 'finished'
-          AND t.started_at::date >= $2::date
-          AND t.started_at::date <= $3::date
-        ORDER BY t.started_at DESC
+          qr.tournament_id,
+          qr.tournament_name,
+          qr.grade,
+          qr.started_at,
+          qr.place,
+          qr.points,
+          qr.score,
+          qr.games_count,
+          qr.wins_count,
+          qr.total_time,
+          (SELECT COUNT(*) FROM tournament_user_results WHERE tournament_id = qr.tournament_id)::integer AS total_participants
+        FROM qualified_results qr
+        ORDER BY qr.started_at DESC
         LIMIT 10
         """,
         [user_id, season.starts_at, season.ends_at]
@@ -434,21 +483,37 @@ defmodule Codebattle.SeasonResult do
     result =
       Repo.query!(
         """
+        WITH ranked_results AS (
+          SELECT
+            tur.*,
+            t.grade,
+            t.started_at,
+            ROW_NUMBER() OVER (
+              PARTITION BY tur.user_id, t.grade, t.started_at::date
+              ORDER BY t.started_at, t.id
+            ) AS daily_grade_position
+          FROM tournament_user_results tur
+          INNER JOIN tournaments t ON t.id = tur.tournament_id
+          WHERE tur.user_id = $1
+            AND t.grade != 'open'
+            AND t.state = 'finished'
+            AND t.started_at::date >= $2::date
+            AND t.started_at::date <= $3::date
+        ),
+        qualified_results AS (
+          SELECT *
+          FROM ranked_results
+          WHERE grade != 'rookie' OR daily_grade_position = 1
+        )
         SELECT
-          DATE_TRUNC('week', t.started_at)::date AS week,
-          COUNT(DISTINCT tur.tournament_id)::integer AS tournaments_count,
-          SUM(tur.points)::integer AS total_points,
-          SUM(tur.wins_count)::integer AS total_wins,
-          SUM(tur.games_count)::integer AS total_games,
-          AVG(tur.place)::numeric(10,2) AS avg_place
-        FROM tournament_user_results tur
-        INNER JOIN tournaments t ON t.id = tur.tournament_id
-        WHERE tur.user_id = $1
-          AND t.grade != 'open'
-          AND t.state = 'finished'
-          AND t.started_at::date >= $2::date
-          AND t.started_at::date <= $3::date
-        GROUP BY DATE_TRUNC('week', t.started_at)
+          DATE_TRUNC('week', qr.started_at)::date AS week,
+          COUNT(DISTINCT qr.tournament_id)::integer AS tournaments_count,
+          SUM(qr.points)::integer AS total_points,
+          SUM(qr.wins_count)::integer AS total_wins,
+          SUM(qr.games_count)::integer AS total_games,
+          AVG(qr.place)::numeric(10,2) AS avg_place
+        FROM qualified_results qr
+        GROUP BY DATE_TRUNC('week', qr.started_at)
         ORDER BY week
         """,
         [user_id, season.starts_at, season.ends_at]
