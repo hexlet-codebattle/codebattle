@@ -32,6 +32,7 @@ interface Task {
   assertsExamples?: AssertExample[];
   asserts?: AssertExample[];
   timeToSolveSec?: number;
+  baseScore?: number;
   creatorId?: number;
   insertedAt?: string;
   updatedAt?: string;
@@ -797,8 +798,11 @@ function TaskPreviewWidget({
 
                   <MetaRow label="Type">{task.type || 'algorithms'}</MetaRow>
                   <MetaRow label="Origin">{task.origin}</MetaRow>
-                  {task.timeToSolveSec && (
+                  {task.timeToSolveSec != null && (
                     <MetaRow label="Time to solve">{formatDuration(task.timeToSolveSec)}</MetaRow>
+                  )}
+                  {task.baseScore != null && (
+                    <MetaRow label="Base static score">{task.baseScore}</MetaRow>
                   )}
                   {task.creatorId && <MetaRow label="Creator ID">{task.creatorId}</MetaRow>}
                   {task.insertedAt && (

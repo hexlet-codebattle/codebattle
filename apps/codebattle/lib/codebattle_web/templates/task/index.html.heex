@@ -11,6 +11,8 @@
           <th class="cb-border-color border-bottom">id</th>
           <th class="cb-border-color border-bottom">name</th>
           <th class="cb-border-color border-bottom">level</th>
+          <th class="cb-border-color border-bottom">time_to_solve</th>
+          <th class="cb-border-color border-bottom">base_static_score</th>
           <th class="cb-border-color border-bottom">tags</th>
           <th class="cb-border-color border-bottom">origin</th>
           <th class="cb-border-color border-bottom">state</th>
@@ -31,6 +33,10 @@
                 </div>
               </div>
             </td>
+            <td class="align-middle text text-white cb-border-color">
+              {task.time_to_solve_sec}
+            </td>
+            <td class="align-middle text text-white cb-border-color">{task.base_score}</td>
             <td class="align-middle text text-white cb-border-color">
               {Enum.join(task.tags, ", ")}
             </td>

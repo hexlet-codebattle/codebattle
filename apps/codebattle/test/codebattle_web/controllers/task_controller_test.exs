@@ -5,7 +5,8 @@ defmodule CodebattleWeb.TaskControllerTest do
 
   test ".index", %{conn: conn} do
     user = insert(:user)
-    insert_list(3, :task)
+    task = insert(:task, time_to_solve_sec: 125, base_score: 275)
+    insert_list(2, :task)
 
     conn =
       conn
@@ -13,12 +14,18 @@ defmodule CodebattleWeb.TaskControllerTest do
       |> get(Routes.task_path(conn, :index))
 
     assert conn.status == 200
+
+    response = html_response(conn, 200)
+    assert response =~ "time_to_solve"
+    assert response =~ "base_static_score"
+    assert response =~ Integer.to_string(task.time_to_solve_sec)
+    assert response =~ Integer.to_string(task.base_score)
   end
 
   test ".show", %{conn: conn} do
     user = insert(:user)
     admin = insert(:admin)
-    visible_task = insert(:task, visibility: "public")
+    visible_task = insert(:task, visibility: "public", time_to_solve_sec: 125, base_score: 275)
     hidden_task = insert(:task, visibility: "hidden")
     hidden_created_task = insert(:task, visibility: "hidden", creator_id: user.id)
 
@@ -35,7 +42,16 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert new_conn.status == 200
     assert inertia_component(new_conn) == "TaskPreview"
-    assert %{"task" => %{id: task_id}, "can_edit_task" => false} = inertia_props(new_conn)
+
+    assert %{
+             "task" => %{
+               id: task_id,
+               time_to_solve_sec: 125,
+               base_score: 275
+             },
+             "can_edit_task" => false
+           } = inertia_props(new_conn)
+
     assert task_id == visible_task.id
 
     # user can't see hidden tasks
