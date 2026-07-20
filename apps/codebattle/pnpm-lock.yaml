@@ -26,7 +26,7 @@ importers:
   .:
     dependencies:
       '@blazediff/core':
-        specifier: ^1.9.3
+        specifier: 1.9.3
         version: 1.9.3
       '@dnd-kit/core':
         specifier: ^6.3.1
