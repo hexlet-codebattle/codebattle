@@ -626,13 +626,7 @@ defmodule Codebattle.Tournament.Context do
   defp parse_meta(_params), do: %{}
 
   defp normalize_moderator_ids(%{moderator_ids: moderator_ids} = params) do
-    creator_id =
-      params
-      |> Map.get(:creator)
-      |> case do
-        nil -> Map.get(params, :creator_id)
-        creator -> Map.get(creator, :id) || Map.get(params, :creator_id)
-      end
+    creator_id = Map.get(params.creator, :id) || Map.get(params, :creator_id)
 
     normalized_moderator_ids =
       moderator_ids
@@ -718,8 +712,7 @@ defmodule Codebattle.Tournament.Context do
   defp ensure_tournament_started(tournament) do
     case Tournament.GlobalSupervisor.start_tournament(tournament) do
       {:ok, _pid} -> :ok
-      {:error, {:already_started, _pid}} -> :ok
-      {:error, {:already_present, _child}} -> :ok
+      {:error, {reason, _child}} when reason in [:already_started, :already_present] -> :ok
       {:error, reason} -> {:error, reason}
     end
   end
@@ -775,7 +768,7 @@ defmodule Codebattle.Tournament.Context do
   end
 
   defp restore_active_break(tournament, params) do
-    :ok = Tournament.Server.handle_event(tournament.id, :restore_active_break, params)
+    _tournament = Tournament.Server.handle_event(tournament.id, :restore_active_break, params)
 
     remaining_break_seconds = remaining_break_seconds(tournament)
 

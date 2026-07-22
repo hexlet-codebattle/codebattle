@@ -384,16 +384,8 @@ defmodule Codebattle.Game.Context do
 
   defp normalize_non_negative_integer(_value), do: 0
 
-  defp offset_ms_to_datetime(value, anchor) when is_integer(value) and value >= 0,
+  defp offset_ms_to_datetime(value, anchor),
     do: anchor |> DateTime.add(value, :millisecond) |> DateTime.truncate(:microsecond)
-
-  defp offset_ms_to_datetime(value, anchor) when is_binary(value) do
-    value
-    |> normalize_non_negative_integer()
-    |> offset_ms_to_datetime(anchor)
-  end
-
-  defp offset_ms_to_datetime(_value, anchor), do: anchor
 
   defp maybe_put_string(data, key, value, max_length) do
     case sanitize_string(value, max_length) do

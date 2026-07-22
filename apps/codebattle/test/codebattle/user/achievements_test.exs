@@ -23,6 +23,15 @@ defmodule Codebattle.User.AchievementsTest do
 
       assert %{"count" => 100, "label" => "100"} = Achievements.calc_games_played_milestone(user.id)
     end
+
+    test "returns nil below the first milestone and formats exact thousands" do
+      new_user = insert(:user)
+      assert Achievements.calc_games_played_milestone(Integer.to_string(new_user.id)) == nil
+
+      experienced = insert(:user)
+      insert_user_games(experienced.id, 1_000)
+      assert %{"count" => 1000, "label" => "1k"} = Achievements.calc_games_played_milestone(experienced.id)
+    end
   end
 
   describe "calc_graded_tournaments_played_milestone/1" do
@@ -44,6 +53,11 @@ defmodule Codebattle.User.AchievementsTest do
       assert %{"count" => 1, "label" => "1"} =
                Achievements.calc_graded_tournaments_played_milestone(user.id)
     end
+
+    test "returns nil when no graded tournament was played" do
+      user = insert(:user)
+      assert Achievements.calc_graded_tournaments_played_milestone(user.id) == nil
+    end
   end
 
   describe "calc_highest_tournament_win_grade/1" do
@@ -61,6 +75,11 @@ defmodule Codebattle.User.AchievementsTest do
 
       assert %{"grade" => "masters", "rank" => 5} =
                Achievements.calc_highest_tournament_win_grade(user.id)
+    end
+
+    test "returns nil without a graded tournament win" do
+      user = insert(:user)
+      assert Achievements.calc_highest_tournament_win_grade(user.id) == nil
     end
   end
 
@@ -237,6 +256,10 @@ defmodule Codebattle.User.AchievementsTest do
 
       assert %{processed_users: 1} = Achievements.recalculate_all_users(1)
     end
+  end
+
+  test "accepts an empty explicit recalculation batch" do
+    assert :ok = Achievements.recalculate_many([])
   end
 
   defp insert_user_games(user_id, count, result \\ "won", lang \\ "js", is_bot \\ false) do

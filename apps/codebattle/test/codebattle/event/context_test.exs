@@ -4,6 +4,7 @@ defmodule Codebattle.Event.ContextTest do
 
   alias Codebattle.Event
   alias Codebattle.Event.Context, as: EventContext
+  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament
   alias Codebattle.UserEvent
 
@@ -152,7 +153,7 @@ defmodule Codebattle.Event.ContextTest do
 
   test "starts a single stage and links a player-specific group tournament" do
     user = insert(:user, lang: "elixir")
-    parent = insert(:group_tournament, require_invitation: false)
+    parent = insert(:group_tournament, require_invitation: true)
     insert(:task_pack, name: "event-stage-pack")
 
     event =
@@ -192,6 +193,7 @@ defmodule Codebattle.Event.ContextTest do
     assert child.event_id == event.id
     assert child.id != parent.id
     assert Codebattle.GroupTournament.Context.get_player(child.id, user.id)
+    assert InviteContext.get_invite(user.id, child.id)
 
     user_stage =
       user.id

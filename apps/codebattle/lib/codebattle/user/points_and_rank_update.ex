@@ -72,7 +72,7 @@ defmodule Codebattle.User.PointsAndRankUpdate do
   end
 
   defp update_from_date_ranges do
-    {current_season, season_start, season_end} = get_current_season_info()
+    {current_season, season_start, season_end} = season_info(Date.utc_today())
 
     sql = """
       WITH season_info AS (
@@ -132,26 +132,28 @@ defmodule Codebattle.User.PointsAndRankUpdate do
     SQL.query!(Repo, sql)
   end
 
-  defp get_current_season_info do
-    today = Date.utc_today()
+  @doc false
+  def season_info(%Date{} = today) do
     {month, day} = {today.month, today.day}
+    year = today.year
 
     cond do
       # Season 0: Sep 21 - Dec 21
       (month == 9 and day >= 21) or month in [10, 11] or (month == 12 and day <= 21) ->
-        {0, ~D[2025-09-21], ~D[2025-12-21]}
+        {0, Date.new!(year, 9, 21), Date.new!(year, 12, 21)}
 
       # Season 1: Dec 21 - Mar 21
       (month == 12 and day >= 21) or month in [1, 2] or (month == 3 and day <= 21) ->
-        {1, ~D[2025-12-21], ~D[2026-03-21]}
+        start_year = if month == 12, do: year, else: year - 1
+        {1, Date.new!(start_year, 12, 21), Date.new!(start_year + 1, 3, 21)}
 
       # Season 2: Mar 21 - Jun 21
       (month == 3 and day >= 21) or month in [4, 5] or (month == 6 and day <= 21) ->
-        {2, ~D[2026-03-21], ~D[2026-06-21]}
+        {2, Date.new!(year, 3, 21), Date.new!(year, 6, 21)}
 
       # Season 3: Jun 21 - Sep 21
       (month == 6 and day >= 21) or month in [7, 8] or (month == 9 and day <= 21) ->
-        {3, ~D[2026-06-21], ~D[2026-09-21]}
+        {3, Date.new!(year, 6, 21), Date.new!(year, 9, 21)}
     end
   end
 end

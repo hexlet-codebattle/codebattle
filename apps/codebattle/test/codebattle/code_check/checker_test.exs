@@ -49,4 +49,13 @@ defmodule Codebattle.CodeCheck.CheckerTest do
 
     assert %V2{status: "service_timeout"} = Checker.call(task, "any_solution", "js")
   end
+
+  test "routes the public three-argument API through the checker" do
+    task = insert(:task)
+
+    assert %V2{status: "service_failure", output_error: output} =
+             Codebattle.CodeCheck.check_solution(task, "any_solution", "java")
+
+    assert output =~ "executor failed"
+  end
 end

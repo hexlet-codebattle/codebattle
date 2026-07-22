@@ -76,15 +76,11 @@ defmodule Codebattle.CodeCheck.Checker do
 
   defp run_error_description(%{status: status} = result) when status in @failure_results do
     output_error = Map.get(result, :output_error)
-    output = Map.get(result, :output)
 
     description =
       cond do
         is_binary(output_error) and String.trim(output_error) != "" ->
           output_error
-
-        is_binary(output) and String.trim(output) != "" ->
-          output
 
         status in ["service_timeout", "timeout"] ->
           "Code check execution timed out"
@@ -103,10 +99,7 @@ defmodule Codebattle.CodeCheck.Checker do
   defp normalize_error_description(description) when is_binary(description) do
     description
     |> String.trim()
-    |> case do
-      "" -> nil
-      trimmed -> String.slice(trimmed, 0, 4_000)
-    end
+    |> String.slice(0, 4_000)
   end
 
   defp get_executor do

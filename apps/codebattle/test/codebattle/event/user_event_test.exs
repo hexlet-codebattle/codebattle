@@ -70,11 +70,16 @@ defmodule Codebattle.UserEventTest do
   end
 
   test "returns nil when completing an unknown event or tournament stage" do
+    assert {:error, invalid} = UserEvent.create(%{})
+    refute invalid.valid?
+
     assert UserEvent.mark_stage_as_completed(-1, -1, %{id: -1}) == nil
 
     user = insert(:user)
     event = insert(:event)
     {:ok, user_event} = UserEvent.create(%{user_id: user.id, event_id: event.id, status: "pending"})
+    assert {:ok, completed} = UserEvent.upsert_stages(user_event, [%{slug: "done", status: :completed}])
+    assert completed.status == "completed"
     assert UserEvent.mark_stage_as_completed(event.id, user.id, %{id: -1}) == nil
     assert UserEvent.changeset(user_event, %{status: "unknown"}).valid? == false
   end

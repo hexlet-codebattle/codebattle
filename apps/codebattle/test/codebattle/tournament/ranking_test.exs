@@ -21,8 +21,10 @@ defmodule Codebattle.Tournament.RankingTest do
       })
 
     page = Ranking.get_page(tournament, 1, 10)
+    default_page = Ranking.get_page(tournament, 1)
 
     assert page.total_entries == 4
+    assert default_page == page
     assert Enum.map(page.entries, & &1.id) == [2, 3, 1, 5]
     assert Enum.map(page.entries, & &1.place) == [1, 2, 3, 4]
     assert Ranking.get_first(tournament, 5) == []
@@ -58,6 +60,7 @@ defmodule Codebattle.Tournament.RankingTest do
     Ranking.add_new_player(tournament, p1)
     Ranking.add_new_player(tournament, p2)
     Ranking.add_new_player(tournament, bot)
+    assert Ranking.update_player_result(tournament, bot, 100) == tournament
 
     assert Enum.map(Ranking.get_first(tournament, 10), & &1.id) == [1, 2]
     assert Ranking.get_by_player(tournament, p1).id == 1
@@ -87,6 +90,20 @@ defmodule Codebattle.Tournament.RankingTest do
       round_position: 0,
       result_percent: Decimal.new("0"),
       game_id: 10,
+      task_id: 1,
+      level: "easy"
+    })
+
+    Repo.insert!(%TournamentResult{
+      tournament_id: tournament.id,
+      user_id: 999,
+      user_name: "departed",
+      user_lang: "js",
+      score: 1,
+      duration_sec: 9,
+      round_position: 0,
+      result_percent: Decimal.new("0"),
+      game_id: 11,
       task_id: 1,
       level: "easy"
     })

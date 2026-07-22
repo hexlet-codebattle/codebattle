@@ -169,12 +169,6 @@ defmodule Codebattle.Tournament.Swiss do
   end
 
   defp drop_player(players, player_id) do
-    index_to_delete = Enum.find_index(players, &(&1.id == player_id))
-
-    if index_to_delete do
-      List.delete_at(players, index_to_delete)
-    else
-      players
-    end
+    Enum.reject(players, &(&1.id == player_id))
   end
 end

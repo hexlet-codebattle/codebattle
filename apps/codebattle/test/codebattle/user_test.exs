@@ -18,4 +18,21 @@ defmodule Codebattle.UserTest do
       refute token_user.id in result_ids
     end
   end
+
+  test "uses the empty nearby-user fallback when no season exists" do
+    Repo.delete_all(Codebattle.Season)
+    Codebattle.SeasonCache.invalidate()
+
+    user = insert(:user, rank: 1)
+    assert User.get_nearby_users(user) == []
+  end
+
+  test "adds a user changeset error when a clan cannot be created" do
+    user = insert(:user)
+    changeset = Ecto.Changeset.change(user)
+
+    invalid = User.find_or_create_by_clan(changeset, "", user.id)
+    assert {message, _} = invalid.errors[:clan]
+    assert message =~ "changeset"
+  end
 end

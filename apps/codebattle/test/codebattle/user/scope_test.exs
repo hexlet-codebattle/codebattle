@@ -94,6 +94,9 @@ defmodule Codebattle.User.ScopeTest do
 
       assert [fallback | _] = %{"s" => "unsupported+direction"} |> Scope.list_users() |> Repo.all()
       assert fallback.id == second.id
+
+      assert [malformed | _] = %{"s" => "broken"} |> Scope.list_users() |> Repo.all()
+      assert malformed.id == second.id
     end
   end
 end

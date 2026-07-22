@@ -1303,4 +1303,125 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       assert scores[fair.id] == 100
     end
   end
+
+  describe "remaining result branches" do
+    test "returns an unknown score strategy unchanged" do
+      tournament = insert(:tournament, score_strategy: "future_strategy")
+      assert TournamentResult.upsert_results(tournament) == tournament
+    end
+
+    test "builds clan-enabled user ranking and excludes cheated rows" do
+      clan = insert(:clan, name: "Ranking clan")
+      tournament = insert(:tournament, ranking_type: "by_user", use_clan: true)
+      honest = insert(:user, clan_id: clan.id)
+      cheater = insert(:user, clan_id: clan.id)
+      honest_id = honest.id
+
+      insert(:tournament_result,
+        tournament_id: tournament.id,
+        user_id: honest.id,
+        user_name: honest.name,
+        clan_id: clan.id,
+        score: 20,
+        duration_sec: 5,
+        was_cheated: false
+      )
+
+      insert(:tournament_result,
+        tournament_id: tournament.id,
+        user_id: cheater.id,
+        user_name: cheater.name,
+        clan_id: clan.id,
+        score: 100,
+        duration_sec: 1,
+        was_cheated: true
+      )
+
+      assert %{clan: "Ranking clan", place: 1, score: 20} =
+               TournamentResult.get_user_ranking(tournament)[honest_id]
+    end
+
+    test "uses Top200 timing and tolerates a live table without the matching game" do
+      tournament =
+        insert(:tournament,
+          type: "top200",
+          ranking_type: "by_user",
+          score_strategy: "static_base_score",
+          current_round_position: 0
+        )
+
+      task = insert(:task, level: "easy", base_score: 100, time_to_solve_sec: nil)
+      winner = insert(:user)
+      loser = insert(:user)
+      insert_game(task, tournament, winner, loser, 20, 100.0, 0.0)
+
+      matches_table = Matches.create_table(tournament.id)
+      live_tournament = %{tournament | matches_table: matches_table}
+
+      assert TournamentResult.upsert_results(live_tournament) == live_tournament
+      assert TournamentResult.get_user_ranking(tournament)[winner.id].score > 100
+      assert Matches.get_matches(live_tournament) == []
+    end
+
+    test "awards the final paid place for every season grade" do
+      for {grade, places} <- [{"challenger", 4}, {"pro", 7}, {"masters", 10}, {"grand_slam", 11}] do
+        tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", grade: grade)
+        users = insert_list(places, :user)
+
+        rows =
+          users
+          |> Enum.with_index(1)
+          |> Enum.map(fn {user, place} ->
+            %{
+              tournament_id: tournament.id,
+              user_id: user.id,
+              user_name: user.name,
+              user_lang: "js",
+              score: places - place + 1,
+              duration_sec: place,
+              round_position: 0,
+              game_id: place,
+              task_id: place,
+              level: "easy",
+              result_percent: Decimal.new("100"),
+              clan_id: nil,
+              was_cheated: false
+            }
+          end)
+
+        Repo.insert_all(TournamentResult, rows)
+        TournamentUserResult.upsert_results(tournament)
+
+        assert %{points: 2} =
+                 Repo.get_by!(TournamentUserResult,
+                   tournament_id: tournament.id,
+                   user_id: List.last(users).id
+                 )
+      end
+    end
+
+    test "handles open, unknown, and nil-cheater tournament result modes" do
+      user = insert(:user)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", grade: "open")
+
+      Repo.insert!(%TournamentResult{
+        tournament_id: tournament.id,
+        user_id: user.id,
+        user_name: user.name,
+        score: 1,
+        duration_sec: 1,
+        result_percent: Decimal.new("100"),
+        was_cheated: false
+      })
+
+      assert %{points: 0} =
+               tournament
+               |> Map.put(:cheater_ids, nil)
+               |> TournamentUserResult.upsert_results()
+               |> then(fn _ -> Repo.get_by!(TournamentUserResult, tournament_id: tournament.id, user_id: user.id) end)
+
+      unsupported = %{type: "individual", ranking_type: "by_user"}
+      assert TournamentUserResult.upsert_results(unsupported) == unsupported
+    end
+  end
 end

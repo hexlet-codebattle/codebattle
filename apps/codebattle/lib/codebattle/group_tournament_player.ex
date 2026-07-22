@@ -81,6 +81,5 @@ defmodule Codebattle.GroupTournamentPlayer do
     |> foreign_key_constraint(:user_id)
   end
 
-  defp normalize_lang(nil), do: nil
   defp normalize_lang(lang), do: lang |> String.trim() |> String.downcase()
 end

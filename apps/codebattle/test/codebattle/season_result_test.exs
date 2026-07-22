@@ -7,6 +7,10 @@ defmodule Codebattle.SeasonResultTest do
   alias Codebattle.Tournament.TournamentUserResult
 
   describe "aggregate_season_results/1 and query helpers" do
+    test "returns an error when aggregation targets a missing season" do
+      assert {:error, %Ecto.NoResultsError{}} = SeasonResult.aggregate_season_results(-1)
+    end
+
     test "aggregates finished non-open tournaments within the season and exposes leaderboard helpers" do
       season = insert_season("Spring 2026", 2026, ~D[2026-01-01], ~D[2026-03-31])
       older_season = insert_season("Winter 2025", 2025, ~D[2025-10-01], ~D[2025-12-31])

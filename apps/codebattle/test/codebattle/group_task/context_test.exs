@@ -339,6 +339,7 @@ defmodule Codebattle.GroupTask.ContextTest do
       result: %{
         "summary" => %{
           "ranking" => [
+            %{"player_id" => 5, "place" => 4, "score" => 9, "duration_ms" => 7},
             %{"player_id" => 1, "place" => 1, "score" => 12.7, "duration_ms" => 20.2},
             %{"player_id" => 2, "place" => 2, "score" => "unknown", "duration_ms" => nil},
             %{"player_id" => "bad", "place" => 3},
@@ -349,6 +350,7 @@ defmodule Codebattle.GroupTask.ContextTest do
     }
 
     assert Context.extract_round_results(run) == [
+             %{user_id: 5, place: 4, score: 9, duration_ms: 7},
              %{user_id: 1, place: 1, score: 13, duration_ms: 20},
              %{user_id: 2, place: 2, score: nil, duration_ms: nil}
            ]
@@ -370,5 +372,89 @@ defmodule Codebattle.GroupTask.ContextTest do
              Context.create_solution_from_submission(task.id, user.id, %{lang: "js", solution: nil})
 
     assert Keyword.has_key?(changeset.errors, :solution)
+  end
+
+  test "returns a structured run error when no runner URL is configured" do
+    user = insert(:user)
+    task = insert(:group_task, runner_url: nil)
+
+    solution =
+      :group_task_solution
+      |> insert(user: user, group_task: task, solution: "def solution, do: 1")
+      |> Repo.preload(:user)
+
+    assert {:ok, run} = Context.run_group_task(task, [user.id], %{solutions: [solution]})
+    assert run.status == "error"
+    assert run.result == %{"error" => "runner_url_not_configured"}
+
+    empty_url_task = %{task | runner_url: ""}
+    assert {:ok, empty_run} = Context.run_group_task(empty_url_task, [user.id], %{solutions: [solution]})
+    assert empty_run.result == %{"error" => "runner_url_not_configured"}
+  end
+
+  test "lists only successful scored results for requested users" do
+    user = insert(:user)
+    outsider = insert(:user)
+    task = insert(:group_task, runner_url: "http://runner.test/run")
+    tournament = insert(:group_tournament, group_task: task, state: "active")
+    {:ok, _token} = Codebattle.GroupTournament.Context.create_or_rotate_token(tournament, user.id)
+
+    insert(:group_task_solution,
+      user: user,
+      group_task: task,
+      group_tournament: tournament,
+      solution: "solution"
+    )
+
+    Process.put(
+      :group_task_runner_response,
+      {:ok,
+       %Req.Response{
+         status: 200,
+         body: %{
+           "summary" => %{
+             "ranking" => [
+               %{"player_id" => user.id, "place" => 1, "score" => 42, "duration_ms" => 9}
+             ]
+           }
+         }
+       }}
+    )
+
+    assert {:ok, run} =
+             Context.run_group_task(task, [user.id], %{
+               group_tournament_id: tournament.id,
+               kind: :user
+             })
+
+    assert Context.list_run_results_by_run_key(run.run_key, [outsider.id]) == []
+
+    assert [%{user_id: user_id, score: 42, duration_ms: duration_ms}] =
+             Context.list_run_results_by_run_key(run.run_key, [user.id])
+
+    assert user_id == user.id
+    assert duration_ms == nil
+
+    Process.put(
+      :group_task_runner_response,
+      {:ok,
+       %Req.Response{
+         status: 200,
+         body: %{
+           "summary" => %{
+             "ranking" => [%{"player_id" => user.id, "place" => 1, "score" => "not-numeric"}]
+           }
+         }
+       }}
+    )
+
+    assert {:ok, unscored_run} =
+             Context.run_group_task(task, [user.id], %{
+               group_tournament_id: tournament.id,
+               kind: :user
+             })
+
+    assert unscored_run.status == "success"
+    assert unscored_run.score == nil
   end
 end

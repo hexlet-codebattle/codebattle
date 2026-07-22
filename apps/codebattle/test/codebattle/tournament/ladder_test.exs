@@ -321,6 +321,20 @@ defmodule Codebattle.Tournament.LadderTest do
     assert_receive %Message{event: "tournament:game:wait", payload: %{type: "tournament"}}
   end
 
+  test "matchmaking ticks do not create games during breaks or after the last dispatched tick" do
+    in_break = build_live_tournament(%{break_state: "on", players_count: 0})
+    assert Ladder.matchmaking_tick(in_break).current_round_position == 0
+
+    exhausted = build_live_tournament(%{rounds_limit: 1, current_round_position: 0, players_count: 0})
+
+    Tournament.Matches.put_match(
+      exhausted,
+      %Match{id: 99, player_ids: [1, 2], round_position: 0, state: "playing"}
+    )
+
+    assert Ladder.matchmaking_tick(exhausted).current_round_position == 0
+  end
+
   test "handles missing task metadata, bots, and marked cheaters while scoring" do
     tournament =
       build_live_tournament(%{

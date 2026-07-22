@@ -372,6 +372,58 @@ defmodule Codebattle.GroupTournament.ContextTest do
     assert_raise Ecto.NoResultsError, fn -> Context.get_run_details!(run.id, stranger) end
   end
 
+  test "uses default run pagination and skips previews for inactive tournaments" do
+    tournament = insert(:group_tournament, state: "waiting_participants")
+    user = insert(:user)
+    token = Repo.insert!(%UserGroupTournament{user_id: user.id, group_tournament_id: tournament.id})
+    run = insert_run(tournament, token, user.id, "user", Ecto.UUID.generate())
+
+    assert Enum.map(Context.list_runs(tournament), & &1.id) == [run.id]
+    assert Context.count_runs(tournament) == 1
+
+    solution = insert(:group_task_solution, group_task: tournament.group_task, user: user)
+    assert Context.maybe_run_after_solution_submission(tournament.id, solution) == :ok
+    assert Context.count_runs(tournament) == 1
+  end
+
+  test "runs direct previews for seed, unsliced ranked, and individual tournaments" do
+    previous_client = Application.get_env(:codebattle, :group_task_runner_http_client)
+    Application.put_env(:codebattle, :group_task_runner_http_client, CodebattleWeb.FakeGroupTaskRunnerHttpClient)
+
+    on_exit(fn ->
+      Application.put_env(:codebattle, :group_task_runner_http_client, previous_client)
+      Process.delete(:group_task_runner_response)
+      Process.delete(:group_task_runner_last_request)
+    end)
+
+    for attrs <- [
+          %{type: "ranked", has_seed_round: true, current_round_position: 1},
+          %{type: "ranked", has_seed_round: false, current_round_position: 2},
+          %{type: "individual", current_round_position: 1}
+        ] do
+      user = insert(:user)
+      task = insert(:group_task, runner_url: "http://runner.test/run")
+      tournament = insert(:group_tournament, Map.merge(attrs, %{group_task: task, state: "active"}))
+      {:ok, _token} = Context.create_or_rotate_token(tournament, user.id)
+
+      solution =
+        insert(:group_task_solution,
+          group_task: task,
+          group_tournament: tournament,
+          user: user,
+          solution: "preview solution"
+        )
+
+      Process.put(
+        :group_task_runner_response,
+        {:ok, %Req.Response{status: 200, body: %{"summary" => %{"ranking" => []}}}}
+      )
+
+      assert Context.maybe_run_after_solution_submission(tournament.id, solution) == :ok
+      assert Context.count_runs(tournament) == 1
+    end
+  end
+
   defp insert_run(tournament, token, user_id, kind, run_key) do
     Repo.insert!(%UserGroupTournamentRun{
       user_group_tournament_id: token.id,

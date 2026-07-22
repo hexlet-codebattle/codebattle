@@ -31,10 +31,7 @@ defmodule Codebattle.GroupTask do
     |> unique_constraint(:slug)
   end
 
-  defp normalize_slug(nil), do: nil
   defp normalize_slug(slug), do: slug |> String.trim() |> String.downcase()
-
-  defp normalize_runner_url(nil), do: nil
 
   defp normalize_runner_url(runner_url) do
     case String.trim(runner_url) do

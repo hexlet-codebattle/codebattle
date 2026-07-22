@@ -492,10 +492,7 @@ defmodule Codebattle.GroupTournament.Context do
       nil ->
         case GlobalSupervisor.start_group_tournament(group_tournament) do
           {:ok, _pid} -> :ok
-          {:error, {:already_started, _pid}} -> :ok
-          {:error, :already_present} -> :ok
-          {:error, {:already_present, _pid}} -> :ok
-          _ -> :ok
+          {:error, _reason} -> :ok
         end
 
       _group_tournament ->
@@ -760,9 +757,9 @@ defmodule Codebattle.GroupTournament.Context do
   # as an already-decoded map with string keys (e.g. %{"1" => ...}); convert
   # to integer keys + atom-valued cells to match the cached leaderboard
   # shape that the rest of the code (and the UI) already uses.
-  defp decode_rounds_map(rounds) when is_map(rounds) do
+  defp decode_rounds_map(rounds) do
     Map.new(rounds, fn {round_position, cell} ->
-      {to_integer_key(round_position),
+      {String.to_integer(round_position),
        %{
          slice_index: cell["slice_index"],
          place: cell["place"],
@@ -771,22 +768,13 @@ defmodule Codebattle.GroupTournament.Context do
     end)
   end
 
-  defp decode_rounds_map(_), do: %{}
-
-  defp to_integer_key(key) when is_integer(key), do: key
-  defp to_integer_key(key) when is_binary(key), do: String.to_integer(key)
-
   # Synthesise R1 from the seeding pass so the UI can show the seed score in
   # the R1 column during the brief window between `run_seeding` completing
   # and `record_seed_round_scores` writing the persisted row. For
   # tournaments with `has_seed_round=false`, `seed_score` is nil and this is
   # a no-op.
   defp maybe_put_seed_round(rounds, seed_score, slice_index) when is_integer(seed_score) do
-    if Map.has_key?(rounds, 1) do
-      rounds
-    else
-      Map.put(rounds, 1, %{slice_index: slice_index, place: nil, score: seed_score})
-    end
+    Map.put_new(rounds, 1, %{slice_index: slice_index, place: nil, score: seed_score})
   end
 
   defp maybe_put_seed_round(rounds, _seed_score, _slice_index), do: rounds

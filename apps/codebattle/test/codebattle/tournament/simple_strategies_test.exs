@@ -100,4 +100,17 @@ defmodule Codebattle.Tournament.SimpleStrategiesTest do
     even = tournament()
     assert Versus.complete_players(even) == even
   end
+
+  test "versus adds and announces a bot for an odd roster" do
+    insert(:user, is_bot: true)
+    players_table = Tournament.Players.create_table(System.unique_integer([:positive]))
+    odd = tournament(%{players: %{1 => %{id: 1, name: "one"}}, players_table: players_table})
+    Tournament.Players.put_player(odd, Tournament.Player.new!(%{id: 1, name: "one", state: "active"}))
+
+    Codebattle.PubSub.subscribe("tournament:#{odd.id}")
+    completed = Versus.complete_players(odd)
+
+    assert length(Tournament.Helpers.get_players(completed)) == 2
+    assert Enum.any?(Tournament.Helpers.get_players(completed), & &1.is_bot)
+  end
 end

@@ -5,6 +5,22 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
   alias Codebattle.Tournament.SeasonTournamentGenerator
 
   describe "generate_season_tournaments/1" do
+    test "accepts a persisted season id and defaults non-quarter start dates to season zero" do
+      season =
+        Repo.insert!(%Season{
+          name: "Short custom season",
+          year: 2024,
+          starts_at: ~D[2024-01-01],
+          ends_at: ~D[2024-01-02]
+        })
+
+      tournaments = SeasonTournamentGenerator.generate_season_tournaments(season.id)
+
+      refute Enum.empty?(tournaments)
+      assert Enum.all?(tournaments, &match?(%Ecto.Changeset{}, &1))
+      assert Enum.any?(tournaments, &(Ecto.Changeset.get_field(&1, :task_pack_name) =~ "s0_2024"))
+    end
+
     test "generates tournaments from a Season struct" do
       season = %Season{
         id: 1,

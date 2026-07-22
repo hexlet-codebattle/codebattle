@@ -20,6 +20,7 @@ defmodule Codebattle.Tournament.ClansTest do
 
     assert :ok = Clans.add_players_clan(tournament, %{clan_id: nil})
     assert Clans.get_clan(tournament, -1).name == "UndefinedClan"
+    assert Clans.get_clans(tournament, []) == %{}
 
     assert :ok = Clans.add_players_clan(tournament, %{clan_id: clan.id})
     assert Clans.get_clan(tournament, clan.id).name == clan.name

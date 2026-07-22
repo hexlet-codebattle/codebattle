@@ -6,6 +6,20 @@ defmodule Codebattle.User.PointsAndRankUpdateTest do
   alias Codebattle.SeasonResult
   alias Codebattle.User.PointsAndRankUpdate
 
+  test "derives every seasonal date range from the supplied year" do
+    assert PointsAndRankUpdate.season_info(~D[2030-10-01]) ==
+             {0, ~D[2030-09-21], ~D[2030-12-21]}
+
+    assert PointsAndRankUpdate.season_info(~D[2030-02-01]) ==
+             {1, ~D[2029-12-21], ~D[2030-03-21]}
+
+    assert PointsAndRankUpdate.season_info(~D[2030-04-01]) ==
+             {2, ~D[2030-03-21], ~D[2030-06-21]}
+
+    assert PointsAndRankUpdate.season_info(~D[2030-08-01]) ==
+             {3, ~D[2030-06-21], ~D[2030-09-21]}
+  end
+
   test "updates points and ranks from persisted season results" do
     today = Date.utc_today()
 

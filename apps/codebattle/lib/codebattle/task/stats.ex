@@ -112,8 +112,5 @@ defmodule Codebattle.Task.Stats do
     end
   end
 
-  defp decimal_to_float(nil), do: nil
   defp decimal_to_float(%Decimal{} = d), do: Decimal.to_float(d)
-  defp decimal_to_float(v) when is_float(v), do: v
-  defp decimal_to_float(v) when is_integer(v), do: v * 1.0
 end

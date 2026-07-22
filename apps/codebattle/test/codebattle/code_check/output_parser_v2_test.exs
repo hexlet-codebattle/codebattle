@@ -279,6 +279,36 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     assert result.asserts == []
   end
 
+  test "recovers a JSON array from otherwise noisy line output" do
+    task = insert(:task, asserts: [%{arguments: [1], expected: 1}])
+
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "",
+        container_output: ~s(noise\n[{"type":"result","value":1,"time":0.1,"output":""}]),
+        exit_code: 0
+      })
+
+    assert result.status == "ok"
+    assert result.success_count == 1
+  end
+
+  test "recognizes out-of-memory messages written only to stderr" do
+    task = insert(:task)
+
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "process Killed by kernel",
+        container_output: "",
+        exit_code: 2
+      })
+
+    assert result.status == "error"
+    assert result.output_error == "Your solution ran out of memory, please, rewrite it"
+  end
+
   test "safe_encode formats values used in assertion reports" do
     assert OutputParser.V2.safe_encode("text") == ~s("text")
     assert OutputParser.V2.safe_encode(nil) == "null"

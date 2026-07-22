@@ -531,9 +531,7 @@ defmodule Codebattle.SeasonResult do
     end)
   end
 
-  defp to_float(nil), do: nil
   defp to_float(%Decimal{} = decimal), do: Decimal.to_float(decimal)
-  defp to_float(value), do: value
 
   @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(season_result, attrs \\ %{}) do

@@ -28,6 +28,8 @@ defmodule Codebattle.Game.PlayerTest do
     assert player.db_type == Application.fetch_env!(:codebattle, :default_db_type_slug)
 
     assert %Player{id: nil, rating: 1200} = Player.build(%UserGame{user: nil})
+
+    assert Player.build(%UserGame{user: user, rating: 1550}).rating == 1550
   end
 
   test "builds from tournament and game players with optional tasks" do

@@ -60,6 +60,10 @@ defmodule Codebattle.UserGameReport do
       :reason,
       :reporter_id
     ])
+    |> foreign_key_constraint(:game_id)
+    |> foreign_key_constraint(:tournament_id)
+    |> foreign_key_constraint(:reporter_id)
+    |> foreign_key_constraint(:offender_id)
   end
 
   def get!(id), do: Repo.get!(__MODULE__, id)

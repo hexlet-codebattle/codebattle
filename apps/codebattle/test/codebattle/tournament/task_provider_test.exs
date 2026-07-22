@@ -4,6 +4,22 @@ defmodule Codebattle.Tournament.TaskProviderTest do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.TaskProvider
 
+  test "loads all visible tasks and asks for none when the round count is absent" do
+    task = insert(:task, visibility: "public", state: "active")
+
+    assert [selected] =
+             TaskProvider.get_all_tasks(%{
+               task_provider: "all",
+               task_strategy: "random",
+               rounds_limit: 1
+             })
+
+    assert selected.visibility == "public"
+    assert selected.state == "active"
+    assert TaskProvider.get_all_tasks(%{task_provider: "all", task_strategy: "random"}) == []
+    assert Codebattle.Task.get(task.id).id == task.id
+  end
+
   test "reads task ids from task packs and current tournament storage" do
     [task1, task2, task3] = insert_list(3, :task, level: "easy")
     insert(:task_pack, name: "provider-pack", task_ids: [task1.id, task2.id, task3.id])

@@ -35,6 +35,5 @@ defmodule Codebattle.GroupTaskSolution do
     |> foreign_key_constraint(:group_tournament_id)
   end
 
-  defp normalize_lang(nil), do: nil
   defp normalize_lang(lang), do: lang |> String.trim() |> String.downcase()
 end
