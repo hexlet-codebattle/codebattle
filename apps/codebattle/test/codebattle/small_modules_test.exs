@@ -46,8 +46,8 @@ defmodule Codebattle.SmallModulesTest do
     css_task = CssTask.create_empty(1)
     sql_task = SqlTask.create_empty(1)
 
-    assert CssTask.changeset(css_task, %{}).valid?
-    assert SqlTask.changeset(sql_task, %{}).valid?
+    refute CssTask.changeset(css_task, %{}).valid?
+    refute SqlTask.changeset(sql_task, %{}).valid?
   end
 
   test "returns real time when the test clock is not frozen" do

@@ -418,9 +418,7 @@ defmodule Codebattle.Tournament.Top200 do
   end
 
   defp score_value(nil), do: 0
-  defp score_value(%Decimal{} = d), do: Decimal.to_float(d)
   defp score_value(n) when is_number(n), do: n
-  defp score_value(_), do: 0
 
   defp get_wait_type(tournament, game_params) do
     if has_more_games_in_round?(tournament, game_params) do

@@ -13,6 +13,6 @@ defmodule CodebattleWeb.EventView do
   def format_datetime(%DateTime{} = datetime, timezone) do
     datetime
     |> DateTime.shift_zone!(timezone)
-    |> Timex.format!("%Y-%m-%d %H:%M %Z", :strftime)
+    |> Calendar.strftime("%Y-%m-%d %H:%M %Z")
   end
 end

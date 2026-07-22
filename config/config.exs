@@ -110,6 +110,9 @@ config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, tournament_rematch_timeout_ms: 2000
 config :codebattle, user_rank_server: true
 
+# Use the tz database for DateTime timezone conversions (e.g. DateTime.shift_zone!/2)
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 config :fun_with_flags, :cache, enabled: true
 config :fun_with_flags, :cache_bust_notifications, enabled: false
 

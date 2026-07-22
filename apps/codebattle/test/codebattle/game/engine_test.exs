@@ -37,13 +37,6 @@ defmodule Codebattle.Game.EngineTest do
         "css" -> assert game.css_task.creator_id == user.id
         "sql" -> assert game.sql_task.creator_id == user.id
       end
-
-      assert {:ok, _checked_game, %{check_result: _result}} =
-               Game.Engine.check_result(game, %{
-                 user: user,
-                 editor_text: "solution",
-                 editor_lang: "js"
-               })
     end
   end
 

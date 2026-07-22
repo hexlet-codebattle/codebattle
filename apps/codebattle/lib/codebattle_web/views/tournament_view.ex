@@ -17,7 +17,7 @@ defmodule CodebattleWeb.TournamentView do
   def format_datetime(%DateTime{} = datetime, user_timezone) do
     datetime
     |> DateTime.shift_zone!(user_timezone)
-    |> Timex.format!("%Y-%m-%d %H:%M %Z", :strftime)
+    |> Calendar.strftime("%Y-%m-%d %H:%M %Z")
   end
 
   def get_link_params(match, %{id: id}) do

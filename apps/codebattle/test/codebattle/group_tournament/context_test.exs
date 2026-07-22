@@ -396,15 +396,21 @@ defmodule Codebattle.GroupTournament.ContextTest do
       Process.delete(:group_task_runner_last_request)
     end)
 
-    for attrs <- [
-          %{type: "ranked", has_seed_round: true, current_round_position: 1},
-          %{type: "ranked", has_seed_round: false, current_round_position: 2},
-          %{type: "individual", current_round_position: 1}
+    for {attrs, slice_index} <- [
+          {%{type: "ranked", has_seed_round: true, current_round_position: 1}, nil},
+          {%{type: "ranked", has_seed_round: false, current_round_position: 2}, nil},
+          {%{type: "ranked", has_seed_round: false, current_round_position: 2}, 0},
+          {%{type: "individual", current_round_position: 1}, nil}
         ] do
       user = insert(:user)
       task = insert(:group_task, runner_url: "http://runner.test/run")
       tournament = insert(:group_tournament, Map.merge(attrs, %{group_task: task, state: "active"}))
       {:ok, _token} = Context.create_or_rotate_token(tournament, user.id)
+
+      if is_integer(slice_index) do
+        assert {:ok, _player} =
+                 Context.create_or_update_player(tournament, user.id, %{lang: "js", slice_index: slice_index})
+      end
 
       solution =
         insert(:group_task_solution,

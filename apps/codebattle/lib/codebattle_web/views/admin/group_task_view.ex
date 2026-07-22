@@ -10,7 +10,7 @@ defmodule CodebattleWeb.Admin.GroupTaskView do
   end
 
   def format_datetime(%DateTime{} = datetime) do
-    Timex.format!(datetime, "%Y-%m-%d %H:%M:%S %Z", :strftime)
+    Calendar.strftime(datetime, "%Y-%m-%d %H:%M:%S %Z")
   end
 
   def extract_run_error(%{"body" => %{"error" => error}}) when is_binary(error), do: error

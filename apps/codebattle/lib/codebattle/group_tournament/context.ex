@@ -835,8 +835,7 @@ defmodule Codebattle.GroupTournament.Context do
       User.admin?(current_user) ->
         true
 
-      match?(%{user_group_tournament: %{user_id: _}}, run) and
-          run.user_group_tournament.user_id == current_user.id ->
+      run.user_group_tournament.user_id == current_user.id ->
         true
 
       is_list(run.player_ids) and current_user.id in run.player_ids ->

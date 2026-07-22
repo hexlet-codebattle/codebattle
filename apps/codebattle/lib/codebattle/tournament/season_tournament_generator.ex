@@ -362,12 +362,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
     end
   end
 
-  # Safely build a date, returning nil if the day doesn't exist in that month
+  # Scheduled tournament days are all valid for every calendar month.
   defp build_date_safe(year, month, day) do
-    case Date.new(year, month, day) do
-      {:ok, date} -> date
-      {:error, _} -> nil
-    end
+    Date.new!(year, month, day)
   end
 
   defp date_in_range?(date, start_date, end_date) do

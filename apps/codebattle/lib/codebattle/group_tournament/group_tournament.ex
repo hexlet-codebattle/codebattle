@@ -231,14 +231,19 @@ defmodule Codebattle.GroupTournament do
   def infinite?(%__MODULE__{is_infinite: true}), do: true
   def infinite?(_), do: false
 
+  defp normalize_slug(nil), do: nil
   defp normalize_slug(slug), do: slug |> String.trim() |> String.downcase()
 
-  defp normalize_optional_string(value) do
+  defp normalize_optional_string(nil), do: nil
+
+  defp normalize_optional_string(value) when is_binary(value) do
     case String.trim(value) do
       "" -> nil
       trimmed -> trimmed
     end
   end
+
+  defp normalize_optional_string(value), do: value
 
   defp validate_round_timeout(changeset) do
     if get_field(changeset, :is_infinite) do

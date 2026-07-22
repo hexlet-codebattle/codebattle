@@ -15,7 +15,7 @@ defmodule Codebattle.MixProject do
       aliases: aliases(),
       deps: deps(),
       listeners: [Phoenix.CodeReloader],
-      test_coverage: [tool: ExCoveralls, threshold: 60],
+      test_coverage: [tool: ExCoveralls, threshold: 99],
       elixirc_options: [warnings_as_errors: false]
     ]
   end
@@ -61,7 +61,7 @@ defmodule Codebattle.MixProject do
       {:finch, "~> 0.16"},
       {:fun_with_flags, "~> 1.11"},
       {:fun_with_flags_ui, "~> 1.0"},
-      {:gettext, "~> 0.18"},
+      {:gettext, "~> 1.0"},
       {:inertia, "~> 2.6"},
       {:oban, "~> 2.19"},
       {:oban_web, "~> 2.11"},
@@ -83,8 +83,8 @@ defmodule Codebattle.MixProject do
       {:statistics, "~> 0.6"},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},
-      {:timex, "~> 3.6"},
       {:typed_struct, "~> 0.3"},
+      {:tzdata, "~> 1.1"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

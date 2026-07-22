@@ -33,6 +33,6 @@ defmodule Codebattle.UserTest do
 
     invalid = User.find_or_create_by_clan(changeset, "", user.id)
     assert {message, _} = invalid.errors[:clan]
-    assert message =~ "changeset"
+    assert message =~ "Ecto.Changeset"
   end
 end

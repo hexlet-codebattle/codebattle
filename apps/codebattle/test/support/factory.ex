@@ -182,8 +182,8 @@ defmodule CodebattleWeb.Factory do
       players_count: 16,
       starts_at:
         DateTime.utc_now()
-        |> Timex.shift(minutes: 30)
-        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
+        |> DateTime.add(30, :minute)
+        |> Calendar.strftime("%Y-%m-%d %H:%M"),
       creator_id: 1,
       players: %{},
       matches: %{}
@@ -202,8 +202,8 @@ defmodule CodebattleWeb.Factory do
       players_limit: 16,
       starts_at:
         DateTime.utc_now()
-        |> Timex.shift(minutes: 30)
-        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
+        |> DateTime.add(30, :minute)
+        |> Calendar.strftime("%Y-%m-%d %H:%M"),
       creator_id: 1
     }
   end

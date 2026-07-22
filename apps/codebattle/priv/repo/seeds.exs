@@ -168,10 +168,10 @@ Enum.each(1..16, fn x ->
 end)
 
 creator = %{
-  name: "User1_admin#{Timex.format!(DateTime.utc_now(), "%FT%T%:z", :strftime)}",
+  name: "User1_admin#{DateTime.to_iso8601(DateTime.utc_now())}",
   is_bot: false,
   rating: 1300,
-  email: "admin@user1#{Timex.format!(DateTime.utc_now(), "%FT%T%:z", :strftime)}",
+  email: "admin@user1#{DateTime.to_iso8601(DateTime.utc_now())}",
   avatar_url: "/assets/images/logo.svg",
   lang: "ruby",
   inserted_at: TimeHelper.utc_now(),
@@ -179,10 +179,10 @@ creator = %{
 }
 
 now = DateTime.utc_now()
-one_month_ago = Timex.shift(now, months: -1)
-two_weeks_ago = Timex.shift(now, weeks: -2)
-five_days_ago = Timex.shift(now, days: -5)
-six_hours_ago = Timex.shift(now, hours: -6)
+one_month_ago = DateTime.add(now, -30, :day)
+two_weeks_ago = DateTime.add(now, -14, :day)
+five_days_ago = DateTime.add(now, -5, :day)
+six_hours_ago = DateTime.add(now, -6, :hour)
 
 Enum.each([one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago], fn t ->
   game_params = %{
@@ -191,8 +191,8 @@ Enum.each([one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago], fn t ->
     type: "duo",
     mode: "standard",
     visibility_type: "public",
-    starts_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
-    finishes_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
+    starts_at: t |> DateTime.to_naive() |> NaiveDateTime.truncate(:second),
+    finishes_at: t |> DateTime.to_naive() |> NaiveDateTime.truncate(:second),
     inserted_at: TimeHelper.utc_now(),
     updated_at: TimeHelper.utc_now()
   }
@@ -203,10 +203,10 @@ Enum.each([one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago], fn t ->
     |> Repo.insert()
 
   user_1_params = %{
-    name: "User1_#{Timex.format!(t, "%FT%T%:z", :strftime)}",
+    name: "User1_#{DateTime.to_iso8601(t)}",
     is_bot: false,
     rating: 1300,
-    email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user1",
+    email: "#{DateTime.to_iso8601(t)}@user1",
     avatar_url: "/assets/images/logo.svg",
     lang: "ruby",
     inserted_at: TimeHelper.utc_now(),
@@ -219,10 +219,10 @@ Enum.each([one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago], fn t ->
     |> Repo.insert()
 
   user_2_params = %{
-    name: "User2_#{Timex.format!(t, "%FT%T%:z", :strftime)}",
+    name: "User2_#{DateTime.to_iso8601(t)}",
     is_bot: false,
     rating: -500,
-    email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user2",
+    email: "#{DateTime.to_iso8601(t)}@user2",
     lang: "java",
     avatar_url: "/assets/images/logo.svg",
     inserted_at: TimeHelper.utc_now(),
@@ -454,7 +454,7 @@ try do
         clan_id: clan_id,
         is_bot: false,
         rating: 1200,
-        email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user#{id}",
+        email: "#{DateTime.to_iso8601(t)}@user#{id}",
         lang: "python",
         inserted_at: TimeHelper.utc_now(),
         updated_at: TimeHelper.utc_now()

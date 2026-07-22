@@ -947,7 +947,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   end
 
   defp format_short_datetime(%DateTime{} = datetime) do
-    Timex.format!(datetime, "%d %b %Y", :strftime)
+    Calendar.strftime(datetime, "%d %b %Y")
   end
 
   defp invite_state_badge("pending"), do: "badge bg-secondary"
@@ -972,7 +972,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   defp format_invite_datetime(nil), do: "–"
 
   defp format_invite_datetime(%DateTime{} = dt) do
-    Timex.format!(dt, "%d %b %Y %H:%M", :strftime)
+    Calendar.strftime(dt, "%d %b %Y %H:%M")
   end
 
   defp format_invite_datetime(%NaiveDateTime{} = dt) do
@@ -1051,7 +1051,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   def format_datetime(%DateTime{} = datetime, timezone) do
     datetime
     |> DateTime.shift_zone!(timezone)
-    |> Timex.format!("%Y-%m-%d %H:%M %Z", :strftime)
+    |> Calendar.strftime("%Y-%m-%d %H:%M %Z")
   end
 
   @impl true
@@ -1288,7 +1288,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                   <div class="d-flex justify-content-between px-3 py-3">
                     <span class="cb-text">Joined</span>
                     <span class="text-white text-end">
-                      {Timex.format!(@user.inserted_at, "{Mfull} {D}, {YYYY}")}
+                      {Calendar.strftime(@user.inserted_at, "%B %-d, %Y")}
                     </span>
                   </div>
                 </div>
@@ -1957,9 +1957,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       <p class="cb-text mb-1">
                         <small>
                           <strong>ID:</strong> {event.id} |
-                          <strong>Date:</strong> {Timex.format!(
+                          <strong>Date:</strong> {Calendar.strftime(
                             event.inserted_at,
-                            "{Mshort} {D}, {YYYY}"
+                            "%b %-d, %Y"
                           )} | <strong>Slug:</strong> {event.event.slug}
                         </small>
                       </p>
