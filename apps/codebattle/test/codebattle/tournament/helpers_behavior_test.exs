@@ -160,6 +160,32 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
   end
 
   describe "timeout, clan, and ranking stats helpers" do
+    test "covers empty and ETS-backed pagination and role fallbacks" do
+      task = insert(:task)
+
+      tournament =
+        build_ets_tournament(%{
+          players: %{
+            1 => player(%{id: 1, name: "p1", place: 3}),
+            2 => player(%{id: 2, name: "p2", place: 1}),
+            3 => player(%{id: 3, name: "p3", place: 2})
+          }
+        })
+
+      Tournament.Tasks.put_task(tournament, task)
+
+      assert Enum.map(get_tasks(tournament), & &1.id) == [task.id]
+      assert get_tasks(%{tournament | tasks_table: nil}) == []
+      assert tournament |> get_paginated_players(2, 2) |> Enum.map(& &1.id) == [1]
+      assert get_top_game_id(tournament) == nil
+      refute can_moderate?(tournament, nil)
+      refute creator?(tournament, nil)
+      refute moderator?(tournament, nil)
+      assert to_id(:already_an_atom) == :already_an_atom
+      assert get_max_draw_index([]) == 0
+      assert get_clans_by_ranking(%{tournament | use_clan: nil}, [%{id: 1}]) == %{}
+    end
+
     test "calculates round timeout through all fallback branches" do
       task = insert(:task, time_to_solve_sec: 45)
       tournament = build_ets_tournament(%{task_ids: [task.id], current_round_position: 0})
@@ -210,6 +236,17 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       Tournament.Tasks.put_task(tournament, task)
 
       assert current_round_timeout_seconds(tournament) == 45
+    end
+
+    test "uses the ladder fallback when a fixed timeout is invalid" do
+      tournament =
+        build_ets_tournament(%{
+          type: "ladder",
+          timeout_mode: "per_round_fixed",
+          round_timeout_seconds: nil
+        })
+
+      assert current_round_timeout_seconds(tournament) == 300
     end
 
     test "builds json-safe tournament info, clan lookups, total games, and ranking stats" do

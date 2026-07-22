@@ -74,7 +74,7 @@ defmodule Runner.AssertsExecutor do
       {"oi", 0}
     else
       Logger.info("Start container execution: #{inspect(cmd_opts)}")
-      System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+      command_runner().cmd(cmd, cmd_opts, stderr_to_stdout: true)
     end
   end
 
@@ -88,5 +88,9 @@ defmodule Runner.AssertsExecutor do
 
   defp fake_container_run? do
     Application.get_env(:runner, :fake_container_run, false)
+  end
+
+  defp command_runner do
+    Application.get_env(:runner, :command_runner, System)
   end
 end

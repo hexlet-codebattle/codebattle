@@ -3,6 +3,7 @@ import React from 'react';
 import { camelizeKeys } from 'humps';
 
 import CreateTournament from './CreateTournament';
+import { getBrowserTimezone } from './dateTime';
 
 interface TournamentRow {
   id: number;
@@ -113,13 +114,14 @@ function TournamentIndex({
   userTimezone = 'UTC',
 }: TournamentIndexProps) {
   const tournaments = camelizeKeys(rawTournaments) as TournamentRow[];
+  const browserTimezone = getBrowserTimezone(userTimezone);
 
   return (
     <>
-      <TournamentsTable tournaments={tournaments} userTimezone={userTimezone} />
+      <TournamentsTable tournaments={tournaments} userTimezone={browserTimezone} />
       <CreateTournament
         taskPackNames={taskPackNames}
-        userTimezone={userTimezone}
+        userTimezone={browserTimezone}
         onSuccess={(tournament) => {
           window.location.href = `/tournaments/${tournament.id}`;
         }}

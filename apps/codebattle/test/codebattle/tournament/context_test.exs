@@ -10,6 +10,197 @@ defmodule Codebattle.Tournament.ContextTest do
   alias Codebattle.Tournament.TournamentUserResult
   alias Codebattle.UserGameReport
 
+  test "fetches persisted tournaments and checks game pass codes" do
+    tournament = insert(:tournament, state: "finished", meta: %{game_passwords: ["secret"]})
+
+    assert Tournament.Context.get!(tournament.id).id == tournament.id
+    assert Tournament.Context.get(tournament.id).id == tournament.id
+    assert Tournament.Context.get_from_db!(tournament.id).id == tournament.id
+    assert Tournament.Context.get_from_db(tournament.id).id == tournament.id
+    assert Tournament.Context.get(-1) == nil
+    assert Tournament.Context.get_from_db(-1) == nil
+    assert Tournament.Context.check_pass_code(tournament.id, "secret")
+    refute Tournament.Context.check_pass_code(tournament.id, "wrong")
+    assert Enum.map(Tournament.Context.get_db_tournaments(["finished"]), & &1.id) == [tournament.id]
+  end
+
+  test "queries event, season, and user tournament histories" do
+    event = insert(:event)
+    user = insert(:user)
+    now = DateTime.utc_now(:second)
+
+    tournament =
+      insert(:tournament,
+        creator: nil,
+        creator_id: user.id,
+        event: nil,
+        event_id: event.id,
+        state: "finished",
+        grade: "rookie",
+        starts_at: now,
+        players: %{
+          1 => %{id: 1, is_bot: false},
+          2 => %{"id" => 2, "is_bot" => true},
+          3 => %{id: 3, is_bot: true}
+        }
+      )
+
+    assert Enum.map(Tournament.Context.get_all_by_event_id!(event.id), & &1.id) == [tournament.id]
+
+    assert Enum.map(
+             Tournament.Context.get_season_tournaments(%{
+               from: DateTime.add(now, -1, :day),
+               to: DateTime.add(now, 1, :day)
+             }),
+             & &1.id
+           ) == [tournament.id]
+
+    assert [finished] = Tournament.Context.get_finished_season_tournaments()
+    assert finished.id == tournament.id
+    assert finished.players_count == 1
+
+    filter = %{from: DateTime.add(now, -1, :day), to: DateTime.add(now, 1, :day), user: user}
+    assert Enum.map(Tournament.Context.get_user_tournaments(filter), & &1.id) == [tournament.id]
+    assert Tournament.Context.get_user_tournaments(%{user: %{is_guest: true}}) == []
+  end
+
+  test "validates tournament parameters without persisting" do
+    changeset = Tournament.Context.validate(%{"name" => "", "rounds_limit" => 0})
+    refute changeset.valid?
+    assert changeset.action == :validate
+  end
+
+  test "normalizes optional tournament form fields" do
+    creator = insert(:user)
+
+    changeset =
+      Tournament.Context.validate(%{
+        "creator" => creator,
+        "type" => "swiss",
+        "starts_at" => "2026-08-01T12:00",
+        "user_timezone" => "Etc/UTC",
+        "access_type" => "token",
+        "match_timeout_seconds" => nil,
+        "show_results" => false,
+        "moderator_ids" => [creator.id, " #{creator.id + 1} ", "", "invalid", nil],
+        "tournament_timeout_seconds" => "600",
+        "meta_json" => ~s({"game_passwords":["secret"]})
+      })
+
+    assert changeset.action == :validate
+    assert get_field(changeset, :timeout_mode) == "per_tournament"
+    assert get_field(changeset, :round_timeout_seconds) == nil
+    assert get_field(changeset, :match_timeout_seconds) == 180
+    assert get_field(changeset, :show_results) == false
+    assert get_field(changeset, :moderator_ids) == [creator.id + 1]
+    assert get_field(changeset, :meta) == %{game_passwords: ["secret"]}
+    assert is_binary(get_field(changeset, :access_token))
+  end
+
+  test "handles atom form keys, invalid metadata, and timeout defaults" do
+    ladder =
+      Tournament.Context.validate(%{
+        type: :ladder,
+        starts_at: "2026-08-01T12:00",
+        user_timezone: "Etc/UTC",
+        tournament_timeout_seconds: "900",
+        meta_json: "not-json"
+      })
+
+    assert get_field(ladder, :timeout_mode) == "per_task"
+    assert get_field(ladder, :tournament_timeout_seconds) == nil
+    assert get_field(ladder, :meta) == %{}
+
+    fixed_round =
+      Tournament.Context.validate(%{
+        type: "swiss",
+        round_timeout_seconds: "120",
+        meta: %{"round" => 1}
+      })
+
+    assert get_field(fixed_round, :timeout_mode) == "per_round_fixed"
+    assert get_field(fixed_round, :tournament_timeout_seconds) == nil
+    assert get_field(fixed_round, :meta) == %{round: 1}
+
+    defaults = Tournament.Context.validate(%{type: "swiss"})
+    assert get_field(defaults, :timeout_mode) == "per_task"
+    assert get_field(defaults, :show_results)
+    assert %DateTime{} = get_field(defaults, :starts_at)
+  end
+
+  test "returns invalid create and update changesets" do
+    assert {:error, create_changeset} =
+             Tournament.Context.create(%{
+               "name" => "",
+               "type" => "swiss",
+               "starts_at" => "2026-08-01T12:00",
+               "user_timezone" => "Etc/UTC"
+             })
+
+    refute create_changeset.valid?
+
+    tournament = :tournament |> insert() |> Repo.preload(:creator)
+    assert {:error, update_changeset} = Tournament.Context.update(tournament, %{"name" => ""})
+    refute update_changeset.valid?
+  end
+
+  test "queries administrator history and one upcoming tournament per grade" do
+    admin = insert(:admin)
+    now = DateTime.utc_now(:second)
+
+    finished =
+      insert(:tournament,
+        state: "finished",
+        grade: "rookie",
+        starts_at: now,
+        creator_id: admin.id
+      )
+
+    first_rookie =
+      insert(:tournament,
+        state: "upcoming",
+        grade: "rookie",
+        starts_at: DateTime.add(now, 10, :minute)
+      )
+
+    _second_rookie =
+      insert(:tournament,
+        state: "upcoming",
+        grade: "rookie",
+        starts_at: DateTime.add(now, 20, :minute)
+      )
+
+    elementary =
+      insert(:tournament,
+        state: "upcoming",
+        grade: "elementary",
+        starts_at: DateTime.add(now, 15, :minute)
+      )
+
+    filter = %{from: DateTime.add(now, -1, :day), to: DateTime.add(now, 1, :day), user: admin}
+    assert Enum.map(Tournament.Context.get_user_tournaments(filter), & &1.id) == [finished.id]
+
+    ids = Enum.map(Tournament.Context.get_one_upcoming_tournament_for_each_grade(), & &1.id)
+    assert Enum.sort(ids) == Enum.sort([first_rookie.id, elementary.id])
+  end
+
+  test "returns a player's latest game id from in-memory tournament data" do
+    player = Player.new!(%{id: 1, name: "player", matches_ids: [2, 1]})
+
+    tournament = %{
+      players_table: nil,
+      matches_table: nil,
+      players: %{"1": player},
+      matches: %{
+        "1": %{id: 1, game_id: 10, state: "game_over"},
+        "2": %{id: 2, game_id: 20, state: "game_over"}
+      }
+    }
+
+    assert Tournament.Context.get_user_latest_game_id(tournament, 1) == 20
+    assert Tournament.Context.get_user_latest_game_id(tournament, 999) == nil
+  end
+
   describe "get_upcoming_to_live_candidate/1" do
     test "returns tournament that starts within the delay window" do
       # Tournament starting in 5 minutes (within 7 minute window)

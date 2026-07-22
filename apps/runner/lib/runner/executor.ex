@@ -130,7 +130,7 @@ defmodule Runner.Executor do
 
       {execution_time, {output, status}} =
         :timer.tc(fn ->
-          System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+          command_runner().cmd(cmd, cmd_opts, stderr_to_stdout: true)
         end)
 
       Logger.debug("Output: #{inspect(output)}")
@@ -147,5 +147,9 @@ defmodule Runner.Executor do
 
   defp fake_container_run? do
     Application.get_env(:runner, :fake_container_run, false)
+  end
+
+  defp command_runner do
+    Application.get_env(:runner, :command_runner, System)
   end
 end

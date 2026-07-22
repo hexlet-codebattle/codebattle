@@ -1,5 +1,21 @@
 defmodule RunnerWeb.Api.V1.ExecutorControllerTest do
-  use RunnerWeb.ConnCase, async: true
+  use RunnerWeb.ConnCase, async: false
+
+  setup do
+    original_tmp = System.get_env("CODEBATTLE_RUNNER_TMP")
+    test_tmp = Path.join(System.tmp_dir!(), "runner-controller-tests")
+    System.put_env("CODEBATTLE_RUNNER_TMP", test_tmp)
+
+    on_exit(fn ->
+      File.rm_rf(test_tmp)
+
+      if original_tmp do
+        System.put_env("CODEBATTLE_RUNNER_TMP", original_tmp)
+      else
+        System.delete_env("CODEBATTLE_RUNNER_TMP")
+      end
+    end)
+  end
 
   describe ".execute" do
     test "invalid params 422", %{conn: conn} do
@@ -42,6 +58,27 @@ defmodule RunnerWeb.Api.V1.ExecutorControllerTest do
                "seed" => "blz",
                "container_stderr" => "blz"
              }
+    end
+
+    test "returns 422 when execution fails", %{conn: conn} do
+      task = %{
+        "type" => "sql",
+        "input_signature" => [],
+        "output_signature" => %{},
+        "asserts" => [],
+        "asserts_examples" => []
+      }
+
+      response =
+        conn
+        |> post(Routes.api_v1_executor_path(conn, :execute), %{
+          "task" => task,
+          "lang_slug" => "postgresql",
+          "solution_text" => %{}
+        })
+        |> json_response(422)
+
+      assert response == %{"errors" => ["failed_execute"]}
     end
   end
 end

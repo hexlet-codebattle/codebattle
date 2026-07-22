@@ -169,6 +169,23 @@ defmodule Runner.SolutionGeneratorTest do
   // use stdout to debug
   """
 
+  test "renders a language typespec when its metadata defines one" do
+    task = %Runner.Task{
+      comment: "typed",
+      input_signature: [%{argument_name: "value", type: %{name: "integer"}}],
+      output_signature: %{type: %{name: "integer"}}
+    }
+
+    meta = %{
+      Languages.meta("swift")
+      | typespec_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
+        arguments_template: %{argument: "<%= name %>", delimiter: ", "},
+        solution_template: "<%= typespec %> | <%= arguments %> | <%= default_value %>"
+    }
+
+    assert SolutionGenerator.call(task, meta) == "value: Int | value | 0"
+  end
+
   setup do
     task = %Runner.Task{
       asserts: [

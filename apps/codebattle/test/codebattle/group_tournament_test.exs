@@ -53,6 +53,53 @@ defmodule Codebattle.GroupTournamentTest do
     assert {"can't be blank", _opts} = changeset.errors[:template_id]
   end
 
+  test "exposes strategy values and classifies tournament modes" do
+    assert "waiting_participants" in GroupTournament.states()
+    assert "ranked" in GroupTournament.types()
+    assert "rating" in GroupTournament.slice_strategies()
+    assert "global_linear" in GroupTournament.scoring_strategies()
+    assert "neighbor_ladder" in GroupTournament.movement_strategies()
+
+    assert GroupTournament.seeding_round?(%GroupTournament{
+             type: "ranked",
+             has_seed_round: true,
+             current_round_position: 1
+           })
+
+    assert GroupTournament.seeding_round?(%GroupTournament{type: "seed_only"})
+    refute GroupTournament.seeding_round?(%GroupTournament{type: "ranked"})
+    assert GroupTournament.ranked?(%GroupTournament{type: "ranked"})
+    refute GroupTournament.ranked?(%GroupTournament{type: "classic"})
+    assert GroupTournament.seed_only?(%GroupTournament{type: "seed_only"})
+    refute GroupTournament.seed_only?(%GroupTournament{type: "ranked"})
+    assert GroupTournament.infinite?(%GroupTournament{is_infinite: true})
+    refute GroupTournament.infinite?(%GroupTournament{})
+  end
+
+  test "normalizes optional fields and permits infinite rounds without a timeout" do
+    creator = insert(:user)
+    group_task = insert(:group_task)
+
+    changeset =
+      GroupTournament.changeset(%GroupTournament{}, %{
+        creator_id: creator.id,
+        group_task_id: group_task.id,
+        name: "Infinite Tournament",
+        slug: "  INFINITE-SLUG  ",
+        description: "description",
+        starts_at: DateTime.utc_now(),
+        rounds_count: 1,
+        is_infinite: true,
+        template_id: "   ",
+        task_description: "  task text  "
+      })
+
+    assert changeset.valid?
+    assert Ecto.Changeset.get_change(changeset, :slug) == "infinite-slug"
+    assert Ecto.Changeset.get_change(changeset, :template_id) == nil
+    assert Ecto.Changeset.get_change(changeset, :task_description) == "task text"
+  end
+
   describe "local_folder" do
     setup do
       creator = insert(:user)

@@ -131,5 +131,12 @@ defmodule Codebattle.Game.BotDetection.BatchAggregatorTest do
       assert stats.total_paste_blocked == 0
       assert stats.max_single_insert_len == 0
     end
+
+    test "invalid summaries and non-numeric fields default to zero" do
+      stats = BatchAggregator.aggregate([%{summary: nil}, %{summary: %{"event_count" => "many"}}])
+
+      assert stats.total_events == 0
+      assert stats.total_chars_inserted == 0
+    end
   end
 end

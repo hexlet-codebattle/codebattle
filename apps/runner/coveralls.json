@@ -1,0 +1,7 @@
+{
+  "skip_files": [
+    "lib/mix/tasks/images/",
+    "lib/runner/application.ex",
+    "lib/runner_web.ex"
+  ]
+}

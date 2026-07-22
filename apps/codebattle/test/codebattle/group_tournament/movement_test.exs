@@ -36,4 +36,20 @@ defmodule Codebattle.GroupTournament.MovementTest do
                ["global_rerank", "mirrored_cascade", "neighbor_ladder"]
     end
   end
+
+  describe "validate_inputs!/2" do
+    test "rejects invalid options and malformed results" do
+      assert_raise ArgumentError, ~r/slice_count must be non-negative/, fn ->
+        Movement.validate_inputs!([], %{slice_count: -1, slice_size: 1})
+      end
+
+      assert_raise ArgumentError, ~r/slice_size must be positive/, fn ->
+        Movement.validate_inputs!([], %{slice_count: 1, slice_size: 0})
+      end
+
+      assert_raise ArgumentError, ~r/expected %\{user_id, slice_index, place\}/, fn ->
+        Movement.validate_inputs!([%{user_id: 1}], %{slice_count: 1, slice_size: 1})
+      end
+    end
+  end
 end

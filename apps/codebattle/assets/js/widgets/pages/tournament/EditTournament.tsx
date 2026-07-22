@@ -7,6 +7,7 @@ import Alert from 'react-bootstrap/Alert';
 import Loading from '../../components/Loading';
 
 import TournamentForm from './TournamentForm';
+import { formatDatetimeLocal, getBrowserTimezone } from './dateTime';
 
 interface TournamentResult {
   id: number;
@@ -111,6 +112,7 @@ function EditTournament({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState<NotificationData>(notifications.empty);
+  const browserTimezone = getBrowserTimezone(userTimezone);
 
   useEffect(() => {
     const fetchTournament = async () => {
@@ -152,7 +154,7 @@ function EditTournament({
           tournament: {
             ...formData,
             tournament_id: tournamentId,
-            user_timezone: userTimezone,
+            user_timezone: browserTimezone,
           },
         };
 
@@ -207,7 +209,7 @@ function EditTournament({
         }
       }
     },
-    [tournamentId, userTimezone, onSuccess],
+    [tournamentId, browserTimezone, onSuccess],
   );
 
   const handleValidate = useCallback(async () => {
@@ -246,25 +248,13 @@ function EditTournament({
     );
   }
 
-  // Format starts_at for datetime-local input
-  const formatDatetimeLocal = (dateString?: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
   const initialValues = {
     type: tournament.type || 'swiss',
     name: tournament.name || '',
     description: tournament.description || '',
     creator_id: tournament.creatorId || '',
     moderator_ids: (tournament.moderatorIds || []).join(', '),
-    starts_at: formatDatetimeLocal(tournament.startsAt),
+    starts_at: formatDatetimeLocal(tournament.startsAt, browserTimezone),
     access_type: tournament.accessType || 'public',
     task_provider: tournament.taskProvider || 'level',
     task_strategy: tournament.taskStrategy || 'random',
@@ -306,7 +296,7 @@ function EditTournament({
             isSubmitting={isSubmitting}
             submitButtonText="Update Tournament"
             taskPackNames={taskPackNames}
-            userTimezone={userTimezone}
+            userTimezone={browserTimezone}
             showCancelButton
             cancelButtonText="Back"
             onCancel={() => {

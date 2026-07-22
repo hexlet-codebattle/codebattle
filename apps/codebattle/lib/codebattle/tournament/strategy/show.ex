@@ -85,11 +85,7 @@ defmodule Codebattle.Tournament.Show do
     # min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
 
     if final_round?(tournament) do
-      if finish_tournament?(tournament) do
-        "tournament"
-      else
-        "round"
-      end
+      "tournament"
     else
       "rematch"
     end

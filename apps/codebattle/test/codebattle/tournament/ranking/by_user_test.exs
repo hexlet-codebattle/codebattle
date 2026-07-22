@@ -61,10 +61,29 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
     Players.put_player(tournament, player)
 
     ByUser.set_places_with_score_to_players(tournament, [
-      %{id: 101, place: 2, score: 33, lang: "js"}
+      %{id: 101, place: 2, score: 33, lang: "js"},
+      %{id: 999, place: 3, score: 1, lang: "rb"}
     ])
 
     assert %{place: 2, score: 33, lang: "python"} = Players.get_player(tournament, 101)
+  end
+
+  test "handles missing players and inactive tournament additions" do
+    tournament_id = System.unique_integer([:positive])
+
+    tournament = %{
+      type: "swiss",
+      state: "finished",
+      ranking_table: Ranking.create_table(tournament_id),
+      players_table: Players.create_table(tournament_id)
+    }
+
+    player = Player.new!(%{id: 20, name: "late", state: "active"})
+    assert ByUser.get_by_player(tournament, nil) == nil
+    assert ByUser.get_nearest_page_by_player(tournament, nil).page_number == 1
+    assert ByUser.get_nearest_page_by_player(tournament, player).page_number == 1
+    assert ByUser.add_new_player(tournament, player) == tournament
+    assert ByUser.update_player_result(tournament, player, 10) == tournament
   end
 
   test "set_ranking applies only current round delta to cumulative standings" do

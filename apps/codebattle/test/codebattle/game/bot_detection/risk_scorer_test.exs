@@ -327,6 +327,36 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
     end
   end
 
+  describe "individual LLM content signals" do
+    test "medium comment ratios and one GPT phrase are reported" do
+      code = %{
+        "comment_to_code_ratio" => 0.35,
+        "comment_lines" => 3,
+        "long_comment_lines" => 0,
+        "gpt_phrase_hits" => 1
+      }
+
+      result = score(%{}, code: code, final_length: 200, template_length: 100)
+
+      assert signal_present?(result, "high comment ratio")
+      assert signal_present?(result, "1 GPT-style phrase")
+    end
+
+    test "low comment ratios and no GPT phrases add no content signals" do
+      code = %{
+        comment_to_code_ratio: 0.1,
+        comment_lines: 1,
+        long_comment_lines: 0,
+        gpt_phrase_hits: 0
+      }
+
+      result = score(%{}, code: code, final_length: 200, template_length: 100)
+
+      refute signal_present?(result, "comment ratio")
+      refute signal_present?(result, "GPT-style phrase")
+    end
+  end
+
   # ──────────────────────────────────────────────────────────────────────
   # Tier 3 — typing-rhythm anomalies
   # ──────────────────────────────────────────────────────────────────────

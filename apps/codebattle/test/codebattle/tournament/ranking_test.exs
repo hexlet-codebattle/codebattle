@@ -15,15 +15,16 @@ defmodule Codebattle.Tournament.RankingTest do
           1 => Player.new!(%{id: 1, name: "late", wr_joined_at: 20, is_bot: false}),
           2 => Player.new!(%{id: 2, name: "placed", place: 1, is_bot: false}),
           3 => Player.new!(%{id: 3, name: "early", wr_joined_at: 10, is_bot: false}),
-          4 => Player.new!(%{id: 4, name: "bot", place: 2, is_bot: true})
+          4 => Player.new!(%{id: 4, name: "bot", place: 2, is_bot: true}),
+          5 => Player.new!(%{id: 5, name: "fallback", is_bot: false})
         }
       })
 
     page = Ranking.get_page(tournament, 1, 10)
 
-    assert page.total_entries == 3
-    assert Enum.map(page.entries, & &1.id) == [2, 3, 1]
-    assert Enum.map(page.entries, & &1.place) == [1, 2, 3]
+    assert page.total_entries == 4
+    assert Enum.map(page.entries, & &1.id) == [2, 3, 1, 5]
+    assert Enum.map(page.entries, & &1.place) == [1, 2, 3, 4]
     assert Ranking.get_first(tournament, 5) == []
     assert Ranking.get_by_player(tournament, hd(page.entries)) == nil
     assert Ranking.get_by_id(tournament, 2) == nil
@@ -32,6 +33,13 @@ defmodule Codebattle.Tournament.RankingTest do
              total_entries: 0,
              page_number: 1,
              page_size: 10,
+             entries: []
+           }
+
+    assert Ranking.get_page(%{tournament | ranking_type: "by_clan"}, 2, 3) == %{
+             total_entries: 0,
+             page_number: 2,
+             page_size: 3,
              entries: []
            }
   end
@@ -51,7 +59,7 @@ defmodule Codebattle.Tournament.RankingTest do
     Ranking.add_new_player(tournament, p2)
     Ranking.add_new_player(tournament, bot)
 
-    assert Enum.map(Ranking.get_first(tournament, 10), & &1.id) == [1, 2, 99]
+    assert Enum.map(Ranking.get_first(tournament, 10), & &1.id) == [1, 2]
     assert Ranking.get_by_player(tournament, p1).id == 1
     assert Ranking.get_by_id(tournament, 2).id == 2
 
@@ -123,6 +131,21 @@ defmodule Codebattle.Tournament.RankingTest do
 
     Ranking.add_new_player(tournament, Player.new!(%{id: 4, name: "p4", clan_id: 9, state: "active"}))
     assert Ranking.get_by_id(tournament, 9).players_count == 2
+
+    nil_clan = Player.new!(%{id: 5, name: "p5", clan_id: nil, state: "active"})
+    Tournament.Players.put_player(tournament, nil_clan)
+    Ranking.add_new_player(tournament, nil_clan)
+    assert Ranking.get_by_player(tournament, nil_clan).id == -1
+    assert Ranking.get_by_player(tournament, nil).id == -1
+
+    missing_clan = Player.new!(%{id: 6, name: "p6", clan_id: 11, state: "active"})
+    Ranking.update_player_result(tournament, missing_clan, 5)
+    assert Ranking.get_by_id(tournament, 11).score == 5
+
+    assert Ranking.get_nearest_page_by_player(tournament, nil).page_number == 1
+    assert Ranking.get_nearest_page_by_player(tournament, p1).page_number == 1
+    assert Ranking.get_nearest_page_by_player(tournament, %{clan_id: 999}).page_number == 1
+    assert Ranking.drop_player(tournament, p1.id) == nil
   end
 
   defp build_ets_tournament(attrs) do

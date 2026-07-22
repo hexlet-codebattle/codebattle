@@ -236,4 +236,57 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
              success_count: 0
            } == result
   end
+
+  test "maps executor failures before parsing container output" do
+    assert OutputParser.V2.call(%{execution_error: :timeout}) == %V2{status: "service_timeout"}
+
+    assert OutputParser.V2.call(%{execution_error: :connection_closed}) == %V2{
+             status: "service_failure",
+             output_error: ":connection_closed"
+           }
+  end
+
+  test "parses a single structured runtime error" do
+    task = insert(:task)
+
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "stack trace",
+        container_output: ~s({"type":"error","value":"undefined function"}),
+        exit_code: 0
+      })
+
+    assert result.status == "error"
+    assert result.exit_code == 0
+    assert result.output_error == "STDERR:\nundefined functionstack trace\n"
+  end
+
+  test "preserves undecodable output as a failed check" do
+    task = insert(:task, asserts: [%{arguments: [1], expected: 2}])
+
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "stderr",
+        container_output: "not json",
+        exit_code: 0
+      })
+
+    assert result.status == "failure"
+    assert result.asserts_count == 1
+    assert result.success_count == 0
+    assert result.asserts == []
+  end
+
+  test "safe_encode formats values used in assertion reports" do
+    assert OutputParser.V2.safe_encode("text") == ~s("text")
+    assert OutputParser.V2.safe_encode(nil) == "null"
+    assert OutputParser.V2.safe_encode(:ok) == "ok"
+    assert OutputParser.V2.safe_encode(3.5) == "3.5"
+    assert OutputParser.V2.safe_encode([1, "two"]) == ~s([1, "two"])
+    assert OutputParser.V2.safe_encode({:ok, 1}) == "{ok, 1}"
+    assert OutputParser.V2.safe_encode(%{a: 1}) == "{a: 1}"
+    assert OutputParser.V2.safe_encode(self()) =~ "#PID<"
+  end
 end

@@ -93,7 +93,7 @@ defmodule EctoMapSet do
     result =
       data
       |> reject_nonexecutable()
-      |> MapSet.new(data)
+      |> MapSet.new()
 
     {:ok, result}
   catch

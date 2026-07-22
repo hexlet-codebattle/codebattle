@@ -1,0 +1,22 @@
+{
+  "skip_files": [
+    "lib/codebattle/application.ex",
+    "lib/codebattle/(cluster|deployment|github_stars_cache|image_cache)\\.ex",
+    "lib/codebattle/auth/(discord|firebase|github)(_mock|_user)?\\.ex",
+    "lib/codebattle/bot/(chat_client|game_client|game_creator|playbook_player)\\.ex",
+    "lib/codebattle/code_check/executor/",
+    "lib/codebattle/(external_platform|external_platform_invite)(/|\\.ex)",
+    "lib/codebattle/group_tournament/(leaderboard_store|slice_runner)\\.ex",
+    "lib/codebattle/pub_sub(/|\\.ex)",
+    "lib/codebattle/tournament/simulator(/|\\.ex)",
+    "lib/codebattle/user_group_tournament/context\\.ex",
+    "lib/codebattle/(workers|utils)/",
+    "lib/codebattle/.*(server|supervisor|runner)\\.ex",
+    "lib/codebattle/.*/storage/",
+    "lib/codebattle_web/",
+    "lib/codebattle_web\\.ex",
+    "lib/mix/",
+    "lib/utils\\.ex",
+    "test/support/"
+  ]
+}

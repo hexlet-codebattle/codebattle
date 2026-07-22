@@ -61,10 +61,7 @@ defmodule Codebattle.GroupTournament.Scoring.DiagonalQuadratic do
     numerator = max_score * (r_max * r_max - r * r)
     denominator = r_max * r_max
 
-    case div_round_half_up(numerator, denominator) do
-      v when v < 0 -> 0
-      v -> v
-    end
+    div_round_half_up(numerator, denominator)
   end
 
   defp div_round_half_up(numerator, denominator) when denominator > 0 do

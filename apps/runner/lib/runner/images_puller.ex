@@ -22,8 +22,12 @@ defmodule Runner.ImagesPuller do
   end
 
   def handle_info(:start_pulling, _state) do
-    Images.Pull.run(:start)
+    pull_task().run(:start)
     Process.send_after(self(), :start_pulling, @timeout)
     {:noreply, %{}}
+  end
+
+  defp pull_task do
+    Application.get_env(:runner, :images_pull_task, Images.Pull)
   end
 end

@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
 import { decamelizeKeys, camelizeKeys } from 'humps';
 
 import TournamentForm from './TournamentForm';
+import { getBrowserTimezone } from './dateTime';
 
 interface TournamentResult {
   id: number;
@@ -33,6 +34,7 @@ function CreateTournament({
 }: CreateTournamentProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const browserTimezone = useMemo(() => getBrowserTimezone(userTimezone), [userTimezone]);
 
   const handleSubmit = useCallback(
     async (formData: Record<string, unknown>) => {
@@ -43,7 +45,7 @@ function CreateTournament({
         const payload = {
           tournament: {
             ...formData,
-            user_timezone: userTimezone,
+            user_timezone: browserTimezone,
           },
         };
 
@@ -90,7 +92,7 @@ function CreateTournament({
         }
       }
     },
-    [userTimezone, onSuccess],
+    [browserTimezone, onSuccess],
   );
 
   const handleValidate = useCallback(async () => {
@@ -110,7 +112,7 @@ function CreateTournament({
             isSubmitting={isSubmitting}
             submitButtonText="Create Tournament"
             taskPackNames={taskPackNames}
-            userTimezone={userTimezone}
+            userTimezone={browserTimezone}
             showCancelButton
             cancelButtonText="Back"
             onCancel={() => {

@@ -6,6 +6,12 @@ defmodule Codebattle.CodeCheck.CheckerTest.ExecutorStub do
   end
 end
 
+defmodule Codebattle.CodeCheck.CheckerTest.TimeoutExecutorStub do
+  @moduledoc false
+
+  def call(token), do: %{token | execution_error: :timeout}
+end
+
 defmodule Codebattle.CodeCheck.CheckerTest do
   use Codebattle.DataCase, async: false
 
@@ -32,5 +38,15 @@ defmodule Codebattle.CodeCheck.CheckerTest do
 
     assert %V2{status: "service_failure"} =
              Checker.call(task, "any_solution", "js", %{game_id: 1, user_id: 1})
+  end
+
+  test "handles timeout descriptions and calls without game telemetry metadata" do
+    task = insert(:task)
+    Application.put_env(:codebattle, :checker_executor, Codebattle.CodeCheck.CheckerTest.TimeoutExecutorStub)
+
+    assert %V2{status: "service_timeout"} =
+             Checker.call(task, "any_solution", "js", %{game_id: 1, user_id: 1})
+
+    assert %V2{status: "service_timeout"} = Checker.call(task, "any_solution", "js")
   end
 end

@@ -68,5 +68,32 @@ defmodule Codebattle.User.ScopeTest do
       assert result.id == user.id
       assert result.rating == 2400
     end
+
+    test "supports identity matching, bot inclusion, empty searches, and every sort key" do
+      first = insert(:user, name: "scope-first", email: "first@scope.test", rank: 2, points: 5, rating: 10)
+      second = insert(:user, name: "scope-second", email: "second@scope.test", rank: 1, points: 10, rating: 20)
+      bot = insert(:user, name: "scope-bot", is_bot: true, rank: 3, points: 1, rating: 30)
+      game = insert(:game)
+      insert(:user_game, user: second, game: game)
+
+      matches = Codebattle.User |> Scope.by_email_or_name(%{name: "missing", email: first.email}) |> Repo.all()
+      assert Enum.map(matches, & &1.id) == [first.id]
+
+      empty_search = %{"q" => %{"name_ilike" => ""}} |> Scope.list_users() |> Repo.all()
+      assert Enum.any?(empty_search, &(&1.id == first.id))
+
+      with_bots = %{"with_bots" => "true", "s" => "id+asc"} |> Scope.list_users() |> Repo.all()
+      assert Enum.any?(with_bots, &(&1.id == bot.id))
+
+      assert [ranked | _] = %{"s" => "rank+asc"} |> Scope.list_users() |> Repo.all()
+      assert ranked.id == second.id
+      assert [pointed | _] = %{"s" => "points+desc"} |> Scope.list_users() |> Repo.all()
+      assert pointed.id == second.id
+      assert [played | _] = %{"s" => "games_played+desc"} |> Scope.list_users() |> Repo.all()
+      assert played.id == second.id
+
+      assert [fallback | _] = %{"s" => "unsupported+direction"} |> Scope.list_users() |> Repo.all()
+      assert fallback.id == second.id
+    end
   end
 end

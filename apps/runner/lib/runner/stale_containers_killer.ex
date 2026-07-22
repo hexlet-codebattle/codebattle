@@ -36,7 +36,7 @@ defmodule Runner.StaleContainersKiller do
   end
 
   def kill_game_container(container_id) do
-    System.cmd("podman", ["rm", "-f", container_id])
+    command_runner().cmd("podman", ["rm", "-f", container_id])
   end
 
   def pull_game_info(game) do
@@ -46,7 +46,7 @@ defmodule Runner.StaleContainersKiller do
 
   def list_containers do
     {containers, _} =
-      System.cmd("podman", [
+      command_runner().cmd("podman", [
         "ps",
         "-a",
         "--filter",
@@ -58,5 +58,9 @@ defmodule Runner.StaleContainersKiller do
     containers
     |> String.split("\n", trim: true)
     |> Enum.map(&pull_game_info/1)
+  end
+
+  defp command_runner do
+    Application.get_env(:runner, :command_runner, System)
   end
 end

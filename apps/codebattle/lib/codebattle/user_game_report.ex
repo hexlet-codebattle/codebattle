@@ -81,19 +81,13 @@ defmodule Codebattle.UserGameReport do
     |> Repo.all()
   end
 
-  def apply_filters(query, [:limit, limit] = opts) do
-    query
-    |> limit(^limit)
-    |> apply_filters(Keyword.delete(opts, :limit))
+  def apply_filters(query, opts) do
+    Enum.reduce(opts, query, fn
+      {:limit, value}, acc -> limit(acc, ^value)
+      {:offset, value}, acc -> offset(acc, ^value)
+      _unknown, acc -> acc
+    end)
   end
-
-  def apply_filters(query, [:offset, offset] = opts) do
-    query
-    |> offset(^offset)
-    |> apply_filters(Keyword.delete(opts, :offset))
-  end
-
-  def apply_filters(query, _opts), do: query
 
   def create(params) do
     result =

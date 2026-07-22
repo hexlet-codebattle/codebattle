@@ -287,6 +287,66 @@ defmodule Codebattle.Tournament.LadderTest do
       assert Ladder.round_timeout_seconds(tournament) == 60
       assert Ladder.final_deadline_seconds(tournament) == 80
     end
+
+    test "uses safe timeout fallbacks when configuration or tasks are absent" do
+      tournament =
+        build_live_tournament(%{
+          round_timeout_seconds: nil,
+          timeout_mode: "per_task",
+          task_ids: []
+        })
+
+      assert Ladder.final_deadline_seconds(tournament) == 60
+      assert Ladder.round_timeout_seconds(%{tournament | timeout_mode: "per_round_fixed"}) == nil
+      assert Ladder.final_deadline_seconds(%{tournament | timeout_mode: "per_round_fixed"}) == 60
+    end
+  end
+
+  test "exposes no-op callbacks and broadcasts ladder wait states" do
+    active = build_live_tournament(%{rounds_limit: 2, current_round_position: 0})
+    final = %{active | current_round_position: 1}
+
+    assert Ladder.game_type() == "duo"
+    assert Ladder.complete_players(active) == active
+    assert Ladder.reset_meta(%{key: :value}) == %{key: :value}
+    assert Ladder.calculate_round_results(active) == active
+    assert Ladder.maybe_finish_round_after_finish_match(active) == active
+
+    Codebattle.PubSub.subscribe("game:101")
+    assert Ladder.maybe_create_rematch(active, %{game_id: 101}) == active
+    assert_receive %Message{event: "tournament:game:wait", payload: %{type: "round"}}
+
+    Codebattle.PubSub.subscribe("game:102")
+    assert Ladder.maybe_create_rematch(final, %{game_id: 102}) == final
+    assert_receive %Message{event: "tournament:game:wait", payload: %{type: "tournament"}}
+  end
+
+  test "handles missing task metadata, bots, and marked cheaters while scoring" do
+    tournament =
+      build_live_tournament(%{
+        cheater_ids: [1],
+        round_timeout_seconds: 10,
+        task_ids: []
+      })
+
+    match = %Match{task_id: -1, player_ids: [-1, 1, 2]}
+
+    results =
+      Ladder.prepare_match_player_results(tournament, match, %{
+        game_state: "game_over",
+        duration_sec: nil,
+        player_results: %{
+          -1 => %{result: "lost", result_percent: 0},
+          1 => %{result: "won", result_percent: 100},
+          2 => %{result: "lost", result_percent: 50}
+        }
+      })
+
+    assert results[-1] == %{result: "lost", result_percent: 0}
+    assert results[1].score == 0
+    assert results[1].score_factor == 0.0
+    assert results[2].score == 0
+    assert results[2].score_factor == 1.0
   end
 
   describe "server matchmaking tick" do

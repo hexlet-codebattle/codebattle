@@ -16,6 +16,10 @@ defmodule Codebattle.GroupTournament.ScoringTest do
       assert Scoring.resolve("global_linear") == Scoring.GlobalLinear
     end
 
+    test "flat_linear" do
+      assert Scoring.resolve("flat_linear") == Scoring.FlatLinear
+    end
+
     test "nil and empty default to diagonal_quadratic" do
       assert Scoring.resolve(nil) == Scoring.DiagonalQuadratic
       assert Scoring.resolve("") == Scoring.DiagonalQuadratic
@@ -34,6 +38,8 @@ defmodule Codebattle.GroupTournament.ScoringTest do
       assert Scoring.round_points("diagonal_quadratic", 0, 1, opts) == 1000
       assert Scoring.round_points("diagonal_linear", 0, 1, opts) == 1000
       assert Scoring.round_points("global_linear", 0, 1, opts) == 1000
+      assert Scoring.round_points("flat_linear", 0, 1, opts) == 1000
+      assert Scoring.max_tournament_score("flat_linear", 3, opts) == 3000
     end
   end
 

@@ -59,7 +59,7 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   @spec add_new_player(Tournament.t(), Tournament.Player.t()) :: Tournament.t()
-  def add_new_player(tournament, %{is_bot: true}, _score), do: tournament
+  def add_new_player(tournament, %{is_bot: true}), do: tournament
 
   def add_new_player(tournament, player) do
     get_module(tournament).add_new_player(tournament, player)

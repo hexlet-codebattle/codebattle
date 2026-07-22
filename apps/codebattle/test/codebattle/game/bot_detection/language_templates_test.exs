@@ -16,6 +16,10 @@ defmodule Codebattle.Game.BotDetection.LanguageTemplatesTest do
       assert LanguageTemplates.length_for("not_a_real_language_lol") == 0
     end
 
+    test "returns 0 for a known runtime language without a solution template" do
+      assert LanguageTemplates.length_for("css") == 0
+    end
+
     test "returns 0 for non-string input" do
       assert LanguageTemplates.length_for(123) == 0
       assert LanguageTemplates.length_for(%{}) == 0

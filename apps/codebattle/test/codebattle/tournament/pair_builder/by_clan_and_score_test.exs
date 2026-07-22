@@ -4,6 +4,10 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
   @matcher Codebattle.Tournament.PairBuilder.ByClanAndScore
 
   describe "call/1" do
+    test "empty list" do
+      assert @matcher.call([]) == {[], []}
+    end
+
     test "one player" do
       users = build_users([1])
 
@@ -20,6 +24,15 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
 
       assert length(pairs) == 1
       assert Enum.empty?(unmatched_player_ids)
+    end
+
+    test "two players from the same clan remain unmatched" do
+      assert @matcher.call([{1, 7, 20}, {2, 7, 10}]) == {[], [1, 2]}
+    end
+
+    test "players remain unmatched when no other clan is available" do
+      assert {[], unmatched} = @matcher.call([{1, 7, 30}, {2, 7, 20}, {3, 7, 10}])
+      assert Enum.sort(unmatched) == [1, 2, 3]
     end
 
     test "simple case with 6,4,4 players linear score" do

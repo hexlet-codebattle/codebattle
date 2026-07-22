@@ -37,4 +37,8 @@ defmodule Runner.AssertsGeneratorTest do
     # |> Enum.each(fn lang_meta ->
     # end)
   end
+
+  test "does not generate asserts for ruby" do
+    assert AssertsGenerator.call(%Runner.Task{}, Languages.meta("ruby")) == :runner
+  end
 end

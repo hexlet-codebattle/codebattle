@@ -143,6 +143,57 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
     assert_receive {:request, "POST", "/code-assist-workplaces/release-bulk", ~s({"user_ids":["platform-user-id"]})}
   end
 
+  test "manages local records and tokens without provisioning" do
+    tournament = insert(:group_tournament, run_on_external_platform: false)
+    user = insert(:user)
+
+    assert Context.get(user.id, tournament.id) == nil
+    assert {:ok, record} = Context.ensure_external_setup(user, tournament)
+    assert Context.get(user.id, tournament.id).id == record.id
+    assert Context.get_latest_for_user(user.id).id == record.id
+    assert Enum.map(Context.list_users(tournament.id), & &1.id) == [record.id]
+
+    assert {:ok, token_record} = Context.get_or_create_token(tournament, user.id)
+    assert is_binary(token_record.token)
+    assert {:ok, same_record} = Context.get_or_create_token(tournament.id, user.id)
+    assert same_record.token == token_record.token
+    assert Context.get_token_by_value("  #{token_record.token}  ").id == record.id
+    assert Context.get_token_by_value(nil) == nil
+
+    assert {:ok, rotated} = Context.create_or_rotate_token(tournament, user.id)
+    assert rotated.token != token_record.token
+    assert Enum.map(Context.list_tokens(tournament, limit: 1), & &1.id) == [record.id]
+  end
+
+  test "creates token records directly and fills a missing token" do
+    tournament = insert(:group_tournament)
+    first = insert(:user)
+    second = insert(:user)
+
+    assert {:ok, created} = Context.create_or_rotate_token(tournament.id, first.id)
+    assert is_binary(created.token)
+
+    tokenless =
+      insert_user_group_tournament(second, tournament, %{
+        token: nil,
+        workplace_state: "pending",
+        release_state: "pending"
+      })
+
+    assert {:ok, filled} = Context.get_or_create_token(tournament.id, second.id)
+    assert filled.id == tokenless.id
+    assert is_binary(filled.token)
+  end
+
+  test "get_or_create returns an existing local record" do
+    tournament = insert(:group_tournament, run_on_external_platform: false)
+    user = insert(:user)
+    existing = insert_user_group_tournament(user, tournament, %{})
+
+    assert Context.get_or_create(user, tournament).id == existing.id
+    assert Context.repo_slug_for(nil, tournament) == tournament.slug
+  end
+
   defp insert_user_group_tournament(user, group_tournament, attrs) do
     %UserGroupTournament{}
     |> UserGroupTournament.changeset(

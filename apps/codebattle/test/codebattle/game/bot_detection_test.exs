@@ -77,6 +77,24 @@ defmodule Codebattle.Game.BotDetectionTest do
                &String.contains?(&1, "looks programmatic")
              )
     end
+
+    test "ignores bot, guest, and unidentified players" do
+      user = insert(:user)
+      bot = insert(:user, is_bot: true)
+      guest = build(:user, id: -100, is_guest: true)
+      unidentified = build(:user, id: nil)
+
+      assert {:ok, game} =
+               Context.create_game(%{
+                 state: "playing",
+                 players: [user, bot, guest, unidentified],
+                 level: "easy",
+                 mode: "training"
+               })
+
+      assert {:ok, [analysis]} = BotDetection.analyze_game(game.id)
+      assert analysis.user_id == user.id
+    end
   end
 
   describe "analyze_and_persist/1 + list_reports/1" do
@@ -103,6 +121,28 @@ defmodule Codebattle.Game.BotDetectionTest do
       assert {:ok, [first, _]} = BotDetection.analyze_and_persist(game.id)
       assert {:ok, [second, _]} = BotDetection.analyze_and_persist(game.id)
       assert first.id == second.id
+    end
+
+    test "skips analyses for missing or bot users and reports persistence errors", %{game: game, user1: user} do
+      base = %Analysis{
+        game_id: game.id,
+        score: 0,
+        level: :none,
+        signals: [],
+        stats: %{},
+        code_analysis: %{},
+        final_length: 0,
+        template_length: 0,
+        effective_added_length: 0
+      }
+
+      bot = insert(:user, is_bot: true)
+      assert {:ok, []} = BotDetection.persist_analyses([%{base | user_id: -1}, %{base | user_id: bot.id}])
+
+      assert {:error, changeset} =
+               BotDetection.persist_analyses([%{base | game_id: -1, user_id: user.id}])
+
+      refute changeset.valid?
     end
   end
 
@@ -144,6 +184,29 @@ defmodule Codebattle.Game.BotDetectionTest do
       assert fresh_for_user.level == cached_for_user.level
       assert fresh_for_user.signals == cached_for_user.signals
     end
+
+    test "gets a report by string id and converts every stored risk level", %{game: game, user1: user} do
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+      assert BotDetection.get_report(to_string(game.id), user.id).user_id == user.id
+
+      for {stored, expected} <- [{"high", :high}, {"medium", :medium}, {"low", :low}, {"unknown", :none}] do
+        report = %PlayerReport{
+          game_id: game.id,
+          user_id: user.id,
+          level: stored,
+          score: 1,
+          signals: nil,
+          stats: nil,
+          code_analysis: nil
+        }
+
+        analysis = BotDetection.report_to_analysis(report)
+        assert analysis.level == expected
+        assert analysis.signals == []
+        assert analysis.stats == nil
+        assert analysis.code_analysis == nil
+      end
+    end
   end
 
   describe "schedule_analysis/2 + Worker" do
@@ -183,6 +246,7 @@ defmodule Codebattle.Game.BotDetectionTest do
     test "is fire-and-forget — never raises on bad input" do
       # Bogus id — worker discards. Helper still returns :ok.
       assert :ok = BotDetection.schedule_analysis_after_game(999_999_999)
+      assert :ok = BotDetection.schedule_analysis_after_game("not-an-integer")
     end
   end
 

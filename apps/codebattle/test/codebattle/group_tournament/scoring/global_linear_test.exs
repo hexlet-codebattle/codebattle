@@ -87,5 +87,11 @@ defmodule Codebattle.GroupTournament.Scoring.GlobalLinearTest do
     test "max_score = 0 → always 0" do
       assert GlobalLinear.round_points(0, 1, opts(%{max_score: 0})) == 0
     end
+
+    test "maximum tournament score clamps negative inputs" do
+      assert GlobalLinear.max_tournament_score(5, opts()) == 5000
+      assert GlobalLinear.max_tournament_score(-1, opts()) == 0
+      assert GlobalLinear.max_tournament_score(5, opts(%{max_score: -1})) == 0
+    end
   end
 end

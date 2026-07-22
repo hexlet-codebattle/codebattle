@@ -29,9 +29,13 @@ defmodule Runner.SystemMonitorLogger do
   end
 
   def get_cpu do
-    @cpu_cmd |> :os.cmd() |> to_string() |> String.trim() |> String.to_integer()
+    @cpu_cmd |> command_runner().cmd() |> to_string() |> String.trim() |> String.to_integer()
   rescue
     _e ->
       0
+  end
+
+  defp command_runner do
+    Application.get_env(:runner, :os_command_runner, :os)
   end
 end

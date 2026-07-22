@@ -2,6 +2,7 @@ defmodule Runner.CheckerGeneratorTest do
   use Codebattle.DataCase, async: true
 
   alias Runner.CheckerGenerator
+  alias Runner.CheckerGenerator.V2
   alias Runner.Languages
 
   test "work for all langs" do
@@ -56,5 +57,30 @@ defmodule Runner.CheckerGeneratorTest do
     |> Enum.each(fn lang_meta ->
       assert CheckerGenerator.call(task, lang_meta, "123")
     end)
+  end
+
+  test "renders empty hashes and false booleans" do
+    task = %Runner.Task{
+      asserts: [%{arguments: [%{}, false], expected: false}],
+      input_signature: [
+        %{argument_name: "values", type: %{name: "hash", nested: %{name: "integer"}}},
+        %{argument_name: "enabled", type: %{name: "boolean"}}
+      ],
+      output_signature: %{type: %{name: "boolean"}}
+    }
+
+    lang_meta = Languages.meta("dart")
+    checker = CheckerGenerator.call(task, lang_meta, "seed")
+
+    assert checker =~ "{}"
+    assert checker =~ "false"
+  end
+
+  test "version 2 languages use their image-provided runner" do
+    task = %Runner.Task{asserts: [%{arguments: [1], expected: 2}]}
+    meta = Languages.meta("ruby")
+
+    assert V2.call(task, meta) == :runner
+    assert CheckerGenerator.call(task, meta, "unused-seed") == :runner
   end
 end
