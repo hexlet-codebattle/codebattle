@@ -7,9 +7,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
     user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
 
-    conn1 = put_session(conn, :user_id, user1.id)
-    conn2 = put_session(conn, :user_id, user2.id)
-    conn3 = put_session(conn, :user_id, user3.id)
+    conn1 = log_in_user(conn, user1.id)
+    conn2 = log_in_user(conn, user2.id)
+    conn3 = log_in_user(conn, user3.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})

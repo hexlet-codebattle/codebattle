@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Api.V1.FeedbackControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, u1.id)
+        |> log_in_user(u1.id)
         |> get(Routes.api_v1_feedback_path(conn, :index))
         |> json_response(200)
 
@@ -52,7 +52,7 @@ defmodule CodebattleWeb.Api.V1.FeedbackControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, u1.id)
+        |> log_in_user(u1.id)
         |> post(Routes.api_v1_feedback_path(conn, :index), params)
         |> json_response(201)
 

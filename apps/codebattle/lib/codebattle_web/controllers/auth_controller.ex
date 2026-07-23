@@ -5,6 +5,7 @@ defmodule CodebattleWeb.AuthController do
   alias Codebattle.Auth.Discord
   alias Codebattle.Auth.External
   alias Codebattle.Auth.Github
+  alias CodebattleWeb.UserAuth
 
   require Logger
 
@@ -14,9 +15,8 @@ defmodule CodebattleWeb.AuthController do
     case Codebattle.Auth.User.find_by_token(token) do
       {:ok, user} ->
         conn
-        |> configure_session(renew: true)
+        |> UserAuth.log_in_user(user)
         |> put_flash(:info, gettext("Successfully authenticated"))
-        |> put_session(:user_id, user.id)
         |> redirect(to: "/")
 
       {:error, reason} ->
@@ -85,9 +85,8 @@ defmodule CodebattleWeb.AuthController do
     case case_result do
       {:ok, user} ->
         conn
-        |> configure_session(renew: true)
+        |> UserAuth.log_in_user(user)
         |> put_flash(:info, gettext("Successfully authenticated"))
-        |> put_session(:user_id, user.id)
         |> redirect(to: next_path)
 
       {:error, reason} ->

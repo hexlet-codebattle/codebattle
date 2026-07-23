@@ -160,7 +160,7 @@ function PlayersRankingPanel({
   };
 
   const handleKickPlayer = (player: RankingItem) => {
-    if (!window.confirm(i18next.t('Kick {{name}} from tournament?', { name: player.name }))) {
+    if (!window.confirm(i18next.t('Kick %{name} from tournament?', { name: player.name }))) {
       return;
     }
 

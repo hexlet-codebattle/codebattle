@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Integration.Game.TimeoutTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    conn2 = put_session(conn, :user_id, user2.id)
+    conn2 = log_in_user(conn, user2.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})

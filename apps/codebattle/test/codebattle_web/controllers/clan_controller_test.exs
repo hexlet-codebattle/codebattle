@@ -4,7 +4,7 @@ defmodule CodebattleWeb.ClanControllerTest do
   alias Codebattle.Clan
 
   defp signed_conn(conn, user) do
-    put_session(conn, :user_id, user.id)
+    log_in_user(conn, user.id)
   end
 
   defp position(html, value) do

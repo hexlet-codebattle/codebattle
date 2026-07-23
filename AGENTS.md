@@ -40,6 +40,8 @@ For frontend-only tasks in `apps/codebattle/`:
 - Naming: descriptive Elixir modules; `camelCase`/`PascalCase` for JS files and components.
 
 ## Testing Guidelines
+- Use `make test` as the canonical final repository test command; do not substitute a direct `mix test` run.
+- Run `mix credo --strict` and `mix dialyzer` as part of the final repository verification.
 - ExUnit tests live in `apps/*/test/`; coverage uses ExCoveralls with a 60% threshold.
 - Frontend tests use Jest in `apps/codebattle/`.
 - Name tests after the module/component under test (e.g., `user_stats_test.exs`, `UserStats.test.jsx`).

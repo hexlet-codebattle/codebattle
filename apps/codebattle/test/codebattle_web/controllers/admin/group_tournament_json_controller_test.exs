@@ -40,7 +40,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentJsonControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, admin.id)
+        |> log_in_user(admin.id)
         |> get("/admin/group_tournaments/#{gt.id}/history.json")
 
       assert response_content_type(conn, :json)
@@ -57,7 +57,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentJsonControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, admin.id)
+        |> log_in_user(admin.id)
         |> get("/admin/group_tournaments/#{gt.id}/history.json")
 
       assert json_response(conn, 200) == %{"who" => "newer"}
@@ -113,7 +113,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentJsonControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, admin.id)
+        |> log_in_user(admin.id)
         |> get("/admin/group_tournaments/#{gt.id}/history.json")
 
       assert json_response(conn, 404) == %{"error" => "NOT_FOUND"}
@@ -127,7 +127,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentJsonControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, admin.id)
+        |> log_in_user(admin.id)
         |> get("/admin/group_tournaments/#{gt.id}/history.json")
 
       assert conn |> get_resp_header("content-disposition") |> hd() =~ "attachment;"

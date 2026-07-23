@@ -93,7 +93,7 @@ defmodule CodebattleWeb.GameControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, current_user.id)
+        |> log_in_user(current_user.id)
         |> get(Routes.game_path(conn, :show, game.id))
 
       assert html_response(conn, 200)
@@ -133,13 +133,41 @@ defmodule CodebattleWeb.GameControllerTest do
         Game.Context.create_game(%{state: "waiting_opponent", players: users, task: task})
 
       conn
-      |> put_session(:user_id, user1.id)
+      |> log_in_user(user1.id)
       |> delete(Routes.game_path(conn, :delete, game.id))
       |> html_response(302)
 
       updated = Game.Context.get_game!(game.id)
       assert updated.is_live == false
       assert updated.state == "canceled"
+    end
+  end
+
+  describe "POST /games/create_by_task" do
+    test "keeps the training game in the lobby snapshot after returning home", %{conn: conn} do
+      user = insert(:user)
+      task = insert(:task, state: "active", visibility: "public")
+      conn = log_in_user(conn, user.id)
+
+      create_conn =
+        post(conn, Routes.game_path(conn, :create_by_task), %{
+          "task_id" => task.id
+        })
+
+      %{"game_id" => game_id} = json_response(create_conn, 200)
+      on_exit(fn -> Game.Context.terminate_game(game_id) end)
+
+      assert {:ok, game} = Game.Context.fetch_game(game_id)
+      assert game.mode == "standard"
+      assert game.is_bot
+      assert game.use_chat
+      assert game.visibility_type == "hidden"
+      assert game.task.id == task.id
+
+      lobby_conn = get(conn, Routes.root_path(conn, :index))
+
+      assert %{"active_games" => active_games} = inertia_props(lobby_conn)
+      assert Enum.any?(active_games, &(&1.id == game_id))
     end
   end
 
@@ -153,7 +181,7 @@ defmodule CodebattleWeb.GameControllerTest do
         Game.Context.create_game(%{state: "waiting_opponent", players: [user1], task: task})
 
       conn
-      |> put_session(:user_id, user2.id)
+      |> log_in_user(user2.id)
       |> post(Routes.game_path(conn, :join, game.id))
       |> html_response(302)
 

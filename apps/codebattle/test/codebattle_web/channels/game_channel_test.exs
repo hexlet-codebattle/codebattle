@@ -17,13 +17,13 @@ defmodule CodebattleWeb.GameChannelTest do
     spectator = insert(:admin)
     insert(:task, level: "easy")
 
-    user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    user_token1 = user_socket_token(user1)
     {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
 
-    user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    user_token2 = user_socket_token(user2)
     {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
-    spectator_token = Phoenix.Token.sign(socket(UserSocket), "user_token", spectator.id)
+    spectator_token = user_socket_token(spectator)
     {:ok, spectator_socket} = connect(UserSocket, %{"token" => spectator_token})
 
     {:ok,

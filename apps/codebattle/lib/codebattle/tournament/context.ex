@@ -228,7 +228,12 @@ defmodule Codebattle.Tournament.Context do
               t.starts_at <= ^datetime_to and
               (t.creator_id == ^user_id or
                  fragment("? = ANY(?)", ^user_id, t.winner_ids) or
-                 fragment("? = ANY(?)", ^user_id, t.moderator_ids))
+                 fragment("? = ANY(?)", ^user_id, t.moderator_ids) or
+                 fragment(
+                   "((? #>> '{}')::jsonb) \\? ?",
+                   t.players,
+                   ^Integer.to_string(user_id)
+                 ))
         )
       )
     end

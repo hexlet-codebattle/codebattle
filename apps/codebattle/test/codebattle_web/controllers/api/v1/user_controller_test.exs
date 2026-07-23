@@ -424,7 +424,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_user_path(conn, :current))
 
       resp_body = json_response(conn, 200)

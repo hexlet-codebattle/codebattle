@@ -23,7 +23,7 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.api_v1_activity_path(conn, :show, user.id))
 
     response = json_response(conn, 200)
@@ -54,7 +54,7 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.api_v1_activity_path(conn, :show, user.id, year: selected_year))
 
     response = json_response(conn, 200)
@@ -85,7 +85,7 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.api_v1_activity_path(conn, :show, user.id, year: current_year))
 
     response = json_response(conn, 200)

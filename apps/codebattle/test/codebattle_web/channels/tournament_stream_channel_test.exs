@@ -25,7 +25,7 @@ defmodule CodebattleWeb.TournamentStreamChannelTest do
   end
 
   defp connect_user(user) do
-    token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    token = user_socket_token(user)
     {:ok, socket} = connect(UserSocket, %{"token" => token})
     socket
   end

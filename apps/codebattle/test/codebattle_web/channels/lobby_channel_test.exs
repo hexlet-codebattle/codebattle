@@ -17,7 +17,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     insert(:user_game, user: user, creator: false, game: game, result: "won")
     insert(:user_game, user: user, creator: true, game: game, result: "gave_up")
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    user_token = user_socket_token(user)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
     {:ok, %{winner: user, socket: socket, task: task}}
@@ -39,7 +39,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   test "creates game with other users" do
     user = insert(:user)
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    user_token = user_socket_token(user)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
@@ -68,7 +68,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   test "creates game with bot" do
     user = insert(:user)
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    user_token = user_socket_token(user)
     insert(:task, level: "elementary", name: "2")
 
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
@@ -97,7 +97,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     insert(:task, level: "elementary", name: "2")
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    user_token = user_socket_token(user1)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
@@ -115,7 +115,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "1"
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    user_token = user_socket_token(user2)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
@@ -152,7 +152,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     insert(:task, level: "elementary", name: "2")
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    user_token = user_socket_token(user1)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
@@ -171,7 +171,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "1"
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    user_token = user_socket_token(user2)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
@@ -191,7 +191,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "2"
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user3.id)
+    user_token = user_socket_token(user3)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 

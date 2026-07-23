@@ -245,7 +245,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         {:ok, token_record} = UserGroupTournamentContext.get_or_create_token(ugt.group_tournament, user.id)
         token_value = token_record.token
 
-        result = ExternalPlatform.upsert_secret(org_slug, repo_slug, secret_key, token_value, secret_group: secret_group)
+        result =
+          ExternalPlatform.upsert_secret(org_slug, repo_slug, secret_key, token_value, secret_group: secret_group)
 
         ugt = update_ugt_from_result(ugt, :secret, result)
 

@@ -21,7 +21,7 @@ defmodule CodebattleWeb.Admin.GroupTaskControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/group_tasks")
 
     assert html_response(conn, 200) =~ "Group Tasks"
@@ -33,7 +33,7 @@ defmodule CodebattleWeb.Admin.GroupTaskControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> post("/admin/group_tasks", %{
         "group_task" => %{"slug" => "spring-final", "time_to_solve_sec" => "900"}
       })
@@ -52,7 +52,7 @@ defmodule CodebattleWeb.Admin.GroupTaskControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> delete("/admin/group_tasks/#{group_task.id}/solutions/#{solution.id}")
 
     assert redirected_to(conn) == "/admin/group_tasks/#{group_task.id}"
@@ -67,7 +67,7 @@ defmodule CodebattleWeb.Admin.GroupTaskControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> patch("/admin/group_tasks/#{group_task.id}/solutions/#{solution.id}", %{
         "group_task_solution" => %{
           "lang" => "python",

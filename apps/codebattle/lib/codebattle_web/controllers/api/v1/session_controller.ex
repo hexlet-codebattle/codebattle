@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.Api.V1.SessionController do
   use CodebattleWeb, :controller
 
+  alias CodebattleWeb.UserAuth
+
   def create(conn, params) do
     user_attrs = %{
       email: params["email"],
@@ -10,8 +12,7 @@ defmodule CodebattleWeb.Api.V1.SessionController do
     case Codebattle.Auth.User.find_by_firebase(user_attrs) do
       {:ok, user} ->
         conn
-        |> configure_session(renew: true)
-        |> put_session(:user_id, user.id)
+        |> UserAuth.log_in_user(user)
         |> json(%{status: :created})
 
       {:error, reason} ->

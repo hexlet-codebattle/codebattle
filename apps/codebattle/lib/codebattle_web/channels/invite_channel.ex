@@ -97,6 +97,23 @@ defmodule CodebattleWeb.InviteChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+
+      {:error, reason, invite} ->
+        data = invite_payload(invite, user_id)
+
+        broadcast_invite(
+          "invites:#{invite.creator_id}",
+          "invites:dropped",
+          %{invite: data}
+        )
+
+        broadcast_invite(
+          "invites:#{invite.recipient_id}",
+          "invites:dropped",
+          %{invite: data}
+        )
+
+        {:reply, {:error, %{reason: reason, invite: data}}, socket}
     end
   end
 
@@ -193,6 +210,20 @@ defmodule CodebattleWeb.InviteChannel do
       {:error, reason} ->
         {:error, %{reason: reason}}
     end
+  end
+
+  defp invite_payload(invite, executor_id) do
+    %{
+      state: invite.state,
+      id: invite.id,
+      game_id: invite.game_id,
+      game_params: invite.game_params,
+      creator_id: invite.creator_id,
+      recipient_id: invite.recipient_id,
+      executor_id: executor_id,
+      creator: invite.creator,
+      recipient: invite.recipient
+    }
   end
 
   defp broadcast_invite(topic, event, payload) do

@@ -10,6 +10,7 @@ defmodule Codebattle.User do
   alias Codebattle.Clan
   alias Codebattle.Repo
   alias Codebattle.User.SoundSettings
+  alias Codebattle.UserSession
 
   @type t :: %__MODULE__{}
   @type raw_id :: String.t() | integer()
@@ -52,6 +53,7 @@ defmodule Codebattle.User do
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
     has_many(:achievements, Codebattle.UserAchievement)
+    has_many(:sessions, UserSession)
 
     field(:auth_token, :string)
     field(:avatar_url, :string)
@@ -87,7 +89,10 @@ defmodule Codebattle.User do
     field(:timezone, :string, default: "Etc/UTC")
 
     field(:games_played, :integer, virtual: true)
+    field(:current_password, :string, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)
+    field(:password, :string, virtual: true)
+    field(:password_confirmation, :string, virtual: true)
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -147,6 +152,49 @@ defmodule Codebattle.User do
     |> validate_length(:name, min: 2, max: 39)
     |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, user.id)
+  end
+
+  def password_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:current_password, :password, :password_confirmation])
+    |> validate_required([:current_password, :password, :password_confirmation])
+    |> validate_length(:password, min: 12, message: "should be at least 12 character(s)")
+    |> validate_password_byte_length()
+    |> validate_confirmation(:password)
+    |> validate_current_password()
+    |> put_password_hash()
+  end
+
+  def update_password(user, current_session, params, session_attrs) do
+    fn ->
+      with {:user, {:ok, updated_user}} <-
+             {:user, Repo.update(password_changeset(user, params))},
+           {:sessions, {:ok, session_data}} <-
+             {:sessions,
+              UserSession.renew_current_and_revoke_others(
+                Repo,
+                updated_user,
+                current_session,
+                session_attrs
+              )} do
+        {updated_user, session_data}
+      else
+        {:user, {:error, changeset}} -> Repo.rollback({:user, changeset})
+        {:sessions, {:error, reason}} -> Repo.rollback({:sessions, reason})
+      end
+    end
+    |> Repo.transaction()
+    |> case do
+      {:ok, {updated_user, session_data}} ->
+        UserSession.disconnect_many(session_data.revoked_session_ids)
+        {:ok, updated_user, session_data}
+
+      {:error, {:user, %Ecto.Changeset{} = changeset}} ->
+        {:error, changeset}
+
+      {:error, {:sessions, reason}} ->
+        {:error, reason}
+    end
   end
 
   def token_changeset(user, params \\ %{}) do
@@ -315,9 +363,13 @@ defmodule Codebattle.User do
     end
   end
 
-  defp verify_password(_user, nil), do: nil
+  def has_password?(user), do: present?(user.password_hash)
 
-  defp verify_password(user, password) do
+  def verify_password(_user, nil), do: nil
+
+  def verify_password(%__MODULE__{password_hash: password_hash}, _password) when password_hash in [nil, ""], do: nil
+
+  def verify_password(user, password) do
     if Bcrypt.verify_pass(password, user.password_hash) do
       user
     end
@@ -332,9 +384,13 @@ defmodule Codebattle.User do
   def create_password_hash(user, password) do
     hashed_password = Bcrypt.hash_pwd_salt(password)
 
-    Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id),
-      set: [password_hash: hashed_password]
-    )
+    result =
+      Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id),
+        set: [password_hash: hashed_password]
+      )
+
+    UserSession.revoke_all(user.id)
+    result
   end
 
   def subscription_types, do: @subscription_types
@@ -352,6 +408,32 @@ defmodule Codebattle.User do
   end
 
   defp present?(value), do: not is_nil(value) and value != ""
+
+  defp validate_password_byte_length(changeset) do
+    validate_change(changeset, :password, fn :password, password ->
+      if byte_size(password) <= 72 do
+        []
+      else
+        [password: "should be at most 72 bytes"]
+      end
+    end)
+  end
+
+  defp validate_current_password(%{valid?: true} = changeset) do
+    if verify_password(changeset.data, get_change(changeset, :current_password)) do
+      changeset
+    else
+      add_error(changeset, :current_password, "is invalid")
+    end
+  end
+
+  defp validate_current_password(changeset), do: changeset
+
+  defp put_password_hash(%{valid?: true} = changeset) do
+    put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(get_change(changeset, :password)))
+  end
+
+  defp put_password_hash(changeset), do: changeset
 
   defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil],
     do: change(changeset, %{clan: nil, clan_id: nil})

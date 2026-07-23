@@ -11,8 +11,8 @@ const channel = new Channel('invites');
 const camelizeKeysAndDispatch = (dispatch: any, actionCreator: any) => (data: any) =>
   dispatch(actionCreator(camelizeKeys(data)));
 
-const getRecipientName = (data: any) => data.invite.recipient.name;
-const getCreatorName = (data: any) => data.invite.creator.name;
+const getRecipientName = (data: any) => data.invite.recipient?.name || 'Anonymous';
+const getCreatorName = (data: any) => data.invite.creator?.name || 'Anonymous';
 const getOpponentName = (data: any, userId: number) => {
   if (userId === data.invite.creatorId) {
     return getRecipientName(data);
@@ -120,8 +120,10 @@ export const acceptInvite = (id: number) => (dispatch: any) =>
 
       dispatch(actions.updateInvite(data));
     })
-    .receive('error', ({ reason }) => {
-      dispatch(actions.updateInvite({ id, state: 'invalid' } as any));
+    .receive('error', ({ reason, invite }) => {
+      dispatch(
+        actions.updateInvite(invite ? camelizeKeys({ invite }) : ({ id, state: 'invalid' } as any)),
+      );
       throw new Error(reason);
     });
 

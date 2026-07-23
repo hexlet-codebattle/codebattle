@@ -35,7 +35,7 @@ defmodule CodebattleWeb.AuthBindControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get("/auth/github/callback/bind", %{"code" => "asfd"})
 
       user = Repo.reload(user)
@@ -59,7 +59,7 @@ defmodule CodebattleWeb.AuthBindControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get("/auth/discord/callback/bind", %{"code" => "asfd"})
 
       user = Repo.reload(user)
@@ -88,7 +88,7 @@ defmodule CodebattleWeb.AuthBindControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get("/auth/github/callback/bind", %{"code" => "expired-code"})
 
       assert conn.state == :sent
@@ -100,7 +100,7 @@ defmodule CodebattleWeb.AuthBindControllerTest do
   describe "DELETE /auth/:provider/" do
     test "unbinds discord", %{conn: conn} do
       user = insert(:user)
-      conn = put_session(conn, :user_id, user.id)
+      conn = log_in_user(conn, user.id)
       delete(conn, "/auth/discord")
 
       user = Repo.reload!(user)
@@ -112,7 +112,7 @@ defmodule CodebattleWeb.AuthBindControllerTest do
 
     test "unbinds github", %{conn: conn} do
       user = insert(:user)
-      conn = put_session(conn, :user_id, user.id)
+      conn = log_in_user(conn, user.id)
       delete(conn, "/auth/github")
 
       user = Repo.reload!(user)
@@ -136,7 +136,7 @@ defmodule CodebattleWeb.AuthBindControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> delete("/auth/github")
 
       user = Repo.reload!(user)

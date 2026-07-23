@@ -10,7 +10,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
       assert json_response(conn, 200) == %{"season_tournaments" => [], "user_tournaments" => []}
@@ -43,7 +43,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
       assert %{
@@ -83,7 +83,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{"from" => from_date})
 
       assert %{
@@ -119,7 +119,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{"to" => to_date})
 
       assert %{
@@ -164,7 +164,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{
           "from" => from_date,
           "to" => to_date
@@ -221,7 +221,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{
           "from" => from_date,
           "to" => to_date
@@ -253,7 +253,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{"from" => "invalid-date"})
 
       # Should fall back to default behavior (current time as from date)
@@ -278,7 +278,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{"to" => "invalid-date"})
 
       # Should fall back to default behavior (30 days from now as to date)
@@ -307,7 +307,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{
           "from" => date_string,
           "to" => date_string
@@ -339,7 +339,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{
           "from" => from_date,
           "to" => to_date
@@ -364,7 +364,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, guest_user.id)
+        |> log_in_user(guest_user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{
           "from" => from_date,
           "to" => to_date
@@ -411,7 +411,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index), %{
           "from" => from_date,
           "to" => to_date
@@ -458,7 +458,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
       assert %{
@@ -487,7 +487,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, moderator.id)
+        |> log_in_user(moderator.id)
         |> put(
           Routes.api_v1_tournament_path(conn, :update, tournament.id),
           %{
@@ -525,7 +525,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, moderator.id)
+        |> log_in_user(moderator.id)
         |> put(
           Routes.api_v1_tournament_path(conn, :update, tournament.id),
           %{
@@ -570,7 +570,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, creator.id)
+        |> log_in_user(creator.id)
         |> put(
           Routes.api_v1_tournament_path(conn, :update, tournament.id),
           %{
@@ -619,7 +619,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, creator.id)
+        |> log_in_user(creator.id)
         |> put(
           Routes.api_v1_tournament_path(conn, :update, tournament.id),
           %{
@@ -649,7 +649,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, moderator.id)
+        |> log_in_user(moderator.id)
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
       assert %{"user_tournaments" => user_tournaments} = json_response(conn, 200)

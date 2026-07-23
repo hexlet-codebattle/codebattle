@@ -12,7 +12,7 @@ defmodule CodebattleWeb.AdminUserShowLiveTest do
 
     html =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get(Routes.admin_user_show_view_path(conn, :show, user.id))
       |> html_response(200)
 
@@ -26,7 +26,7 @@ defmodule CodebattleWeb.AdminUserShowLiveTest do
 
     html =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get(Routes.admin_user_show_view_path(conn, :show, user.id))
       |> html_response(200)
 
@@ -88,7 +88,7 @@ defmodule CodebattleWeb.AdminUserShowLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get(Routes.admin_user_show_view_path(conn, :show, user.id))
 
     body = html_response(conn, 200)

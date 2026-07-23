@@ -16,7 +16,7 @@ defmodule CodebattleWeb.LocaleTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.root_path(conn, :index))
 
     assert get_session(conn, :locale) == "ru"
@@ -33,7 +33,7 @@ defmodule CodebattleWeb.LocaleTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.root_path(conn, :index))
 
     assert get_session(conn, :locale) == "en"
@@ -45,7 +45,7 @@ defmodule CodebattleWeb.LocaleTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.root_path(conn, :index))
 
     assert get_session(conn, :locale) == "ru"
@@ -57,7 +57,7 @@ defmodule CodebattleWeb.LocaleTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.root_path(conn, :index))
 
     assert get_session(conn, :locale) == "ru"

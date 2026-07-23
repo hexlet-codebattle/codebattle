@@ -1,6 +1,7 @@
 defmodule Codebattle.InviteTest do
   use Codebattle.DataCase, async: false
 
+  alias Codebattle.Game.Context
   alias Codebattle.Invite
 
   test "manages invite lifecycle and accepts a task-specific challenge" do
@@ -70,5 +71,33 @@ defmodule Codebattle.InviteTest do
              Invite.accept_invite(%{id: invite.id, recipient_id: recipient.id})
 
     refute changeset.valid?
+  end
+
+  test "drops an invite when one of its players has already started another game" do
+    creator = insert(:user, subscription_type: :premium)
+    recipient = insert(:user, subscription_type: :premium)
+
+    assert {:ok, active_game} =
+             Context.create_game(%{
+               players: [creator, Codebattle.Bot.Context.build()],
+               state: "playing"
+             })
+
+    on_exit(fn -> Context.terminate_game(active_game.id) end)
+
+    invite =
+      insert(:invite,
+        creator: creator,
+        recipient: recipient,
+        state: "pending",
+        game_params: %{}
+      )
+
+    assert {:error, :already_in_a_game, dropped_invite} =
+             Invite.accept_invite(%{id: invite.id, recipient_id: recipient.id})
+
+    assert dropped_invite.state == "dropped"
+    assert Invite.get_invite!(invite.id).state == "dropped"
+    assert Invite.list_active_invites(recipient.id) == []
   end
 end

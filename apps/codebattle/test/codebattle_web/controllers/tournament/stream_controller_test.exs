@@ -32,7 +32,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, creator.id)
+        |> log_in_user(creator.id)
         |> get("/tournaments/#{tournament.id}/stream")
 
       assert conn.status == 200
@@ -47,7 +47,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get("/tournaments/#{tournament.id}/stream")
 
       assert conn.status == 404
@@ -68,7 +68,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, creator.id)
+        |> log_in_user(creator.id)
         |> get("/admin/tournaments/#{tournament.id}/stream")
 
       body = html_response(conn, 200)
@@ -85,7 +85,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, moderator.id)
+        |> log_in_user(moderator.id)
         |> get("/admin/tournaments/#{tournament.id}/stream")
 
       assert conn.status == 200
@@ -98,7 +98,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get("/admin/tournaments/#{tournament.id}/stream")
 
       assert conn.status == 404
@@ -119,7 +119,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, creator.id)
+        |> log_in_user(creator.id)
         |> get("/admin/tournaments/#{tournament.id}/stream/state")
 
       body = json_response(conn, 200)
@@ -137,7 +137,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, creator.id)
+        |> log_in_user(creator.id)
         |> get("/admin/tournaments/#{tournament.id}/stream/state")
 
       assert %{"active_game_id" => 4242} = json_response(conn, 200)
@@ -150,7 +150,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get("/admin/tournaments/#{tournament.id}/stream/state")
 
       assert %{"error" => "NOT_FOUND"} = json_response(conn, 404)

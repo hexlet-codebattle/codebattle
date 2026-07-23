@@ -7,7 +7,7 @@ defmodule CodebattleWeb.EventControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/events")
 
     assert html_response(conn, 200) =~ event.title

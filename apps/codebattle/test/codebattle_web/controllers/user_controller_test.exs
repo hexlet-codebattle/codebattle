@@ -6,7 +6,7 @@ defmodule CodebattleWeb.UserControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.user_path(conn, :index))
 
     assert conn.status == 200
@@ -34,7 +34,7 @@ defmodule CodebattleWeb.UserControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.user_path(conn, :show, user.id))
 
     assert conn.status == 200
@@ -54,7 +54,7 @@ defmodule CodebattleWeb.UserControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.user_setting_path(conn, :edit))
 
     assert conn.status == 200

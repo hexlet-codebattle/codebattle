@@ -167,7 +167,8 @@ function LobbyWidget() {
   );
 
   useEffect(() => {
-    const channel = lobbyMiddlewares.fetchState(currentUserId ?? 0)(dispatch);
+    const waitingGameId = activeGame?.state === 'waiting_opponent' ? activeGame.id : undefined;
+    const channel = lobbyMiddlewares.fetchState(currentUserId ?? 0, waitingGameId)(dispatch);
 
     if (currentOpponent) {
       window.history.replaceState({}, document.title, getLobbyUrl());

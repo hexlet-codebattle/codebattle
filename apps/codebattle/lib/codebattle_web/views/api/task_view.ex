@@ -5,6 +5,8 @@ defmodule CodebattleWeb.Api.TaskView do
     %{
       id: task.id,
       name: task.name,
+      description_en: task.description_en,
+      description_ru: task.description_ru,
       level: task.level,
       origin: task.origin,
       creator_id: task.creator_id,

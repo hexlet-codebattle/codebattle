@@ -9,7 +9,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/feedback")
 
     assert conn.status == 200
@@ -26,7 +26,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin")
 
     assert conn.status == 200
@@ -57,7 +57,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/games")
 
     assert conn.status == 200
@@ -71,7 +71,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/events")
 
     assert conn.status == 200
@@ -85,7 +85,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/code-checks")
 
     assert conn.status == 200
@@ -112,7 +112,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get("/admin/code-checks?tab=failures")
 
     body = response(conn, 200)
@@ -127,7 +127,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/admin/feedback")
 
     assert conn.status == 302

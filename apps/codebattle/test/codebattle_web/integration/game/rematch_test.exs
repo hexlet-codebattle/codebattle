@@ -10,8 +10,8 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    conn1 = put_session(conn, :user_id, user1.id)
-    conn2 = put_session(conn, :user_id, user2.id)
+    conn1 = log_in_user(conn, user1.id)
+    conn2 = log_in_user(conn, user2.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})

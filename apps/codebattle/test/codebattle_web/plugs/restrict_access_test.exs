@@ -19,7 +19,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/tournaments/2")
 
     assert conn.status != 302
@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/tournaments/23")
 
     assert conn.status != 302
@@ -42,7 +42,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/api/v1/user/123/stats")
 
     assert conn.status != 302
@@ -53,7 +53,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/api/v1/user/current")
 
     assert conn.status != 302

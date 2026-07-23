@@ -35,7 +35,7 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
     # Grant the user access to the tournament
     Context.get_or_create(user, group_tournament)
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    user_token = user_socket_token(user)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
     {:ok, %{socket: socket, topic: topic, user: user}}
@@ -208,7 +208,7 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
 
     {:ok, _response, socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
 
-    other_token = Phoenix.Token.sign(socket(UserSocket), "user_token", other_user.id)
+    other_token = user_socket_token(other_user)
     {:ok, other_socket} = connect(UserSocket, %{"token" => other_token})
 
     {:ok, _other_response, other_socket} = subscribe_and_join(other_socket, GroupTournamentChannel, topic)

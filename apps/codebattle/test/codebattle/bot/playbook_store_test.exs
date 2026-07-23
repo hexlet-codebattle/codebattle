@@ -11,7 +11,7 @@ defmodule Codebattle.PlaybookStoreTest do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
 
-    conn2 = put_session(conn, :user_id, user2.id)
+    conn2 = log_in_user(conn, user2.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})

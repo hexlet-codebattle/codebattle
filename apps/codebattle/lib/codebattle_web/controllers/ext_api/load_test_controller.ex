@@ -392,7 +392,9 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
   end
 
   defp sign_user_token(user_id) do
-    Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", user_id)
+    user = User.get!(user_id)
+    {:ok, token} = Codebattle.UserSession.create_socket_token(user, %{user_agent: "Codebattle load test"})
+    token
   end
 
   defp scenario_tournament_params(params) do

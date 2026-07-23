@@ -13,10 +13,15 @@ function ActionsAfterGame() {
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
+  const isCurrentUserGuest = useSelector(selectors.currentUserIsGuestSelector);
 
   const isRematchDisabled = !isOpponentInGame;
 
   if (gameMode === GameRoomModes.training) {
+    if (!isCurrentUserGuest) {
+      return null;
+    }
+
     return (
       <>
         <StartTrainingButton />

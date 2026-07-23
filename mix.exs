@@ -14,6 +14,10 @@ defmodule CodebattleUmbrella.MixProject do
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
         {:excoveralls, "~> 0.13", only: :test}
       ],
+      hex: [
+        # Remove these acknowledgements when cowlib publishes a fixed release.
+        ignore_advisories: ["CVE-2026-43966", "CVE-2026-43969"]
+      ],
       listeners: [Phoenix.CodeReloader],
       dialyzer: [
         paths: [

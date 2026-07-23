@@ -22,7 +22,7 @@ defmodule CodebattleWeb.TournamentAdminChannelAuthTest do
         "players_limit" => 200
       })
 
-    creator_token = Phoenix.Token.sign(socket(UserSocket), "user_token", creator.id)
+    creator_token = user_socket_token(creator)
     {:ok, creator_socket} = connect(UserSocket, %{"token" => creator_token})
 
     assert {:ok, _response, _socket} =
@@ -53,7 +53,7 @@ defmodule CodebattleWeb.TournamentAdminChannelAuthTest do
         "players_limit" => 200
       })
 
-    moderator_token = Phoenix.Token.sign(socket(UserSocket), "user_token", moderator.id)
+    moderator_token = user_socket_token(moderator)
     {:ok, moderator_socket} = connect(UserSocket, %{"token" => moderator_token})
 
     assert {:ok, _response, _socket} =

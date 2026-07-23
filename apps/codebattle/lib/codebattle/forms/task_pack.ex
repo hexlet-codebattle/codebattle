@@ -6,6 +6,9 @@ defmodule Codebattle.TaskPackForm do
   alias Codebattle.Repo
   alias Codebattle.TaskPack
 
+  @task_id_range 1..2_147_483_647
+  @max_task_ids 10_000
+
   def create(params, user) do
     new_params = Map.merge(params, %{"state" => "draft", "creator_id" => user.id})
 
@@ -44,16 +47,41 @@ defmodule Codebattle.TaskPackForm do
   end
 
   defp cast_task_ids(changeset, params) do
-    task_ids =
-      params
-      |> Map.get("task_ids", "")
-      |> String.split(",")
-      |> Enum.map(&String.trim/1)
-      |> Enum.map(&String.to_integer/1)
+    raw_task_ids = Map.get(params, "task_ids", "")
 
-    put_change(changeset, :task_ids, task_ids)
-  rescue
-    _ ->
+    if is_binary(raw_task_ids) do
+      cast_binary_task_ids(changeset, raw_task_ids)
+    else
       add_error(changeset, :task_ids, "Please provide only integers with comma separated values")
+    end
+  end
+
+  defp cast_binary_task_ids(changeset, raw_task_ids) do
+    tokens = String.split(raw_task_ids, ",", trim: false)
+
+    cond do
+      length(tokens) > @max_task_ids ->
+        add_error(changeset, :task_ids, "Please provide no more than #{@max_task_ids} task ids")
+
+      Enum.any?(tokens, &(not Regex.match?(~r/^\s*\d+\s*$/, &1))) ->
+        add_error(changeset, :task_ids, "Please provide only integers with comma separated values")
+
+      true ->
+        cast_parsed_task_ids(changeset, tokens)
+    end
+  end
+
+  defp cast_parsed_task_ids(changeset, tokens) do
+    task_ids = Enum.map(tokens, &(&1 |> String.trim() |> String.to_integer()))
+
+    if Enum.all?(task_ids, &(&1 in @task_id_range)) do
+      put_change(changeset, :task_ids, task_ids)
+    else
+      add_error(
+        changeset,
+        :task_ids,
+        "Please provide integers between 1 and 2147483647 with comma separated values"
+      )
+    end
   end
 end

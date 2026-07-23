@@ -5,7 +5,7 @@ defmodule CodebattleWeb.Live.Admin.ClanIndexViewTest do
 
   defp signed_conn(conn) do
     admin = insert(:admin)
-    put_session(conn, :user_id, admin.id)
+    log_in_user(conn, admin.id)
   end
 
   test "renders clans", %{conn: conn} do
