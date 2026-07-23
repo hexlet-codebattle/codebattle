@@ -13,7 +13,7 @@ defmodule Codebattle.RootControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.user_path(conn, :index))
 
     assert conn.status == 200
@@ -24,7 +24,7 @@ defmodule Codebattle.RootControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.root_path(conn, :index))
 
     assert html_response(conn, 200)

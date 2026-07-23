@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.DevLoginController do
   use CodebattleWeb, :controller
 
+  alias CodebattleWeb.UserAuth
+
   def create(conn, params) do
     if Application.get_env(:codebattle, :dev_sign_in) do
       subscription_type = Map.get(params, "subscription_type", "free")
@@ -18,9 +20,8 @@ defmodule CodebattleWeb.DevLoginController do
       case Codebattle.Auth.User.create_dev_user(params) do
         {:ok, user} ->
           conn
-          |> configure_session(renew: true)
+          |> UserAuth.log_in_user(user)
           |> put_flash(:success, gettext("Successfully authenticated."))
-          |> put_session(:user_id, user.id)
           |> redirect(to: "/")
 
         {:error, reason} ->

@@ -28,7 +28,7 @@ defmodule CodebattleWeb.InertiaPagesControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.head_to_head_path(conn, :show, user.id, opponent.id))
 
     assert inertia_component(conn) == "HeadToHead"

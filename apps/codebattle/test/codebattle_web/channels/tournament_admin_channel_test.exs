@@ -25,7 +25,7 @@ defmodule CodebattleWeb.TournamentAdminChannelTest do
   end
 
   defp join_admin(user, tournament_id) do
-    token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    token = user_socket_token(user)
     {:ok, socket} = connect(UserSocket, %{"token" => token})
 
     {:ok, _payload, channel_socket} =

@@ -64,6 +64,27 @@ defmodule Codebattle.Tournament.ContextTest do
     assert Tournament.Context.get_user_tournaments(%{user: %{is_guest: true}}) == []
   end
 
+  test "includes tournaments where the user is a registered player" do
+    creator = insert(:user)
+    player = insert(:user)
+    now = DateTime.utc_now(:second)
+
+    tournament =
+      insert(:tournament,
+        creator_id: creator.id,
+        starts_at: now,
+        players: %{player.id => %{id: player.id, is_bot: false}}
+      )
+
+    filter = %{
+      from: DateTime.add(now, -1, :day),
+      to: DateTime.add(now, 1, :day),
+      user: player
+    }
+
+    assert Enum.map(Tournament.Context.get_user_tournaments(filter), & &1.id) == [tournament.id]
+  end
+
   test "validates tournament parameters without persisting" do
     changeset = Tournament.Context.validate(%{"name" => "", "rounds_limit" => 0})
     refute changeset.valid?

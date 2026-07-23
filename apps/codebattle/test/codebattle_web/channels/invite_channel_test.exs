@@ -12,8 +12,8 @@ defmodule CodebattleWeb.InviteChannelTest do
     insert(:task, level: "elementary")
     insert(:task, level: "elementary")
 
-    creator_token = Phoenix.Token.sign(socket(UserSocket), "user_token", creator.id)
-    recipient_token = Phoenix.Token.sign(socket(UserSocket), "user_token", recipient.id)
+    creator_token = user_socket_token(creator)
+    recipient_token = user_socket_token(recipient)
     {:ok, creator_socket} = connect(UserSocket, %{"token" => creator_token})
     {:ok, recipient_socket} = connect(UserSocket, %{"token" => recipient_token})
 

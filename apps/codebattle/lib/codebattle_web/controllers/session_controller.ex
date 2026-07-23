@@ -2,6 +2,7 @@ defmodule CodebattleWeb.SessionController do
   use CodebattleWeb, :controller
 
   alias Codebattle.User
+  alias CodebattleWeb.UserAuth
 
   plug(:put_view, CodebattleWeb.SessionView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
@@ -48,9 +49,8 @@ defmodule CodebattleWeb.SessionController do
 
       user ->
         conn
-        |> configure_session(renew: true)
+        |> UserAuth.log_in_user(user)
         |> put_flash(:info, gettext("Welcome to Codebattle!"))
-        |> put_session(:user_id, user.id)
         |> redirect(to: "/")
     end
   end
@@ -60,7 +60,7 @@ defmodule CodebattleWeb.SessionController do
   def delete(conn, _params) do
     conn
     |> put_flash(:info, gettext("You have been logged out!"))
-    |> configure_session(drop: true)
+    |> UserAuth.log_out_user()
     |> redirect(to: "/")
   end
 

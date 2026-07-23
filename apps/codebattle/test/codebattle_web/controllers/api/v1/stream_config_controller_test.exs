@@ -5,7 +5,7 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
 
   setup %{conn: conn} do
     user = :user |> insert() |> Repo.reload()
-    conn = put_session(conn, :user_id, user.id)
+    conn = log_in_user(conn, user.id)
 
     {:ok, %{conn: conn, user: user}}
   end

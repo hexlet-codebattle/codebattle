@@ -3,6 +3,8 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
 
   import Inertia.Controller
 
+  alias Codebattle.UserSession
+
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
 
@@ -14,8 +16,19 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
     props = %{
       "current_season" => present_season(current_season),
       "current_user" => present_user(current_user),
+      "user_sessions" =>
+        present_user_sessions(
+          current_user,
+          conn.assigns.current_user_session,
+          conn.request_path
+        ),
       "locale" => Gettext.get_locale(CodebattleWeb.Gettext),
-      "user_token" => Phoenix.Token.sign(conn, "user_token", current_user.id)
+      "user_token" =>
+        Phoenix.Token.sign(
+          conn,
+          "user_token",
+          socket_token_payload(current_user, conn.assigns.current_user_session)
+        )
     }
 
     conn
@@ -28,6 +41,27 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
 
   defp present_season(season) do
     Map.take(season, [:name, :year, :starts_at, :ends_at])
+  end
+
+  defp socket_token_payload(%{is_guest: true} = user, nil), do: user.id
+  defp socket_token_payload(user, session), do: {user.id, session.id}
+
+  defp present_user_sessions(%{is_guest: true}, _current_session, _request_path), do: []
+  defp present_user_sessions(_user, _current_session, request_path) when request_path != "/settings", do: []
+
+  defp present_user_sessions(user, current_session, "/settings") do
+    user.id
+    |> UserSession.list_active()
+    |> Enum.map(fn session ->
+      %{
+        id: session.id,
+        current: session.id == current_session.id,
+        user_agent: session.user_agent,
+        ip: session.ip,
+        last_seen_at: session.last_seen_at,
+        created_at: session.inserted_at
+      }
+    end)
   end
 
   defp present_user(user) do
@@ -66,6 +100,7 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
       :sound_settings
     ])
     |> Map.put(:can_unlink_social, Codebattle.User.can_unlink_social?(user))
+    |> Map.put(:has_password, Codebattle.User.has_password?(user))
     |> Map.put(:is_admin, Codebattle.User.admin?(user))
   end
 end

@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { grades } from '@/config/grades';
 import ModalCodes from '@/config/modalCodes';
 import { uploadFinishedTournaments, uploadTournamentsByFilter } from '@/middlewares/Tournament';
-import { currentUserIdSelector, currentUserIsAdminSelector } from '@/selectors';
+import { currentUserIsAdminSelector } from '@/selectors';
 import useTournamentScheduleModals from '@/utils/useTournamentScheduleModals';
 
 import dayjs from '../../../i18n/dayjs';
@@ -53,9 +53,6 @@ interface TournamentsState {
 
 const haveSeasonGrade = (t: Tournament) => t.grade !== grades.open;
 const notCancelled = (t: Tournament) => t.state !== 'canceled';
-const filterMyTournaments = (userId: number | string | null) => (t: Tournament) =>
-  t.creatorId === userId;
-
 const getEndOffsetParams = (t: Tournament): [number, dayjs.ManipulateType] => {
   if (t.finished && t.lastRoundEndedAt) {
     const begin = dayjs(t.startsAt);
@@ -133,7 +130,6 @@ function TournamentSchedule() {
   const [date, setDate] = useState<string>(dayjs().format());
   const [view, setView] = useState<ScheduleView>(views.month);
   const isAdmin = useSelector(currentUserIsAdminSelector);
-  const currentUserId = useSelector(currentUserIdSelector);
 
   useTournamentScheduleModals();
 
@@ -217,7 +213,6 @@ function TournamentSchedule() {
       setEvents(newEvents);
     } else if (context === states.my) {
       const newEvents = tournaments.userTournaments
-        .filter(filterMyTournaments(currentUserId))
         .filter(notCancelled)
         .map(getEventFromTournamentData);
 
@@ -232,7 +227,7 @@ function TournamentSchedule() {
 
       setEvents(newEvents);
     }
-  }, [context, currentUserId, tournaments, isAdmin]);
+  }, [context, tournaments, isAdmin]);
 
   useEffect(() => {
     if (context !== states.list || historyLoaded) {

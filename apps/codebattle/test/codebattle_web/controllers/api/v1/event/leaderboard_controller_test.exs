@@ -38,7 +38,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{"type" => "clan"})
 
       response = json_response(conn, 200)
@@ -86,7 +86,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{"type" => "player"})
 
       response = json_response(conn, 200)
@@ -141,7 +141,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{
           "type" => "player_clan",
           "clan_id" => clan1_id
@@ -188,7 +188,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{
           "type" => "random"
         })
@@ -267,7 +267,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{"type" => "clan"})
 
       response = json_response(conn, 200)
@@ -315,7 +315,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{"type" => "player"})
 
       response = json_response(conn, 200)
@@ -370,7 +370,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{
           "type" => "player_clan",
           "clan_id" => clan1_id
@@ -417,7 +417,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/api/v1/events/#{event.id}/leaderboard", %{
           "type" => "random"
         })
@@ -595,7 +595,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     } do
       conn =
         conn
-        |> put_session(:user_id, user1_id)
+        |> log_in_user(user1_id)
         |> get("/public_api/v1/events/#{event.id}/leaderboard", %{
           "type" => "random"
         })

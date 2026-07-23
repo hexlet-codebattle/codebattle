@@ -113,7 +113,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
       task = insert(:task, level: "easy", time_to_solve_sec: 30, solutions: %{"python" => @python_solution})
       user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1400})
 
-      conn = put_session(conn, :user_id, user.id)
+      conn = log_in_user(conn, user.id)
       socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 
       bot = Bot.Context.build()

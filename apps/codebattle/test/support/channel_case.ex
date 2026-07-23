@@ -17,6 +17,7 @@ defmodule CodebattleWeb.ChannelCase do
 
   using do
     quote do
+      import CodebattleWeb.ChannelCase, only: [user_socket_token: 1]
       import CodebattleWeb.Factory
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
@@ -35,5 +36,10 @@ defmodule CodebattleWeb.ChannelCase do
   setup tags do
     Codebattle.DataCase.setup_sandbox(tags)
     :ok
+  end
+
+  def user_socket_token(user) do
+    {:ok, token} = Codebattle.UserSession.create_socket_token(user)
+    token
   end
 end

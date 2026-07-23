@@ -10,7 +10,7 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_path(conn, :index))
 
     assert conn.status == 200
@@ -37,7 +37,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # user can see public tasks
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_path(conn, :show, visible_task.id))
 
     assert new_conn.status == 200
@@ -57,7 +57,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # user can't see hidden tasks
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_path(conn, :show, hidden_task.id))
 
     assert new_conn.status == 404
@@ -65,7 +65,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # user can see his hidden tasks
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_path(conn, :show, hidden_created_task.id))
 
     assert new_conn.status == 200
@@ -73,7 +73,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # admin can see hidden tasks
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get(Routes.task_path(conn, :show, hidden_task.id))
 
     assert new_conn.status == 200
@@ -86,14 +86,14 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> patch(Routes.task_activate_path(conn, :activate, task))
 
     assert new_conn.status == 404
 
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> patch(Routes.task_activate_path(conn, :activate, task))
 
     assert redirected_to(new_conn) == Routes.task_path(conn, :index)
@@ -110,14 +110,14 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> patch(Routes.task_disable_path(conn, :disable, task))
 
     assert new_conn.status == 404
 
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> patch(Routes.task_disable_path(conn, :disable, task))
 
     assert redirected_to(new_conn) == Routes.task_path(conn, :index)
@@ -135,7 +135,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # unrelated user
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> delete(Routes.task_path(conn, :delete, task))
 
     assert new_conn.status == 404
@@ -143,7 +143,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # admin or creator
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> delete(Routes.task_path(conn, :delete, task))
 
     assert redirected_to(new_conn) == Routes.task_path(conn, :index)
@@ -154,7 +154,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # unrelated user
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> delete(Routes.task_path(conn, :delete, task))
 
     assert new_conn.status == 404
@@ -162,7 +162,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     # admin or creator
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> delete(Routes.task_path(conn, :delete, task))
 
     assert new_conn.status == 404

@@ -1883,8 +1883,8 @@ msgstr "Формат"
 msgid "Kick player"
 msgstr "Исключить игрока"
 
-msgid "Kick {{name}} from tournament?"
-msgstr "Исключить {{name}} из турнира?"
+msgid "Kick %{name} from tournament?"
+msgstr "Исключить %{name} из турнира?"
 
 msgid "Last page"
 msgstr "Последняя страница"
@@ -1970,3 +1970,95 @@ msgstr "Напишите сообщение..."
 msgid "Chat message"
 msgstr "Сообщение в чат"
 
+msgid "Your weapon"
+msgstr "Ваш язык"
+
+msgid "No access yet"
+msgstr "Пока недоступно"
+
+msgid "Your name"
+msgstr "Ваше имя"
+
+msgid "Your clan"
+msgstr "Ваш клан"
+
+msgid "clan list"
+msgstr "список кланов"
+
+msgid "Enter your clan"
+msgstr "Введите название клана"
+
+msgid "Locale"
+msgstr "Язык интерфейса"
+
+msgid "Select sound type"
+msgstr "Выберите набор звуков"
+
+msgid "Dendy"
+msgstr "Dendy"
+
+msgid "CS"
+msgstr "CS"
+
+msgid "Standard"
+msgstr "Стандартный"
+
+msgid "Silent"
+msgstr "Без звука"
+
+msgid "Select sound level"
+msgstr "Громкость игры"
+
+msgid "Select tournament sound level"
+msgstr "Громкость турнира"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Socials"
+msgstr "Социальные сети"
+
+msgid "Unlink %{provider}"
+msgstr "Отвязать %{provider}"
+
+msgid "Link %{provider}"
+msgstr "Привязать %{provider}"
+
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "Old password"
+msgstr "Текущий пароль"
+
+msgid "Enter old password"
+msgstr "Введите текущий пароль"
+
+msgid "New password"
+msgstr "Новый пароль"
+
+msgid "Enter new password"
+msgstr "Введите новый пароль"
+
+msgid "Confirm new password"
+msgstr "Подтвердите новый пароль"
+
+msgid "Active devices"
+msgstr "Активные устройства"
+
+msgid "No active devices"
+msgstr "Нет активных устройств"
+
+msgid "Unknown device"
+msgstr "Неизвестное устройство"
+
+msgid "Current device"
+msgstr "Текущее устройство"
+
+msgid "Remove device %{device}"
+msgstr "Удалить устройство %{device}"
+
+msgid "Sign out"
+msgstr "Выйти"
+
+msgid "Remove"
+msgstr "Удалить"

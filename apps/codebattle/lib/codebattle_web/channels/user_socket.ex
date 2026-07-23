@@ -2,6 +2,7 @@ defmodule CodebattleWeb.UserSocket do
   use Phoenix.Socket
 
   alias Codebattle.User
+  alias Codebattle.UserSession
 
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
@@ -23,15 +24,34 @@ defmodule CodebattleWeb.UserSocket do
       {:ok, ^guest_id} ->
         {:ok, assign(socket, current_user: User.build_guest(), access_token: access_token)}
 
-      {:ok, user_id} ->
-        {:ok, assign(socket, current_user: User.get!(user_id), access_token: access_token)}
+      {:ok, {user_id, session_id}} ->
+        connect_user(socket, user_id, session_id, access_token)
+
+      {:ok, _user_id} ->
+        :error
 
       {:error, _reason} ->
         :error
     end
   end
 
+  def id(%{assigns: %{current_user_session: %{id: session_id}}}), do: "user_session:#{session_id}"
   def id(_socket), do: nil
+
+  defp connect_user(socket, user_id, session_id, access_token) do
+    case UserSession.get_active_for_socket(user_id, session_id) do
+      %UserSession{user: user} = session ->
+        {:ok,
+         assign(socket,
+           current_user: user,
+           current_user_session: session,
+           access_token: access_token
+         )}
+
+      _ ->
+        :error
+    end
+  end
 
   defp normalize_access_token(nil), do: nil
 

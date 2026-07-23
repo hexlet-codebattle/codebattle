@@ -25,6 +25,8 @@ const taskTags = getPageProp<string[]>('task_tags', []);
 interface Task {
   id: number | null;
   name?: string;
+  descriptionEn?: string;
+  descriptionRu?: string;
   level?: string;
   origin?: string;
   creatorId?: number;
@@ -94,8 +96,22 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
     random: { icon: faShuffle, transform: 'down-1' },
   };
 
+  const getLocalizedDescription = (task: Task) => {
+    const description =
+      i18n.language === 'ru'
+        ? task.descriptionRu || task.descriptionEn
+        : task.descriptionEn || task.descriptionRu;
+
+    return description
+      ?.split('\n')
+      .map((line) => line.replace(/^#+\s*/, '').trim())
+      .find(Boolean);
+  };
+
   const renderOptionLabel = (task: Task) => {
     const origin = taskOriginToIcon[task.origin ?? 'random'] ?? taskOriginToIcon.random;
+    const description = getLocalizedDescription(task);
+    const title = description || task.name;
 
     return (
       <div className="d-flex align-items-center">
@@ -110,7 +126,9 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <FontAwesomeIcon icon={origin.icon as any} transform={origin.transform} />
         )}
-        <span className="text-truncate ml-1">{task.name}</span>
+        <span className="text-truncate ml-1" lang={i18n.language}>
+          {title}
+        </span>
       </div>
     );
   };
@@ -185,9 +203,13 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
       value={value}
       onChange={(task) => onChange(task as Task)}
       options={options}
-      getOptionLabel={(task) => renderOptionLabel(task) as unknown as string}
+      getOptionLabel={(task) => task.name ?? ''}
+      formatOptionLabel={renderOptionLabel}
       getOptionValue={(task) => String(task.id)}
-      filterOption={createFilter({ stringify: (option) => option.data.name ?? '' })}
+      filterOption={createFilter({
+        stringify: (option) =>
+          [option.data.name, getLocalizedDescription(option.data)].filter(Boolean).join(' '),
+      })}
     />
   );
 }

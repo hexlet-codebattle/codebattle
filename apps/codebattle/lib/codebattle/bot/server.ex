@@ -259,7 +259,9 @@ defmodule Codebattle.Bot.Server do
   end
 
   defp bot_token(bot_id) do
-    Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", bot_id)
+    bot = Codebattle.User.get!(bot_id)
+    {:ok, token} = Codebattle.UserSession.create_socket_token(bot, %{user_agent: "Codebattle bot"})
+    token
   end
 
   defp join_channel(socket, topic), do: do_join_channel(socket, topic, 0)

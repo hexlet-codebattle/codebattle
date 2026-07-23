@@ -28,7 +28,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(201)
 
@@ -72,7 +72,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(422)
 
@@ -98,7 +98,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(422)
 
@@ -124,7 +124,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, other_user.id)
+        |> log_in_user(other_user.id)
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(403)
 
@@ -148,7 +148,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(422)
 
@@ -173,7 +173,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(422)
 

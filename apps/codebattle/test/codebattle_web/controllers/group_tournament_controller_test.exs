@@ -53,7 +53,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament")
 
     assert redirected_to(conn) == "/"
@@ -75,7 +75,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament")
 
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
@@ -96,7 +96,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament")
 
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
@@ -110,7 +110,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament")
 
     assert redirected_to(conn) == "/"
@@ -123,7 +123,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament")
 
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
@@ -142,7 +142,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament?start=true")
 
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
@@ -176,7 +176,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament?start=true")
 
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
@@ -206,7 +206,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament?start=true")
 
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
@@ -236,7 +236,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get("/my-tournament")
 
     assert redirected_to(conn) == "/group_tournaments/#{newer.id}"

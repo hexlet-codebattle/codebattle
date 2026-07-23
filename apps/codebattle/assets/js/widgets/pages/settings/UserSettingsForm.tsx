@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 
 import cn from 'classnames';
-import { Field, Form, Formik, useField } from 'formik';
+import { Field, Form, Formik, useField, type FormikHelpers } from 'formik';
 import capitalize from 'lodash/capitalize';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 
 import LanguageIcon from '@/components/LanguageIcon';
 
+import i18n from '../../../i18n';
 import languages, { cssProcessors, dbNames } from '../../config/languages';
 import schemas from '../../formik';
 import { createPlayer } from '../../lib/sound';
@@ -30,6 +31,7 @@ export interface UserSettingsData {
   githubId?: string | number | null;
   discordId?: string | number | null;
   canUnlinkSocial?: boolean;
+  hasPassword?: boolean;
   [key: string]: unknown;
 }
 
@@ -46,6 +48,9 @@ export interface UserSettingsFormValues {
     level: number;
     tournamentLevel: number;
   };
+  currentPassword: string;
+  password: string;
+  passwordConfirmation: string;
 }
 
 type SoundType = 'dendy' | 'cs' | 'standard';
@@ -57,6 +62,38 @@ const views = {
 } as const;
 
 type SettingsView = (typeof views)[keyof typeof views];
+const passwordFieldNames = ['currentPassword', 'password', 'passwordConfirmation'] as const;
+
+const hasPasswordValue = (values: Partial<UserSettingsFormValues>) =>
+  passwordFieldNames.some((fieldName) => Boolean(values[fieldName]?.trim()));
+
+const passwordValidationSchema = {
+  currentPassword: Yup.string().test(
+    'required-current-password',
+    "Field can't be empty",
+    function (value) {
+      return !hasPasswordValue(this.parent) || Boolean(value?.trim());
+    },
+  ),
+  password: Yup.string()
+    .test('required-password', "Field can't be empty", function (value) {
+      return !hasPasswordValue(this.parent) || Boolean(value?.trim());
+    })
+    .test('password-min-length', 'Should be at least 12 characters', function (value) {
+      return !hasPasswordValue(this.parent) || (value?.length ?? 0) >= 12;
+    })
+    .test('password-max-bytes', 'Should be at most 72 bytes', function (value) {
+      return !value || new TextEncoder().encode(value).length <= 72;
+    })
+    .matches(/^\S*$/, "Can't contain empty symbols"),
+  passwordConfirmation: Yup.string()
+    .test('required-password-confirmation', "Field can't be empty", function (value) {
+      return !hasPasswordValue(this.parent) || Boolean(value?.trim());
+    })
+    .test('password-confirmation', 'Passwords must match', function (value) {
+      return !hasPasswordValue(this.parent) || value === this.parent.password;
+    }),
+};
 
 const playingLanguages = Object.entries(omit(languages, [...cssProcessors, ...dbNames]));
 const cssLanguages = Object.entries(pick(languages, cssProcessors));
@@ -103,7 +140,7 @@ const getPlaceholder = ({
     return placeholder;
   }
 
-  return 'No access yet';
+  return i18n.t('No access yet');
 };
 
 function TextInput({ label, ...props }: TextInputProps) {
@@ -143,26 +180,48 @@ interface LanguageSelectProps {
 }
 
 function LanguageSelect({ lang, view, currentView, items }: LanguageSelectProps) {
+  const [field, , helpers] = useField(getFieldNameByView(view));
+  const selectedSlug = field.value || lang || items[0]?.[0];
+  const selectedName = items.find(([slug]) => slug === selectedSlug)?.[1] || selectedSlug;
+
   return (
     <div className={cn('col-lg-4', { hidden: view !== currentView })}>
-      <div className="h6">Your weapon</div>
+      <div className="h6">{i18n.t('Your weapon')}</div>
       <div className="card cb-card p-3">
-        <div className="d-flex align-items-center">
-          <LanguageIcon className="w-100 h-100 mb-2" lang={lang} />
-          <Field
-            as="select"
+        <Dropdown className="w-100">
+          <Dropdown.Toggle
+            id={`${view}-language-dropdown`}
             data-testid={`${view}-langSelect`}
             aria-label="Programming language select"
-            name={getFieldNameByView(view)}
-            className="cb-bg-panel ml-2 cb-border-color text-white custom-select"
+            className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
           >
-            {items.map(([slug, l]) => (
-              <option key={slug} value={slug}>
-                {capitalize(l)}
-              </option>
+            <LanguageIcon
+              className="mr-2 flex-shrink-0"
+              lang={selectedSlug}
+              style={{ width: '24px', height: '24px' }}
+            />
+            <span>{capitalize(selectedName)}</span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+            {items.map(([slug, languageName]) => (
+              <Dropdown.Item
+                key={slug}
+                as="button"
+                type="button"
+                active={selectedSlug === slug}
+                className="cb-dropdown-item d-flex align-items-center"
+                onClick={() => helpers.setValue(slug)}
+              >
+                <LanguageIcon
+                  className="mr-2 flex-shrink-0"
+                  lang={slug}
+                  style={{ width: '24px', height: '24px' }}
+                />
+                {capitalize(languageName)}
+              </Dropdown.Item>
             ))}
-          </Field>
-        </div>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </div>
   );
@@ -240,7 +299,7 @@ interface UserSettingsFormProps {
   settings: UserSettingsData;
   onSubmit: (
     values: UserSettingsFormValues,
-    formikHelpers: { setErrors: (errors: { name?: string }) => void },
+    formikHelpers: FormikHelpers<UserSettingsFormValues>,
   ) => void | Promise<void>;
 }
 
@@ -259,11 +318,17 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
       lang: settings.lang || '',
       styleLang: settings.styleLang || '',
       dbType: settings.dbType || '',
+      currentPassword: '',
+      password: '',
+      passwordConfirmation: '',
     }),
     [settings],
   );
 
-  const validationSchema = useMemo(() => Yup.object(schemas.userSettings(settings)), [settings]);
+  const validationSchema = useMemo(
+    () => Yup.object({ ...schemas.userSettings(settings), ...passwordValidationSchema }),
+    [settings],
+  );
 
   return (
     <Formik
@@ -283,28 +348,28 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                   <TextInput
                     className="col-5"
                     data-testid="nameInput"
-                    label="Your name"
+                    label={i18n.t('Your name')}
                     id="name"
                     name="name"
                     type="text"
-                    placeholder="Enter your name"
+                    placeholder={i18n.t('Enter your name')}
                   />
                 </div>
                 <div className="mt-2">
                   <TextInput
                     className="col-5"
                     data-testid="clanInput"
-                    label="Your clan"
+                    label={i18n.t('Your clan')}
                     id="clan"
                     name="clan"
                     type="text"
-                    hint="clan list"
+                    hint={i18n.t('clan list')}
                     hintHref="/clans"
-                    placeholder="Enter your clan"
+                    placeholder={i18n.t('Enter your clan')}
                   />
                 </div>
                 <div className="mt-2">
-                  <div className="h6">Locale</div>
+                  <div className="h6">{i18n.t('Locale')}</div>
                   <LocaleSelect />
                 </div>
               </div>
@@ -329,8 +394,45 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
             </div>
           </div>
 
+          {settings.hasPassword && (
+            <div className="container">
+              <div className="row form-group mb-3">
+                <div className="col-lg-4">
+                  <h3 className="font-weight-normal">{i18n.t('Change password')}</h3>
+                  <TextInput
+                    data-testid="currentPasswordInput"
+                    label={i18n.t('Old password')}
+                    id="currentPassword"
+                    name="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder={i18n.t('Enter old password')}
+                  />
+                  <TextInput
+                    data-testid="passwordInput"
+                    label={i18n.t('New password')}
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder={i18n.t('Enter new password')}
+                  />
+                  <TextInput
+                    data-testid="passwordConfirmationInput"
+                    label={i18n.t('Confirm new password')}
+                    id="passwordConfirmation"
+                    name="passwordConfirmation"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder={i18n.t('Confirm new password')}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           <div id="my-radio-group" className="h6 ml-2">
-            Select sound type
+            {i18n.t('Select sound type')}
           </div>
           <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
             <div className="form-check">
@@ -343,7 +445,7 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                 onClick={() => playSound('dendy', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioDendy">
-                Dendy
+                {i18n.t('Dendy')}
               </label>
             </div>
             <div className="form-check">
@@ -356,7 +458,7 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                 onClick={() => playSound('cs', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioCS">
-                CS
+                {i18n.t('CS')}
               </label>
             </div>
             <div className="form-check">
@@ -369,7 +471,7 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                 onClick={() => playSound('standard', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioStandard">
-                Standard
+                {i18n.t('Standard')}
               </label>
             </div>
             <div className="form-check">
@@ -381,12 +483,12 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                 className="form-check-input"
               />
               <label className="form-check-label" htmlFor="radioSilent">
-                Silent
+                {i18n.t('Silent')}
               </label>
             </div>
           </div>
 
-          <div className="h6 ml-2">Select sound level</div>
+          <div className="h6 ml-2">{i18n.t('Select sound level')}</div>
           <div className="ml-2 mb-3 d-flex align-items-center">
             <Icon.VolumeX />
             <RangeInput
@@ -407,7 +509,7 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
             <Icon.Volume2 />
           </div>
 
-          <div className="h6 ml-2">Select tournament sound level</div>
+          <div className="h6 ml-2">{i18n.t('Select tournament sound level')}</div>
           <div className="ml-2 mb-3 d-flex align-items-center">
             <Icon.VolumeX />
             <RangeInput
@@ -441,7 +543,7 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                   <span className="sr-only">Loading...</span>
                 </div>
               ) : (
-                'Save'
+                i18n.t('Save')
               )}
             </button>
           </div>

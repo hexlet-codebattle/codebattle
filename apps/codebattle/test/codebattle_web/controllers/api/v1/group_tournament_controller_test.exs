@@ -76,7 +76,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> post("/api/v1/group_tournaments/#{group_tournament.id}/submit_solution", %{
         "solution" => "print(1)"
       })

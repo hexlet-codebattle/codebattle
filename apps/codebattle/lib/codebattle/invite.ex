@@ -143,6 +143,14 @@ defmodule Codebattle.Invite do
       raise "Not authorized!"
     end
 
+    if invite.state == "pending" do
+      do_accept_invite(invite)
+    else
+      {:error, :invite_is_not_pending}
+    end
+  end
+
+  defp do_accept_invite(invite) do
     users = [invite.creator, invite.recipient]
 
     game_params = %{
@@ -174,9 +182,18 @@ defmodule Codebattle.Invite do
         {:ok, %{invite: invite, dropped_invites: dropped_invites}}
 
       {:error, reason} ->
-        {:error, reason}
+        maybe_drop_unavailable_invite(invite, reason)
     end
   end
+
+  defp maybe_drop_unavailable_invite(invite, :already_in_a_game = reason) do
+    case Invite.update_invite(invite, %{state: "dropped"}) do
+      {:ok, dropped_invite} -> {:error, reason, dropped_invite}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  defp maybe_drop_unavailable_invite(_invite, reason), do: {:error, reason}
 
   def cancel_invite(params) do
     user_id = params.user_id

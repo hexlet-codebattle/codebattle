@@ -16,7 +16,7 @@ defmodule CodebattleWeb.SessionControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.session_path(conn, :new))
 
     assert redirected_to(conn) == "/"
@@ -27,7 +27,7 @@ defmodule CodebattleWeb.SessionControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.session_path(conn, :new, next: "/settings"))
 
     assert redirected_to(conn) == "/settings"

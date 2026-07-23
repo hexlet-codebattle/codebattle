@@ -21,10 +21,10 @@
 #         players_count: nil
 #       )
 
-#     creator_token = Phoenix.Token.sign(socket(UserSocket), "user_token", creator.id)
+#     creator_token = user_socket_token(creator)
 #     {:ok, creator_socket} = connect(UserSocket, %{"token" => creator_token})
 
-#     participant_token = Phoenix.Token.sign(socket(UserSocket), "user_token", participant.id)
+#     participant_token = user_socket_token(participant)
 #     {:ok, participant_socket} = connect(UserSocket, %{"token" => participant_token})
 
 #     {:ok,

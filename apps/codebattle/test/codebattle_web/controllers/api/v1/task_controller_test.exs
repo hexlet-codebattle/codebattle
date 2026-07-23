@@ -22,7 +22,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
 
       tasks =
         conn
-        |> put_session(:user_id, u1.id)
+        |> log_in_user(u1.id)
         |> get(Routes.api_v1_task_path(conn, :index))
         |> json_response(200)
         |> Map.get("tasks")
@@ -32,6 +32,8 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                %{
                  "creator_id" => u1.id,
                  "id" => t1.id,
+                 "description_en" => "test sum",
+                 "description_ru" => "проверка суммы",
                  "level" => "easy",
                  "name" => "1",
                  "origin" => "user",
@@ -40,6 +42,8 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                %{
                  "creator_id" => u2.id,
                  "id" => t2.id,
+                 "description_en" => "test sum",
+                 "description_ru" => "проверка суммы",
                  "level" => "easy",
                  "name" => "2",
                  "origin" => "user",
@@ -48,6 +52,8 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                %{
                  "creator_id" => nil,
                  "id" => t3.id,
+                 "description_en" => "test sum",
+                 "description_ru" => "проверка суммы",
                  "level" => "easy",
                  "name" => "3",
                  "origin" => "user",
@@ -103,7 +109,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
 
       response =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.api_v1_task_path(conn, :show, hidden_task.id))
         |> json_response(200)
 

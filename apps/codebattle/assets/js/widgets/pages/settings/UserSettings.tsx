@@ -7,8 +7,10 @@ import capitalize from 'lodash/capitalize';
 import noop from 'lodash/noop';
 import Alert from 'react-bootstrap/Alert';
 import { useDispatch, useSelector } from 'react-redux';
+import type { FormikHelpers } from 'formik';
 
 import type { RootState } from '@/slices/store';
+import { getPageProp } from '@/inertia/pageProps';
 
 import i18n, { getSupportedLocale } from '../../../i18n';
 import { userSettingsSelector } from '../../selectors';
@@ -25,7 +27,16 @@ interface Notification {
 }
 
 interface UpdateSettingsError extends Error {
-  response?: { data: { errors: { name?: string[] } }; status: number };
+  response?: { data: { errors: Record<string, string[]> }; status: number };
+}
+
+interface UserSessionData {
+  id: string;
+  current: boolean;
+  userAgent?: string | null;
+  ip?: string | null;
+  lastSeenAt: string;
+  createdAt: string;
 }
 
 const providers = ['github', 'discord'] as const;
@@ -59,6 +70,55 @@ const updateSettings = async (values: Record<string, unknown>) => {
 
   return data;
 };
+
+const updatePassword = async (values: Record<string, unknown>) => {
+  const response = await fetch('/api/v1/settings/password', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-csrf-token': csrfToken ?? '',
+    },
+    body: JSON.stringify(decamelizeKeys(values)),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`) as UpdateSettingsError;
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
+
+const deleteUserSession = async (sessionId: string) => {
+  const response = await fetch(`/api/v1/settings/sessions/${sessionId}`, {
+    method: 'DELETE',
+    headers: {
+      'x-csrf-token': csrfToken ?? '',
+    },
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return data as { current: boolean };
+};
+
+const formatFieldErrors = (errors: Record<string, string[]> = {}) =>
+  Object.entries(camelizeKeys(errors)).reduce<Record<string, string>>(
+    (result, [fieldName, messages]) => {
+      const fieldMessages = Array.isArray(messages) ? messages : [String(messages)];
+
+      return {
+        ...result,
+        [fieldName]: fieldMessages.map(capitalize).join(', '),
+      };
+    },
+    {},
+  );
 
 interface NotificationProps {
   notification: Notification;
@@ -108,11 +168,11 @@ function SocialButtons({ settings }: SocialButtonsProps) {
             data-to={`/auth/${provider}`}
             disabled={!settings.canUnlinkSocial}
           >
-            {`Unlink ${formatedProviderName}`}
+            {i18n.t('Unlink %{provider}', { provider: formatedProviderName })}
           </button>
         ) : (
           <a className="bind-social" href={`/auth/${provider}/bind/`}>
-            {`Link ${formatedProviderName}`}
+            {i18n.t('Link %{provider}', { provider: formatedProviderName })}
           </a>
         )}
       </div>
@@ -122,21 +182,63 @@ function SocialButtons({ settings }: SocialButtonsProps) {
 
 function UserSettings() {
   const [notification, setNotification] = useState<Notification>(notifications.empty);
+  const [sessions, setSessions] = useState<UserSessionData[]>(() =>
+    camelizeKeys(getPageProp<UserSessionData[]>('user_sessions', [])),
+  );
+  const [revokingSessionId, setRevokingSessionId] = useState<string>();
   const settings = useSelector((state: RootState) =>
     userSettingsSelector(state),
   ) as UserSettingsData;
   const dispatch = useDispatch();
 
+  const handleDeleteSession = useCallback(async (session: UserSessionData) => {
+    setRevokingSessionId(session.id);
+
+    try {
+      const result = await deleteUserSession(session.id);
+
+      if (result.current) {
+        window.location.assign('/session/new');
+        return;
+      }
+
+      setSessions((currentSessions) =>
+        currentSessions.filter((currentSession) => currentSession.id !== session.id),
+      );
+      setNotification(notifications.success);
+    } catch {
+      setNotification(notifications.error);
+    } finally {
+      setRevokingSessionId(undefined);
+    }
+  }, []);
+
   const handleUpdateUserSettings = useCallback(
     async (
       values: UserSettingsFormValues,
-      { setErrors }: { setErrors: (errors: { name?: string }) => void },
+      { setErrors, resetForm }: FormikHelpers<UserSettingsFormValues>,
     ) => {
+      const { currentPassword, password, passwordConfirmation, ...settingsValues } = values;
+      const passwordValues = { currentPassword, password, passwordConfirmation };
+
       try {
-        const data = await updateSettings(values as unknown as Record<string, unknown>);
+        const data = await updateSettings(settingsValues as unknown as Record<string, unknown>);
 
         await i18n.changeLanguage(getSupportedLocale(data.locale));
         dispatch(actions.updateUserSettings(camelizeKeys(data)));
+
+        if (Object.values(passwordValues).some((value) => value.trim())) {
+          await updatePassword(passwordValues);
+        }
+
+        resetForm({
+          values: {
+            ...settingsValues,
+            currentPassword: '',
+            password: '',
+            passwordConfirmation: '',
+          },
+        });
         setNotification(notifications.success);
       } catch (rawError) {
         const error = rawError as UpdateSettingsError;
@@ -145,8 +247,7 @@ function UserSettings() {
           return;
         }
 
-        const { name: userNameErrors = [] } = error.response.data.errors;
-        setErrors({ name: userNameErrors.map(capitalize).join(', ') });
+        setErrors(formatFieldErrors(error.response.data.errors));
       }
     },
     [dispatch],
@@ -155,11 +256,51 @@ function UserSettings() {
   return (
     <div className="container cb-bg-panel cb-text cb-rounded shadow-sm py-4">
       <Notification notification={notification} onClose={setNotification} />
-      <h2 className="font-weight-normal">Settings</h2>
+      <h2 className="font-weight-normal">{i18n.t('Settings')}</h2>
       <UserSettingsForm settings={settings} onSubmit={handleUpdateUserSettings} />
       <div className="mt-3 ml-2 d-flex flex-column">
-        <h3 className="mb-3 font-weight-normal">Socials</h3>
+        <h3 className="mb-3 font-weight-normal">{i18n.t('Socials')}</h3>
         <SocialButtons settings={settings} />
+      </div>
+      <div className="mt-4 ml-2">
+        <h3 className="mb-3 font-weight-normal">{i18n.t('Active devices')}</h3>
+        {sessions.length === 0 ? (
+          <div className="text-muted">{i18n.t('No active devices')}</div>
+        ) : (
+          <div className="d-flex flex-column">
+            {sessions.map((session) => (
+              <div
+                key={session.id}
+                className="d-flex flex-wrap justify-content-between align-items-center cb-border-color border rounded p-3 mb-2"
+              >
+                <div className="mr-3 text-break">
+                  <div>
+                    {session.userAgent || i18n.t('Unknown device')}
+                    {session.current && (
+                      <span className="badge badge-success ml-2">{i18n.t('Current device')}</span>
+                    )}
+                  </div>
+                  <small className="text-muted">
+                    {[session.ip, new Date(session.lastSeenAt).toLocaleString()]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </small>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-outline-danger btn-sm mt-2 mt-md-0"
+                  disabled={revokingSessionId === session.id}
+                  onClick={() => handleDeleteSession(session)}
+                  aria-label={i18n.t('Remove device %{device}', {
+                    device: session.userAgent || session.id,
+                  })}
+                >
+                  {session.current ? i18n.t('Sign out') : i18n.t('Remove')}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

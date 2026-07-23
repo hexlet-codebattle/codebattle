@@ -27,7 +27,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.public_event_path(conn, :show, event.slug))
 
       response = html_response(conn, 200)
@@ -57,7 +57,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> get(Routes.public_event_path(conn, :show, event.slug))
 
       assert redirected_to(conn) == Routes.root_path(conn, :index)
@@ -115,7 +115,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "q"}))
 
       assert [db_tournament] = Repo.all(Tournament)
@@ -161,7 +161,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "q"}))
 
       assert redirected_to(conn) == Routes.public_event_path(conn, :show, event.slug)
@@ -213,7 +213,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "global-q"}))
 
       assert redirected_to(conn) == Routes.tournament_path(conn, :show, tournament.id)
@@ -247,7 +247,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       conn =
         conn
-        |> put_session(:user_id, user.id)
+        |> log_in_user(user.id)
         |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "q"}))
 
       assert redirected_to(conn) == Routes.public_event_path(conn, :show, event.slug)

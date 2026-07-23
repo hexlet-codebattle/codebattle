@@ -1195,8 +1195,8 @@ msgstr "Format"
 msgid "Kick player"
 msgstr "Kick player"
 
-msgid "Kick {{name}} from tournament?"
-msgstr "Kick {{name}} from tournament?"
+msgid "Kick %{name} from tournament?"
+msgstr "Kick %{name} from tournament?"
 
 msgid "Last page"
 msgstr "Last page"
@@ -1288,3 +1288,98 @@ msgstr "Chat message"
 msgid "Wins"
 msgstr "Wins"
 
+msgid "Your weapon"
+msgstr "Your weapon"
+
+msgid "No access yet"
+msgstr "No access yet"
+
+msgid "Your name"
+msgstr "Your name"
+
+msgid "Enter your name"
+msgstr "Enter your name"
+
+msgid "Your clan"
+msgstr "Your clan"
+
+msgid "clan list"
+msgstr "clan list"
+
+msgid "Enter your clan"
+msgstr "Enter your clan"
+
+msgid "Locale"
+msgstr "Locale"
+
+msgid "Select sound type"
+msgstr "Select sound type"
+
+msgid "Dendy"
+msgstr "Dendy"
+
+msgid "CS"
+msgstr "CS"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Silent"
+msgstr "Silent"
+
+msgid "Select sound level"
+msgstr "Select sound level"
+
+msgid "Select tournament sound level"
+msgstr "Select tournament sound level"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Socials"
+msgstr "Socials"
+
+msgid "Unlink %{provider}"
+msgstr "Unlink %{provider}"
+
+msgid "Link %{provider}"
+msgstr "Link %{provider}"
+
+msgid "Change password"
+msgstr "Change password"
+
+msgid "Old password"
+msgstr "Old password"
+
+msgid "Enter old password"
+msgstr "Enter old password"
+
+msgid "New password"
+msgstr "New password"
+
+msgid "Enter new password"
+msgstr "Enter new password"
+
+msgid "Confirm new password"
+msgstr "Confirm new password"
+
+msgid "Active devices"
+msgstr "Active devices"
+
+msgid "No active devices"
+msgstr "No active devices"
+
+msgid "Unknown device"
+msgstr "Unknown device"
+
+msgid "Current device"
+msgstr "Current device"
+
+msgid "Remove device %{device}"
+msgstr "Remove device %{device}"
+
+msgid "Sign out"
+msgstr "Sign out"
+
+msgid "Remove"
+msgstr "Remove"

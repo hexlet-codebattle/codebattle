@@ -25,6 +25,7 @@ defmodule CodebattleWeb.ConnCase do
   using do
     quote do
       import Codebattle.OauthTestHelpers
+      import CodebattleWeb.ConnCase, only: [log_in_user: 2, log_in_user: 3]
       import CodebattleWeb.Factory
       import Phoenix.ConnTest
       import Phoenix.LiveViewTest
@@ -55,5 +56,16 @@ defmodule CodebattleWeb.ConnCase do
       |> Plug.Conn.fetch_session()
 
     {:ok, conn: conn}
+  end
+
+  def log_in_user(conn, user_or_id, attrs \\ %{}) do
+    user =
+      case user_or_id do
+        %Codebattle.User{} = user -> user
+        user_id -> Codebattle.User.get!(user_id)
+      end
+
+    {:ok, _session, token} = Codebattle.UserSession.create(user, attrs)
+    Plug.Conn.put_session(conn, :user_session_token, token)
   end
 end

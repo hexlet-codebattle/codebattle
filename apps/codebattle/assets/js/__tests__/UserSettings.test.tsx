@@ -13,7 +13,9 @@ vi.mock('@fortawesome/react-fontawesome', () => ({
 }));
 
 vi.mock('calcite-react/Slider', () => ({ default: 'input' }));
-vi.mock('../widgets/components/LanguageIcon', () => ({ default: () => null }));
+vi.mock('../widgets/components/LanguageIcon', () => ({
+  default: ({ lang }: { lang?: string }) => <span data-testid={`language-icon-${lang}`} />,
+}));
 vi.mock('react-bootstrap/Alert', () => ({
   __esModule: true,
   default: ({
@@ -37,7 +39,12 @@ vi.mock('../i18n', () => ({
   getLocale: vi.fn(() => 'en'),
   getSupportedLocale: vi.fn((locale) => (['en', 'ru'].includes(locale) ? locale : 'en')),
   default: {
-    t: vi.fn((key) => key),
+    t: vi.fn((key: string, params: Record<string, unknown> = {}) =>
+      Object.entries(params).reduce(
+        (result, [name, value]) => result.replace(`%{${name}}`, String(value)),
+        key,
+      ),
+    ),
     changeLanguage: vi.fn(() => Promise.resolve()),
   },
 }));
@@ -72,6 +79,24 @@ vi.mock('@/inertia/pageProps', () => {
     local: 'en',
     current_user: { sound_settings: {} },
     game_id: 10,
+    user_sessions: [
+      {
+        id: 'current-session',
+        current: true,
+        user_agent: 'Current browser',
+        ip: '127.0.0.1',
+        last_seen_at: '2026-07-23T12:00:00Z',
+        created_at: '2026-07-23T11:00:00Z',
+      },
+      {
+        id: 'other-session',
+        current: false,
+        user_agent: 'Other browser',
+        ip: '10.0.0.2',
+        last_seen_at: '2026-07-22T12:00:00Z',
+        created_at: '2026-07-22T11:00:00Z',
+      },
+    ],
   };
   return {
     getPageProp: (key: keyof typeof pageProps, fallback?: unknown) => pageProps[key] ?? fallback,
@@ -107,7 +132,7 @@ describe('UserSettings test cases', () => {
       ok: true,
       json: async () => ({}),
     });
-    const { getByRole, getByLabelText, getByTestId, user } = setup(
+    const { getByRole, getByLabelText, getByTestId, findByText, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
@@ -118,7 +143,8 @@ describe('UserSettings test cases', () => {
 
     await user.clear(nameInput);
     await user.type(nameInput, 'Dmitry');
-    await user.selectOptions(codeLangSelect, 'Javascript');
+    await user.click(codeLangSelect);
+    await user.click(await findByText('Javascript'));
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -226,6 +252,112 @@ describe('UserSettings test cases', () => {
     await user.click(submitButton);
 
     expect(await findByRole('alert')).toHaveClass('alert-danger');
+  });
+
+  test('enables saving the Silent sound option', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ locale: 'en' }),
+    });
+
+    const { getByLabelText, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    const submitButton = getByLabelText('SubmitForm');
+    await user.click(getByLabelText('Silent'));
+
+    expect(submitButton).toBeEnabled();
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      const [, requestOptions] = fetchMock.mock.calls[0];
+      expect(JSON.parse(requestOptions.body).sound_settings.type).toBe('silent');
+    });
+  });
+
+  test('shows language icons in the settings language menu', async () => {
+    const { getByTestId, getAllByTestId, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    await user.click(getByTestId('code-langSelect'));
+
+    expect(getAllByTestId('language-icon-js').length).toBeGreaterThan(0);
+    expect(getAllByTestId('language-icon-python').length).toBeGreaterThan(0);
+  });
+
+  test('changes a password without sending password fields to the settings endpoint', async () => {
+    const passwordStore = configureStore({
+      reducer,
+      preloadedState: {
+        user: {
+          settings: {
+            ...preloadedState.user.settings,
+            hasPassword: true,
+          },
+        },
+      } as never,
+    });
+
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ locale: 'en' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ status: 'ok', has_password: true }),
+      });
+
+    const { getByLabelText, getByTestId, user } = setup(
+      <Provider store={passwordStore}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    await user.type(getByTestId('currentPasswordInput'), 'old-password-secure!');
+    await user.type(getByTestId('passwordInput'), 'new-password-secure!');
+    await user.type(getByTestId('passwordConfirmationInput'), 'new-password-secure!');
+    await user.click(getByLabelText('SubmitForm'));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+
+    const settingsBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(settingsBody).not.toHaveProperty('current_password');
+    expect(settingsBody).not.toHaveProperty('password');
+    expect(fetchMock.mock.calls[1][0]).toBe('/api/v1/settings/password');
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+      current_password: 'old-password-secure!',
+      password: 'new-password-secure!',
+      password_confirmation: 'new-password-secure!',
+    });
+  });
+
+  test('removes another active device', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: 'ok', current: false }),
+    });
+
+    const { getByLabelText, queryByText, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    expect(queryByText('Other browser')).toBeInTheDocument();
+    await user.click(getByLabelText('Remove device Other browser'));
+
+    await waitFor(() => expect(queryByText('Other browser')).not.toBeInTheDocument());
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/v1/settings/sessions/other-session',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
   });
 
   test('unlink button is disabled when it is the last sign-in method', () => {

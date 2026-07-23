@@ -10,7 +10,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.tournament_path(conn, :index))
 
     assert conn.status == 200
@@ -43,7 +43,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200
@@ -56,21 +56,21 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, creator.id)
+      |> log_in_user(creator.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200
 
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200
 
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token))
 
     assert new_conn.status == 200
@@ -118,7 +118,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     assert_raise Ecto.NoResultsError, fn ->
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.tournament_path(conn, :show, 12_313_221))
     end
   end
@@ -146,7 +146,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, creator.id)
+      |> log_in_user(creator.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200

@@ -195,8 +195,8 @@ defmodule CodebattleWeb.GameController do
     game_params = %{
       level: task.level,
       task: task,
-      mode: "training",
-      use_chat: false,
+      mode: "standard",
+      use_chat: true,
       visibility_type: "hidden",
       players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
     }

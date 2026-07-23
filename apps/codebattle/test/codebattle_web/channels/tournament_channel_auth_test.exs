@@ -27,7 +27,7 @@ defmodule CodebattleWeb.TournamentChannelAuthTest do
         "players_limit" => 200
       })
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    user_token = user_socket_token(user)
 
     assert {:ok, user_socket} =
              connect(UserSocket, %{"token" => user_token, "access_token" => tournament.access_token})
@@ -70,7 +70,7 @@ defmodule CodebattleWeb.TournamentChannelAuthTest do
       avg_result_percent: Decimal.new("100.0")
     })
 
-    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    user_token = user_socket_token(user)
     assert {:ok, user_socket} = connect(UserSocket, %{"token" => user_token})
 
     assert {:ok, _response, channel_socket} =

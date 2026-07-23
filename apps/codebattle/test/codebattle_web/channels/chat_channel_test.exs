@@ -11,13 +11,13 @@ defmodule CodebattleWeb.ChatChannelTest do
     user2 = insert(:user, name: "bob")
     admin = insert(:admin)
 
-    user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    user_token1 = user_socket_token(user1)
     {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
 
-    user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    user_token2 = user_socket_token(user2)
     {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
-    admin_token = Phoenix.Token.sign(socket(UserSocket), "user_token", admin.id)
+    admin_token = user_socket_token(admin)
     {:ok, admin_socket} = connect(UserSocket, %{"token" => admin_token})
 
     {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, admin_socket: admin_socket}}

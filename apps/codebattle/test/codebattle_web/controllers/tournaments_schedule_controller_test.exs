@@ -8,7 +8,7 @@ defmodule CodebattleWeb.TournamentsScheduleControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.tournaments_schedule_path(conn, :index))
 
     assert inertia_component(conn) == "TournamentsSchedule"
@@ -29,7 +29,7 @@ defmodule CodebattleWeb.TournamentsScheduleControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.tournaments_schedule_path(conn, :index))
 
     version = conn.private.inertia_version

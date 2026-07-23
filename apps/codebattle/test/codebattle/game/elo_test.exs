@@ -19,6 +19,8 @@ defmodule Codebattle.Game.EloTest do
     assert {1200, 1200} = Elo.calc_elo(1200, 1200, "grand_slam", :draw)
 
     assert_raise ArgumentError, ~r/result must be :win or :draw/, fn ->
+      # Deliberately bypass the public type contract to verify the runtime guard.
+      # credo:disable-for-next-line Credo.Check.Refactor.Apply
       apply(Elo, :calc_elo, [1200, 1200, "grand_slam", :loss])
     end
   end

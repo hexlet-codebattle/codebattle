@@ -7,7 +7,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :index))
 
     assert conn.status == 200
@@ -28,7 +28,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     # user can see public tasks
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :show, visible_task_pack))
 
     assert new_conn.status == 200
@@ -36,7 +36,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     # user can't see hidden tasks
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :show, hidden_task_pack.id))
 
     assert new_conn.status == 404
@@ -44,7 +44,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     # user can see his hidden tasks
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :show, hidden_created_task_pack.id))
 
     assert new_conn.status == 200
@@ -52,7 +52,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     # admin can see hidden tasks
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> get(Routes.task_pack_path(conn, :show, hidden_task_pack.id))
 
     assert new_conn.status == 200
@@ -63,7 +63,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :new))
 
     assert html_response(conn, 200) =~ "Create your own task pack"
@@ -75,7 +75,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :edit, task_pack))
 
     assert html_response(conn, 200) =~ "Edit task pack"
@@ -92,7 +92,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> post(Routes.task_pack_path(conn, :create), task_pack: params)
 
     assert %{id: id} = redirected_params(conn)
@@ -113,6 +113,53 @@ defmodule CodebattleWeb.TaskPackControllerTest do
            } = task_pack
   end
 
+  test ".create validates malformed and out-of-range task ids", %{conn: conn} do
+    user = insert(:user)
+    conn = log_in_user(conn, user.id)
+
+    Enum.each(
+      [
+        {"It is string", "Please provide only integers with comma separated values"},
+        {nil, "Please provide only integers with comma separated values"},
+        {["1", "2"], "Please provide only integers with comma separated values"},
+        {"0, 1", "Please provide integers between 1 and 2147483647 with comma separated values"},
+        {"2147483648", "Please provide integers between 1 and 2147483647 with comma separated values"}
+      ],
+      fn {task_ids, error} ->
+        response =
+          conn
+          |> post(Routes.task_pack_path(conn, :create),
+            task_pack: %{
+              "name" => "pack_#{System.unique_integer([:positive])}",
+              "task_ids" => task_ids,
+              "visibility" => "public"
+            }
+          )
+          |> html_response(200)
+
+        assert response =~ error
+      end
+    )
+  end
+
+  test ".create accepts the largest PostgreSQL integer task id", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> log_in_user(user.id)
+      |> post(Routes.task_pack_path(conn, :create),
+        task_pack: %{
+          "name" => "max_task_id_pack",
+          "task_ids" => "2147483647",
+          "visibility" => "public"
+        }
+      )
+
+    assert %{id: id} = redirected_params(conn)
+    assert %{task_ids: [2_147_483_647]} = Codebattle.TaskPack.get!(id)
+  end
+
   test ".update", %{conn: conn} do
     user = insert(:user)
     task_pack = insert(:task_pack, creator_id: user.id)
@@ -125,7 +172,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> patch(Routes.task_pack_path(conn, :update, task_pack), task_pack: params)
 
     assert %{id: id} = redirected_params(conn)
@@ -136,6 +183,26 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     assert %{name: "new_mega_task_pack", task_ids: [22]} = task_pack
   end
 
+  test ".update rejects malformed task ids without changing the task pack", %{conn: conn} do
+    user = insert(:user)
+    task_pack = insert(:task_pack, creator_id: user.id, task_ids: [1, 2])
+
+    response =
+      conn
+      |> log_in_user(user.id)
+      |> patch(Routes.task_pack_path(conn, :update, task_pack),
+        task_pack: %{
+          "name" => task_pack.name,
+          "task_ids" => "1, nope",
+          "visibility" => "public"
+        }
+      )
+      |> html_response(200)
+
+    assert response =~ "Please provide only integers with comma separated values"
+    assert Codebattle.TaskPack.get!(task_pack.id).task_ids == [1, 2]
+  end
+
   test ".activate", %{conn: conn} do
     user = insert(:user)
     admin = insert(:admin)
@@ -143,14 +210,14 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> patch(Routes.task_pack_activate_path(conn, :activate, task_pack))
 
     assert new_conn.status == 404
 
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> patch(Routes.task_pack_activate_path(conn, :activate, task_pack))
 
     assert redirected_to(new_conn) == Routes.task_pack_path(conn, :index)
@@ -167,14 +234,14 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> patch(Routes.task_pack_disable_path(conn, :disable, task_pack))
 
     assert new_conn.status == 404
 
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> patch(Routes.task_pack_disable_path(conn, :disable, task_pack))
 
     assert redirected_to(new_conn) == Routes.task_pack_path(conn, :index)
@@ -192,7 +259,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     # unrelated user
     new_conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> log_in_user(user.id)
       |> delete(Routes.task_pack_path(conn, :delete, task_pack))
 
     assert new_conn.status == 404
@@ -200,7 +267,7 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     # admin or creator
     new_conn =
       conn
-      |> put_session(:user_id, admin.id)
+      |> log_in_user(admin.id)
       |> delete(Routes.task_pack_path(conn, :delete, task_pack))
 
     assert redirected_to(new_conn) == Routes.task_pack_path(conn, :index)

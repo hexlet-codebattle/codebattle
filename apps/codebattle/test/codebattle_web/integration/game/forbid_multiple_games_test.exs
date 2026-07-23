@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Integration.ForbidMultipleGamesTest do
     socket = socket(UserSocket, "user_id", %{current_user: user})
 
     conn
-    |> put_session(:user_id, user.id)
+    |> log_in_user(user.id)
     |> get(user_path(conn, :index))
 
     {:ok, _response, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")

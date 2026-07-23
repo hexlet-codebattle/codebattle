@@ -10,23 +10,39 @@ import Channel from './Channel';
 
 const channel = new Channel();
 
-export const fetchState = (currentUserId: number) => (dispatch: any) => {
+export const findCurrentUserPlayingGame = (games: any[] = [], currentUserId: number) =>
+  games.find(
+    (game: any) =>
+      game.state === 'playing' &&
+      some(game.players, ({ id: playerId }: { id: number }) => playerId === currentUserId),
+  );
+
+export const fetchState = (currentUserId: number, waitingGameId?: number) => (dispatch: any) => {
   const channelName = 'lobby';
   channel.setupChannel(channelName);
 
   const camelizeKeysAndDispatch = (actionCreator: any) => (data: any) =>
     dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
+  channel.join().receive('ok', (data: any) => {
+    const normalizedData = camelizeKeys(data);
+    dispatch(actions.initGameList(normalizedData));
+
+    const activeGame = findCurrentUserPlayingGame(normalizedData.activeGames, currentUserId);
+    if (activeGame?.id === waitingGameId) {
+      window.location.replace(`/games/${activeGame.id}`);
+    }
+  });
 
   channel.onError(() => {
     dispatch(actions.updateLobbyChannelState(false));
   });
 
   const handleGameUpsert = (data: any) => {
+    const normalizedData = camelizeKeys(data);
     const {
       game: { players, id, state: gameState },
-    } = data;
+    } = normalizedData;
     const currentPlayerId = currentUserId;
     const isGameStarted = gameState === 'playing';
     const isCurrentUserInGame = some(
@@ -35,9 +51,9 @@ export const fetchState = (currentUserId: number) => (dispatch: any) => {
     );
 
     if (isGameStarted && isCurrentUserInGame) {
-      window.location.href = `/games/${id}`;
+      window.location.replace(`/games/${id}`);
     } else {
-      dispatch(actions.upsertGameLobby(data));
+      dispatch(actions.upsertGameLobby(normalizedData));
     }
   };
 
