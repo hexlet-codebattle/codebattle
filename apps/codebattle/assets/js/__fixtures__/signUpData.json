@@ -81,20 +81,20 @@
     ],
     [
       "password validation: short password",
-      "11111",
-      "Should be from 6 to 16 characters",
+      "pass1",
+      "Should be at least 8 characters",
       "password"
     ],
     [
-      "password validation: only special characters",
-      "!@#$%&*?",
-      "Should contain at least one letter or number",
+      "password validation: no letter",
+      "!@#$1234",
+      "Should contain at least one letter",
       "password"
     ],
     [
-      "password validation: long password",
-      "11111111111111111",
-      "Should be from 6 to 16 characters",
+      "password validation: no number",
+      "passwordonly",
+      "Should contain at least one number",
       "password"
     ],
     ["password validation: empty", "", "Password required", "password"]
@@ -103,8 +103,8 @@
     "data": {
       "name": "testName",
       "email": "valid@email.com",
-      "password": "testpassword!",
-      "passwordConfirmation": "testpassword!"
+      "password": "testpassword1!",
+      "passwordConfirmation": "testpassword1!"
     },
     "route": "/api/v1/users",
     "headers": {
