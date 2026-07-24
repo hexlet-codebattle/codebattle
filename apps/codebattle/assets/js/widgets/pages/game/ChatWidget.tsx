@@ -70,7 +70,7 @@ function ChatWidget() {
       inputRef={inputRef as React.RefObject<HTMLInputElement>}
       request={menuRequest}
     >
-      <div className="d-flex cb-bg-panel shadow-sm h-100 cb-rounded">
+      <div className="d-flex cb-game-chat-layout cb-bg-panel shadow-sm h-100 cb-rounded">
         <div
           className={cn(
             'd-flex flex-column flex-grow-1 position-relative p-0 h-100 mh-100 rounded-left',

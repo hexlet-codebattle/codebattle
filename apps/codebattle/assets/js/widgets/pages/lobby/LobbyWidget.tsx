@@ -206,7 +206,8 @@ function LobbyWidget() {
       <Modal
         show={showJoinGameModal}
         onHide={handleCloseJoinGameModal}
-        contentClassName="cb-bg-panel cb-join-game-modal"
+        dialogClassName="cb-join-game-modal"
+        contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title>{i18n.t('Join a game')}</Modal.Title>

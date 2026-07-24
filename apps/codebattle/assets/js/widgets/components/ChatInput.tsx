@@ -34,11 +34,21 @@ const trimColons = (message: string) => message.slice(0, message.lastIndexOf(':'
 
 const getColons = (message: string) => message.slice(message.lastIndexOf(':') + 1);
 
+const emoticonSearchQueries: Record<string, string> = {
+  ')': 'smiley',
+  '(': 'disappointed',
+};
+
+export const getEmojiSearchQuery = (message: string) => {
+  const query = getColons(message);
+
+  return emoticonSearchQueries[query] || query;
+};
+
 const getTooltipVisibility = async (msg: string) => {
   const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
   if (!endsWithEmojiCodeRegex.test(msg)) return Promise.resolve(false);
-  const colons = getColons(msg);
-  return !isEmpty(await SearchIndex.search(colons));
+  return !isEmpty(await SearchIndex.search(getEmojiSearchQuery(msg)));
 };
 
 interface ChatInputProps {
@@ -210,7 +220,7 @@ export default function ChatInput({
       )}
       {isTooltipVisible && (
         <EmojiToolTip
-          colons={getColons(text)}
+          query={getEmojiSearchQuery(text)}
           handleSelect={handleSelectEmodji}
           hide={hideTooltip}
         />

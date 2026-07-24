@@ -451,8 +451,9 @@
 
 .cb-profile-heatmap-grid {
   width: 100%;
-  overflow: hidden;
-  padding: 0 14px 0.25rem 6px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0.75rem 14px 0.25rem 6px;
 }
 
 .cb-profile-heatmap-grid svg {
@@ -461,6 +462,7 @@
   min-width: 0;
   max-width: 100%;
   height: auto;
+  overflow: visible;
 }
 
 .cb-profile-heatmap-overlay {

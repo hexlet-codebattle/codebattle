@@ -69,7 +69,7 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
 
   return (
     <>
-      <div className="d-none d-md-block table-responsive rounded-bottom cb-rounded">
+      <div className="d-none d-md-block rounded-bottom cb-rounded">
         <table className="table table-striped mb-0">
           <thead className="text-center text-white">
             <tr>

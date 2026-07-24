@@ -13,6 +13,7 @@ import type { RootState } from '@/slices/store';
 import { getPageProp } from '@/inertia/pageProps';
 
 import i18n, { getSupportedLocale } from '../../../i18n';
+import { configureSound } from '../../lib/sound';
 import { userSettingsSelector } from '../../selectors';
 import { actions } from '../../slices';
 
@@ -226,6 +227,7 @@ function UserSettings() {
 
         await i18n.changeLanguage(getSupportedLocale(data.locale));
         dispatch(actions.updateUserSettings(camelizeKeys(data)));
+        configureSound(settingsValues.soundSettings);
 
         if (Object.values(passwordValues).some((value) => value.trim())) {
           await updatePassword(passwordValues);

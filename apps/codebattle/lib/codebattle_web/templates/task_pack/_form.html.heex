@@ -17,7 +17,8 @@
   <div class="form-group">
     {label(f, :visibility, class: "text-white")}
     {select(f, :visibility, Codebattle.TaskPack.visibility_types(),
-      class: "form-select form-select-lg custom-select cb-bg-panel cb-border-color text-white"
+      class:
+        "form-select form-select-lg custom-select cb-dark-select cb-bg-panel cb-border-color text-white"
     )}
     {error_tag(f, :visibility)}
   </div>
