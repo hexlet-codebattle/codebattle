@@ -36,6 +36,7 @@ describe('sign up', () => {
   });
 
   beforeEach(() => {
+    window.history.pushState({}, '', '/users/new');
     fetchMock = vi.fn();
     globalThis.fetch = fetchMock as unknown as typeof fetch;
   });
@@ -84,5 +85,24 @@ describe('sign up', () => {
         body: JSON.stringify(data),
       });
     });
+  });
+
+  test('shows a readable password recovery confirmation', async () => {
+    window.history.pushState({}, '', '/remind_password');
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+
+    const { getByLabelText, findByText, user } = setup(<Registration />);
+
+    await user.type(getByLabelText('email'), 'user@example.com');
+    await user.click(getByLabelText('SubmitForm'));
+
+    const confirmation = await findByText(
+      'We have sent you an email with instructions on how to reset your password',
+    );
+
+    expect(confirmation).toHaveClass('text-white');
   });
 });

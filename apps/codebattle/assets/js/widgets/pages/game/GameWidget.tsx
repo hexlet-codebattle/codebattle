@@ -65,7 +65,7 @@ function RightSide({ output, children }: RightSideProps) {
           role="tablist"
         >
           <a
-            className={cn('nav-item nav-link flex-grow-1 rounded-0 px-5', {
+            className={cn('nav-item nav-link flex-grow-1 rounded-0 px-2 px-sm-5', {
               active: showTab === 'editor',
             })}
             href="#Editor"

@@ -90,7 +90,7 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }: RoomW
                 invisible: !visible,
               })}
             >
-              <div className="row no-gutter cb-game px-1">
+              <div className="row no-gutters cb-game px-1">
                 {showBattleRoom && (
                   <>
                     <InfoWidget viewMode={viewMode} />

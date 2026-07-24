@@ -1305,6 +1305,15 @@ main > #app {
   min-width: 250px;
 }
 
+.cb-game > [class*='col-'] {
+  min-width: 0;
+}
+
+.cb-game-chat-layout,
+.cb-game-chat-container {
+  min-width: 0;
+}
+
 @media screen and (min-width: $md) {
   .main-nav {
     padding-left: clamp(0.25rem, 1vw, 0.5rem);
@@ -1394,6 +1403,18 @@ main > #app {
 
   .cb-game-control-container {
     width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  .cb-game-chat-layout {
+    flex-direction: column;
+  }
+
+  .cb-game-chat-container {
+    width: 100%;
+    min-height: 0;
+    height: auto !important;
   }
 
   .main-nav {
@@ -1614,17 +1635,30 @@ $cb-bronze-bottom: #4a3223;
 .dropdown-menu,
 .cb-dropdown-menu {
   & .dropdown-item.cb-dropdown-item {
-    color: white;
+    color: white !important;
 
-    &:hover:not(:active):not(.active) {
+    &:hover:not(:active):not(.active),
+    &:focus:not(:active):not(.active) {
+      color: white !important;
       background-color: $cb-bg-panel;
     }
 
     &:active,
     &.active {
+      color: white !important;
       background-color: $cb-bg-panel;
     }
   }
+}
+
+.cb-dark-select,
+.cb-dark-select option {
+  color: white;
+  background-color: $cb-bg-panel;
+}
+
+.cb-dark-select {
+  color-scheme: dark;
 }
 
 div.cb-dropdown-menu {
@@ -1734,9 +1768,19 @@ div.cb-dropdown-menu {
 }
 
 @media screen and (min-width: $md) {
-  .cb-join-game-modal .modal-dialog {
-    min-width: 900px;
-    /* New width for default modal */
+  .modal-dialog.cb-join-game-modal {
+    width: calc(100vw - 2rem);
+    min-width: 0;
+    max-width: 900px;
+  }
+
+  .cb-join-game-modal table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .cb-join-game-modal .cb-username-td {
+    max-width: 0;
   }
 }
 

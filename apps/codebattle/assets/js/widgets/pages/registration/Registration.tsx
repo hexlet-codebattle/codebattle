@@ -381,7 +381,11 @@ function ResetPassword() {
   if (isSend) {
     return (
       <Container>
-        <Body>We have sent you an email with instructions on how to reset your password</Body>
+        <Body>
+          <p className="mb-0 text-white">
+            We have sent you an email with instructions on how to reset your password
+          </p>
+        </Body>
       </Container>
     );
   }

@@ -14,12 +14,12 @@ interface EmojiItem {
 }
 
 interface EmojiTooltipProps {
-  colons: string;
+  query: string;
   handleSelect: (emoji: EmojiItem) => void;
   hide: () => void;
 }
 
-export default function EmojiTooltip({ colons, handleSelect, hide }: EmojiTooltipProps) {
+export default function EmojiTooltip({ query, handleSelect, hide }: EmojiTooltipProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [emojis, setEmojis] = useState<EmojiItem[]>([]);
 
@@ -32,7 +32,7 @@ export default function EmojiTooltip({ colons, handleSelect, hide }: EmojiToolti
 
   useEffect(() => {
     const fetchEmojis = async () => {
-      const rawEmojis = await SearchIndex.search(colons);
+      const rawEmojis = await SearchIndex.search(query);
       const preparedEmojis = rawEmojis.map((emoji: EmojiItem) => ({
         ...emoji,
         native: emoji.skins[0].native,
@@ -42,7 +42,7 @@ export default function EmojiTooltip({ colons, handleSelect, hide }: EmojiToolti
     };
 
     fetchEmojis();
-  }, [colons]);
+  }, [query]);
 
   const decreaseIndex = () => {
     setActiveIndex((prevIndex) => {
