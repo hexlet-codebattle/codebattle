@@ -1,6 +1,11 @@
 defmodule CodebattleWeb.Api.V1.ResetPasswordController do
   use CodebattleWeb, :controller
 
+  plug(
+    CodebattleWeb.Plugs.RateLimit,
+    [bucket: "reset_password", limit: 5, window: to_timeout(minute: 15)] when action in [:create]
+  )
+
   def create(conn, params) do
     user_attrs = %{
       email: params["email"]

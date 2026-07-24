@@ -41,6 +41,7 @@ config :codebattle, Oban,
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
+config :codebattle, :auth_rate_limit_enabled, true
 config :codebattle, :base_admin_path, "/"
 config :codebattle, :base_moderator_path, "/"
 config :codebattle, :base_user_path, "/"

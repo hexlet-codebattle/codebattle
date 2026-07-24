@@ -3,6 +3,11 @@ defmodule CodebattleWeb.Api.V1.SessionController do
 
   alias CodebattleWeb.UserAuth
 
+  plug(
+    CodebattleWeb.Plugs.RateLimit,
+    [bucket: "sign_in", limit: 20, window: to_timeout(minute: 5)] when action in [:create]
+  )
+
   def create(conn, params) do
     user_attrs = %{
       email: params["email"],

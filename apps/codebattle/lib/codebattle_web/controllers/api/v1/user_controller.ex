@@ -12,6 +12,11 @@ defmodule CodebattleWeb.Api.V1.UserController do
   alias Codebattle.User.Stats, as: UserStats
   alias CodebattleWeb.Api.UserView
 
+  plug(
+    CodebattleWeb.Plugs.RateLimit,
+    [bucket: "sign_up", limit: 10, window: to_timeout(minute: 10)] when action in [:create]
+  )
+
   def index(conn, params) do
     payload = UserView.render_rating(params)
 

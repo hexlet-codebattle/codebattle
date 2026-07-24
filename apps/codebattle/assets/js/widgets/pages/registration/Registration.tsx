@@ -269,10 +269,7 @@ function SignIn() {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email === 'EMAIL_NOT_FOUND') {
-              formik.errors.email = 'Invalid email';
-            }
-            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') {
+            if (errors.email) {
               formik.setFieldError('email', errors.email);
             }
             if (errors.base) {

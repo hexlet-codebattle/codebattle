@@ -11,7 +11,7 @@ const emailSchema = Yup.string()
   )
   .matches(/^[a-zA-Z0-9]{1}[^;]*@[^;]*$/i, 'Should begin and end with a Latin letter or number')
   .matches(
-    /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/i,
+    /^[_a-zA-Z0-9+-]+(\.[_a-zA-Z0-9+-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/i,
     "Can't contain special symbols",
   )
   .required('Email required');
@@ -63,11 +63,10 @@ const schemas = {
       .required('Nickname required'),
     email: emailSchema,
     password: Yup.string()
-      .matches(/^\S*$/, "Can't contain empty symbols")
-      .min(6, 'Should be from 6 to 16 characters')
-      .max(16, 'Should be from 6 to 16 characters')
-      .matches(/[a-zA-Z0-9]/, 'Should contain at least one letter or number')
-      .matches(/[!@#$%^&*(),.?":{}|<>/]/, 'Should contain at least one special character')
+      .min(8, 'Should be at least 8 characters')
+      .max(128, 'Should be at most 128 characters')
+      .matches(/[a-zA-Z]/, 'Should contain at least one letter')
+      .matches(/[0-9]/, 'Should contain at least one number')
       .required('Password required'),
     passwordConfirmation: Yup.string()
       .required('Confirmation required')

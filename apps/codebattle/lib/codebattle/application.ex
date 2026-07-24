@@ -24,6 +24,10 @@ defmodule Codebattle.Application do
           {Cachex, name: :password_attempts_cache},
           id: :password_attempts_cache
         ),
+        Supervisor.child_spec(
+          {Cachex, name: :auth_rate_limit_cache},
+          id: :auth_rate_limit_cache
+        ),
         {Codebattle.UsersPointsAndRankServer, []},
         {Codebattle.UserAchievementsServer, []},
         {Codebattle.Bot.GameCreator, []},
