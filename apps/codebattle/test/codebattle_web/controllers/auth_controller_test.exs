@@ -45,7 +45,7 @@ defmodule CodebattleWeb.AuthControllerTest do
                is_bot: false,
                is_guest: false,
                name: "test_user",
-               rank: 5432,
+               rank: 0,
                rating: 1200
              } = user
 
@@ -103,7 +103,7 @@ defmodule CodebattleWeb.AuthControllerTest do
                is_guest: false,
                lang: "js",
                name: "test_name",
-               rank: 5432,
+               rank: 0,
                rating: 1200
              } = user
 
@@ -139,7 +139,7 @@ defmodule CodebattleWeb.AuthControllerTest do
                external_oauth_login: "external_test_login",
                lang: "js",
                name: "External-external-user-id",
-               rank: 5432,
+               rank: 0,
                rating: 1200,
                subscription_type: :free
              } = user

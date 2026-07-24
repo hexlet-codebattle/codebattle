@@ -82,7 +82,7 @@ defmodule Codebattle.User do
     field(:password_hash, :string)
     field(:points, :integer, default: 0)
     field(:public_id, :binary_id)
-    field(:rank, :integer, default: 5432)
+    field(:rank, :integer, default: 0)
     field(:rating, :integer, default: 1200)
     field(:style_lang, :string, default: "css")
     field(:subscription_type, Ecto.Enum, values: @subscription_types)

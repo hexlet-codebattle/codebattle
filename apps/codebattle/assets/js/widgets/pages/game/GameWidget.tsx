@@ -146,7 +146,7 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
           </EditorContainer>
           <EditorContainer
             orientation="right"
-            cardClassName="card cb-card h-100 shadow-sm border-0"
+            cardClassName="card cb-card h-100 shadow-sm position-relative border-0"
             editorContainerClassName="col-12 col-lg-6 p-1"
             editorMachine={editorMachine}
             {...editors[1]}
@@ -166,7 +166,7 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
         >
           <EditorContainer
             orientation="side"
-            cardClassName="card cb-card h-100 shadow-sm"
+            cardClassName="card cb-card h-100 shadow-sm position-relative"
             editorContainerClassName="col-12 p-1"
             editorMachine={editorMachine}
             {...editors[0]}
