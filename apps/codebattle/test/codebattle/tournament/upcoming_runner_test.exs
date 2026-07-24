@@ -238,38 +238,6 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
       assert {:ok, :noop} = UpcomingRunner.init(:noop)
     end
 
-    # skip flaky test
-    @tag :skip
-    test "handle_info/2 with :run_upcoming processes tournaments and schedules next run" do
-      # Clean up any existing tournaments from previous tests
-      Repo.delete_all(Tournament)
-
-      # Create a tournament that starts in the future (won't be auto-canceled)
-      starts_at =
-        DateTime.utc_now()
-        |> DateTime.add(5, :minute)
-        |> DateTime.truncate(:second)
-        |> Calendar.strftime("%Y-%m-%d %H:%M")
-
-      insert(:tournament,
-        state: "upcoming",
-        grade: "rookie",
-        starts_at: starts_at
-      )
-
-      assert {:noreply, :noop} = UpcomingRunner.handle_info(:run_upcoming, :noop)
-
-      # Verify tournament was processed
-      tournaments = Repo.all(Tournament)
-      assert length(tournaments) == 1
-      tournament = List.first(tournaments)
-      # Tournament is moved to waiting_participants but then canceled because:
-      # 1. It has no players
-      # 2. Its start time is in the past (for start_or_cancel check)
-      # So we expect it to be canceled
-      assert tournament.state == "canceled"
-    end
-
     test "handle_info/2 with unknown message returns {:noreply, state}" do
       assert {:noreply, :noop} = UpcomingRunner.handle_info(:unknown_message, :noop)
     end

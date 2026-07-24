@@ -48,36 +48,6 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanTest do
       assert length(pairs) == 5055
       assert length(unmatched_player_ids) == 1
     end
-
-    @tag :skip
-    test "1000 clans ~ 100 players" do
-      users =
-        0..1000
-        |> Enum.map(fn _id -> Enum.random(30..100) end)
-        |> build_users()
-
-      {execution_time, {pairs, unmatched_player_ids}} =
-        :timer.tc(fn -> @matcher.call(users) end)
-
-      assert execution_time / 1000 < 3000
-      assert length(pairs) > 10_000
-      assert length(unmatched_player_ids) < 2
-    end
-
-    @tag :skip
-    test "10_000 clans with small amount of players" do
-      users =
-        0..10_000
-        |> Enum.map(fn _id -> Enum.random(2..3) end)
-        |> build_users()
-
-      {execution_time, {pairs, unmatched_player_ids}} =
-        :timer.tc(fn -> @matcher.call(users) end)
-
-      assert execution_time / 1000 < 7000
-      assert length(pairs) > 10_000
-      assert length(unmatched_player_ids) < 2
-    end
   end
 
   defp build_users(counts) do

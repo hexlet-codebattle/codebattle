@@ -49,36 +49,6 @@ defmodule CodebattleWeb.ChatChannelTest do
     assert Jason.encode(response) == Jason.encode(%{users: [Codebattle.User.get!(user2.id)]})
   end
 
-  # SKIP flaky test for now, pls fix it
-  @tag :skip
-  test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do
-    chat_id = :rand.uniform(1000)
-    Chat.start_link({:game, chat_id})
-    chat_topic = get_chat_topic(chat_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
-
-    message = "oiblz"
-
-    push(socket1, "chat:add_msg", %{text: message})
-
-    :timer.sleep(100)
-
-    assert_receive %Phoenix.Socket.Message{
-      topic: ^chat_topic,
-      event: "chat:new_msg",
-      payload: response
-    }
-
-    id = user1.id
-    assert %{name: "alice", user_id: ^id, text: ^message, time: _} = response
-
-    {:ok, %{users: users, messages: messages}, _socket2} =
-      subscribe_and_join(socket2, ChatChannel, chat_topic)
-
-    assert length(users) == 2
-    assert [%{name: "alice", user_id: ^id, text: ^message, time: _}] = messages
-  end
-
   test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2} do
     chat_id = :rand.uniform(1000)
     Chat.start_link({:game, chat_id})
