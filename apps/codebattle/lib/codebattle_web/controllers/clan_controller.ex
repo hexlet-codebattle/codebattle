@@ -28,11 +28,12 @@ defmodule CodebattleWeb.ClanController do
 
   def show(conn, %{"id" => id}) do
     clan = Clan.get!(id, [:creator, :users])
+    clan_name = clan.name || gettext("Unnamed clan")
 
     conn
     |> put_meta_tags(%{
-      title: clan.name <> " • Hexlet Codebattle • Clan.",
-      description: clan.long_name,
+      title: clan_name <> " • Hexlet Codebattle • Clan.",
+      description: clan.long_name || clan_name,
       url: Routes.clan_path(conn, :show, clan)
     })
     |> render("show.html", %{clan: clan})
