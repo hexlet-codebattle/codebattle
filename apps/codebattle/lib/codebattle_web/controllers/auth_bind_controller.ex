@@ -68,6 +68,10 @@ defmodule CodebattleWeb.AuthBindController do
 
   defp bind_error_message(:already_bound), do: gettext("This account is already linked to another Codebattle user.")
 
+  defp bind_error_message(%{"error" => error}) when is_binary(error) do
+    gettext("Could not update authentication settings: %{error}", error: error)
+  end
+
   defp bind_error_message(_reason), do: gettext("Could not update authentication settings. Please try again.")
 
   def unbind(conn, params) do
