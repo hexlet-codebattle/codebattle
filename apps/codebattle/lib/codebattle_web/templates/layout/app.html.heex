@@ -201,7 +201,10 @@
                         href={Routes.user_path(@conn, :show, @current_user.id)}
                       >
                         <div class="d-flex flex-column justify-content-center text-nowrap mr-2">
-                          <h5 class="text-white text-right mb-0 text-break">
+                          <h5
+                            id="navbar-current-user-name"
+                            class="text-white text-right mb-0 text-break"
+                          >
                             {@current_user.name}
                           </h5>
                         </div>

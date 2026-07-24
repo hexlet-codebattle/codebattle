@@ -310,8 +310,16 @@ function UsersRating() {
             </tr>
           </thead>
           <tbody className="text-left">
-            {users.map((user, index) =>
-              renderUser(page, Number(pageSize), user as RatingUser, index),
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="p-3 text-center cb-text">
+                  {i18n.t('Player not found')}
+                </td>
+              </tr>
+            ) : (
+              users.map((user, index) =>
+                renderUser(page, Number(pageSize), user as RatingUser, index),
+              )
             )}
           </tbody>
         </table>

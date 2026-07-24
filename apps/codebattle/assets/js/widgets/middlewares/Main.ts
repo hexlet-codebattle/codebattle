@@ -213,11 +213,11 @@ export const changeReportStatus = (reportId: number, status: string) => (dispatc
     });
 };
 
-export const followUser = (userId: number) => (dispatch: any, getState: any) => {
+export const followUser = (userId: number, userName?: string) => (dispatch: any, getState: any) => {
   channel.push('user:follow', { userId }).receive('ok', (payload: any) => {
     const data = camelizeKeys(payload);
 
-    camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
+    dispatch(actions.followUser({ followId: data.followId, followName: userName }));
 
     if (!data.activeGameId) return;
 

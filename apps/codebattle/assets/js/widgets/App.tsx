@@ -28,6 +28,7 @@ const gameUIPersistWhitelist = [
   'editorTheme',
   'streamMode',
   'followId',
+  'followName',
   'followPaused',
   'taskDescriptionLanguage',
   'tournamentVisibleMode',

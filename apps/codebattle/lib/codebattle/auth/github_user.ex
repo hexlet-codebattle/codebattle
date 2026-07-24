@@ -37,7 +37,7 @@ defmodule Codebattle.Auth.User.GithubUser do
     github_user = Repo.get_by(User, github_id: profile.id)
 
     if github_user != nil && github_user.id != user.id do
-      {:error, "User with #{github_user.id} already registered."}
+      {:error, :already_bound}
     else
       github_name = profile.login
 

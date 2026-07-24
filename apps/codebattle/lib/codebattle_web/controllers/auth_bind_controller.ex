@@ -62,9 +62,13 @@ defmodule CodebattleWeb.AuthBindController do
         conn |> put_flash(:info, gettext("Successfully updated authentication settings")) |> redirect(to: "/settings")
 
       {:error, reason} ->
-        conn |> put_flash(:danger, inspect(reason)) |> redirect(to: "/settings")
+        conn |> put_flash(:danger, bind_error_message(reason)) |> redirect(to: "/settings")
     end
   end
+
+  defp bind_error_message(:already_bound), do: gettext("This account is already linked to another Codebattle user.")
+
+  defp bind_error_message(_reason), do: gettext("Could not update authentication settings. Please try again.")
 
   def unbind(conn, params) do
     user_id = conn.assigns.current_user.id

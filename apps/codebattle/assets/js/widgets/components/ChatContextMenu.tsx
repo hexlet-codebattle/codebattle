@@ -105,9 +105,9 @@ function ChatContextMenu({
     if (isFollowing) {
       dispatch(unfollowUser(userId));
     } else {
-      dispatch(followUser(userId));
+      dispatch(followUser(userId, name ?? undefined));
     }
-  }, [userId, isFollowing, dispatch]);
+  }, [userId, name, isFollowing, dispatch]);
 
   const handleShowGithubProfile = useCallback(() => {
     window.open(`https://github.com/${githubName}`, '_blank');
@@ -212,15 +212,13 @@ function ChatContextMenu({
             <span className="text-white">Send an invite</span>
           </Item>
         )}
-        {currentUserIsAdmin ? (
-          <>
-            <Separator />
-            <Item aria-label="Ban" onClick={handleBanClick} disabled={isBot}>
-              <FontAwesomeIcon className="mr-2 text-white" icon="ban" />
-              <span className="text-white">Ban</span>
-            </Item>
-          </>
-        ) : null}
+        {currentUserIsAdmin && <Separator />}
+        {currentUserIsAdmin && (
+          <Item aria-label="Ban" onClick={handleBanClick} disabled={isBot}>
+            <FontAwesomeIcon className="mr-2 text-white" icon="ban" />
+            <span className="text-white">Ban</span>
+          </Item>
+        )}
       </Menu>
     </>
   );

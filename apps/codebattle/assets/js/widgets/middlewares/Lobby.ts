@@ -29,7 +29,7 @@ export const fetchState = (currentUserId: number, waitingGameId?: number) => (di
     dispatch(actions.initGameList(normalizedData));
 
     const activeGame = findCurrentUserPlayingGame(normalizedData.activeGames, currentUserId);
-    if (activeGame?.id === waitingGameId) {
+    if (activeGame && activeGame.id === waitingGameId) {
       window.location.replace(`/games/${activeGame.id}`);
     }
   });

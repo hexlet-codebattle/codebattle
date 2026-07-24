@@ -6,6 +6,7 @@ import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 export interface GameUIState {
   followId: number | undefined;
+  followName: string | undefined;
   followPaused: boolean;
   streamMode: boolean;
   tournamentVisibleMode: string;
@@ -23,6 +24,7 @@ export interface GameUIState {
 
 const initialState: GameUIState = {
   followId: undefined,
+  followName: undefined,
   followPaused: false,
   streamMode: false,
   tournamentVisibleMode: 'full', // 'full', 'without_info_and_controls'
@@ -53,12 +55,17 @@ const gameUI = createSlice({
     updateGameUI: (state, { payload }: PayloadAction<Partial<GameUIState>>) => {
       Object.assign(state, payload);
     },
-    followUser: (state, { payload }: PayloadAction<{ followId: number }>) => {
+    followUser: (state, { payload }: PayloadAction<{ followId: number; followName?: string }>) => {
       state.followId = payload.followId;
+      // Keep the existing name on re-follow (e.g. unpause) where no name is passed.
+      if (payload.followName !== undefined) {
+        state.followName = payload.followName;
+      }
       state.followPaused = false;
     },
     unfollowUser: (state) => {
       state.followId = undefined;
+      state.followName = undefined;
       state.followPaused = false;
     },
     togglePausedFollow: (state) => {

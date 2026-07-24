@@ -38,7 +38,7 @@ defmodule Codebattle.Auth.User.DiscordUser do
     discord_user = Repo.get_by(User, discord_id: profile.id)
 
     if discord_user != nil && discord_user.id != user.id do
-      {:error, "discord_id has been taken"}
+      {:error, :already_bound}
     else
       discord_name = profile.username
 

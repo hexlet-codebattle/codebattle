@@ -134,9 +134,9 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
     if (userInfo.id && followId === userInfo.id) {
       dispatch(unfollowUser(userInfo.id as number));
     } else {
-      dispatch(followUser(userInfo.id as number));
+      dispatch(followUser(userInfo.id as number, userInfo.name as string | undefined));
     }
-  }, [userInfo.id, followId, dispatch]);
+  }, [userInfo.id, userInfo.name, followId, dispatch]);
 
   return (
     <div className="container-fluid p-2">

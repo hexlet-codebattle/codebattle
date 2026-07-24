@@ -98,6 +98,12 @@ interface UsersRatingSort {
   direction: string;
 }
 
+// Guards against stale responses: the rating search fires on every keystroke
+// with no debounce, so a slow response for a short prefix (which ILIKE-matches
+// many users) could resolve after the final query and clobber it with
+// irrelevant results. Only the latest request's response is applied.
+let latestRatingRequestId = 0;
+
 export const getUsersRatingPage =
   (
     { name, period, withBots }: UsersRatingFilter,
@@ -117,12 +123,21 @@ export const getUsersRatingPage =
       with_bots: withBots,
     });
 
+    latestRatingRequestId += 1;
+    const requestId = latestRatingRequestId;
+
     requestJson(`/api/v1/users?${queryParamsString}`)
       .then((data: any) => {
+        if (requestId !== latestRatingRequestId) {
+          return;
+        }
         dispatch(actions.updateUsersRatingPage(camelizeKeys(data)));
         dispatch(actions.finishStoreInit());
       })
       .catch((error: any) => {
+        if (requestId !== latestRatingRequestId) {
+          return;
+        }
         dispatch(actions.setError(error));
       });
   };

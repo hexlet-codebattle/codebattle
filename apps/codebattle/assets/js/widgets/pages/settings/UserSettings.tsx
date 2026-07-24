@@ -226,8 +226,18 @@ function UserSettings() {
         const data = await updateSettings(settingsValues as unknown as Record<string, unknown>);
 
         await i18n.changeLanguage(getSupportedLocale(data.locale));
-        dispatch(actions.updateUserSettings(camelizeKeys(data)));
+        const updatedSettings = camelizeKeys(data) as { name?: string };
+        dispatch(actions.updateUserSettings(updatedSettings));
         configureSound(settingsValues.soundSettings);
+
+        // The navbar user name is server-rendered from @current_user, so reflect
+        // the new name there without requiring a full page reload.
+        if (updatedSettings.name) {
+          const headerNameEl = document.getElementById('navbar-current-user-name');
+          if (headerNameEl) {
+            headerNameEl.textContent = updatedSettings.name;
+          }
+        }
 
         if (Object.values(passwordValues).some((value) => value.trim())) {
           await updatePassword(passwordValues);
