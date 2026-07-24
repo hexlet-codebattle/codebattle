@@ -105,12 +105,14 @@ const eventPropGetter = (event: CalendarEvent) => ({
   }),
 });
 
-const checkNeedLoading = (oldData: dayjs.ConfigType, newDate: dayjs.ConfigType) => {
-  const oldBeginMonth = dayjs(oldData).startOf('month');
-  const newBeginMonth = dayjs(newDate).startOf('month');
+// react-big-calendar's onRangeChange reports the visible range either as an
+// array of dates (day/week views) or as a { start, end } object (month/agenda).
+const getRangeBounds = (range: Date[] | { start: Date; end: Date }) => {
+  if (Array.isArray(range)) {
+    return { start: range[0], end: range[range.length - 1] };
+  }
 
-  const result = oldBeginMonth.diff(newBeginMonth, 'month');
-  return result !== 0;
+  return { start: range.start, end: range.end };
 };
 
 function TournamentSchedule() {
@@ -135,15 +137,25 @@ function TournamentSchedule() {
 
   const codebattleLocalizer = dayjsLocalizer(dayjs);
 
-  const loadTournaments = async (_abortController?: AbortController, newDate: string = date) => {
-    const beginMonth = dayjs(newDate).startOf('month').toISOString();
-    const endMonth = dayjs(newDate).endOf('month').toISOString();
-
+  const loadTournaments = async (beginDate: string, endDate: string) => {
     const [seasonTournaments, userTournaments] = await uploadTournamentsByFilter(
-      beginMonth,
-      endMonth,
+      beginDate,
+      endDate,
     );
     setTournaments({ seasonTournaments, userTournaments, loading: false });
+  };
+
+  const loadTournamentsForRange = (range: Date[] | { start: Date; end: Date }) => {
+    const { start, end } = getRangeBounds(range);
+    const beginDate = dayjs(start).startOf('day').toISOString();
+    const endDate = dayjs(end).endOf('day').toISOString();
+
+    setTournaments((state) => ({ ...state, loading: true }));
+    setEvents([]);
+    loadTournaments(beginDate, endDate).catch((e) => {
+      console.error(e);
+      setTournaments((state) => ({ ...state, loading: false }));
+    });
   };
 
   const onView = useCallback(
@@ -170,23 +182,21 @@ function TournamentSchedule() {
     }
   };
 
+  // Keep the controlled `date` in sync; the actual data fetch is driven by
+  // onRangeChange so the loaded interval always matches what the calendar shows.
   const onNavigate = (newDate: string) => {
-    if (checkNeedLoading(date, newDate)) {
-      const abortController = new AbortController();
-      setTournaments((state) => ({ ...state, loading: true }));
-      setEvents([]);
-      loadTournaments(abortController, newDate).catch((e) => {
-        console.error(e);
-        setDate(date);
-      });
-    }
-
     setDate(newDate);
   };
 
+  const onRangeChange = useCallback((range: Date[] | { start: Date; end: Date }) => {
+    loadTournamentsForRange(range);
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, []);
+
   useEffect(() => {
-    const abortController = new AbortController();
-    loadTournaments(abortController);
+    const beginDate = dayjs(date).startOf('month').toISOString();
+    const endDate = dayjs(date).endOf('month').toISOString();
+    loadTournaments(beginDate, endDate).catch((e) => console.error(e));
     /* eslint-disable-next-line */
   }, []);
 
@@ -283,6 +293,7 @@ function TournamentSchedule() {
           date={date}
           defaultDate={date}
           onNavigate={onNavigate}
+          onRangeChange={onRangeChange}
           onSelectEvent={setSelectedEvent}
           popup
           style={{

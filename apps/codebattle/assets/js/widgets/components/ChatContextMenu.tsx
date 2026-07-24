@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import i18n from '../../i18n';
 import { pushCommand } from '@/middlewares/Chat';
 import { openDirect } from '@/middlewares/Lobby';
-import { followUser } from '@/middlewares/Main';
+import { followUser, unfollowUser } from '@/middlewares/Main';
 import { currentUserIsAdminSelector, currentUserIdSelector, lobbyDataSelector } from '@/selectors';
 import { actions } from '@/slices';
 import { type RootState, type AppDispatch } from '@/slices/store';
@@ -68,6 +68,8 @@ function ChatContextMenu({
     [activeGames, currentUserId],
   );
   const isCurrentUser = !!userId && currentUserId === userId;
+  const followId = useSelector((state: RootState) => state.gameUI.followId);
+  const isFollowing = !!userId && followId === userId;
 
   const inviteSendDisabled = isBot || isCurrentUser || isCurrentUserHasActiveGames;
   const canCreatePrivateRoom = !(isBot || isCurrentUser) && !!name;
@@ -96,8 +98,16 @@ function ChatContextMenu({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
   const handleFollow = useCallback(() => {
-    dispatch(followUser(userId as number));
-  }, [userId, dispatch]);
+    if (!userId) {
+      return;
+    }
+
+    if (isFollowing) {
+      dispatch(unfollowUser(userId));
+    } else {
+      dispatch(followUser(userId));
+    }
+  }, [userId, isFollowing, dispatch]);
 
   const handleShowGithubProfile = useCallback(() => {
     window.open(`https://github.com/${githubName}`, '_blank');
@@ -159,9 +169,14 @@ function ChatContextMenu({
           </Item>
         )}
         {!isCurrentUser && (
-          <Item role="menuitem" tabIndex={-1} aria-label="Follow" onClick={handleFollow}>
+          <Item
+            role="menuitem"
+            tabIndex={-1}
+            aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+            onClick={handleFollow}
+          >
             <FontAwesomeIcon className="mr-2 text-white" icon="binoculars" />
-            <span className="text-white">Follow</span>
+            <span className="text-white">{isFollowing ? 'Unfollow' : 'Follow'}</span>
           </Item>
         )}
         {canCreatePrivateRoom ? (

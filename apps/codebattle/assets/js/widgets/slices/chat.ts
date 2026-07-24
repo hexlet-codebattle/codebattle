@@ -22,8 +22,31 @@ export interface ChatRoom {
 
 export interface ChatUser {
   id: number;
+  name?: string;
   [key: string]: unknown;
 }
+
+// Private rooms cache the target user's name at creation time (and in
+// localStorage), so it goes stale when that user renames themselves. The chat
+// presence list always carries the current name, so reconcile private-room
+// names against it by targetUserId whenever the users list or rooms change.
+const reconcileRoomNames = (rooms: ChatRoom[], activeRoom: ChatRoom, users: ChatUser[]) => {
+  const nameById = new Map(users.map((user) => [user.id, user.name]));
+
+  const applyName = (room: ChatRoom): ChatRoom => {
+    if (room.targetUserId == null) {
+      return room;
+    }
+
+    const currentName = nameById.get(room.targetUserId);
+    return currentName && currentName !== room.name ? { ...room, name: currentName } : room;
+  };
+
+  return {
+    rooms: rooms.map(applyName),
+    activeRoom: applyName(activeRoom),
+  };
+};
 
 export interface ChatState {
   users: ChatUser[];
@@ -57,10 +80,17 @@ const chat = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    updateChatData: (state, { payload }: PayloadAction<Partial<ChatState>>) => ({
-      ...state,
-      ...payload,
-    }),
+    updateChatData: (state, { payload }: PayloadAction<Partial<ChatState>>) => {
+      const next = { ...state, ...payload };
+
+      if (payload.users) {
+        const reconciled = reconcileRoomNames(next.rooms, next.activeRoom, next.users);
+        next.rooms = reconciled.rooms;
+        next.activeRoom = reconciled.activeRoom;
+      }
+
+      return next;
+    },
     updateChatDataHistory: (state, { payload }: PayloadAction<ChatState['history']>) => ({
       ...state,
       history: {
@@ -69,9 +99,15 @@ const chat = createSlice({
     }),
     userJoinedChat: (state, { payload: { users } }: PayloadAction<{ users: ChatUser[] }>) => {
       state.users = users;
+      const reconciled = reconcileRoomNames(state.rooms, state.activeRoom, users);
+      state.rooms = reconciled.rooms;
+      state.activeRoom = reconciled.activeRoom;
     },
     userLeftChat: (state, { payload: { users } }: PayloadAction<{ users: ChatUser[] }>) => {
       state.users = users;
+      const reconciled = reconcileRoomNames(state.rooms, state.activeRoom, users);
+      state.rooms = reconciled.rooms;
+      state.activeRoom = reconciled.activeRoom;
     },
     newChatMessage: (state, { payload }: PayloadAction<ChatMessage>) => {
       if (isMessageForCurrentUser(payload)) {
@@ -104,7 +140,10 @@ const chat = createSlice({
       state.activeRoom = payload;
     },
     setPrivateRooms: (state, { payload }: PayloadAction<ChatRoom[]>) => {
-      state.rooms = [...state.rooms, ...payload];
+      const rooms = [...state.rooms, ...payload];
+      const reconciled = reconcileRoomNames(rooms, state.activeRoom, state.users);
+      state.rooms = reconciled.rooms;
+      state.activeRoom = reconciled.activeRoom;
     },
     updateChatChannelState: (state, { payload }: PayloadAction<boolean>) => {
       state.channel.online = payload;

@@ -34,7 +34,7 @@
               {format_inserted_at(clan.inserted_at)}
             </td>
             <td class="align-middle cb-border-color">
-              <div class="btn-group btn-group-sm">
+              <div class="d-flex align-items-center">
                 {link("Show",
                   to: Routes.clan_path(@conn, :show, clan.id),
                   class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
@@ -44,7 +44,7 @@
                     to: Routes.clan_path(@conn, :delete, clan.id),
                     method: :delete,
                     data: [confirm: "Delete this clan?"],
-                    class: "btn btn-sm btn-outline-danger cb-rounded"
+                    class: "btn btn-sm btn-outline-danger cb-rounded ml-2"
                   )}
                 <% end %>
               </div>
