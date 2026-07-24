@@ -21,7 +21,12 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
   def create(user_attrs) do
     with :ok <- check_existed_user(user_attrs),
-         {:ok, firebase_uid} <- create_in_firebase(user_attrs) do
+         {:ok, %{firebase_uid: firebase_uid, id_token: id_token}} <-
+           create_in_firebase(user_attrs) do
+      # Firebase creates email/password accounts as unverified.  Send the
+      # verification message immediately; the account remains unusable until
+      # the email is verified (enforced in `find_in_firebase/1`).
+      send_email_verification(id_token)
       create_in_db(user_attrs, firebase_uid)
     end
   end
@@ -55,8 +60,9 @@ defmodule Codebattle.Auth.User.FirebaseUser do
          ) do
       {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid = Map.get(body, "localId")
+        id_token = Map.get(body, "idToken")
 
-        {:ok, firebase_uid}
+        {:ok, %{firebase_uid: firebase_uid, id_token: id_token}}
 
       {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
@@ -81,8 +87,20 @@ defmodule Codebattle.Auth.User.FirebaseUser do
          ) do
       {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid = Map.get(body, "localId")
+        id_token = Map.get(body, "idToken")
 
-        {:ok, firebase_uid}
+        case account_verified?(id_token) do
+          {:ok, true} ->
+            {:ok, firebase_uid}
+
+          {:ok, false} ->
+            send_email_verification(id_token)
+            {:error, %{base: "EMAIL_NOT_VERIFIED"}}
+
+          {:error, reason} ->
+            Logger.error("Unable to verify Firebase email status: #{inspect(reason)}")
+            {:error, %{base: "Unable to verify email status. Please try again later."}}
+        end
 
       {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
@@ -99,6 +117,44 @@ defmodule Codebattle.Auth.User.FirebaseUser do
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(reason)}"}}
     end
   end
+
+  defp account_verified?(id_token) when is_binary(id_token) do
+    case Req.post(
+           "#{firebase_url()}:lookup?key=#{api_key()}",
+           json: %{idToken: id_token}
+         ) do
+      {:ok, %Req.Response{status: 200, body: %{"users" => [%{"emailVerified" => verified} | _]}}} ->
+        {:ok, verified}
+
+      {:ok, %Req.Response{status: status, body: body}} ->
+        {:error, {status, body}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp account_verified?(_), do: {:error, :missing_id_token}
+
+  defp send_email_verification(id_token) when is_binary(id_token) do
+    case Req.post(
+           "#{firebase_url()}:sendOobCode?key=#{api_key()}",
+           json: %{requestType: "VERIFY_EMAIL", idToken: id_token}
+         ) do
+      {:ok, %Req.Response{status: 200}} ->
+        :ok
+
+      {:ok, %Req.Response{body: body}} ->
+        Logger.error("Unable to send Firebase verification email: #{inspect(body)}")
+        {:error, body}
+
+      {:error, reason} ->
+        Logger.error("Unable to send Firebase verification email: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
+  defp send_email_verification(_), do: {:error, :missing_id_token}
 
   defp reset_in_firebase(%{email: email}) do
     case Req.post(

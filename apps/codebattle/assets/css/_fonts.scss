@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+// Source Code Pro + Montserrat are loaded non-render-blocking from the document
+// <head> via CodebattleWeb.LayoutView.google_fonts_head/0 (preconnect + async
+// stylesheet). Importing them here would put them back on the critical path.
 
 @font-face {
   font-family: 'pixy';

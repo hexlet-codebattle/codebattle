@@ -67,7 +67,7 @@ const schemas = {
       .min(6, 'Should be from 6 to 16 characters')
       .max(16, 'Should be from 6 to 16 characters')
       .matches(/[a-zA-Z0-9]/, 'Should contain at least one letter or number')
-      .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Should contain at least one special character')
+      .matches(/[!@#$%^&*(),.?":{}|<>/]/, 'Should contain at least one special character')
       .required('Password required'),
     passwordConfirmation: Yup.string()
       .required('Confirmation required')

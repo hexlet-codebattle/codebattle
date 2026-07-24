@@ -11,7 +11,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
   alias Codebattle.User.Achievements
   alias Codebattle.User.Stats, as: UserStats
   alias CodebattleWeb.Api.UserView
-  alias CodebattleWeb.UserAuth
 
   def index(conn, params) do
     payload = UserView.render_rating(params)
@@ -33,10 +32,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
     }
 
     case Codebattle.Auth.User.create_in_firebase(user_attrs) do
-      {:ok, user} ->
-        conn
-        |> UserAuth.log_in_user(user)
-        |> json(%{status: :created})
+      {:ok, _user} ->
+        json(conn, %{status: :created, email_verification_required: true})
 
       {:error, errors} ->
         conn

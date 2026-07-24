@@ -179,6 +179,15 @@ const searchParams = new URLSearchParams(window.location.search);
 const getNextLocation = () => (searchParams.has('next') ? (searchParams.get('next') ?? '/') : '/');
 const getLinkWithNext = (link: string) =>
   searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link;
+const getSignInAfterRegistrationLocation = () => {
+  const params = new URLSearchParams();
+  const next = searchParams.get('next');
+
+  if (next) params.set('next', next);
+  params.set('verification', 'sent');
+
+  return `/session/new?${params.toString()}`;
+};
 const redirectTo = (path: string) => {
   if (window.navigator.userAgent.includes('jsdom')) {
     window.history.replaceState({}, '', path);
@@ -267,7 +276,13 @@ function SignIn() {
               formik.setFieldError('email', errors.email);
             }
             if (errors.base) {
-              formik.setFieldError('base', errors.base);
+              const message =
+                errors.base === 'EMAIL_NOT_VERIFIED'
+                  ? i18n.t(
+                      'Please verify your email before signing in. A new verification email was sent.',
+                    )
+                  : errors.base;
+              formik.setFieldError('base', message);
             }
           }
         });
@@ -279,6 +294,11 @@ function SignIn() {
       <Body>
         <Form onSubmit={formik.handleSubmit} id="login">
           <Title text="Sign In" />
+          {searchParams.get('verification') === 'sent' && (
+            <div className="alert alert-info" role="status">
+              {i18n.t('We sent a verification email. Please confirm your email before signing in.')}
+            </div>
+          )}
           <Input id="base" type="hidden" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
           <PasswordInput id="password" title="Password" formik={formik} />
@@ -309,7 +329,7 @@ function SignUp() {
     onSubmit: (formData) => {
       postJson('/api/v1/users', formData)
         .then(() => {
-          redirectTo(getNextLocation());
+          redirectTo(getSignInAfterRegistrationLocation());
         })
         .catch((error) => {
           // TODO: Add better errors handler

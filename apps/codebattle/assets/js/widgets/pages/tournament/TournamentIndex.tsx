@@ -63,11 +63,11 @@ function TournamentsTable({ tournaments = [], userTimezone = 'UTC' }: Tournament
             {tournaments.map((tournament) => (
               <tr key={tournament.id}>
                 <td className="align-middle text-white cb-border-color">{tournament.name}</td>
-                <td className="align-middle text-nowrap text-white cb-border-color">
+                <td className="align-middle text-white text-break cb-border-color">
                   {tournament.type}
                 </td>
                 <td
-                  className="align-middle text-nowrap cb-border-color"
+                  className="align-middle cb-border-color"
                   aria-label={`Level: ${tournament.level}`}
                 >
                   <div className="d-flex">
@@ -79,13 +79,13 @@ function TournamentsTable({ tournaments = [], userTimezone = 'UTC' }: Tournament
                     </div>
                   </div>
                 </td>
-                <td className="align-middle text-nowrap text-white cb-border-color">
+                <td className="align-middle text-white text-break cb-border-color">
                   {tournament.state}
                 </td>
-                <td className="align-middle text-nowrap text-white cb-border-color">
+                <td className="align-middle text-white text-break cb-border-color">
                   {formatStartsAt(tournament.startsAt, userTimezone)}
                 </td>
-                <td className="align-middle text-nowrap text-white cb-border-color">
+                <td className="align-middle text-white text-break cb-border-color">
                   <a
                     href={`/tournaments/${tournament.id}`}
                     className="btn btn-success cb-btn-success cb-rounded mt-2"
