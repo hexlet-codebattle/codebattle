@@ -1,14 +1,17 @@
 import { camelizeKeys } from 'humps';
 import some from 'lodash/some';
 
+import i18n from '../../i18n';
 import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 import { calculateExpireDate } from '../utils/chatRoom';
+import notification from '../utils/notification';
 
 import Channel from './Channel';
 
 const channel = new Channel();
+const gameStartNotification = notification();
 
 export const findCurrentUserPlayingGame = (games: any[] = [], currentUserId: number) =>
   games.find(
@@ -51,7 +54,16 @@ export const fetchState = (currentUserId: number, waitingGameId?: number) => (di
     );
 
     if (isGameStarted && isCurrentUserInGame) {
-      window.location.replace(`/games/${id}`);
+      const redirectToGame = () => window.location.replace(`/games/${id}`);
+
+      if (gameStartNotification.isTabHidden()) {
+        // Opponent found while the user is on another tab: blink the tab title
+        // to notify them, and only navigate into the game once they come back.
+        gameStartNotification.start(`⚔️ ${i18n.t('Opponent found!')}`);
+        gameStartNotification.whenVisible(redirectToGame);
+      } else {
+        redirectToGame();
+      }
     } else {
       dispatch(actions.upsertGameLobby(normalizedData));
     }

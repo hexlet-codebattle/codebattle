@@ -1,50 +1,74 @@
-import sound from '../lib/sound';
+// Tab notification: blinks the browser tab title to grab the user's attention
+// when something happens (e.g. an opponent is found and the battle starts)
+// while the Codebattle tab is in the background. Blinking only runs while the
+// tab is hidden and stops as soon as the user comes back to it.
 
-const settings = {
-  message: '***PLAY***',
-  defaultTitle: document.title,
-  intervalBlinking: 3000,
-  isActiveWindows: true,
-};
+const defaultMessage = '⚔️ Opponent found!';
+const blinkIntervalMs = 1000;
 
-let timerID: ReturnType<typeof setInterval> | null = null;
+const createTabNotification = () => {
+  let timerId: ReturnType<typeof setInterval> | null = null;
+  let originalTitle: string | null = null;
+  let onReturn: (() => void) | null = null;
 
-const startBlinkingMsg = () => {
-  timerID = setInterval(() => {
-    sound.play('win');
-    document.title = document.title === settings.message ? settings.defaultTitle : settings.message;
-  }, settings.intervalBlinking);
-};
+  const isTabHidden = () => document.visibilityState === 'hidden';
 
-const stopBlinkingMsg = () => {
-  sound.stop();
-  document.title = settings.defaultTitle;
-  if (timerID) {
-    clearInterval(timerID);
-  }
-};
+  const stop = () => {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
 
-const initialize = () => {
-  window.addEventListener('focus', () => {
-    stopBlinkingMsg();
-    settings.isActiveWindows = true;
-  });
-
-  window.addEventListener('blur', () => {
-    settings.isActiveWindows = false;
-  });
-};
-
-const notification = () => {
-  initialize();
-
-  return {
-    start: () => {
-      if (!settings.isActiveWindows) {
-        startBlinkingMsg();
-      }
-    },
+    if (originalTitle !== null) {
+      document.title = originalTitle;
+      originalTitle = null;
+    }
   };
+
+  const start = (message: string = defaultMessage) => {
+    // Only nag from a background tab, and never stack multiple blink timers.
+    if (!isTabHidden() || timerId) {
+      return;
+    }
+
+    originalTitle = document.title;
+    let showMessage = true;
+
+    timerId = setInterval(() => {
+      document.title = showMessage ? message : (originalTitle as string);
+      showMessage = !showMessage;
+    }, blinkIntervalMs);
+  };
+
+  // Runs `callback` once the user returns to the tab (immediately if the tab is
+  // already visible). Used to defer an action — e.g. redirecting into the game
+  // — until the user is actually looking at the page.
+  const whenVisible = (callback: () => void) => {
+    if (!isTabHidden()) {
+      callback();
+      return;
+    }
+
+    onReturn = callback;
+  };
+
+  document.addEventListener('visibilitychange', () => {
+    if (isTabHidden()) {
+      return;
+    }
+
+    stop();
+
+    if (onReturn) {
+      const callback = onReturn;
+      onReturn = null;
+      callback();
+    }
+  });
+
+  return { start, stop, whenVisible, isTabHidden };
 };
+
+const notification = createTabNotification;
 
 export default notification;

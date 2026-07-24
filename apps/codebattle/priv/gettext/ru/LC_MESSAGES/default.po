@@ -2062,3 +2062,6 @@ msgstr "Выйти"
 
 msgid "Remove"
 msgstr "Удалить"
+
+msgid "Opponent found!"
+msgstr "Соперник найден!"

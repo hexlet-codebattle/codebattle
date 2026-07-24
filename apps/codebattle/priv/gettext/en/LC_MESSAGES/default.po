@@ -1383,3 +1383,6 @@ msgstr "Sign out"
 
 msgid "Remove"
 msgstr "Remove"
+
+msgid "Opponent found!"
+msgstr "Opponent found!"
