@@ -18,11 +18,10 @@ defmodule CodebattleWeb.TournamentController do
       |> Codebattle.TaskPack.list_visible()
       |> Enum.map(& &1.name)
 
-    tournaments =
+    last_tournament =
       current_user
-      |> Tournament.Context.list_live_and_finished()
-      |> Enum.take(5)
-      |> Enum.map(&index_tournament_json/1)
+      |> Tournament.Context.get_last_created_tournament()
+      |> last_tournament_json()
 
     conn
     |> put_meta_tags(%{
@@ -34,7 +33,7 @@ defmodule CodebattleWeb.TournamentController do
     |> assign(:page_title, "Tournaments")
     |> render_inertia("TournamentIndex", %{
       "page_title" => "Tournaments",
-      "tournaments" => tournaments,
+      "last_tournament" => last_tournament,
       "task_pack_names" => task_pack_names,
       "user_timezone" => user_timezone
     })
@@ -140,14 +139,32 @@ defmodule CodebattleWeb.TournamentController do
     })
   end
 
-  defp index_tournament_json(tournament) do
+  # Shaped to match TournamentForm's field names so the "Use my last tournament's
+  # settings" button can prefill the form. `starts_at` is intentionally omitted
+  # (it must be a future time the organizer picks anew).
+  defp last_tournament_json(nil), do: nil
+
+  defp last_tournament_json(tournament) do
     %{
-      id: tournament.id,
-      name: tournament.name,
       type: tournament.type,
+      name: tournament.name,
+      description: tournament.description,
+      access_type: tournament.access_type,
+      task_provider: tournament.task_provider,
+      task_strategy: tournament.task_strategy,
       level: tournament.level,
-      state: tournament.state,
-      starts_at: tournament.starts_at
+      task_pack_name: tournament.task_pack_name,
+      moderator_ids: tournament.moderator_ids,
+      players_limit: tournament.players_limit,
+      rounds_limit: tournament.rounds_limit,
+      timeout_mode: tournament.timeout_mode,
+      round_timeout_seconds: tournament.round_timeout_seconds,
+      tournament_timeout_seconds: tournament.tournament_timeout_seconds,
+      break_duration_seconds: tournament.break_duration_seconds,
+      use_chat: tournament.use_chat,
+      ranking_type: tournament.ranking_type,
+      score_strategy: tournament.score_strategy,
+      meta: tournament.meta
     }
   end
 end

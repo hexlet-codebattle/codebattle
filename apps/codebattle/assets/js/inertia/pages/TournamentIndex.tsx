@@ -8,14 +8,14 @@ type TournamentIndexPageProps = React.ComponentProps<typeof TournamentIndexPage>
 
 interface TournamentIndexProps {
   page_title: string;
-  tournaments: TournamentIndexPageProps['tournaments'];
+  last_tournament: TournamentIndexPageProps['lastTournament'];
   task_pack_names: TournamentIndexPageProps['taskPackNames'];
   user_timezone: TournamentIndexPageProps['userTimezone'];
 }
 
 export default function TournamentIndex({
   page_title,
-  tournaments,
+  last_tournament,
   task_pack_names,
   user_timezone,
 }: TournamentIndexProps) {
@@ -23,7 +23,7 @@ export default function TournamentIndex({
     <div className="container-xl cb-text py-4">
       <Head title={page_title} />
       <TournamentIndexPage
-        tournaments={tournaments}
+        lastTournament={last_tournament}
         taskPackNames={task_pack_names}
         userTimezone={user_timezone}
       />

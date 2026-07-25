@@ -348,26 +348,29 @@
           </div>
         </div>
       <% end %>
-      <div class="bg-dark py-2">
-        <div class="container-lg">
-          <%= for {type, message} <- @flash || [] do %>
-            <div
-              class={"alert alert-#{type} alert-dismissible fade show mb-2 rounded shadow-sm alert-dark-theme"}
-              role="alert"
-            >
-              {message}
-              <button
-                type="button"
-                class="close text-white"
-                data-dismiss="alert"
-                aria-label="Close"
+
+      <%= if @flash != %{} do %>
+        <div class="bg-dark py-2">
+          <div class="container-lg">
+            <%= for {type, message} <- @flash || [] do %>
+              <div
+                class={"alert alert-#{type} alert-dismissible fade show mb-2 rounded shadow-sm alert-dark-theme"}
+                role="alert"
               >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          <% end %>
+                {message}
+                <button
+                  type="button"
+                  class="close text-white"
+                  data-dismiss="alert"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
       <%= if @ticker_text do %>
         <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
           <span class="cb-ticker-line cb-ticker-line-head">{@ticker_text}</span>

@@ -15,7 +15,19 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     assert conn.status == 200
     assert inertia_component(conn) == "TournamentIndex"
-    assert %{"tournaments" => [], "task_pack_names" => []} = inertia_props(conn)
+    assert %{"last_tournament" => nil, "task_pack_names" => []} = inertia_props(conn)
+  end
+
+  test "ships last created tournament for prefill", %{conn: conn} do
+    user = insert(:user)
+    insert(:tournament, creator: nil, creator_id: user.id, name: "Prev", type: "swiss")
+
+    conn =
+      conn
+      |> log_in_user(user.id)
+      |> get(Routes.tournament_path(conn, :index))
+
+    assert %{"last_tournament" => %{name: "Prev", type: "swiss"}} = inertia_props(conn)
   end
 
   test "authorizes to tournaments", %{conn: conn} do

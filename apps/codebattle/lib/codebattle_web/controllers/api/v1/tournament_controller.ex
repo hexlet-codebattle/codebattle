@@ -24,6 +24,34 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     json(conn, %{tournaments: tournaments})
   end
 
+  def created(conn, params) do
+    current_user = conn.assigns.current_user
+
+    page_number = params |> Map.get("page", "1") |> String.to_integer()
+    page_size = params |> Map.get("page_size", "20") |> String.to_integer()
+
+    result = Tournament.Context.get_created_tournaments(current_user, page_number, page_size)
+    total_pages = max(div(result.total_entries + page_size - 1, page_size), 1)
+
+    page_info =
+      result
+      |> Map.take([:page_number, :page_size, :total_entries])
+      |> Map.put(:total_pages, total_pages)
+
+    json(conn, %{tournaments: Enum.map(result.entries, &created_item/1), page_info: page_info})
+  end
+
+  defp created_item(tournament) do
+    %{
+      id: tournament.id,
+      name: tournament.name,
+      type: tournament.type,
+      level: tournament.level,
+      state: tournament.state,
+      starts_at: tournament.starts_at
+    }
+  end
+
   def show(conn, %{"id" => id}) do
     tournament = Tournament.Context.get!(id)
 

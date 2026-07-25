@@ -85,6 +85,44 @@ defmodule Codebattle.Tournament.ContextTest do
     assert Enum.map(Tournament.Context.get_user_tournaments(filter), & &1.id) == [tournament.id]
   end
 
+  test "lists and paginates tournaments created by the user, newest first" do
+    creator = insert(:user)
+    other = insert(:user)
+
+    created =
+      for _ <- 1..3 do
+        insert(:tournament, creator: nil, creator_id: creator.id, state: "finished")
+      end
+
+    insert(:tournament, creator: nil, creator_id: other.id, state: "finished")
+
+    expected_ids = created |> Enum.map(& &1.id) |> Enum.sort(:desc)
+
+    all = Tournament.Context.get_created_tournaments(creator, 1, 20)
+    assert Enum.map(all.entries, & &1.id) == expected_ids
+    assert all.total_entries == 3
+
+    page1 = Tournament.Context.get_created_tournaments(creator, 1, 2)
+    page2 = Tournament.Context.get_created_tournaments(creator, 2, 2)
+    assert length(page1.entries) == 2
+    assert length(page2.entries) == 1
+    assert Enum.map(page1.entries ++ page2.entries, & &1.id) == expected_ids
+
+    assert Tournament.Context.get_created_tournaments(%{is_guest: true}).entries == []
+    assert Tournament.Context.get_created_tournaments(nil).entries == []
+  end
+
+  test "returns the newest tournament created by the user for prefill" do
+    creator = insert(:user)
+    insert(:tournament, creator: nil, creator_id: creator.id, state: "finished")
+    newest = insert(:tournament, creator: nil, creator_id: creator.id, state: "finished")
+
+    assert Tournament.Context.get_last_created_tournament(creator).id == newest.id
+    assert Tournament.Context.get_last_created_tournament(%{is_guest: true}) == nil
+    assert Tournament.Context.get_last_created_tournament(nil) == nil
+    assert Tournament.Context.get_last_created_tournament(insert(:user)) == nil
+  end
+
   test "validates tournament parameters without persisting" do
     changeset = Tournament.Context.validate(%{"name" => "", "rounds_limit" => 0})
     refute changeset.valid?

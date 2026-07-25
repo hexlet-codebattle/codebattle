@@ -239,6 +239,50 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
+  @empty_page %{entries: [], page_number: 1, page_size: 20, total_entries: 0, total_pages: 1}
+
+  @doc """
+  Paginated list of tournaments created by the given user, newest first.
+  Guests (and missing users) get an empty page. Mirrors the pagination shape of
+  `TournamentUserResult.get_user_history/3`.
+  """
+  @spec get_created_tournaments(User.t() | nil, pos_integer(), pos_integer()) :: map()
+  def get_created_tournaments(user, page \\ 1, page_size \\ 20)
+
+  def get_created_tournaments(%{is_guest: true}, _page, page_size) do
+    %{@empty_page | page_size: page_size}
+  end
+
+  def get_created_tournaments(%{id: user_id}, page, page_size) do
+    Repo.paginate(from(t in Tournament, order_by: [desc: t.id], where: t.creator_id == ^user_id), %{
+      page: page,
+      page_size: page_size,
+      total: true
+    })
+  end
+
+  def get_created_tournaments(_user, _page, page_size) do
+    %{@empty_page | page_size: page_size}
+  end
+
+  @doc """
+  The newest tournament created by the given user, or nil. Used to prefill the create form.
+  """
+  @spec get_last_created_tournament(User.t() | nil) :: Tournament.t() | nil
+  def get_last_created_tournament(%{is_guest: true}), do: nil
+
+  def get_last_created_tournament(%{id: user_id}) do
+    Repo.one(
+      from(t in Tournament,
+        order_by: [desc: t.id],
+        where: t.creator_id == ^user_id,
+        limit: 1
+      )
+    )
+  end
+
+  def get_last_created_tournament(_user), do: nil
+
   @spec get_live_tournaments_for_user(User.t()) :: list(Tournament.t())
   def get_live_tournaments_for_user(user) do
     get_live_tournaments()

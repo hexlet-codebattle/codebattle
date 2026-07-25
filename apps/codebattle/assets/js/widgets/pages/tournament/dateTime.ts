@@ -8,6 +8,30 @@ export const getBrowserTimezone = (fallback = DEFAULT_TIMEZONE) => {
   }
 };
 
+export const formatStartsAt = (value: string | undefined, userTimezone = DEFAULT_TIMEZONE) => {
+  if (!value) {
+    return 'none';
+  }
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: userTimezone || DEFAULT_TIMEZONE,
+    timeZoneName: 'short',
+  };
+
+  try {
+    return new Intl.DateTimeFormat(undefined, options).format(new Date(value));
+  } catch (_error) {
+    return new Intl.DateTimeFormat(undefined, { ...options, timeZone: DEFAULT_TIMEZONE }).format(
+      new Date(value),
+    );
+  }
+};
+
 export const formatDatetimeLocal = (value: string | undefined, timezone: string) => {
   if (!value) return '';
 

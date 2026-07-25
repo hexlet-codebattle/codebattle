@@ -252,7 +252,6 @@ function EditTournament({
     type: tournament.type || 'swiss',
     name: tournament.name || '',
     description: tournament.description || '',
-    creator_id: tournament.creatorId || '',
     moderator_ids: (tournament.moderatorIds || []).join(', '),
     starts_at: formatDatetimeLocal(tournament.startsAt, browserTimezone),
     access_type: tournament.accessType || 'public',
@@ -268,9 +267,6 @@ function EditTournament({
     tournament_timeout_seconds: tournament.tournamentTimeoutSeconds ?? null,
     break_duration_seconds: tournament.breakDurationSeconds || 42,
     use_chat: tournament.useChat !== undefined ? tournament.useChat : true,
-    use_clan: tournament.useClan !== undefined ? tournament.useClan : false,
-    exclude_banned_players:
-      tournament.excludeBannedPlayers !== undefined ? tournament.excludeBannedPlayers : false,
     ranking_type: tournament.rankingType || 'by_user',
     score_strategy: tournament.scoreStrategy || '75_percentile',
     meta_json: tournament.meta ? JSON.stringify(decamelizeKeys(tournament.meta), null, 2) : '{}',

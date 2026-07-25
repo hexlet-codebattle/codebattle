@@ -2065,3 +2065,326 @@ msgstr "Удалить"
 
 msgid "Opponent found!"
 msgstr "Соперник найден!"
+
+#. Tournament create form (added for the create-tournament UX overhaul)
+
+msgid "Create tournament"
+msgstr "Создать турнир"
+
+msgid "My tournaments"
+msgstr "Мои турниры"
+
+msgid "You haven't created any tournaments yet"
+msgstr "Вы ещё не создали ни одного турнира"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "State"
+msgstr "Состояние"
+
+msgid "Starts at"
+msgstr "Начало"
+
+msgid "Edit"
+msgstr "Изменить"
+
+msgid "Create a New Tournament"
+msgstr "Создание нового турнира"
+
+msgid "Use my last tournament's settings"
+msgstr "Взять настройки из прошлого турнира"
+
+msgid "Reset to defaults"
+msgstr "Сбросить к значениям по умолчанию"
+
+msgid "Basic Information"
+msgstr "Основная информация"
+
+msgid "Schedule & Access"
+msgstr "Расписание и доступ"
+
+msgid "Tournament Features"
+msgstr "Возможности турнира"
+
+msgid "Task Configuration"
+msgstr "Настройка задач"
+
+msgid "Tournament Settings"
+msgstr "Настройки турнира"
+
+msgid "Timeout Configuration"
+msgstr "Настройка таймаутов"
+
+msgid "Advanced Settings"
+msgstr "Расширенные настройки"
+
+msgid "Tournament Name"
+msgstr "Название турнира"
+
+msgid "Moderator IDs"
+msgstr "ID модераторов"
+
+msgid "Access Type"
+msgstr "Тип доступа"
+
+msgid "Use Chat"
+msgstr "Использовать чат"
+
+msgid "Use Clan"
+msgstr "Использовать кланы"
+
+msgid "Exclude Banned Players"
+msgstr "Исключить забаненных игроков"
+
+msgid "Task Provider"
+msgstr "Источник задач"
+
+msgid "Task Strategy"
+msgstr "Стратегия выдачи задач"
+
+msgid "Task Pack"
+msgstr "Набор задач"
+
+msgid "Tags (comma separated)"
+msgstr "Теги (через запятую)"
+
+msgid "Tournament Type"
+msgstr "Тип турнира"
+
+msgid "Players Limit"
+msgstr "Лимит игроков"
+
+msgid "Ranking Type"
+msgstr "Тип рейтинга"
+
+msgid "Score Strategy"
+msgstr "Стратегия подсчёта очков"
+
+msgid "Rounds Limit"
+msgstr "Количество раундов"
+
+msgid "Break Duration (seconds)"
+msgstr "Длительность перерыва (сек)"
+
+msgid "Timeout Mode"
+msgstr "Режим таймаута"
+
+msgid "Matching interval (sec)"
+msgstr "Интервал подбора (сек)"
+
+msgid "Round Timeout (seconds)"
+msgstr "Таймаут раунда (сек)"
+
+msgid "Tournament Timeout (seconds)"
+msgstr "Таймаут турнира (сек)"
+
+msgid "Meta JSON"
+msgstr "Meta JSON"
+
+msgid "Tags"
+msgstr "Теги"
+
+msgid "Random"
+msgstr "Случайно"
+
+msgid "Sequential"
+msgstr "Последовательно"
+
+msgid "Public"
+msgstr "Открытый"
+
+msgid "Token (Private)"
+msgstr "По токену (приватный)"
+
+msgid "Elementary"
+msgstr "Начальный"
+
+msgid "Easy"
+msgstr "Лёгкий"
+
+msgid "Medium"
+msgstr "Средний"
+
+msgid "Hard"
+msgstr "Сложный"
+
+msgid "By User"
+msgstr "По игрокам"
+
+msgid "By Clan"
+msgstr "По кланам"
+
+msgid "75 Percentile"
+msgstr "75-й перцентиль"
+
+msgid "Static Base Score"
+msgstr "Фиксированные базовые очки"
+
+msgid "Win/Loss"
+msgstr "Победа/Поражение"
+
+msgid "Per task timeout"
+msgstr "Таймаут на задачу"
+
+msgid "Per round (fixed)"
+msgstr "На раунд (фиксированный)"
+
+msgid "Per round (with rematch)"
+msgstr "На раунд (с переигровками)"
+
+msgid "Per tournament timeout"
+msgstr "Таймаут на весь турнир"
+
+msgid "Swiss"
+msgstr "Швейцарская система"
+
+msgid "Ladder (continuous matchmaking)"
+msgstr "Лестница (непрерывный подбор)"
+
+msgid "Select a task pack"
+msgstr "Выберите набор задач"
+
+msgid "Shown to players in the lobby and on the tournament page."
+msgstr "Отображается игрокам в лобби и на странице турнира."
+
+msgid "Markdown is supported. Shown on the tournament page."
+msgstr "Поддерживается Markdown. Отображается на странице турнира."
+
+msgid "Enter user IDs separated by commas or spaces. You are always a moderator and do not need to be listed here."
+msgstr "Укажите ID пользователей через запятую или пробел. Вы всегда являетесь модератором, добавлять себя не нужно."
+
+msgid "The tournament starts automatically at this time."
+msgstr "Турнир начнётся автоматически в это время."
+
+msgid "Maximum number of players who can join."
+msgstr "Максимальное число игроков, которые могут вступить."
+
+msgid "Ladder always uses a static base score per task."
+msgstr "В режиме «Лестница» всегда используются фиксированные базовые очки за задачу."
+
+msgid "For Ladder, this is the number of matching rounds."
+msgstr "Для «Лестницы» это количество раундов подбора."
+
+msgid "Number of rounds to play."
+msgstr "Количество раундов в турнире."
+
+msgid "Pause between rounds, in seconds."
+msgstr "Пауза между раундами, в секундах."
+
+msgid "How often the pool is matched, in seconds."
+msgstr "Как часто выполняется подбор из пула, в секундах."
+
+msgid "Time limit for each round, in seconds."
+msgstr "Ограничение времени на раунд, в секундах."
+
+msgid "Total time for the whole tournament, in seconds."
+msgstr "Общее время на весь турнир, в секундах."
+
+msgid "Advanced JSON configuration. Leave as {} if unsure."
+msgstr "Расширенная конфигурация в JSON. Оставьте {}, если не уверены."
+
+msgid "Players are paired each round against opponents with a similar score. Runs for a fixed number of rounds — good for balanced, bracket-style events."
+msgstr "Каждый раунд игроки соревнуются с соперниками с близким счётом. Проходит фиксированное число раундов — подходит для сбалансированных турниров."
+
+msgid "Continuous pool matchmaking. \"Rounds Limit\" is the number of matching rounds; \"Round Timeout\" is the matching interval. Timeout and score are fixed (per-task, static base score)."
+msgstr "Непрерывный подбор соперников из пула. «Количество раундов» — число раундов подбора, «Таймаут раунда» — интервал подбора. Таймаут и подсчёт очков фиксированы (на задачу, базовые очки)."
+
+msgid "Tasks are picked automatically from the chosen difficulty level."
+msgstr "Задачи выбираются автоматически из выбранного уровня сложности."
+
+msgid "Tasks come from a fixed task pack, played in the pack's order."
+msgstr "Задачи берутся из выбранного набора и идут в порядке набора."
+
+msgid "Tasks are picked by the given tags and difficulty level."
+msgstr "Задачи выбираются по указанным тегам и уровню сложности."
+
+msgid "Each player gets tasks in a random order."
+msgstr "Каждый игрок получает задачи в случайном порядке."
+
+msgid "All players get tasks in the same fixed order."
+msgstr "Все игроки получают задачи в одном фиксированном порядке."
+
+msgid "Score is based on the 75th percentile of solve times — faster solutions score higher."
+msgstr "Очки считаются по 75-му перцентилю времени решения — быстрые решения приносят больше очков."
+
+msgid "Each task gives a fixed base score regardless of the player's solve time."
+msgstr "Каждая задача даёт фиксированные базовые очки независимо от времени решения."
+
+msgid "Only the match result counts — a win or a loss, with no partial score."
+msgstr "Учитывается только результат матча — победа или поражение, без частичных очков."
+
+msgid "Players are ranked individually."
+msgstr "Игроки ранжируются индивидуально."
+
+msgid "Players are grouped and ranked by their clan."
+msgstr "Игроки группируются и ранжируются по кланам."
+
+msgid "Anyone can find and join this tournament."
+msgstr "Любой может найти турнир и вступить в него."
+
+msgid "Only players who have the invite link can join."
+msgstr "Вступить могут только игроки, у которых есть ссылка-приглашение."
+
+msgid "Each game uses the task's own time limit. Different tasks may have different timeouts."
+msgstr "Каждая игра использует собственный лимит времени задачи. У разных задач таймауты могут отличаться."
+
+msgid "All games in a round share a fixed timeout. One task per round."
+msgstr "Все игры раунда используют общий фиксированный таймаут. Одна задача на раунд."
+
+msgid "Each round has a fixed timeout. Players play multiple tasks (rematches) within the round until time runs out."
+msgstr "У каждого раунда фиксированный таймаут. Игроки решают несколько задач (переигровки) в раунде, пока не истечёт время."
+
+msgid "One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires."
+msgstr "Один общий таймаут на весь турнир. Игры используют оставшееся время турнира. Турнир завершается автоматически по истечении времени."
+
+msgid "Submitting..."
+msgstr "Отправка..."
+
+msgid "Create Tournament"
+msgstr "Создать турнир"
+
+msgid "Update Tournament"
+msgstr "Обновить турнир"
+
+msgid "Approximate start time shown to players. The creator or a moderator starts the tournament manually."
+msgstr "Примерное время начала, которое видят игроки. Создатель или модератор запускает турнир вручную."
+
+msgid "Moderators can start and cancel the tournament, kick or ban players, and manage rounds. Enter user IDs separated by commas or spaces. You are always a moderator and do not need to be listed here."
+msgstr "Модераторы могут запускать и отменять турнир, кикать и банить игроков, управлять раундами. Укажите ID пользователей через запятую или пробел. Вы всегда являетесь модератором, добавлять себя не нужно."
+
+msgid "Options"
+msgstr "Опции"
+
+msgid "- ✅ Solve each task correctly to earn points\n- ⚡ Faster solutions rank higher\n- 🤝 Be respectful to other players\n\nGood luck and have fun! 🚀"
+msgstr "- ✅ Решайте задачи правильно, чтобы получать очки\n- ⚡ Чем быстрее решение, тем выше место\n- 🤝 Уважайте других игроков\n\nУдачи и хорошей игры! 🚀"
+
+msgid "Code Rumble"
+msgstr "Кодовая заварушка"
+
+msgid "Byte Brawl"
+msgstr "Байтовая драка"
+
+msgid "Algo Arena Showdown"
+msgstr "Схватка на арене алгоритмов"
+
+msgid "The Great Bug Hunt"
+msgstr "Великая охота на баги"
+
+msgid "Syntax Smackdown"
+msgstr "Синтаксическая рубка"
+
+msgid "Midnight Code Clash"
+msgstr "Полночная битва кода"
+
+msgid "Turbo Loop Rumble"
+msgstr "Турбо-заруба циклов"
+
+msgid "Hack & Slash"
+msgstr "Хак и руби"
+
+msgid "Recursion Rampage"
+msgstr "Рекурсивный раж"
+
+msgid "Stack Overflow Showdown"
+msgstr "Дуэль переполнения стека"

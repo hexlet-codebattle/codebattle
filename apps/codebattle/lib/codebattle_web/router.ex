@@ -320,6 +320,7 @@ defmodule CodebattleWeb.Router do
       resources("/tasks", TaskController, only: [:index, :show, :update])
       get("/tasks/:id/stats", TaskController, :stats)
       get("/tournaments/history", TournamentController, :history)
+      get("/tournaments/created", TournamentController, :created)
       resources("/tournaments", TournamentController, only: [:index, :show, :create, :update])
       get("/stream_configs", StreamConfigController, :index)
       put("/stream_configs", StreamConfigController, :put_all)

@@ -658,4 +658,43 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       assert Enum.any?(user_tournaments, &(&1["id"] == moderated_tournament_id))
     end
   end
+
+  describe "#created" do
+    test "returns only tournaments created by the current user, newest first", %{conn: conn} do
+      user = insert(:user)
+      other = insert(:user)
+
+      first = insert(:tournament, creator: nil, creator_id: user.id, state: "finished")
+      second = insert(:tournament, creator: nil, creator_id: user.id, state: "finished")
+      insert(:tournament, creator: nil, creator_id: other.id, state: "finished")
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> get(Routes.api_v1_tournament_path(conn, :created))
+
+      assert %{"tournaments" => tournaments, "page_info" => page_info} = json_response(conn, 200)
+      assert Enum.map(tournaments, & &1["id"]) == [second.id, first.id]
+      assert page_info["total_entries"] == 2
+      assert page_info["total_pages"] == 1
+    end
+
+    test "paginates results", %{conn: conn} do
+      user = insert(:user)
+
+      for _ <- 1..3 do
+        insert(:tournament, creator: nil, creator_id: user.id, state: "finished")
+      end
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> get(Routes.api_v1_tournament_path(conn, :created), %{"page" => "1", "page_size" => "2"})
+
+      assert %{"tournaments" => tournaments, "page_info" => page_info} = json_response(conn, 200)
+      assert length(tournaments) == 2
+      assert page_info["total_entries"] == 3
+      assert page_info["total_pages"] == 2
+    end
+  end
 end
