@@ -70,6 +70,22 @@ defmodule Codebattle.Chat do
     :ok
   end
 
+  @spec delete_message(chat_type(), pos_integer(), user_id(), boolean()) :: :ok
+  def delete_message(chat_type, message_id, user_id, can_delete_any? \\ false) do
+    case Chat.Server.delete_message(chat_type, message_id, user_id, can_delete_any?) do
+      {:ok, deleted_id} ->
+        Codebattle.PubSub.broadcast("chat:msg_deleted", %{
+          chat_type: chat_type,
+          message_id: deleted_id
+        })
+
+      {:error, _reason} ->
+        :noop
+    end
+
+    :ok
+  end
+
   @spec ban_user(chat_type(), ban_user_params()) :: :ok
   def ban_user(chat_type, params) do
     Chat.Server.delete_user_messages(chat_type, params.user_id)

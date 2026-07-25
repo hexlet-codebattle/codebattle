@@ -84,6 +84,48 @@ defmodule Codebattle.ChatTest do
     assert length(Chat.get_messages(@chat_type)) == 6
   end
 
+  test "deletes own message but not another user's message", %{user1: user1, user2: user2} do
+    {:ok, _pid} = Chat.start_link(@chat_type, %{clean_timeout: 50, message_ttl: 10})
+
+    Chat.add_message(@chat_type, %{type: :text, text: "oi", user_id: user1.id, name: user1.name})
+    Chat.add_message(@chat_type, %{type: :text, text: "blz", user_id: user2.id, name: user2.name})
+
+    assert [
+             %Message{id: 1, user_id: user1_id},
+             %Message{id: 2, user_id: user2_id}
+           ] = Chat.get_messages(@chat_type)
+
+    assert user1_id == user1.id
+    assert user2_id == user2.id
+
+    # cannot delete another user's message
+    :ok = Chat.delete_message(@chat_type, 2, user1.id)
+    assert length(Chat.get_messages(@chat_type)) == 2
+
+    # cannot delete a non-existent message
+    :ok = Chat.delete_message(@chat_type, 999, user1.id)
+    assert length(Chat.get_messages(@chat_type)) == 2
+
+    # can delete own message
+    :ok = Chat.delete_message(@chat_type, 1, user1.id)
+
+    assert [%Message{id: 2, text: "blz", user_id: ^user2_id}] = Chat.get_messages(@chat_type)
+  end
+
+  test "privileged user can delete any message", %{user1: user1, user2: user2, admin: admin} do
+    {:ok, _pid} = Chat.start_link(@chat_type, %{clean_timeout: 50, message_ttl: 10})
+
+    Chat.add_message(@chat_type, %{type: :text, text: "oi", user_id: user1.id, name: user1.name})
+    Chat.add_message(@chat_type, %{type: :text, text: "blz", user_id: user2.id, name: user2.name})
+
+    assert length(Chat.get_messages(@chat_type)) == 2
+
+    # with can_delete_any? = true, a user may delete a message they do not own
+    :ok = Chat.delete_message(@chat_type, 1, admin.id, true)
+
+    assert [%Message{id: 2, text: "blz"}] = Chat.get_messages(@chat_type)
+  end
+
   test "catches no_chat error", %{user1: %{id: user_id, name: name} = user1} do
     assert %{messages: [], users: []} = Chat.join_chat(@chat_type, user1)
     assert [] = Chat.leave_chat(@chat_type, user1)

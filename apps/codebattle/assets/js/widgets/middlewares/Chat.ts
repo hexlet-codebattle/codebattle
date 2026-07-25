@@ -39,12 +39,14 @@ const establishChat = (page: string) => (dispatch: any) => {
   const handleUserLeft = getDispatchActionHandler(actions.userLeftChat);
   const handleNewMessage = getDispatchActionHandler(actions.newChatMessage);
   const handleUserbanned = getDispatchActionHandler(actions.banUserChat);
+  const handleMessageDeleted = getDispatchActionHandler(actions.deleteChatMessage);
 
   return channel
     .addListener(channelTopics.chatUserJoinedTopic, handleUserJoined)
     .addListener(channelTopics.chatUserLeftTopic, handleUserLeft)
     .addListener(channelTopics.chatUserNewMsgTopic, handleNewMessage)
-    .addListener(channelTopics.chatUserBannedTopic, handleUserbanned);
+    .addListener(channelTopics.chatUserBannedTopic, handleUserbanned)
+    .addListener(channelTopics.chatMsgDeletedTopic, handleMessageDeleted);
 };
 
 export const connectToChat =
@@ -63,6 +65,10 @@ export const connectToChat =
 
 export const addMessage = (payload: any) => {
   channel.push(channelMethods.chatAddMsg, payload);
+};
+
+export const deleteMessage = (id: string | number) => {
+  channel.push(channelMethods.chatDeleteMsg, { id });
 };
 
 export const pushCommand = (command: any) => {

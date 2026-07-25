@@ -69,25 +69,33 @@ function MessagePart({ part, index, name }: MessagePartProps) {
 }
 
 export interface MessageProps {
+  id?: string | number;
   text?: string;
   name?: string;
   userId?: number;
+  currentUserId?: number | null;
   type?: string;
   time?: number;
   meta?: MessageMeta | null;
   displayMenu?: (event: MouseEvent | KeyboardEvent) => void;
   onBanUser?: (user: { userId: number; name: string }) => void;
+  onDeleteMessage?: (id: string | number) => void;
+  canDeleteAny?: boolean;
 }
 
 function Message({
+  id,
   text = '',
   name = '',
   userId,
+  currentUserId,
   type,
   time,
   meta,
   displayMenu,
   onBanUser,
+  onDeleteMessage,
+  canDeleteAny = false,
 }: MessageProps) {
   const [chatHeaderRef, hoveredChatHeader] = useHover();
   const isInteractive = Boolean(userId && displayMenu);
@@ -106,6 +114,22 @@ function Message({
         <FontAwesomeIcon icon="ban" />
       </button>
     ) : null;
+  const isOwnMessage = Boolean(userId && currentUserId && userId === currentUserId);
+  const canDelete = Boolean(id != null && onDeleteMessage && (canDeleteAny || isOwnMessage));
+  const deleteAction = canDelete ? (
+    <button
+      type="button"
+      className="btn cb-chat-message-delete"
+      title="Delete message"
+      aria-label="Delete message"
+      onClick={(event) => {
+        event.stopPropagation();
+        onDeleteMessage!(id!);
+      }}
+    >
+      <FontAwesomeIcon icon="trash" />
+    </button>
+  ) : null;
 
   if (!text) {
     return null;
@@ -130,7 +154,14 @@ function Message({
       time={time}
       hovered={hoveredChatHeader}
       interactive={isInteractive}
-      action={banAction}
+      action={
+        banAction || deleteAction ? (
+          <>
+            {banAction}
+            {deleteAction}
+          </>
+        ) : undefined
+      }
     />
   );
 

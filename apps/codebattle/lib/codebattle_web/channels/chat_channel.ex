@@ -45,6 +45,15 @@ defmodule CodebattleWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  def handle_in("chat:delete_msg", payload, socket) do
+    chat_type = get_chat_type(socket)
+    user = socket.assigns.current_user
+
+    Chat.delete_message(chat_type, payload["id"], user.id, can_delete_any_message?(chat_type, user))
+
+    {:noreply, socket}
+  end
+
   def handle_in("chat:command", payload, socket) do
     chat_type = get_chat_type(socket)
     user = socket.assigns.current_user
@@ -109,6 +118,12 @@ defmodule CodebattleWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{topic: _topic, event: "chat:msg_deleted", payload: payload}, socket) do
+    push(socket, "chat:msg_deleted", payload)
+
+    {:noreply, socket}
+  end
+
   def handle_info(_, socket), do: {:noreply, socket}
 
   def terminate(_reason, socket) do
@@ -134,6 +149,21 @@ defmodule CodebattleWeb.ChatChannel do
   end
 
   defp get_chat_type(socket), do: get_chat_type(socket.topic)
+
+  # Admins can delete any message in any chat. Tournament creators and
+  # moderators can additionally delete any message in their tournament chat.
+  defp can_delete_any_message?({:tournament, tournament_id}, user) do
+    Codebattle.User.admin?(user) || tournament_moderator?(tournament_id, user)
+  end
+
+  defp can_delete_any_message?(_chat_type, user), do: Codebattle.User.admin?(user)
+
+  defp tournament_moderator?(tournament_id, user) do
+    case Codebattle.Tournament.Context.get(tournament_id) do
+      nil -> false
+      tournament -> Codebattle.Tournament.Helpers.can_moderate?(tournament, user)
+    end
+  end
 
   defp update_playbook(:lobby, _event_name, _payload), do: :noop
 

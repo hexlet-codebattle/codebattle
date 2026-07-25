@@ -16,6 +16,7 @@ import ChatInput from '../../components/ChatInput';
 import Messages from '../../components/Messages';
 import RoomContext from '../../components/RoomContext';
 import GameRoomModes from '../../config/gameModes';
+import { deleteMessage } from '../../middlewares/Chat';
 import { isRestrictedContentSelector, openedReplayerSelector } from '../../machines/selectors';
 import * as selectors from '../../selectors';
 import { shouldShowMessage } from '../../utils/chat';
@@ -31,6 +32,8 @@ function ChatWidget() {
   const users = useSelector(selectors.chatUsersSelector);
   const messages = useSelector(selectors.chatMessagesSelector);
   const isOnline = useSelector(selectors.chatChannelStateSelector);
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const useChat = useSelector(selectors.gameUseChatSelector);
@@ -91,6 +94,9 @@ function ChatWidget() {
               messages={
                 filteredMessages as unknown as React.ComponentProps<typeof Messages>['messages']
               }
+              currentUserId={currentUserId}
+              onDeleteMessage={deleteMessage}
+              canDeleteAny={currentUserIsAdmin}
               disabled={disabledChatMessages}
             />
           )}

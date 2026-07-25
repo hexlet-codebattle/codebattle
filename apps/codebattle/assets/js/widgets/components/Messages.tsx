@@ -30,6 +30,9 @@ interface MessagesProps {
   messages: ChatMessage[];
   displayMenu?: (event: MouseEvent | KeyboardEvent) => void;
   onBanUser?: (user: { userId: number; name: string }) => void;
+  onDeleteMessage?: (id: string | number) => void;
+  canDeleteAny?: boolean;
+  currentUserId?: number | null;
   disabled?: boolean;
   className?: string;
 }
@@ -51,6 +54,9 @@ function Messages({
   messages,
   displayMenu,
   onBanUser,
+  onDeleteMessage,
+  canDeleteAny = false,
+  currentUserId,
   disabled = false,
   className = '',
 }: MessagesProps) {
@@ -154,8 +160,10 @@ function Messages({
 
           return (
             <Message
+              id={id}
               name={name}
               userId={userId}
+              currentUserId={currentUserId}
               text={text}
               key={key}
               type={type}
@@ -163,6 +171,8 @@ function Messages({
               meta={meta}
               displayMenu={displayMenu}
               onBanUser={onBanUser}
+              onDeleteMessage={onDeleteMessage}
+              canDeleteAny={canDeleteAny}
             />
           );
         })}

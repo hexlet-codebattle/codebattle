@@ -131,5 +131,94 @@ defmodule CodebattleWeb.ChatChannelTest do
            ] = Chat.get_messages(:lobby)
   end
 
+  test "user deletes own message but cannot delete another user's message", %{
+    socket1: socket1,
+    socket2: socket2
+  } do
+    chat_id = :rand.uniform(1000)
+    Chat.start_link({:game, chat_id})
+    chat_type = {:game, "#{chat_id}"}
+    chat_topic = get_chat_topic(chat_id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
+    {:ok, _response, socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
+
+    push(socket1, "chat:add_msg", %{"text" => "oi"})
+    :timer.sleep(10)
+    push(socket2, "chat:add_msg", %{"text" => "blz"})
+    :timer.sleep(50)
+
+    assert [
+             %{id: 1, name: "alice", text: "oi"},
+             %{id: 2, name: "bob", text: "blz"}
+           ] = Chat.get_messages(chat_type)
+
+    # user cannot delete another user's message
+    push(socket1, "chat:delete_msg", %{"id" => 2})
+    :timer.sleep(50)
+
+    assert [
+             %{id: 1, name: "alice", text: "oi"},
+             %{id: 2, name: "bob", text: "blz"}
+           ] = Chat.get_messages(chat_type)
+
+    # user deletes own message and other clients are notified
+    push(socket1, "chat:delete_msg", %{"id" => 1})
+
+    assert_push("chat:msg_deleted", %{id: 1})
+    :timer.sleep(50)
+
+    assert [%{id: 2, name: "bob", text: "blz"}] = Chat.get_messages(chat_type)
+  end
+
+  test "admin can delete any message", %{socket1: socket1, admin_socket: admin_socket} do
+    chat_id = :rand.uniform(1000)
+    Chat.start_link({:game, chat_id})
+    chat_type = {:game, "#{chat_id}"}
+    chat_topic = get_chat_topic(chat_id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
+    {:ok, _response, admin_socket} = subscribe_and_join(admin_socket, ChatChannel, chat_topic)
+
+    push(socket1, "chat:add_msg", %{"text" => "oi"})
+    :timer.sleep(50)
+
+    assert [%{id: 1, name: "alice", text: "oi"}] = Chat.get_messages(chat_type)
+
+    push(admin_socket, "chat:delete_msg", %{"id" => 1})
+
+    assert_push("chat:msg_deleted", %{id: 1})
+    :timer.sleep(50)
+
+    assert [] = Chat.get_messages(chat_type)
+  end
+
+  test "tournament creator can delete any message in tournament chat", %{
+    user1: user1,
+    socket1: socket1,
+    socket2: socket2
+  } do
+    tournament = insert(:tournament, creator_id: user1.id)
+    Chat.start_link({:tournament, tournament.id})
+    chat_type = {:tournament, "#{tournament.id}"}
+    chat_topic = "chat:t_#{tournament.id}"
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
+    {:ok, _response, socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
+
+    push(socket2, "chat:add_msg", %{"text" => "blz"})
+    :timer.sleep(50)
+
+    assert [%{id: 1, name: "bob", text: "blz"}] = Chat.get_messages(chat_type)
+
+    # tournament creator (non-admin) deletes another user's message
+    push(socket1, "chat:delete_msg", %{"id" => 1})
+
+    assert_push("chat:msg_deleted", %{id: 1})
+    :timer.sleep(50)
+
+    assert [] = Chat.get_messages(chat_type)
+  end
+
   def get_chat_topic(id), do: "chat:g_#{id}"
 end

@@ -5,6 +5,7 @@ import { isMessageForCurrentUser, isMessageForCurrentPrivateRoom } from '../util
 import { ttl, filterPrivateRooms } from '../utils/chatRoom';
 
 export interface ChatMessage {
+  id?: string | number;
   name?: string;
   type?: string;
   userId?: number;
@@ -122,6 +123,9 @@ const chat = createSlice({
     },
     banUserChat: (state, { payload }: PayloadAction<{ name: string }>) => {
       state.messages = [...state.messages.filter((message) => message.name !== payload.name)];
+    },
+    deleteChatMessage: (state, { payload }: PayloadAction<{ id: string | number }>) => {
+      state.messages = state.messages.filter((message) => message.id !== payload.id);
     },
     setActiveRoom: (state, { payload }: PayloadAction<ChatRoom>) => {
       state.activeRoom = payload;

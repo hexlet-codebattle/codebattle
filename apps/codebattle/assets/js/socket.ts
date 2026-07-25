@@ -50,6 +50,7 @@ export const channelTopics = {
   chatUserLeftTopic: 'chat:user_left',
   chatUserNewMsgTopic: 'chat:new_msg',
   chatUserBannedTopic: 'chat:user_banned',
+  chatMsgDeletedTopic: 'chat:msg_deleted',
 
   lobbyGameUpsertTopic: 'game:upsert',
   lobbyGameEditorLangChangedTopic: 'game:editor_lang_changed',
@@ -102,6 +103,7 @@ export const channelMethods = {
   gameTaskChangeTarget: 'game:task:change_target',
 
   chatAddMsg: 'chat:add_msg',
+  chatDeleteMsg: 'chat:delete_msg',
   chatCommand: 'chat:command',
 
   checkResult: 'check_result',

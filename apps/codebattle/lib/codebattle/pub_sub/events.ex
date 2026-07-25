@@ -478,6 +478,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("chat:msg_deleted", params) do
+    [
+      %Message{
+        topic: chat_topic(params.chat_type),
+        event: "chat:msg_deleted",
+        payload: %{id: params.message_id}
+      }
+    ]
+  end
+
   def get_messages("game:created", %{game: game}) do
     user_messages =
       game

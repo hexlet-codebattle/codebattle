@@ -75,6 +75,14 @@ defmodule Codebattle.Chat.Server do
     :exit, _reason -> :ok
   end
 
+  @spec delete_message(Chat.chat_type(), pos_integer(), Chat.user_id(), boolean()) ::
+          {:ok, pos_integer()} | {:error, atom()}
+  def delete_message(chat_type, message_id, user_id, can_delete_any?) do
+    GenServer.call(chat_key(chat_type), {:delete_message, message_id, user_id, can_delete_any?})
+  catch
+    :exit, _reason -> {:error, :no_chat}
+  end
+
   @spec add_to_banned(Chat.chat_type(), Chat.user_id()) :: :ok
   def add_to_banned(chat_type, user_id) do
     GenServer.cast(chat_key(chat_type), {:add_to_banned, user_id})
@@ -152,6 +160,23 @@ defmodule Codebattle.Chat.Server do
   end
 
   @impl GenServer
+  def handle_call({:delete_message, message_id, user_id, can_delete_any?}, _from, state) do
+    message = Enum.find(state.messages, fn msg -> msg.id == message_id end)
+
+    cond do
+      is_nil(message) ->
+        {:reply, {:error, :not_found}, state}
+
+      can_delete_any? or own_message?(message, user_id) ->
+        new_messages = Enum.reject(state.messages, fn msg -> msg.id == message_id end)
+        {:reply, {:ok, message_id}, %{state | messages: new_messages}}
+
+      true ->
+        {:reply, {:error, :unauthorized}, state}
+    end
+  end
+
+  @impl GenServer
   def handle_cast({:delete_user_messages, user_id}, state) do
     new_messages = Enum.reject(state.messages, fn msg -> msg.user_id == user_id end)
 
@@ -181,6 +206,9 @@ defmodule Codebattle.Chat.Server do
     Process.send_after(self(), :clean_messages, state.clean_timeout)
     {:noreply, %{state | messages: new_messages}}
   end
+
+  defp own_message?(_message, nil), do: false
+  defp own_message?(message, user_id), do: message.user_id == user_id
 
   defp can_send_message?(nil, _), do: true
 

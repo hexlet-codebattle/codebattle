@@ -3297,6 +3297,27 @@ a.cb-text-light:hover {
   }
 }
 
+.cb-chat-message-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 0.4rem;
+  padding: 0;
+  color: rgba($cb-text-color, 0.85);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+
+  &:hover,
+  &:focus {
+    color: #ff6b78;
+    border-color: rgba($danger, 0.35);
+    background: rgba($danger, 0.12);
+  }
+}
+
 .cb-tournament-chat-composer {
   padding: 0.75rem;
   border-top: 1px solid rgba($cb-border-color, 0.6);

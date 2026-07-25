@@ -110,6 +110,8 @@ function LobbyChat({
 
   const messages = useSelector(selectors.chatMessagesSelector);
   const isOnline = useSelector(selectors.chatChannelStateSelector);
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
 
   const users = useMemo(() => presenceList.map(({ user }) => user), [presenceList]);
 
@@ -162,6 +164,9 @@ function LobbyChat({
             displayMenu={displayMenu as any}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             messages={filteredMessages as any}
+            currentUserId={currentUserId}
+            onDeleteMessage={chatMiddlewares.deleteMessage}
+            canDeleteAny={currentUserIsAdmin}
           />
           <ChatInput
             mode={mode}

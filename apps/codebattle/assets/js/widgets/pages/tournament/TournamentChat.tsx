@@ -4,13 +4,15 @@ import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
 import Messages from '../../components/Messages';
-import { pushCommand, pushCommandTypes } from '../../middlewares/Chat';
+import { pushCommand, pushCommandTypes, deleteMessage } from '../../middlewares/Chat';
 import * as selectors from '../../selectors';
 
 import TournamentChatInput from './TournamentChatInput';
 
 function TournamentChat() {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const currentUserCanModerate = useSelector(selectors.currentUserCanModerateTournament);
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
   const messages = useSelector(selectors.chatMessagesSelector);
   const isOnline = useSelector(selectors.chatChannelStateSelector);
 
@@ -62,6 +64,9 @@ function TournamentChat() {
           <Messages
             messages={messages as unknown as React.ComponentProps<typeof Messages>['messages']}
             onBanUser={currentUserIsAdmin ? handleBanUser : undefined}
+            currentUserId={currentUserId}
+            onDeleteMessage={deleteMessage}
+            canDeleteAny={currentUserCanModerate}
           />
         </div>
       </div>
