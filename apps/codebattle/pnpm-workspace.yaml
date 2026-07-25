@@ -9,6 +9,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   'brace-expansion': ^5.0.5
+  'esbuild': ^0.28.1
   'fast-uri': ^3.1.4
   'flatted': ^3.4.2
   'glob>minimatch': ^10.2.3
