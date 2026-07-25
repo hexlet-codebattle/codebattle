@@ -243,7 +243,7 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
                   {item.userLang || '-'}
                 </td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">
-                  {moment.utc(item.tournamentStartedAt).local().format('MM.DD HH:mm')}
+                  {moment.utc(item.tournamentStartedAt).local().format('YYYY.MM.DD HH:mm')}
                 </td>
               </tr>
             ))}

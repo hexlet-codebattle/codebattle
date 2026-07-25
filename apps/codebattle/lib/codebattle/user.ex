@@ -149,7 +149,15 @@ defmodule Codebattle.User do
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_required([:name])
-    |> validate_length(:name, min: 2, max: 39)
+    # Apply the same nickname rules as registration so the settings form (and
+    # the underlying API) can't set names the sign-up flow would reject —
+    # Cyrillic, a leading digit, spaces, etc. These validators only run when the
+    # name actually changes, so existing OAuth-generated names are unaffected
+    # unless the user edits them.
+    |> validate_length(:name, min: 3, max: 16)
+    |> validate_format(:name, ~r/^[a-zA-Z][a-zA-Z0-9_-]*$/,
+      message: "must start with a Latin letter and contain only Latin letters, digits, - and _"
+    )
     |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, user.id)
   end

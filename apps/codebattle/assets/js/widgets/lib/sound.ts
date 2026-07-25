@@ -67,6 +67,24 @@ const getAssetPlayer = (path: string) => {
   return assetPlayers[path];
 };
 
+// iOS Safari (and some other mobile browsers) keep the Web Audio context
+// suspended until it is resumed inside a real user gesture. Howler's built-in
+// autoUnlock is unreliable with Web Audio + sprites, so explicitly resume the
+// shared context on the first user interactions. Without this, win/loss sounds
+// — which are triggered by an incoming socket event, with no user gesture on
+// the call stack — never play on mobile.
+const resumeAudioContext = () => {
+  if (Howler.ctx && Howler.ctx.state === 'suspended') {
+    Howler.ctx.resume();
+  }
+};
+
+if (typeof document !== 'undefined') {
+  ['touchend', 'pointerdown', 'mousedown', 'keydown'].forEach((event) => {
+    document.addEventListener(event, resumeAudioContext, { passive: true });
+  });
+}
+
 const sound = {
   play: (type: string, soundLevel?: number) => {
     const isMute = JSON.parse((localStorage.getItem('ui_mute_sound') || false) as string);

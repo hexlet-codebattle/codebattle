@@ -127,7 +127,7 @@ const InfiniteScrollableGames = memo(
                       </div>
                     </td>
                     <td className="px-1 py-3 align-middle text-nowrap text-white cb-border-color">
-                      {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
+                      {moment.utc(game.finishesAt).local().format('YYYY.MM.DD HH:mm')}
                     </td>
                     <td className="px-1 py-3 align-middle cb-border-color">
                       <a
