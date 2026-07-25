@@ -33,10 +33,26 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   # Only the nickname is validated against the DB. Email uniqueness is enforced
   # by Firebase, and we deliberately don't disclose whether an email is taken
   # (see `register_in_firebase/1`).
+  # Same rule as the sign-up form and settings changeset: start with a Latin
+  # letter, then Latin letters / digits / - / _, length 3-16. Enforced here
+  # (not just on the client) so the registration API can't persist Cyrillic,
+  # whitespace or invisible/zero-width characters in a nickname.
+  @nickname_format ~r/^[a-zA-Z][a-zA-Z0-9_-]{2,15}$/
+
   defp check_nickname(name) do
-    case Repo.get_by(User, name: name) do
-      nil -> :ok
-      %User{} -> {:error, %{name: "Nickname is already taken"}}
+    cond do
+      not (is_binary(name) and String.match?(name, @nickname_format)) ->
+        {:error,
+         %{
+           name:
+             "Nickname must start with a Latin letter and contain only Latin letters, digits, - and _ (3-16 characters)"
+         }}
+
+      Repo.get_by(User, name: name) ->
+        {:error, %{name: "Nickname is already taken"}}
+
+      true ->
+        :ok
     end
   end
 

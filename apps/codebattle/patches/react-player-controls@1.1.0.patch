@@ -1,0 +1,54 @@
+diff --git a/dist/components/RangeControlOverlay.js b/dist/components/RangeControlOverlay.js
+index 05a6a3dce05ce78055d57b2580b3e99469d36b22..8631dd683854d9851ccedd6ae0642d19fd6770f7 100644
+--- a/dist/components/RangeControlOverlay.js
++++ b/dist/components/RangeControlOverlay.js
+@@ -83,6 +83,9 @@ function (_Component) {
+       });
+       window.addEventListener('mousemove', this.triggerRangeChange);
+       window.addEventListener('mouseup', this.endDrag);
++      window.addEventListener('touchmove', this.triggerRangeChange, { passive: false });
++      window.addEventListener('touchend', this.endDrag);
++      window.addEventListener('touchcancel', this.endDrag);
+       this.toggleSelection('none');
+       var startValue = evt ? this.getValueFromMouseEvent(evt) : null;
+       this.props.onChangeStart(startValue);
+@@ -99,6 +102,9 @@ function (_Component) {
+       });
+       window.removeEventListener('mousemove', this.triggerRangeChange);
+       window.removeEventListener('mouseup', this.endDrag);
++      window.removeEventListener('touchmove', this.triggerRangeChange);
++      window.removeEventListener('touchend', this.endDrag);
++      window.removeEventListener('touchcancel', this.endDrag);
+       this.toggleSelection('');
+       var endValue = evt ? this.getValueFromMouseEvent(evt) : null;
+       this.props.onChangeEnd(endValue);
+@@ -115,11 +121,15 @@ function (_Component) {
+   }, {
+     key: "getValueFromMouseEvent",
+     value: function getValueFromMouseEvent(mouseEvent) {
+-      return this.props.direction === _constants.Direction.VERTICAL ? this.getVerticalValue(mouseEvent.pageY) : this.getHorizontalValue(mouseEvent.pageX);
++      var point = mouseEvent.touches && mouseEvent.touches[0] ? mouseEvent.touches[0] : mouseEvent.changedTouches && mouseEvent.changedTouches[0] ? mouseEvent.changedTouches[0] : mouseEvent;
++      return this.props.direction === _constants.Direction.VERTICAL ? this.getVerticalValue(point.pageY) : this.getHorizontalValue(point.pageX);
+     }
+   }, {
+     key: "triggerRangeChange",
+     value: function triggerRangeChange(mouseEvent) {
++      if (mouseEvent && mouseEvent.cancelable && mouseEvent.touches) {
++        mouseEvent.preventDefault();
++      }
+       this.props.onChange(this.getValueFromMouseEvent(mouseEvent));
+     }
+   }, {
+@@ -189,8 +199,11 @@ function (_Component) {
+           style = _this$props3.style;
+       return _react.default.createElement("div", {
+         className: className,
+-        style: style,
++        style: Object.assign({
++          touchAction: 'none'
++        }, style),
+         onMouseDown: this.startDrag,
++        onTouchStart: this.startDrag,
+         onMouseEnter: this.handleIntentStart,
+         onMouseMove: this.handleIntentMove,
+         onMouseLeave: this.handleIntentEnd

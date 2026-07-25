@@ -8,6 +8,10 @@ defmodule CodebattleWeb.Api.V1.SessionController do
     [bucket: "sign_in", limit: 20, window: to_timeout(minute: 5)] when action in [:create]
   )
 
+  # The :api pipeline fetches the session but not the flash; enable it here so a
+  # success message can be shown on the next full-page load after sign-in.
+  plug(:fetch_flash when action in [:create])
+
   def create(conn, params) do
     user_attrs = %{
       email: params["email"],
@@ -18,6 +22,7 @@ defmodule CodebattleWeb.Api.V1.SessionController do
       {:ok, user} ->
         conn
         |> UserAuth.log_in_user(user)
+        |> put_flash(:info, gettext("Successfully authenticated"))
         |> json(%{status: :created})
 
       {:error, reason} ->

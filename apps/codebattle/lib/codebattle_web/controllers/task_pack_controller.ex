@@ -33,25 +33,32 @@ defmodule CodebattleWeb.TaskPackController do
 
   def show(conn, %{"id" => id}) do
     # use only visible tasks
-    task_pack = TaskPack.get!(id)
+    task_pack = TaskPack.get(id)
 
-    if TaskPack.can_see_task_pack?(task_pack, conn.assigns.current_user) do
-      conn
-      |> put_meta_tags(%{
-        title: task_pack.name <> " • Hexlet Codebattle • TaskPack.",
-        description: "Hexlet Codebattle • TaskPack",
-        url: Routes.task_pack_path(conn, :show, task_pack)
-      })
-      |> render("show.html", %{
-        task_pack: task_pack,
-        tasks: TaskPack.get_tasks(task_pack),
-        current_user: conn.assigns.current_user
-      })
-    else
-      conn
-      |> put_status(:not_found)
-      |> put_view(CodebattleWeb.ErrorView)
-      |> render("404.html", %{msg: gettext("Task Pack not found")})
+    cond do
+      is_nil(task_pack) ->
+        conn
+        |> put_flash(:danger, gettext("Task Pack not found"))
+        |> redirect(to: Routes.task_pack_path(conn, :index))
+
+      TaskPack.can_see_task_pack?(task_pack, conn.assigns.current_user) ->
+        conn
+        |> put_meta_tags(%{
+          title: task_pack.name <> " • Hexlet Codebattle • TaskPack.",
+          description: "Hexlet Codebattle • TaskPack",
+          url: Routes.task_pack_path(conn, :show, task_pack)
+        })
+        |> render("show.html", %{
+          task_pack: task_pack,
+          tasks: TaskPack.get_tasks(task_pack),
+          current_user: conn.assigns.current_user
+        })
+
+      true ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(CodebattleWeb.ErrorView)
+        |> render("404.html", %{msg: gettext("Task Pack not found")})
     end
   end
 
@@ -89,16 +96,23 @@ defmodule CodebattleWeb.TaskPackController do
   end
 
   def edit(conn, %{"id" => id}) do
-    task_pack = TaskPack.get!(id)
+    task_pack = TaskPack.get(id)
 
-    if TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user) do
-      changeset = TaskPack.changeset(task_pack)
-      render(conn, "edit.html", task_pack: task_pack, changeset: changeset)
-    else
-      conn
-      |> put_status(:not_found)
-      |> put_view(CodebattleWeb.ErrorView)
-      |> render("404.html", %{msg: gettext("TaskPack not found")})
+    cond do
+      is_nil(task_pack) ->
+        conn
+        |> put_flash(:danger, gettext("Task Pack not found"))
+        |> redirect(to: Routes.task_pack_path(conn, :index))
+
+      TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user) ->
+        changeset = TaskPack.changeset(task_pack)
+        render(conn, "edit.html", task_pack: task_pack, changeset: changeset)
+
+      true ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(CodebattleWeb.ErrorView)
+        |> render("404.html", %{msg: gettext("TaskPack not found")})
     end
   end
 

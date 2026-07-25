@@ -10,6 +10,11 @@ import Channel from './Channel';
 
 const players = getPageProp<any[]>('players', []);
 const currentUser = getPageProp<{ id?: number }>('current_user', {});
+const game = getPageProp<{ state?: string }>('game', {});
+
+// A user counts as "playing" only while their game is actually live — opening
+// your own finished/stored game should show you as watching, not playing.
+const liveGameStates = ['waiting_opponent', 'playing'];
 
 let channel: Channel;
 
@@ -37,12 +42,11 @@ const getUserStateByPath = () => {
   }
 
   if (pathname.startsWith('/games')) {
-    const state = players.some((player: any) => player.id === currentUser.id)
-      ? 'playing'
-      : 'watching';
+    const isPlayer = players.some((player: any) => player.id === currentUser.id);
+    const isLiveGame = !!game.state && liveGameStates.includes(game.state);
 
     return {
-      state,
+      state: isPlayer && isLiveGame ? 'playing' : 'watching',
     };
   }
 

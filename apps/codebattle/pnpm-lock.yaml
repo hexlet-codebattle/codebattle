@@ -21,6 +21,9 @@ overrides:
   uuid: ^14.0.0
   yaml@>=1.0.0 <1.10.3: ^1.10.3
 
+patchedDependencies:
+  react-player-controls@1.1.0: 62e05d9e7807f79fd803f4937afbda6b8ec0fa3eadccd1a0b10e31f49de0f1ca
+
 importers:
 
   .:
@@ -216,7 +219,7 @@ importers:
         version: 8.3.0(react@19.2.7)
       react-player-controls:
         specifier: ^1.1.0
-        version: 1.1.0(react@19.2.7)
+        version: 1.1.0(patch_hash=62e05d9e7807f79fd803f4937afbda6b8ec0fa3eadccd1a0b10e31f49de0f1ca)(react@19.2.7)
       react-redux:
         specifier: ^9.3.0
         version: 9.3.0(@types/react@19.2.17)(react@19.2.7)(redux@5.0.1)
@@ -7820,7 +7823,7 @@ snapshots:
       prop-types: 15.8.1
       react: 19.2.7
 
-  react-player-controls@1.1.0(react@19.2.7):
+  react-player-controls@1.1.0(patch_hash=62e05d9e7807f79fd803f4937afbda6b8ec0fa3eadccd1a0b10e31f49de0f1ca)(react@19.2.7):
     dependencies:
       autobind-decorator: 2.4.0
       prop-types: 15.8.1
