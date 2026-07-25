@@ -46,6 +46,13 @@ function UserPopoverContent({ user }: UserPopoverContentProps) {
         }
       })
       .catch((error) => {
+        // Aborting the in-flight request on hover-out (below) rejects with an
+        // AbortError — that's expected teardown, not a real failure, so don't
+        // surface it as a global error.
+        if (controller.signal.aborted || (error as { name?: string })?.name === 'AbortError') {
+          return;
+        }
+
         dispatch(actions.setError(error));
       });
 

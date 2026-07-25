@@ -238,7 +238,12 @@ defmodule Codebattle.Task do
     query =
       __MODULE__
       |> filter_visibility(user)
-      |> where([t], fragment("? @> ?", t.tags, ^tags))
+      # Match a task carrying ANY of the selected tags (array overlap), mirroring
+      # the union the task-picker UI shows. `@>` (contains-all) never matched
+      # multi-tag selections — especially the synthetic "rest" bucket tag, which
+      # no task carries — so the filter was silently dropped and a random task
+      # of the level was created instead.
+      |> where([t], fragment("? && ?", t.tags, ^tags))
 
     query =
       if level do
