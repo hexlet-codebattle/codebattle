@@ -7,6 +7,7 @@ WORKDIR /tmp/codebattle
 RUN npm install --global pnpm@11.11.0
 
 COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml apps/codebattle/pnpm-workspace.yaml ./
+COPY apps/codebattle/patches ./patches
 RUN pnpm install --frozen-lockfile
 
 COPY apps/codebattle/postcss.config.js apps/codebattle/vite.config.js ./
