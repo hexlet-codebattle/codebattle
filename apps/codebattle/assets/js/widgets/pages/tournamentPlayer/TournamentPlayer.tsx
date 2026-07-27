@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useInterpret } from '@xstate/react';
+import { useActorRef } from '@xstate/react';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -237,19 +237,21 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
     userId: playerId,
     type: EditorUserTypes.player,
   };
-  const spectatorService = useInterpret(spectatorMachine, {
-    context,
-    devTools: true,
-    actions: {
-      // xstate v4 action args are untyped here (machine is loosely typed).
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      blockGameRoomAfterCheck: (_ctx: any, { payload }: any) => {
-        if (payload?.award) {
-          NiceModal.show(ModalCodes.awardModal, { onlyShowAward: true });
-        }
+  // xstate v5: per-instance implementations via `.provide(...)`; seed context via `input`.
+  const spectatorService = useActorRef(
+    spectatorMachine.provide({
+      actions: {
+        // machine is loosely typed; event args are untyped here.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        blockGameRoomAfterCheck: ({ event }: any) => {
+          if (event.payload?.award) {
+            NiceModal.show(ModalCodes.awardModal, { onlyShowAward: true });
+          }
+        },
       },
-    },
-  });
+    }),
+    { input: context },
+  );
   const handleSwitchWidgets = useCallback(
     () => setSwitchedWidgetsStatus((state) => !state),
     [setSwitchedWidgetsStatus],

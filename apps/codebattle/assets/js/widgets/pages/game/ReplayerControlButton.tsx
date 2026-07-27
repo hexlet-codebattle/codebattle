@@ -65,7 +65,7 @@ function ReplayerControlButton() {
       return (
         <button
           type="button"
-          onClick={() => mainService.send('CLOSE_REPLAYER')}
+          onClick={() => mainService.send({ type: 'CLOSE_REPLAYER' })}
           className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
           aria-label="Close Record Player"
         >

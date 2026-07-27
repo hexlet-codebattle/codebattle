@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { type AnyInterpreter } from 'xstate';
+import { type AnyActorRef } from 'xstate';
 
 export interface RoomContextValue {
-  mainService: AnyInterpreter;
-  taskService: AnyInterpreter;
+  mainService: AnyActorRef;
+  taskService: AnyActorRef;
 }
 
 const context = React.createContext<RoomContextValue>({} as RoomContextValue);

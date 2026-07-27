@@ -136,13 +136,13 @@ const initPlaybook = (dispatch: any) => (data: any) => {
 
 const initGameChannel = (gameRoomService: any) => (dispatch: any) => {
   const onJoinFailure = (payload: any) => {
-    gameRoomService.send('REJECT_LOADING_GAME', { payload });
-    gameRoomService.send('FAILURE_JOIN', { payload });
+    gameRoomService.send({ type: 'REJECT_LOADING_GAME', payload });
+    gameRoomService.send({ type: 'FAILURE_JOIN', payload });
     window.location.reload();
   };
 
   channel.onError(() => {
-    gameRoomService.send('FAILURE');
+    gameRoomService.send({ type: 'FAILURE' });
   });
 
   const onJoinSuccess = (response: any) => {
@@ -167,7 +167,7 @@ const initGameChannel = (gameRoomService: any) => (dispatch: any) => {
 
     const gameStatus = getGameStatus(normalizedResponse.game);
 
-    gameRoomService.send('LOAD_GAME', { payload: gameStatus });
+    gameRoomService.send({ type: 'LOAD_GAME', payload: gameStatus });
 
     if (activeGameId) {
       dispatch(actions.setActiveGameId({ activeGameId }));
@@ -426,12 +426,12 @@ export const addCursorListeners = (
 };
 
 export const activeEditorReady = (service: any, isBanned: boolean) => {
-  const listenerParams = { userId: service.machine.context.userId };
+  const listenerParams = { userId: service.getSnapshot().context.userId };
 
   if (isBanned) {
-    service.send('load_banned_editor');
+    service.send({ type: 'load_banned_editor' });
   } else {
-    service.send('load_active_editor');
+    service.send({ type: 'load_active_editor' });
   }
 
   // channel.on('editor:data', data => {
@@ -440,19 +440,19 @@ export const activeEditorReady = (service: any, isBanned: boolean) => {
   // });
 
   const handleUserBanned = (data: any) => {
-    service.send('banned_user', data);
+    service.send({ type: 'banned_user', ...data });
   };
 
   const handleUserUnbanned = (data: any) => {
-    service.send('unbanned_user', data);
+    service.send({ type: 'unbanned_user', ...data });
   };
 
   const handleStartsCheck = (data: any) => {
-    service.send('check_solution_received', data);
+    service.send({ type: 'check_solution_received', ...data });
   };
 
   const handleNewCheckResult = (data: any) => {
-    service.send('receive_check_result', data);
+    service.send({ type: 'receive_check_result', ...data });
   };
 
   channel
@@ -506,7 +506,7 @@ export const activeGameReady =
       dispatch(actions.updateCheckStatus({ [userId]: false }));
 
       const payload = { state, award };
-      gameRoomService.send(channelTopics.userCheckCompleteTopic, { payload });
+      gameRoomService.send({ type: channelTopics.userCheckCompleteTopic, payload });
     };
 
     const handleUserJoined = (data: any) => {
@@ -559,16 +559,14 @@ export const activeGameReady =
           timeoutSeconds,
         }),
       );
-      gameRoomService.send(channelTopics.gameUserJoinedTopic, {
-        payload: data,
-      });
+      gameRoomService.send({ type: channelTopics.gameUserJoinedTopic, payload: data });
     };
 
     const handleUserWon = (data: any) => {
       const { players, state, msg } = data;
       dispatch(actions.updateGamePlayers({ players }));
       dispatch(actions.updateGameStatus({ state, msg }));
-      gameRoomService.send(channelTopics.userWonTopic, { payload: data });
+      gameRoomService.send({ type: channelTopics.userWonTopic, payload: data });
     };
 
     const handleUserGiveUp = (data: any) => {
@@ -578,18 +576,16 @@ export const activeGameReady =
       channel
         .push(channelMethods.gameHeadToHead, {})
         .receive('ok', (response: any) => dispatch(actions.setGameHeadToHead(response)));
-      gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
+      gameRoomService.send({ type: channelTopics.userGiveUpTopic, payload: data });
     };
 
     const handleRematchStatusUpdate = (data: any) => {
       dispatch(actions.updateRematchStatus(data));
-      gameRoomService.send(channelTopics.rematchStatusUpdatedTopic, {
-        payload: data,
-      });
+      gameRoomService.send({ type: channelTopics.rematchStatusUpdatedTopic, payload: data });
     };
 
     const handleRematchAccepted = ({ gameId: newGameId }: any) => {
-      gameRoomService.send(channelTopics.rematchAcceptedTopic, { newGameId });
+      gameRoomService.send({ type: channelTopics.rematchAcceptedTopic, newGameId });
       redirectToNewGame(newGameId);
     };
 
@@ -597,7 +593,7 @@ export const activeGameReady =
       const { gameState } = data;
       const payload = { state: gameState };
       dispatch(actions.updateGameStatus(payload));
-      gameRoomService.send(channelTopics.gameTimeoutTopic, { payload });
+      gameRoomService.send({ type: channelTopics.gameTimeoutTopic, payload });
     };
 
     const handleGameToggleVisible = () => {
@@ -610,9 +606,7 @@ export const activeGameReady =
 
     const handleTournamentGameCreated = (data: any) => {
       dispatch(actions.setTournamentsInfo(data));
-      gameRoomService.send(channelTopics.tournamentGameCreatedTopic, {
-        payload: data,
-      });
+      gameRoomService.send({ type: channelTopics.tournamentGameCreatedTopic, payload: data });
       if (!cancelRedirect) {
         setTimeout(() => {
           window.location.replace(makeGameUrl(data.gameId));
@@ -627,7 +621,8 @@ export const activeGameReady =
     const handleTournamentRoundFinished = (response: any) => {
       dispatch(actions.updateTournamentData(response.tournament));
       dispatch(actions.updateTournamentMatches(response.matches || []));
-      gameRoomService.send(channelTopics.tournamentRoundFinishedTopic, {
+      gameRoomService.send({
+        type: channelTopics.tournamentRoundFinishedTopic,
         payload: response.tournament,
       });
     };
@@ -666,7 +661,7 @@ export const activeGameReady =
 
 const fetchPlaybook =
   (service: any, init: (dispatch: any) => (data: any) => void) => (dispatch: any) => {
-    service.send('START_LOADING_PLAYBOOK');
+    service.send({ type: 'START_LOADING_PLAYBOOK' });
 
     requestJson(`/api/v1/playbook/${gameId}`)
       .then((response: any) => {
@@ -680,12 +675,12 @@ const fetchPlaybook =
 
         init(dispatch)(resolvedData);
 
-        service.send('LOAD_PLAYBOOK', { payload: resolvedData });
+        service.send({ type: 'LOAD_PLAYBOOK', payload: resolvedData });
       })
       .catch((err: any) => {
         console.error(err);
         dispatch(actions.setError(err));
-        service.send('REJECT_LOADING_PLAYBOOK', { payload: err });
+        service.send({ type: 'REJECT_LOADING_PLAYBOOK', payload: err });
       });
   };
 
@@ -721,7 +716,7 @@ export const changePlaybookSolution = (method: string) => (dispatch: any) => {
 };
 
 export const storedEditorReady = (service: any) => {
-  service.send('load_stored_editor');
+  service.send({ type: 'load_stored_editor' });
 
   return () => {};
 };
@@ -731,7 +726,7 @@ export const downloadPlaybook = (service: any) => (dispatch: any) => {
 };
 
 export const openPlaybook = (service: any) => () => {
-  service.send('OPEN_REPLAYER');
+  service.send({ type: 'OPEN_REPLAYER' });
 };
 
 export const connectToGame = (gameRoomService: any, options: any) => (dispatch: any) => {
@@ -739,7 +734,7 @@ export const connectToGame = (gameRoomService: any, options: any) => (dispatch: 
     return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
   }
 
-  gameRoomService.send('JOIN');
+  gameRoomService.send({ type: 'JOIN' });
 
   return activeGameReady(gameRoomService, options)(dispatch);
 };

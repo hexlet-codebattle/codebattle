@@ -45,7 +45,8 @@ export const spectatorEditorIsChecking = (state: any) =>
 export const gameRoomKeySelector = () => 'game';
 
 export const isInvalidTaskSelector = (state: any) =>
-  state.matches((taskMachineStates as any).invalid);
+  // there is no `invalid` task state; kept for API compat (always false).
+  state.matches('invalid');
 
 export const isIdleStateTaskSelector = (state: any) => state.matches(taskMachineStates.idle);
 
@@ -54,7 +55,7 @@ export const isSavedTaskSelector = (state: any) => state.matches(taskMachineStat
 export const isReadyTaskSelector = (state: any) => state.matches(taskMachineStates.ready);
 
 export const isTaskAssertsReadySelector = (state: any) =>
-  [taskMachineStates.ready, taskMachineStates.saved].some(state.matches);
+  [taskMachineStates.ready, taskMachineStates.saved].some((s) => state.matches(s));
 
 export const isTaskPrepareSavingSelector = (state: any) =>
   state.matches(taskMachineStates.prepareSaving);
@@ -63,7 +64,7 @@ export const isTaskPrepareTestingSelector = (state: any) =>
   state.matches(taskMachineStates.prepareTesting);
 
 export const isTaskAssertsFormingSelector = (state: any) =>
-  [taskMachineStates.prepareSaving, taskMachineStates.prepareTesting].some(state.matches);
+  [taskMachineStates.prepareSaving, taskMachineStates.prepareTesting].some((s) => state.matches(s));
 
 export const isDisconnectedWithMessageSelector = (state: any) =>
   state.matches({ network: networkMachineStates.disconnectedWithMessage });

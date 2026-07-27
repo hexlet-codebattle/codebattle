@@ -39,8 +39,8 @@ const machine = {
     none: {
       on: {
         SETUP_TASK: [
-          { target: 'idle', cond: 'isBlank' },
-          { target: 'saved', cond: 'isSaved' },
+          { target: 'idle', guard: 'isBlank' },
+          { target: 'saved', guard: 'isSaved' },
         ],
       },
     },
@@ -96,8 +96,8 @@ const machine = {
 
 export const config = {
   guards: {
-    isBlank: (_ctx: any, { payload }: any) => payload.state === taskStateCodes.blank,
-    isSaved: (_ctx: any, { payload }: any) => payload.state !== taskStateCodes.blank,
+    isBlank: ({ event }: any) => event.payload.state === taskStateCodes.blank,
+    isSaved: ({ event }: any) => event.payload.state !== taskStateCodes.blank,
   },
   actions: {
     openTesting: () => {},
@@ -107,7 +107,7 @@ export const config = {
     onFailure: () => {},
     onError: () => {},
     handleError: assign({
-      errorMessage: (_ctx: any, { payload }: any) => payload.message,
+      errorMessage: ({ event }: any) => event.payload.message,
     }),
   },
 };

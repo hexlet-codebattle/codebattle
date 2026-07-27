@@ -26,7 +26,6 @@ import './staticAssets';
 import './pwa';
 import { initializeInertiaApp } from './inertia';
 
-import { inspect } from '@xstate/inspect';
 import NProgress from 'nprogress';
 import { Socket } from 'phoenix';
 import { LiveSocket, type Hook } from 'phoenix_live_view';
@@ -50,8 +49,6 @@ import {
   renderOnlineWidget,
   renderRegistrationPage,
   renderSettingPage,
-  renderStairwayGamePage,
-  renderStreamPage,
   renderTournamentThreejsStreamPage,
   renderTournamentStreamAdminPage,
   renderTournamentAdminPage,
@@ -62,14 +59,10 @@ import {
   renderAdminPage,
 } from './widgets';
 
-if (import.meta.env.DEV) {
-  const xstateIframe = document.querySelector<HTMLIFrameElement>('.xstate');
-  if (xstateIframe) {
-    inspect({
-      iframe: () => xstateIframe,
-    });
-  }
-}
+// NOTE: the xstate v4 iframe inspector (`@xstate/inspect`) was removed with the
+// xstate v5 upgrade — it is not compatible with v5. To restore dev inspection,
+// adopt `@statelyai/inspect` (`createBrowserInspector`) and pass its `inspect`
+// handler to the actors created in `useGameRoomMachine` / `EditorContainer`.
 
 const Hooks: Record<string, Hook> = {
   NewChatMessage: {
@@ -122,14 +115,12 @@ const heatmapRoot = document.getElementById('heatmap-root');
 const onlineRoot = document.getElementById('online-root');
 const invitesRoot = document.getElementById('invites-root');
 const mainChannelRoot = document.getElementById('main-channel-root');
-const streamRoot = document.getElementById('stream-classic-root');
 const tournamentThreejsStreamRoot = document.getElementById('tournament-threejs-stream-root');
 const tournamentStreamAdminRoot = document.getElementById('tournament-stream-admin-root');
 const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
 const registrationRoot = document.getElementById('registration');
 const settingsRoot = document.getElementById('settings');
-const stairwayGameRoot = document.getElementById('stairway-game-root');
 const tournamentPlayerRoot = document.getElementById('tournament-player-root');
 const tournamentRoot = document.getElementById('tournament-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
@@ -182,10 +173,6 @@ if (registrationRoot) {
   renderRegistrationPage(registrationRoot);
 }
 
-if (stairwayGameRoot) {
-  renderStairwayGamePage(stairwayGameRoot);
-}
-
 if (tournamentPlayerRoot) {
   renderTournamentPlayerPage(tournamentPlayerRoot);
 }
@@ -212,10 +199,6 @@ if (onlineRoot) {
 
 if (invitesRoot) {
   renderInvitesWidget(invitesRoot);
-}
-
-if (streamRoot) {
-  renderStreamPage(streamRoot);
 }
 
 if (tournamentThreejsStreamRoot) {

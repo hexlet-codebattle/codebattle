@@ -6,6 +6,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - vite@8.1.4
+  - baseline-browser-mapping@2.11.4
 
 overrides:
   'brace-expansion': ^5.0.5

@@ -18,7 +18,6 @@ import leaderboard, { actions as leaderboardActions } from './leaderboard';
 import lobby, { actions as lobbyActions } from './lobby';
 import playbook, { actions as playbookActions } from './playbook';
 import reports, { actions as reportsActions } from './reports';
-import stairwayGame, { actions as stairwayGameActions } from './stairway';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import tournament, { actions as tournamentActions } from './tournament';
 import tournamentAdmin, { actions as tournamentAdminActions } from './tournamentAdmin';
@@ -44,7 +43,6 @@ export const actions = {
   ...leaderboardActions,
   ...lobbyActions,
   ...playbookActions,
-  ...stairwayGameActions,
   ...storeLoadedActions,
   ...tournamentActions,
   ...tournamentAdminActions,
@@ -72,7 +70,6 @@ const reducers = {
   leaderboard,
   lobby,
   playbook,
-  stairwayGame,
   storeLoaded,
   tournament,
   tournamentAdmin,

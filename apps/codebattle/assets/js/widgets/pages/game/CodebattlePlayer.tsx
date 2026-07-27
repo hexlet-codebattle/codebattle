@@ -159,12 +159,12 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
 
     if (roomMachineState.matches({ replayer: replayerMachineStates.ended })) {
       this.setGameState(0.0);
-      mainService.send('PLAY');
+      mainService.send({ type: 'PLAY' });
       this.play(0.0);
     }
 
     if (roomMachineState.matches({ replayer: replayerMachineStates.paused })) {
-      mainService.send('PLAY');
+      mainService.send({ type: 'PLAY' });
       this.play(handlerPosition);
     }
   };
@@ -174,12 +174,12 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
       cancelAnimationFrame(this.animationFrameId);
     }
     const { mainService } = this.context;
-    mainService.send('PAUSE');
+    mainService.send({ type: 'PAUSE' });
   };
 
   onChangeSpeed = () => {
     const { mainService } = this.context;
-    mainService.send('TOGGLE_SPEED_MODE');
+    mainService.send({ type: 'TOGGLE_SPEED_MODE' });
   };
 
   onChangePlaybackMode = () => {
@@ -212,7 +212,7 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
       cancelAnimationFrame(this.animationFrameId);
     }
     const { mainService } = this.context;
-    mainService.send('HOLD');
+    mainService.send({ type: 'HOLD' });
   };
 
   onSliderHandleChangeEnd = (handlerPosition: number) => {
@@ -222,11 +222,11 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
 
     switch (holding) {
       case 'play':
-        mainService.send('RELEASE_AND_PLAY');
+        mainService.send({ type: 'RELEASE_AND_PLAY' });
         this.play(handlerPosition);
         break;
       case 'pause':
-        mainService.send('RELEASE_AND_PAUSE');
+        mainService.send({ type: 'RELEASE_AND_PAUSE' });
         break;
       default:
         setError(new Error('Unexpected holding state [replayer machine]'));
@@ -256,7 +256,7 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
     setGameStateByRecordId(nextRecordId);
 
     if (nextRecordId + 1 >= recordsCount) {
-      mainService.send('END');
+      mainService.send({ type: 'END' });
     }
 
     this.setState({ handlerPosition, smoothHandlerPosition: handlerPosition, nextRecordId });
@@ -271,7 +271,7 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
     updateGameStateByRecordId(recordId);
 
     if (nextRecordId >= recordsCount) {
-      mainService.send('END');
+      mainService.send({ type: 'END' });
       this.setState({ handlerPosition: 1.0, smoothHandlerPosition: 1.0 });
     }
 

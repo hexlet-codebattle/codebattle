@@ -1,16 +1,17 @@
-import { Machine } from 'xstate';
+import { createMachine } from 'xstate';
 
 import editor, { config as editorConfig } from './editor';
 import game, { config as gameConfig } from './game';
 import spectator, { config as spectatorConfig } from './spectator';
 import task, { config as taskConfig } from './task';
 
-// xstate v4's `Machine` expects a strongly-typed `MachineConfig`; our machine
+// xstate v5's `createMachine` expects a strongly-typed config; our machine
 // definitions are plain config objects with widened string literals, so we cast
-// through `any` here rather than fighting the library's inference.
+// through `any` here rather than fighting the library's inference. Guards/actions
+// are attached via `.provide(...)` (v5 replacement for the old second argument).
 export default {
-  game: Machine(game as any, gameConfig as any),
-  editor: Machine(editor as any, editorConfig as any),
-  task: Machine(task as any, taskConfig as any),
-  spectator: Machine(spectator as any, spectatorConfig as any),
+  game: createMachine(game as any).provide(gameConfig as any),
+  editor: createMachine(editor as any).provide(editorConfig as any),
+  task: createMachine(task as any).provide(taskConfig as any),
+  spectator: createMachine(spectator as any).provide(spectatorConfig as any),
 };

@@ -1,5 +1,5 @@
 import NiceModal from '@ebay/nice-modal-react';
-import { useInterpret } from '@xstate/react';
+import { useActorRef } from '@xstate/react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { changePresenceState } from '@/middlewares/Main';
@@ -22,52 +22,58 @@ const useGameRoomMachine = ({
 
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
-  const mainService = useInterpret(mainMachine, {
-    devTools: true,
-    context: {
-      errorMessage: null,
-      holding: 'none',
-      speedMode: speedModes.normal,
-      subscriptionType,
-    },
-    actions: {
-      handleOpenHistory: () => {
+  const mainService = useActorRef(
+    // xstate v5: per-instance implementations come from `.provide(...)`, and
+    // seed context flows in via `input` (see the machine's `context({ input })`).
+    mainMachine.provide({
+      actions: {
+        handleOpenHistory: () => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          dispatch(changePresenceState('watching') as any);
+        },
+        handleOpenActiveGame: () => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          dispatch(changePresenceState('playing') as any);
+        },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        dispatch(changePresenceState('watching') as any);
-      },
-      handleOpenActiveGame: () => {
+        showGameResultModal: ({ event }: any) => {
+          if (!event.payload.award) {
+            NiceModal.show(ModalCodes.gameResultModal);
+          }
+        },
+        showPremiumSubscribeRequestModal: () => {
+          NiceModal.show(ModalCodes.premiumRestrictionModal);
+        },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        dispatch(changePresenceState('playing') as any);
+        blockGameRoomAfterCheck: ({ event }: any) => {
+          if (event.payload.award) {
+            NiceModal.show(ModalCodes.awardModal);
+          }
+        },
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      showGameResultModal: (_ctx: any, { payload }: any) => {
-        if (!payload.award) {
-          NiceModal.show(ModalCodes.gameResultModal);
-        }
-      },
-      showPremiumSubscribeRequestModal: () => {
-        NiceModal.show(ModalCodes.premiumRestrictionModal);
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      blockGameRoomAfterCheck: (_ctx: any, { payload }: any) => {
-        if (payload.award) {
-          NiceModal.show(ModalCodes.awardModal);
-        }
+    }),
+    {
+      input: {
+        errorMessage: null,
+        holding: 'none',
+        speedMode: speedModes.normal,
+        subscriptionType,
       },
     },
-  });
+  );
 
-  const taskService = useInterpret(taskMachine, {
-    devTools: true,
-    actions: {
-      openTesting: () => {},
-      showTaskSaveConfirmation: () => {},
-      closeTaskSaveConfirmation: () => {},
-      onSuccess: () => {},
-      onFailure: () => {},
-      onError: () => {},
-    },
-  });
+  const taskService = useActorRef(
+    taskMachine.provide({
+      actions: {
+        openTesting: () => {},
+        showTaskSaveConfirmation: () => {},
+        closeTaskSaveConfirmation: () => {},
+        onSuccess: () => {},
+        onFailure: () => {},
+        onError: () => {},
+      },
+    }),
+  );
 
   return { mainService, taskService };
 };

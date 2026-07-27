@@ -172,53 +172,6 @@ declare module 'react-big-calendar' {
   export const Calendar: React.ComponentType<any>;
 }
 
-// `react-syntax-highlighter` ships no bundled declarations here and no
-// @types/react-syntax-highlighter is installed. Provide a minimal ambient
-// declaration covering the Prism highlighter and prism style presets used.
-declare module 'react-syntax-highlighter' {
-  import type * as React from 'react';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const Prism: React.ComponentType<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const Light: React.ComponentType<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const SyntaxHighlighter: React.ComponentType<any>;
-  export default SyntaxHighlighter;
-}
-
-declare module 'react-syntax-highlighter/dist/esm/styles/prism' {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const styles: Record<string, any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const vscDarkPlus: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const okaidia: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const coy: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const duotoneDark: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const tomorrow: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const atomDark: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const prism: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const solarizedlight: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const gruvboxDark: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const gruvboxLight: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const materialDark: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const materialLight: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const oneDark: any;
-  export default styles;
-}
-
 // `react-player-controls` ships no bundled declarations here and no
 // @types/react-player-controls is installed. Provide a minimal ambient
 // declaration covering the Slider component used by the replayer.

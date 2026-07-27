@@ -322,8 +322,6 @@ defmodule CodebattleWeb.Router do
       get("/tournaments/history", TournamentController, :history)
       get("/tournaments/created", TournamentController, :created)
       resources("/tournaments", TournamentController, only: [:index, :show, :create, :update])
-      get("/stream_configs", StreamConfigController, :index)
-      put("/stream_configs", StreamConfigController, :put_all)
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
       get("/events/:id/leaderboard", Event.LeaderboardController, :show)
@@ -358,7 +356,6 @@ defmodule CodebattleWeb.Router do
   scope "/", CodebattleWeb do
     # Use the default browser stack
     pipe_through(:browser)
-    get("/broadcast-editor", BroadcastEditorController, :index)
 
     get("/cssbattle/builder", CssBattleBuilderController, :index)
 
@@ -380,9 +377,7 @@ defmodule CodebattleWeb.Router do
     get("/group_tournaments/:id", GroupTournamentController, :show)
     get("/group_tournaments/:id/admin", GroupTournamentController, :admin, as: :group_tournament_admin)
 
-    get("/stream", StreamController, :index)
     get("/schedule", TournamentsScheduleController, :index)
-    get("/stream/preset", StreamController, :stream_preset)
     get("/hall_of_fame", HallOfFameController, :index)
     get("/h2h/:user_id/:opponent_id", HeadToHeadController, :show)
 

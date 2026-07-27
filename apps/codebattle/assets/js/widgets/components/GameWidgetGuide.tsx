@@ -1,6 +1,6 @@
 import React, { useState, memo } from 'react';
 
-import ReactJoyride, { STATUS, type CallBackProps, type Status, type Step } from 'react-joyride';
+import { Joyride, STATUS, type EventData, type Status, type Step } from 'react-joyride';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../selectors';
@@ -8,8 +8,9 @@ import { actions } from '../slices';
 
 const steps: Step[] = [
   {
-    disableBeacon: true,
-    disableOverlayClose: true,
+    skipBeacon: true,
+    overlayClickAction: false,
+    blockTargetInteraction: true,
     title: 'Game page',
     content: (
       <div className="text-justify">
@@ -26,7 +27,8 @@ const steps: Step[] = [
     target: 'body',
   },
   {
-    disableOverlayClose: true,
+    overlayClickAction: false,
+    blockTargetInteraction: true,
     target: '[data-guide-id="Task"]',
     title: 'Task',
     content: 'Read the task carefully, pay attention to examples',
@@ -35,8 +37,7 @@ const steps: Step[] = [
     },
   },
   {
-    disableOverlayClose: true,
-    spotlightClicks: true,
+    overlayClickAction: false,
     target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
     placement: 'top',
     title: 'Language',
@@ -46,7 +47,8 @@ const steps: Step[] = [
     },
   },
   {
-    disableOverlayClose: true,
+    overlayClickAction: false,
+    blockTargetInteraction: true,
     target: '[data-guide-id="LeftEditor"] .react-monaco-editor-container',
     title: 'Editor',
     content: 'Write the solution of task in the editor',
@@ -55,13 +57,8 @@ const steps: Step[] = [
     },
   },
   {
-    spotlightClicks: true,
-    disableOverlayClose: true,
-    styles: {
-      options: {
-        zIndex: 10000,
-      },
-    },
+    overlayClickAction: false,
+    zIndex: 10000,
     target: '[data-guide-id="LeftEditor"] [data-guide-id="GiveUpButton"]',
     title: 'Give up button',
     content:
@@ -71,13 +68,8 @@ const steps: Step[] = [
     },
   },
   {
-    spotlightClicks: true,
-    disableOverlayClose: true,
-    styles: {
-      options: {
-        zIndex: 10000,
-      },
-    },
+    overlayClickAction: false,
+    zIndex: 10000,
     target: '[data-guide-id="LeftEditor"] [data-guide-id="ResetButton"]',
     title: 'Reset button',
     content: 'Click this button to reset the code to the original template',
@@ -86,13 +78,8 @@ const steps: Step[] = [
     },
   },
   {
-    spotlightClicks: true,
-    disableOverlayClose: true,
-    styles: {
-      options: {
-        zIndex: 10000,
-      },
-    },
+    overlayClickAction: false,
+    zIndex: 10000,
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
     content: 'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
@@ -101,7 +88,8 @@ const steps: Step[] = [
     },
   },
   {
-    disableOverlayClose: true,
+    overlayClickAction: false,
+    blockTargetInteraction: true,
     target: '#leftOutput-tab',
     title: 'Result output',
     content: 'Here you will see the results of the tests or compilation errors after check',
@@ -127,15 +115,19 @@ function GameWidgetGuide({ tournamentId }: GameWidgetGuideProps) {
   return (
     (isShowGuide || isFirstTime) &&
     !tournamentId && (
-      <ReactJoyride
+      <Joyride
         continuous
         run
         scrollToFirstStep
-        showProgress
-        showSkipButton
         steps={steps}
-        spotlightPadding={6}
-        callback={({ status }: CallBackProps) => {
+        options={{
+          primaryColor: '#0275d8',
+          zIndex: 1000,
+          showProgress: true,
+          spotlightPadding: 6,
+          buttons: ['back', 'skip', 'primary'],
+        }}
+        onEvent={({ status }: EventData) => {
           if (([STATUS.FINISHED, STATUS.SKIPPED] as Status[]).includes(status)) {
             window.localStorage.setItem('guideGamePassed', 'true');
             setIsFirstTime(false);
@@ -143,11 +135,7 @@ function GameWidgetGuide({ tournamentId }: GameWidgetGuideProps) {
           }
         }}
         styles={{
-          options: {
-            primaryColor: '#0275d8',
-            zIndex: 1000,
-          },
-          buttonNext: {
+          buttonPrimary: {
             borderRadius: 'unset',
           },
         }}

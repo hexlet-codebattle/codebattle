@@ -184,8 +184,6 @@ const input = {
   styles: path.resolve(__dirname, "assets/css/style.scss"),
   landingStyles: path.resolve(__dirname, "assets/css/landing.scss"),
   externalStyles: path.resolve(__dirname, "assets/css/external.scss"),
-  // broadcast_editor: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/index.ts"),
-  // stream: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/stream.tsx"),
 };
 
 export default defineConfig(({ command, mode }) => ({
@@ -291,6 +289,11 @@ export default defineConfig(({ command, mode }) => ({
       "@/slices": path.resolve(__dirname, "assets/js/widgets/slices"),
       "@/utils": path.resolve(__dirname, "assets/js/widgets/utils"),
       "monaco-themes/themes": path.resolve(__dirname, "node_modules/monaco-themes/themes"),
+      // monaco-editor >=0.55 ships a restrictive "exports" map that no longer exposes
+      // deep "monaco-editor/esm/vs/*" subpaths. monaco-vim (unmaintained) still imports
+      // them, so redirect those deep imports to the real files (same physical modules the
+      // app's own `import * as monaco` resolves to, so no duplicate monaco instance).
+      "monaco-editor/esm/vs": path.resolve(__dirname, "node_modules/monaco-editor/esm/vs"),
       path: "path-browserify",
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],

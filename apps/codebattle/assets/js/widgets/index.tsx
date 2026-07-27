@@ -14,8 +14,6 @@ import {
   Online,
   RegistrationPage,
   SettingsPage,
-  StairwayGamePage,
-  StreamPage,
   TournamentThreejsStreamPage,
   TournamentStreamAdminPage,
   TournamentAdminPage,
@@ -51,10 +49,6 @@ export const renderRegistrationPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<RegistrationPage />);
 export const renderSettingPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<SettingsPage />);
-export const renderStairwayGamePage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<StairwayGamePage />);
-export const renderStreamPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<StreamPage />);
 export const renderTournamentThreejsStreamPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentThreejsStreamPage />);
 export const renderTournamentStreamAdminPage = (domElement: HTMLElement) =>

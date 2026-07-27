@@ -47,12 +47,12 @@ const settingsByState = {
   },
 };
 
-// const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
+// const initContextByState = state => assign(({ context }) => ({ ...settingsByState[state], userId: context.userId }));
 const initContextByState = (state: keyof typeof settingsByState) =>
-  assign(({ userId, type }: any) => ({
-    ...editorSettingsByUserType[type as keyof typeof editorSettingsByUserType],
+  assign(({ context }: any) => ({
+    ...editorSettingsByUserType[context.type as keyof typeof editorSettingsByUserType],
     ...settingsByState[state],
-    userId,
+    userId: context.userId,
   }));
 
 const initActiveEditor = assign(() => ({ editorState: 'active' }));
@@ -68,13 +68,15 @@ const successCheckingActions = ['soundFinishedChecking', 'openCheckResultOutput'
 
 const editor = {
   initial: 'loading',
+  // xstate v5: seed context (userId/type/subscriptionType) from `input`.
+  context: ({ input }: any) => ({ ...(input || {}) }),
   states: {
     loading: {
       on: {
         load_active_editor: [
           {
             target: 'idle',
-            cond: 'canSkipCharging',
+            guard: 'canSkipCharging',
             actions: [initActiveEditor],
           },
           {
@@ -102,12 +104,12 @@ const editor = {
         check_solution_received: {
           target: 'checking',
           actions: ['soundStartChecking'],
-          cond: 'isUserEvent',
+          guard: 'isUserEvent',
         },
         unload_editor: 'loading',
         banned_user: {
           target: 'banned',
-          cond: 'isUserEvent',
+          guard: 'isUserEvent',
         },
       },
     },
@@ -121,12 +123,12 @@ const editor = {
         check_solution_received: {
           target: 'checking',
           actions: ['soundStartChecking'],
-          cond: 'isUserEvent',
+          guard: 'isUserEvent',
         },
         unload_editor: 'loading',
         banned_user: {
           target: 'banned',
-          cond: 'isUserEvent',
+          guard: 'isUserEvent',
         },
       },
     },
@@ -136,7 +138,7 @@ const editor = {
         50000: [
           {
             target: 'idle',
-            cond: 'canSkipCharging',
+            guard: 'canSkipCharging',
             actions: timeoutCheckingActions,
           },
           {
@@ -150,18 +152,18 @@ const editor = {
           {
             target: 'idle',
             actions: successCheckingActions,
-            cond: 'isUserEventWhoCanSkipCharging',
+            guard: 'isUserEventWhoCanSkipCharging',
           },
           {
             target: 'charging',
             actions: successCheckingActions,
-            cond: 'isUserEvent',
+            guard: 'isUserEvent',
           },
         ],
         unload_editor: 'loading',
         banned_user: {
           target: 'banned',
-          cond: 'isUserEvent',
+          guard: 'isUserEvent',
         },
       },
     },
@@ -170,7 +172,7 @@ const editor = {
       on: {
         unbanned_user: {
           target: 'idle',
-          cond: 'isUserEvent',
+          guard: 'isUserEvent',
         },
       },
     },
@@ -183,9 +185,9 @@ export const config = {
   actions: {
     userSendSolution: () => {},
     handleTimeoutFailureChecking: () => {},
-    openCheckResultOutput: (ctx: any) => {
+    openCheckResultOutput: ({ context }: any) => {
       const leftOutputNode = document.getElementById('leftOutput-tab');
-      if (ctx.type === editorUserTypes.currentUser && leftOutputNode) {
+      if (context.type === editorUserTypes.currentUser && leftOutputNode) {
         leftOutputNode.click();
       }
     },
@@ -201,10 +203,10 @@ export const config = {
     },
   },
   guards: {
-    isUserEvent: (ctx: any, { userId }: any) => ctx.userId === userId,
-    isUserEventWhoCanSkipCharging: (ctx: any, { userId }: any) =>
-      ctx.userId === userId && canSkipCharging(ctx.subscriptionType),
-    canSkipCharging: (ctx: any) => canSkipCharging(ctx.subscriptionType),
+    isUserEvent: ({ context, event }: any) => context.userId === event.userId,
+    isUserEventWhoCanSkipCharging: ({ context, event }: any) =>
+      context.userId === event.userId && canSkipCharging(context.subscriptionType),
+    canSkipCharging: ({ context }: any) => canSkipCharging(context.subscriptionType),
   },
 };
 

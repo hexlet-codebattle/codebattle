@@ -1,4 +1,4 @@
-import { assign, actions } from 'xstate';
+import { assign, raise } from 'xstate';
 
 import { channelTopics } from '../../socket';
 import GameStateCodes from '../config/gameStateCodes';
@@ -6,8 +6,6 @@ import speedModes from '../config/speedModes';
 import subscriptionTypes from '../config/subscriptionTypes';
 import tournamentSounds from '../config/tournamentSounds';
 import sound from '../lib/sound';
-
-const { send } = actions;
 
 const states = {
   room: {
@@ -109,14 +107,17 @@ const recordMachine = {
 const machine = {
   id: 'main',
   type: 'parallel',
-  context: {
+  // xstate v5: initial context is derived from `input` so callers can seed it
+  // (e.g. subscriptionType from redux) via `useActorRef(machine, { input })`.
+  context: ({ input }: any) => ({
     // common context
     errorMessage: null,
     // context for replayer
     holding: 'none', // ['none', 'play', 'pause']
     speedMode: speedModes.normal,
     subscriptionType: subscriptionTypes.free, // ['free', 'premium', 'admin'],
-  },
+    ...(input || {}),
+  }),
   states: {
     network: {
       initial: 'none',
@@ -132,7 +133,7 @@ const machine = {
           },
         },
         disconnected: {
-          entry: send(
+          entry: raise(
             { type: 'SHOW_ERROR_MESSAGE' },
             {
               delay: 2000,
@@ -170,17 +171,17 @@ const machine = {
         preview: {
           on: {
             LOAD_GAME: [
-              { target: 'waiting', cond: 'isWaitingGame' },
-              { target: 'active', cond: 'isActiveGame' },
+              { target: 'waiting', guard: 'isWaitingGame' },
+              { target: 'active', guard: 'isActiveGame' },
               {
                 target: 'game_over',
-                cond: 'isGameOver',
+                guard: 'isGameOver',
               },
               {
                 target: 'game_over',
-                cond: 'isTimeout',
+                guard: 'isTimeout',
               },
-              { target: 'failure', action: 'throwError' },
+              { target: 'failure' },
             ],
 
             REJECT_LOADING_GAME: {
@@ -188,7 +189,7 @@ const machine = {
               actions: ['handleError', 'throwError'],
             },
             START_LOADING_PLAYBOOK: [
-              { target: 'restricted', cond: 'haveOnlyFreeAccess' },
+              { target: 'restricted', guard: 'haveOnlyFreeAccess' },
               { target: 'stored' },
             ],
           },
@@ -204,7 +205,7 @@ const machine = {
             [channelTopics.userCheckCompleteTopic]: [
               {
                 target: 'game_over',
-                cond: (_ctx: any, { payload }: any) => payload.state === 'game_over',
+                guard: ({ event }: any) => event.payload.state === 'game_over',
                 // TODO: figureOut why soundWin doesn't work
                 actions: ['soundWin', 'blockGameRoomAfterCheck', 'showGameResultModal'],
               },
@@ -260,7 +261,7 @@ const machine = {
             START_LOADING_PLAYBOOK: [
               {
                 target: 'empty',
-                cond: 'haveOnlyFreeAccess',
+                guard: 'haveOnlyFreeAccess',
                 actions: ['showPremiumSubscribeRequestModal'],
               },
               { target: 'loading' },
@@ -272,7 +273,7 @@ const machine = {
             LOAD_PLAYBOOK: [
               {
                 target: 'empty',
-                cond: 'haveOnlyFreeAccess',
+                guard: 'haveOnlyFreeAccess',
                 actions: ['showPremiumSubscribeRequestModal'],
               },
               {
@@ -303,7 +304,7 @@ const machine = {
             OPEN_REPLAYER: [
               {
                 target: 'off',
-                cond: 'haveOnlyFreeAccess',
+                guard: 'haveOnlyFreeAccess',
                 actions: ['showPremiumSubscribeRequestModal'],
               },
               {
@@ -325,20 +326,19 @@ const machine = {
 export const config = {
   guards: {
     // game guards
-    isWaitingGame: (_ctx: any, { payload }: any) =>
-      payload.state === GameStateCodes.waitingOpponent,
-    isActiveGame: (_ctx: any, { payload }: any) => payload.state === GameStateCodes.playing,
-    haveOnlyFreeAccess: (ctx: any) => ctx.subscriptionType === 'free',
-    isGameOver: (_ctx: any, { payload }: any) => payload.state === GameStateCodes.gameOver,
-    isTimeout: (_ctx: any, { payload }: any) => payload.state === GameStateCodes.timeout,
+    isWaitingGame: ({ event }: any) => event.payload.state === GameStateCodes.waitingOpponent,
+    isActiveGame: ({ event }: any) => event.payload.state === GameStateCodes.playing,
+    haveOnlyFreeAccess: ({ context }: any) => context.subscriptionType === 'free',
+    isGameOver: ({ event }: any) => event.payload.state === GameStateCodes.gameOver,
+    isTimeout: ({ event }: any) => event.payload.state === GameStateCodes.timeout,
   },
   actions: {
     // common actions
     handleError: assign({
-      errorMessage: (_ctx: any, { payload }: any) => payload.message,
+      errorMessage: ({ event }: any) => event.payload.message,
     }),
-    throwError: (_ctx: any, { payload }: any) => {
-      throw new Error(`Unexpected behavior (payload: ${JSON.stringify(payload)})`);
+    throwError: ({ event }: any) => {
+      throw new Error(`Unexpected behavior (payload: ${JSON.stringify(event.payload)})`);
     },
     // network actions
     handleFailureJoin: () => {},
@@ -355,13 +355,17 @@ export const config = {
     soundTimeIsOver: () => {
       sound.play('time_is_over');
     },
-    soundTournamentRoundCreated: (_ctx: any, { payload }: any) => {
-      if (payload?.tournament?.currentRoundPosition === 0) {
+    soundTournamentRoundCreated: ({ event }: any) => {
+      if (event.payload?.tournament?.currentRoundPosition === 0) {
         sound.playTournamentAsset(tournamentSounds.started);
       } else {
         sound.playTournamentAsset(tournamentSounds.roundStarted);
       }
     },
+    // referenced by the `active`/`game_over` states but historically never
+    // implemented (was a silent no-op under v4); keep it a no-op so v5 doesn't
+    // throw on an unresolved action reference.
+    soundTournamentGameCreated: () => {},
     soundRematchUpdateStatus: () => {},
     blockGameRoomAfterCheck: () => {},
     handleOpenHistory: () => {},
@@ -369,8 +373,8 @@ export const config = {
 
     // replayer actions
     toggleSpeedMode: assign({
-      speedMode: ({ speedMode }: any) => {
-        switch (speedMode) {
+      speedMode: ({ context }: any) => {
+        switch (context.speedMode) {
           case speedModes.normal:
             return speedModes.fast;
           case speedModes.fast:

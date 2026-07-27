@@ -73,7 +73,6 @@ const ThreejsGamePage = React.lazy(() => import('./pages/game/ThreejsGamePage'))
 const TournamentThreejsStreamWidget = React.lazy(
   () => import('./pages/game/TournamentThreejsStreamPage'),
 );
-const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
 const TournamentAdmin = React.lazy(() => import('./pages/tournament/TournamentAdminWidget'));
 const TournamentStreamAdmin = React.lazy(
@@ -241,16 +240,6 @@ export function RegistrationPage() {
   );
 }
 
-export function StairwayGamePage() {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Suspense>{/* <Stairway /> */}</Suspense>
-      </PersistGate>
-    </Provider>
-  );
-}
-
 export function TournamentPage() {
   return (
     <Provider store={store}>
@@ -354,18 +343,6 @@ export function TournamentPlayerPage() {
           <NiceModal.Provider>
             <TournamentPlayer spectatorMachine={spectatorMachine} />
           </NiceModal.Provider>
-        </Suspense>
-      </PersistGate>
-    </Provider>
-  );
-}
-
-export function StreamPage() {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Suspense>
-          <Stream mainMachine={mainMachine} taskMachine={taskMachine} />
         </Suspense>
       </PersistGate>
     </Provider>

@@ -1,21 +1,24 @@
+import { createActor } from 'xstate';
+
 import machines from '../widgets/machines';
 import { findCurrentUserPlayingGame } from '../widgets/middlewares/Lobby';
 
 describe('game recovery flows', () => {
   test('opens and closes a loaded replay on the first event', () => {
-    const machine = machines.game.withContext({
-      ...machines.game.context,
-      subscriptionType: 'premium',
-    });
+    // xstate v5: seed context via `input` and drive the machine through a running actor.
+    const actor = createActor(machines.game, { input: { subscriptionType: 'premium' } });
+    actor.start();
 
-    const loading = machine.transition(machine.initialState, 'START_LOADING_PLAYBOOK');
-    expect(loading.matches({ replayer: 'loading' })).toBe(true);
+    actor.send({ type: 'START_LOADING_PLAYBOOK' });
+    expect(actor.getSnapshot().matches({ replayer: 'loading' })).toBe(true);
 
-    const opened = machine.transition(loading, { type: 'LOAD_PLAYBOOK', payload: {} });
-    expect(opened.matches({ replayer: 'on' })).toBe(true);
+    actor.send({ type: 'LOAD_PLAYBOOK', payload: {} });
+    expect(actor.getSnapshot().matches({ replayer: 'on' })).toBe(true);
 
-    const closed = machine.transition(opened, 'CLOSE_REPLAYER');
-    expect(closed.matches({ replayer: 'off' })).toBe(true);
+    actor.send({ type: 'CLOSE_REPLAYER' });
+    expect(actor.getSnapshot().matches({ replayer: 'off' })).toBe(true);
+
+    actor.stop();
   });
 
   test('recovers a playing game from a lobby channel snapshot', () => {

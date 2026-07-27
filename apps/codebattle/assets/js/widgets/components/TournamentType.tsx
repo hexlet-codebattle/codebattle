@@ -33,15 +33,6 @@ function TournamentType({ type }: TournamentTypeProps) {
     );
   }
 
-  if (type === TournamentTypeCodes.stairway) {
-    return (
-      <>
-        <FontAwesomeIcon icon="user" />
-        <FontAwesomeIcon icon="sort-amount-up" />
-      </>
-    );
-  }
-
   if (type === TournamentTypeCodes.show) {
     return <FontAwesomeIcon icon="wine-bottle" />;
   }

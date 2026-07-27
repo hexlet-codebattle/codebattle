@@ -68,7 +68,6 @@ const getPageLabel = (path?: string | null) => {
   if (p === '/my-tournament') return 'My Tournament';
 
   if (p === '/schedule') return 'Schedule';
-  if (/^\/stream/.test(p)) return 'Stream';
   if (p === '/hall_of_fame') return 'Hall of Fame';
   if (/^\/h2h\//.test(p)) return 'Head to Head';
 
@@ -93,7 +92,6 @@ const getPageLabel = (path?: string | null) => {
   if (/^\/admin/.test(p)) return 'Admin';
 
   if (/^\/cssbattle/.test(p)) return 'CSS Battle';
-  if (/^\/broadcast-editor/.test(p)) return 'Broadcast';
 
   return p;
 };

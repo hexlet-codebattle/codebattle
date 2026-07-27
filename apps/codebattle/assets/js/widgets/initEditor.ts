@@ -2,7 +2,7 @@
 
 // 1) wire workers & include monaco css
 import '../monaco.setup';
-import 'monaco-editor/min/vs/editor/editor.main.css';
+import '/node_modules/monaco-editor/min/vs/editor/editor.main.css';
 // Override codicon font path - MUST be after monaco CSS
 import '../../css/monaco-codicon-fix.css';
 

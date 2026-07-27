@@ -10,9 +10,9 @@ import { createMachine } from 'xstate';
 import GameRoomModes from '../widgets/config/gameModes';
 import GameStateCodes from '../widgets/config/gameStateCodes';
 import userTypes from '../widgets/config/userTypes';
-import editor from '../widgets/machines/editor';
-import game from '../widgets/machines/game';
-import task from '../widgets/machines/task';
+import editor, { config as editorConfig } from '../widgets/machines/editor';
+import game, { config as gameConfig } from '../widgets/machines/game';
+import task, { config as taskConfig } from '../widgets/machines/task';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
@@ -245,9 +245,9 @@ test('rendering preview game component', async () => {
       <NiceModal.Provider>
         <RootContainer
           pageName="game"
-          mainMachine={createMachine({ predictableActionArguments: true, ...game } as never)}
-          taskMachine={createMachine({ predictableActionArguments: true, ...task } as never)}
-          editorMachine={createMachine({ predictableActionArguments: true, ...editor } as never)}
+          mainMachine={createMachine(game as never).provide(gameConfig as never)}
+          taskMachine={createMachine(task as never).provide(taskConfig as never)}
+          editorMachine={createMachine(editor as never).provide(editorConfig as never)}
         />
       </NiceModal.Provider>
     </Provider>,
@@ -267,9 +267,9 @@ test('a bot invite button', async () => {
       <NiceModal.Provider>
         <RootContainer
           pageName="game"
-          mainMachine={createMachine({ predictableActionArguments: true, ...game } as never)}
-          taskMachine={createMachine({ predictableActionArguments: true, ...task } as never)}
-          editorMachine={createMachine({ predictableActionArguments: true, ...editor } as never)}
+          mainMachine={createMachine(game as never).provide(gameConfig as never)}
+          taskMachine={createMachine(task as never).provide(taskConfig as never)}
+          editorMachine={createMachine(editor as never).provide(editorConfig as never)}
         />
       </NiceModal.Provider>
     </Provider>,

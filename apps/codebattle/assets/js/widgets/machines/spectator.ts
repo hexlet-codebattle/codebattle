@@ -1,12 +1,10 @@
-import { assign, actions } from 'xstate';
+import { assign, raise } from 'xstate';
 
 import GameStateCodes from '../config/gameStateCodes';
 import tournamentSounds from '../config/tournamentSounds';
 import sound from '../lib/sound';
 
 import editor, { config as editorConfig } from './editor';
-
-const { send } = actions;
 
 const initSpectatorEditor = assign(() => ({ editorState: 'spectator' }));
 
@@ -47,10 +45,12 @@ export const spectatorEditorMachineStates = states.editor;
 const machine = {
   id: 'spectator',
   type: 'parallel',
-  context: {
+  // xstate v5: seed context (userId/type) from `input`.
+  context: ({ input }: any) => ({
     // common context
     errorMessage: null,
-  },
+    ...(input || {}),
+  }),
   states: {
     network: {
       initial: 'none',
@@ -63,7 +63,7 @@ const machine = {
           },
         },
         disconnected: {
-          entry: send(
+          entry: raise(
             { type: 'SHOW_ERROR_MESSAGE' },
             {
               delay: 2000,
@@ -99,10 +99,10 @@ const machine = {
         preview: {
           on: {
             LOAD_GAME: [
-              { target: 'active', cond: 'isActiveGame' },
-              { target: 'game_over', cond: 'isGameOver' },
-              { target: 'game_over', cond: 'isTimeout' },
-              { target: 'failure', action: 'throwError' },
+              { target: 'active', guard: 'isActiveGame' },
+              { target: 'game_over', guard: 'isGameOver' },
+              { target: 'game_over', guard: 'isTimeout' },
+              { target: 'failure' },
             ],
 
             REJECT_LOADING_GAME: {
@@ -116,7 +116,7 @@ const machine = {
             'user:check_complete': [
               {
                 target: 'game_over',
-                cond: (_ctx: any, { payload }: any) => payload.state === 'game_over',
+                guard: ({ event }: any) => event.payload.state === 'game_over',
                 actions: ['soundWin', 'blockGameRoomAfterCheck'],
               },
               {
@@ -153,7 +153,7 @@ const machine = {
             'user:check_complete': [
               {
                 target: 'game_over',
-                cond: (_ctx: any, { payload }: any) => payload.state === 'game_over',
+                guard: ({ event }: any) => event.payload.state === 'game_over',
                 actions: ['soundWin', 'blockGameRoomAfterCheck'],
               },
             ],
@@ -170,19 +170,19 @@ const machine = {
 export const config = {
   guards: {
     // game guards
-    isActiveGame: (_ctx: any, { payload }: any) => payload.state === GameStateCodes.playing,
-    isGameOver: (_ctx: any, { payload }: any) => payload.state === GameStateCodes.gameOver,
-    isTimeout: (_ctx: any, { payload }: any) => payload.state === GameStateCodes.timeout,
+    isActiveGame: ({ event }: any) => event.payload.state === GameStateCodes.playing,
+    isGameOver: ({ event }: any) => event.payload.state === GameStateCodes.gameOver,
+    isTimeout: ({ event }: any) => event.payload.state === GameStateCodes.timeout,
 
     ...editorConfig.guards,
   },
   actions: {
     // common actions
     handleError: assign({
-      errorMessage: (_ctx: any, { payload }: any) => payload.message,
+      errorMessage: ({ event }: any) => event.payload.message,
     }),
-    throwError: (_ctx: any, { payload }: any) => {
-      throw new Error(`Unexpected behavior (payload: ${JSON.stringify(payload)})`);
+    throwError: ({ event }: any) => {
+      throw new Error(`Unexpected behavior (payload: ${JSON.stringify(event.payload)})`);
     },
     // network actions
     handleFailureJoin: () => {},
@@ -199,8 +199,8 @@ export const config = {
     soundTimeIsOver: () => {
       sound.play('time_is_over');
     },
-    soundTournamentRoundCreated: (_ctx: any, { payload }: any) => {
-      if (payload?.tournament?.currentRoundPosition === 0) {
+    soundTournamentRoundCreated: ({ event }: any) => {
+      if (event.payload?.tournament?.currentRoundPosition === 0) {
         sound.playTournamentAsset(tournamentSounds.started);
       } else {
         sound.playTournamentAsset(tournamentSounds.roundStarted);

@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useCallback, useRef, type ReactNode } from 'react';
 
-import { useInterpret } from '@xstate/react';
+import { useActorRef } from '@xstate/react';
 import cn from 'classnames';
 import i18next from 'i18next';
 import noop from 'lodash/noop';
@@ -160,36 +160,37 @@ function EditorContainer({
 
   const context = { userId: id, type, subscriptionType };
 
-  const editorService = useInterpret(editorMachine, {
-    context,
-    devTools: true,
-    id: `editor_${id}`,
-    actions: {
-      userSendSolution: (ctx: any) => {
-        if (ctx.editorState === 'active') {
-          dispatch(GameActions.checkGameSolution());
-        }
-      },
-      handleTimeoutFailureChecking: (ctx: any) => {
-        dispatch(
-          actions.updateExecutionOutput({
-            userId: ctx.userId,
-            status: 'client_timeout',
-            output: '',
-            result: {},
-            asserts: [],
-          }),
-        );
+  // xstate v5: per-instance implementations via `.provide(...)`; seed context via `input`.
+  const editorService = useActorRef(
+    editorMachine.provide({
+      actions: {
+        userSendSolution: ({ context: ctx }: any) => {
+          if (ctx.editorState === 'active') {
+            dispatch(GameActions.checkGameSolution());
+          }
+        },
+        handleTimeoutFailureChecking: ({ context: ctx }: any) => {
+          dispatch(
+            actions.updateExecutionOutput({
+              userId: ctx.userId,
+              status: 'client_timeout',
+              output: '',
+              result: {},
+              asserts: [],
+            }),
+          );
 
-        dispatch(actions.updateCheckStatus({ [ctx.userId]: false }));
+          dispatch(actions.updateCheckStatus({ [ctx.userId]: false }));
+        },
       },
-    },
-  });
+    }),
+    { id: `editor_${id}`, input: context },
+  );
 
   const editorCurrent = useMachineStateSelector(editorService, editorStateSelector);
 
   const checkActiveTaskSolution = useCallback(
-    () => editorService.send('user_check_solution'),
+    () => editorService.send({ type: 'user_check_solution' }),
     [editorService],
   );
   const checkResult = checkActiveTaskSolution;
