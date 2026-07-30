@@ -359,7 +359,9 @@ function CreateGameDialog({ hideModal }: CreateGameDialogProps) {
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title cb-create-game__section-title--with-value">
           <h5 className="mb-0">{i18n.t('Time control')}</h5>
-          <span className="cb-create-game__time-value">{i18n.t(`${timeoutMinutes} min`)}</span>
+          <span className="cb-create-game__time-value">
+            {i18n.t('%{count} min', { count: timeoutMinutes })}
+          </span>
         </div>
         <div className="px-sm-3 px-md-5 mt-3">
           <input

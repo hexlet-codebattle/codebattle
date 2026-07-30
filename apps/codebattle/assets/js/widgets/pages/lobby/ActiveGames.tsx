@@ -5,6 +5,7 @@ import groupBy from 'lodash/groupBy';
 import isEmpty from 'lodash/isEmpty';
 import sortBy from 'lodash/sortBy';
 
+import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import HorizontalScrollControls from '../../components/SideScrollControls';
 import gameStateCodes from '../../config/gameStateCodes';
@@ -43,7 +44,7 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
   const filtetedGames = games.filter(filterGames);
 
   if (isEmpty(filtetedGames)) {
-    return <p className="text-center">There are no active games right now.</p>;
+    return <p className="text-center">{i18n.t('There are no active games right now.')}</p>;
   }
 
   const gamesSortByLevel = sortBy(filtetedGames, [
@@ -73,12 +74,12 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
         <table className="table table-striped mb-0">
           <thead className="text-center text-white">
             <tr>
-              <th className="p-3 border-0">Level</th>
-              <th className="p-3 border-0">State</th>
+              <th className="p-3 border-0">{i18n.t('Level')}</th>
+              <th className="p-3 border-0">{i18n.t('State')}</th>
               <th className="p-3 border-0 text-center" colSpan={2}>
-                Players
+                {i18n.t('Players')}
               </th>
-              <th className="p-3 border-0">Actions</th>
+              <th className="p-3 border-0">{i18n.t('Actions')}</th>
             </tr>
           </thead>
           <tbody>

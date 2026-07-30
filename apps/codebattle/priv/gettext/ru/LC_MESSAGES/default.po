@@ -92,7 +92,7 @@ msgid "Show"
 msgstr "Открыть"
 
 msgid "Continue"
-msgstr "Продолжать"
+msgstr "Продолжить"
 
 #: lib/codebattle_web/templates/game/index.html.slim:25
 msgid "Main page"
@@ -565,7 +565,7 @@ msgid "Duration (sec)"
 msgstr "Время (сек)"
 
 msgid "Clan"
-msgstr "ВУЗ"
+msgstr "Клан"
 
 msgid "Page"
 msgstr "Страница"
@@ -2388,3 +2388,119 @@ msgstr "Рекурсивный раж"
 
 msgid "Stack Overflow Showdown"
 msgstr "Дуэль переполнения стека"
+
+# Interface localization
+
+msgid "View Hall of Fame"
+msgstr "Посмотреть зал славы"
+
+msgid "Contests History"
+msgstr "История соревнований"
+
+msgid "My Tournaments"
+msgstr "Мои турниры"
+
+msgid "Create a Tournament"
+msgstr "Создать турнир"
+
+msgid "Achievements"
+msgstr "Достижения"
+
+msgid "Calendar"
+msgstr "Календарь"
+
+msgid "Task packs"
+msgstr "Наборы задач"
+
+msgid "Task Packs"
+msgstr "Наборы задач"
+
+msgid "Create new task pack"
+msgstr "Создать новый набор задач"
+
+msgid "Clans"
+msgstr "Кланы"
+
+msgid "Total clans:"
+msgstr "Всего кланов:"
+
+msgid "Creator"
+msgstr "Создатель"
+
+msgid "Created at"
+msgstr "Дата создания"
+
+msgid "Game Type"
+msgstr "Тип игры"
+
+msgid "Time control"
+msgstr "Контроль времени"
+
+msgid "Choose task by name or tags"
+msgstr "Выберите задачу по названию или тегам"
+
+msgid "With other user"
+msgstr "С другим пользователем"
+
+msgid "With a friend"
+msgstr "С другом"
+
+msgid "With a bot"
+msgstr "С ботом"
+
+msgid "Create battle"
+msgstr "Создать битву"
+
+msgid "Feedback"
+msgstr "Обратная связь"
+
+msgid "Send feedback"
+msgstr "Отправить отзыв"
+
+msgid "Message"
+msgstr "Сообщение"
+
+msgid "Bug"
+msgstr "Ошибка"
+
+msgid "Suggestion"
+msgstr "Предложение"
+
+msgid "Question"
+msgstr "Вопрос"
+
+msgid "Opponent has left"
+msgstr "Соперник покинул игру"
+
+msgid "Are you sure you want to give up?"
+msgstr "Вы уверены, что хотите сдаться?"
+
+msgid "Rematch"
+msgstr "Реванш"
+
+msgid "Rematch?"
+msgstr "Реванш?"
+
+msgid "Accept"
+msgstr "Принять"
+
+msgid "Decline"
+msgstr "Отклонить"
+
+msgid "Rejected Offer"
+msgstr "Предложение отклонено"
+
+msgid "Wait For An Answer..."
+msgstr "Ожидание ответа..."
+
+msgid "Opponent Left The Game"
+msgstr "Соперник покинул игру"
+
+msgid "There are no active games right now."
+msgstr "Сейчас нет активных игр."
+
+msgid "Ranking Points"
+msgstr "Рейтинговые очки"
+
+msgid "Waiting Players"
+msgstr "Ожидание игроков"

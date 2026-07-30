@@ -4,6 +4,7 @@ import cn from 'classnames';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 
+import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import Loading from '../../components/Loading';
 import ResultIcon from '../../components/ResultIcon';
@@ -84,12 +85,12 @@ const InfiniteScrollableGames = memo(
           <table className={tableClassName}>
             <thead className="cb-text sticky-top">
               <tr>
-                <th className="p-3 border-0">Level</th>
+                <th className="p-3 border-0">{i18n.t('Level')}</th>
                 <th className="px-1 py-3 border-0 text-center" colSpan={2}>
-                  Players
+                  {i18n.t('Players')}
                 </th>
-                <th className="px-1 py-3 border-0">Date</th>
-                <th className="px-1 py-3 border-0">Actions</th>
+                <th className="px-1 py-3 border-0">{i18n.t('Date')}</th>
+                <th className="px-1 py-3 border-0">{i18n.t('Actions')}</th>
               </tr>
             </thead>
             <tbody>

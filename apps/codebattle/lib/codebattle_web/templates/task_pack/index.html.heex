@@ -1,10 +1,10 @@
 <div class="container-xl cb-bg-panel shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center text-white">Task Packs</h1>
-  {link("Create new task pack",
+  <h1 class="text-center text-white">{gettext("Task Packs")}</h1>
+  {link(gettext("Create new task pack"),
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :new),
     class: "btn btn-success cb-btn-success mt-2 cb-rounded"
   )}
-  {link("Tasks",
+  {link(gettext("Tasks"),
     to: CodebattleWeb.Router.Helpers.task_path(@conn, :index),
     class: "btn btn-secondary cb-btn-secondary mt-2 ml-2 cb-rounded"
   )}
@@ -33,13 +33,13 @@
             <td class="align-middle text-nowrap text-white cb-border-color">
               <div class="d-flex">
                 <%= if !Codebattle.User.admin?(@current_user) do %>
-                  {link("Show",
+                  {link(gettext("Show"),
                     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
                     class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                   )}
                 <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
-                  {link("Show",
+                  {link(gettext("Show"),
                     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
                     class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                   )}

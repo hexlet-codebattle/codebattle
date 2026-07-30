@@ -59,13 +59,14 @@ const RematchButton = ({
 
   const renderBtnAfterRecieveOffer = () => (
     <div className="d-flex flex-nowrap mb-3 w-100">
-      <div className="flex-grow-1 border py-1 px-2 text-center">Rematch?</div>
+      <div className="flex-grow-1 border py-1 px-2 text-center">{i18n.t('Rematch?')}</div>
       <div className="d-flex">
         <button
           className="btn btn-outline-secondary cb-btn-outline-secondary mr-1"
           type="button"
           onClick={sendAcceptToRematch}
-          title="Accept"
+          title={i18n.t('Accept')}
+          aria-label={i18n.t('Accept')}
         >
           <FontAwesomeIcon icon={faCheck} />
         </button>
@@ -73,7 +74,8 @@ const RematchButton = ({
           className="btn btn-outline-secondary cb-btn-outline-secondary"
           type="button"
           onClick={sendRejectToRematch}
-          title="Decline"
+          title={i18n.t('Decline')}
+          aria-label={i18n.t('Decline')}
         >
           <FontAwesomeIcon icon={faXmark} />
         </button>

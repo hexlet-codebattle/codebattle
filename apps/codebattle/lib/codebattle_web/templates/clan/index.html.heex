@@ -1,8 +1,8 @@
 <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
-  <h1 class="text-center text-white">Clans</h1>
+  <h1 class="text-center text-white">{gettext("Clans")}</h1>
   <div class="d-flex justify-content-between align-items-center mt-3">
     <div class="cb-text">
-      Total clans: <span class="text-white">{@total_clans}</span>
+      {gettext("Total clans:")} <span class="text-white">{@total_clans}</span>
     </div>
   </div>
   <div class="table-responsive mt-4">
@@ -10,16 +10,16 @@
       <thead class="cb-text">
         <tr>
           <th class="cb-border-color border-bottom-0">
-            {sort_link(@conn, "Name", "name", @sort, @order)}
+            {sort_link(@conn, gettext("Name"), "name", @sort, @order)}
           </th>
           <th class="cb-border-color border-bottom-0">
-            {sort_link(@conn, "Players", "players_count", @sort, @order)}
+            {sort_link(@conn, gettext("Players"), "players_count", @sort, @order)}
           </th>
-          <th class="cb-border-color border-bottom-0">Creator</th>
+          <th class="cb-border-color border-bottom-0">{gettext("Creator")}</th>
           <th class="cb-border-color border-bottom-0">
-            {sort_link(@conn, "Created at", "created_at", @sort, @order)}
+            {sort_link(@conn, gettext("Created at"), "created_at", @sort, @order)}
           </th>
-          <th class="cb-border-color border-bottom-0">Actions</th>
+          <th class="cb-border-color border-bottom-0">{gettext("Actions")}</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +35,7 @@
             </td>
             <td class="align-middle cb-border-color">
               <div class="d-flex align-items-center">
-                {link("Show",
+                {link(gettext("Show"),
                   to: Routes.clan_path(@conn, :show, clan.id),
                   class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                 )}

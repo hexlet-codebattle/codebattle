@@ -41,7 +41,7 @@ function ContinueButton({ url, type = 'table' }: ContinueButtonProps) {
       className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`}
       href={url}
     >
-      Continue
+      {i18n.t('Continue')}
     </a>
   );
 }
@@ -68,7 +68,7 @@ function GameActionButton({
 
   if (gameState === gameStateCodes.playing) {
     return havePlayer(currentUserId, game) ? (
-      <ContinueButton url={gameUrl} />
+      <ContinueButton url={gameUrl} type={type} />
     ) : (
       <ShowButton url={gameUrl} type={type} />
     );

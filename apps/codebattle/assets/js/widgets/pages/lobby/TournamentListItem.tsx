@@ -153,7 +153,7 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
                 <span className="cb-tournament-points-value">
                   {getRankingPoints(tournament.grade ?? '')[0]}
                 </span>
-                <span className="ml-1">Ranking Points</span>
+                <span className="ml-1">{i18n.t('Ranking Points')}</span>
               </span>
             )}
             <span className="d-flex flex-wrap">
@@ -164,7 +164,7 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
                     className="mr-2 text-warning"
                     style={iconSize}
                   />
-                  {tournament.state ? mapTournamentTitleByState[tournament.state] : null}
+                  {tournament.state ? i18n.t(mapTournamentTitleByState[tournament.state]) : null}
                 </span>
               )}
               {tournamentStates.canceled !== tournament.state &&

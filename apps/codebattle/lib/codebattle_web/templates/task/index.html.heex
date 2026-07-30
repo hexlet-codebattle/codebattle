@@ -1,6 +1,6 @@
 <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
-  <h1 class="text-center text-white">Tasks</h1>
-  {link("Task packs",
+  <h1 class="text-center text-white">{gettext("Tasks")}</h1>
+  {link(gettext("Task packs"),
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index),
     class: "btn btn-secondary cb-btn-secondary mt-2 ml-2 cb-rounded"
   )}
@@ -49,13 +49,13 @@
             <td class="align-middle text-nowrap text-white cb-border-color">
               <div class="d-flex">
                 <%= if !Codebattle.User.admin?(@current_user) do %>
-                  {link("Show",
+                  {link(gettext("Show"),
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
                     class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                   )}
                 <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
-                  {link("Show",
+                  {link(gettext("Show"),
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
                     class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                   )}

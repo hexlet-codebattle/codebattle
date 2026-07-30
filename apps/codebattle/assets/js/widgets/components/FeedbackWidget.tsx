@@ -135,7 +135,7 @@ function FeedbackWidget() {
                       aria-checked={status === option}
                       onClick={() => setStatus(option)}
                     >
-                      {option}
+                      {i18n.t(option)}
                     </button>
                   ))}
                 </div>
