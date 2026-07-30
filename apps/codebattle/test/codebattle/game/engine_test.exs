@@ -86,6 +86,32 @@ defmodule Codebattle.Game.EngineTest do
     assert checked_game.state == "playing"
   end
 
+  test "rejects a correct solution submitted after the game deadline" do
+    user1 = insert(:user)
+    user2 = insert(:user)
+
+    {:ok, game} =
+      Game.Engine.create_game(%{
+        players: [user1, user2],
+        state: "playing",
+        level: "easy",
+        timeout_seconds: 60
+      })
+
+    expired_game = %{game | starts_at: NaiveDateTime.add(TimeHelper.utc_now(), -61, :second)}
+
+    assert {:error, :game_timeout} =
+             Game.Engine.check_result(expired_game, %{
+               user: user1,
+               editor_text: "correct solution",
+               editor_lang: "js"
+             })
+
+    assert {:ok, timed_out_game} = Game.Server.get_game(game.id)
+    assert timed_out_game.state == "timeout"
+    refute Enum.any?(timed_out_game.players, &(&1.result == "won"))
+  end
+
   test "propagates transition errors while a live server is frozen" do
     user1 = insert(:user)
     user2 = insert(:user)

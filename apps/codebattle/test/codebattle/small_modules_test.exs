@@ -59,6 +59,25 @@ defmodule Codebattle.SmallModulesTest do
     assert NaiveDateTime.diff(NaiveDateTime.utc_now(:second), TimeHelper.utc_now()) in 0..1
   end
 
+  test "detects a playing game whose deadline has passed" do
+    now = ~N[2026-07-30 10:00:00]
+
+    assert GameHelpers.timeout_expired?(
+             %{state: "playing", starts_at: ~N[2026-07-30 09:59:00], timeout_seconds: 60},
+             now
+           )
+
+    refute GameHelpers.timeout_expired?(
+             %{state: "playing", starts_at: ~N[2026-07-30 09:59:01], timeout_seconds: 60},
+             now
+           )
+
+    refute GameHelpers.timeout_expired?(
+             %{state: "timeout", starts_at: ~N[2026-07-30 09:59:00], timeout_seconds: 60},
+             now
+           )
+  end
+
   test "validates task pack ids and reports malformed input" do
     valid =
       TaskPackForm.changeset(%TaskPack{}, %{

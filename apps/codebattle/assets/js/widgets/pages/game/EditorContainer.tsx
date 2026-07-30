@@ -193,7 +193,7 @@ function EditorContainer({
     () => editorService.send({ type: 'user_check_solution' }),
     [editorService],
   );
-  const checkResult = checkActiveTaskSolution;
+  const checkResult = isActiveGame ? checkActiveTaskSolution : noop;
 
   const isNeedHotKeys = editorCurrent.context.type === editorUserTypes.currentUser;
 
@@ -216,8 +216,7 @@ function EditorContainer({
     }
 
     return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [checkResult, isNeedHotKeys]);
 
   const userSettings = {
     type,
@@ -230,6 +229,8 @@ function EditorContainer({
     currentEditorLangSlug,
     ...userSettings,
     showGiveUpBtn: !isTournamentGame,
+    checkBtnStatus: isActiveGame ? userSettings.checkBtnStatus : EditorBtnStatuses.disabled,
+    resetBtnStatus: isActiveGame ? userSettings.resetBtnStatus : EditorBtnStatuses.disabled,
     giveUpBtnStatus: isActiveGame ? userSettings.giveUpBtnStatus : EditorBtnStatuses.disabled,
   };
 

@@ -213,7 +213,19 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
+  def check_result(%Game{state: "timeout"}, _params), do: {:error, :game_timeout}
+
   def check_result(game, params) do
+    if timeout_expired?(game) do
+      with {:ok, _game} <- trigger_timeout(game) do
+        {:error, :game_timeout}
+      end
+    else
+      do_check_result(game, params)
+    end
+  end
+
+  defp do_check_result(game, params) do
     %{user: user, editor_text: editor_text, editor_lang: editor_lang} = params
 
     # TODO: maybe drop editor_text here

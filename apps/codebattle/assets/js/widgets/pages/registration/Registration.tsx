@@ -4,7 +4,6 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { type FormikProps, useFormik } from 'formik';
-import { Button } from 'react-bootstrap';
 import * as Yup from 'yup';
 
 import i18n from '../../../i18n';
@@ -133,6 +132,7 @@ function PasswordInput({ id, title, formik }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
+  const visibilityLabel = `${showPassword ? 'Hide' : 'Show'} ${title.toLowerCase()}`;
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -146,17 +146,21 @@ function PasswordInput({ id, title, formik }: PasswordInputProps) {
           type={showPassword ? 'text' : 'password'}
           id={id}
           aria-label={id}
-          className={inputClassName}
+          className={`${inputClassName} cb-password-input`}
           {...formik.getFieldProps(id)}
         />
-        <Button
-          variant="link"
-          className={`position-absolute end-0 top-0 h-100 ${isInvalid ? 'mr-4' : ''}`}
+        <button
+          type="button"
+          className={cn('btn btn-link position-absolute cb-password-toggle', {
+            'cb-password-toggle-invalid': isInvalid,
+          })}
+          aria-label={visibilityLabel}
+          aria-pressed={showPassword}
+          title={visibilityLabel}
           onClick={togglePasswordVisibility}
         >
-          {/* <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} /> */}
           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-        </Button>
+        </button>
       </div>
       {isInvalid && <div className="invalid-feedback">{formik.errors[id] as ReactNode}</div>}
     </div>

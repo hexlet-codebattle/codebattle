@@ -3119,6 +3119,30 @@ a.cb-text-light:hover {
   }
 }
 
+.cb-password-input {
+  padding-right: 3rem;
+}
+
+.cb-password-toggle {
+  top: 0;
+  right: 0;
+  z-index: 3;
+  width: 2.75rem;
+  height: 100%;
+  padding: 0.375rem;
+  color: rgba(255, 255, 255, 0.7);
+
+  &:hover,
+  &:focus {
+    color: white;
+    text-decoration: none;
+  }
+
+  &.cb-password-toggle-invalid {
+    right: 2rem;
+  }
+}
+
 .text-white {
   fill: white;
 

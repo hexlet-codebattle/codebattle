@@ -25,6 +25,19 @@ defmodule Codebattle.Game.Helpers do
   def training_game?(game), do: game.mode == "training"
   def active_game?(game), do: game.is_live && game.state in ["waiting_opponent", "playing"]
 
+  def timeout_expired?(game, now \\ TimeHelper.utc_now())
+
+  def timeout_expired?(
+        %{state: "playing", starts_at: %NaiveDateTime{} = starts_at, timeout_seconds: timeout_seconds},
+        %NaiveDateTime{} = now
+      )
+      when is_integer(timeout_seconds) and timeout_seconds >= 0 do
+    deadline = NaiveDateTime.add(starts_at, timeout_seconds, :second)
+    NaiveDateTime.compare(now, deadline) != :lt
+  end
+
+  def timeout_expired?(_game, _now), do: false
+
   def get_winner(game) do
     game
     |> get_players()

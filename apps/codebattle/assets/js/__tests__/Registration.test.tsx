@@ -47,6 +47,39 @@ describe('sign up', () => {
     expect(getByText(/Sign Up/)).toBeInTheDocument();
   });
 
+  test('reveals and hides passwords without removing the controls', async () => {
+    const { getByLabelText, getByRole, user } = setup(<Registration />);
+    const password = getByLabelText('password');
+    const confirmation = getByLabelText('passwordConfirmation');
+
+    expect(password).toHaveAttribute('type', 'password');
+    expect(confirmation).toHaveAttribute('type', 'password');
+
+    await user.click(getByRole('button', { name: 'Show password' }));
+    await user.click(getByRole('button', { name: 'Show password confirmation' }));
+
+    expect(password).toHaveAttribute('type', 'text');
+    expect(confirmation).toHaveAttribute('type', 'text');
+    expect(getByRole('button', { name: 'Hide password' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Hide password confirmation' })).toBeInTheDocument();
+
+    await user.click(getByRole('button', { name: 'Hide password' }));
+
+    expect(password).toHaveAttribute('type', 'password');
+    expect(getByRole('button', { name: 'Show password' })).toBeInTheDocument();
+  });
+
+  test('reveals the password on the sign-in page', async () => {
+    window.history.pushState({}, '', '/session/new');
+    const { getByLabelText, getByRole, user } = setup(<Registration />);
+    const password = getByLabelText('password');
+
+    await user.click(getByRole('button', { name: 'Show password' }));
+
+    expect(password).toHaveAttribute('type', 'text');
+    expect(getByRole('button', { name: 'Hide password' })).toBeInTheDocument();
+  });
+
   test.each(invalidData)('%s', async (testName, value, validationMessage, inputName) => {
     const { getByLabelText, findByText, user } = setup(<Registration />);
 
