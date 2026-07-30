@@ -166,7 +166,7 @@ const initPresence = (followId?: number) => (dispatch: any) => {
 };
 
 export const changePresenceState = (state: string) => () => {
-  channel.push('change_presence_state', { state });
+  channel?.push('change_presence_state', { state });
 };
 
 export const broadcastRedirect =

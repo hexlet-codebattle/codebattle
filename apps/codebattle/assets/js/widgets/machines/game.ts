@@ -2,7 +2,7 @@ import { assign, raise } from 'xstate';
 
 import { channelTopics } from '../../socket';
 import GameStateCodes from '../config/gameStateCodes';
-import speedModes from '../config/speedModes';
+import speedModes, { speedModeValues } from '../config/speedModes';
 import subscriptionTypes from '../config/subscriptionTypes';
 import tournamentSounds from '../config/tournamentSounds';
 import sound from '../lib/sound';
@@ -296,6 +296,9 @@ const machine = {
             TOGGLE_SPEED_MODE: {
               actions: ['toggleSpeedMode'],
             },
+            SET_SPEED_MODE: {
+              actions: ['setSpeedMode'],
+            },
           },
           ...recordMachine,
         },
@@ -374,17 +377,14 @@ export const config = {
     // replayer actions
     toggleSpeedMode: assign({
       speedMode: ({ context }: any) => {
-        switch (context.speedMode) {
-          case speedModes.normal:
-            return speedModes.fast;
-          case speedModes.fast:
-            return speedModes.faster;
-          case speedModes.faster:
-            return speedModes.normal;
-          default:
-            throw new Error('Unexpected speedMode [replayer machine]');
-        }
+        const currentIndex = speedModeValues.indexOf(context.speedMode);
+        const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % speedModeValues.length;
+
+        return speedModeValues[nextIndex];
       },
+    }),
+    setSpeedMode: assign({
+      speedMode: ({ event }: any) => event.speedMode,
     }),
     showPremiumSubscribeRequestModal: () => {},
   },

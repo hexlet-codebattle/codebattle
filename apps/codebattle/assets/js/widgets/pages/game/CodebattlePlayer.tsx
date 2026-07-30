@@ -6,7 +6,6 @@ import { Direction } from 'react-player-controls/dist/constants';
 import { connect } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
-import speedModes from '../../config/speedModes';
 import playbackModes from '../../config/playbackModes';
 import { replayerMachineStates } from '../../machines/game';
 import * as GameActions from '../../middlewares/Room';
@@ -16,18 +15,6 @@ import { actions, type RootState } from '../../slices';
 
 import CodebattleSliderBar from './CodebattleSliderBar';
 import ControlPanel from './ControlPanel';
-
-const playDelays = {
-  [speedModes.normal]: 100,
-  [speedModes.fast]: 50,
-  [speedModes.faster]: 25,
-};
-
-const speedScales = {
-  [speedModes.normal]: 1,
-  [speedModes.fast]: 2,
-  [speedModes.faster]: 4,
-};
 
 const isEqual = (float1: number, float2: number) => {
   const compareEpsilon = Number.EPSILON;
@@ -177,18 +164,13 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
     mainService.send({ type: 'PAUSE' });
   };
 
-  onChangeSpeed = () => {
+  onChangeSpeed = (speedMode: string) => {
     const { mainService } = this.context;
-    mainService.send({ type: 'TOGGLE_SPEED_MODE' });
+    mainService.send({ type: 'SET_SPEED_MODE', speedMode });
   };
 
-  onChangePlaybackMode = () => {
-    this.setState((state) => ({
-      playbackMode:
-        state.playbackMode === playbackModes.realtime
-          ? playbackModes.standard
-          : playbackModes.realtime,
-    }));
+  onChangePlaybackMode = (playbackMode: string) => {
+    this.setState({ playbackMode });
   };
 
   // Slider callbacks
@@ -283,7 +265,8 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
     const { playbackMode } = this.state;
 
     const { speedMode } = roomMachineState.context;
-    const playDelay = playDelays[speedMode];
+    const speedScale = Number.parseFloat(speedMode) || 1;
+    const playDelay = 100 / speedScale;
 
     let delay = playDelay;
 
@@ -296,7 +279,6 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
           if (currentRecord && nextRecord && currentRecord.time && nextRecord.time) {
             const diff = nextRecord.time - currentRecord.time;
             if (diff >= 0) {
-              const speedScale = speedScales[speedMode] || 1;
               const maxRealtimeDelay = 2000; // max delay between events in real-time is 2 seconds
               delay = Math.min(diff / speedScale, maxRealtimeDelay);
             }
@@ -378,49 +360,43 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
 
     return (
       <>
-        <div className="py-5" />
-        <div className="container-fluid fixed-bottom">
-          <div className="px-1">
-            <div className="cb-bg-highlight-panel cb-rounded">
-              <div className="d-flex align-items-center justify-content-center">
-                <ControlPanel
-                  nextRecordId={nextRecordId}
-                  roomMachineState={roomMachineState}
-                  playbackMode={playbackMode}
-                  onChangePlaybackMode={this.onChangePlaybackMode}
-                  onPlayClick={this.onPlayClick}
-                  onPauseClick={this.onPauseClick}
-                  onChangeSpeed={this.onChangeSpeed}
-                  currentTime={currentTime}
-                  totalDuration={totalDuration}
-                >
-                  <Slider
-                    className="cb-slider col-md-7 ml-1"
-                    value={smoothHandlerPosition}
-                    isEnabled={isEnabled}
-                    direction={direction}
-                    onChange={this.onSliderHandleChange}
-                    onChangeStart={this.onSliderHandleChangeStart}
-                    onChangeEnd={this.onSliderHandleChangeEnd}
-                    onIntent={this.onSliderHandleChangeIntent}
-                    onIntentEnd={this.onSliderHandleChangeIntentEnd}
-                  >
-                    <CodebattleSliderBar
-                      holded={roomMachineState.matches({
-                        replayer: replayerMachineStates.holded,
-                      })}
-                      mainEvents={mainEvents}
-                      handlerPosition={smoothHandlerPosition}
-                      lastIntent={lastIntent}
-                      recordsCount={recordsCount}
-                      setGameState={this.setGameState}
-                      startTime={startTime}
-                    />
-                  </Slider>
-                </ControlPanel>
-              </div>
-            </div>
-          </div>
+        <div className="cb-replayer-controls-spacer" />
+        <div className="container-fluid fixed-bottom cb-replayer-controls-shell">
+          <ControlPanel
+            nextRecordId={nextRecordId}
+            roomMachineState={roomMachineState}
+            playbackMode={playbackMode}
+            onChangePlaybackMode={this.onChangePlaybackMode}
+            onPlayClick={this.onPlayClick}
+            onPauseClick={this.onPauseClick}
+            onChangeSpeed={this.onChangeSpeed}
+            currentTime={currentTime}
+            totalDuration={totalDuration}
+          >
+            <Slider
+              className="cb-slider cb-replayer-controls__scrubber"
+              value={smoothHandlerPosition}
+              isEnabled={isEnabled}
+              direction={direction}
+              onChange={this.onSliderHandleChange}
+              onChangeStart={this.onSliderHandleChangeStart}
+              onChangeEnd={this.onSliderHandleChangeEnd}
+              onIntent={this.onSliderHandleChangeIntent}
+              onIntentEnd={this.onSliderHandleChangeIntentEnd}
+            >
+              <CodebattleSliderBar
+                holded={roomMachineState.matches({
+                  replayer: replayerMachineStates.holded,
+                })}
+                mainEvents={mainEvents}
+                handlerPosition={smoothHandlerPosition}
+                lastIntent={lastIntent}
+                recordsCount={recordsCount}
+                setGameState={this.setGameState}
+                startTime={startTime}
+              />
+            </Slider>
+          </ControlPanel>
         </div>
       </>
     );

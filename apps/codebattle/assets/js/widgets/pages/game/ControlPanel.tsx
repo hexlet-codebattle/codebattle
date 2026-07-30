@@ -1,18 +1,27 @@
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode, useEffect, useState } from 'react';
 
-import cn from 'classnames';
 import copy from 'copy-to-clipboard';
 import { PlayerIcon } from 'react-player-controls';
+import {
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  Clock,
+  Copy,
+  FastForward,
+  Minus,
+  Plus,
+  Settings,
+} from 'react-feather';
 import { useDispatch } from 'react-redux';
 
-import { getPageProp } from '@/inertia/pageProps';
-
-import speedModes from '../../config/speedModes';
 import playbackModes from '../../config/playbackModes';
 import { replayerMachineStates } from '../../machines/game';
 import { actions } from '../../slices';
 
-const gameId = getPageProp('game_id');
+const speedOptions = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4];
+const formatSpeedLabel = (value: number) => `${value}×`;
+type SettingsView = 'main' | 'speed';
 
 const formatDuration = (ms: number | null | undefined) => {
   if (ms === null || ms === undefined || Number.isNaN(ms)) return '--:--';
@@ -31,9 +40,9 @@ interface ControlPanelProps {
   roomMachineState: any;
   onPauseClick: () => void;
   onPlayClick: () => void;
-  onChangeSpeed: () => void;
+  onChangeSpeed: (speedMode: string) => void;
   playbackMode?: string;
-  onChangePlaybackMode?: () => void;
+  onChangePlaybackMode?: (playbackMode: string) => void;
   children?: ReactNode;
   nextRecordId?: number | string;
   currentTime?: number | null;
@@ -53,19 +62,22 @@ function ControlPanel({
   totalDuration,
 }: ControlPanelProps) {
   const dispatch = useDispatch();
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsView, setSettingsView] = useState<SettingsView>('main');
 
   const { speedMode } = roomMachineState.context;
   const isPaused = !roomMachineState.matches({ replayer: replayerMachineStates.playing });
+  const speedValue = Math.min(4, Math.max(0.5, Number.parseFloat(speedMode) || 1));
 
-  const speedControlClassNames = cn('btn btn-sm cb-rounded ml-2 border cb-border-color', {
-    'btn-light': speedMode === speedModes.normal,
-    'btn-secondary cb-btn-secondary': speedMode !== speedModes.normal,
-  });
+  useEffect(() => {
+    if (!linkCopied) {
+      return undefined;
+    }
 
-  const playbackControlClassNames = cn('btn btn-sm cb-rounded ml-2 border cb-border-color', {
-    'btn-light': playbackMode === playbackModes.standard,
-    'btn-secondary cb-btn-secondary': playbackMode === playbackModes.realtime,
-  });
+    const timeoutId = window.setTimeout(() => setLinkCopied(false), 1800);
+    return () => window.clearTimeout(timeoutId);
+  }, [linkCopied]);
 
   const onControlButtonClick = () => {
     switch (true) {
@@ -81,84 +93,223 @@ function ControlPanel({
     }
   };
 
+  const setSpeed = (value: number) => {
+    onChangeSpeed(`${value}x`);
+  };
+
+  const changeSpeedBy = (delta: number) => {
+    setSpeed(Math.min(4, Math.max(0.5, speedValue + delta)));
+  };
+
+  const setPlaybackMode = (mode: string) => {
+    if (mode !== playbackMode) {
+      onChangePlaybackMode?.(mode);
+    }
+  };
+
+  const copyCurrentPositionLink = async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('t', String(nextRecordId ?? 0));
+    setLinkCopied(await copy(url.toString()));
+  };
+
+  const toggleSettings = () => {
+    if (settingsOpen) {
+      setSettingsView('main');
+    }
+
+    setSettingsOpen(!settingsOpen);
+  };
+
   return (
-    <>
-      <button
-        type="button"
-        className="mr-4 btn btn-secondary cb-btn-secondary cb-rounded text-white"
-        onClick={onControlButtonClick}
-      >
-        {isPaused ? (
-          <PlayerIcon.Play width={32} height={32} />
-        ) : (
-          <PlayerIcon.Pause width={32} height={32} />
-        )}
-      </button>
-      {children}
-      {totalDuration !== null && totalDuration !== undefined && (
-        <span
-          className="ml-3 mr-1 px-2 py-1 small text-monospace cb-text-light font-weight-bold"
-          aria-label="Playback time"
-        >
-          {formatDuration(currentTime)}
-          <span className="mx-1 text-secondary">/</span>
-          {formatDuration(totalDuration)}
-        </span>
-      )}
-      <div className="dropup ml-2">
-        <button
-          className="btn btn-secondary cb-btn-secondary px-2 ml-1 shadow-none d-flex cb-rounded"
-          type="button"
-          id="dropdownMenuButton"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-          aria-label="Settings menu"
-        >
-          <i className="fas fa-cog" />
-        </button>
-        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <div className="d-flex">
-            <button
-              type="button"
-              className={speedControlClassNames}
-              onClick={onChangeSpeed}
-              aria-label="Toggle speed"
-              title={`Playback speed: ${speedMode}`}
-            >
-              {speedMode}
-            </button>
-            {playbackMode && (
+    <div className="cb-replayer-controls">
+      {settingsOpen && (
+        <div className="cb-replayer-settings" role="dialog" aria-label="Replay settings">
+          {settingsView === 'main' ? (
+            <>
+              <div className="cb-replayer-settings__header">Replay settings</div>
+
               <button
                 type="button"
-                className={playbackControlClassNames}
-                onClick={onChangePlaybackMode}
-                title={
-                  playbackMode === playbackModes.realtime
-                    ? 'Standard playback mode'
-                    : 'Real-time playback mode'
-                }
-                aria-label="Toggle playback mode"
+                className="cb-replayer-settings__menu-item"
+                onClick={() => setSettingsView('speed')}
               >
-                {playbackMode === playbackModes.realtime ? 'RT' : 'ST'}
+                <FastForward size={18} aria-hidden="true" />
+                <span>
+                  <strong>Playback speed</strong>
+                  <small>Choose from 0.5× to 4×</small>
+                </span>
+                <span className="cb-replayer-settings__menu-value">
+                  {formatSpeedLabel(speedValue)}
+                  <ChevronRight size={18} aria-hidden="true" />
+                </span>
               </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-sm ml-2 border btn-light cb-rounded"
-              title="Copy history game url at current record id"
-              aria-label="Copy game link"
-              onClick={() => {
-                const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;
-                copy(url);
-              }}
-            >
-              <i className="fas fa-link" />
-            </button>
-          </div>
+
+              {playbackMode && (
+                <div className="cb-replayer-settings__timing">
+                  <div className="cb-replayer-settings__timing-title">
+                    <Clock size={18} aria-hidden="true" />
+                    <span>
+                      <strong>Timing</strong>
+                      <small>Original pauses or uniform steps</small>
+                    </span>
+                  </div>
+                  <div
+                    className="cb-replayer-settings__segmented"
+                    role="group"
+                    aria-label="Replay timing"
+                  >
+                    <button
+                      type="button"
+                      className={playbackMode === playbackModes.realtime ? 'active' : ''}
+                      aria-pressed={playbackMode === playbackModes.realtime}
+                      onClick={() => setPlaybackMode(playbackModes.realtime)}
+                    >
+                      Real time
+                    </button>
+                    <button
+                      type="button"
+                      className={playbackMode === playbackModes.standard ? 'active' : ''}
+                      aria-pressed={playbackMode === playbackModes.standard}
+                      onClick={() => setPlaybackMode(playbackModes.standard)}
+                    >
+                      Uniform
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <button
+                className="cb-replayer-settings__menu-item"
+                type="button"
+                aria-label="Copy replay link at current position"
+                onClick={copyCurrentPositionLink}
+              >
+                {linkCopied ? (
+                  <Check size={18} aria-hidden="true" />
+                ) : (
+                  <Copy size={18} aria-hidden="true" />
+                )}
+                <span>
+                  <strong>{linkCopied ? 'Link copied' : 'Copy replay link'}</strong>
+                  <small>Share this exact replay position</small>
+                </span>
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="cb-replayer-settings__header cb-replayer-settings__header--back">
+                <button
+                  type="button"
+                  aria-label="Back to replay settings"
+                  onClick={() => setSettingsView('main')}
+                >
+                  <ArrowLeft size={20} aria-hidden="true" />
+                </button>
+                <span>Playback speed</span>
+              </div>
+
+              <output className="cb-replayer-settings__speed-value" htmlFor="replayer-speed">
+                {formatSpeedLabel(speedValue)}
+              </output>
+
+              <div className="cb-replayer-settings__speed-slider-row">
+                <button
+                  type="button"
+                  aria-label="Decrease playback speed"
+                  disabled={speedValue === 0.5}
+                  onClick={() => changeSpeedBy(-0.5)}
+                >
+                  <Minus size={20} aria-hidden="true" />
+                </button>
+                <input
+                  id="replayer-speed"
+                  className="cb-replayer-settings__speed-slider"
+                  type="range"
+                  min="0.5"
+                  max="4"
+                  step="0.5"
+                  value={speedValue}
+                  style={
+                    {
+                      '--speed-progress': `${((speedValue - 0.5) / 3.5) * 100}%`,
+                    } as React.CSSProperties
+                  }
+                  aria-label="Playback speed"
+                  aria-valuetext={formatSpeedLabel(speedValue)}
+                  onChange={(event) => setSpeed(Number(event.target.value))}
+                />
+                <button
+                  type="button"
+                  aria-label="Increase playback speed"
+                  disabled={speedValue === 4}
+                  onClick={() => changeSpeedBy(0.5)}
+                >
+                  <Plus size={20} aria-hidden="true" />
+                </button>
+              </div>
+
+              <div
+                className="cb-replayer-settings__speed-presets"
+                role="group"
+                aria-label="Playback speed presets"
+              >
+                {speedOptions.map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={value === speedValue ? 'active' : ''}
+                    aria-label={`Set playback speed to ${formatSpeedLabel(value)}`}
+                    aria-pressed={value === speedValue}
+                    onClick={() => setSpeed(value)}
+                  >
+                    {formatSpeedLabel(value)}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
+      )}
+
+      <div className="cb-replayer-controls__main">
+        <button
+          type="button"
+          className="cb-replayer-controls__play"
+          onClick={onControlButtonClick}
+          aria-label={isPaused ? 'Play replay' : 'Pause replay'}
+          title={isPaused ? 'Play replay' : 'Pause replay'}
+        >
+          {isPaused ? (
+            <PlayerIcon.Play width={24} height={24} />
+          ) : (
+            <PlayerIcon.Pause width={24} height={24} />
+          )}
+        </button>
+
+        <div className="cb-replayer-controls__timeline">
+          {children}
+          {totalDuration !== null && totalDuration !== undefined && (
+            <span className="cb-replayer-controls__time text-monospace" aria-label="Playback time">
+              {formatDuration(currentTime)}
+              <span aria-hidden="true"> / </span>
+              {formatDuration(totalDuration)}
+            </span>
+          )}
+        </div>
+
+        <button
+          className={`cb-replayer-controls__settings-button ${settingsOpen ? 'active' : ''}`}
+          type="button"
+          aria-label="Replay settings"
+          aria-expanded={settingsOpen}
+          title="Replay settings"
+          onClick={toggleSettings}
+        >
+          <Settings size={20} aria-hidden="true" />
+        </button>
       </div>
-    </>
+    </div>
   );
 }
 

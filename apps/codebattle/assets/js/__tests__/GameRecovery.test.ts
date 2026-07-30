@@ -4,7 +4,7 @@ import machines from '../widgets/machines';
 import { findCurrentUserPlayingGame } from '../widgets/middlewares/Lobby';
 
 describe('game recovery flows', () => {
-  test('opens and closes a loaded replay on the first event', () => {
+  test('opens, closes, and reopens a loaded replay on the first event', () => {
     // xstate v5: seed context via `input` and drive the machine through a running actor.
     const actor = createActor(machines.game, { input: { subscriptionType: 'premium' } });
     actor.start();
@@ -13,6 +13,15 @@ describe('game recovery flows', () => {
     expect(actor.getSnapshot().matches({ replayer: 'loading' })).toBe(true);
 
     actor.send({ type: 'LOAD_PLAYBOOK', payload: {} });
+    expect(actor.getSnapshot().matches({ replayer: 'on' })).toBe(true);
+
+    actor.send({ type: 'SET_SPEED_MODE', speedMode: '2.5x' });
+    expect(actor.getSnapshot().context.speedMode).toBe('2.5x');
+
+    actor.send({ type: 'CLOSE_REPLAYER' });
+    expect(actor.getSnapshot().matches({ replayer: 'off' })).toBe(true);
+
+    actor.send({ type: 'OPEN_REPLAYER' });
     expect(actor.getSnapshot().matches({ replayer: 'on' })).toBe(true);
 
     actor.send({ type: 'CLOSE_REPLAYER' });

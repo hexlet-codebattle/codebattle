@@ -29,6 +29,10 @@ function ReplayerControlButton() {
     () => dispatch(openPlaybook(mainService)),
     [mainService, dispatch],
   );
+  const closeReplayer = useCallback(
+    () => mainService.send({ type: 'CLOSE_REPLAYER' }),
+    [mainService],
+  );
 
   switch (true) {
     case roomMachineState.matches({ room: roomMachineStates.restricted }):
@@ -65,7 +69,7 @@ function ReplayerControlButton() {
       return (
         <button
           type="button"
-          onClick={() => mainService.send({ type: 'CLOSE_REPLAYER' })}
+          onClick={closeReplayer}
           className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
           aria-label="Close Record Player"
         >
