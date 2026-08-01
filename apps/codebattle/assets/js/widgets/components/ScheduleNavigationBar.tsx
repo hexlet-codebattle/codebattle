@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import dayjs from '../../i18n/dayjs';
+import { localizeTournamentName } from '../utils/localizeTournamentName';
 
 interface ScheduleEvent {
   title?: string;
   start?: string | number | Date;
-  resourse: { id: number | string };
+  resourse: { id: number | string; grade?: string };
 }
 
 interface ScheduleNavigationTabProps {
@@ -47,6 +48,10 @@ function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleN
     setEvent(next);
   }, [setEvent, next]);
 
+  const getEventTitle = (item: ScheduleEvent) => {
+    return localizeTournamentName(item.title, item.resourse.grade);
+  };
+
   return (
     <div className={className}>
       <div className="d-flex">
@@ -59,7 +64,7 @@ function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleN
             tabIndex={0}
           >
             <span className="pr-2">{'<<'}</span>
-            {prev.title}
+            {getEventTitle(prev)}
           </div>
         )}
       </div>
@@ -72,7 +77,7 @@ function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleN
             className="btn-link"
             tabIndex={0}
           >
-            {next.title}
+            {getEventTitle(next)}
             <span className="pl-2">{'>>'}</span>
           </div>
         )}

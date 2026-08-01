@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useRef, useEffect } from 'react';
 
-import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
+import i18next from '../../../i18n';
 import Messages from '../../components/Messages';
 import { pushCommand, pushCommandTypes, deleteMessage } from '../../middlewares/Chat';
 import * as selectors from '../../selectors';

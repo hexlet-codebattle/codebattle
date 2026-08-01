@@ -4,6 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import orderBy from 'lodash/orderBy';
 import moment from 'moment';
 
+import i18n from '../../../i18n';
 import HorizontalScrollControls from '../../components/SideScrollControls';
 
 import ShowButton from './ShowButton';
@@ -19,9 +20,11 @@ function LiveTournaments({ tournaments = [] }: LiveTournamentsProps) {
   if (isEmpty(tournaments)) {
     return (
       <div className="d-flex flex-column text-center">
-        <span className="mb-0 mt-3 p-3 text-muted">There are no active tournaments right now</span>
+        <span className="mb-0 mt-3 p-3 text-muted">
+          {i18n.t('There are no active tournaments right now')}
+        </span>
         <a className="text-primary" href="/tournaments/#create">
-          <u>You may want to create one</u>
+          <u>{i18n.t('You may want to create one')}</u>
         </a>
       </div>
     );
@@ -29,14 +32,14 @@ function LiveTournaments({ tournaments = [] }: LiveTournamentsProps) {
 
   return (
     <div className="table-responsive">
-      <h2 className="text-center mt-3">Live tournaments</h2>
+      <h2 className="text-center mt-3">{i18n.t('Live tournaments')}</h2>
       <div className="d-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped">
           <thead className="">
             <tr>
-              <th className="p-3 border-0">Title</th>
-              <th className="p-3 border-0">Starts_at</th>
-              <th className="p-3 border-0">Actions</th>
+              <th className="p-3 border-0">{i18n.t('Title')}</th>
+              <th className="p-3 border-0">{i18n.t('Starts at')}</th>
+              <th className="p-3 border-0">{i18n.t('Actions')}</th>
             </tr>
           </thead>
           <tbody className="">
@@ -61,7 +64,7 @@ function LiveTournaments({ tournaments = [] }: LiveTournamentsProps) {
       </HorizontalScrollControls>
       <div className="text-center mt-3">
         <a href="/tournaments">
-          <u>Tournaments Info</u>
+          <u>{i18n.t('Tournaments Info')}</u>
         </a>
       </div>
     </div>

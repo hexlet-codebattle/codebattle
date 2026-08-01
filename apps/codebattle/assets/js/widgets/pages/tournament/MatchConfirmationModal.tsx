@@ -177,7 +177,7 @@ function MatchConfirmationModal({
         {remainingTime !== null && (
           <div className="progress mx-5 cb-match-confirmation-progress">
             <div
-              aria-label="Countdown before redirect to the next match"
+              aria-label={i18next.t('Countdown before redirect to the next match')}
               style={{ width: `${timerProgress}%` }}
               className="progress-bar"
               role="progressbar"

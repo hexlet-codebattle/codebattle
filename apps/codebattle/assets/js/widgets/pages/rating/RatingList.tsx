@@ -72,7 +72,7 @@ const renderUser = (page: number, pageSize: number, user: RatingUser, index: num
         <a
           className="text-muted text-nowrap text-white cb-border-color"
           href={`https://github.com/${user.githubName || user.name}`}
-          aria-label="Github account"
+          aria-label={i18n.t('Github account')}
         >
           <span className="h3">
             <i className="fab fa-github" />

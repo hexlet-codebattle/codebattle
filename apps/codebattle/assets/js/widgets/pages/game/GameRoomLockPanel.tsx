@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import { type AppDispatch } from '@/slices';
 
+import i18n from '../../../i18n';
 import { sendPassCode } from '../../middlewares/Room';
 
 function GameRoomLockPanel() {
@@ -32,14 +33,14 @@ function GameRoomLockPanel() {
 
   return (
     <div className="d-flex flex-column w-50">
-      <span className="text-center h3">Game is Locked</span>
+      <span className="text-center h3">{i18n.t('Game is Locked')}</span>
       <div className="d-flex">
         <input
           ref={inputRef}
           id="game-lock"
           type="text"
-          aria-label="Game lock input for pass code"
-          placeholder="Enter pass code"
+          aria-label={i18n.t('Game lock input for pass code')}
+          placeholder={i18n.t('Enter pass code')}
           className={inputClassName}
           onChange={onChangePassCode}
         />
@@ -48,11 +49,11 @@ function GameRoomLockPanel() {
           className="btn btn-sm btn-success cb-btn-success cb-rounded text-white"
           onClick={onSubmitCode}
         >
-          Submit
+          {i18n.t('Submit')}
         </button>
       </div>
       <div className="d-flex flex-column flex-sm-row justify-content-between">
-        <span className="text-muted m-1">Example: 12345678</span>
+        <span className="text-muted m-1">{i18n.t('Example: 12345678')}</span>
         {error && <span className="text-danger m-1">{error.message}</span>}
       </div>
     </div>

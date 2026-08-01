@@ -3,6 +3,7 @@ import React, { useState, useCallback, useMemo, type ReactNode } from 'react';
 import cn from 'classnames';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 
+import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
@@ -138,7 +139,7 @@ function EditableSelect({ value, options, onChange, disabled }: EditableSelectPr
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
-          {opt}
+          {i18n.t(opt)}
         </option>
       ))}
     </select>
@@ -192,10 +193,10 @@ function EditableTagsInput({ value, onChange, disabled, inputId }: EditableTagsI
       {!disabled && (
         <input
           id={inputId}
-          aria-label="Add tag"
+          aria-label={i18n.t('Add tag')}
           type="text"
           className="form-control form-control-sm cb-bg-panel cb-border-color text-white"
-          placeholder="Add tag..."
+          placeholder={i18n.t('Add tag...')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -227,7 +228,7 @@ interface PercentileBarProps {
 
 function PercentileBar({ percentiles }: PercentileBarProps) {
   if (!percentiles || percentiles.count === 0) {
-    return <p className="cb-text font-italic py-2 mb-0">No solve time data yet</p>;
+    return <p className="cb-text font-italic py-2 mb-0">{i18n.t('No solve time data yet')}</p>;
   }
 
   const entries = [
@@ -320,8 +321,8 @@ function ExamplesTable({ examples }: ExamplesTableProps) {
         <thead>
           <tr className="cb-border-color border-bottom">
             <th className="cb-text border-0 px-3 py-2">#</th>
-            <th className="cb-text border-0 px-3 py-2">Arguments</th>
-            <th className="cb-text border-0 px-3 py-2">Expected</th>
+            <th className="cb-text border-0 px-3 py-2">{i18n.t('Arguments')}</th>
+            <th className="cb-text border-0 px-3 py-2">{i18n.t('Expected')}</th>
           </tr>
         </thead>
         <tbody>
@@ -352,16 +353,16 @@ function Leaderboard({ entries }: LeaderboardProps) {
   return (
     <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
       <div className="card-body">
-        <h5 className="mb-3 text-white font-weight-bold">Fastest Solutions</h5>
+        <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Fastest Solutions')}</h5>
         <div className="table-responsive">
           <table className="table table-sm mb-0">
             <thead>
               <tr className="cb-border-color border-bottom">
                 <th className="cb-text border-0 px-2 py-2">#</th>
-                <th className="cb-text border-0 px-2 py-2">Player</th>
-                <th className="cb-text border-0 px-2 py-2">Time</th>
-                <th className="cb-text border-0 px-2 py-2">Lang</th>
-                <th className="cb-text border-0 px-2 py-2">Game</th>
+                <th className="cb-text border-0 px-2 py-2">{i18n.t('Player')}</th>
+                <th className="cb-text border-0 px-2 py-2">{i18n.t('Time')}</th>
+                <th className="cb-text border-0 px-2 py-2">{i18n.t('Lang')}</th>
+                <th className="cb-text border-0 px-2 py-2">{i18n.t('Game')}</th>
               </tr>
             </thead>
             <tbody>
@@ -424,14 +425,18 @@ function AssertsSection({ asserts }: AssertsSectionProps) {
     <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="mb-0 text-white font-weight-bold">Test Cases ({asserts.length})</h5>
+          <h5 className="mb-0 text-white font-weight-bold">
+            {i18n.t('Test Cases (%{count})', { count: asserts.length })}
+          </h5>
           {asserts.length > 3 && (
             <button
               type="button"
               className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
               onClick={() => setExpanded(!expanded)}
             >
-              {expanded ? 'Show less' : `Show all ${asserts.length}`}
+              {expanded
+                ? i18n.t('Show less')
+                : i18n.t('Show all %{count}', { count: asserts.length })}
             </button>
           )}
         </div>
@@ -526,7 +531,7 @@ function TaskPreviewWidget({
         className="d-flex justify-content-center align-items-center cb-text"
         style={{ minHeight: '50vh' }}
       >
-        Task not found
+        {i18n.t('Task not found')}
       </div>
     );
   }
@@ -540,14 +545,14 @@ function TaskPreviewWidget({
         <div className="container">
           <div className="d-flex align-items-center mb-3 small">
             <a href="/tasks" className="text-info">
-              Tasks
+              {i18n.t('Tasks')}
             </a>
             <span className="mx-2 cb-text">/</span>
             <span className="cb-text">{task.name}</span>
             {isSaving && (
               <span className="ml-2 text-warning small">
                 <span className="spinner-border spinner-border-sm mr-1" />
-                Saving...
+                {i18n.t('Saving...')}
               </span>
             )}
           </div>
@@ -559,9 +564,9 @@ function TaskPreviewWidget({
 
           <div className="d-flex flex-wrap align-items-center">
             <span className={cn('badge mr-2 mb-1', levelBadgeClasses[task.level])}>
-              {task.level}
+              {i18n.t(task.level)}
             </span>
-            <span className={cn('badge mr-2 mb-1', stateInfo.cls)}>{stateInfo.label}</span>
+            <span className={cn('badge mr-2 mb-1', stateInfo.cls)}>{i18n.t(stateInfo.label)}</span>
             {task.origin && <span className="badge badge-dark mr-2 mb-1">{task.origin}</span>}
             {task.visibility && (
               <span
@@ -570,7 +575,7 @@ function TaskPreviewWidget({
                   task.visibility === 'public' ? 'badge-success' : 'badge-secondary',
                 )}
               >
-                {task.visibility}
+                {i18n.t(task.visibility)}
               </span>
             )}
             {task.tags &&
@@ -591,7 +596,7 @@ function TaskPreviewWidget({
             <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="mb-0 text-white font-weight-bold">Description</h5>
+                  <h5 className="mb-0 text-white font-weight-bold">{i18n.t('Description')}</h5>
                   <div className="d-flex align-items-center">
                     {hasRuDescription && (
                       <div className="btn-group btn-group-sm mr-2">
@@ -633,7 +638,7 @@ function TaskPreviewWidget({
                         className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
                         onClick={startEditDesc}
                       >
-                        Edit
+                        {i18n.t('Edit')}
                       </button>
                     )}
                   </div>
@@ -641,7 +646,7 @@ function TaskPreviewWidget({
                 {editingDesc ? (
                   <div>
                     <textarea
-                      aria-label="Description"
+                      aria-label={i18n.t('Description')}
                       className="form-control cb-bg-highlight-panel cb-border-color text-white mb-2"
                       rows={12}
                       value={descDraft}
@@ -653,7 +658,7 @@ function TaskPreviewWidget({
                         className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
                         onClick={() => setEditingDesc(false)}
                       >
-                        Cancel
+                        {i18n.t('Cancel')}
                       </button>
                       <button
                         type="button"
@@ -661,7 +666,7 @@ function TaskPreviewWidget({
                         onClick={saveDesc}
                         disabled={isSaving}
                       >
-                        Save
+                        {i18n.t('Save')}
                       </button>
                     </div>
                   </div>
@@ -676,7 +681,7 @@ function TaskPreviewWidget({
             {/* Signature */}
             <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
               <div className="card-body">
-                <h5 className="mb-3 text-white font-weight-bold">Function Signature</h5>
+                <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Function Signature')}</h5>
                 <SignatureDisplay
                   inputSignature={task.inputSignature}
                   outputSignature={task.outputSignature}
@@ -688,7 +693,7 @@ function TaskPreviewWidget({
             {task.assertsExamples && task.assertsExamples.length > 0 && (
               <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
                 <div className="card-body">
-                  <h5 className="mb-3 text-white font-weight-bold">Examples</h5>
+                  <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Examples')}</h5>
                   <ExamplesTable examples={task.assertsExamples} />
                 </div>
               </div>
@@ -701,17 +706,17 @@ function TaskPreviewWidget({
             {taskStats && (
               <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
                 <div className="card-body">
-                  <h5 className="mb-3 text-white font-weight-bold">Statistics</h5>
+                  <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Statistics')}</h5>
                   <div className="d-flex mb-3" style={{ gap: 12 }}>
-                    <StatCard label="Games" value={taskStats.gamesCount} />
-                    <StatCard label="Winners" value={taskStats.winnersCount} />
+                    <StatCard label={i18n.t('Games')} value={taskStats.gamesCount} />
+                    <StatCard label={i18n.t('Winners')} value={taskStats.winnersCount} />
                   </div>
 
                   <h6
                     className="mt-3 mb-3 cb-text small text-uppercase"
                     style={{ letterSpacing: 1 }}
                   >
-                    Solve Time (winners)
+                    {i18n.t('Solve Time (winners)')}
                   </h6>
                   <PercentileBar percentiles={taskStats.percentiles} />
                 </div>
@@ -736,15 +741,15 @@ function TaskPreviewWidget({
                   {isCreating ? (
                     <>
                       <span className="spinner-border spinner-border-sm mr-2" />
-                      Creating game...
+                      {i18n.t('Creating game...')}
                     </>
                   ) : (
-                    'Play this task'
+                    i18n.t('Play this task')
                   )}
                 </button>
                 {task.state !== 'active' && (
                   <small className="d-block text-center mt-2 cb-text">
-                    Task must be active to play
+                    {i18n.t('Task must be active to play')}
                   </small>
                 )}
               </div>
@@ -753,11 +758,11 @@ function TaskPreviewWidget({
             {/* Editable Details */}
             <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
               <div className="card-body">
-                <h5 className="mb-3 text-white font-weight-bold">Details</h5>
+                <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Details')}</h5>
                 <dl className="mb-0">
-                  <MetaRow label="ID">{task.id}</MetaRow>
+                  <MetaRow label={i18n.t('ID')}>{task.id}</MetaRow>
 
-                  <MetaRow label="Level">
+                  <MetaRow label={i18n.t('Level')}>
                     {canEditTask ? (
                       <EditableSelect
                         value={task.level}
@@ -766,11 +771,11 @@ function TaskPreviewWidget({
                         disabled={isSaving}
                       />
                     ) : (
-                      task.level
+                      i18n.t(task.level)
                     )}
                   </MetaRow>
 
-                  <MetaRow label="State">
+                  <MetaRow label={i18n.t('State')}>
                     {canEditTask ? (
                       <EditableSelect
                         value={task.state}
@@ -779,11 +784,11 @@ function TaskPreviewWidget({
                         disabled={isSaving}
                       />
                     ) : (
-                      stateInfo.label
+                      i18n.t(stateInfo.label)
                     )}
                   </MetaRow>
 
-                  <MetaRow label="Visibility">
+                  <MetaRow label={i18n.t('Visibility')}>
                     {canEditTask ? (
                       <EditableSelect
                         value={task.visibility}
@@ -791,28 +796,34 @@ function TaskPreviewWidget({
                         onChange={(v) => updateField('visibility', v)}
                         disabled={isSaving}
                       />
+                    ) : task.visibility ? (
+                      i18n.t(task.visibility)
                     ) : (
                       task.visibility
                     )}
                   </MetaRow>
 
-                  <MetaRow label="Type">{task.type || 'algorithms'}</MetaRow>
-                  <MetaRow label="Origin">{task.origin}</MetaRow>
+                  <MetaRow label={i18n.t('Type')}>{i18n.t(task.type || 'algorithms')}</MetaRow>
+                  <MetaRow label={i18n.t('Origin')}>{task.origin}</MetaRow>
                   {task.timeToSolveSec != null && (
-                    <MetaRow label="Time to solve">{formatDuration(task.timeToSolveSec)}</MetaRow>
+                    <MetaRow label={i18n.t('Time to solve')}>
+                      {formatDuration(task.timeToSolveSec)}
+                    </MetaRow>
                   )}
                   {task.baseScore != null && (
-                    <MetaRow label="Base static score">{task.baseScore}</MetaRow>
+                    <MetaRow label={i18n.t('Base static score')}>{task.baseScore}</MetaRow>
                   )}
-                  {task.creatorId && <MetaRow label="Creator ID">{task.creatorId}</MetaRow>}
+                  {task.creatorId && (
+                    <MetaRow label={i18n.t('Creator ID')}>{task.creatorId}</MetaRow>
+                  )}
                   {task.insertedAt && (
-                    <MetaRow label="Created">
-                      {new Date(task.insertedAt).toLocaleDateString()}
+                    <MetaRow label={i18n.t('Created')}>
+                      {new Date(task.insertedAt).toLocaleDateString(i18n.language)}
                     </MetaRow>
                   )}
                   {task.updatedAt && (
-                    <MetaRow label="Updated">
-                      {new Date(task.updatedAt).toLocaleDateString()}
+                    <MetaRow label={i18n.t('Updated')}>
+                      {new Date(task.updatedAt).toLocaleDateString(i18n.language)}
                     </MetaRow>
                   )}
                 </dl>
@@ -820,7 +831,7 @@ function TaskPreviewWidget({
                 {canEditTask && (
                   <div className="mt-3 pt-3 cb-border-color border-top">
                     <label htmlFor="task-preview-tags-input" className="cb-text small mb-1">
-                      Tags
+                      {i18n.t('Tags')}
                     </label>
                     <EditableTagsInput
                       inputId="task-preview-tags-input"

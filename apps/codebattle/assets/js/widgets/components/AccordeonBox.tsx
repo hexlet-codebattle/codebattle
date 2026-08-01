@@ -200,7 +200,7 @@ function SubMenu({
               {assert.status}
             </span>
             <OverlayTrigger
-              overlay={<Tooltip id={String(assert.id)}>Execution Time</Tooltip>}
+              overlay={<Tooltip id={String(assert.id)}>{i18n.t('Execution Time')}</Tooltip>}
               placement="top"
             >
               {executionTime !== undefined && Number(executionTime) !== 0 ? (

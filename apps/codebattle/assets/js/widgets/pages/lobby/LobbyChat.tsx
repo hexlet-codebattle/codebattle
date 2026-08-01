@@ -73,11 +73,26 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }: ChatGroupedPlaye
 
   return (
     <>
-      <UsersList mode={mode} title="Watching" list={watchingList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Playing" list={playingList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Lobby" list={lobbyList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Online" list={onlineList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Edit task" list={builderList} displayMenu={displayMenu} />
+      <UsersList
+        mode={mode}
+        title={i18n.t('Watching')}
+        list={watchingList}
+        displayMenu={displayMenu}
+      />
+      <UsersList
+        mode={mode}
+        title={i18n.t('Playing')}
+        list={playingList}
+        displayMenu={displayMenu}
+      />
+      <UsersList mode={mode} title={i18n.t('Lobby')} list={lobbyList} displayMenu={displayMenu} />
+      <UsersList mode={mode} title={i18n.t('Online')} list={onlineList} displayMenu={displayMenu} />
+      <UsersList
+        mode={mode}
+        title={i18n.t('Edit task')}
+        list={builderList}
+        displayMenu={displayMenu}
+      />
     </>
   );
 }

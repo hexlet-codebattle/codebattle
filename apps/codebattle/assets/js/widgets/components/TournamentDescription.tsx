@@ -1,9 +1,16 @@
 import React from 'react';
 
 import cn from 'classnames';
-import capitalize from 'lodash/capitalize';
 
-import { getRankingPoints, getTasksCount, grades, type Grade } from '@/config/grades';
+import {
+  getGradeLabel,
+  getRankingPoints,
+  getTasksCount,
+  grades,
+  type Grade,
+} from '@/config/grades';
+
+import i18n from '../../i18n';
 
 const getGradeDescriptionClassName = (highlight: boolean) =>
   cn('d-flex flex-column flex-lg-row flex-md-row flex-sm-row justify-content-between', {
@@ -19,7 +26,7 @@ function GradeInfo({ grade, selected }: GradeInfoProps) {
   return (
     <div className={getGradeDescriptionClassName(grade === selected)}>
       <span className={grade === selected ? 'text-white' : ''}>
-        {capitalize(grade)}
+        {i18n.t(getGradeLabel(grade))}
         {grade === selected && '(*)'}
       </span>
       <span className={cn('pl-3', { 'text-white': grade === selected })}>
@@ -42,15 +49,21 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
     <div className={className}>
       {tournament.grade !== grades.open ? (
         <>
-          <span className="text-white">Tournament Highlights:</span>
+          <span className="text-white">{i18n.t('Tournament Highlights:')}</span>
           <div className="d-flex flex-column">
-            <span>Prizes: Codebattle T-shirt merch for a top-tier of League</span>
-            <span>{`Challenges: ${getTasksCount(tournament.grade)} unique algorithm problems`}</span>
-            <span>Impact: Advancing in the Codebattle programmer rankings</span>
+            <span>{i18n.t('Prizes: Codebattle T-shirt merch for a top-tier of League')}</span>
+            <span>
+              {i18n.t('Challenges: %{count} unique algorithm problems', {
+                count: getTasksCount(tournament.grade),
+              })}
+            </span>
+            <span>{i18n.t('Impact: Advancing in the Codebattle programmer rankings')}</span>
           </div>
           <div className="d-flex justify-content-center w-100">
             <div className="card cb-card mt-2">
-              <div className="card-header text-center">View League Ranking Points System</div>
+              <div className="card-header text-center">
+                {i18n.t('View League Ranking Points System')}
+              </div>
               <div className="card-body">
                 {[
                   grades.rookie,
@@ -60,7 +73,7 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
                   grades.masters,
                   grades.grandSlam,
                 ].map((grade) => (
-                  <GradeInfo grade={grade} selected={tournament.grade} />
+                  <GradeInfo key={grade} grade={grade} selected={tournament.grade} />
                 ))}
               </div>
             </div>
@@ -68,7 +81,7 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
         </>
       ) : (
         <>
-          <span className="text-white">Tournament Description:</span>
+          <span className="text-white">{i18n.t('Tournament Description:')}</span>
           {tournament.description}
         </>
       )}

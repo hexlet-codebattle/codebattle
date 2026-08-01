@@ -1,5 +1,7 @@
 import React from 'react';
 
+import i18n from '../../i18n';
+
 interface LoadingProps {
   adaptive?: boolean;
   large?: boolean;
@@ -29,7 +31,7 @@ function Loading(props: LoadingProps) {
         style={{ width: `${size}px`, height: `${size}px` }}
         role="status"
       >
-        <span className="sr-only">Loading...</span>
+        <span className="sr-only">{i18n.t('Loading...')}</span>
       </div>
     </div>
   );

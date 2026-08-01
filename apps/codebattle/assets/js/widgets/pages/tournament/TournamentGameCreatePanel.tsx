@@ -3,6 +3,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import shuffle from 'lodash/shuffle';
 
+import i18n from '../../../i18n';
 import MatchStates from '../../config/matchStates';
 import { createCustomRound } from '../../middlewares/TournamentAdmin';
 import {
@@ -126,7 +127,7 @@ function TournamentGameCreatePanel({
       {!selectedPlayer && (
         <>
           <img
-            alt="Waiting opponent avatar"
+            alt={i18n.t('Waiting opponent avatar')}
             src={tournamentEmptyPlayerUrl}
             className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray cb-rounded p-3"
           />
@@ -136,7 +137,7 @@ function TournamentGameCreatePanel({
               onChange={(e) => setSelectedPlayer(players[Number(e.target.value)])}
             >
               <option disabled selected value="">
-                Choose player
+                {i18n.t('Choose player')}
               </option>
               {Object.values(players)
                 .filter((player) => !player.isBot)
@@ -153,7 +154,7 @@ function TournamentGameCreatePanel({
         <>
           <div className="d-flex flex-column align-items-baseline flex-nowrap">
             <span className="h5">
-              {'Choose task level for '}
+              {i18n.t('Choose task level for')}{' '}
               <span className="text-nowrap">{selectedPlayer.name}</span>
               {opponentPlayer?.name && (
                 <>
@@ -170,9 +171,11 @@ function TournamentGameCreatePanel({
                 onClick={() => setSelectedTaskLevel('elementary')}
                 disabled={availableTasks.elementary.length < 1}
               >
-                Elementary{' '}
+                {i18n.t('Elementary')}{' '}
                 <span className="text-nowrap">
-                  {`(${availableTasks.elementary.length} available)`}
+                  {i18n.t('(%{count} available)', {
+                    count: availableTasks.elementary.length,
+                  })}
                 </span>
               </button>
               <button
@@ -181,7 +184,7 @@ function TournamentGameCreatePanel({
                 onClick={() => setSelectedTaskLevel('easy')}
                 disabled={availableTasks.easy.length < 1}
               >
-                Easy {availableTasks.easy.length}
+                {i18n.t('Easy')} {availableTasks.easy.length}
               </button>
               <button
                 type="button"
@@ -189,7 +192,7 @@ function TournamentGameCreatePanel({
                 onClick={() => setSelectedTaskLevel('medium')}
                 disabled={availableTasks.medium.length < 1}
               >
-                Medium {availableTasks.medium.length}
+                {i18n.t('Medium')} {availableTasks.medium.length}
               </button>
               <button
                 type="button"
@@ -197,7 +200,7 @@ function TournamentGameCreatePanel({
                 onClick={() => setSelectedTaskLevel('hard')}
                 disabled={availableTasks.hard.length < 1}
               >
-                Hard {availableTasks.hard.length}
+                {i18n.t('Hard')} {availableTasks.hard.length}
               </button>
             </div>
           </div>
@@ -233,13 +236,20 @@ function TournamentGameCreatePanel({
               )}
             </div>
             <div className="d-flex flex-column justify-content-center">
-              <span className="h6 p-1 text-nowrap">{`Player: ${selectedPlayer.name}`}</span>
+              <span className="h6 p-1 text-nowrap">
+                {i18n.t('Player: %{name}', { name: selectedPlayer.name })}
+              </span>
               {opponentPlayer?.name && (
-                <span className="h6 p-1 text-nowrap">{`Opponent: ${opponentPlayer.name}`}</span>
+                <span className="h6 p-1 text-nowrap">
+                  {i18n.t('Opponent: %{name}', { name: opponentPlayer.name })}
+                </span>
               )}
               <div className="d-flex align-items-baseline px-1">
                 <span className="h6 text-nowrap">
-                  {`Level: ${selectedTaskLevel} (${availableTasks[selectedTaskLevel].length} available)`}
+                  {i18n.t('Level: %{level} (%{count} available)', {
+                    level: i18n.t(selectedTaskLevel),
+                    count: availableTasks[selectedTaskLevel].length,
+                  })}
                 </span>
                 <button type="button" className="btn btn-sm" onClick={clearSelectedTaskLevel}>
                   <FontAwesomeIcon icon="pen" />
@@ -249,7 +259,7 @@ function TournamentGameCreatePanel({
                 <input
                   id="round-seconds"
                   name="round-seconds"
-                  aria-label="Round timeout seconds"
+                  aria-label={i18n.t('Round timeout seconds')}
                   type="number"
                   min="180"
                   max="7200"
@@ -273,7 +283,7 @@ function TournamentGameCreatePanel({
                   }}
                   className="my-1 mr-1"
                 />
-                <label htmlFor="round-seconds">Match seconds</label>
+                <label htmlFor="round-seconds">{i18n.t('Match seconds')}</label>
               </div>
               {activeMatch ? (
                 <button
@@ -281,7 +291,7 @@ function TournamentGameCreatePanel({
                   className="btn btn-sm btn-secondary rounded-lg p-1 px-2"
                   disabled
                 >
-                  Round already started
+                  {i18n.t('Round already started')}
                 </button>
               ) : (
                 <button
@@ -296,7 +306,7 @@ function TournamentGameCreatePanel({
                   disabled={availableTasks[selectedTaskLevel].length < 1}
                 >
                   <FontAwesomeIcon className="mr-2" icon="play" />
-                  Start round
+                  {i18n.t('Start round')}
                 </button>
               )}
             </div>

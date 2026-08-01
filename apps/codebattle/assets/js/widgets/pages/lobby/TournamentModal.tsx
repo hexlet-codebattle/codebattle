@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import cn from 'classnames';
-import i18n from 'i18next';
 import Button from 'react-bootstrap/Button';
 import { useSelector } from 'react-redux';
 
@@ -13,7 +12,9 @@ import { grades } from '@/config/grades';
 import ModalCodes from '@/config/modalCodes';
 import { currentUserIsAdminSelector } from '@/selectors';
 
+import i18n from '../../../i18n';
 import dayjs from '../../../i18n/dayjs';
+import { localizeTournamentName } from '../../utils/localizeTournamentName';
 
 import { type LobbyTournament } from './TournamentCard';
 
@@ -46,7 +47,9 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
           {tournament.grade !== grades.open && (
             <span className="text-white">Codebattle League 2025</span>
           )}
-          {i18n.t('Tournament: %{name}', { name: tournament.name })}
+          {i18n.t('Tournament: %{name}', {
+            name: localizeTournamentName(tournament.name, tournament.grade),
+          })}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="position-relative">

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 
 import { type AppDispatch } from '@/slices';
 
+import i18n from '../../../i18n';
 import Loading from '@/components/Loading';
 import * as roomActions from '@/middlewares/Room';
 import useCssBattle from '@/utils/useCssBattle';
@@ -61,7 +62,7 @@ function CssBattleInfoPanel() {
             <div className={cn('position-relative h-100 w-100', { 'cb-opacity-25': isLoading })}>
               <img
                 alt=""
-                title="Right editor solution picture"
+                title={i18n.t('Right editor solution picture')}
                 className={cn('w-100 h-100 position-absolute', 'cb-opacity-05', {
                   invisible: isLoading,
                 })}
@@ -69,7 +70,7 @@ function CssBattleInfoPanel() {
               />
               <img
                 alt=""
-                title="Left editor solution picture"
+                title={i18n.t('Left editor solution picture')}
                 className={cn(
                   'w-100 h-100 position-absolute',
                   // 'cb-opacity-75',
@@ -79,14 +80,14 @@ function CssBattleInfoPanel() {
               />
               <iframe
                 src="/cssbattle/builder"
-                title="left editor solution"
+                title={i18n.t('left editor solution')}
                 className="border-0 w-100 h-100 position-absolute invisible"
                 ref={leftSolutionIframe}
                 onLoad={handleLoadLeftIframe}
               />
               <iframe
                 src="/cssbattle/builder"
-                title="right editor solution"
+                title={i18n.t('right editor solution')}
                 className="border-0 w-100 h-100 position-absolute invisible"
                 ref={rightSolutionIframe}
                 onLoad={handleLoadRightIframe}
@@ -125,7 +126,7 @@ function CssBattleInfoPanel() {
             </div>
             <img
               alt=""
-              title="target solution picture"
+              title={i18n.t('target solution picture')}
               className={cn('w-100 h-100 position-absolute', {
                 'cb-opacity-50 ': showStats,
                 invisible: showTargetControls || isLoading,

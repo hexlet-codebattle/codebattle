@@ -3,6 +3,7 @@ import React, { type MouseEvent, type KeyboardEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
+import i18n from '../../i18n';
 import useHover from '../utils/useHover';
 
 import InfoMessage from './InfoMessage';
@@ -104,8 +105,8 @@ function Message({
       <button
         type="button"
         className="btn cb-tournament-chat-ban"
-        title={`Ban ${name}`}
-        aria-label={`Ban ${name}`}
+        title={i18n.t('Ban %{name}', { name })}
+        aria-label={i18n.t('Ban %{name}', { name })}
         onClick={(event) => {
           event.stopPropagation();
           onBanUser({ userId, name });
@@ -120,8 +121,8 @@ function Message({
     <button
       type="button"
       className="btn cb-chat-message-delete"
-      title="Delete message"
-      aria-label="Delete message"
+      title={i18n.t('Delete message')}
+      aria-label={i18n.t('Delete message')}
       onClick={(event) => {
         event.stopPropagation();
         onDeleteMessage!(id!);

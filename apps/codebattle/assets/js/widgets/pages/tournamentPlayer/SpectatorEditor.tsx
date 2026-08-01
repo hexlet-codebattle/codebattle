@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { spectatorEditorIsChecking, spectatorStateSelector } from '@/machines/selectors';
 import useMachineStateSelector from '@/utils/useMachineStateSelector';
 
+import i18n from '../../../i18n';
 import ExtendedEditor from '../../components/ExtendedEditor';
 import LanguagePickerView from '../../components/LanguagePickerView';
 import UserInfo from '../../components/UserInfo';
@@ -146,13 +147,13 @@ function SpectatorEditor({
                         />
                       </div>
                     ) : (
-                      <h5 className="pt-2 pl-2">Spectator</h5>
+                      <h5 className="pt-2 pl-2">{i18n.t('Spectator')}</h5>
                     )}
                   </div>
                   <div
                     className="btn-group align-items-center ml-2 mr-auto"
                     role="group"
-                    aria-label="Editor mode"
+                    aria-label={i18n.t('Editor mode')}
                   >
                     {/* playerId is a legacy prop DarkModeButton no longer reads; kept for runtime parity. */}
                     <DakModeButton
@@ -164,7 +165,7 @@ function SpectatorEditor({
                   <div
                     className="btn-group align-items-center ml-2 mr-auto"
                     role="group"
-                    aria-label="Editor size controls"
+                    aria-label={i18n.t('Editor size controls')}
                   >
                     <button
                       type="button"
@@ -214,7 +215,7 @@ function SpectatorEditor({
                 {/*   <FontAwesomeIcon icon="exchange-alt" /> */}
                 {/* </button> */}
                 <button
-                  title="Swap game widgets"
+                  title={i18n.t('Swap game widgets')}
                   type="button"
                   className={`btn btn-sm mr-1 rounded-lg ${
                     !hidingControls ? 'btn-primary' : 'btn-light'

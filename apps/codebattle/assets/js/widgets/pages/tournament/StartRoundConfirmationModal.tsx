@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from '@/components/BootstrapModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
+import i18n from '../../../i18n';
 import {
   startTournament as handleStartTournament,
   startRoundTournament as handleStartRoundTournament,
@@ -14,9 +15,9 @@ import {
 const getModalTittle = (type: string | boolean) => {
   switch (type) {
     case 'firstRound':
-      return 'Start tournament confirmation';
+      return i18n.t('Start tournament confirmation');
     case 'nextRound':
-      return 'Start next round';
+      return i18n.t('Start next round');
     default:
       return '';
   }
@@ -25,9 +26,9 @@ const getModalTittle = (type: string | boolean) => {
 const getModalText = (type: string | boolean) => {
   switch (type) {
     case 'firstRound':
-      return 'Are you sure you want to start the tournament?';
+      return i18n.t('Are you sure you want to start the tournament?');
     case 'nextRound':
-      return 'Are you sure you want to start the round?';
+      return i18n.t('Are you sure you want to start the round?');
     default:
       return '';
   }
@@ -94,21 +95,18 @@ function StartRoundConfirmationModal({
           <h4 className="mb-4">{text}</h4>
           <div className="d-flex flex-column justify-content-center">
             <div className="d-flex justify-content-center">
-              <span title="Round timeout seconds" className="mr-2">
-                {'Seconds: '}
-                {matchTimeoutSeconds}
+              <span title={i18n.t('Round timeout seconds')} className="mr-2">
+                {i18n.t('Seconds:')} {matchTimeoutSeconds}
                 {', '}
               </span>
               {taskProvider === 'task_pack' && (
-                <span title="Round task pack id">
-                  {'Task pack name: '}
-                  {taskPackName}
+                <span title={i18n.t('Round task pack id')}>
+                  {i18n.t('Task pack name:')} {taskPackName}
                 </span>
               )}
               {taskProvider === 'level' && (
-                <span title="Round task level">
-                  {'Task level: '}
-                  {level}
+                <span title={i18n.t('Round task level')}>
+                  {i18n.t('Task level:')} {level ? i18n.t(level) : level}
                 </span>
               )}
             </div>
@@ -118,7 +116,7 @@ function StartRoundConfirmationModal({
       <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-between w-100">
           <Button onClick={onClose} className={cancelBtnClassName}>
-            Cancel
+            {i18n.t('Cancel')}
           </Button>
           <div className="d-flex">
             <Button
@@ -126,7 +124,7 @@ function StartRoundConfirmationModal({
               onClick={handleConfirmation}
               className={confirmBtnClassName}
             >
-              Confirm
+              {i18n.t('Confirm')}
             </Button>
           </div>
         </div>

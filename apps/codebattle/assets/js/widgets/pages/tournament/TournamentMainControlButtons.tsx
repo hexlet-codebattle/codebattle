@@ -9,6 +9,7 @@ import Modal from '@/components/BootstrapModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { type AppDispatch } from '@/slices';
 
+import i18n from '../../../i18n';
 import {
   cancelTournament,
   finishTournament,
@@ -140,28 +141,29 @@ function TournamentMainControlButtons({
         contentClassName="cb-bg-panel cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
-          <Modal.Title>Reset tournament progress</Modal.Title>
+          <Modal.Title>{i18n.t('Reset tournament progress')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="cb-border-color">
           <div className="d-flex flex-column">
-            <h4 className="mb-3">Are you sure you want to reset this tournament?</h4>
+            <h4 className="mb-3">{i18n.t('Are you sure you want to reset this tournament?')}</h4>
             <p className="mb-0 text-muted">
-              This action is destructive. All tournament progress, matches, and results will be
-              lost.
+              {i18n.t(
+                'This action is destructive. All tournament progress, matches, and results will be lost.',
+              )}
             </p>
           </div>
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-between w-100">
             <Button onClick={closeRestartConfirmationModal} className={cancelBtnClassName}>
-              Cancel
+              {i18n.t('Cancel')}
             </Button>
             <Button
               ref={confirmBtnRef}
               onClick={confirmRestartTournament}
               className={confirmBtnClassName}
             >
-              Reset tournament
+              {i18n.t('Reset tournament')}
             </Button>
           </div>
         </Modal.Footer>
@@ -172,23 +174,25 @@ function TournamentMainControlButtons({
         contentClassName="cb-bg-panel cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
-          <Modal.Title>Retry tournament</Modal.Title>
+          <Modal.Title>{i18n.t('Retry tournament')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="cb-border-color">
           <div className="d-flex flex-column">
-            <h4 className="mb-3">Are you sure you want to retry this tournament?</h4>
+            <h4 className="mb-3">{i18n.t('Are you sure you want to retry this tournament?')}</h4>
             <p className="mb-0 text-muted">
-              This will clear tournament games and results, then restore the current player roster.
+              {i18n.t(
+                'This will clear tournament games and results, then restore the current player roster.',
+              )}
             </p>
           </div>
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-between w-100">
             <Button onClick={closeRetryConfirmationModal} className={cancelBtnClassName}>
-              Cancel
+              {i18n.t('Cancel')}
             </Button>
             <Button onClick={confirmRetryTournament} className={confirmBtnClassName}>
-              Retry tournament
+              {i18n.t('Retry tournament')}
             </Button>
           </div>
         </Modal.Footer>
@@ -199,23 +203,23 @@ function TournamentMainControlButtons({
         contentClassName="cb-bg-panel cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
-          <Modal.Title>Finish tournament</Modal.Title>
+          <Modal.Title>{i18n.t('Finish tournament')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="cb-border-color">
           <div className="d-flex flex-column">
-            <h4 className="mb-3">Are you sure you want to finish this tournament?</h4>
+            <h4 className="mb-3">{i18n.t('Are you sure you want to finish this tournament?')}</h4>
             <p className="mb-0 text-muted">
-              This will end the tournament and finalize all results.
+              {i18n.t('This will end the tournament and finalize all results.')}
             </p>
           </div>
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-between w-100">
             <Button onClick={closeFinishConfirmationModal} className={cancelBtnClassName}>
-              Cancel
+              {i18n.t('Cancel')}
             </Button>
             <Button onClick={confirmFinishTournament} className={confirmBtnClassName}>
-              Finish tournament
+              {i18n.t('Finish tournament')}
             </Button>
           </div>
         </Modal.Footer>
@@ -225,7 +229,7 @@ function TournamentMainControlButtons({
           {!streamMode && (
             <div className="col-12 col-xl-6 px-2 mb-3 mb-xl-0">
               <div className="small text-uppercase text-muted font-weight-bold mb-2">
-                Tournament flow
+                {i18n.t('Tournament flow')}
               </div>
               <div className="d-flex flex-wrap align-items-center">
                 {canStartRound ? (
@@ -236,7 +240,7 @@ function TournamentMainControlButtons({
                     disabled={!canStartRound || disabled}
                   >
                     <FontAwesomeIcon className="mr-2" icon="arrow-right" />
-                    Start Round
+                    {i18n.t('Start Round')}
                   </button>
                 ) : null}
                 {canFinishRound ? (
@@ -247,7 +251,7 @@ function TournamentMainControlButtons({
                     disabled={!canFinishRound || disabled}
                   >
                     <FontAwesomeIcon className="mr-2" icon="flag-checkered" />
-                    Finish Round
+                    {i18n.t('Finish Round')}
                   </button>
                 ) : null}
                 {canFinishTournament ? (
@@ -258,7 +262,7 @@ function TournamentMainControlButtons({
                     disabled={disabled}
                   >
                     <FontAwesomeIcon className="mr-2" icon="stop" />
-                    Finish Tournament
+                    {i18n.t('Finish Tournament')}
                   </button>
                 ) : null}
                 {canRestart ? (
@@ -269,7 +273,7 @@ function TournamentMainControlButtons({
                     disabled={!canRestart || disabled}
                   >
                     <FontAwesomeIcon className="mr-2" icon="sync" />
-                    Restart
+                    {i18n.t('Restart')}
                   </button>
                 ) : (
                   <button
@@ -279,7 +283,7 @@ function TournamentMainControlButtons({
                     disabled={!canStart || disabled}
                   >
                     <FontAwesomeIcon className="mr-2" icon="play" />
-                    Start
+                    {i18n.t('Start')}
                   </button>
                 )}
                 <button
@@ -289,7 +293,7 @@ function TournamentMainControlButtons({
                   disabled={disabled}
                 >
                   <FontAwesomeIcon className="mr-2" icon="redo" />
-                  Retry
+                  {i18n.t('Retry')}
                 </button>
                 <button
                   type="button"
@@ -298,7 +302,7 @@ function TournamentMainControlButtons({
                   disabled={disabled || !hideResults}
                 >
                   <FontAwesomeIcon className="mr-2" icon="eye" />
-                  Show Results
+                  {i18n.t('Show Results')}
                 </button>
                 <button
                   type="button"
@@ -307,22 +311,24 @@ function TournamentMainControlButtons({
                   disabled={disabled}
                 >
                   <FontAwesomeIcon className="mr-2" icon="trash" />
-                  Cancel
+                  {i18n.t('Cancel')}
                 </button>
               </div>
             </div>
           )}
 
           <div className={settingsColClassName}>
-            <div className="small text-uppercase text-muted font-weight-bold mb-2">Settings</div>
+            <div className="small text-uppercase text-muted font-weight-bold mb-2">
+              {i18n.t('Settings')}
+            </div>
             <div className="d-flex flex-wrap align-items-center">
               <a href={`/tournaments/${tournamentId}/edit`} className={subtleBtnClassName}>
                 <FontAwesomeIcon className="mr-2" icon="edit" />
-                Edit
+                {i18n.t('Edit')}
               </a>
               <button type="button" className={subtleBtnClassName} onClick={handleOpenDetails}>
                 <FontAwesomeIcon className="mr-2" icon="cog" />
-                Tournament details
+                {i18n.t('Tournament details')}
               </button>
               <button
                 type="button"
@@ -331,7 +337,7 @@ function TournamentMainControlButtons({
                 disabled={disabled}
               >
                 <FontAwesomeIcon className="mr-2" icon="video" />
-                Toggle stream mode
+                {i18n.t('Toggle stream mode')}
               </button>
               <button
                 type="button"
@@ -340,7 +346,7 @@ function TournamentMainControlButtons({
                 disabled={disabled || !canToggleShowBots}
               >
                 <FontAwesomeIcon className="mr-2" icon="robot" />
-                {showBots ? 'Hide bots' : 'Show bots'}
+                {i18n.t(showBots ? 'Hide bots' : 'Show bots')}
               </button>
               {accessType === 'token' && (
                 <button
@@ -350,7 +356,7 @@ function TournamentMainControlButtons({
                   disabled={disabled}
                 >
                   <FontAwesomeIcon className="mr-2" icon="unlock" />
-                  Open up
+                  {i18n.t('Open up')}
                 </button>
               )}
             </div>

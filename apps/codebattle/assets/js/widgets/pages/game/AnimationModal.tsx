@@ -72,7 +72,7 @@ const AnimationModal = NiceModal.create(() => {
             className="w-100 cb-rounded"
             style={{ maxWidth: '400px' }}
             src={gifs[result]}
-            alt="animation"
+            alt={i18n.t('animation')}
           />
         </div>
         {Boolean(tournamentId) && (

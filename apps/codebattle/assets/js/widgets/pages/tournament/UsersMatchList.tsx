@@ -275,17 +275,14 @@ function UsersMatchList({
       {!hideStats && matches.length > 0 && (
         <div className="d-flex py-2 border-bottom cb-border-color align-items-center overflow-auto">
           <span className="ml-2">
-            {'Wins: '}
-            {player.winMatches.length}
+            {i18next.t('Wins:')} {player.winMatches.length}
           </span>
           <span className="ml-1 pl-1 border-left cb-border-color">
-            {'AVG Tests: '}
-            {Math.ceil(player.avgTests)}%
+            {i18next.t('AVG Tests:')} {Math.ceil(player.avgTests)}%
           </span>
           <span className="ml-1 pl-1 border-left cb-border-color">
-            {'AVG Duration: '}
-            {Math.ceil(player.avgDuration)}
-            {' sec'}
+            {i18next.t('AVG Duration:')} {Math.ceil(player.avgDuration)}
+            {` ${i18next.t('sec')}`}
           </span>
         </div>
       )}

@@ -7,6 +7,7 @@ import moment from 'moment';
 import Modal from '@/components/BootstrapModal';
 import { type TournamentState } from '@/slices/initial';
 
+import i18n from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 
 const formatValue = (value: unknown): string | null => {
@@ -15,7 +16,7 @@ const formatValue = (value: unknown): string | null => {
   }
 
   if (typeof value === 'boolean') {
-    return value ? 'Yes' : 'No';
+    return i18n.t(value ? 'Yes' : 'No');
   }
 
   if (Array.isArray(value)) {
@@ -23,6 +24,11 @@ const formatValue = (value: unknown): string | null => {
   }
 
   return String(value);
+};
+
+const formatTranslatedValue = (value: unknown): string | null => {
+  const formattedValue = formatValue(value);
+  return formattedValue === null ? null : i18n.t(formattedValue);
 };
 
 const formatDate = (value: unknown): string | null => {
@@ -101,67 +107,79 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const detailSections = useMemo(() => {
     const sections = [
       {
-        title: 'Overview',
+        title: i18n.t('Overview'),
         items: [
-          { label: 'Name', value: formatValue(tournament.name) },
-          { label: 'State', value: formatValue(tournament.state) },
-          { label: 'Type', value: formatValue(tournament.type) },
-          { label: 'Level', value: formatValue(tournament.level) },
-          { label: 'Access', value: formatValue(tournament.accessType) },
-          { label: 'Ranking type', value: formatValue(tournament.rankingType) },
-        ],
-      },
-      {
-        title: 'Schedule',
-        items: [
-          { label: 'Starts at', value: formatDate(tournament.startsAt) },
-          { label: 'Created at', value: formatDate(tournament.insertedAt) },
-          { label: 'Updated at', value: formatDate(tournament.updatedAt) },
-          { label: 'Rounds limit', value: formatValue(tournament.roundsLimit) },
-          { label: 'Current round', value: formatValue(tournament.currentRoundPosition) },
-        ],
-      },
-      {
-        title: 'Timeouts',
-        items: [
-          { label: 'Timeout mode', value: formatValue(tournament.timeoutMode) },
+          { label: i18n.t('Name'), value: formatValue(tournament.name) },
+          { label: i18n.t('State'), value: formatTranslatedValue(tournament.state) },
+          { label: i18n.t('Type'), value: formatTranslatedValue(tournament.type) },
+          { label: i18n.t('Level'), value: formatTranslatedValue(tournament.level) },
+          { label: i18n.t('Access'), value: formatTranslatedValue(tournament.accessType) },
           {
-            label: 'Round timeout',
+            label: i18n.t('Ranking type'),
+            value: formatTranslatedValue(tournament.rankingType),
+          },
+        ],
+      },
+      {
+        title: i18n.t('Schedule'),
+        items: [
+          { label: i18n.t('Starts at'), value: formatDate(tournament.startsAt) },
+          { label: i18n.t('Created at'), value: formatDate(tournament.insertedAt) },
+          { label: i18n.t('Updated at'), value: formatDate(tournament.updatedAt) },
+          { label: i18n.t('Rounds limit'), value: formatValue(tournament.roundsLimit) },
+          { label: i18n.t('Current round'), value: formatValue(tournament.currentRoundPosition) },
+        ],
+      },
+      {
+        title: i18n.t('Timeouts'),
+        items: [
+          {
+            label: i18n.t('Timeout mode'),
+            value: formatTranslatedValue(tournament.timeoutMode),
+          },
+          {
+            label: i18n.t('Round timeout'),
             value: formatValue(tournament.roundTimeoutSeconds),
           },
           {
-            label: 'Current round timeout',
+            label: i18n.t('Current round timeout'),
             value: formatValue(tournament.currentRoundTimeoutSeconds),
           },
           {
-            label: 'Tournament timeout',
+            label: i18n.t('Tournament timeout'),
             value: formatValue(tournament.tournamentTimeoutSeconds),
           },
           {
-            label: 'Break duration',
+            label: i18n.t('Break duration'),
             value: formatValue(tournament.breakDurationSeconds),
           },
         ],
       },
       {
-        title: 'Participants',
+        title: i18n.t('Participants'),
         items: [
-          { label: 'Players', value: formatValue(tournament.playersCount) },
-          { label: 'Players limit', value: formatValue(tournament.playersLimit) },
-          { label: 'Bots visible', value: formatValue(tournament.showBots) },
-          { label: 'Chat enabled', value: formatValue(tournament.useChat) },
-          { label: 'Clan mode', value: formatValue(tournament.useClan) },
-          { label: 'Live', value: formatValue(tournament.isLive) },
+          { label: i18n.t('Players'), value: formatValue(tournament.playersCount) },
+          { label: i18n.t('Players limit'), value: formatValue(tournament.playersLimit) },
+          { label: i18n.t('Bots visible'), value: formatValue(tournament.showBots) },
+          { label: i18n.t('Chat enabled'), value: formatValue(tournament.useChat) },
+          { label: i18n.t('Clan mode'), value: formatValue(tournament.useClan) },
+          { label: i18n.t('Live'), value: formatValue(tournament.isLive) },
         ],
       },
       {
-        title: 'Task',
+        title: i18n.t('Task'),
         items: [
-          { label: 'Task provider', value: formatValue(tournament.taskProvider) },
-          { label: 'Task pack', value: formatValue(tournament.taskPackName) },
-          { label: 'Task strategy', value: formatValue(tournament.taskStrategy) },
-          { label: 'Event ID', value: formatValue(tournament.eventId) },
-          { label: 'Tournament ID', value: formatValue(tournament.id) },
+          {
+            label: i18n.t('Task provider'),
+            value: formatTranslatedValue(tournament.taskProvider),
+          },
+          { label: i18n.t('Task pack'), value: formatValue(tournament.taskPackName) },
+          {
+            label: i18n.t('Task strategy'),
+            value: formatTranslatedValue(tournament.taskStrategy),
+          },
+          { label: i18n.t('Event ID'), value: formatValue(tournament.eventId) },
+          { label: i18n.t('Tournament ID'), value: formatValue(tournament.id) },
         ],
       },
     ];
@@ -177,12 +195,14 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   return (
     <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
       <Modal.Header className="cb-border-color" closeButton>
-        <Modal.Title>Tournament details</Modal.Title>
+        <Modal.Title>{i18n.t('Tournament details')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {tournament.description ? (
           <div className="cb-bg-highlight-panel cb-rounded p-3 mb-3">
-            <div className="small text-uppercase text-muted font-weight-bold mb-2">Description</div>
+            <div className="small text-uppercase text-muted font-weight-bold mb-2">
+              {i18n.t('Description')}
+            </div>
             <div className="mb-0 text-break">{tournament.description as ReactNode}</div>
           </div>
         ) : null}
@@ -202,10 +222,10 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
           className="rounded-lg"
           onClick={() => setShowRawJson((v) => !v)}
         >
-          {showRawJson ? 'Hide JSON' : 'Raw JSON'}
+          {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
         </Button>
         <Button onClick={handleCancel} className={closeBtnClassName}>
-          Close
+          {i18n.t('Close')}
         </Button>
       </Modal.Footer>
     </Modal>

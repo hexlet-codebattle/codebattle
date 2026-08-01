@@ -542,7 +542,7 @@ function Pane({
                     type="button"
                     style={fontButtonStyle(accent)}
                     onClick={onDecreaseFont}
-                    aria-label="Decrease font size"
+                    aria-label={i18next.t('Decrease font size')}
                   >
                     −
                   </button>
@@ -553,7 +553,7 @@ function Pane({
                     type="button"
                     style={fontButtonStyle(accent)}
                     onClick={onIncreaseFont}
-                    aria-label="Increase font size"
+                    aria-label={i18next.t('Increase font size')}
                   >
                     +
                   </button>
@@ -564,8 +564,8 @@ function Pane({
                   type="button"
                   style={fontButtonStyle(accent)}
                   onClick={onToggleHeader}
-                  title="Hide header"
-                  aria-label="Hide header"
+                  title={i18next.t('Hide header')}
+                  aria-label={i18next.t('Hide header')}
                 >
                   ×
                 </button>
@@ -595,8 +595,8 @@ function Pane({
             <button
               type="button"
               onClick={onToggleHeader}
-              title="Show header"
-              aria-label="Show header"
+              title={i18next.t('Show header')}
+              aria-label={i18next.t('Show header')}
               style={{
                 position: 'absolute',
                 top: 4,
@@ -680,8 +680,8 @@ function EditorBody({
       {isWinner && showCup && (
         <img
           src="/assets/images/stream/lightning.png"
-          alt="Winner"
-          title="Winner"
+          alt={i18next.t('Winner')}
+          title={i18next.t('Winner')}
           style={{
             position: 'absolute',
             ...(cupY != null ? { top: `${cupY}px`, bottom: 'auto' } : { bottom: '20px' }),
@@ -751,8 +751,8 @@ function TestsBody({
     >
       {isWinner && showCup && (
         <div
-          aria-label="Winner"
-          title="Winner"
+          aria-label={i18next.t('Winner')}
+          title={i18next.t('Winner')}
           style={{
             position: 'absolute',
             top: '6px',
@@ -2144,7 +2144,7 @@ function ThreejsGamePage({
                   className={editMode ? 'cb-active' : ''}
                   onClick={() => setEditMode((v) => !v)}
                   title={editMode ? i18next.t('Done editing') : i18next.t('Edit Layout')}
-                  aria-label="Edit layout"
+                  aria-label={i18next.t('Edit layout')}
                 >
                   <svg
                     width="20"

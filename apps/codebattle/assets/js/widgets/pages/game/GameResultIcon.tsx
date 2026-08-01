@@ -7,13 +7,14 @@ import { useSelector } from 'react-redux';
 
 import OverlayTrigger from '@/components/OverlayTriggerCompat';
 
+import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 
 const mapModeToWinImgProps: Record<string, React.ImgHTMLAttributes<HTMLImageElement>> = {
-  default: { src: '/assets/images/big-gold-cup.png', alt: 'gold-cup' },
+  default: { src: '/assets/images/big-gold-cup.png', alt: i18n.t('Gold cup') },
   spectator: {
     src: '/assets/images/check.png',
-    alt: 'green-check',
+    alt: i18n.t('Green check'),
     style: { width: '100px', height: '100px' },
   },
 };
@@ -36,16 +37,26 @@ function GameResultIcon({ userId, mode = 'default' }: GameResultIconProps) {
 
   if (resultUser1 === 'gave_up') {
     return (
-      <OverlayTrigger overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>} placement="left">
-        <img src="/assets/images/big-flag.png" alt="white-flag" style={{ width: '200px' }} />
+      <OverlayTrigger
+        overlay={<Tooltip id={tooltipId}>{i18n.t('Player gave up')}</Tooltip>}
+        placement="left"
+      >
+        <img
+          src="/assets/images/big-flag.png"
+          alt={i18n.t('White flag')}
+          style={{ width: '200px' }}
+        />
       </OverlayTrigger>
     );
   }
 
   if (resultUser1 === 'won' && resultUser2 !== 'gave_up') {
     return (
-      <OverlayTrigger overlay={<Tooltip id={tooltipId}>Player won</Tooltip>} placement="left">
-        <img alt="empty win icon" {...winIconProps} />
+      <OverlayTrigger
+        overlay={<Tooltip id={tooltipId}>{i18n.t('Player won')}</Tooltip>}
+        placement="left"
+      >
+        <img alt={i18n.t('Win icon')} {...winIconProps} />
       </OverlayTrigger>
     );
   }

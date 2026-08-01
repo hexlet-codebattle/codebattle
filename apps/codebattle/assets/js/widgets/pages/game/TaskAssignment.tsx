@@ -95,7 +95,7 @@ function TaskAssignment({
     return (
       <div className={cardClassName}>
         <div className="d-flex justify-content-center align-items-center h-100">
-          <span>Only for Premium subscribers</span>
+          <span>{i18n.t('Only for Premium subscribers')}</span>
         </div>
       </div>
     );
@@ -131,7 +131,7 @@ function TaskAssignment({
               <div
                 className="btn-group align-items-center ml-2 mr-auto"
                 role="group"
-                aria-label="Editor size controls"
+                aria-label={i18n.t('Editor size controls')}
               >
                 <button
                   type="button"

@@ -136,7 +136,7 @@ const InfiniteScrollableGames = memo(
                         className="btn btn-secondary cb-btn-secondary btn-sm cb-rounded"
                         href={`/games/${game.id}`}
                       >
-                        Show
+                        {i18n.t('Show')}
                       </a>
                     </td>
                   </tr>
@@ -172,7 +172,7 @@ function CompletedGames({ className, tableClassName = '' }: CompletedGamesProps)
     return status === fetchionStatuses.loading ? (
       <Loading />
     ) : (
-      <div className="py-5 text-center text-muted">No completed games</div>
+      <div className="py-5 text-center text-muted">{i18n.t('No completed games')}</div>
     );
   }
 
@@ -184,7 +184,7 @@ function CompletedGames({ className, tableClassName = '' }: CompletedGamesProps)
         games={completedGames as unknown as LobbyCompletedGame[]}
       />
       <div className="mt-auto border-top cb-border-color py-2 px-5 font-weight-bold rounded-bottom">
-        {`Total games: ${totalGames}`}
+        {i18n.t('Total games: %{count}', { count: totalGames })}
       </div>
     </>
   );

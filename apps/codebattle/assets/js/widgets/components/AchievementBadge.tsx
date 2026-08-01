@@ -1,5 +1,6 @@
 import React from 'react';
 
+import i18n from '../../i18n';
 import langIconNames from '../config/langIconNames';
 
 import LanguageIcon from './LanguageIcon';
@@ -117,8 +118,11 @@ function AchievementBadge({ achievement }: AchievementBadgeProps) {
   const gradeIconUrl = grade ? gradeIcon[grade] : undefined;
 
   return (
-    <div className={`cb-achievement-badge cb-achievement-badge--${badge.tone}`} title={badge.title}>
-      <div className="cb-achievement-badge__label">{badge.label}</div>
+    <div
+      className={`cb-achievement-badge cb-achievement-badge--${badge.tone}`}
+      title={i18n.t(badge.title)}
+    >
+      <div className="cb-achievement-badge__label">{i18n.t(badge.label)}</div>
       {isHighestGrade && grade && gradeIconUrl && (
         <div className="cb-achievement-badge__grade-icon">
           <img

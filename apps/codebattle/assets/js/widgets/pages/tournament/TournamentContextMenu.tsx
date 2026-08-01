@@ -16,6 +16,8 @@ import {
 } from 'react-contexify';
 import { /* useSelector, */ useDispatch } from 'react-redux';
 
+import i18n from '../../../i18n';
+
 interface TournamentContextMenuRequest {
   userId: string | null;
 }
@@ -81,9 +83,9 @@ function TournamentContextMenu({
     <>
       {children}
       <Menu role="menu" id={menuId}>
-        <Item aria-label="Ban" onClick={handleBanClick}>
+        <Item aria-label={i18n.t('Ban')} onClick={handleBanClick}>
           <FontAwesomeIcon className="mr-2" icon="ban" />
-          <span>Ban</span>
+          <span>{i18n.t('Ban')}</span>
         </Item>
       </Menu>
     </>

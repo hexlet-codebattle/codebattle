@@ -193,9 +193,9 @@ function GameActionButtons({
   );
 
   return (
-    <div className="d-flex py-2" role="group" aria-label="Game actions">
+    <div className="d-flex py-2" role="group" aria-label={i18next.t('Game actions')}>
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
-      <Dropdown title="Other actions">
+      <Dropdown title={i18next.t('Other actions')}>
         <Dropdown.Toggle
           as={CustomToggle}
           className="btn btm-sm btn-secondary cb-btn-secondary cb-rounded mx-1"

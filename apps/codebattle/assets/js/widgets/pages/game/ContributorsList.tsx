@@ -29,7 +29,7 @@ const renderContributorsList = (contributors: Contributor[] | null) => (
                 width="40"
                 height="40"
                 src={avatarLink}
-                alt="avatar"
+                alt={i18n.t('avatar')}
               />
             </a>
           </li>

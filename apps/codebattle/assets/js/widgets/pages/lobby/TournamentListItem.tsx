@@ -13,6 +13,7 @@ import { getTournamentUrl } from '@/utils/urlBuilders';
 import i18n from '../../../i18n';
 import dayjs from '../../../i18n/dayjs';
 import tournamentStates from '../../config/tournament';
+import { localizeTournamentName } from '../../utils/localizeTournamentName';
 
 import { type LobbyTournament } from './TournamentCard';
 
@@ -28,9 +29,9 @@ const mapTournamentTitleByState = {
 const getDateFormat = (grade?: string) => {
   switch (grade) {
     case grades.open:
-      return 'MMM D, YYYY [at] h:mma';
+      return `MMM D, YYYY [${i18n.t('at')}] h:mma`;
     default:
-      return '[at] h:mma';
+      return `[${i18n.t('at')}] h:mma`;
   }
 };
 
@@ -50,23 +51,25 @@ interface TournamentTitleProps {
 }
 
 function TournamentTitle({ tournament }: TournamentTitleProps) {
+  const title = localizeTournamentName(tournament.name, tournament.grade);
+
   if (tournament.grade === grades.open) {
     return (
       <span
-        title={tournament.name}
+        title={title}
         className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block cb-tournament-title"
       >
-        {tournament.name}
+        {title}
       </span>
     );
   }
 
-  const subtitle = formatDate(tournament.startsAt, 'MMM D, YYYY [at] HH:mm');
+  const subtitle = formatDate(tournament.startsAt, `MMM D, YYYY [${i18n.t('at')}] HH:mm`);
 
   return (
     <div className="d-flex flex-column align-items-baseline">
       <span className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block">
-        {tournament.name}
+        {title}
       </span>
       <span className="small">{subtitle}</span>
     </div>
@@ -108,8 +111,8 @@ function TournamentAction({ tournament, isAdmin = false }: TournamentActionProps
           type="button"
           className={infoClassName}
           onClick={openTournamentInfo}
-          aria-label="Tournament details"
-          title="Tournament details"
+          aria-label={i18n.t('Tournament details')}
+          title={i18n.t('Tournament details')}
         >
           <FontAwesomeIcon icon="info" />
         </button>
@@ -131,6 +134,7 @@ interface TournamentListItemProps {
 }
 
 function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemProps) {
+  const title = localizeTournamentName(tournament.name, tournament.grade);
   const finishedAt = formatTournamentDate(
     tournament.finishedAt || tournament.lastRoundEndedAt || tournament.startsAt,
     tournament.grade,
@@ -149,7 +153,7 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
         <div className="d-flex w-100 justify-content-between cb-tournament-meta-row">
           <div className="d-flex flex-column align-items-baseline cb-tournament-meta">
             {tournament.grade !== grades.open && (
-              <span title={tournament.name} className="d-inline-flex mt-2 text-white text-nowrap">
+              <span title={title} className="d-inline-flex mt-2 text-white text-nowrap">
                 <span className="cb-tournament-points-value">
                   {getRankingPoints(tournament.grade ?? '')[0]}
                 </span>
@@ -184,7 +188,7 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
                       className="mr-2 cb-tournament-gold"
                       style={iconSize}
                     />
-                    <TournamentTimer label="starts in" date={tournament.startsAt}>
+                    <TournamentTimer label={i18n.t('starts in')} date={tournament.startsAt}>
                       {formatTournamentDate(tournament.startsAt, tournament.grade)}
                     </TournamentTimer>
                   </span>

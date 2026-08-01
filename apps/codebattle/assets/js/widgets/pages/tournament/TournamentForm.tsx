@@ -344,7 +344,7 @@ function TournamentForm({
               type="text"
               id="name"
               name="name"
-              aria-label="Tournament Name"
+              aria-label={i18next.t('Tournament Name')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.name })}
               value={formData.name}
               onChange={handleChange}
@@ -363,7 +363,7 @@ function TournamentForm({
               type="text"
               id="moderator_ids"
               name="moderator_ids"
-              aria-label="Moderator IDs"
+              aria-label={i18next.t('Moderator IDs')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.moderator_ids })}
               value={formData.moderator_ids}
               onChange={handleChange}
@@ -382,7 +382,7 @@ function TournamentForm({
             <textarea
               id="description"
               name="description"
-              aria-label="Description"
+              aria-label={i18next.t('Description')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.description })}
               value={formData.description}
               onChange={handleChange}
@@ -407,7 +407,7 @@ function TournamentForm({
               type="datetime-local"
               id="starts_at"
               name="starts_at"
-              aria-label="Starts at"
+              aria-label={i18next.t('Starts at')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.starts_at })}
               value={formData.starts_at}
               onChange={handleChange}
@@ -447,7 +447,7 @@ function TournamentForm({
                 type="checkbox"
                 id="use_chat"
                 name="use_chat"
-                aria-label="Use Chat"
+                aria-label={i18next.t('Use Chat')}
                 className="form-check-input"
                 checked={formData.use_chat}
                 onChange={handleChange}
@@ -550,7 +550,7 @@ function TournamentForm({
                 type="text"
                 id="tags"
                 name="tags"
-                aria-label="Tags"
+                aria-label={i18next.t('Tags')}
                 className={cn(INPUT_CLASS, { 'is-invalid': errors.tags })}
                 value={formData.tags}
                 onChange={handleChange}
@@ -662,7 +662,7 @@ function TournamentForm({
               type="number"
               id="break_duration_seconds"
               name="break_duration_seconds"
-              aria-label="Break Duration (seconds)"
+              aria-label={i18next.t('Break Duration (seconds)')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.break_duration_seconds })}
               value={formData.break_duration_seconds}
               onChange={handleChange}
@@ -709,7 +709,7 @@ function TournamentForm({
               type="number"
               id="round_timeout_seconds"
               name="round_timeout_seconds"
-              aria-label="Round Timeout (seconds)"
+              aria-label={i18next.t('Round Timeout (seconds)')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.round_timeout_seconds })}
               value={roundTimeoutActive ? (formData.round_timeout_seconds ?? '') : ''}
               onChange={handleChange}
@@ -735,7 +735,7 @@ function TournamentForm({
               type="number"
               id="tournament_timeout_seconds"
               name="tournament_timeout_seconds"
-              aria-label="Tournament Timeout (seconds)"
+              aria-label={i18next.t('Tournament Timeout (seconds)')}
               className={cn(INPUT_CLASS, { 'is-invalid': errors.tournament_timeout_seconds })}
               value={tournamentTimeoutActive ? (formData.tournament_timeout_seconds ?? '') : ''}
               onChange={handleChange}
@@ -758,7 +758,7 @@ function TournamentForm({
               <textarea
                 id="meta_json"
                 name="meta_json"
-                aria-label="Meta JSON"
+                aria-label={i18next.t('Meta JSON')}
                 className={cn(INPUT_CLASS, { 'is-invalid': errors.meta_json })}
                 value={formData.meta_json}
                 onChange={handleChange}

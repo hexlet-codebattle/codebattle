@@ -5,6 +5,7 @@ import capitalize from 'lodash/capitalize';
 
 import { type Player } from '@/slices/initial';
 
+import i18n from '../../../i18n';
 import UserInfo from '../../components/UserInfo';
 
 interface Match {
@@ -48,39 +49,39 @@ const getRoundCounts = (playersCount: number) =>
 const getTitleByRoundType = (type: string, playersCount: number) => {
   switch (type) {
     case RoundTypes.one:
-      return 'Round 1';
+      return i18n.t('Round %{number}', { number: 1 });
     case RoundTypes.two: {
       if (maxPlayersPerRoundType[RoundTypes.two] < playersCount) {
-        return 'Round 2';
+        return i18n.t('Round %{number}', { number: 2 });
       }
 
-      return 'Round 1';
+      return i18n.t('Round %{number}', { number: 1 });
     }
     case RoundTypes.three: {
       if (maxPlayersPerRoundType[RoundTypes.two] < playersCount) {
-        return 'Round 3';
+        return i18n.t('Round %{number}', { number: 3 });
       }
       if (maxPlayersPerRoundType[RoundTypes.three] < playersCount) {
-        return 'Round 2';
+        return i18n.t('Round %{number}', { number: 2 });
       }
 
-      return 'Round 1';
+      return i18n.t('Round %{number}', { number: 1 });
     }
     case RoundTypes.four: {
       if (maxPlayersPerRoundType[RoundTypes.two] < playersCount) {
-        return 'Round 4';
+        return i18n.t('Round %{number}', { number: 4 });
       }
       if (maxPlayersPerRoundType[RoundTypes.three] < playersCount) {
-        return 'Round 3';
+        return i18n.t('Round %{number}', { number: 3 });
       }
       if (maxPlayersPerRoundType[RoundTypes.four] < playersCount) {
-        return 'Round 2';
+        return i18n.t('Round %{number}', { number: 2 });
       }
 
-      return 'Round 1';
+      return i18n.t('Round %{number}', { number: 1 });
     }
     default:
-      return capitalize(type);
+      return i18n.t(capitalize(type));
   }
 };
 
@@ -140,7 +141,7 @@ function Round({ matches, players, playersCount, type, round, currentUserId }: R
               {match ? (
                 <div className={getLinkParams(match, currentUserId)[1]}>
                   <div className="d-flex justify-content-center align-items-center">
-                    <span>{match.state}</span>
+                    <span>{i18n.t(match.state)}</span>
                     <div id={String(match.gameId)}>
                       <a
                         href={`/games/${match.gameId}`}
@@ -163,7 +164,7 @@ function Round({ matches, players, playersCount, type, round, currentUserId }: R
                 </div>
               ) : (
                 <div className="d-flex align-items-center justify-content-center x-bg-gray">
-                  <p>Waiting</p>
+                  <p>{i18n.t('Waiting')}</p>
                 </div>
               )}
             </div>

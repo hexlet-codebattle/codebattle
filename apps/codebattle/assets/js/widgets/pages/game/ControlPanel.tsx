@@ -15,6 +15,7 @@ import {
 } from 'react-feather';
 import { useDispatch } from 'react-redux';
 
+import i18n from '../../../i18n';
 import playbackModes from '../../config/playbackModes';
 import { replayerMachineStates } from '../../machines/game';
 import { actions } from '../../slices';
@@ -124,10 +125,10 @@ function ControlPanel({
   return (
     <div className="cb-replayer-controls">
       {settingsOpen && (
-        <div className="cb-replayer-settings" role="dialog" aria-label="Replay settings">
+        <div className="cb-replayer-settings" role="dialog" aria-label={i18n.t('Replay settings')}>
           {settingsView === 'main' ? (
             <>
-              <div className="cb-replayer-settings__header">Replay settings</div>
+              <div className="cb-replayer-settings__header">{i18n.t('Replay settings')}</div>
 
               <button
                 type="button"
@@ -136,8 +137,8 @@ function ControlPanel({
               >
                 <FastForward size={18} aria-hidden="true" />
                 <span>
-                  <strong>Playback speed</strong>
-                  <small>Choose from 0.5× to 4×</small>
+                  <strong>{i18n.t('Playback speed')}</strong>
+                  <small>{i18n.t('Choose from 0.5× to 4×')}</small>
                 </span>
                 <span className="cb-replayer-settings__menu-value">
                   {formatSpeedLabel(speedValue)}
@@ -150,14 +151,14 @@ function ControlPanel({
                   <div className="cb-replayer-settings__timing-title">
                     <Clock size={18} aria-hidden="true" />
                     <span>
-                      <strong>Timing</strong>
-                      <small>Original pauses or uniform steps</small>
+                      <strong>{i18n.t('Timing')}</strong>
+                      <small>{i18n.t('Original pauses or uniform steps')}</small>
                     </span>
                   </div>
                   <div
                     className="cb-replayer-settings__segmented"
                     role="group"
-                    aria-label="Replay timing"
+                    aria-label={i18n.t('Replay timing')}
                   >
                     <button
                       type="button"
@@ -165,7 +166,7 @@ function ControlPanel({
                       aria-pressed={playbackMode === playbackModes.realtime}
                       onClick={() => setPlaybackMode(playbackModes.realtime)}
                     >
-                      Real time
+                      {i18n.t('Real time')}
                     </button>
                     <button
                       type="button"
@@ -173,7 +174,7 @@ function ControlPanel({
                       aria-pressed={playbackMode === playbackModes.standard}
                       onClick={() => setPlaybackMode(playbackModes.standard)}
                     >
-                      Uniform
+                      {i18n.t('Uniform')}
                     </button>
                   </div>
                 </div>
@@ -182,7 +183,7 @@ function ControlPanel({
               <button
                 className="cb-replayer-settings__menu-item"
                 type="button"
-                aria-label="Copy replay link at current position"
+                aria-label={i18n.t('Copy replay link at current position')}
                 onClick={copyCurrentPositionLink}
               >
                 {linkCopied ? (
@@ -191,8 +192,8 @@ function ControlPanel({
                   <Copy size={18} aria-hidden="true" />
                 )}
                 <span>
-                  <strong>{linkCopied ? 'Link copied' : 'Copy replay link'}</strong>
-                  <small>Share this exact replay position</small>
+                  <strong>{i18n.t(linkCopied ? 'Link copied' : 'Copy replay link')}</strong>
+                  <small>{i18n.t('Share this exact replay position')}</small>
                 </span>
               </button>
             </>
@@ -201,12 +202,12 @@ function ControlPanel({
               <div className="cb-replayer-settings__header cb-replayer-settings__header--back">
                 <button
                   type="button"
-                  aria-label="Back to replay settings"
+                  aria-label={i18n.t('Back to replay settings')}
                   onClick={() => setSettingsView('main')}
                 >
                   <ArrowLeft size={20} aria-hidden="true" />
                 </button>
-                <span>Playback speed</span>
+                <span>{i18n.t('Playback speed')}</span>
               </div>
 
               <output className="cb-replayer-settings__speed-value" htmlFor="replayer-speed">
@@ -216,7 +217,7 @@ function ControlPanel({
               <div className="cb-replayer-settings__speed-slider-row">
                 <button
                   type="button"
-                  aria-label="Decrease playback speed"
+                  aria-label={i18n.t('Decrease playback speed')}
                   disabled={speedValue === 0.5}
                   onClick={() => changeSpeedBy(-0.5)}
                 >
@@ -235,13 +236,13 @@ function ControlPanel({
                       '--speed-progress': `${((speedValue - 0.5) / 3.5) * 100}%`,
                     } as React.CSSProperties
                   }
-                  aria-label="Playback speed"
+                  aria-label={i18n.t('Playback speed')}
                   aria-valuetext={formatSpeedLabel(speedValue)}
                   onChange={(event) => setSpeed(Number(event.target.value))}
                 />
                 <button
                   type="button"
-                  aria-label="Increase playback speed"
+                  aria-label={i18n.t('Increase playback speed')}
                   disabled={speedValue === 4}
                   onClick={() => changeSpeedBy(0.5)}
                 >
@@ -252,14 +253,16 @@ function ControlPanel({
               <div
                 className="cb-replayer-settings__speed-presets"
                 role="group"
-                aria-label="Playback speed presets"
+                aria-label={i18n.t('Playback speed presets')}
               >
                 {speedOptions.map((value) => (
                   <button
                     key={value}
                     type="button"
                     className={value === speedValue ? 'active' : ''}
-                    aria-label={`Set playback speed to ${formatSpeedLabel(value)}`}
+                    aria-label={i18n.t('Set playback speed to %{speed}', {
+                      speed: formatSpeedLabel(value),
+                    })}
                     aria-pressed={value === speedValue}
                     onClick={() => setSpeed(value)}
                   >
@@ -277,8 +280,8 @@ function ControlPanel({
           type="button"
           className="cb-replayer-controls__play"
           onClick={onControlButtonClick}
-          aria-label={isPaused ? 'Play replay' : 'Pause replay'}
-          title={isPaused ? 'Play replay' : 'Pause replay'}
+          aria-label={i18n.t(isPaused ? 'Play replay' : 'Pause replay')}
+          title={i18n.t(isPaused ? 'Play replay' : 'Pause replay')}
         >
           {isPaused ? (
             <PlayerIcon.Play width={24} height={24} />
@@ -290,7 +293,10 @@ function ControlPanel({
         <div className="cb-replayer-controls__timeline">
           {children}
           {totalDuration !== null && totalDuration !== undefined && (
-            <span className="cb-replayer-controls__time text-monospace" aria-label="Playback time">
+            <span
+              className="cb-replayer-controls__time text-monospace"
+              aria-label={i18n.t('Playback time')}
+            >
               {formatDuration(currentTime)}
               <span aria-hidden="true"> / </span>
               {formatDuration(totalDuration)}
@@ -301,9 +307,9 @@ function ControlPanel({
         <button
           className={`cb-replayer-controls__settings-button ${settingsOpen ? 'active' : ''}`}
           type="button"
-          aria-label="Replay settings"
+          aria-label={i18n.t('Replay settings')}
           aria-expanded={settingsOpen}
-          title="Replay settings"
+          title={i18n.t('Replay settings')}
           onClick={toggleSettings}
         >
           <Settings size={20} aria-hidden="true" />

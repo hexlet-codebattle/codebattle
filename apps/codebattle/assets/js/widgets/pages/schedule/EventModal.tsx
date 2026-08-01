@@ -2,7 +2,6 @@ import React, { memo, useCallback, useState } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import cn from 'classnames';
-import i18n from 'i18next';
 import Button from 'react-bootstrap/Button';
 import { useSelector } from 'react-redux';
 
@@ -13,6 +12,9 @@ import TournamentPreviewPanel from '@/components/TournamentPreviewPanel';
 import { grades } from '@/config/grades';
 import ModalCodes from '@/config/modalCodes';
 import { currentUserIsAdminSelector } from '@/selectors';
+
+import i18n from '../../../i18n';
+import { localizeTournamentName } from '../../utils/localizeTournamentName';
 
 interface CalendarEventResource {
   id: number | string;
@@ -44,6 +46,7 @@ export const EventModal = NiceModal.create(
 
     const event = currentEvent || selectedEvent;
     const isUpcoming = event?.resourse?.grade === 'upcoming';
+    const eventTitle = localizeTournamentName(event.title, event.resourse.grade);
     const handleClose = useCallback(() => {
       modal.hide();
       clearEvent();
@@ -61,7 +64,7 @@ export const EventModal = NiceModal.create(
             {event.resourse.grade !== grades.open && (
               <span className="text-white">Codebattle League 2025</span>
             )}
-            {i18n.t('Tournament: %{name}', { name: event.title })}
+            {i18n.t('Tournament: %{name}', { name: eventTitle })}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

@@ -88,7 +88,7 @@ describe('sign up', () => {
       await userEvent.type(nameInput, value);
     }
 
-    const submitButton = getByLabelText('SubmitForm');
+    const submitButton = getByLabelText('Submit form');
     await user.click(submitButton);
 
     expect(await findByText(validationMessage)).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe('sign up', () => {
     await userEvent.type(getByLabelText('password'), data.password);
     await userEvent.type(getByLabelText('passwordConfirmation'), data.passwordConfirmation);
 
-    const submitButton = getByLabelText('SubmitForm');
+    const submitButton = getByLabelText('Submit form');
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -130,7 +130,7 @@ describe('sign up', () => {
     const { getByLabelText, findByText, user } = setup(<Registration />);
 
     await user.type(getByLabelText('email'), 'user@example.com');
-    await user.click(getByLabelText('SubmitForm'));
+    await user.click(getByLabelText('Submit form'));
 
     const confirmation = await findByText(
       'We have sent you an email with instructions on how to reset your password',

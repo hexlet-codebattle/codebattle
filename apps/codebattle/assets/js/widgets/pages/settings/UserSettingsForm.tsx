@@ -194,7 +194,7 @@ function LanguageSelect({ lang, view, currentView, items }: LanguageSelectProps)
           <Dropdown.Toggle
             id={`${view}-language-dropdown`}
             data-testid={`${view}-langSelect`}
-            aria-label="Programming language select"
+            aria-label={i18n.t('Programming language select')}
             className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
           >
             <LanguageIcon
@@ -243,7 +243,7 @@ function LocaleSelect() {
       <Dropdown.Toggle
         id="locale-dropdown"
         data-testid="localeSelect"
-        aria-label="Locale"
+        aria-label={i18n.t('Locale')}
         type="button"
         className="btn cb-bg-panel cb-border-color text-white w-100 text-left"
       >
@@ -535,14 +535,14 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
           <div className="d-flex justify-content-center">
             <button
               disabled={!dirty || !isValid}
-              aria-label="SubmitForm"
+              aria-label={i18n.t('Submit form')}
               style={{ width: '120px' }}
               type="submit"
               className="btn py-1 btn-primary rounded-lg"
             >
               {isSubmitting ? (
                 <div className="spinner-border spinner-border-sm" role="status">
-                  <span className="sr-only">Loading...</span>
+                  <span className="sr-only">{i18n.t('Loading...')}</span>
                 </div>
               ) : (
                 i18n.t('Save')

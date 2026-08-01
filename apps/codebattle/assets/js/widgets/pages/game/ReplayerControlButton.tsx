@@ -45,7 +45,7 @@ function ReplayerControlButton() {
           type="button"
           onClick={loadReplayer}
           className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-          aria-label="Open Record Player"
+          aria-label={i18n.t('Open Record Player')}
           disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
@@ -58,7 +58,7 @@ function ReplayerControlButton() {
           type="button"
           onClick={openLoadedReplayer}
           className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-          aria-label="Open Record Player"
+          aria-label={i18n.t('Open Record Player')}
           disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
@@ -71,7 +71,7 @@ function ReplayerControlButton() {
           type="button"
           onClick={closeReplayer}
           className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-          aria-label="Close Record Player"
+          aria-label={i18n.t('Close Record Player')}
         >
           {i18n.t('Return to game')}
         </button>

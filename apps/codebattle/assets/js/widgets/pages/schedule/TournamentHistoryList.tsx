@@ -1,8 +1,10 @@
 import React from 'react';
 
-import i18n from 'i18next';
+import { getGradeLabel } from '@/config/grades';
 
+import i18n from '../../../i18n';
 import dayjs from '../../../i18n/dayjs';
+import { localizeTournamentName } from '../../utils/localizeTournamentName';
 
 interface HistoryWinner {
   id?: number | string;
@@ -26,12 +28,6 @@ interface TournamentHistoryListProps {
   tournaments: HistoryTournament[];
   loading: boolean;
 }
-
-const gradeLabel = (grade?: string) =>
-  (grade || '')
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
 
 const formatDuration = (t: HistoryTournament): string | null => {
   if (!t.startsAt || !t.lastRoundEndedAt) {
@@ -98,8 +94,12 @@ function TournamentHistoryList({ tournaments, loading }: TournamentHistoryListPr
                 style={{ backgroundColor: `var(--cb-grade-${t.grade})` }}
               />
               <span className="d-flex flex-column">
-                <span className="cb-schedule-row-name">{t.name}</span>
-                <small className="cb-schedule-row-grade-label">{gradeLabel(t.grade)}</small>
+                <span className="cb-schedule-row-name">
+                  {localizeTournamentName(t.name, t.grade)}
+                </span>
+                <small className="cb-schedule-row-grade-label">
+                  {t.grade ? i18n.t(getGradeLabel(t.grade)) : null}
+                </small>
               </span>
             </span>
             <span className="cb-schedule-col-date">

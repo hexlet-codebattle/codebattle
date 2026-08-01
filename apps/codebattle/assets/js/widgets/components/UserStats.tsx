@@ -149,7 +149,7 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
                   className="img-fluid cb-rounded mr-2"
                   style={{ maxHeight: '42px', width: '42px' }}
                   src={avatarUrl}
-                  alt="User avatar"
+                  alt={i18next.t('User avatar')}
                 />
                 <div className="d-flex flex-column">
                   <div className="d-flex align-items-center">
@@ -173,7 +173,7 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
               <div>
                 <button
                   type="button"
-                  title="play active game"
+                  title={i18next.t('play active game')}
                   className={cn('btn btn-sm text-primary border-0 cb-rounded', {
                     'text-primary': !!activeGameId,
                     'text-muted': !activeGameId,
@@ -185,7 +185,7 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
                 </button>
                 <button
                   type="button"
-                  title="follow user"
+                  title={i18next.t('follow user')}
                   className={cn('btn btn-sm border-0 cb-rounded', {
                     'text-primary': followId !== userInfo.id,
                     'text-danger': followId === userInfo.id,

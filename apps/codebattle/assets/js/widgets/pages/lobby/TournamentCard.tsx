@@ -2,6 +2,7 @@ import React from 'react';
 
 import moment from 'moment';
 
+import i18n from '../../../i18n';
 import TournamentType from '../../components/TournamentType';
 // import UserInfo from '../../components/UserInfo';
 
@@ -31,12 +32,13 @@ function TournamentCard({ tournament }: TournamentCardProps) {
       <div className="d-flex flex-column mb-2 h-100">
         <h4 className="p-1 text-nowrap">{tournament.name}</h4>
         <h5 className="p-1 text-nowrap">
-          {'Mode: '}
-          <TournamentType type={tournament.type ?? ''} />
+          {i18n.t('Mode:')} <TournamentType type={tournament.type ?? ''} />
           {` ${tournament.type}`}
         </h5>
         <span className="p-1 text-nowrap">
-          {`Starts at ${moment.utc(tournament.startsAt).local().format('YYYY-MM-DD HH:mm')}`}
+          {i18n.t('Starts at %{date}', {
+            date: moment.utc(tournament.startsAt).local().locale(i18n.language).format('LLL'),
+          })}
         </span>
         {/* <span className="d-flex p-1 text-nowrap"> */}
         {/*   <span className="mr-2">Creator:</span> */}

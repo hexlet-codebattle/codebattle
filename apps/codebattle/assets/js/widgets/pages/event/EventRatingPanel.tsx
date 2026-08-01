@@ -155,7 +155,10 @@ function PersonalEventTable({
                     user.userId === currentUserId,
                   )}
                 >
-                  <td className={tableDataCellClassNamePersonal(true)} aria-label="User row" />
+                  <td
+                    className={tableDataCellClassNamePersonal(true)}
+                    aria-label={i18next.t('User row')}
+                  />
                   <td className={tableDataCellClassNamePersonal()}>
                     <div style={{ maxWidth: 200 }} className="cb-custom-event-name mr-1">
                       {user.userName}

@@ -109,7 +109,12 @@ function InvitesContainer() {
     >
       {({ ref, ...triggerHandler }) => (
         <Button {...triggerHandler} className="bg-transparent border-0 attachment mx-2">
-          <img ref={ref} alt="invites" src={fightSvg} style={{ width: '46px', height: '46px' }} />
+          <img
+            ref={ref}
+            alt={i18n.t('Invites')}
+            src={fightSvg}
+            style={{ width: '46px', height: '46px' }}
+          />
           {followId && (
             <span className="position-absolute badge badge-danger" style={{ top: '74%' }}>
               <FontAwesomeIcon icon={followPaused ? 'pause' : 'binoculars'} />
@@ -118,10 +123,10 @@ function InvitesContainer() {
           {invites.length !== 0 ? (
             <>
               <span className="position-absolute badge badge-danger">{invites.length}</span>
-              <span className="sr-only">your`&apos;`s invites</span>
+              <span className="sr-only">{i18n.t('Your invites')}</span>
             </>
           ) : (
-            <span className="sr-only">no invites</span>
+            <span className="sr-only">{i18n.t('No invites')}</span>
           )}
         </Button>
       )}

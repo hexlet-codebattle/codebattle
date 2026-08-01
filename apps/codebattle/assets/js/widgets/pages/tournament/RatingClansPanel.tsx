@@ -97,7 +97,10 @@ function RatingClansPanel({ type, state, handleUserSelectClick }: RatingClansPan
                   <React.Fragment key={`${type}-user-${user.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
                     <tr className={getCustomEventTrClassName('user', index > 3)}>
-                      <td className={tableDataCellClassName(true)} aria-label="User row" />
+                      <td
+                        className={tableDataCellClassName(true)}
+                        aria-label={i18next.t('User row')}
+                      />
                       <td className={tableDataCellClassName()}>
                         <div
                           role="button"

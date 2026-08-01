@@ -12,6 +12,7 @@ import React, {
 import cn from 'classnames';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import i18n from '../../i18n';
 import useStayScrolled from '../utils/useStayScrolled';
 
 import Message from './Message';
@@ -134,7 +135,7 @@ function Messages({
   if (disabled) {
     return (
       <div
-        title="Chat is disabled"
+        title={i18n.t('Chat is disabled')}
         className="h-100 position-relative"
         ref={listRef as React.RefObject<HTMLDivElement>}
       >
@@ -187,7 +188,7 @@ function Messages({
             setIsScrollButtonVisible(false);
           }
         }}
-        aria-label="Scroll to bottom"
+        aria-label={i18n.t('Scroll to bottom')}
       />
     </>
   );

@@ -12,6 +12,7 @@ import { uploadFinishedTournaments, uploadTournamentsByFilter } from '@/middlewa
 import { currentUserIsAdminSelector } from '@/selectors';
 import useTournamentScheduleModals from '@/utils/useTournamentScheduleModals';
 
+import i18n from '../../../i18n';
 import dayjs from '../../../i18n/dayjs';
 
 import ScheduleLegend, { states, type ScheduleContext } from './ScheduleLegend';
@@ -303,6 +304,20 @@ function TournamentSchedule() {
           views={[views.month, views.day, views.agenda]}
           eventPropGetter={eventPropGetter}
           className="cb-rbc-calendar"
+          messages={{
+            today: i18n.t('Today'),
+            previous: i18n.t('Back'),
+            next: i18n.t('Next'),
+            month: i18n.t('Month'),
+            week: i18n.t('Week'),
+            day: i18n.t('Day'),
+            agenda: i18n.t('Agenda'),
+            date: i18n.t('Date'),
+            time: i18n.t('Time'),
+            event: i18n.t('Event'),
+            noEventsInRange: i18n.t('There are no tournaments in this range.'),
+            showMore: (total: number) => i18n.t('+%{count} more', { count: total }),
+          }}
           formats={{
             monthHeaderFormat: 'MMMM YYYY',
             dayHeaderFormat: 'dddd MMMM DD',

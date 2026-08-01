@@ -3,6 +3,7 @@ import React, { memo, useMemo } from 'react';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
+import i18n from '../../../i18n';
 import { gamePlayersSelector, userGameHeadToHeadSelector } from '../../selectors';
 
 interface HeadToHeadPlayer {
@@ -51,7 +52,11 @@ function UserHeadToHead({ userId }: UserHeadToHeadProps) {
   }
 
   return (
-    <a href={href} className={cn(headToHeadClassName, 'text-decoration-none')} title="Open H2H">
+    <a
+      href={href}
+      className={cn(headToHeadClassName, 'text-decoration-none')}
+      title={i18n.t('Open H2H')}
+    >
       {content}
     </a>
   );

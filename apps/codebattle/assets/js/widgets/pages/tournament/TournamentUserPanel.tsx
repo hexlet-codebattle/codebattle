@@ -104,8 +104,10 @@ function TournamentUserPanel({
             </span>
           )}
           <span className="cb-user-panel-name text-nowrap" title={name}>
-            {searchedUserId === userId && <span className={searchBadge}>Search</span>}
-            {currentUserId === userId && <span className={playerBadge}>you</span>}
+            {searchedUserId === userId && (
+              <span className={searchBadge}>{i18next.t('Search')}</span>
+            )}
+            {currentUserId === userId && <span className={playerBadge}>{i18next.t('you')}</span>}
             <LanguageIcon className="mr-1" lang={lang} />
             {name}
             {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}

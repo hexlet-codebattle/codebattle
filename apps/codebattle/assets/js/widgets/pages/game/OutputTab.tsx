@@ -53,7 +53,7 @@ function OutputTab({ sideOutput, large = false }: OutputTabProps) {
     return status === 'ok' ? (
       <FontAwesomeIcon className="h2 text-warning" icon="trophy" />
     ) : (
-      <div title="Asserts status" className={panelClassName}>
+      <div title={i18n.t('Asserts status')} className={panelClassName}>
         <h2>{status === 'error' ? 'Error' : `${percent}%`}</h2>
       </div>
     );

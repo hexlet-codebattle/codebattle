@@ -1,5 +1,6 @@
 import React, { type Ref } from 'react';
 
+import i18n from '../../../i18n';
 import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../../components/UserInfo';
 import GameRoomModes from '../../config/gameModes';
@@ -23,7 +24,11 @@ interface ModeButtonsProps {
 
 function ModeButtons({ player }: ModeButtonsProps) {
   return (
-    <div className="btn-group align-items-center mr-auto" role="group" aria-label="Editor mode">
+    <div
+      className="btn-group align-items-center mr-auto"
+      role="group"
+      aria-label={i18n.t('Editor mode')}
+    >
       <VimModeButton playerId={player.id} />
       {/* <DarkModeButton playerId={player.id} /> */}
     </div>
@@ -87,7 +92,11 @@ function EditorToolbar({
       >
         <div className={toolbarClassNames} role="toolbar">
           <div className="d-flex justify-content-between">
-            <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
+            <div
+              className={editorSettingClassNames}
+              role="group"
+              aria-label={i18n.t('Editor settings')}
+            >
               <LanguagePicker editor={editor} status={langPickerStatus} />
             </div>
             {showControlBtns && !isHistory && <ModeButtons player={player} />}
@@ -100,7 +109,7 @@ function EditorToolbar({
               />
             )}
             {!showControlBtns && !hideToolbarControls && (
-              <div className="py-2" role="group" aria-label="Report actions">
+              <div className="py-2" role="group" aria-label={i18n.t('Report actions')}>
                 <GameReportButton userId={player.id} gameId={gameId as number} />
                 {isAdmin && (
                   <>
@@ -114,7 +123,7 @@ function EditorToolbar({
                 )}
               </div>
             )}
-            <div className={userInfoClassNames} role="group" aria-label="User info">
+            <div className={userInfoClassNames} role="group" aria-label={i18n.t('User info')}>
               <UserInfo
                 {...({ mode: 'dark' } as Partial<React.ComponentProps<typeof UserInfo>>)}
                 user={player}

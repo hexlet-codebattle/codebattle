@@ -135,7 +135,7 @@ function Output({ fontSize, sideOutput, hideContent }: OutputProps) {
     return (
       <div className="alert text-white pb-2">
         <pre>
-          <span className="font-weight-bold d-block">Output:</span>
+          <span className="font-weight-bold d-block">{i18next.t('Output:')}</span>
           <div>{i18next.t('We could not verify your solution')}</div>
           <div>{i18next.t('Please try to fix your code and submit it again')}</div>
           <div>

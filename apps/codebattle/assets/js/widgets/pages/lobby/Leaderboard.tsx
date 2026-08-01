@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import Table from 'react-bootstrap/Table';
 import { useSelector, useDispatch } from 'react-redux';
 
+import i18n from '../../../i18n';
 import { type UserNameUser } from '../../components/UserName';
 import UserInfo from '../../components/UserInfo';
 import periodTypes from '../../config/periodTypes';
@@ -65,17 +66,17 @@ function Leaderboard() {
   return (
     <Table striped className="cb-bg-panel cb-border-color rounded shadow-sm m-0">
       <thead>
-        <tr aria-label="Leaderboard header">
+        <tr aria-label={i18n.t('Leaderboard header')}>
           <th
             scope="col"
-            aria-label="Leaderboard"
+            aria-label={i18n.t('Leaderboard')}
             className="text-uppercase py-1 px-0 text-white cb-border-color"
             colSpan={2}
           >
             <div className="d-flex flex-column align-items-center flex-nowrap">
               <div className="d-flex align-items-center">
-                <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
-                <span className="d-flex">Leaderboard</span>
+                <img alt={i18n.t('Rating')} src="/assets/images/topPlayers.svg" className="m-2" />
+                <span className="d-flex">{i18n.t('Leaderboard')}</span>
               </div>
               <nav className="w-100">
                 <div
@@ -92,7 +93,7 @@ function Leaderboard() {
                     className="nav-item cb-nav-item nav-link border-0 text-center w-100 active"
                     onClick={handlePeriodClick}
                   >
-                    {periodTypes.WEEKLY}
+                    {i18n.t(periodTypes.WEEKLY)}
                   </a>
                   <a
                     href="#!"
@@ -103,7 +104,7 @@ function Leaderboard() {
                     className="nav-item cb-nav-item nav-link border-0 text-center w-100"
                     onClick={handlePeriodClick}
                   >
-                    {periodTypes.MONTHLY}
+                    {i18n.t(periodTypes.MONTHLY)}
                   </a>
                   <a
                     href="#!"
@@ -114,7 +115,7 @@ function Leaderboard() {
                     className="nav-item cb-nav-item nav-link border-0 text-center w-100"
                     onClick={handlePeriodClick}
                   >
-                    {periodTypes.ALL}
+                    {i18n.t(periodTypes.ALL)}
                   </a>
                 </div>
               </nav>
@@ -136,13 +137,13 @@ function Leaderboard() {
           ))
         ) : (
           <tr className="text-center cb-border-color">
-            <td className="cb-border-color">No rating</td>
+            <td className="cb-border-color">{i18n.t('No rating')}</td>
           </tr>
         )}
-        <tr aria-label="Top list" className="cb-bg-panel text-center cb-border-color">
+        <tr aria-label={i18n.t('Top list')} className="cb-bg-panel text-center cb-border-color">
           <td className="cb-border-color">
             <a className="btn-link text-primary" href="/users">
-              Top list
+              {i18n.t('Top list')}
             </a>
           </td>
         </tr>

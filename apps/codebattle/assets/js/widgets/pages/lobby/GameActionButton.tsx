@@ -88,8 +88,8 @@ function GameActionButton({
               onClick={() => copy(`${window.location.host}${gameUrl}`)}
               data-toggle="tooltip"
               data-placement="right"
-              title="Copy link"
-              aria-label="Copy link"
+              title={i18n.t('Copy link')}
+              aria-label={i18n.t('Copy link')}
             >
               <i className="far fa-copy" />
             </button>
@@ -99,8 +99,8 @@ function GameActionButton({
               onClick={lobbyMiddlewares.cancelGame(game.id)}
               data-toggle="tooltip"
               data-placement="right"
-              title="Cancel game"
-              aria-label="Cancel game"
+              title={i18n.t('Cancel game')}
+              aria-label={i18n.t('Cancel game')}
               disabled={!isOnline}
             >
               <i className="fas fa-times" />
@@ -120,8 +120,8 @@ function GameActionButton({
             onClick={() => copy(`${window.location.host}${gameUrl}`)}
             data-toggle="tooltip"
             data-placement="right"
-            title="Copy link"
-            aria-label="Copy link"
+            title={i18n.t('Copy link')}
+            aria-label={i18n.t('Copy link')}
           >
             <i className="far fa-copy" />
           </button>
@@ -131,8 +131,8 @@ function GameActionButton({
             onClick={lobbyMiddlewares.cancelGame(game.id)}
             data-toggle="tooltip"
             data-placement="right"
-            title="Cancel game"
-            aria-label="Cancel game"
+            title={i18n.t('Cancel game')}
+            aria-label={i18n.t('Cancel game')}
             disabled={!isOnline}
           >
             <i className="fas fa-times" />

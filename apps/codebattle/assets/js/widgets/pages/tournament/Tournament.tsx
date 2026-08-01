@@ -444,7 +444,8 @@ function Tournament() {
         <h1 className="text-center">{tournament.name}</h1>
         <p className="text-center">
           <span>
-            Please <a href="/session/new">sign in</a> to see the tournament details
+            {i18next.t('Please')} <a href="/session/new">{i18next.t('sign in')}</a>{' '}
+            {i18next.t('to see the tournament details')}
           </span>
         </p>
       </>

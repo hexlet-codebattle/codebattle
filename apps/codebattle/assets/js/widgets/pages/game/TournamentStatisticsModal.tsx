@@ -12,6 +12,7 @@ import {
 } from '@/selectors';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
+import i18n from '../../../i18n';
 import ModalCodes from '../../config/modalCodes';
 import TournamentStateCodes from '../../config/tournament';
 
@@ -64,7 +65,9 @@ const TournamentStatisticsModal = NiceModal.create(() => {
     }
   }, [modal.visible, showTournamentStatistics]);
 
-  const title = showFullStatistics ? 'Tournament statistics' : 'Tournament round statistics';
+  const title = i18n.t(
+    showFullStatistics ? 'Tournament statistics' : 'Tournament round statistics',
+  );
 
   return (
     <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
@@ -79,14 +82,14 @@ const TournamentStatisticsModal = NiceModal.create(() => {
             <span className="h4 mb-2">{Math.ceil(player.avgTests)}%</span>
             <span className="h4 mb-2">
               {Math.ceil(player.avgDuration)}
-              {' sec'}
+              {` ${i18n.t('sec')}`}
             </span>
           </div>
           <div className="d-flex flex-column align-items-center p-2">
-            <span className="h4 mb-2">Player</span>
-            <span className="h4 mb-2">Wins</span>
-            <span className="h4 mb-2">AVG Tests</span>
-            <span className="h4 mb-2 text-nowrap">AVG Solving speed</span>
+            <span className="h4 mb-2">{i18n.t('Player')}</span>
+            <span className="h4 mb-2">{i18n.t('Wins')}</span>
+            <span className="h4 mb-2">{i18n.t('AVG Tests')}</span>
+            <span className="h4 mb-2 text-nowrap">{i18n.t('AVG Solving speed')}</span>
           </div>
           <div className="d-flex flex-column align-items-center p-2">
             <span className="h4 mb-2">{secondPlayer?.name}</span>
@@ -94,7 +97,7 @@ const TournamentStatisticsModal = NiceModal.create(() => {
             <span className="h4 mb-2">{Math.ceil(opponent.avgTests)}%</span>
             <span className="h4 mb-2">
               {Math.ceil(opponent.avgDuration)}
-              {' sec'}
+              {` ${i18n.t('sec')}`}
             </span>
           </div>
         </div>

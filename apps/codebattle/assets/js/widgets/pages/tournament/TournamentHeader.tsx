@@ -2,16 +2,17 @@ import React, { memo, useContext, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import i18next from 'i18next';
 import moment from 'moment';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getIconForGrade from '@/components/icons/Grades';
 import { getRankingPoints, grades } from '@/config/grades';
 
+import i18next from '../../../i18n';
 import CopyButton from '../../components/CopyButton';
 import TournamentStates from '../../config/tournament';
 import TournamentTypes from '../../config/tournamentTypes';
+import { localizeTournamentName } from '../../utils/localizeTournamentName';
 import useTimer from '../../utils/useTimer';
 
 import JoinButton from './JoinButton';
@@ -272,6 +273,7 @@ function TournamentHeader({
   const gradeName = grade || grades.open;
   const isGradeTournament = gradeName !== grades.open;
   const firstPlaceRankingPoints = isGradeTournament ? getRankingPoints(gradeName)[0] : null;
+  const tournamentName = localizeTournamentName(name, gradeName);
 
   return (
     <>
@@ -286,20 +288,20 @@ function TournamentHeader({
               )}
               <div className="d-flex flex-column min-w-0">
                 <h2
-                  title={name}
+                  title={tournamentName}
                   className="cb-tournament-header-title pb-1 m-0 text-capitalize text-nowrap cb-overflow-x-auto cb-overflow-y-hidden"
                 >
-                  {name}
+                  {tournamentName}
                 </h2>
                 {firstPlaceRankingPoints != null && (
                   <span className="text-white text-nowrap">
                     <span className="cb-tournament-points-value">{firstPlaceRankingPoints}</span>
-                    <span className="ml-1">Ranking Points</span>
+                    <span className="ml-1">{i18next.t('Ranking Points')}</span>
                   </span>
                 )}
               </div>
               {accessType === 'token' && (
-                <div title="Private tournament" className="text-center ml-2">
+                <div title={i18next.t('Private tournament')} className="text-center ml-2">
                   <FontAwesomeIcon icon="lock" />
                 </div>
               )}
@@ -332,7 +334,7 @@ function TournamentHeader({
                 {level && (
                   <span className="cb-tournament-header-meta-item text-capitalize">
                     <FontAwesomeIcon className="cb-tournament-header-meta-icon" icon="signal" />
-                    {level}
+                    {i18next.t(level.charAt(0).toUpperCase() + level.slice(1))}
                   </span>
                 )}
               </div>
@@ -385,7 +387,7 @@ function TournamentHeader({
                 )}
               >
                 <div className="d-flex input-group">
-                  <div title="Access token" className="input-group-prepend">
+                  <div title={i18next.t('Access token')} className="input-group-prepend">
                     <span className="input-group-text cb-bg-highlight-panel cb-border-color cb-text">
                       <FontAwesomeIcon icon="key" />
                     </span>

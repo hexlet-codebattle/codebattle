@@ -4,6 +4,7 @@ import { decamelizeKeys, camelizeKeys } from 'humps';
 import noop from 'lodash/noop';
 import Alert from 'react-bootstrap/Alert';
 
+import i18n from '../../../i18n';
 import Loading from '../../components/Loading';
 
 import TournamentForm from './TournamentForm';
@@ -278,9 +279,10 @@ function EditTournament({
       style={{ maxWidth: '1400px' }}
     >
       <Notification notification={notification} onClose={setNotification} />
-      <h1 className="text-center mb-2">Edit Tournament</h1>
+      <h1 className="text-center mb-2">{i18n.t('Edit Tournament')}</h1>
       <h3 className="text-center mb-4 text-muted">
-        {tournament.creator && <>Creator: {tournament.creator.name}</>}
+        {tournament.creator &&
+          i18n.t('Creator: %{name}', { name: tournament.creator.name as string })}
       </h3>
       <div className="row justify-content-center">
         <div className="col-12 col-lg-10 col-xl-10">
@@ -290,11 +292,11 @@ function EditTournament({
             onValidate={handleValidate}
             errors={errors}
             isSubmitting={isSubmitting}
-            submitButtonText="Update Tournament"
+            submitButtonText={i18n.t('Update Tournament')}
             taskPackNames={taskPackNames}
             userTimezone={browserTimezone}
             showCancelButton
-            cancelButtonText="Back"
+            cancelButtonText={i18n.t('Back')}
             onCancel={() => {
               window.location.href = `/tournaments/${tournamentId}`;
             }}

@@ -167,7 +167,7 @@ function StageCard({
       ) : (
         <>
           <img
-            alt="Waiting opponent avatar"
+            alt={i18next.t('Waiting opponent avatar')}
             src={tournamentEmptyPlayerUrl}
             className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray rounded p-3"
           />

@@ -120,7 +120,7 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
             className="img-fluid"
             style={{ maxHeight: '24px', width: '16px' }}
             src={avatarUrl}
-            alt="User avatar"
+            alt={i18n.t('User avatar')}
           />
         ) : (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -137,7 +137,7 @@ describe('UserSettings test cases', () => {
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText('SubmitForm');
+    const submitButton = getByLabelText('Submit form');
     const nameInput = getByTestId('nameInput');
     const codeLangSelect = getByTestId('code-langSelect');
 
@@ -183,7 +183,7 @@ describe('UserSettings test cases', () => {
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText('SubmitForm');
+    const submitButton = getByLabelText('Submit form');
     const localeSelect = getByTestId('localeSelect');
 
     await user.click(localeSelect);
@@ -209,7 +209,7 @@ describe('UserSettings test cases', () => {
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText('SubmitForm');
+    const submitButton = getByLabelText('Submit form');
     const nameInput = getByTestId('nameInput');
 
     await user.clear(nameInput);
@@ -266,7 +266,7 @@ describe('UserSettings test cases', () => {
       </Provider>,
     );
 
-    const submitButton = getByLabelText('SubmitForm');
+    const submitButton = getByLabelText('Submit form');
     await user.click(getByLabelText('Silent'));
 
     expect(submitButton).toBeEnabled();
@@ -323,7 +323,7 @@ describe('UserSettings test cases', () => {
     await user.type(getByTestId('currentPasswordInput'), 'old-password-secure!');
     await user.type(getByTestId('passwordInput'), 'new-password-secure!');
     await user.type(getByTestId('passwordConfirmationInput'), 'new-password-secure!');
-    await user.click(getByLabelText('SubmitForm'));
+    await user.click(getByLabelText('Submit form'));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
 

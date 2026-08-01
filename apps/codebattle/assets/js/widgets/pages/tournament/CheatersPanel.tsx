@@ -142,7 +142,7 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
                         </td>
                       </tr>
                       {isExpanded && playerReports.length > 0 && (
-                        <tr aria-label="Reports">
+                        <tr aria-label={i18next.t('Reports')}>
                           <td colSpan={5} className="border-top-0 pt-0">
                             <div className="px-3 pb-3 pt-2">
                               {playerReports.map((report) => {

@@ -149,19 +149,19 @@ function ChatContextMenu({
     <>
       {children}
       <Menu className="cb-bg-panel cb-border-color cb-rounded text-white" role="menu" id={menuId}>
-        <Item role="menuitem" tabIndex={-1} aria-label="Copy Name" onClick={handleCopy}>
+        <Item role="menuitem" tabIndex={-1} aria-label={i18n.t('Copy Name')} onClick={handleCopy}>
           <FontAwesomeIcon className="mr-2 text-white" icon="copy" />
-          <span className="text-white">Copy Name</span>
+          <span className="text-white">{i18n.t('Copy Name')}</span>
         </Item>
-        <Item role="menuitem" tabIndex={-1} aria-label="Info" onClick={handleShowInfo}>
+        <Item role="menuitem" tabIndex={-1} aria-label={i18n.t('Info')} onClick={handleShowInfo}>
           <FontAwesomeIcon className="mr-2 text-white" icon="user" />
-          <span className="text-white">Info</span>
+          <span className="text-white">{i18n.t('Info')}</span>
         </Item>
         {githubName && (
           <Item
             role="menuitem"
             tabIndex={-1}
-            aria-label="Github account"
+            aria-label={i18n.t('Github account')}
             onClick={handleShowGithubProfile}
           >
             <FontAwesomeIcon className="mr-2 text-white" icon={['fab', 'github']} />
@@ -172,28 +172,28 @@ function ChatContextMenu({
           <Item
             role="menuitem"
             tabIndex={-1}
-            aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+            aria-label={i18n.t(isFollowing ? 'Unfollow' : 'Follow')}
             onClick={handleFollow}
           >
             <FontAwesomeIcon className="mr-2 text-white" icon="binoculars" />
-            <span className="text-white">{isFollowing ? 'Unfollow' : 'Follow'}</span>
+            <span className="text-white">{i18n.t(isFollowing ? 'Unfollow' : 'Follow')}</span>
           </Item>
         )}
         {canCreatePrivateRoom ? (
           <Item
             role="menuitem"
-            aria-label="Direct message"
+            aria-label={i18n.t('Direct message')}
             onClick={handleOpenDirect}
             disabled={!canCreatePrivateRoom}
           >
             <FontAwesomeIcon className="mr-2 text-white" icon="comment-alt" />
-            <span className="text-white">Direct message</span>
+            <span className="text-white">{i18n.t('Direct message')}</span>
           </Item>
         ) : null}
         {canInvite && (
           <Item
             role="menuitem"
-            aria-label="Send an invite"
+            aria-label={i18n.t('Send an invite')}
             onClick={handleCreateInviteModal}
             onMouseEnter={handleSelectInvateMenuItem}
             onMouseLeave={handleBlurInvateMenuItem}
@@ -202,21 +202,21 @@ function ChatContextMenu({
             disabled={inviteSendDisabled}
           >
             <img
-              alt="invite"
+              alt={i18n.t('Invite')}
               src={whiteSwordSrc}
               style={{ width: 14, height: 16 }}
               className={cn('mr-2', {
                 'text-muted': !inviteSendDisabled,
               })}
             />
-            <span className="text-white">Send an invite</span>
+            <span className="text-white">{i18n.t('Send an invite')}</span>
           </Item>
         )}
         {currentUserIsAdmin && <Separator />}
         {currentUserIsAdmin && (
-          <Item aria-label="Ban" onClick={handleBanClick} disabled={isBot}>
+          <Item aria-label={i18n.t('Ban')} onClick={handleBanClick} disabled={isBot}>
             <FontAwesomeIcon className="mr-2 text-white" icon="ban" />
-            <span className="text-white">Ban</span>
+            <span className="text-white">{i18n.t('Ban')}</span>
           </Item>
         )}
       </Menu>

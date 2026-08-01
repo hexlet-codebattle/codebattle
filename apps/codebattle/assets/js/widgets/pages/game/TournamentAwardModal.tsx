@@ -55,7 +55,11 @@ const TournamentAwardModal = NiceModal.create((params: TournamentAwardModalProps
           {gameStatus?.state !== 'playing' && (
             <div className="d-flex flex-column align-items-center">
               {award && award.startsWith('http') ? (
-                <img alt="Game award" src={award} style={{ width: '100%', height: '100%' }} />
+                <img
+                  alt={i18next.t('Game award')}
+                  src={award}
+                  style={{ width: '100%', height: '100%' }}
+                />
               ) : (
                 <span style={{ fontSize: '10rem' }}>{award}</span>
               )}

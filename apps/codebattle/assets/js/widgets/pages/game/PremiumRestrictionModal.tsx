@@ -11,6 +11,7 @@ import { currentUserIdSelector, userSettingsSelector } from '@/selectors';
 import { type AppDispatch } from '@/slices';
 
 import ModalCodes from '../../config/modalCodes';
+import i18n from '../../../i18n';
 
 const PremiumRestrictionModal = NiceModal.create(() => {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,29 +43,29 @@ const PremiumRestrictionModal = NiceModal.create(() => {
       contentClassName="cb-bg-panel cb-text"
     >
       <Modal.Header className="cb-border-color" closeButton>
-        <Modal.Title>Restricted Content</Modal.Title>
+        <Modal.Title>{i18n.t('Restricted Content')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex flex-column align-items-xl-center p-3">
-          <h3 className="pb-3">Sorry! This content for Premium Subscribers only.</h3>
+          <h3 className="pb-3">{i18n.t('Sorry! This content is for Premium subscribers only.')}</h3>
           <div className="d-flex flex-column">
-            <h5 className="pb-1">Subscribe to Premium and you&apos;ll get:</h5>
+            <h5 className="pb-1">{i18n.t("Subscribe to Premium and you'll get:")}</h5>
             <ul className="pl-3">
-              <li>Full access to game history</li>
-              <li>Testing your own tasks</li>
-              <li>No pauses between solution checkings</li>
+              <li>{i18n.t('Full access to game history')}</li>
+              <li>{i18n.t('Testing your own tasks')}</li>
+              <li>{i18n.t('No pauses between solution checks')}</li>
             </ul>
             <div className="d-flex align-items-center">
-              <span className="mr-2">Not a Premium subscriber?</span>
+              <span className="mr-2">{i18n.t('Not a Premium subscriber?')}</span>
               {alreadySendPremiumRequest || !currentUserId ? (
-                <span className="text-muted">Working on it.</span>
+                <span className="text-muted">{i18n.t('Working on it.')}</span>
               ) : (
                 <>
-                  <span className="mr-2">Want subscribe?</span>
+                  <span className="mr-2">{i18n.t('Want to subscribe?')}</span>
                   <div className="btn-group">
                     {sended ? (
                       <div className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded disabled">
-                        Sending...
+                        {i18n.t('Sending...')}
                       </div>
                     ) : (
                       <>
@@ -76,7 +77,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                           onClick={handleSendRequest}
                         >
                           <FontAwesomeIcon className="mr-2" icon="check" />
-                          Yes
+                          {i18n.t('Yes')}
                         </button>
                         <button
                           type="button"
@@ -86,7 +87,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                           onClick={handleSendRequest}
                         >
                           <FontAwesomeIcon className="mr-2" icon="times" />
-                          No
+                          {i18n.t('No')}
                         </button>
                       </>
                     )}
@@ -101,7 +102,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
         <div className="d-flex justify-content-end w-100">
           <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
             <FontAwesomeIcon icon="times" className="mr-2" />
-            Close
+            {i18n.t('Close')}
           </Button>
         </div>
       </Modal.Footer>

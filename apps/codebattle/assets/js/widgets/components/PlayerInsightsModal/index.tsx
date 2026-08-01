@@ -26,6 +26,7 @@ import {
 
 import Modal from '@/components/BootstrapModal';
 
+import i18n from '../../../i18n';
 import LanguageIcon from '../LanguageIcon';
 import {
   GRADE_COLORS,
@@ -117,7 +118,7 @@ function GradeStatsChart({ gradeStats }: { gradeStats?: GradeStat[] }) {
 
   return (
     <div className="mb-4">
-      <h6 className="text-muted text-uppercase mb-3">Points by Tournament Grade</h6>
+      <h6 className="text-muted text-uppercase mb-3">{i18n.t('Points by Tournament Grade')}</h6>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={chartData} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -127,7 +128,7 @@ function GradeStatsChart({ gradeStats }: { gradeStats?: GradeStat[] }) {
             contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}
             labelStyle={{ color: '#fff' }}
           />
-          <Bar dataKey="points" name="Points">
+          <Bar dataKey="points" name={i18n.t('Points')}>
             {chartData.map((entry) => (
               <Cell key={`cell-${entry.name}`} fill={entry.fill} />
             ))}
@@ -142,8 +143,8 @@ function GradeStatsChart({ gradeStats }: { gradeStats?: GradeStat[] }) {
 function WinRateChart({ wins, total }: { wins: number; total: number }) {
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
   const data = [
-    { name: 'Wins', value: wins, fill: '#198754' },
-    { name: 'Losses', value: total - wins, fill: '#2d2d2d' },
+    { name: i18n.t('Wins'), value: wins, fill: '#198754' },
+    { name: i18n.t('Losses'), value: total - wins, fill: '#2d2d2d' },
   ];
 
   return (
@@ -169,7 +170,7 @@ function WinRateChart({ wins, total }: { wins: number; total: number }) {
       </ResponsiveContainer>
       <div style={{ marginTop: '-40px', position: 'relative' }}>
         <div className="fs-4 fw-bold text-success">{winRate}%</div>
-        <div className="text-muted small">Win Rate</div>
+        <div className="text-muted small">{i18n.t('Win Rate')}</div>
       </div>
     </div>
   );
@@ -188,7 +189,7 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
 
   return (
     <div className="mb-4">
-      <h6 className="text-muted text-uppercase mb-3">Weekly Performance Trend</h6>
+      <h6 className="text-muted text-uppercase mb-3">{i18n.t('Weekly Performance Trend')}</h6>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -202,7 +203,7 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
           <Area
             type="monotone"
             dataKey="points"
-            name="Points"
+            name={i18n.t('Points')}
             stroke="#0dcaf0"
             fill="#0dcaf0"
             fillOpacity={0.3}
@@ -210,7 +211,7 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
           <Area
             type="monotone"
             dataKey="wins"
-            name="Wins"
+            name={i18n.t('Wins')}
             stroke="#198754"
             fill="#198754"
             fillOpacity={0.3}
@@ -224,7 +225,11 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
 // Grade Stats Table
 function GradeStatsTable({ gradeStats }: { gradeStats?: GradeStat[] }) {
   if (!gradeStats || gradeStats.length === 0) {
-    return <div className="text-center text-muted py-3">No tournament data by grade available</div>;
+    return (
+      <div className="text-center text-muted py-3">
+        {i18n.t('No tournament data by grade available')}
+      </div>
+    );
   }
 
   return (
@@ -232,13 +237,13 @@ function GradeStatsTable({ gradeStats }: { gradeStats?: GradeStat[] }) {
       <table className="table table-dark table-sm mb-0">
         <thead>
           <tr className="text-muted small">
-            <th>Grade</th>
-            <th className="text-center">Tournaments</th>
-            <th className="text-center">Points</th>
-            <th className="text-center">Wins</th>
-            <th className="text-center">Best</th>
-            <th className="text-center">Avg</th>
-            <th className="text-center">Podiums</th>
+            <th>{i18n.t('Grade')}</th>
+            <th className="text-center">{i18n.t('Tournaments')}</th>
+            <th className="text-center">{i18n.t('Points')}</th>
+            <th className="text-center">{i18n.t('Wins')}</th>
+            <th className="text-center">{i18n.t('Best')}</th>
+            <th className="text-center">{i18n.t('Avg')}</th>
+            <th className="text-center">{i18n.t('Podiums')}</th>
           </tr>
         </thead>
         <tbody>
@@ -280,7 +285,9 @@ function GradeStatsTable({ gradeStats }: { gradeStats?: GradeStat[] }) {
 // Tournaments Table (no scroll limit)
 function TournamentsTable({ tournaments }: { tournaments?: TournamentResult[] }) {
   if (!tournaments || tournaments.length === 0) {
-    return <div className="text-center text-muted py-3">No tournament data available</div>;
+    return (
+      <div className="text-center text-muted py-3">{i18n.t('No tournament data available')}</div>
+    );
   }
 
   return (
@@ -288,11 +295,11 @@ function TournamentsTable({ tournaments }: { tournaments?: TournamentResult[] })
       <table className="table table-dark table-sm table-hover mb-0">
         <thead className="bg-dark">
           <tr className="text-muted small">
-            <th>Tournament</th>
-            <th className="text-center">Grade</th>
-            <th className="text-center">Place</th>
-            <th className="text-center">Points</th>
-            <th className="text-center">W/G</th>
+            <th>{i18n.t('Tournament')}</th>
+            <th className="text-center">{i18n.t('Grade')}</th>
+            <th className="text-center">{i18n.t('Place')}</th>
+            <th className="text-center">{i18n.t('Points')}</th>
+            <th className="text-center">{i18n.t('W/G')}</th>
           </tr>
         </thead>
         <tbody>
@@ -303,7 +310,7 @@ function TournamentsTable({ tournaments }: { tournaments?: TournamentResult[] })
                   href={`/tournaments/${t.tournament_id}`}
                   className="text-light text-decoration-none"
                 >
-                  {t.tournament_name || `Tournament #${t.tournament_id}`}
+                  {t.tournament_name || i18n.t('Tournament #%{id}', { id: t.tournament_id })}
                   <small className="text-muted ml-2">{formatDate(t.started_at)}</small>
                 </a>
               </td>
@@ -369,7 +376,7 @@ function PlayerInsightsModal({
         })
         .catch((err) => {
           console.error('Failed to fetch player stats:', err);
-          setError('Failed to load detailed stats');
+          setError(i18n.t('Failed to load detailed stats'));
           setLoading(false);
         });
     }
@@ -492,15 +499,15 @@ function PlayerInsightsModal({
                 <div className="fs-4 fw-bold text-warning">
                   {player.total_points.toLocaleString()}
                 </div>
-                <div className="text-muted small text-uppercase">Points</div>
+                <div className="text-muted small text-uppercase">{i18n.t('Points')}</div>
               </div>
               <div className="text-center px-4">
                 <div className="fs-4 fw-bold text-success">{player.total_wins_count}</div>
-                <div className="text-muted small text-uppercase">Wins</div>
+                <div className="text-muted small text-uppercase">{i18n.t('Wins')}</div>
               </div>
               <div className="text-center px-4">
                 <div className="fs-4 fw-bold text-info">{player.tournaments_count}</div>
-                <div className="text-muted small text-uppercase">Tournaments</div>
+                <div className="text-muted small text-uppercase">{i18n.t('Tournaments')}</div>
               </div>
             </div>
           </div>
@@ -518,7 +525,7 @@ function PlayerInsightsModal({
             })}
             onClick={() => setActiveTab('overview')}
           >
-            Overview
+            {i18n.t('Overview')}
           </button>
           <button
             type="button"
@@ -528,7 +535,7 @@ function PlayerInsightsModal({
             })}
             onClick={() => setActiveTab('grades')}
           >
-            By Grade
+            {i18n.t('By Grade')}
           </button>
           <button
             type="button"
@@ -538,7 +545,7 @@ function PlayerInsightsModal({
             })}
             onClick={() => setActiveTab('tournaments')}
           >
-            Tournaments
+            {i18n.t('Tournaments')}
           </button>
           <button
             type="button"
@@ -548,7 +555,7 @@ function PlayerInsightsModal({
             })}
             onClick={() => setActiveTab('trends')}
           >
-            Trends
+            {i18n.t('Trends')}
           </button>
         </div>
 
@@ -556,13 +563,15 @@ function PlayerInsightsModal({
         {loading && (
           <div className="text-center py-5">
             <Spinner animation="border" variant="info" />
-            <p className="text-muted mt-2">Loading detailed stats...</p>
+            <p className="text-muted mt-2">{i18n.t('Loading detailed stats...')}</p>
           </div>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <div className="alert alert-warning m-3">{error}. Showing basic stats only.</div>
+          <div className="alert alert-warning m-3">
+            {error}. {i18n.t('Showing basic stats only.')}
+          </div>
         )}
 
         {/* Tab Content */}
@@ -576,7 +585,7 @@ function PlayerInsightsModal({
                   {/* Weapon Section */}
                   {player.user_lang && (
                     <div className="mb-4 text-center">
-                      <h6 className="text-muted text-uppercase mb-3">Weapon</h6>
+                      <h6 className="text-muted text-uppercase mb-3">{i18n.t('Weapon')}</h6>
                       <LanguageIcon
                         lang={player.user_lang}
                         style={{ width: '80px', height: '80px' }}
@@ -588,38 +597,40 @@ function PlayerInsightsModal({
                   {/* Stats List */}
                   <div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Season Rank</span>
+                      <span className="text-muted">{i18n.t('Season Rank')}</span>
                       <span className="fw-bold text-warning">
                         #{player.place}{' '}
-                        <small className="text-muted">/ Top {100 - percentile}%</small>
+                        <small className="text-muted">
+                          {i18n.t('/ Top %{percent}%', { percent: 100 - percentile })}
+                        </small>
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Total Points</span>
+                      <span className="text-muted">{i18n.t('Total Points')}</span>
                       <span className="fw-bold text-warning">
                         {player.total_points.toLocaleString()}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Total Score</span>
+                      <span className="text-muted">{i18n.t('Total Score')}</span>
                       <span className="fw-bold text-info">
                         {player.total_score.toLocaleString()}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Total Wins</span>
+                      <span className="text-muted">{i18n.t('Total Wins')}</span>
                       <span className="fw-bold text-success">{player.total_wins_count}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Total Games</span>
+                      <span className="text-muted">{i18n.t('Total Games')}</span>
                       <span className="fw-bold">{player.total_games_count}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Tournaments</span>
+                      <span className="text-muted">{i18n.t('Tournaments')}</span>
                       <span className="fw-bold">{player.tournaments_count}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Best Finish</span>
+                      <span className="text-muted">{i18n.t('Best Finish')}</span>
                       <span>
                         {player.best_place ? (
                           <span className={cn('badge', getPlaceBadgeClass(player.best_place))}>
@@ -631,13 +642,13 @@ function PlayerInsightsModal({
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Avg Finish</span>
+                      <span className="text-muted">{i18n.t('Avg Finish')}</span>
                       <span className="fw-bold">
                         #{player.avg_place ? Number(player.avg_place).toFixed(1) : '-'}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Time Played</span>
+                      <span className="text-muted">{i18n.t('Time Played')}</span>
                       <span className="fw-bold">{formatTime(player.total_time)}</span>
                     </div>
                   </div>
@@ -651,7 +662,9 @@ function PlayerInsightsModal({
                   {/* Tournaments by Grade */}
                   <div className="card cb-bg-panel border-0 mb-3 mt-3">
                     <div className="card-body">
-                      <h6 className="text-muted text-uppercase mb-3">Tournaments by Grade</h6>
+                      <h6 className="text-muted text-uppercase mb-3">
+                        {i18n.t('Tournaments by Grade')}
+                      </h6>
                       <div className="row">
                         {ALL_GRADES.map((grade) => (
                           <div key={grade} className="col-6 col-md-4">
@@ -676,10 +689,12 @@ function PlayerInsightsModal({
                   {medianStats && (
                     <div className="card cb-bg-panel border-0">
                       <div className="card-body">
-                        <h6 className="text-muted text-uppercase mb-3">vs Median Player</h6>
+                        <h6 className="text-muted text-uppercase mb-3">
+                          {i18n.t('vs Median Player')}
+                        </h6>
                         <div className="row small">
                           <div className="col-6">
-                            <span className="text-muted">Points: </span>
+                            <span className="text-muted">{i18n.t('Points:')} </span>
                             <span
                               className={cn(
                                 'fw-bold',
@@ -693,7 +708,7 @@ function PlayerInsightsModal({
                             </span>
                           </div>
                           <div className="col-6">
-                            <span className="text-muted">Win Rate: </span>
+                            <span className="text-muted">{i18n.t('Win Rate:')} </span>
                             <span
                               className={cn(
                                 'fw-bold',
@@ -707,7 +722,7 @@ function PlayerInsightsModal({
                             </span>
                           </div>
                           <div className="col-6">
-                            <span className="text-muted">Wins: </span>
+                            <span className="text-muted">{i18n.t('Wins:')} </span>
                             <span
                               className={cn(
                                 'fw-bold',
@@ -721,7 +736,7 @@ function PlayerInsightsModal({
                             </span>
                           </div>
                           <div className="col-6">
-                            <span className="text-muted">Tournaments: </span>
+                            <span className="text-muted">{i18n.t('Tournaments:')} </span>
                             <span
                               className={cn(
                                 'fw-bold',
@@ -745,7 +760,9 @@ function PlayerInsightsModal({
             {/* Grades Tab */}
             {activeTab === 'grades' && (
               <>
-                <h6 className="text-muted text-uppercase mb-3">Tournament Performance by Grade</h6>
+                <h6 className="text-muted text-uppercase mb-3">
+                  {i18n.t('Tournament Performance by Grade')}
+                </h6>
                 {detailedStats?.grade_stats ? (
                   <>
                     <GradeStatsTable gradeStats={detailedStats.grade_stats} />
@@ -755,7 +772,7 @@ function PlayerInsightsModal({
                   </>
                 ) : (
                   <div className="text-center text-muted py-3">
-                    {loading ? 'Loading...' : 'No grade stats available'}
+                    {i18n.t(loading ? 'Loading...' : 'No grade stats available')}
                   </div>
                 )}
               </>
@@ -764,12 +781,12 @@ function PlayerInsightsModal({
             {/* Tournaments Tab */}
             {activeTab === 'tournaments' && (
               <>
-                <h6 className="text-muted text-uppercase mb-3">Tournament Results</h6>
+                <h6 className="text-muted text-uppercase mb-3">{i18n.t('Tournament Results')}</h6>
                 {detailedStats?.recent_tournaments ? (
                   <TournamentsTable tournaments={detailedStats.recent_tournaments} />
                 ) : (
                   <div className="text-center text-muted py-3">
-                    {loading ? 'Loading...' : 'No tournament data available'}
+                    {i18n.t(loading ? 'Loading...' : 'No tournament data available')}
                   </div>
                 )}
               </>
@@ -778,12 +795,14 @@ function PlayerInsightsModal({
             {/* Trends Tab */}
             {activeTab === 'trends' && (
               <>
-                <h6 className="text-muted text-uppercase mb-3">Performance Over Time</h6>
+                <h6 className="text-muted text-uppercase mb-3">
+                  {i18n.t('Performance Over Time')}
+                </h6>
                 {detailedStats?.performance_trend && detailedStats.performance_trend.length > 0 ? (
                   <PerformanceTrendChart trend={detailedStats.performance_trend} />
                 ) : (
                   <div className="text-center text-muted py-3">
-                    {loading ? 'Loading...' : 'Not enough data for trend analysis'}
+                    {i18n.t(loading ? 'Loading...' : 'Not enough data for trend analysis')}
                   </div>
                 )}
 
@@ -795,13 +814,13 @@ function PlayerInsightsModal({
                       <div className="card cb-bg-panel border-0 h-100">
                         <div className="card-body">
                           <h6 className="text-muted small text-uppercase">
-                            Stats vs Median (Normalized)
+                            {i18n.t('Stats vs Median (Normalized)')}
                           </h6>
                           <ResponsiveContainer width="100%" height={250}>
                             <RadarChart
                               data={[
                                 {
-                                  stat: 'Points',
+                                  stat: i18n.t('Points'),
                                   player: Math.min(
                                     (player.total_points / Math.max(medianStats.points, 1)) * 50,
                                     100,
@@ -809,7 +828,7 @@ function PlayerInsightsModal({
                                   median: 50,
                                 },
                                 {
-                                  stat: 'Wins',
+                                  stat: i18n.t('Wins'),
                                   player: Math.min(
                                     (player.total_wins_count / Math.max(medianStats.wins, 1)) * 50,
                                     100,
@@ -817,7 +836,7 @@ function PlayerInsightsModal({
                                   median: 50,
                                 },
                                 {
-                                  stat: 'Win Rate',
+                                  stat: i18n.t('Win Rate'),
                                   player: Math.min(
                                     (playerWinRate / Math.max(medianStats.winRate, 1)) * 50,
                                     100,
@@ -825,7 +844,7 @@ function PlayerInsightsModal({
                                   median: 50,
                                 },
                                 {
-                                  stat: 'Score',
+                                  stat: i18n.t('Score'),
                                   player: Math.min(
                                     (player.total_score / Math.max(medianStats.score, 1)) * 50,
                                     100,
@@ -833,7 +852,7 @@ function PlayerInsightsModal({
                                   median: 50,
                                 },
                                 {
-                                  stat: 'Tournaments',
+                                  stat: i18n.t('Tournaments'),
                                   player: Math.min(
                                     (player.tournaments_count /
                                       Math.max(medianStats.tournaments, 1)) *
@@ -857,14 +876,14 @@ function PlayerInsightsModal({
                                 axisLine={false}
                               />
                               <Radar
-                                name="You"
+                                name={i18n.t('You')}
                                 dataKey="player"
                                 stroke="#0dcaf0"
                                 fill="#0dcaf0"
                                 fillOpacity={0.5}
                               />
                               <Radar
-                                name="Median"
+                                name={i18n.t('Median')}
                                 dataKey="median"
                                 stroke="#6c757d"
                                 fill="#6c757d"
@@ -881,27 +900,29 @@ function PlayerInsightsModal({
                     <div className="col-md-6 mb-4">
                       <div className="card cb-bg-panel border-0 h-100">
                         <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">Your Stats vs Median</h6>
+                          <h6 className="text-muted small text-uppercase">
+                            {i18n.t('Your Stats vs Median')}
+                          </h6>
                           <ResponsiveContainer width="100%" height={250}>
                             <BarChart
                               data={[
                                 {
-                                  name: 'Points',
+                                  name: i18n.t('Points'),
                                   you: player.total_points,
                                   median: medianStats.points,
                                 },
                                 {
-                                  name: 'Score',
+                                  name: i18n.t('Score'),
                                   you: player.total_score,
                                   median: medianStats.score,
                                 },
                                 {
-                                  name: 'Wins',
+                                  name: i18n.t('Wins'),
                                   you: player.total_wins_count,
                                   median: medianStats.wins,
                                 },
                                 {
-                                  name: 'Games',
+                                  name: i18n.t('Games'),
                                   you: player.total_games_count,
                                   median: medianStats.games,
                                 },
@@ -918,8 +939,8 @@ function PlayerInsightsModal({
                                 }}
                               />
                               <Legend />
-                              <Bar dataKey="you" name="You" fill="#0dcaf0" />
-                              <Bar dataKey="median" name="Median" fill="#6c757d" />
+                              <Bar dataKey="you" name={i18n.t('You')} fill="#0dcaf0" />
+                              <Bar dataKey="median" name={i18n.t('Median')} fill="#6c757d" />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
@@ -930,12 +951,14 @@ function PlayerInsightsModal({
                     <div className="col-md-6 mb-4">
                       <div className="card cb-bg-panel border-0 h-100">
                         <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">Win Rate Comparison</h6>
+                          <h6 className="text-muted small text-uppercase">
+                            {i18n.t('Win Rate Comparison')}
+                          </h6>
                           <ResponsiveContainer width="100%" height={200}>
                             <BarChart
                               data={[
                                 {
-                                  name: 'Win Rate %',
+                                  name: i18n.t('Win Rate %'),
                                   you: playerWinRate,
                                   median: Math.round(medianStats.winRate),
                                 },
@@ -952,8 +975,8 @@ function PlayerInsightsModal({
                                 formatter={(value) => [`${value}%`, '']}
                               />
                               <Legend />
-                              <Bar dataKey="you" name="You" fill="#198754" />
-                              <Bar dataKey="median" name="Median" fill="#6c757d" />
+                              <Bar dataKey="you" name={i18n.t('You')} fill="#198754" />
+                              <Bar dataKey="median" name={i18n.t('Median')} fill="#6c757d" />
                               <ReferenceLine
                                 y={50}
                                 stroke="#ffc107"
@@ -971,14 +994,22 @@ function PlayerInsightsModal({
                       <div className="card cb-bg-panel border-0 h-100">
                         <div className="card-body">
                           <h6 className="text-muted small text-uppercase">
-                            Your Ranking Percentile
+                            {i18n.t('Your Ranking Percentile')}
                           </h6>
                           <ResponsiveContainer width="100%" height={200}>
                             <PieChart>
                               <Pie
                                 data={[
-                                  { name: 'Your Percentile', value: percentile, fill: '#0dcaf0' },
-                                  { name: 'Above You', value: 100 - percentile, fill: '#2d2d2d' },
+                                  {
+                                    name: i18n.t('Your Percentile'),
+                                    value: percentile,
+                                    fill: '#0dcaf0',
+                                  },
+                                  {
+                                    name: i18n.t('Above You'),
+                                    value: 100 - percentile,
+                                    fill: '#2d2d2d',
+                                  },
                                 ]}
                                 cx="50%"
                                 cy="50%"
@@ -1000,9 +1031,13 @@ function PlayerInsightsModal({
                             </PieChart>
                           </ResponsiveContainer>
                           <div className="text-center" style={{ marginTop: '-60px' }}>
-                            <div className="fs-3 fw-bold text-info">Top {100 - percentile}%</div>
+                            <div className="fs-3 fw-bold text-info">
+                              {i18n.t('Top %{percent}%', { percent: 100 - percentile })}
+                            </div>
                             <div className="text-muted small">
-                              Better than {percentile}% of players
+                              {i18n.t('Better than %{percent}% of players', {
+                                percent: percentile,
+                              })}
                             </div>
                           </div>
                         </div>
@@ -1018,7 +1053,7 @@ function PlayerInsightsModal({
                       <div className="card cb-bg-panel border-0">
                         <div className="card-body">
                           <h6 className="text-muted small text-uppercase">
-                            Points Distribution by Grade
+                            {i18n.t('Points Distribution by Grade')}
                           </h6>
                           <ResponsiveContainer width="100%" height={200}>
                             <BarChart
@@ -1041,9 +1076,12 @@ function PlayerInsightsModal({
                                   backgroundColor: '#1a1a1a',
                                   border: '1px solid #333',
                                 }}
-                                formatter={(value) => [Number(value).toLocaleString(), 'Points']}
+                                formatter={(value) => [
+                                  Number(value).toLocaleString(),
+                                  i18n.t('Points'),
+                                ]}
                               />
-                              <Bar dataKey="points" name="Points">
+                              <Bar dataKey="points" name={i18n.t('Points')}>
                                 {ALL_GRADES.map((grade) => (
                                   <Cell key={`cell-${grade}`} fill={GRADE_COLORS[grade]} />
                                 ))}
@@ -1056,7 +1094,9 @@ function PlayerInsightsModal({
                     <div className="col-md-6">
                       <div className="card cb-bg-panel border-0">
                         <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">Wins by Grade</h6>
+                          <h6 className="text-muted small text-uppercase">
+                            {i18n.t('Wins by Grade')}
+                          </h6>
                           <ResponsiveContainer width="100%" height={200}>
                             <BarChart
                               data={detailedStats.grade_stats.map((g) => ({
@@ -1075,7 +1115,7 @@ function PlayerInsightsModal({
                                   border: '1px solid #333',
                                 }}
                               />
-                              <Bar dataKey="wins" name="Wins" fill="#198754" />
+                              <Bar dataKey="wins" name={i18n.t('Wins')} fill="#198754" />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>

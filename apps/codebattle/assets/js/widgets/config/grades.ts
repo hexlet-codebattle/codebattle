@@ -10,6 +10,12 @@ export const grades = {
 
 export type Grade = (typeof grades)[keyof typeof grades];
 
+export const getGradeLabel = (grade: Grade | string) =>
+  grade
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
 export const getRankingPoints = (grade: Grade | string) => {
   switch (grade) {
     case grades.rookie:

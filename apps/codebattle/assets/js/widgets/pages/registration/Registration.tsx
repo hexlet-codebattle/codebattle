@@ -70,7 +70,7 @@ interface TitleProps {
 }
 
 function Title({ text }: TitleProps) {
-  return <h3 className="text-center text-white">{text}</h3>;
+  return <h3 className="text-center text-white">{i18n.t(text)}</h3>;
 }
 
 interface FormProps {
@@ -87,10 +87,10 @@ function Form({ onSubmit, id, children }: FormProps) {
         type="submit"
         name="commit"
         id={`${id}-submit`}
-        value="Submit"
-        aria-label="SubmitForm"
+        value={i18n.t('Submit')}
+        aria-label={i18n.t('Submit form')}
         className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-        data-disable-with="Submit"
+        data-disable-with={i18n.t('Submit')}
       />
     </form>
   );
@@ -109,7 +109,7 @@ function Input({ id, type, title, formik }: InputProps) {
 
   return (
     <div className="form-group">
-      <span className="text-white">{title}</span>
+      <span className="text-white">{title ? i18n.t(title) : title}</span>
       <input
         type={type}
         id={id}
@@ -132,7 +132,10 @@ function PasswordInput({ id, title, formik }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
-  const visibilityLabel = `${showPassword ? 'Hide' : 'Show'} ${title.toLowerCase()}`;
+  const translatedTitle = i18n.t(title).toLowerCase();
+  const visibilityLabel = i18n.t(showPassword ? 'Hide %{field}' : 'Show %{field}', {
+    field: translatedTitle,
+  });
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -140,7 +143,7 @@ function PasswordInput({ id, title, formik }: PasswordInputProps) {
 
   return (
     <div className="form-group">
-      <span className="text-white">{title}</span>
+      <span className="text-white">{i18n.t(title)}</span>
       <div className="position-relative">
         <input
           type={showPassword ? 'text' : 'password'}
@@ -305,7 +308,7 @@ function SignIn() {
           <PasswordInput id="password" title="Password" formik={formik} />
           <div className="text-right my-3">
             <a className="text-primary" href="/remind_password">
-              Forgot your password?
+              {i18n.t('Forgot your password?')}
             </a>
           </div>
         </Form>
@@ -404,7 +407,7 @@ function ResetPassword() {
       <Container>
         <Body>
           <p className="mb-0 text-white">
-            We have sent you an email with instructions on how to reset your password
+            {i18n.t('We have sent you an email with instructions on how to reset your password')}
           </p>
         </Body>
       </Container>
