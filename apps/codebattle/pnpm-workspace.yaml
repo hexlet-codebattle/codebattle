@@ -10,6 +10,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   'brace-expansion': ^5.0.5
+  'dompurify': ^3.4.12
   'esbuild': ^0.28.1
   'fast-uri': ^3.1.4
   'flatted': ^3.4.2
