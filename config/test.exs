@@ -48,7 +48,9 @@ config :codebattle, :external_platform_service_url, "https://ext.test"
 config :codebattle, :firebase,
   sender_id: "ASDF",
   api_key: "ASDF",
-  firebase_autn_url: "http://localhost:4002"
+  firebase_autn_url: "http://firebase.test/v1/accounts"
+
+config :codebattle, :firebase_req_options, plug: {Req.Test, Codebattle.Auth.User.FirebaseUser}
 
 config :codebattle, :oauth,
   github_client_id: "GITHUB_CLIENT_ID",

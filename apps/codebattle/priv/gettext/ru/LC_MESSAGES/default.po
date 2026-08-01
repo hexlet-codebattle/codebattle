@@ -2504,3 +2504,27 @@ msgstr "Рейтинговые очки"
 
 msgid "Waiting Players"
 msgstr "Ожидание игроков"
+
+msgid "Change email"
+msgstr "Изменить адрес электронной почты"
+
+msgid "Current email"
+msgstr "Текущий адрес электронной почты"
+
+msgid "New email"
+msgstr "Новый адрес электронной почты"
+
+msgid "Enter new email"
+msgstr "Введите новый адрес электронной почты"
+
+msgid "Current password"
+msgstr "Текущий пароль"
+
+msgid "Enter current password"
+msgstr "Введите текущий пароль"
+
+msgid "Send verification email"
+msgstr "Отправить письмо для подтверждения"
+
+msgid "Verification email sent. Confirm the new address to finish the change."
+msgstr "Письмо отправлено. Подтвердите новый адрес, чтобы завершить изменение."

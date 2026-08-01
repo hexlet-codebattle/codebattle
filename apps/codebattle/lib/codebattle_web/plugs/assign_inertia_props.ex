@@ -15,7 +15,7 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
 
     props = %{
       "current_season" => present_season(current_season),
-      "current_user" => present_user(current_user),
+      "current_user" => present_user(current_user, conn.request_path),
       "user_sessions" =>
         present_user_sessions(
           current_user,
@@ -64,43 +64,54 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
     end)
   end
 
-  defp present_user(user) do
-    user
-    |> Map.take([
-      :avatar_url,
-      :can_unlink_social,
-      :clan,
-      :clan_id,
-      :discord_avatar,
-      :discord_id,
-      :discord_name,
-      :editor_mode,
-      :editor_theme,
-      :external_oauth_login,
-      :external_platform_id,
-      :external_platform_login,
-      :games_played,
-      :github_id,
-      :github_name,
-      :id,
-      :inserted_at,
-      :is_bot,
-      :is_guest,
-      :category,
-      :lang,
-      :style_lang,
-      :db_type,
-      :locale,
-      :name,
-      :performance,
-      :points,
-      :rank,
-      :rating,
-      :subscription_type,
-      :sound_settings
-    ])
-    |> Map.put(:can_unlink_social, Codebattle.User.can_unlink_social?(user))
-    |> Map.put(:has_password, Codebattle.User.has_password?(user))
-    |> Map.put(:is_admin, Codebattle.User.admin?(user))
+  defp present_user(user, request_path) do
+    presented_user =
+      user
+      |> Map.take([
+        :avatar_url,
+        :can_unlink_social,
+        :clan,
+        :clan_id,
+        :discord_avatar,
+        :discord_id,
+        :discord_name,
+        :editor_mode,
+        :editor_theme,
+        :external_oauth_login,
+        :external_platform_id,
+        :external_platform_login,
+        :games_played,
+        :github_id,
+        :github_name,
+        :id,
+        :inserted_at,
+        :is_bot,
+        :is_guest,
+        :category,
+        :lang,
+        :style_lang,
+        :db_type,
+        :locale,
+        :name,
+        :performance,
+        :points,
+        :rank,
+        :rating,
+        :subscription_type,
+        :sound_settings
+      ])
+      |> Map.put(:can_unlink_social, Codebattle.User.can_unlink_social?(user))
+      |> Map.put(:has_password, Codebattle.User.has_password?(user))
+      |> Map.put(:is_admin, Codebattle.User.admin?(user))
+
+    if request_path == "/settings" do
+      presented_user
+      |> Map.put(:email, user.email)
+      |> Map.put(:has_firebase_auth, present?(user.firebase_uid))
+    else
+      presented_user
+    end
   end
+
+  defp present?(value), do: not is_nil(value) and value != ""
 end

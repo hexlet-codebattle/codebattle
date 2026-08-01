@@ -129,6 +129,7 @@ defmodule Codebattle.User do
       :subscription_type
     ])
     |> unique_constraint(:name)
+    |> unique_constraint(:firebase_uid, name: :users_firebase_uid_index)
     |> cast_embed(:sound_settings)
     |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
@@ -160,6 +161,22 @@ defmodule Codebattle.User do
     )
     |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, user.id)
+  end
+
+  def firebase_email_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:email, :current_password])
+    |> update_change(:email, &String.trim/1)
+    |> validate_required([:email, :current_password])
+    |> validate_length(:email, max: 254)
+    |> validate_format(:email, ~r/^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "is invalid")
+    |> validate_change(:email, fn :email, email ->
+      if is_binary(user.email) and String.downcase(email) == String.downcase(user.email) do
+        [email: "is unchanged"]
+      else
+        []
+      end
+    end)
   end
 
   def password_changeset(user, params \\ %{}) do

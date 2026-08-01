@@ -4,7 +4,7 @@ const braillePatternBlank = '\u2800';
 const space = ' ';
 const invalidSymbols = [braillePatternBlank, space];
 
-const emailSchema = Yup.string()
+export const emailSchema = Yup.string()
   .email('Invalid email')
   .test('exclude-braille-pattern-blank', 'Invalid email', (value) =>
     value ? !value.includes(braillePatternBlank) : true,
@@ -37,6 +37,10 @@ const schemas = {
   }),
   resetPassword: {
     email: emailSchema,
+  },
+  emailChange: {
+    email: emailSchema,
+    currentPassword: Yup.string().required('Password required'),
   },
   signIn: {
     email: emailSchema,

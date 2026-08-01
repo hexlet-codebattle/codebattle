@@ -21,6 +21,7 @@ import UserSettingsForm, {
   type UserSettingsData,
   type UserSettingsFormValues,
 } from './UserSettingsForm';
+import EmailSettingsForm, { type EmailSettingsFormValues } from './EmailSettingsForm';
 
 interface Notification {
   variant?: string;
@@ -45,8 +46,12 @@ const mapUserPropNameByProviderName: Record<(typeof providers)[number], keyof Us
   github: 'githubId',
   discord: 'discordId',
 };
-const notifications: Record<'success' | 'error' | 'empty', Notification> = {
+const notifications: Record<'success' | 'emailVerification' | 'error' | 'empty', Notification> = {
   success: { variant: 'success', message: i18n.t('Settings changed successfully') },
+  emailVerification: {
+    variant: 'success',
+    message: i18n.t('Verification email sent. Confirm the new address to finish the change.'),
+  },
   error: { variant: 'danger', message: i18n.t('Something went wrong') },
   empty: {},
 };
@@ -74,6 +79,26 @@ const updateSettings = async (values: Record<string, unknown>) => {
 
 const updatePassword = async (values: Record<string, unknown>) => {
   const response = await fetch('/api/v1/settings/password', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-csrf-token': csrfToken ?? '',
+    },
+    body: JSON.stringify(decamelizeKeys(values)),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`) as UpdateSettingsError;
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
+
+const requestEmailChange = async (values: EmailSettingsFormValues) => {
+  const response = await fetch('/api/v1/settings/email', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -265,11 +290,43 @@ function UserSettings() {
     [dispatch],
   );
 
+  const handleEmailChange = useCallback(
+    async (
+      values: EmailSettingsFormValues,
+      { resetForm, setErrors }: FormikHelpers<EmailSettingsFormValues>,
+    ) => {
+      try {
+        await requestEmailChange(values);
+        resetForm();
+        setNotification(notifications.emailVerification);
+      } catch (rawError) {
+        const error = rawError as UpdateSettingsError;
+        if (!error.response) {
+          setNotification(notifications.error);
+          return;
+        }
+
+        const errors = formatFieldErrors(error.response.data.errors);
+        if (errors.base) {
+          setNotification({ variant: 'danger', message: errors.base });
+        }
+        setErrors({
+          email: errors.email,
+          currentPassword: errors.currentPassword,
+        });
+      }
+    },
+    [],
+  );
+
   return (
     <div className="container cb-bg-panel cb-text cb-rounded shadow-sm py-4">
       <Notification notification={notification} onClose={setNotification} />
       <h2 className="font-weight-normal">{i18n.t('Settings')}</h2>
       <UserSettingsForm settings={settings} onSubmit={handleUpdateUserSettings} />
+      {settings.hasFirebaseAuth && settings.email && (
+        <EmailSettingsForm currentEmail={settings.email} onSubmit={handleEmailChange} />
+      )}
       <div className="mt-3 ml-2 d-flex flex-column">
         <h3 className="mb-3 font-weight-normal">{i18n.t('Socials')}</h3>
         <SocialButtons settings={settings} />

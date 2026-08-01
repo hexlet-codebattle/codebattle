@@ -4,6 +4,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserSession
+  alias CodebattleWeb.EmailChangeRateLimit
   alias CodebattleWeb.UserAuth
 
   plug(CodebattleWeb.Plugs.ApiRequireAuth)
@@ -16,6 +17,8 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
     json(conn, %{
       name: current_user.name,
+      email: current_user.email,
+      has_firebase_auth: present?(current_user.firebase_uid),
       clan: current_user.clan,
       locale: current_user.locale,
       has_password: User.has_password?(current_user),
@@ -95,6 +98,61 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
     end
   end
 
+  def update_email(conn, params) do
+    current_user = conn.assigns.current_user
+    attempt_key = {:email_change, current_user.id}
+
+    if password_rate_limited?(attempt_key) do
+      conn
+      |> put_status(:too_many_requests)
+      |> json(%{errors: %{current_password: ["too many attempts, try again later"]}})
+    else
+      current_user
+      |> User.firebase_email_changeset(params)
+      |> request_email_change(conn, current_user, attempt_key)
+    end
+  end
+
+  defp request_email_change(%Ecto.Changeset{valid?: false} = changeset, conn, _user, _attempt_key) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{errors: translate_errors(changeset)})
+  end
+
+  defp request_email_change(changeset, conn, user, attempt_key) do
+    user_attrs = %{
+      email: Ecto.Changeset.get_field(changeset, :email),
+      current_password: Ecto.Changeset.get_field(changeset, :current_password)
+    }
+
+    case EmailChangeRateLimit.consume(conn, user.id) do
+      :ok ->
+        user
+        |> Codebattle.Auth.User.request_firebase_email_change(user_attrs)
+        |> present_email_change_result(conn, attempt_key)
+
+      {:error, :rate_limited} ->
+        conn
+        |> put_status(:too_many_requests)
+        |> json(%{errors: %{base: ["Too many attempts. Please try again later."]}})
+    end
+  end
+
+  defp present_email_change_result(:ok, conn, attempt_key) do
+    Cachex.del(:password_attempts_cache, attempt_key)
+    json(conn, %{status: "verification_sent"})
+  end
+
+  defp present_email_change_result({:error, errors}, conn, attempt_key) do
+    if Map.has_key?(errors, :current_password) do
+      register_password_failure(attempt_key)
+    end
+
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{errors: errors})
+  end
+
   def sessions(conn, _params) do
     current_session_id = conn.assigns.current_user_session.id
 
@@ -161,4 +219,6 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
       created_at: session.inserted_at
     }
   end
+
+  defp present?(value), do: not is_nil(value) and value != ""
 end

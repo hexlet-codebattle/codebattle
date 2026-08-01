@@ -30,4 +30,8 @@ defmodule Codebattle.Auth.User do
   def reset_in_firebase(user_attrs) do
     FirebaseUser.reset(user_attrs)
   end
+
+  def request_firebase_email_change(user, user_attrs) do
+    FirebaseUser.request_email_change(user, user_attrs)
+  end
 end

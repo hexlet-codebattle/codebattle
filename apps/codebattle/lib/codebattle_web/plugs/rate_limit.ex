@@ -60,7 +60,7 @@ defmodule CodebattleWeb.Plugs.RateLimit do
 
   # Prefer the forwarded client IP (the app runs behind a proxy) and fall back
   # to the direct peer address.
-  defp client_ip(conn) do
+  def client_ip(conn) do
     case get_req_header(conn, "x-forwarded-for") do
       [forwarded | _] ->
         forwarded

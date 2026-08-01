@@ -17,6 +17,8 @@ import schemas from '../../formik';
 import { createPlayer } from '../../lib/sound';
 
 export interface UserSettingsData {
+  email?: string;
+  hasFirebaseAuth?: boolean;
   locale: string;
   name: string;
   clan?: string;

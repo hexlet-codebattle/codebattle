@@ -1386,3 +1386,30 @@ msgstr "Remove"
 
 msgid "Opponent found!"
 msgstr "Opponent found!"
+
+msgid "Change email"
+msgstr "Change email"
+
+msgid "Current email"
+msgstr "Current email"
+
+msgid "New email"
+msgstr "New email"
+
+msgid "Enter new email"
+msgstr "Enter new email"
+
+msgid "Current password"
+msgstr "Current password"
+
+msgid "Enter current password"
+msgstr "Enter current password"
+
+msgid "Send verification email"
+msgstr "Send verification email"
+
+msgid "Sending..."
+msgstr "Sending..."
+
+msgid "Verification email sent. Confirm the new address to finish the change."
+msgstr "Verification email sent. Confirm the new address to finish the change."

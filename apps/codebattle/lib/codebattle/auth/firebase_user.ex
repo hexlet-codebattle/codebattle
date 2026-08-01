@@ -30,6 +30,20 @@ defmodule Codebattle.Auth.User.FirebaseUser do
     reset_in_firebase(user_attrs)
   end
 
+  def request_email_change(%User{firebase_uid: firebase_uid, email: current_email}, %{
+        email: new_email,
+        current_password: password
+      })
+      when is_binary(firebase_uid) and firebase_uid != "" do
+    with {:ok, id_token} <- reauthenticate(current_email, password, firebase_uid) do
+      send_email_change_verification(id_token, new_email)
+    end
+  end
+
+  def request_email_change(%User{}, _user_attrs) do
+    {:error, %{base: ["Email sign-in is not available for this account"]}}
+  end
+
   # Only the nickname is validated against the DB. Email uniqueness is enforced
   # by Firebase, and we deliberately don't disclose whether an email is taken
   # (see `register_in_firebase/1`).
@@ -57,10 +71,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   end
 
   defp register_in_firebase(%{name: name, email: email, password: password}) do
-    case Req.post(
-           "#{firebase_url()}:signUp?key=#{api_key()}",
-           json: %{email: email, password: password}
-         ) do
+    case firebase_post("signUp", %{email: email, password: password}) do
       {:ok, %Req.Response{status: 200, body: body}} ->
         id_token = Map.get(body, "idToken")
         # Persist the chosen nickname so we can recreate it locally at first
@@ -94,10 +105,11 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   end
 
   defp find_in_firebase(%{email: email, password: password}) do
-    case Req.post(
-           "#{firebase_url()}:signInWithPassword?key=#{api_key()}",
-           json: %{email: email, password: password, returnSecureToken: true}
-         ) do
+    case firebase_post("signInWithPassword", %{
+           email: email,
+           password: password,
+           returnSecureToken: true
+         }) do
       {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid = Map.get(body, "localId")
         id_token = Map.get(body, "idToken")
@@ -131,10 +143,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   end
 
   defp lookup_account(id_token) when is_binary(id_token) do
-    case Req.post(
-           "#{firebase_url()}:lookup?key=#{api_key()}",
-           json: %{idToken: id_token}
-         ) do
+    case firebase_post("lookup", %{idToken: id_token}) do
       {:ok, %Req.Response{status: 200, body: %{"users" => [account | _]}}} ->
         {:ok,
          %{
@@ -154,10 +163,11 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp lookup_account(_), do: {:error, :missing_id_token}
 
   defp set_display_name(id_token, name) when is_binary(id_token) do
-    case Req.post(
-           "#{firebase_url()}:update?key=#{api_key()}",
-           json: %{idToken: id_token, displayName: name, returnSecureToken: false}
-         ) do
+    case firebase_post("update", %{
+           idToken: id_token,
+           displayName: name,
+           returnSecureToken: false
+         }) do
       {:ok, %Req.Response{status: 200}} ->
         :ok
 
@@ -174,10 +184,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp set_display_name(_, _), do: {:error, :missing_id_token}
 
   defp send_email_verification(id_token) when is_binary(id_token) do
-    case Req.post(
-           "#{firebase_url()}:sendOobCode?key=#{api_key()}",
-           json: %{requestType: "VERIFY_EMAIL", idToken: id_token}
-         ) do
+    case firebase_post("sendOobCode", %{requestType: "VERIFY_EMAIL", idToken: id_token}) do
       {:ok, %Req.Response{status: 200}} ->
         :ok
 
@@ -194,10 +201,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp send_email_verification(_), do: {:error, :missing_id_token}
 
   defp reset_in_firebase(%{email: email}) do
-    case Req.post(
-           "#{firebase_url()}:sendOobCode?key=#{api_key()}",
-           json: %{email: email, requestType: "PASSWORD_RESET"}
-         ) do
+    case firebase_post("sendOobCode", %{email: email, requestType: "PASSWORD_RESET"}) do
       {:ok, %Req.Response{status: 200}} ->
         :ok
 
@@ -222,10 +226,85 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   # existing row on subsequent logins.
   defp get_or_create_user(%{firebase_uid: firebase_uid} = account) do
     case Repo.get_by(User, firebase_uid: firebase_uid) do
-      %User{} = user -> {:ok, user}
+      %User{} = user -> sync_email(user, account.email)
       nil -> create_in_db(account)
     end
   end
+
+  defp sync_email(%User{email: email} = user, email), do: {:ok, user}
+
+  defp sync_email(%User{} = user, email) when is_binary(email) and email != "" do
+    user
+    |> Ecto.Changeset.change(email: email)
+    |> Repo.update()
+    |> case do
+      {:ok, updated_user} ->
+        {:ok, updated_user}
+
+      {:error, reason} ->
+        Logger.error("Unable to synchronize Firebase email: #{inspect(reason)}")
+        {:error, %{base: "Something went wrong, pls, try again later."}}
+    end
+  end
+
+  defp sync_email(%User{} = user, _email), do: {:ok, user}
+
+  defp reauthenticate(email, password, expected_uid) do
+    case firebase_post("signInWithPassword", %{
+           email: email,
+           password: password,
+           returnSecureToken: true
+         }) do
+      {:ok, %Req.Response{status: 200, body: %{"idToken" => id_token, "localId" => ^expected_uid}}}
+      when is_binary(id_token) ->
+        {:ok, id_token}
+
+      {:ok, %Req.Response{status: 200}} ->
+        Logger.warning("Firebase email-change reauthentication returned a different user")
+        {:error, %{current_password: ["is invalid"]}}
+
+      {:ok, %Req.Response{status: 400, body: body}} ->
+        Logger.info("Firebase email-change reauthentication rejected: #{inspect(firebase_error(body))}")
+        {:error, %{current_password: ["is invalid"]}}
+
+      {:ok, %Req.Response{body: body}} ->
+        Logger.error("Unable to reauthenticate Firebase user: #{inspect(body)}")
+        {:error, %{base: ["Unable to verify your password. Please try again later."]}}
+
+      {:error, reason} ->
+        Logger.error("Unable to reauthenticate Firebase user: #{inspect(reason)}")
+        {:error, %{base: ["Unable to verify your password. Please try again later."]}}
+    end
+  end
+
+  defp send_email_change_verification(id_token, new_email) do
+    case firebase_post("sendOobCode", %{
+           requestType: "VERIFY_AND_CHANGE_EMAIL",
+           idToken: id_token,
+           newEmail: new_email
+         }) do
+      {:ok, %Req.Response{status: 200}} ->
+        :ok
+
+      {:ok, %Req.Response{status: 400, body: body}} ->
+        case firebase_error(body) do
+          "INVALID_EMAIL" -> {:error, %{email: ["is invalid"]}}
+          "TOO_MANY_ATTEMPTS_TRY_LATER" -> {:error, %{base: ["Too many attempts. Please try again later."]}}
+          _error -> {:error, %{base: ["Unable to send the verification email. Please try again later."]}}
+        end
+
+      {:ok, %Req.Response{body: body}} ->
+        Logger.error("Unable to send Firebase email-change verification: #{inspect(body)}")
+        {:error, %{base: ["Unable to send the verification email. Please try again later."]}}
+
+      {:error, reason} ->
+        Logger.error("Unable to send Firebase email-change verification: #{inspect(reason)}")
+        {:error, %{base: ["Unable to send the verification email. Please try again later."]}}
+    end
+  end
+
+  defp firebase_error(%{"error" => %{"message" => message}}), do: message
+  defp firebase_error(_body), do: nil
 
   defp create_in_db(%{firebase_uid: firebase_uid, name: name, email: email}) do
     name = resolve_name(name, email)
@@ -235,21 +314,40 @@ defmodule Codebattle.Auth.User.FirebaseUser do
         {:ok, user}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        # Rare: two unverified signups reserved the same nickname and both
-        # verified. Disambiguate so the verified user can still sign in.
-        if name_taken?(changeset) do
-          disambiguated = "#{String.slice(name, 0, 32)}_#{String.slice(firebase_uid, 0..5)}"
-          insert_or_fail(disambiguated, email, firebase_uid)
+        cond do
+          firebase_uid_taken?(changeset) ->
+            get_existing_firebase_user(firebase_uid, email)
+
+          # Rare: two unverified signups reserved the same nickname and both
+          # verified. Disambiguate so the verified user can still sign in.
+          name_taken?(changeset) ->
+            disambiguated = "#{String.slice(name, 0, 32)}_#{String.slice(firebase_uid, 0..5)}"
+            insert_or_get_existing(disambiguated, email, firebase_uid)
+
+          true ->
+            {:error, %{base: "Something went wrong, pls, try again later."}}
+        end
+    end
+  end
+
+  defp insert_or_get_existing(name, email, firebase_uid) do
+    case insert_user(name, email, firebase_uid) do
+      {:ok, user} ->
+        {:ok, user}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        if firebase_uid_taken?(changeset) do
+          get_existing_firebase_user(firebase_uid, email)
         else
           {:error, %{base: "Something went wrong, pls, try again later."}}
         end
     end
   end
 
-  defp insert_or_fail(name, email, firebase_uid) do
-    case insert_user(name, email, firebase_uid) do
-      {:ok, user} -> {:ok, user}
-      {:error, _} -> {:error, %{base: "Something went wrong, pls, try again later."}}
+  defp get_existing_firebase_user(firebase_uid, email) do
+    case Repo.get_by(User, firebase_uid: firebase_uid) do
+      %User{} = user -> sync_email(user, email)
+      nil -> {:error, %{base: "Something went wrong, pls, try again later."}}
     end
   end
 
@@ -269,6 +367,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp resolve_name(_name, email), do: email |> String.split("@") |> List.first()
 
   defp name_taken?(%Ecto.Changeset{errors: errors}), do: Keyword.has_key?(errors, :name)
+  defp firebase_uid_taken?(%Ecto.Changeset{errors: errors}), do: Keyword.has_key?(errors, :firebase_uid)
 
   defp firebase_url do
     Application.get_env(:codebattle, :firebase)[:firebase_autn_url]
@@ -276,6 +375,11 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
   defp api_key do
     Application.get_env(:codebattle, :firebase)[:api_key]
+  end
+
+  defp firebase_post(action, payload) do
+    request_options = Application.get_env(:codebattle, :firebase_req_options, [])
+    Req.post("#{firebase_url()}:#{action}?key=#{api_key()}", Keyword.put(request_options, :json, payload))
   end
 
   defp gravatar_url(email) do

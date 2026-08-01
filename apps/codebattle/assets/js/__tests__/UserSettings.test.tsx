@@ -338,6 +338,53 @@ describe('UserSettings test cases', () => {
     });
   });
 
+  test('requests a verified email change for Firebase users', async () => {
+    const firebaseStore = configureStore({
+      reducer,
+      preloadedState: {
+        user: {
+          settings: {
+            ...preloadedState.user.settings,
+            email: 'old@example.com',
+            hasFirebaseAuth: true,
+          },
+        },
+      } as never,
+    });
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: 'verification_sent' }),
+    });
+
+    const { getByRole, getByTestId, getByDisplayValue, findByRole, user } = setup(
+      <Provider store={firebaseStore}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    expect(getByDisplayValue('old@example.com')).toHaveAttribute('readonly');
+    await user.type(getByTestId('newEmailInput'), 'new@example.com');
+    await user.type(getByTestId('emailCurrentPasswordInput'), 'firebase-password');
+    await user.click(getByRole('button', { name: 'Send verification email' }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/settings/email',
+        expect.objectContaining({ method: 'PATCH' }),
+      );
+
+      expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+        email: 'new@example.com',
+        current_password: 'firebase-password',
+      });
+    });
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'Verification email sent. Confirm the new address to finish the change.',
+    );
+  });
+
   test('removes another active device', async () => {
     fetchMock.mockResolvedValueOnce({
       ok: true,

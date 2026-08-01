@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
+  alias Codebattle.Auth.User.FirebaseUser
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserSession
@@ -32,6 +33,8 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
       assert json_response(conn, 200) == %{
                "can_unlink_social" => true,
+               "email" => "test1@test.test",
+               "has_firebase_auth" => false,
                "name" => "first",
                "lang" => "dart",
                "locale" => "en",
@@ -210,6 +213,195 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
       assert json_response(response, 429) == %{
                "errors" => %{"current_password" => ["too many attempts, try again later"]}
+             }
+    end
+  end
+
+  describe "#update_email" do
+    setup {Req.Test, :verify_on_exit!}
+
+    setup do
+      Cachex.clear(:email_change_rate_limit_cache)
+      :ok
+    end
+
+    test "reauthenticates in Firebase and sends verification to the new email", %{conn: conn} do
+      user = insert(:user, email: "old@example.com", firebase_uid: "firebase-123")
+
+      Req.Test.expect(FirebaseUser, 2, fn conn ->
+        body = conn |> Req.Test.raw_body() |> Jason.decode!()
+
+        case conn.request_path do
+          "/v1/accounts:signInWithPassword" ->
+            assert body == %{
+                     "email" => "old@example.com",
+                     "password" => "firebase-password",
+                     "returnSecureToken" => true
+                   }
+
+            Req.Test.json(conn, %{"idToken" => "fresh-token", "localId" => "firebase-123"})
+
+          "/v1/accounts:sendOobCode" ->
+            assert body == %{
+                     "idToken" => "fresh-token",
+                     "newEmail" => "new@example.com",
+                     "requestType" => "VERIFY_AND_CHANGE_EMAIL"
+                   }
+
+            Req.Test.json(conn, %{"email" => "new@example.com"})
+        end
+      end)
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/settings/email", %{
+          "email" => "new@example.com",
+          "current_password" => "firebase-password"
+        })
+
+      assert json_response(conn, 200) == %{"status" => "verification_sent"}
+      assert Repo.get!(User, user.id).email == "old@example.com"
+    end
+
+    test "rejects reauthentication for a different Firebase identity", %{conn: conn} do
+      user = insert(:user, email: "owner@example.com", firebase_uid: "owner-firebase-uid")
+      other_user = insert(:user, email: "victim@example.com", firebase_uid: "victim-firebase-uid")
+
+      Req.Test.expect(FirebaseUser, 1, fn firebase_conn ->
+        body = firebase_conn |> Req.Test.raw_body() |> Jason.decode!()
+
+        assert firebase_conn.request_path == "/v1/accounts:signInWithPassword"
+        assert body["email"] == "owner@example.com"
+
+        Req.Test.json(firebase_conn, %{
+          "idToken" => "victim-token",
+          "localId" => "victim-firebase-uid"
+        })
+      end)
+
+      response =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/settings/email", %{
+          "email" => "attacker-controlled@example.com",
+          "current_password" => "victim-password",
+          "firebase_uid" => other_user.firebase_uid,
+          "user_id" => other_user.id
+        })
+
+      assert json_response(response, 422) == %{"errors" => %{"current_password" => ["is invalid"]}}
+      assert Repo.get!(User, user.id).email == "owner@example.com"
+      assert Repo.get!(User, other_user.id).email == "victim@example.com"
+    end
+
+    test "rejects an invalid Firebase password", %{conn: conn} do
+      user = insert(:user, email: "old@example.com", firebase_uid: "firebase-123")
+
+      Req.Test.expect(FirebaseUser, fn conn ->
+        conn
+        |> Plug.Conn.put_status(:bad_request)
+        |> Req.Test.json(%{"error" => %{"message" => "INVALID_LOGIN_CREDENTIALS"}})
+      end)
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/settings/email", %{
+          "email" => "new@example.com",
+          "current_password" => "wrong-password"
+        })
+
+      assert json_response(conn, 422) == %{"errors" => %{"current_password" => ["is invalid"]}}
+    end
+
+    test "does not reveal when Firebase reports that the new email exists", %{conn: conn} do
+      user = insert(:user, email: "old@example.com", firebase_uid: "firebase-123")
+
+      Req.Test.expect(FirebaseUser, 2, fn firebase_conn ->
+        case firebase_conn.request_path do
+          "/v1/accounts:signInWithPassword" ->
+            Req.Test.json(firebase_conn, %{"idToken" => "fresh-token", "localId" => "firebase-123"})
+
+          "/v1/accounts:sendOobCode" ->
+            firebase_conn
+            |> Plug.Conn.put_status(:bad_request)
+            |> Req.Test.json(%{"error" => %{"message" => "EMAIL_EXISTS"}})
+        end
+      end)
+
+      response =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/settings/email", %{
+          "email" => "registered@example.com",
+          "current_password" => "firebase-password"
+        })
+
+      assert json_response(response, 422) == %{
+               "errors" => %{"base" => ["Unable to send the verification email. Please try again later."]}
+             }
+    end
+
+    test "limits successful verification requests for an account", %{conn: conn} do
+      user = insert(:user, email: "old@example.com", firebase_uid: "firebase-123")
+
+      Req.Test.stub(FirebaseUser, fn firebase_conn ->
+        case firebase_conn.request_path do
+          "/v1/accounts:signInWithPassword" ->
+            Req.Test.json(firebase_conn, %{"idToken" => "fresh-token", "localId" => "firebase-123"})
+
+          "/v1/accounts:sendOobCode" ->
+            Req.Test.json(firebase_conn, %{})
+        end
+      end)
+
+      logged_in_conn = log_in_user(conn, user.id)
+
+      Enum.each(1..3, fn attempt ->
+        response =
+          patch(logged_in_conn, "/api/v1/settings/email", %{
+            "email" => "new#{attempt}@example.com",
+            "current_password" => "firebase-password"
+          })
+
+        assert json_response(response, 200) == %{"status" => "verification_sent"}
+      end)
+
+      response =
+        patch(logged_in_conn, "/api/v1/settings/email", %{
+          "email" => "new4@example.com",
+          "current_password" => "firebase-password"
+        })
+
+      assert json_response(response, 429) == %{
+               "errors" => %{"base" => ["Too many attempts. Please try again later."]}
+             }
+    end
+
+    test "validates the email and requires Firebase authentication", %{conn: conn} do
+      user = insert(:user, email: "old@example.com", firebase_uid: nil)
+
+      invalid_email =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/settings/email", %{
+          "email" => "not-an-email",
+          "current_password" => "password"
+        })
+
+      assert json_response(invalid_email, 422) == %{"errors" => %{"email" => ["is invalid"]}}
+
+      unavailable =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/settings/email", %{
+          "email" => "new@example.com",
+          "current_password" => "password"
+        })
+
+      assert json_response(unavailable, 422) == %{
+               "errors" => %{"base" => ["Email sign-in is not available for this account"]}
              }
     end
   end
