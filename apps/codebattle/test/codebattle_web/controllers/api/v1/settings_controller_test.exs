@@ -41,7 +41,12 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
                "clan" => "abc",
                "discord_id" => 5_246_840,
                "discord_name" => "discord_name782",
-               "sound_settings" => %{"level" => 7, "tournament_level" => 7, "type" => "dendy"},
+               "sound_settings" => %{
+                 "level" => 7,
+                 "muted" => false,
+                 "tournament_level" => 7,
+                 "type" => "dendy"
+               },
                "db_type" => "mongodb",
                "style_lang" => "less",
                "github_id" => 1,
@@ -59,7 +64,12 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         "name" => "evgen",
         "clan" => "  Bca  ",
         "locale" => "ru",
-        "sound_settings" => %{"level" => 3, "tournament_level" => 8, "type" => "cs"},
+        "sound_settings" => %{
+          "level" => 3,
+          "muted" => true,
+          "tournament_level" => 8,
+          "type" => "cs"
+        },
         "db_type" => "postgresql",
         "style_lang" => "css",
         "lang" => "ruby"
@@ -81,6 +91,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       updated = Repo.get!(User, user.id)
 
       assert updated.sound_settings.level == 3
+      assert updated.sound_settings.muted
       assert updated.sound_settings.tournament_level == 8
       assert updated.sound_settings.type == "cs"
       assert updated.clan == "Bca"
@@ -88,6 +99,26 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert updated.name == "evgen"
       assert updated.lang == "ruby"
       assert updated.locale == "ru"
+    end
+
+    test "updates only the mute preference", %{conn: conn} do
+      user = insert(:user, sound_settings: %User.SoundSettings{level: 3, type: "cs"})
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> patch(
+          Routes.api_v1_settings_path(conn, :update, %{
+            "sound_settings" => %{"muted" => true}
+          })
+        )
+
+      assert %{"muted" => true} = json_response(conn, 200)["sound_settings"]
+
+      updated = Repo.get!(User, user.id)
+      assert updated.sound_settings.muted
+      assert updated.sound_settings.level == 3
+      assert updated.sound_settings.type == "cs"
     end
 
     test "update with empty name doesn't work", %{conn: conn} do

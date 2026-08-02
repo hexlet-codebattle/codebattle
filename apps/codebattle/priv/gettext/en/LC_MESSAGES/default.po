@@ -233,6 +233,75 @@ msgstr "My Profile"
 msgid "Settings"
 msgstr "Settings"
 
+msgid "Sound"
+msgstr "Sound"
+
+msgid "Master sound"
+msgstr "Master sound"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Manage your public identity and coding preferences."
+msgstr "Manage your public identity and coding preferences."
+
+msgid "Sound settings"
+msgstr "Sound settings"
+
+msgid "Choose how game and tournament notifications sound."
+msgstr "Choose how game and tournament notifications sound."
+
+msgid "Sound theme"
+msgstr "Sound theme"
+
+msgid "Game sound level"
+msgstr "Game sound level"
+
+msgid "Tournament sound level"
+msgstr "Tournament sound level"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Update profile"
+msgstr "Update profile"
+
+msgid "Manage your public identity."
+msgstr "Manage your public identity."
+
+msgid "Coding preferences"
+msgstr "Coding preferences"
+
+msgid "Weapon and locale changes are saved automatically."
+msgstr "Weapon and locale changes are saved automatically."
+
+msgid "Manage your account, preferences, and active sessions."
+msgstr "Manage your account, preferences, and active sessions."
+
+msgid "Connected accounts"
+msgstr "Connected accounts"
+
+msgid "Manage the services you use to sign in."
+msgstr "Manage the services you use to sign in."
+
+msgid "Review and remove signed-in sessions."
+msgstr "Review and remove signed-in sessions."
+
+msgid "On"
+msgstr "On"
+
+msgid "Off"
+msgstr "Off"
+
+msgid "Mute sound"
+msgstr "Mute sound"
+
+msgid "Turn sound on"
+msgstr "Turn sound on"
+
+msgid "New private message"
+msgstr "New private message"
+
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Tg#codebattle"

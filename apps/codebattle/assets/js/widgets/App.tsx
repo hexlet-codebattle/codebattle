@@ -12,6 +12,7 @@ import machines from '@/machines';
 import reducers from '@/slices';
 
 import PageNames from './config/pageNames';
+import SoundToggle from './components/SoundToggle';
 
 const {
   game: mainMachine,
@@ -86,6 +87,13 @@ const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
 const TaskPreview = React.lazy(() => import('./pages/taskPreview'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
 const UserSettings = React.lazy(() => import('./pages/settings'));
+export function SoundToggleMenu() {
+  return (
+    <Provider store={store}>
+      <SoundToggle />
+    </Provider>
+  );
+}
 
 export function Online() {
   return (

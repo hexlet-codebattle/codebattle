@@ -49,6 +49,7 @@ import {
   renderOnlineWidget,
   renderRegistrationPage,
   renderSettingPage,
+  renderSoundToggle,
   renderTournamentThreejsStreamPage,
   renderTournamentStreamAdminPage,
   renderTournamentAdminPage,
@@ -121,6 +122,7 @@ const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
 const registrationRoot = document.getElementById('registration');
 const settingsRoot = document.getElementById('settings');
+const soundToggleRoot = document.getElementById('sound-toggle-root');
 const tournamentPlayerRoot = document.getElementById('tournament-player-root');
 const tournamentRoot = document.getElementById('tournament-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
@@ -167,6 +169,10 @@ if (userPageRoot) {
 
 if (settingsRoot) {
   renderSettingPage(settingsRoot);
+}
+
+if (soundToggleRoot) {
+  renderSoundToggle(soundToggleRoot);
 }
 
 if (registrationRoot) {

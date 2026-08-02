@@ -39,6 +39,11 @@ export const isMessageForCurrentUser = (message: ChatMessage) =>
   message.meta?.type === messageTypes.private &&
   (message.userId === currentUserId || message.meta.targetUserId === currentUserId);
 
+export const isIncomingPrivateMessage = (message: ChatMessage) =>
+  message.meta?.type === messageTypes.private &&
+  message.meta.targetUserId === currentUserId &&
+  message.userId !== currentUserId;
+
 export const isMessageForEveryone = (message: ChatMessage) =>
   !message.meta || message.meta.type === messageTypes.general;
 

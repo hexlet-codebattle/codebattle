@@ -2,7 +2,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 import GameRoomModes from '../config/gameModes';
-import sound from '../lib/sound';
 
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from './editor';
 import useCursorUpdates from './useCursorUpdates';
@@ -432,8 +431,6 @@ const useEditor = (props: UseEditorProps) => {
       label: 'Codebattle mute sound',
       keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.KEY_M],
       run: () => {
-        const { mute } = props;
-        sound.toggle(mute ? undefined : 0);
         toggleMuteSound!();
       },
     });

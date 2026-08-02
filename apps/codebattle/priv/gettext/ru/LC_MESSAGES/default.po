@@ -283,6 +283,75 @@ msgstr "Чат Discord"
 msgid "Settings"
 msgstr "Настройки"
 
+msgid "Sound"
+msgstr "Звук"
+
+msgid "Master sound"
+msgstr "Общий звук"
+
+msgid "Profile"
+msgstr "Профиль"
+
+msgid "Manage your public identity and coding preferences."
+msgstr "Управляйте публичным профилем и настройками программирования."
+
+msgid "Sound settings"
+msgstr "Настройки звука"
+
+msgid "Choose how game and tournament notifications sound."
+msgstr "Настройте звуки игры и уведомлений турниров."
+
+msgid "Sound theme"
+msgstr "Тема звуков"
+
+msgid "Game sound level"
+msgstr "Громкость в игре"
+
+msgid "Tournament sound level"
+msgstr "Громкость турниров"
+
+msgid "Save changes"
+msgstr "Сохранить изменения"
+
+msgid "Update profile"
+msgstr "Обновить профиль"
+
+msgid "Manage your public identity."
+msgstr "Управляйте своей публичной информацией."
+
+msgid "Coding preferences"
+msgstr "Настройки программирования"
+
+msgid "Weapon and locale changes are saved automatically."
+msgstr "Изменения языка программирования и локали сохраняются автоматически."
+
+msgid "Manage your account, preferences, and active sessions."
+msgstr "Управляйте аккаунтом, настройками и активными сессиями."
+
+msgid "Connected accounts"
+msgstr "Связанные аккаунты"
+
+msgid "Manage the services you use to sign in."
+msgstr "Управляйте сервисами, используемыми для входа."
+
+msgid "Review and remove signed-in sessions."
+msgstr "Просматривайте и завершайте активные сессии."
+
+msgid "On"
+msgstr "Вкл"
+
+msgid "Off"
+msgstr "Выкл"
+
+msgid "Mute sound"
+msgstr "Выключить звук"
+
+msgid "Turn sound on"
+msgstr "Включить звук"
+
+msgid "New private message"
+msgstr "Новое личное сообщение"
+
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Tg#codebattle"

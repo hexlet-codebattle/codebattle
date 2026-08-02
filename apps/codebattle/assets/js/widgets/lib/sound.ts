@@ -23,6 +23,7 @@ const audioConfigs = {
 interface SoundSettings {
   type: string;
   level: number;
+  muted?: boolean;
   tournament_level?: number;
   tournamentLevel?: number;
 }
@@ -33,6 +34,12 @@ const initialSoundSettings = getPageProp<{ sound_settings: SoundSettings }>('cur
 }).sound_settings;
 
 let currentSoundSettings = { ...defaultSoundSettings, ...initialSoundSettings };
+
+if (typeof initialSoundSettings.muted === 'boolean') {
+  localStorage.setItem('ui_mute_sound', String(initialSoundSettings.muted));
+}
+
+export const isSoundMuted = () => localStorage.getItem('ui_mute_sound') === 'true';
 
 const getSoundType = () => currentSoundSettings.type;
 const getDefaultSoundLevel = () => currentSoundSettings.level * 0.1;
@@ -87,21 +94,18 @@ if (typeof document !== 'undefined') {
 
 const sound = {
   play: (type: string, soundLevel?: number) => {
-    const isMute = JSON.parse((localStorage.getItem('ui_mute_sound') || false) as string);
-    if (getSoundType() === 'silent' || isMute) return;
+    if (getSoundType() === 'silent' || isSoundMuted()) return;
     const soundEffect = audio();
     Howler.volume(isUndefined(soundLevel) ? getDefaultSoundLevel() : soundLevel);
     soundEffect.play(type);
   },
   playAsset: (path: string, soundLevel?: number) => {
-    const isMute = JSON.parse((localStorage.getItem('ui_mute_sound') || false) as string);
-    if (getSoundType() === 'silent' || isMute) return;
+    if (getSoundType() === 'silent' || isSoundMuted()) return;
     Howler.volume(isUndefined(soundLevel) ? getDefaultSoundLevel() : soundLevel);
     getAssetPlayer(path).play();
   },
   playTournamentAsset: (path: string) => {
-    const isMute = JSON.parse((localStorage.getItem('ui_mute_sound') || false) as string);
-    if (getSoundType() === 'silent' || isMute) return;
+    if (getSoundType() === 'silent' || isSoundMuted()) return;
     Howler.volume(getTournamentSoundLevel());
     const player = getAssetPlayer(path);
     player.volume(1);
@@ -115,6 +119,7 @@ const sound = {
 
 const createSound = (slug: string) => ({
   play: (type: string, soundLevel?: number) => {
+    if (isSoundMuted()) return;
     const soundEffect = audio(slug, soundLevel);
     soundEffect.play(type);
   },

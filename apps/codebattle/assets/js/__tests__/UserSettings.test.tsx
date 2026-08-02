@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { type ReactElement, type ReactNode } from 'react';
 import { Provider } from 'react-redux';
@@ -9,7 +9,7 @@ import UserSettings from '../widgets/pages/settings';
 import reducers from '../widgets/slices';
 
 vi.mock('@fortawesome/react-fontawesome', () => ({
-  FontAwesomeIcon: 'img',
+  FontAwesomeIcon: () => <span aria-hidden="true" />,
 }));
 
 vi.mock('calcite-react/Slider', () => ({ default: 'input' }));
@@ -119,32 +119,30 @@ describe('UserSettings test cases', () => {
   });
 
   test('render main component', () => {
-    const { getByText } = setup(
+    const { getByRole } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-    expect(getByText(/settings/i)).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Mute sound' })).toBeInTheDocument();
   });
 
   test('successfull user settings update', async () => {
     const settingUpdaterSpy = fetchMock.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      json: async () => ({ name: 'Dmitry', clan: '' }),
     });
-    const { getByRole, getByLabelText, getByTestId, findByText, user } = setup(
+    const { getByRole, getByTestId, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText('Submit form');
+    const submitButton = getByRole('button', { name: 'Update profile' });
     const nameInput = getByTestId('nameInput');
-    const codeLangSelect = getByTestId('code-langSelect');
 
     await user.clear(nameInput);
     await user.type(nameInput, 'Dmitry');
-    await user.click(codeLangSelect);
-    await user.click(await findByText('Javascript'));
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -159,17 +157,30 @@ describe('UserSettings test cases', () => {
       expect(JSON.parse(requestOptions.body)).toEqual({
         clan: '',
         name: 'Dmitry',
-        lang: 'js',
-        lang_view: 'code',
-        db_type: '',
-        style_lang: '',
-        sound_settings: {
-          level: 6,
-          tournament_level: 4,
-          type: 'standard',
-        },
       });
       expect(getByRole('alert')).toHaveClass('alert-success');
+    });
+  });
+
+  test('automatically saves a language change', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ lang: 'js' }),
+    });
+    const { getByTestId, findByText, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    await user.click(getByTestId('code-langSelect'));
+    await user.click(await findByText('Javascript'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+        lang: 'js',
+      });
     });
   });
 
@@ -178,17 +189,15 @@ describe('UserSettings test cases', () => {
       ok: true,
       json: async () => ({ locale: 'ru' }),
     });
-    const { getByLabelText, getByTestId, findByText, user } = setup(
+    const { getByTestId, findByText, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText('Submit form');
     const localeSelect = getByTestId('localeSelect');
 
     await user.click(localeSelect);
     await user.click(await findByText('Ru'));
-    await user.click(submitButton);
 
     await waitFor(() => {
       const [, requestOptions] = settingUpdaterSpy.mock.calls[0];
@@ -198,18 +207,20 @@ describe('UserSettings test cases', () => {
     });
 
     const i18n = (
-      await vi.importMock<{ default: { changeLanguage: ReturnType<typeof vi.fn> } }>('../i18n')
+      await vi.importMock<{
+        default: { changeLanguage: ReturnType<typeof vi.fn> };
+      }>('../i18n')
     ).default;
     expect(i18n.changeLanguage).toHaveBeenCalledWith('ru');
   });
 
   test('failed user settings update', async () => {
-    const { getByTestId, getByLabelText, findByRole, findByText, user } = setup(
+    const { getByTestId, getByRole, findByRole, findByText, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-    const submitButton = getByLabelText('Submit form');
+    const submitButton = getByRole('button', { name: 'Update profile' });
     const nameInput = getByTestId('nameInput');
 
     await user.clear(nameInput);
@@ -254,27 +265,54 @@ describe('UserSettings test cases', () => {
     expect(await findByRole('alert')).toHaveClass('alert-danger');
   });
 
-  test('enables saving the Silent sound option', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ locale: 'en' }),
-    });
-
-    const { getByLabelText, user } = setup(
+  test('does not offer the legacy Silent sound type', () => {
+    const { queryByLabelText } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
 
-    const submitButton = getByLabelText('Submit form');
-    await user.click(getByLabelText('Silent'));
+    expect(queryByLabelText('Silent')).not.toBeInTheDocument();
+  });
 
-    expect(submitButton).toBeEnabled();
-    await user.click(submitButton);
+  test('automatically saves sound theme and level changes', async () => {
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          sound_settings: { type: 'cs', level: 6, tournament_level: 4 },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          sound_settings: { type: 'cs', level: 8, tournament_level: 4 },
+        }),
+      });
+
+    const { getByRole, getByLabelText, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    await user.click(getByRole('radio', { name: 'CS' }));
 
     await waitFor(() => {
-      const [, requestOptions] = fetchMock.mock.calls[0];
-      expect(JSON.parse(requestOptions.body).sound_settings.type).toBe('silent');
+      expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+        sound_settings: { type: 'cs' },
+      });
+    });
+
+    fireEvent.input(getByLabelText('Game sound level'), {
+      target: { value: '8' },
+    });
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+        sound_settings: { level: 8 },
+      });
     });
   });
 
@@ -304,17 +342,12 @@ describe('UserSettings test cases', () => {
       } as never,
     });
 
-    fetchMock
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ locale: 'en' }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ status: 'ok', has_password: true }),
-      });
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: 'ok', has_password: true }),
+    });
 
-    const { getByLabelText, getByTestId, user } = setup(
+    const { getByRole, getByTestId, user } = setup(
       <Provider store={passwordStore}>
         <UserSettings />
       </Provider>,
@@ -323,15 +356,12 @@ describe('UserSettings test cases', () => {
     await user.type(getByTestId('currentPasswordInput'), 'old-password-secure!');
     await user.type(getByTestId('passwordInput'), 'new-password-secure!');
     await user.type(getByTestId('passwordConfirmationInput'), 'new-password-secure!');
-    await user.click(getByLabelText('Submit form'));
+    await user.click(getByRole('button', { name: 'Change password' }));
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
-    const settingsBody = JSON.parse(fetchMock.mock.calls[0][1].body);
-    expect(settingsBody).not.toHaveProperty('current_password');
-    expect(settingsBody).not.toHaveProperty('password');
-    expect(fetchMock.mock.calls[1][0]).toBe('/api/v1/settings/password');
-    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/settings/password');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
       current_password: 'old-password-secure!',
       password: 'new-password-secure!',
       password_confirmation: 'new-password-secure!',

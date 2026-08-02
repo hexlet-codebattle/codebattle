@@ -1,6 +1,7 @@
 import { camelizeKeys } from 'humps';
 
 import { channelMethods, channelTopics } from '../../socket';
+import sound from '../lib/sound';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 
@@ -39,6 +40,7 @@ export const initInvites = (currentUserId: number) => (dispatch: any) => {
 
     channel.addListener(channelTopics.invitesCreatedTopic, (data: any) => {
       if (data.invite.creatorId !== currentUserId) {
+        sound.play('round_created');
         const message = getSystemMessage({
           text: `You received battle invite (from ${getCreatorName(data)})`,
         });
@@ -49,6 +51,7 @@ export const initInvites = (currentUserId: number) => (dispatch: any) => {
     });
     channel.addListener(channelTopics.invitesCanceledTopic, (data: any) => {
       if (data.invite.executorId !== currentUserId) {
+        sound.play('give_up');
         const message = getSystemMessage({
           text: `Invite has been canceled (Opponent ${getOpponentName(data, currentUserId)})`,
           status: 'failure',
@@ -60,6 +63,7 @@ export const initInvites = (currentUserId: number) => (dispatch: any) => {
     });
     channel.addListener(channelTopics.invitesAcceptedTopic, (data: any) => {
       if (data.invite.executorId !== currentUserId) {
+        sound.play('win');
         const message = getSystemMessage({
           text: `Invite has been accepted (Opponent ${getOpponentName(data, currentUserId)})`,
           status: 'success',

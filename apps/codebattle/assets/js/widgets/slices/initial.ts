@@ -476,7 +476,10 @@ const initialState: InitialState = {
     },
     settings: {
       ...(currentUserParams || {}),
-      mute: JSON.parse((localStorage.getItem('ui_mute_sound') || false) as string),
+      mute:
+        currentUserParams?.soundSettings?.muted ??
+        (currentUserParams?.soundSettings?.type === 'silent' ||
+          JSON.parse((localStorage.getItem('ui_mute_sound') || false) as string)),
       alreadySendPremiumRequest: JSON.parse(
         (localStorage.getItem('already_send_premium_request') || false) as string,
       ),

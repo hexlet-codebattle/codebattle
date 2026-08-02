@@ -14,6 +14,7 @@ import {
   Online,
   RegistrationPage,
   SettingsPage,
+  SoundToggleMenu,
   TournamentThreejsStreamPage,
   TournamentStreamAdminPage,
   TournamentAdminPage,
@@ -49,6 +50,8 @@ export const renderRegistrationPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<RegistrationPage />);
 export const renderSettingPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<SettingsPage />);
+export const renderSoundToggle = (domElement: HTMLElement) =>
+  createRoot(domElement).render(<SoundToggleMenu />);
 export const renderTournamentThreejsStreamPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentThreejsStreamPage />);
 export const renderTournamentStreamAdminPage = (domElement: HTMLElement) =>

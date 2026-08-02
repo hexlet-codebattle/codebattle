@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import sound from '../lib/sound';
-import { actions } from '../slices';
+import { toggleMuteSound } from '../slices/user';
 
 const useGameRoomSoundSettings = () => {
   const dispatch = useDispatch();
@@ -16,13 +15,7 @@ const useGameRoomSoundSettings = () => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
         e.preventDefault();
 
-        if (mute) {
-          sound.toggle();
-        } else {
-          sound.toggle(0);
-        }
-
-        dispatch(actions.toggleMuteSound());
+        dispatch(toggleMuteSound() as never);
       }
     };
 

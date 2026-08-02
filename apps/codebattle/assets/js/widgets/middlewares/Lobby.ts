@@ -4,6 +4,7 @@ import some from 'lodash/some';
 import i18n from '../../i18n';
 import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
+import sound from '../lib/sound';
 import { getSystemMessage } from '../utils/chat';
 import { calculateExpireDate } from '../utils/chatRoom';
 import notification from '../utils/notification';
@@ -54,6 +55,7 @@ export const fetchState = (currentUserId: number, waitingGameId?: number) => (di
     );
 
     if (isGameStarted && isCurrentUserInGame) {
+      sound.play('round_created');
       const redirectToGame = () => window.location.replace(`/games/${id}`);
 
       if (gameStartNotification.isTabHidden()) {

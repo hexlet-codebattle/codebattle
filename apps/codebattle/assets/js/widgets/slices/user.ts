@@ -1,6 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import isEmpty from 'lodash/isEmpty';
 
+import sound from '../lib/sound';
+
 import initial, { type UserSliceState } from './initial';
 
 interface UserRecord {
@@ -62,9 +64,14 @@ const userSlice = createSlice({
     updateUserSettings: (state, { payload }: PayloadAction<Record<string, unknown>>) => {
       Object.assign(state.settings, payload);
     },
-    toggleMuteSound: (state) => {
-      localStorage.setItem('ui_mute_sound', String(!state.settings.mute));
-      state.settings.mute = !state.settings.mute;
+    setMuteSound: (state, { payload }: PayloadAction<boolean>) => {
+      localStorage.setItem('ui_mute_sound', String(payload));
+      state.settings.mute = payload;
+
+      const soundSettings = state.settings.soundSettings as Record<string, unknown> | undefined;
+      if (soundSettings) {
+        soundSettings.muted = payload;
+      }
     },
     togglePremiumRequestStatus: (state) => {
       localStorage.setItem(
@@ -77,6 +84,46 @@ const userSlice = createSlice({
 });
 
 const { actions, reducer } = userSlice;
+
+let muteSaveQueue: Promise<void> = Promise.resolve();
+
+const persistMuteSound = (muted: boolean) => {
+  const save = async () => {
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute('content');
+    const response = await fetch('/api/v1/settings', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': csrfToken ?? '',
+      },
+      body: JSON.stringify({ sound_settings: { muted } }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+  };
+
+  muteSaveQueue = muteSaveQueue.catch(() => {}).then(save);
+  return muteSaveQueue;
+};
+
+export const toggleMuteSound = () => async (dispatch: any, getState: any) => {
+  const previousMuted = Boolean(getState().user.settings.mute);
+  const muted = !previousMuted;
+
+  sound.toggle(muted ? 0 : undefined);
+  dispatch(actions.setMuteSound(muted));
+
+  try {
+    await persistMuteSound(muted);
+  } catch {
+    if (Boolean(getState().user.settings.mute) === muted) {
+      sound.toggle(previousMuted ? 0 : undefined);
+      dispatch(actions.setMuteSound(previousMuted));
+    }
+  }
+};
 
 export { actions };
 

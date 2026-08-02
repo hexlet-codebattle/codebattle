@@ -6,7 +6,7 @@ import type { RootState } from '@/slices/store';
 
 import customTheme from '../config/customTheme.json';
 import { gameIdSelector, gameModeSelector, gameLockedSelector } from '../selectors/index';
-import { actions } from '../slices';
+import { toggleMuteSound } from '../slices/user';
 
 interface ExtendedEditorProps {
   monacoTheme?: string;
@@ -107,6 +107,6 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = { toggleMuteSound: actions.toggleMuteSound };
+const mapDispatchToProps = { toggleMuteSound };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExtendedEditor);

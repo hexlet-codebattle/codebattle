@@ -27,10 +27,14 @@ function EmailSettingsForm({ currentEmail, onSubmit }: EmailSettingsFormProps) {
       onSubmit={onSubmit}
     >
       {({ dirty, isSubmitting, isValid }) => (
-        <Form className="container mt-4">
-          <div className="row form-group mb-3">
-            <div className="col-lg-4">
-              <h3 className="font-weight-normal">{i18n.t('Change email')}</h3>
+        <Form className="cb-settings-section">
+          <div className="cb-settings-section-heading">
+            <div>
+              <h3>{i18n.t('Change email')}</h3>
+            </div>
+          </div>
+          <div className="cb-settings-security-grid">
+            <div>
               <div className="form-group mb-3">
                 <label className="h6" htmlFor="currentEmail">
                   {i18n.t('Current email')}

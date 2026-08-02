@@ -1,4 +1,4 @@
-import sound, { configureSound } from '../widgets/lib/sound';
+import sound, { configureSound, createPlayer } from '../widgets/lib/sound';
 
 const howlerMocks = vi.hoisted(() => ({
   howl: vi.fn(),
@@ -58,6 +58,25 @@ describe('game sound settings', () => {
     configureSound({ type: 'silent', level: 5 });
 
     sound.play('win');
+
+    expect(howlerMocks.howl).not.toHaveBeenCalled();
+    expect(howlerMocks.play).not.toHaveBeenCalled();
+  });
+
+  test('does not play while quick mute is enabled', () => {
+    configureSound({ type: 'standard', level: 5 });
+    localStorage.setItem('ui_mute_sound', 'true');
+
+    sound.play('round_created');
+
+    expect(howlerMocks.howl).not.toHaveBeenCalled();
+    expect(howlerMocks.play).not.toHaveBeenCalled();
+  });
+
+  test('does not play settings previews while quick mute is enabled', () => {
+    localStorage.setItem('ui_mute_sound', 'true');
+
+    createPlayer().standard.play('win', 0.5);
 
     expect(howlerMocks.howl).not.toHaveBeenCalled();
     expect(howlerMocks.play).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import cn from 'classnames';
 import { Field, Form, Formik, useField, type FormikHelpers } from 'formik';
@@ -12,6 +12,7 @@ import * as Yup from 'yup';
 import LanguageIcon from '@/components/LanguageIcon';
 
 import i18n from '../../../i18n';
+import SoundToggle from '../../components/SoundToggle';
 import languages, { cssProcessors, dbNames } from '../../config/languages';
 import schemas from '../../formik';
 import { createPlayer } from '../../lib/sound';
@@ -28,6 +29,7 @@ export interface UserSettingsData {
   soundSettings: {
     type: 'dendy' | 'cs' | 'standard' | 'silent';
     level: number;
+    muted?: boolean;
     tournamentLevel?: number;
   };
   githubId?: string | number | null;
@@ -50,10 +52,19 @@ export interface UserSettingsFormValues {
     level: number;
     tournamentLevel: number;
   };
+}
+
+export interface PasswordSettingsFormValues {
   currentPassword: string;
   password: string;
   passwordConfirmation: string;
 }
+
+export type UserPreferenceUpdate = Partial<
+  Pick<UserSettingsFormValues, 'locale' | 'lang' | 'styleLang' | 'dbType'>
+> & {
+  soundSettings?: Partial<UserSettingsFormValues['soundSettings']>;
+};
 
 type SoundType = 'dendy' | 'cs' | 'standard';
 
@@ -66,7 +77,7 @@ const views = {
 type SettingsView = (typeof views)[keyof typeof views];
 const passwordFieldNames = ['currentPassword', 'password', 'passwordConfirmation'] as const;
 
-const hasPasswordValue = (values: Partial<UserSettingsFormValues>) =>
+const hasPasswordValue = (values: Partial<PasswordSettingsFormValues>) =>
   passwordFieldNames.some((fieldName) => Boolean(values[fieldName]?.trim()));
 
 const passwordValidationSchema = {
@@ -179,52 +190,55 @@ interface LanguageSelectProps {
   view: SettingsView;
   currentView: SettingsView;
   items: [string, string][];
+  onSelect: (fieldName: 'lang' | 'styleLang' | 'dbType', value: string) => void;
 }
 
-function LanguageSelect({ lang, view, currentView, items }: LanguageSelectProps) {
-  const [field, , helpers] = useField(getFieldNameByView(view));
+function LanguageSelect({ lang, view, currentView, items, onSelect }: LanguageSelectProps) {
+  const fieldName = getFieldNameByView(view);
+  const [field, , helpers] = useField(fieldName);
   const selectedSlug = field.value || lang || items[0]?.[0];
   const selectedName = items.find(([slug]) => slug === selectedSlug)?.[1] || selectedSlug;
 
   return (
-    <div className={cn('col-lg-4', { hidden: view !== currentView })}>
+    <div className={cn({ 'd-none': view !== currentView })}>
       <div className="h6">{i18n.t('Your weapon')}</div>
-      <div className="card cb-card p-3">
-        <Dropdown className="w-100">
-          <Dropdown.Toggle
-            id={`${view}-language-dropdown`}
-            data-testid={`${view}-langSelect`}
-            aria-label={i18n.t('Programming language select')}
-            className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
-          >
-            <LanguageIcon
-              className="mr-2 flex-shrink-0"
-              lang={selectedSlug}
-              style={{ width: '24px', height: '24px' }}
-            />
-            <span>{capitalize(selectedName)}</span>
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
-            {items.map(([slug, languageName]) => (
-              <Dropdown.Item
-                key={slug}
-                as="button"
-                type="button"
-                active={selectedSlug === slug}
-                className="cb-dropdown-item d-flex align-items-center"
-                onClick={() => helpers.setValue(slug)}
-              >
-                <LanguageIcon
-                  className="mr-2 flex-shrink-0"
-                  lang={slug}
-                  style={{ width: '24px', height: '24px' }}
-                />
-                {capitalize(languageName)}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      </div>
+      <Dropdown className="w-100">
+        <Dropdown.Toggle
+          id={`${view}-language-dropdown`}
+          data-testid={`${view}-langSelect`}
+          aria-label={i18n.t('Programming language select')}
+          className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
+        >
+          <LanguageIcon
+            className="mr-2 flex-shrink-0"
+            lang={selectedSlug}
+            style={{ width: '24px', height: '24px' }}
+          />
+          <span>{capitalize(selectedName)}</span>
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+          {items.map(([slug, languageName]) => (
+            <Dropdown.Item
+              key={slug}
+              as="button"
+              type="button"
+              active={selectedSlug === slug}
+              className="cb-dropdown-item d-flex align-items-center"
+              onClick={() => {
+                helpers.setValue(slug);
+                onSelect(fieldName, slug);
+              }}
+            >
+              <LanguageIcon
+                className="mr-2 flex-shrink-0"
+                lang={slug}
+                style={{ width: '24px', height: '24px' }}
+              />
+              {capitalize(languageName)}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
     </div>
   );
 }
@@ -234,7 +248,13 @@ const locales = [
   ['ru', 'Ru'],
 ];
 
-function LocaleSelect() {
+const soundTypes = [
+  { value: 'dendy', label: 'Dendy', icon: Icon.Cpu },
+  { value: 'cs', label: 'CS', icon: Icon.Target },
+  { value: 'standard', label: 'Standard', icon: Icon.Volume2 },
+] as const;
+
+function LocaleSelect({ onSelect }: { onSelect: (locale: string) => void }) {
   const [field, , helpers] = useField('locale');
   const currentLocaleLabel = locales.find(([value]) => value === field.value)?.[1] || locales[0][1];
 
@@ -257,7 +277,10 @@ function LocaleSelect() {
             type="button"
             active={field.value === value}
             className="cb-dropdown-item"
-            onClick={() => helpers.setValue(value)}
+            onClick={() => {
+              helpers.setValue(value);
+              onSelect(value);
+            }}
           >
             {label}
           </Dropdown.Item>
@@ -303,15 +326,33 @@ interface UserSettingsFormProps {
     values: UserSettingsFormValues,
     formikHelpers: FormikHelpers<UserSettingsFormValues>,
   ) => void | Promise<void>;
+  onAutoSave: (values: UserPreferenceUpdate) => void | Promise<void>;
+  onPasswordSubmit: (
+    values: PasswordSettingsFormValues,
+    formikHelpers: FormikHelpers<PasswordSettingsFormValues>,
+  ) => void | Promise<void>;
 }
 
-function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
+const passwordInitialValues: PasswordSettingsFormValues = {
+  currentPassword: '',
+  password: '',
+  passwordConfirmation: '',
+};
+
+function UserSettingsForm({
+  onSubmit,
+  onAutoSave,
+  onPasswordSubmit,
+  settings,
+}: UserSettingsFormProps) {
+  const pendingSoundUpdate = useRef<Partial<UserSettingsFormValues['soundSettings']>>({});
+  const soundSaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const initialValues = useMemo<UserSettingsFormValues>(
     () => ({
       locale: settings.locale,
       name: settings.name,
       soundSettings: {
-        type: settings.soundSettings.type,
+        type: settings.soundSettings.type === 'silent' ? 'dendy' : settings.soundSettings.type,
         level: settings.soundSettings.level,
         tournamentLevel: settings.soundSettings.tournamentLevel ?? settings.soundSettings.level,
       },
@@ -320,35 +361,68 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
       lang: settings.lang || '',
       styleLang: settings.styleLang || '',
       dbType: settings.dbType || '',
-      currentPassword: '',
-      password: '',
-      passwordConfirmation: '',
     }),
     [settings],
   );
 
-  const validationSchema = useMemo(
-    () => Yup.object({ ...schemas.userSettings(settings), ...passwordValidationSchema }),
-    [settings],
+  const validationSchema = useMemo(() => Yup.object(schemas.userSettings(settings)), [settings]);
+
+  const savePreference = useCallback(
+    (values: UserPreferenceUpdate) => {
+      void onAutoSave(values);
+    },
+    [onAutoSave],
+  );
+
+  const queueSoundUpdate = useCallback(
+    (values: Partial<UserSettingsFormValues['soundSettings']>) => {
+      pendingSoundUpdate.current = { ...pendingSoundUpdate.current, ...values };
+      clearTimeout(soundSaveTimer.current);
+      soundSaveTimer.current = setTimeout(() => {
+        const soundSettings = pendingSoundUpdate.current;
+        pendingSoundUpdate.current = {};
+        savePreference({ soundSettings });
+      }, 300);
+    },
+    [savePreference],
+  );
+
+  useEffect(
+    () => () => {
+      clearTimeout(soundSaveTimer.current);
+    },
+    [],
   );
 
   return (
-    <Formik
-      initialValues={initialValues}
-      initialTouched={{ name: true }}
-      enableReinitialize
-      validateOnChange
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
-    >
-      {({ handleChange, dirty, isValid, isSubmitting, values }) => (
-        <Form>
-          <div className="container">
-            <div className="row form-group mb-3">
-              <div className="col-lg-3">
-                <div>
+    <>
+      <Formik
+        initialValues={initialValues}
+        initialTouched={{ name: true }}
+        validateOnChange
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        {({ errors, handleChange, isSubmitting, values }) => {
+          const profileChanged =
+            values.name !== settings.name || values.clan !== (settings.clan || '');
+          const profileIsValid = !errors.name && !errors.clan;
+
+          return (
+            <Form className="cb-settings-form">
+              <section className="cb-settings-section" aria-labelledby="profile-settings-title">
+                <div className="cb-settings-section-heading">
+                  <span className="cb-settings-section-icon" aria-hidden="true">
+                    <Icon.User size={20} />
+                  </span>
+                  <div>
+                    <h3 id="profile-settings-title">{i18n.t('Profile')}</h3>
+                    <p>{i18n.t('Manage your public identity.')}</p>
+                  </div>
+                </div>
+
+                <div className="cb-settings-profile-grid">
                   <TextInput
-                    className="col-5"
                     data-testid="nameInput"
                     label={i18n.t('Your name')}
                     id="name"
@@ -356,10 +430,7 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                     type="text"
                     placeholder={i18n.t('Enter your name')}
                   />
-                </div>
-                <div className="mt-2">
                   <TextInput
-                    className="col-5"
                     data-testid="clanInput"
                     label={i18n.t('Your clan')}
                     id="clan"
@@ -370,37 +441,189 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                     placeholder={i18n.t('Enter your clan')}
                   />
                 </div>
-                <div className="mt-2">
-                  <div className="h6">{i18n.t('Locale')}</div>
-                  <LocaleSelect />
-                </div>
-              </div>
-              <LanguageSelect
-                view={views.code}
-                currentView={values.langView}
-                lang={values.lang}
-                items={playingLanguages}
-              />
-              <LanguageSelect
-                view={views.css}
-                currentView={values.langView}
-                lang={values.styleLang}
-                items={cssLanguages}
-              />
-              <LanguageSelect
-                view={views.sql}
-                currentView={values.langView}
-                lang={values.dbType}
-                items={databaseTypes}
-              />
-            </div>
-          </div>
 
-          {settings.hasPassword && (
-            <div className="container">
-              <div className="row form-group mb-3">
-                <div className="col-lg-4">
-                  <h3 className="font-weight-normal">{i18n.t('Change password')}</h3>
+                <div className="cb-settings-section-actions">
+                  <button
+                    disabled={!profileChanged || !profileIsValid || isSubmitting}
+                    aria-label={i18n.t('Update profile')}
+                    type="submit"
+                    className="btn btn-primary rounded-lg px-4"
+                  >
+                    {isSubmitting ? (
+                      <div className="spinner-border spinner-border-sm" role="status">
+                        <span className="sr-only">{i18n.t('Loading...')}</span>
+                      </div>
+                    ) : (
+                      i18n.t('Update profile')
+                    )}
+                  </button>
+                </div>
+              </section>
+
+              <section className="cb-settings-section" aria-labelledby="preferences-settings-title">
+                <div className="cb-settings-section-heading">
+                  <span className="cb-settings-section-icon" aria-hidden="true">
+                    <Icon.Code size={20} />
+                  </span>
+                  <div>
+                    <h3 id="preferences-settings-title">{i18n.t('Coding preferences')}</h3>
+                    <p>{i18n.t('Weapon and locale changes are saved automatically.')}</p>
+                  </div>
+                </div>
+
+                <div className="cb-settings-profile-grid">
+                  <LanguageSelect
+                    view={views.code}
+                    currentView={values.langView}
+                    lang={values.lang}
+                    items={playingLanguages}
+                    onSelect={(fieldName, value) => savePreference({ [fieldName]: value })}
+                  />
+                  <LanguageSelect
+                    view={views.css}
+                    currentView={values.langView}
+                    lang={values.styleLang}
+                    items={cssLanguages}
+                    onSelect={(fieldName, value) => savePreference({ [fieldName]: value })}
+                  />
+                  <LanguageSelect
+                    view={views.sql}
+                    currentView={values.langView}
+                    lang={values.dbType}
+                    items={databaseTypes}
+                    onSelect={(fieldName, value) => savePreference({ [fieldName]: value })}
+                  />
+                  <div>
+                    <div className="h6">{i18n.t('Locale')}</div>
+                    <LocaleSelect onSelect={(locale) => savePreference({ locale })} />
+                  </div>
+                </div>
+              </section>
+
+              <section className="cb-settings-section" aria-labelledby="sound-settings-title">
+                <div className="cb-settings-section-heading cb-settings-sound-heading">
+                  <span className="cb-settings-section-icon" aria-hidden="true">
+                    <Icon.Volume2 size={20} />
+                  </span>
+                  <div className="flex-grow-1">
+                    <h3 id="sound-settings-title">{i18n.t('Sound settings')}</h3>
+                    <p>{i18n.t('Choose how game and tournament notifications sound.')}</p>
+                  </div>
+                  <SoundToggle variant="settings" />
+                </div>
+
+                <fieldset className="mb-4">
+                  <legend className="cb-settings-label">{i18n.t('Sound theme')}</legend>
+                  <div className="cb-settings-sound-types">
+                    {soundTypes.map(({ value, label, icon: SoundIcon }) => (
+                      <div key={value} className="cb-settings-sound-option">
+                        <Field
+                          id={`sound-type-${value}`}
+                          type="radio"
+                          name="soundSettings.type"
+                          value={value}
+                          className="cb-settings-sound-input"
+                          onClick={() => {
+                            playSound(value, values.soundSettings.level * 0.1);
+                            savePreference({ soundSettings: { type: value } });
+                          }}
+                        />
+                        <label htmlFor={`sound-type-${value}`}>
+                          <SoundIcon size={20} aria-hidden="true" />
+                          <span>{i18n.t(label)}</span>
+                          <Icon.Check className="cb-settings-sound-check" size={16} />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <div className="cb-settings-volume-grid">
+                  <div className="cb-settings-volume-card">
+                    <div className="cb-settings-volume-label">
+                      <span>{i18n.t('Game sound level')}</span>
+                      <strong>{values.soundSettings.level}/10</strong>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <Icon.VolumeX size={18} aria-hidden="true" />
+                      <RangeInput
+                        type="range"
+                        min={0}
+                        max={10}
+                        name="soundSettings.level"
+                        aria-label={i18n.t('Game sound level')}
+                        disabled={values.soundSettings.type === 'silent'}
+                        onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                          handleChange(e);
+                          queueSoundUpdate({
+                            level: Number(e.currentTarget.value),
+                          });
+                          playSound(
+                            values.soundSettings.type as SoundType,
+                            Number(e.currentTarget.value) * 0.1,
+                          );
+                        }}
+                        className="mx-3"
+                      />
+                      <Icon.Volume2 size={18} aria-hidden="true" />
+                    </div>
+                  </div>
+
+                  <div className="cb-settings-volume-card">
+                    <div className="cb-settings-volume-label">
+                      <span>{i18n.t('Tournament sound level')}</span>
+                      <strong>{values.soundSettings.tournamentLevel}/10</strong>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <Icon.VolumeX size={18} aria-hidden="true" />
+                      <RangeInput
+                        type="range"
+                        min={0}
+                        max={10}
+                        name="soundSettings.tournamentLevel"
+                        aria-label={i18n.t('Tournament sound level')}
+                        disabled={values.soundSettings.type === 'silent'}
+                        onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                          handleChange(e);
+                          queueSoundUpdate({
+                            tournamentLevel: Number(e.currentTarget.value),
+                          });
+                          playSound(
+                            values.soundSettings.type as SoundType,
+                            Number(e.currentTarget.value) * 0.1,
+                          );
+                        }}
+                        className="mx-3"
+                      />
+                      <Icon.Volume2 size={18} aria-hidden="true" />
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </Form>
+          );
+        }}
+      </Formik>
+
+      {settings.hasPassword && (
+        <Formik
+          initialValues={passwordInitialValues}
+          validationSchema={Yup.object(passwordValidationSchema)}
+          validateOnChange
+          onSubmit={onPasswordSubmit}
+        >
+          {({ dirty, isValid, isSubmitting }) => (
+            <Form className="cb-settings-form">
+              <section className="cb-settings-section" aria-labelledby="password-settings-title">
+                <div className="cb-settings-section-heading">
+                  <span className="cb-settings-section-icon" aria-hidden="true">
+                    <Icon.Lock size={20} />
+                  </span>
+                  <div>
+                    <h3 id="password-settings-title">{i18n.t('Change password')}</h3>
+                  </div>
+                </div>
+                <div className="cb-settings-security-grid">
                   <TextInput
                     data-testid="currentPasswordInput"
                     label={i18n.t('Old password')}
@@ -429,129 +652,28 @@ function UserSettingsForm({ onSubmit, settings }: UserSettingsFormProps) {
                     placeholder={i18n.t('Confirm new password')}
                   />
                 </div>
-              </div>
-            </div>
-          )}
-
-          <div id="my-radio-group" className="h6 ml-2">
-            {i18n.t('Select sound type')}
-          </div>
-          <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
-            <div className="form-check">
-              <Field
-                id="radioDendy"
-                type="radio"
-                name="soundSettings.type"
-                value="dendy"
-                className="form-check-input"
-                onClick={() => playSound('dendy', values.soundSettings.level * 0.1)}
-              />
-              <label className="form-check-label" htmlFor="radioDendy">
-                {i18n.t('Dendy')}
-              </label>
-            </div>
-            <div className="form-check">
-              <Field
-                id="radioCS"
-                type="radio"
-                name="soundSettings.type"
-                value="cs"
-                className="form-check-input"
-                onClick={() => playSound('cs', values.soundSettings.level * 0.1)}
-              />
-              <label className="form-check-label" htmlFor="radioCS">
-                {i18n.t('CS')}
-              </label>
-            </div>
-            <div className="form-check">
-              <Field
-                id="radioStandard"
-                type="radio"
-                name="soundSettings.type"
-                value="standard"
-                className="form-check-input"
-                onClick={() => playSound('standard', values.soundSettings.level * 0.1)}
-              />
-              <label className="form-check-label" htmlFor="radioStandard">
-                {i18n.t('Standard')}
-              </label>
-            </div>
-            <div className="form-check">
-              <Field
-                id="radioSilent"
-                type="radio"
-                name="soundSettings.type"
-                value="silent"
-                className="form-check-input"
-              />
-              <label className="form-check-label" htmlFor="radioSilent">
-                {i18n.t('Silent')}
-              </label>
-            </div>
-          </div>
-
-          <div className="h6 ml-2">{i18n.t('Select sound level')}</div>
-          <div className="ml-2 mb-3 d-flex align-items-center">
-            <Icon.VolumeX />
-            <RangeInput
-              type="range"
-              min={0}
-              max={10}
-              name="soundSettings.level"
-              disabled={values.soundSettings.type === 'silent'}
-              onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                handleChange(e);
-                playSound(
-                  values.soundSettings.type as SoundType,
-                  Number(e.currentTarget.value) * 0.1,
-                );
-              }}
-              className="mx-3"
-            />
-            <Icon.Volume2 />
-          </div>
-
-          <div className="h6 ml-2">{i18n.t('Select tournament sound level')}</div>
-          <div className="ml-2 mb-3 d-flex align-items-center">
-            <Icon.VolumeX />
-            <RangeInput
-              type="range"
-              min={0}
-              max={10}
-              name="soundSettings.tournamentLevel"
-              disabled={values.soundSettings.type === 'silent'}
-              onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                handleChange(e);
-                playSound(
-                  values.soundSettings.type as SoundType,
-                  Number(e.currentTarget.value) * 0.1,
-                );
-              }}
-              className="mx-3"
-            />
-            <Icon.Volume2 />
-          </div>
-
-          <div className="d-flex justify-content-center">
-            <button
-              disabled={!dirty || !isValid}
-              aria-label={i18n.t('Submit form')}
-              style={{ width: '120px' }}
-              type="submit"
-              className="btn py-1 btn-primary rounded-lg"
-            >
-              {isSubmitting ? (
-                <div className="spinner-border spinner-border-sm" role="status">
-                  <span className="sr-only">{i18n.t('Loading...')}</span>
+                <div className="cb-settings-section-actions">
+                  <button
+                    disabled={!dirty || !isValid || isSubmitting}
+                    aria-label={i18n.t('Change password')}
+                    type="submit"
+                    className="btn btn-primary rounded-lg px-4"
+                  >
+                    {isSubmitting ? (
+                      <div className="spinner-border spinner-border-sm" role="status">
+                        <span className="sr-only">{i18n.t('Loading...')}</span>
+                      </div>
+                    ) : (
+                      i18n.t('Change password')
+                    )}
+                  </button>
                 </div>
-              ) : (
-                i18n.t('Save')
-              )}
-            </button>
-          </div>
-        </Form>
+              </section>
+            </Form>
+          )}
+        </Formik>
       )}
-    </Formik>
+    </>
   );
 }
 
