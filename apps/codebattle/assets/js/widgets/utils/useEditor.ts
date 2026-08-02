@@ -145,6 +145,13 @@ const useEditor = (props: UseEditorProps) => {
   const [editor, setEditor] = useState();
   const [monaco, setMonaco] = useState();
 
+  // Monaco registers keybindings only when the editor mounts. Keep the callback
+  // current when the game becomes active without recreating the editor action.
+  const checkResultRef = useRef(props.checkResult);
+  useEffect(() => {
+    checkResultRef.current = props.checkResult;
+  }, [props.checkResult]);
+
   // Keep the latest onTelemetryEvent in a ref so Monaco's mount-time listener
   // closure always invokes the current callback, not a stale (no-op) snapshot
   // captured before the gating state turned on.
@@ -199,15 +206,7 @@ const useEditor = (props: UseEditorProps) => {
 
     // currentMonaco.editor.setTheme('code-theme-dark');
 
-    const {
-      editable,
-      roomMode,
-      checkResult,
-      toggleMuteSound,
-      syntax,
-      gameStartTimeMs,
-      allowClipboard,
-    } = props;
+    const { editable, roomMode, toggleMuteSound, syntax, gameStartTimeMs, allowClipboard } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const emitTelemetry = (payload: Record<string, any>) => {
@@ -414,23 +413,18 @@ const useEditor = (props: UseEditorProps) => {
     }
 
     // Codebattle action: Check on Ctrl+Enter
-    if (checkResult) {
-      currentEditor.addAction({
-        id: 'codebattle-check-keys',
-        label: 'Codebattle check start',
-        keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter],
-        run: () => {
-          if (!currentEditor.getOptions().readOnly) {
-            checkResult();
-          }
-        },
-      });
-    } else {
-      currentEditor.addCommand(
-        currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter,
-        () => null,
-      );
-    }
+    currentEditor.addAction({
+      id: 'codebattle-check-keys',
+      label: 'Codebattle check start',
+      keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter],
+      run: () => {
+        const currentCheckResult = checkResultRef.current;
+
+        if (!currentEditor.getOptions().readOnly && currentCheckResult) {
+          currentCheckResult();
+        }
+      },
+    });
 
     // Codebattle action: toggle sound on Ctrl+M
     currentEditor.addAction({
