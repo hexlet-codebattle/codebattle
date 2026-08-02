@@ -300,6 +300,36 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       assert is_list(achievements)
     end
 
+    test "uses denormalized achievements without scanning user games", %{conn: conn} do
+      user = insert(:user)
+      game = insert(:game, state: "game_over")
+      insert(:user_game, user: user, game: game, result: "won", lang: "js")
+      :ok = Achievements.recalculate_user(user.id)
+
+      handler_id = "user-achievements-query-test-#{System.unique_integer()}"
+      test_process = self()
+
+      :ok =
+        :telemetry.attach(
+          handler_id,
+          [:codebattle, :repo, :query],
+          fn _event, _measurements, %{query: query}, _config ->
+            if String.contains?(query, ~s[FROM "user_games"]) do
+              send(test_process, :queried_user_games)
+            end
+          end,
+          nil
+        )
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
+      conn
+      |> get(Routes.api_v1_user_path(conn, :achievements, user.id))
+      |> json_response(200)
+
+      refute_receive :queried_user_games
+    end
+
     test "returns 404 for missing user", %{conn: conn} do
       resp_body =
         conn

@@ -276,8 +276,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
       user ->
         active_game_id = Game.Context.get_active_game_id(id)
-        stats = UserStats.get_game_stats(id)
         achievements = Achievements.get_user_achievements(id)
+        stats = if include_stats, do: UserStats.get_game_stats(id), else: %{games: %{}, all: []}
         metrics = build_metrics_from_achievements(achievements, stats)
 
         payload = %{

@@ -23,23 +23,34 @@ function PopoverStickOnHover({
 }: PopoverStickOnHoverProps) {
   const [showPopover, setShowPopover] = useState(false);
   const childNode = useRef<unknown>(null);
-  let setTimeoutConst: ReturnType<typeof setTimeout> | null = null;
+  const showTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => {
-    if (setTimeoutConst) {
-      clearTimeout(setTimeoutConst);
-    }
-  });
+  useEffect(
+    () => () => {
+      if (showTimeout.current) {
+        clearTimeout(showTimeout.current);
+      }
+    },
+    [],
+  );
 
   const handleMouseEnter = () => {
-    setTimeoutConst = setTimeout(() => {
+    if (showTimeout.current) {
+      clearTimeout(showTimeout.current);
+    }
+
+    showTimeout.current = setTimeout(() => {
       setShowPopover(true);
       onMouseEnter();
     }, delay);
   };
 
   const handleMouseLeave = () => {
-    clearTimeout(setTimeoutConst as ReturnType<typeof setTimeout>);
+    if (showTimeout.current) {
+      clearTimeout(showTimeout.current);
+      showTimeout.current = null;
+    }
+
     setShowPopover(false);
   };
 

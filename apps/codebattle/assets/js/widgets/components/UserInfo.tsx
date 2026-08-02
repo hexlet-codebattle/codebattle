@@ -20,46 +20,69 @@ interface UserPopoverContentProps {
   user: UserNameUser;
 }
 
-function UserPopoverContent({ user }: UserPopoverContentProps) {
-  // TODO: store stats in global redux state
-  const dispatch = useDispatch<AppDispatch>();
+type UserStatsData = React.ComponentProps<typeof UserStats>['data'];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [stats, setStats] = useState<any>(null);
+const userStatsCache = new Map<UserNameUser['id'], UserStatsData>();
+const userStatsRequests = new Map<UserNameUser['id'], Promise<UserStatsData>>();
+
+const fetchUserStats = (userId: UserNameUser['id']) => {
+  const cached = userStatsCache.get(userId);
+
+  if (cached) {
+    return Promise.resolve(cached);
+  }
+
+  const pendingRequest = userStatsRequests.get(userId);
+
+  if (pendingRequest) {
+    return pendingRequest;
+  }
+
+  const request = fetch(`/api/v1/user/${userId}/achievements`)
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      return camelizeKeys(await response.json()) as UserStatsData;
+    })
+    .then((data) => {
+      userStatsCache.set(userId, data);
+      return data;
+    })
+    .finally(() => {
+      userStatsRequests.delete(userId);
+    });
+
+  userStatsRequests.set(userId, request);
+  return request;
+};
+
+function UserPopoverContent({ user }: UserPopoverContentProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const [stats, setStats] = useState<UserStatsData>(() => userStatsCache.get(user.id));
 
   useEffect(() => {
     const userId = user.id;
-    const controller = new AbortController();
+    let mounted = true;
 
-    fetch(`/api/v1/user/${userId}/achievements`, {
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (!controller.signal.aborted) {
-          setStats(camelizeKeys(data));
+    setStats(userStatsCache.get(userId));
+    fetchUserStats(userId)
+      .then((data) => {
+        if (mounted) {
+          setStats(data);
         }
       })
       .catch((error) => {
-        // Aborting the in-flight request on hover-out (below) rejects with an
-        // AbortError — that's expected teardown, not a real failure, so don't
-        // surface it as a global error.
-        if (controller.signal.aborted || (error as { name?: string })?.name === 'AbortError') {
-          return;
+        if (mounted) {
+          dispatch(actions.setError(error));
         }
-
-        dispatch(actions.setError(error));
       });
 
     return () => {
-      controller.abort();
+      mounted = false;
     };
-  }, [dispatch, setStats, user.id]);
+  }, [dispatch, user.id]);
 
   // UserStats expects a stricter user shape (numeric id); UserNameUser is broader.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -141,7 +164,12 @@ function UserInfo({
   }
 
   return (
-    <PopoverStickOnHover id={`user-info-${user?.id}`} placement={placement} component={content}>
+    <PopoverStickOnHover
+      id={`user-info-${user?.id}`}
+      delay={150}
+      placement={placement}
+      component={content}
+    >
       <div>
         <UserName
           className={userClassName}

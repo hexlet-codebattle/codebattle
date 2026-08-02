@@ -457,16 +457,15 @@ defmodule Codebattle.Game.Context do
   end
 
   def get_active_game_id(user_id) do
-    Game
-    |> where([g], g.state == "playing")
-    |> where([g], fragment("? = ANY(player_ids)", ^user_id))
-    # |> where([g], g.inserted_at > fragment("now() - interval '30 minutes'"))
-    |> order_by([g], desc: g.id)
-    |> Repo.all()
-    |> case do
-      [%Game{id: id} | _] -> id
-      _ -> nil
-    end
+    Repo.one(
+      from(g in Game,
+        where: g.state == "playing",
+        where: fragment("? @> ARRAY[?]::integer[]", g.player_ids, ^user_id),
+        order_by: [desc: g.id],
+        limit: 1,
+        select: g.id
+      )
+    )
   end
 
   def report_on_player(game_id, reporter, offender_id) do

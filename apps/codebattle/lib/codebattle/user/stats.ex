@@ -15,7 +15,7 @@ defmodule Codebattle.User.Stats do
     user_games_stats =
       Repo.all(
         from(ug in UserGame,
-          select: %{result: ug.result, lang: ug.lang, count: count(ug.id)},
+          select: %{result: ug.result, lang: ug.lang, count: count()},
           where: ug.user_id == ^user_id,
           where: ug.result in ["won", "lost", "gave_up"],
           group_by: [ug.result, ug.lang]
