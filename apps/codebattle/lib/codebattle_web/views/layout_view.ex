@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.LayoutView do
   use CodebattleWeb, :view
 
+  import CodebattleWeb.LobbyLoadingHelpers
   import CodebattleWeb.Router.Helpers
   import Inertia.HTML
 

@@ -383,7 +383,14 @@
       <% end %>
       <div class="content bg-light"></div>
       <main class="d-lg-flex">
-        {@inner_content}
+        <%= if assigns[:show_lobby_loading_shell] do %>
+          <div class="cb-lobby-loading-frame">
+            {@inner_content}
+            <.lobby_loading_shell />
+          </div>
+        <% else %>
+          {@inner_content}
+        <% end %>
       </main>
       <footer>
         <%= unless FunWithFlags.enabled?(:hide_footer) do %>

@@ -13,6 +13,7 @@ import reducers from '@/slices';
 
 import PageNames from './config/pageNames';
 import SoundToggle from './components/SoundToggle';
+import LobbyLoading from './pages/lobby/LobbyLoading';
 
 const {
   game: mainMachine,
@@ -173,10 +174,12 @@ export function TournamentStreamAdminPage() {
 }
 
 export function Lobby() {
+  const loading = <LobbyLoading />;
+
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Suspense>
+      <PersistGate loading={loading} persistor={persistor}>
+        <Suspense fallback={loading}>
           <NiceModal.Provider>
             <LobbyWidget />
           </NiceModal.Provider>

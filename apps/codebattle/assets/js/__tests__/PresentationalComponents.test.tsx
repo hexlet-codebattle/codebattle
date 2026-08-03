@@ -7,6 +7,7 @@ import EditorLoading from '../widgets/components/EditorLoading';
 import GameLevelBadge from '../widgets/components/GameLevelBadge';
 import InfoMessage from '../widgets/components/InfoMessage';
 import Loading from '../widgets/components/Loading';
+import LobbyLoading from '../widgets/pages/lobby/LobbyLoading';
 import MessageTimestamp from '../widgets/components/MessageTimestamp';
 import PlayerLoading from '../widgets/components/PlayerLoading';
 import SystemMessage from '../widgets/components/SystemMessage';
@@ -36,6 +37,14 @@ describe('presentational components', () => {
     render(<Loading small />);
 
     expect(screen.getByRole('status')).toHaveStyle({ width: '30px', height: '30px' });
+  });
+
+  test('renders the lobby loading shell', () => {
+    const { container } = render(<LobbyLoading />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('Loading...');
+    expect(screen.getByText('Preparing your arena')).toBeInTheDocument();
+    expect(container.querySelectorAll('.cb-text-skeleton')).toHaveLength(18);
   });
 
   test('renders the timer duration', () => {

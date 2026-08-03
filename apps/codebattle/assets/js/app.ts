@@ -36,29 +36,6 @@ import { LiveSocket, type Hook } from 'phoenix_live_view';
 // paths "./socket" or full ones "web/static/js/socket".
 
 import './widgets/lib/sentry';
-import {
-  renderEventPage,
-  renderGroupTournamentPage,
-  renderGameMlPage,
-  renderGameThreejsPage,
-  renderGameWidget,
-  renderHeatmapWidget,
-  renderInvitesWidget,
-  renderMainChannelWidget,
-  renderLobby,
-  renderOnlineWidget,
-  renderRegistrationPage,
-  renderSettingPage,
-  renderSoundToggle,
-  renderTournamentThreejsStreamPage,
-  renderTournamentStreamAdminPage,
-  renderTournamentAdminPage,
-  renderTournamentPage,
-  renderTournamentPlayerPage,
-  renderUserPage,
-  renderUsersRating,
-  renderAdminPage,
-} from './widgets';
 
 // NOTE: the xstate v4 iframe inspector (`@xstate/inspect`) was removed with the
 // xstate v5 upgrade — it is not compatible with v5. To restore dev inspection,
@@ -131,86 +108,100 @@ const groupTournamentRoot = document.getElementById('group-tournament-root');
 const userPageRoot = document.getElementById('user-page-root');
 const adminConnectionsRoot = document.getElementById('admin-connections-root');
 
-if (mainChannelRoot) {
-  renderMainChannelWidget(mainChannelRoot);
+let widgetsPromise: Promise<typeof import('./widgets')> | undefined;
+const loadWidgets = () => (widgetsPromise ??= import('./widgets'));
+
+const primaryWidgetRoots = [
+  adminConnectionsRoot,
+  gameWidgetRoot,
+  gameThreejsRoot,
+  gameMlRoot,
+  heatmapRoot,
+  lobbyRoot,
+  ratingList,
+  userPageRoot,
+  settingsRoot,
+  registrationRoot,
+  tournamentPlayerRoot,
+  tournamentRoot,
+  adminTournamentRoot,
+  eventWidgetRoot,
+  groupTournamentRoot,
+  tournamentThreejsStreamRoot,
+  tournamentStreamAdminRoot,
+];
+
+if (primaryWidgetRoots.some(Boolean)) {
+  void loadWidgets().then(
+    ({
+      renderAdminPage,
+      renderEventPage,
+      renderGameMlPage,
+      renderGameThreejsPage,
+      renderGameWidget,
+      renderGroupTournamentPage,
+      renderHeatmapWidget,
+      renderLobby,
+      renderRegistrationPage,
+      renderSettingPage,
+      renderTournamentAdminPage,
+      renderTournamentPage,
+      renderTournamentPlayerPage,
+      renderTournamentStreamAdminPage,
+      renderTournamentThreejsStreamPage,
+      renderUserPage,
+      renderUsersRating,
+    }) => {
+      if (adminConnectionsRoot) renderAdminPage(adminConnectionsRoot);
+      if (gameWidgetRoot) renderGameWidget(gameWidgetRoot);
+      if (gameThreejsRoot) renderGameThreejsPage(gameThreejsRoot);
+      if (gameMlRoot) renderGameMlPage(gameMlRoot);
+      if (heatmapRoot) renderHeatmapWidget(heatmapRoot);
+      if (lobbyRoot) renderLobby(lobbyRoot);
+      if (ratingList) renderUsersRating(ratingList);
+      if (userPageRoot) renderUserPage(userPageRoot);
+      if (settingsRoot) renderSettingPage(settingsRoot);
+      if (registrationRoot) renderRegistrationPage(registrationRoot);
+      if (tournamentPlayerRoot) renderTournamentPlayerPage(tournamentPlayerRoot);
+      if (tournamentRoot) renderTournamentPage(tournamentRoot);
+      if (adminTournamentRoot) renderTournamentAdminPage(adminTournamentRoot);
+      if (eventWidgetRoot) renderEventPage(eventWidgetRoot);
+      if (groupTournamentRoot) renderGroupTournamentPage(groupTournamentRoot);
+      if (tournamentThreejsStreamRoot) {
+        renderTournamentThreejsStreamPage(tournamentThreejsStreamRoot);
+      }
+      if (tournamentStreamAdminRoot) {
+        renderTournamentStreamAdminPage(tournamentStreamAdminRoot);
+      }
+    },
+  );
 }
 
-if (adminConnectionsRoot) {
-  renderAdminPage(adminConnectionsRoot);
-}
+const secondaryWidgetRoots = [mainChannelRoot, onlineRoot, invitesRoot, soundToggleRoot];
 
-if (gameWidgetRoot) {
-  renderGameWidget(gameWidgetRoot);
-}
+if (secondaryWidgetRoots.some(Boolean)) {
+  const renderSecondaryWidgets = () => {
+    void loadWidgets().then(
+      ({ renderInvitesWidget, renderMainChannelWidget, renderOnlineWidget, renderSoundToggle }) => {
+        if (mainChannelRoot) renderMainChannelWidget(mainChannelRoot);
+        if (onlineRoot) renderOnlineWidget(onlineRoot);
+        if (invitesRoot) renderInvitesWidget(invitesRoot);
+        if (soundToggleRoot) renderSoundToggle(soundToggleRoot);
+      },
+    );
+  };
 
-if (gameThreejsRoot) {
-  renderGameThreejsPage(gameThreejsRoot);
-}
+  const scheduleSecondaryWidgets = () => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(renderSecondaryWidgets, { timeout: 2_000 });
+    } else {
+      setTimeout(renderSecondaryWidgets, 0);
+    }
+  };
 
-if (gameMlRoot) {
-  renderGameMlPage(gameMlRoot);
-}
-
-if (heatmapRoot) {
-  renderHeatmapWidget(heatmapRoot);
-}
-
-if (lobbyRoot) {
-  renderLobby(lobbyRoot);
-}
-
-if (ratingList) {
-  renderUsersRating(ratingList);
-}
-
-if (userPageRoot) {
-  renderUserPage(userPageRoot);
-}
-
-if (settingsRoot) {
-  renderSettingPage(settingsRoot);
-}
-
-if (soundToggleRoot) {
-  renderSoundToggle(soundToggleRoot);
-}
-
-if (registrationRoot) {
-  renderRegistrationPage(registrationRoot);
-}
-
-if (tournamentPlayerRoot) {
-  renderTournamentPlayerPage(tournamentPlayerRoot);
-}
-
-if (tournamentRoot) {
-  renderTournamentPage(tournamentRoot);
-}
-
-if (adminTournamentRoot) {
-  renderTournamentAdminPage(adminTournamentRoot);
-}
-
-if (eventWidgetRoot) {
-  renderEventPage(eventWidgetRoot);
-}
-
-if (groupTournamentRoot) {
-  renderGroupTournamentPage(groupTournamentRoot);
-}
-
-if (onlineRoot) {
-  renderOnlineWidget(onlineRoot);
-}
-
-if (invitesRoot) {
-  renderInvitesWidget(invitesRoot);
-}
-
-if (tournamentThreejsStreamRoot) {
-  renderTournamentThreejsStreamPage(tournamentThreejsStreamRoot);
-}
-
-if (tournamentStreamAdminRoot) {
-  renderTournamentStreamAdminPage(tournamentStreamAdminRoot);
+  if (document.readyState === 'complete') {
+    scheduleSecondaryWidgets();
+  } else {
+    window.addEventListener('load', scheduleSecondaryWidgets, { once: true });
+  }
 }
