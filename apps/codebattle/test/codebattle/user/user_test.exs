@@ -44,11 +44,21 @@ defmodule Codebattle.User.ModelTest do
     user = insert(:user, name: "Coverage Search User", rank: 2, is_bot: false)
     _bot = insert(:user, name: "Coverage Search Bot", rank: 1, is_bot: true)
 
+    archived =
+      insert(:user,
+        name: "Coverage Search Archived",
+        rank: 3,
+        is_bot: false,
+        archived_at: DateTime.utc_now(:second)
+      )
+
     assert User.get!(user.id).id == user.id
     assert User.get(user.id).id == user.id
     assert User.get(-1) == nil
     assert {2, user.id} in User.get_user_places_and_ids()
+    refute {3, archived.id} in User.get_user_places_and_ids()
     assert Enum.map(User.search_users("Search User"), & &1.id) == [user.id]
+    assert User.search_users("Search Archived") == []
     assert User.get_nearby_users(%{rank: nil}) == []
     assert User.get_nearby_users(%{is_guest: true}) == []
   end

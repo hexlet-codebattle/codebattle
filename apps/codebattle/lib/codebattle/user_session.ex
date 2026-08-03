@@ -46,6 +46,14 @@ defmodule Codebattle.UserSession do
   end
 
   def create(user, attrs \\ %{}) do
+    if User.active?(user) do
+      do_create(user, attrs)
+    else
+      {:error, :account_archived}
+    end
+  end
+
+  defp do_create(user, attrs) do
     {token, token_hash} = generate_token()
     now = now()
 
@@ -76,7 +84,9 @@ defmodule Codebattle.UserSession do
 
     session =
       __MODULE__
+      |> join(:inner, [s], u in assoc(s, :user))
       |> where([s], s.token_hash == ^hash_token(token))
+      |> where([_s, u], is_nil(u.archived_at))
       |> where([s], is_nil(s.revoked_at) and s.expires_at > ^current_time)
       |> preload(:user)
       |> Repo.one()
@@ -92,7 +102,9 @@ defmodule Codebattle.UserSession do
         current_time = now()
 
         __MODULE__
+        |> join(:inner, [s], u in assoc(s, :user))
         |> where([s], s.id == ^session_id and s.user_id == ^user_id)
+        |> where([_s, u], is_nil(u.archived_at))
         |> where([s], is_nil(s.revoked_at) and s.expires_at > ^current_time)
         |> preload(:user)
         |> Repo.one()

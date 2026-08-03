@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { FormikHelpers } from 'formik';
 
 import type { RootState } from '@/slices/store';
+import Modal from '@/components/BootstrapModal';
 import { getPageProp } from '@/inertia/pageProps';
 
 import i18n, { getSupportedLocale } from '../../../i18n';
@@ -138,6 +139,19 @@ const deleteUserSession = async (sessionId: string) => {
   return data as { current: boolean };
 };
 
+const archiveAccount = async () => {
+  const response = await fetch('/api/v1/settings/account', {
+    method: 'DELETE',
+    headers: {
+      'x-csrf-token': csrfToken ?? '',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+};
+
 const formatFieldErrors = (errors: Record<string, string[]> = {}) =>
   Object.entries(camelizeKeys(errors)).reduce<Record<string, string>>(
     (result, [fieldName, messages]) => {
@@ -217,6 +231,9 @@ function UserSettings() {
     camelizeKeys(getPageProp<UserSessionData[]>('user_sessions', [])),
   );
   const [revokingSessionId, setRevokingSessionId] = useState<string>();
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [showArchiveConfirmation, setShowArchiveConfirmation] = useState(false);
+  const [archiveConfirmation, setArchiveConfirmation] = useState('');
   const settings = useSelector((state: RootState) =>
     userSettingsSelector(state),
   ) as UserSettingsData;
@@ -242,6 +259,18 @@ function UserSettings() {
       setNotification(notifications.error);
     } finally {
       setRevokingSessionId(undefined);
+    }
+  }, []);
+
+  const handleArchiveAccount = useCallback(async () => {
+    setIsArchiving(true);
+
+    try {
+      await archiveAccount();
+      window.location.assign('/');
+    } catch {
+      setIsArchiving(false);
+      setNotification(notifications.error);
     }
   }, []);
 
@@ -439,6 +468,83 @@ function UserSettings() {
           )}
         </section>
       </div>
+      <section
+        className="cb-settings-section border-danger mt-4"
+        aria-labelledby="archive-account-title"
+      >
+        <div className="cb-settings-section-heading">
+          <span className="cb-settings-section-icon text-danger" aria-hidden="true">
+            <FontAwesomeIcon icon="user-minus" />
+          </span>
+          <div>
+            <h3 id="archive-account-title">{i18n.t('Archive account')}</h3>
+            <p>
+              {i18n.t(
+                'Anonymize your profile, revoke every session, and permanently disable access to this account.',
+              )}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline-danger"
+          disabled={isArchiving}
+          onClick={() => setShowArchiveConfirmation(true)}
+        >
+          {i18n.t('Archive account')}
+        </button>
+      </section>
+      <Modal
+        show={showArchiveConfirmation}
+        onHide={() => {
+          if (isArchiving) return;
+          setShowArchiveConfirmation(false);
+          setArchiveConfirmation('');
+        }}
+        centered
+      >
+        <Modal.Header closeButton={!isArchiving}>
+          <Modal.Title>{i18n.t('Archive account permanently')}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            {i18n.t(
+              'This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account.',
+            )}
+          </p>
+          <label htmlFor="archive-account-confirmation">{i18n.t('Type ARCHIVE to confirm')}</label>
+          <input
+            id="archive-account-confirmation"
+            className="form-control"
+            type="text"
+            autoComplete="off"
+            value={archiveConfirmation}
+            disabled={isArchiving}
+            onChange={(event) => setArchiveConfirmation(event.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={isArchiving}
+            onClick={() => {
+              setShowArchiveConfirmation(false);
+              setArchiveConfirmation('');
+            }}
+          >
+            {i18n.t('Cancel')}
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            disabled={archiveConfirmation !== 'ARCHIVE' || isArchiving}
+            onClick={handleArchiveAccount}
+          >
+            {isArchiving ? i18n.t('Archiving account...') : i18n.t('Archive permanently')}
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

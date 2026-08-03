@@ -2715,3 +2715,24 @@ msgstr "Tournament statistics"
 
 msgid "Tournament round statistics"
 msgstr "Tournament round statistics"
+
+msgid "Archive account"
+msgstr "Archive account"
+
+msgid "Archiving account..."
+msgstr "Archiving account..."
+
+msgid "Archive account permanently"
+msgstr "Archive account permanently"
+
+msgid "Anonymize your profile, revoke every session, and permanently disable access to this account."
+msgstr "Anonymize your profile, revoke every session, and permanently disable access to this account."
+
+msgid "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+msgstr "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+
+msgid "Type ARCHIVE to confirm"
+msgstr "Type ARCHIVE to confirm"
+
+msgid "Archive permanently"
+msgstr "Archive permanently"

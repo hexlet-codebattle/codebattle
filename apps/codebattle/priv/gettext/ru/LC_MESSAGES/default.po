@@ -3821,3 +3821,24 @@ msgstr "Статистика турнира"
 
 msgid "Tournament round statistics"
 msgstr "Статистика раунда турнира"
+
+msgid "Archive account"
+msgstr "Архивировать аккаунт"
+
+msgid "Archiving account..."
+msgstr "Архивация аккаунта..."
+
+msgid "Archive account permanently"
+msgstr "Архивировать аккаунт навсегда"
+
+msgid "Anonymize your profile, revoke every session, and permanently disable access to this account."
+msgstr "Обезличить профиль, завершить все сеансы и навсегда отключить доступ к этому аккаунту."
+
+msgid "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+msgstr "Это действие нельзя отменить. Вы навсегда потеряете доступ к этому аккаунту. Позже вы сможете создать новый аккаунт, но восстановить этот не получится."
+
+msgid "Type ARCHIVE to confirm"
+msgstr "Введите ARCHIVE для подтверждения"
+
+msgid "Archive permanently"
+msgstr "Архивировать навсегда"

@@ -178,6 +178,66 @@ defmodule CodebattleWeb.AuthControllerTest do
       assert redirected_to(conn) == "/next_path"
     end
 
+    test "oauth callbacks create new accounts after previous accounts were archived", %{conn: conn} do
+      archived_at = DateTime.utc_now(:second)
+
+      github_user =
+        insert(:user,
+          archived_at: archived_at,
+          name: "archived-github",
+          github_id: nil,
+          github_name: nil,
+          avatar_url: nil,
+          email: nil
+        )
+
+      stub_github_oauth_requests()
+      github_conn = get(conn, "/auth/github/callback", %{"code" => "asfd"})
+
+      new_github_user = Repo.get_by!(User, github_id: 19)
+      refute new_github_user.id == github_user.id
+      assert redirected_to(github_conn) == "/"
+      assert Repo.get!(User, github_user.id).avatar_url == nil
+
+      discord_user =
+        insert(:user,
+          archived_at: archived_at,
+          name: "archived-discord",
+          discord_id: nil,
+          discord_name: nil,
+          discord_avatar: nil,
+          avatar_url: nil,
+          email: nil
+        )
+
+      stub_discord_oauth_requests()
+      discord_conn = get(conn, "/auth/discord/callback", %{"code" => "asfd"})
+
+      new_discord_user = Repo.get_by!(User, discord_id: 1_234_567)
+      refute new_discord_user.id == discord_user.id
+      assert redirected_to(discord_conn) == "/"
+      assert Repo.get!(User, discord_user.id).avatar_url == nil
+
+      external_user =
+        insert(:user,
+          archived_at: archived_at,
+          name: "archived-external",
+          external_oauth_id: nil,
+          external_oauth_login: nil,
+          avatar_url: nil
+        )
+
+      stub_external_oauth_requests()
+      external_conn = get(conn, "/auth/external/callback", %{"code" => "asfd"})
+
+      new_external_user = Repo.get_by!(User, external_oauth_id: "external-user-id")
+      refute new_external_user.id == external_user.id
+      assert redirected_to(external_conn) == "/"
+      archived_external = Repo.get!(User, external_user.id)
+      assert archived_external.external_oauth_login == nil
+      assert archived_external.avatar_url == nil
+    end
+
     test "/auth/github/lol", %{conn: conn} do
       conn = get(conn, "/auth/lol/callback")
 

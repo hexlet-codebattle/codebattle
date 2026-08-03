@@ -56,6 +56,7 @@ defmodule Codebattle.User do
     has_many(:sessions, UserSession)
 
     field(:auth_token, :string)
+    field(:archived_at, :utc_datetime)
     field(:avatar_url, :string)
     field(:category, :string)
     field(:clan, :string)
@@ -289,6 +290,7 @@ defmodule Codebattle.User do
     __MODULE__
     |> order_by([u], {:asc, u.rank})
     |> where([u], u.is_bot != true)
+    |> where([u], is_nil(u.archived_at))
     |> select([u], {u.rank, u.id})
     |> Repo.all()
   end
@@ -310,13 +312,14 @@ defmodule Codebattle.User do
           # Return User structs for compatibility
           Repo.get(__MODULE__, season_result.user_id)
         end)
-        |> Enum.reject(&is_nil/1)
+        |> Enum.filter(&active?/1)
     end
   end
 
   def search_users(query) do
     __MODULE__
     |> where([u], u.is_bot == false)
+    |> where([u], is_nil(u.archived_at))
     |> where([u], fragment("? ilike ?", u.name, ^"%#{query}%"))
     |> limit(20)
     |> order_by([u], {:desc, :updated_at})
@@ -381,6 +384,7 @@ defmodule Codebattle.User do
 
   def authenticate(name, password) do
     __MODULE__
+    |> where([u], is_nil(u.archived_at))
     |> Repo.get_by(name: name)
     |> case do
       nil -> nil
@@ -389,6 +393,81 @@ defmodule Codebattle.User do
   end
 
   def has_password?(user), do: present?(user.password_hash)
+
+  def active?(%__MODULE__{archived_at: nil}), do: true
+  def active?(_user), do: false
+
+  @doc """
+  Archives an account without deleting records referenced by games and tournaments.
+
+  Reusable credentials and profile data are removed, administrative privileges
+  are dropped, and every browser session is revoked. The same external identity
+  may create a new account later, but it cannot regain access to this account.
+  """
+  def archive(%__MODULE__{id: user_id}) do
+    now = DateTime.utc_now(:second)
+
+    result =
+      Repo.transaction(fn ->
+        user =
+          __MODULE__
+          |> where([u], u.id == ^user_id)
+          |> lock("FOR UPDATE")
+          |> Repo.one!()
+
+        if active?(user) do
+          session_ids =
+            UserSession
+            |> where([s], s.user_id == ^user_id and is_nil(s.revoked_at))
+            |> select([s], s.id)
+            |> Repo.all()
+
+          archived_user =
+            user
+            |> change(%{
+              archived_at: now,
+              auth_token: nil,
+              avatar_url: nil,
+              category: nil,
+              clan: nil,
+              clan_id: nil,
+              collab_logo: nil,
+              discord_avatar: nil,
+              discord_id: nil,
+              discord_name: nil,
+              email: nil,
+              external_oauth_id: nil,
+              external_oauth_login: nil,
+              external_platform_id: nil,
+              external_platform_login: nil,
+              firebase_uid: nil,
+              github_id: nil,
+              github_name: nil,
+              name: archived_name(),
+              password_hash: nil,
+              subscription_type: :free
+            })
+            |> Repo.update!()
+
+          UserSession
+          |> where([s], s.id in ^session_ids)
+          |> Repo.update_all(set: [revoked_at: now, updated_at: NaiveDateTime.utc_now(:second)])
+
+          {archived_user, session_ids}
+        else
+          Repo.rollback(:already_archived)
+        end
+      end)
+
+    case result do
+      {:ok, {archived_user, session_ids}} ->
+        UserSession.disconnect_many(session_ids)
+        {:ok, archived_user}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
 
   def verify_password(_user, nil), do: nil
 
@@ -430,6 +509,11 @@ defmodule Codebattle.User do
       ],
       & &1
     )
+  end
+
+  defp archived_name do
+    suffix = 9 |> :crypto.strong_rand_bytes() |> Base.url_encode64(padding: false)
+    "archived-#{suffix}"
   end
 
   defp present?(value), do: not is_nil(value) and value != ""

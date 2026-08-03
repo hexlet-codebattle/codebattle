@@ -470,3 +470,24 @@ msgstr ""
 
 msgid "Tournament process is dead. Click Restart to make it live again so users can join."
 msgstr ""
+
+msgid "Archive account"
+msgstr ""
+
+msgid "Archiving account..."
+msgstr ""
+
+msgid "Archive account permanently"
+msgstr ""
+
+msgid "Anonymize your profile, revoke every session, and permanently disable access to this account."
+msgstr ""
+
+msgid "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+msgstr ""
+
+msgid "Type ARCHIVE to confirm"
+msgstr ""
+
+msgid "Archive permanently"
+msgstr ""

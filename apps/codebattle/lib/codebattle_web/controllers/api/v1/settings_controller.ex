@@ -113,6 +113,21 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
     end
   end
 
+  def archive_account(conn, _params) do
+    case User.archive(conn.assigns.current_user) do
+      {:ok, _user} ->
+        conn
+        |> clear_session()
+        |> configure_session(drop: true)
+        |> json(%{status: "archived"})
+
+      {:error, _reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "account could not be archived"})
+    end
+  end
+
   defp request_email_change(%Ecto.Changeset{valid?: false} = changeset, conn, _user, _attempt_key) do
     conn
     |> put_status(:unprocessable_entity)

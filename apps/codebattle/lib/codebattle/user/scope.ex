@@ -22,6 +22,7 @@ defmodule Codebattle.User.Scope do
   defp base_query(params) do
     User
     |> from(as: :u)
+    |> where([u: u], is_nil(u.archived_at))
     |> join(:left, [u: u], ug in assoc(u, :user_games), as: :ug)
     |> group_by([u: u], u.id)
     |> sort(params)

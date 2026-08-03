@@ -28,8 +28,11 @@ defmodule Codebattle.Auth.User.DiscordUser do
         |> User.changeset(params)
         |> Repo.insert()
 
-      user ->
+      %User{archived_at: nil} = user ->
         {:ok, user}
+
+      %User{} ->
+        {:error, :account_archived}
     end
   end
 

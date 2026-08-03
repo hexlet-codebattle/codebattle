@@ -487,6 +487,87 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
     end
   end
 
+  describe "#archive_account" do
+    test "anonymizes the account, drops privileges, and revokes every sign-in credential", %{conn: conn} do
+      clan = insert(:clan, name: "Secret Clan")
+
+      user =
+        insert(:user,
+          name: "AccountOwner",
+          email: "owner@example.com",
+          auth_token: "reusable-auth-token",
+          password_hash: Bcrypt.hash_pwd_salt(@old_password),
+          avatar_url: "https://example.com/avatar.png",
+          category: "staff",
+          clan: "Secret Clan",
+          clan_id: clan.id,
+          collab_logo: "private-logo",
+          discord_id: 123_456,
+          discord_name: "private-discord-name",
+          discord_avatar: "private-discord-avatar",
+          external_oauth_id: "external-id",
+          external_oauth_login: "private-external-login",
+          external_platform_id: "platform-id",
+          external_platform_login: "private-platform-login",
+          firebase_uid: "firebase-id",
+          github_id: 654_321,
+          github_name: "private-github-name",
+          subscription_type: :admin
+        )
+
+      conn = log_in_user(conn, user)
+      current_token = get_session(conn, :user_session_token)
+      {:ok, other_session, other_token} = UserSession.create(user)
+
+      conn = delete(conn, "/api/v1/settings/account")
+
+      assert json_response(conn, 200) == %{"status" => "archived"}
+      assert get_session(conn, :user_session_token) == nil
+
+      archived = Repo.get!(User, user.id)
+      assert archived.archived_at
+      assert archived.name =~ ~r/^archived-[A-Za-z0-9_-]{12}$/
+      refute archived.name == user.name
+      assert archived.subscription_type == :free
+
+      for field <- [
+            :auth_token,
+            :avatar_url,
+            :category,
+            :clan,
+            :clan_id,
+            :collab_logo,
+            :discord_avatar,
+            :discord_id,
+            :discord_name,
+            :email,
+            :external_oauth_id,
+            :external_oauth_login,
+            :external_platform_id,
+            :external_platform_login,
+            :firebase_uid,
+            :github_id,
+            :github_name,
+            :password_hash
+          ] do
+        assert Map.fetch!(archived, field) == nil
+      end
+
+      refute User.authenticate(user.name, @old_password)
+      assert Codebattle.Auth.User.TokenUser.find("reusable-auth-token") == {:error, "Wrong auth token"}
+      assert UserSession.get_active_by_token(current_token) == nil
+      assert UserSession.get_active_by_token(other_token) == nil
+      assert Repo.get!(UserSession, other_session.id).revoked_at
+      assert {:error, :account_archived} = UserSession.create(archived)
+    end
+
+    test "requires an authenticated account", %{conn: conn} do
+      conn = delete(conn, "/api/v1/settings/account")
+
+      assert json_response(conn, 401) == %{"error" => "oiblz"}
+    end
+  end
+
   defp insert_user_with_password do
     insert(:user, password_hash: Bcrypt.hash_pwd_salt(@old_password))
   end

@@ -226,7 +226,8 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   # existing row on subsequent logins.
   defp get_or_create_user(%{firebase_uid: firebase_uid} = account) do
     case Repo.get_by(User, firebase_uid: firebase_uid) do
-      %User{} = user -> sync_email(user, account.email)
+      %User{archived_at: nil} = user -> sync_email(user, account.email)
+      %User{} -> {:error, %{base: "Account is archived"}}
       nil -> create_in_db(account)
     end
   end
@@ -346,7 +347,8 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
   defp get_existing_firebase_user(firebase_uid, email) do
     case Repo.get_by(User, firebase_uid: firebase_uid) do
-      %User{} = user -> sync_email(user, email)
+      %User{archived_at: nil} = user -> sync_email(user, email)
+      %User{} -> {:error, %{base: "Account is archived"}}
       nil -> {:error, %{base: "Something went wrong, pls, try again later."}}
     end
   end

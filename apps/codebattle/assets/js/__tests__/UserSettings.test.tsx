@@ -488,4 +488,38 @@ describe('UserSettings test cases', () => {
 
     expect(getByRole('button', { name: 'Unlink Github' })).toBeEnabled();
   });
+
+  test('archives the account only after typing the confirmation text', async () => {
+    const { getByLabelText, getByRole, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+    const archiveButton = getByRole('button', { name: 'Archive account' });
+
+    await user.click(archiveButton);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(getByRole('dialog')).toBeInTheDocument();
+
+    const confirmButton = getByRole('button', { name: 'Archive permanently' });
+    expect(confirmButton).toBeDisabled();
+
+    await user.type(getByLabelText('Type ARCHIVE to confirm'), 'archive');
+    expect(confirmButton).toBeDisabled();
+
+    await user.clear(getByLabelText('Type ARCHIVE to confirm'));
+    await user.type(getByLabelText('Type ARCHIVE to confirm'), 'ARCHIVE');
+    expect(confirmButton).toBeEnabled();
+
+    fetchMock.mockImplementationOnce(() => new Promise(() => {}));
+    await user.click(confirmButton);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/settings/account',
+        expect.objectContaining({ method: 'DELETE' }),
+      );
+      expect(confirmButton).toBeDisabled();
+    });
+  });
 });

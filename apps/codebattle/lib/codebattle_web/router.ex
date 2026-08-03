@@ -316,6 +316,7 @@ defmodule CodebattleWeb.Router do
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       patch("/settings/password", SettingsController, :update_password)
       patch("/settings/email", SettingsController, :update_email)
+      delete("/settings/account", SettingsController, :archive_account)
       get("/settings/sessions", SettingsController, :sessions)
       delete("/settings/sessions/:id", SettingsController, :delete_user_session)
       resources("/tasks", TaskController, only: [:index, :show, :update])

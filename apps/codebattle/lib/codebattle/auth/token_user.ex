@@ -2,6 +2,8 @@ defmodule Codebattle.Auth.User.TokenUser do
   @moduledoc """
     Token auth
   """
+  import Ecto.Query
+
   alias Codebattle.Repo
   alias Codebattle.User
 
@@ -9,7 +11,12 @@ defmodule Codebattle.Auth.User.TokenUser do
   def find(""), do: {:error, "kek"}
 
   def find(token) do
-    case Repo.get_by(User, auth_token: String.trim(token)) do
+    user =
+      User
+      |> where([u], is_nil(u.archived_at))
+      |> Repo.get_by(auth_token: String.trim(token))
+
+    case user do
       nil -> {:error, "Wrong auth token"}
       user -> {:ok, user}
     end
