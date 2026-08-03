@@ -437,8 +437,6 @@ export const lobbyDataSelector = (state: RootState) => state.lobby;
 
 export const usersStatsSelector = (state: RootState) => state.user.usersStats;
 
-export const usersListSelector = (state: RootState) => state.user.usersRatingPage;
-
 export const gameTypeSelector = (state: RootState) => state.game.gameStatus.type;
 
 export const gameModeSelector = (state: RootState) => state.game.gameStatus.mode;

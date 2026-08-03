@@ -9,12 +9,17 @@ import InfoMessage from '../widgets/components/InfoMessage';
 import Loading from '../widgets/components/Loading';
 import LobbyLoading from '../widgets/pages/lobby/LobbyLoading';
 import MessageTimestamp from '../widgets/components/MessageTimestamp';
+import Messages from '../widgets/components/Messages';
 import PlayerLoading from '../widgets/components/PlayerLoading';
 import SystemMessage from '../widgets/components/SystemMessage';
 import Timer from '../widgets/components/Timer';
 
 vi.mock('../widgets/utils/useTimer', () => ({
   default: () => ['01:02:03', 3723],
+}));
+
+vi.mock('../widgets/utils/useStayScrolled', () => ({
+  default: () => ({ stayScrolled: vi.fn(), scrollBottom: vi.fn() }),
 }));
 
 describe('presentational components', () => {
@@ -71,6 +76,16 @@ describe('presentational components', () => {
     render(<MessageTimestamp time={0} />);
 
     expect(screen.getByText(/\d{2}:\d{2} [AP]M/)).toHaveClass('text-muted');
+  });
+
+  test('renders chat messages as semantic list items', () => {
+    render(<Messages messages={[{ id: 1, text: 'Connected', type: 'system' }]} />);
+
+    const list = screen.getByRole('list');
+
+    expect(list).toHaveClass('list-unstyled');
+    expect(list.children).toHaveLength(1);
+    expect(list.firstElementChild).toHaveRole('listitem');
   });
 
   test('renders system message status styling', () => {

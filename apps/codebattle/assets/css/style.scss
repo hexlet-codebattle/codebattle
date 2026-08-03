@@ -1345,23 +1345,6 @@ a {
   width: 25px;
 }
 
-.cb-sort-arrow {
-  height: 0;
-  width: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-
-  &.asc {
-    border-bottom: 5px solid #666;
-    margin-bottom: 3px;
-  }
-
-  &.desc {
-    border-top: 5px solid #666;
-    padding-bottom: 2px;
-  }
-}
-
 .cb-private-text {
   color: var(--indigo);
 }
@@ -1407,23 +1390,6 @@ a {
 
 .cursor-pointer {
   cursor: pointer;
-}
-
-.sort-arrows:before,
-.sort-arrows:after {
-  border: 5px solid transparent;
-  content: '';
-  display: block;
-}
-
-.sort-arrows:before {
-  border-bottom-color: #666;
-}
-
-.sort-arrows:after {
-  border-top-color: #666;
-  margin-top: 2px;
-  margin-bottom: -5px;
 }
 
 .x-bottom-0 {
@@ -3285,6 +3251,19 @@ a.cb-text-light:hover {
   max-width: 33.333%;
 }
 
+.cb-lobby-chat-card .text-muted {
+  color: #a6a6b3 !important;
+}
+
+.cb-lobby-chat-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+}
+
 .cb-season-actions .btn {
   flex: 1 1 0;
   min-width: 0;
@@ -3688,7 +3667,7 @@ a.cb-text-light:hover {
     font-size: 0.9rem;
   }
 
-  .cb-messages-list > div {
+  .cb-messages-list > li {
     padding: 0.3rem 0.45rem;
     margin-bottom: 0.1rem !important;
     border-radius: 6px;

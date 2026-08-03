@@ -21,7 +21,6 @@ import {
   TournamentPage,
   TournamentPlayerPage,
   UserPage,
-  UsersRating,
   AdminPage,
 } from './App';
 
@@ -64,7 +63,5 @@ export const renderTournamentPlayerPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<TournamentPlayerPage />);
 export const renderUserPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<UserPage />);
-export const renderUsersRating = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<UsersRating />);
 export const renderAdminPage = (domElement: HTMLElement) =>
   createRoot(domElement).render(<AdminPage />);

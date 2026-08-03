@@ -42,25 +42,6 @@ const userSlice = createSlice({
       const { userId, stats, achievements } = payload;
       state.usersStats[userId] = { stats, achievements };
     },
-    updateUsersRatingPage: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        users: unknown[];
-        pageInfo: { totalEntries: number; [key: string]: unknown };
-        dateFrom: string | null;
-        withBots: string | boolean;
-      }>,
-    ) => {
-      const { users, pageInfo, dateFrom, withBots } = payload;
-      state.usersRatingPage = {
-        users,
-        pageInfo,
-        dateFrom,
-        withBots: withBots === 'true',
-      };
-    },
     updateUserSettings: (state, { payload }: PayloadAction<Record<string, unknown>>) => {
       Object.assign(state.settings, payload);
     },

@@ -79,7 +79,6 @@ const getPageLabel = (path?: string | null) => {
 
   if (/^\/e\//.test(p)) return 'Event';
 
-  if (p === '/users') return 'Rating';
   if (p === '/users/new') return 'Sign Up';
   if (/^\/users\/[^/]+/.test(p)) return 'Profile';
 

@@ -1,19 +1,9 @@
 defmodule CodebattleWeb.UserController do
   use CodebattleWeb, :controller
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :edit, :show])
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:edit, :show])
   plug(:put_view, CodebattleWeb.UserView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
-
-  def index(conn, _params) do
-    conn
-    |> put_meta_tags(%{
-      title: "Hexlet Codebattle • Users rating",
-      description: "Top Codebattle players ever, compare your skills with other developers",
-      url: Routes.user_path(conn, :index)
-    })
-    |> render("index.html")
-  end
 
   def new(conn, _params) do
     if FunWithFlags.enabled?(:use_only_token_auth) do

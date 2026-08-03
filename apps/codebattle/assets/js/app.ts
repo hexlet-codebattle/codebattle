@@ -96,7 +96,6 @@ const mainChannelRoot = document.getElementById('main-channel-root');
 const tournamentThreejsStreamRoot = document.getElementById('tournament-threejs-stream-root');
 const tournamentStreamAdminRoot = document.getElementById('tournament-stream-admin-root');
 const lobbyRoot = document.getElementById('lobby-root');
-const ratingList = document.getElementById('rating-list');
 const registrationRoot = document.getElementById('registration');
 const settingsRoot = document.getElementById('settings');
 const soundToggleRoot = document.getElementById('sound-toggle-root');
@@ -118,7 +117,6 @@ const primaryWidgetRoots = [
   gameMlRoot,
   heatmapRoot,
   lobbyRoot,
-  ratingList,
   userPageRoot,
   settingsRoot,
   registrationRoot,
@@ -150,7 +148,6 @@ if (primaryWidgetRoots.some(Boolean)) {
       renderTournamentStreamAdminPage,
       renderTournamentThreejsStreamPage,
       renderUserPage,
-      renderUsersRating,
     }) => {
       if (adminConnectionsRoot) renderAdminPage(adminConnectionsRoot);
       if (gameWidgetRoot) renderGameWidget(gameWidgetRoot);
@@ -158,7 +155,6 @@ if (primaryWidgetRoots.some(Boolean)) {
       if (gameMlRoot) renderGameMlPage(gameMlRoot);
       if (heatmapRoot) renderHeatmapWidget(heatmapRoot);
       if (lobbyRoot) renderLobby(lobbyRoot);
-      if (ratingList) renderUsersRating(ratingList);
       if (userPageRoot) renderUserPage(userPageRoot);
       if (settingsRoot) renderSettingPage(settingsRoot);
       if (registrationRoot) renderRegistrationPage(registrationRoot);

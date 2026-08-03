@@ -8,17 +8,6 @@ defmodule Codebattle.RootControllerTest do
     assert html_response(conn, 200)
   end
 
-  test "index for signed_user", %{conn: conn} do
-    user = insert(:user)
-
-    conn =
-      conn
-      |> log_in_user(user.id)
-      |> get(Routes.user_path(conn, :index))
-
-    assert conn.status == 200
-  end
-
   test "renders the authenticated lobby through Inertia", %{conn: conn} do
     user = insert(:user)
 

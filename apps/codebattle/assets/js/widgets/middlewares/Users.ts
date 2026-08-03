@@ -1,6 +1,4 @@
 import { camelizeKeys } from 'humps';
-import moment from 'moment';
-import qs from 'qs';
 
 import { actions } from '../slices';
 
@@ -70,76 +68,6 @@ export const sendPremiumRequest =
     } catch (error) {
       dispatch(actions.setError(error));
     }
-  };
-
-const periodToTimeUnit = {
-  weekly: 'week',
-  monthly: 'month',
-};
-
-const getDateByPeriod = (period: string) => {
-  if (period === 'total') {
-    return null;
-  }
-  return moment()
-    .startOf(periodToTimeUnit[period as keyof typeof periodToTimeUnit] as moment.unitOfTime.StartOf)
-    .utc()
-    .format('YYYY-MM-DD');
-};
-
-interface UsersRatingFilter {
-  name?: string;
-  period: string;
-  withBots?: boolean;
-}
-
-interface UsersRatingSort {
-  attribute: string;
-  direction: string;
-}
-
-// Guards against stale responses: the rating search fires on every keystroke
-// with no debounce, so a slow response for a short prefix (which ILIKE-matches
-// many users) could resolve after the final query and clobber it with
-// irrelevant results. Only the latest request's response is applied.
-let latestRatingRequestId = 0;
-
-export const getUsersRatingPage =
-  (
-    { name, period, withBots }: UsersRatingFilter,
-    { attribute, direction }: UsersRatingSort,
-    page: number,
-    pageSize: number,
-  ) =>
-  (dispatch: any) => {
-    const queryParamsString = qs.stringify({
-      page,
-      page_size: pageSize,
-      s: `${attribute}+${direction}`,
-      q: {
-        name_ilike: name,
-      },
-      date_from: getDateByPeriod(period),
-      with_bots: withBots,
-    });
-
-    latestRatingRequestId += 1;
-    const requestId = latestRatingRequestId;
-
-    requestJson(`/api/v1/users?${queryParamsString}`)
-      .then((data: any) => {
-        if (requestId !== latestRatingRequestId) {
-          return;
-        }
-        dispatch(actions.updateUsersRatingPage(camelizeKeys(data)));
-        dispatch(actions.finishStoreInit());
-      })
-      .catch((error: any) => {
-        if (requestId !== latestRatingRequestId) {
-          return;
-        }
-        dispatch(actions.setError(error));
-      });
   };
 
 export default loadUserStats;

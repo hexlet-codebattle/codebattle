@@ -210,25 +210,25 @@ function LobbyChat({
               <div className="d-flex justify-items-center p-2">
                 <button
                   type="button"
-                  className="btn btn-sm p-0 cb-rounded mr-1"
+                  className="btn btn-sm p-0 cb-rounded mr-1 cb-lobby-chat-action"
                   onClick={openSendMessageModal}
                   disabled={!isOnline || presenceList.length <= 1}
+                  aria-label={i18n.t('Send message')}
+                  title={i18n.t('Send message')}
                 >
-                  <FontAwesomeIcon
-                    title={i18n.t('Send message')}
-                    className="text-white"
-                    icon={faEnvelope}
-                  />
+                  <FontAwesomeIcon aria-hidden="true" className="text-white" icon={faEnvelope} />
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm p-0 cb-rounded"
+                  className="btn btn-sm p-0 cb-rounded cb-lobby-chat-action"
                   onClick={openSendInviteModal}
                   disabled={!isOnline || presenceList.length <= 1}
+                  aria-label={i18n.t('Send fight invite')}
+                  title={i18n.t('Send fight invite')}
                 >
                   <img
-                    title={i18n.t('Send fight invite')}
-                    alt={i18n.t('fight')}
+                    alt=""
+                    aria-hidden="true"
                     style={{ width: '16px', height: '16px' }}
                     src={fightSvg}
                   />

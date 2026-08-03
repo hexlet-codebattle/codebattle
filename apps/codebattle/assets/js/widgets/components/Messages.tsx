@@ -129,7 +129,7 @@ function Messages({
   const messageClassName = cn(
     className,
     'overflow-auto pt-0 pl-3 pr-2',
-    'position-relative cb-messages-list flex-grow-1',
+    'position-relative cb-messages-list flex-grow-1 list-unstyled',
   );
 
   if (disabled) {
@@ -160,21 +160,22 @@ function Messages({
           const key = getKey(id, time, name, messages.length - index);
 
           return (
-            <Message
-              id={id}
-              name={name}
-              userId={userId}
-              currentUserId={currentUserId}
-              text={text}
-              key={key}
-              type={type}
-              time={time}
-              meta={meta}
-              displayMenu={displayMenu}
-              onBanUser={onBanUser}
-              onDeleteMessage={onDeleteMessage}
-              canDeleteAny={canDeleteAny}
-            />
+            <li key={key}>
+              <Message
+                id={id}
+                name={name}
+                userId={userId}
+                currentUserId={currentUserId}
+                text={text}
+                type={type}
+                time={time}
+                meta={meta}
+                displayMenu={displayMenu}
+                onBanUser={onBanUser}
+                onDeleteMessage={onDeleteMessage}
+                canDeleteAny={canDeleteAny}
+              />
+            </li>
           );
         })}
       </ul>

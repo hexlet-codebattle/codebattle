@@ -68,7 +68,6 @@ const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'
 const MainChannelContainer = React.lazy(() => import('./components/MainChannelContainer'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
 const OnlineContainer = React.lazy(() => import('./components/OnlineContainer'));
-const RatingList = React.lazy(() => import('./pages/rating'));
 const Registration = React.lazy(() => import('./pages/registration'));
 const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const ThreejsGamePage = React.lazy(() => import('./pages/game/ThreejsGamePage'));
@@ -183,18 +182,6 @@ export function Lobby() {
           <NiceModal.Provider>
             <LobbyWidget />
           </NiceModal.Provider>
-        </Suspense>
-      </PersistGate>
-    </Provider>
-  );
-}
-
-export function UsersRating() {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Suspense>
-          <RatingList />
         </Suspense>
       </PersistGate>
     </Provider>

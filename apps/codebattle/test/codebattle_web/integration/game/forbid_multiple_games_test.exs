@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Integration.ForbidMultipleGamesTest do
 
     conn
     |> log_in_user(user.id)
-    |> get(user_path(conn, :index))
+    |> get(root_path(conn, :index))
 
     {:ok, _response, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
     ref = Phoenix.ChannelTest.push(socket, "game:create", %{level: "easy"})

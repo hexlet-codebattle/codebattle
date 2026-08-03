@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import Table from 'react-bootstrap/Table';
 import { useSelector, useDispatch } from 'react-redux';
@@ -24,17 +24,11 @@ function Leaderboard() {
     [users],
   );
 
-  const anchorWeekRef = useRef(null);
-  const anchorMonthRef = useRef(null);
-  const anchorAllRef = useRef(null);
-
-  const handlePeriodClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handlePeriodClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const {
       currentTarget: { dataset },
     } = e;
     const periodValue = dataset.period || periodTypes.ALL;
-    e.preventDefault();
-
     switch (periodValue) {
       case periodTypes.ALL:
         dispatch(actions.changePeriod(periodTypes.ALL));
@@ -84,39 +78,36 @@ function Leaderboard() {
                   role="tablist"
                   className="nav nav-tabs border-0 d-flex flex-nowrap justify-content-around"
                 >
-                  <a
-                    href="#!"
+                  <button
+                    type="button"
                     role="tab"
                     data-toggle="tab"
                     data-period={periodTypes.WEEKLY}
-                    ref={anchorWeekRef}
                     className="nav-item cb-nav-item nav-link border-0 text-center w-100 active"
                     onClick={handlePeriodClick}
                   >
                     {i18n.t(periodTypes.WEEKLY)}
-                  </a>
-                  <a
-                    href="#!"
+                  </button>
+                  <button
+                    type="button"
                     role="tab"
                     data-toggle="tab"
                     data-period={periodTypes.MONTHLY}
-                    ref={anchorMonthRef}
                     className="nav-item cb-nav-item nav-link border-0 text-center w-100"
                     onClick={handlePeriodClick}
                   >
                     {i18n.t(periodTypes.MONTHLY)}
-                  </a>
-                  <a
-                    href="#!"
+                  </button>
+                  <button
+                    type="button"
                     role="tab"
                     data-toggle="tab"
                     data-period={periodTypes.ALL}
-                    ref={anchorAllRef}
                     className="nav-item cb-nav-item nav-link border-0 text-center w-100"
                     onClick={handlePeriodClick}
                   >
                     {i18n.t(periodTypes.ALL)}
-                  </a>
+                  </button>
                 </div>
               </nav>
             </div>
@@ -140,13 +131,6 @@ function Leaderboard() {
             <td className="cb-border-color">{i18n.t('No rating')}</td>
           </tr>
         )}
-        <tr aria-label={i18n.t('Top list')} className="cb-bg-panel text-center cb-border-color">
-          <td className="cb-border-color">
-            <a className="btn-link text-primary" href="/users">
-              {i18n.t('Top list')}
-            </a>
-          </td>
-        </tr>
       </tbody>
     </Table>
   );

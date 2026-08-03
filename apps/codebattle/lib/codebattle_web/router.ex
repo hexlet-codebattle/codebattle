@@ -396,7 +396,7 @@ defmodule CodebattleWeb.Router do
     get("/e/:slug", PublicEventController, :show)
     post("/e/:slug/stage", PublicEventController, :stage)
 
-    resources("/users", UserController, only: [:new, :index, :show])
+    resources("/users", UserController, only: [:new, :show])
     get("/settings", UserController, :edit, as: :user_setting)
     resources("/feedback", FeedbackController, only: [:index])
 

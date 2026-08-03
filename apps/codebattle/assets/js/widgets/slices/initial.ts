@@ -32,7 +32,6 @@ const playerId = getPageProp<number | null>('player_id', null);
 const tournamentData = getPageProp('tournament');
 const tournamentId = getPageProp<number | null>('tournament_id', null);
 const tournamentsData = getPageProp('tournaments');
-const usersRatingData = getPageProp('users_rating');
 const langsData = getPageProp('langs');
 const leaderboardUsersData = getPageProp('leaderboard_users');
 const eventData = getPageProp('event');
@@ -53,7 +52,6 @@ const tournamentParams = tournamentData ? camelizeKeys(tournamentData) : undefin
 const completedGamesParams = completedGamesData ? camelizeKeys(completedGamesData) : [];
 const initialActiveGames = activeGamesData ? camelizeKeys(activeGamesData) : [];
 const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
-const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
 const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : undefined;
 const currentUserId = currentUserParams ? currentUserParams.id : null;
@@ -382,12 +380,6 @@ export interface UserSliceState {
   currentUserId: number | null;
   users: Record<number, Record<string, unknown>>;
   usersStats: Record<string, unknown>;
-  usersRatingPage: {
-    users: unknown[];
-    pageInfo: { totalEntries: number; [key: string]: unknown };
-    dateFrom: string | null;
-    withBots: boolean;
-  };
   settings: Record<string, unknown>;
 }
 
@@ -468,12 +460,6 @@ const initialState: InitialState = {
     currentUserId,
     users: initialUsers,
     usersStats: {},
-    usersRatingPage: {
-      users: usersRatingParams,
-      pageInfo: { totalEntries: 0 },
-      dateFrom: null,
-      withBots: false,
-    },
     settings: {
       ...(currentUserParams || {}),
       mute:
