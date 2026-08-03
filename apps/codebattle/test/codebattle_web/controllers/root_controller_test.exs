@@ -18,7 +18,14 @@ defmodule Codebattle.RootControllerTest do
 
     assert html_response(conn, 200)
     assert inertia_component(conn) == "Lobby"
-    assert %{"active_games" => _, "task_tags" => _} = inertia_props(conn)
+
+    assert %{
+             "active_games" => _,
+             "live_tournaments" => _,
+             "season_tournaments" => _,
+             "task_tags" => _
+           } = inertia_props(conn)
+
     assert html_response(conn, 200) =~ ~s(id="lobby-loading-shell")
   end
 

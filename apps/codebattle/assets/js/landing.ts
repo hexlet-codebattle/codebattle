@@ -1,5 +1,4 @@
 import 'phoenix_html';
-import 'bootstrap';
 import './pwa';
 
 const revealItems = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));

@@ -32,6 +32,8 @@ const playerId = getPageProp<number | null>('player_id', null);
 const tournamentData = getPageProp('tournament');
 const tournamentId = getPageProp<number | null>('tournament_id', null);
 const tournamentsData = getPageProp('tournaments');
+const liveTournamentsData = getPageProp('live_tournaments');
+const seasonTournamentsData = getPageProp('season_tournaments');
 const langsData = getPageProp('langs');
 const leaderboardUsersData = getPageProp('leaderboard_users');
 const eventData = getPageProp('event');
@@ -52,6 +54,8 @@ const tournamentParams = tournamentData ? camelizeKeys(tournamentData) : undefin
 const completedGamesParams = completedGamesData ? camelizeKeys(completedGamesData) : [];
 const initialActiveGames = activeGamesData ? camelizeKeys(activeGamesData) : [];
 const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
+const liveTournamentsParams = liveTournamentsData ? camelizeKeys(liveTournamentsData) : [];
+const seasonTournamentsParams = seasonTournamentsData ? camelizeKeys(seasonTournamentsData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
 const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : undefined;
 const currentUserId = currentUserParams ? currentUserParams.id : null;
@@ -267,12 +271,14 @@ const initialTournament = tournamentParams
     }
   : defaultTournamentParams;
 
-const initialseasonTournaments = (tournamentsParams as Array<Record<string, unknown>>).filter(
-  (x) => x.state === tournamentStates.upcoming,
-);
-const initialLiveTournaments = (tournamentsParams as Array<Record<string, unknown>>).filter(
-  (x) => x.isLive,
-);
+const initialseasonTournaments = seasonTournamentsData
+  ? (seasonTournamentsParams as Array<Record<string, unknown>>)
+  : (tournamentsParams as Array<Record<string, unknown>>).filter(
+      (x) => x.state === tournamentStates.upcoming,
+    );
+const initialLiveTournaments = liveTournamentsData
+  ? (liveTournamentsParams as Array<Record<string, unknown>>)
+  : (tournamentsParams as Array<Record<string, unknown>>).filter((x) => x.isLive);
 const initialCompletedTournaments = (tournamentsParams as Array<Record<string, unknown>>).filter(
   (x) => !x.isLive,
 );

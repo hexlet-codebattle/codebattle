@@ -6,9 +6,7 @@ defmodule CodebattleWeb.Api.LobbyView do
   alias CodebattleWeb.Api.GameView
 
   def render_lobby_params(current_user) do
-    live_tournaments = Tournament.Context.get_live_tournaments_for_user(current_user)
-
-    season_tournaments = Tournament.Context.get_one_upcoming_tournament_for_each_grade()
+    tournament_params = render_tournament_params(current_user)
 
     user_tournaments =
       Tournament.Context.get_user_tournaments(%{
@@ -25,13 +23,18 @@ defmodule CodebattleWeb.Api.LobbyView do
 
     completed_games = GameView.render_completed_games(games)
 
-    %{
+    Map.merge(tournament_params, %{
       active_games: render_active_games(current_user),
       tournaments: [],
-      live_tournaments: live_tournaments,
       user_tournaments: user_tournaments,
-      season_tournaments: season_tournaments,
       completed_games: completed_games
+    })
+  end
+
+  def render_tournament_params(current_user) do
+    %{
+      live_tournaments: Tournament.Context.get_live_tournaments_for_user(current_user),
+      season_tournaments: Tournament.Context.get_one_upcoming_tournament_for_each_grade()
     }
   end
 

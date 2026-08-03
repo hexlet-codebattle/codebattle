@@ -5,13 +5,9 @@
     <div class="landing-orb orb-a"></div>
 
     <div class="container-lg">
-      <nav
-        class="navbar navbar-dark px-0 pt-4 landing-nav"
-        data-reveal
-        style="--reveal-delay: 0ms;"
-      >
+      <nav class="navbar navbar-dark px-0 pt-4 landing-nav">
         <a class="navbar-brand d-flex align-items-end" href="/">
-          <img alt="Logo" height="40px" src={static_asset("images/logo.svg")} />
+          <img alt="Logo" height="40" src={static_asset("images/logo.svg")} width="83" />
           <div class="d-sm-flex d-none flex-column text-gray ml-2 pb-1">
             <span class="header-txt">Hexlet Codebattle</span>
             <span class="header-txt">Competitive coding platform</span>
@@ -52,7 +48,7 @@
     <section class="hero">
       <div class="container-lg">
         <div class="hero-grid">
-          <div class="hero-copy" data-reveal style="--reveal-delay: 120ms;">
+          <div class="hero-copy">
             <span class="eyebrow">Tournaments. Seasons. Code-first competition.</span>
             <h1 class="hero-title">Play in the best coding arena</h1>
             <p class="hero-lead">
@@ -70,13 +66,13 @@
               </button>
               <span class="d-block mt-2 text-muted">No registration required</span>
             </div>
-            <div class="hero-pills" data-reveal style="--reveal-delay: 220ms;">
+            <div class="hero-pills">
               <span class="pill">Live ladders</span>
               <span class="pill">Team seasons</span>
               <span class="pill">Bots + training</span>
             </div>
           </div>
-          <div class="hero-visual" data-reveal style="--reveal-delay: 240ms;">
+          <div class="hero-visual">
             <div class="hero-panel">
               <div class="hero-panel-header">
                 <span class="panel-title">Current Season Leaderboard</span>
@@ -101,7 +97,10 @@
                             <img
                               alt={result.user_name}
                               class="leaderboard-avatar"
+                              decoding="async"
+                              height="36"
                               src={result.avatar_url}
+                              width="36"
                             />
                           <% else %>
                             <div class="leaderboard-avatar placeholder"></div>
@@ -266,52 +265,164 @@
         </div>
         <div class="lang-icons landing-langs" data-reveal style="--reveal-delay: 120ms;">
           <span class="lang-tooltip" data-tooltip="Clojure">
-            <img alt="clojure" src={static_asset("images/landing/languages/clojure.svg")} />
+            <img
+              alt="clojure"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/clojure.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="C++">
-            <img alt="cpp" src={static_asset("images/landing/languages/cpp.svg")} />
+            <img
+              alt="cpp"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/cpp.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="C#">
-            <img alt="csharp" src={static_asset("images/landing/languages/c-sharp.svg")} />
+            <img
+              alt="csharp"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/c-sharp.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Dart">
-            <img alt="dart" src={static_asset("images/landing/languages/dart.svg")} />
+            <img
+              alt="dart"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/dart.svg")}
+            />
           </span>
           <span class="lang-tooltip lang-highlight lang-highlight--elixir" data-tooltip="Elixir">
-            <img alt="elixir" src={static_asset("images/landing/languages/elixir.svg")} />
+            <img
+              alt="elixir"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/elixir.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Go">
-            <img alt="go" src={static_asset("images/landing/languages/go.svg")} />
+            <img
+              alt="go"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/go.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Java">
-            <img alt="java" src={static_asset("images/landing/languages/java.svg")} />
+            <img
+              alt="java"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/java.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="JavaScript">
-            <img alt="javascript" src={static_asset("images/landing/languages/js.svg")} />
+            <img
+              alt="javascript"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/js.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Kotlin">
-            <img alt="kotlin" src={static_asset("images/landing/languages/kotlin.svg")} />
+            <img
+              alt="kotlin"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/kotlin.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="PHP">
-            <img alt="php" src={static_asset("images/landing/languages/php.svg")} />
+            <img
+              alt="php"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/php.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Python">
-            <img alt="python" src={static_asset("images/landing/languages/python.svg")} />
+            <img
+              alt="python"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/python.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Ruby">
-            <img alt="ruby" src={static_asset("images/landing/languages/ruby.svg")} />
+            <img
+              alt="ruby"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/ruby.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Rust">
-            <img alt="rust" src={static_asset("images/landing/languages/rust.svg")} />
+            <img
+              alt="rust"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/rust.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Swift">
-            <img alt="swift" src={static_asset("images/landing/languages/swift.svg")} />
+            <img
+              alt="swift"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/swift.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="TypeScript">
-            <img alt="typescript" src={static_asset("images/landing/languages/ts.svg")} />
+            <img
+              alt="typescript"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/ts.svg")}
+            />
           </span>
           <span class="lang-tooltip" data-tooltip="Zig">
-            <img alt="zig" src={static_asset("images/landing/languages/zig.svg")} />
+            <img
+              alt="zig"
+              decoding="async"
+              height="80"
+              loading="lazy"
+              width="80"
+              src={static_asset("images/landing/languages/zig.svg")}
+            />
           </span>
         </div>
       </div>
@@ -332,8 +443,15 @@
               class="text-uppercase text-white fw-500"
               href="https://github.com/hexlet-codebattle/codebattle"
             >
-              <img class="mr-sm-2 github-logo" src={static_asset("images/landing/github.svg")} />
-              Codebattle
+              <img
+                alt=""
+                class="mr-sm-2 github-logo"
+                decoding="async"
+                height="49"
+                loading="lazy"
+                src={static_asset("images/landing/github.svg")}
+                width="49"
+              /> Codebattle
             </a>
             <div class="float-right mt-2 ml-auto">
               <a

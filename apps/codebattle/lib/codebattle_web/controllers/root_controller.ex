@@ -54,16 +54,23 @@ defmodule CodebattleWeb.RootController do
 
       # by default render index page with lobby view
       true ->
+        %{live_tournaments: live_tournaments, season_tournaments: season_tournaments} =
+          LobbyView.render_tournament_params(current_user)
+
         conn
         |> assign(:show_lobby_loading_shell, true)
-        |> render_inertia("Lobby", %{
-          "task_tags" => ["strings", "math", "hash-maps", "collections", "rest"],
-          "active_games" => LobbyView.render_active_games(current_user),
-          "tournaments" => [],
-          "completed_games" => [],
-          "leaderboard_users" => [],
-          "opponent" => opponent(params)
-        })
+        |> render_inertia(
+          "Lobby",
+          %{
+            "task_tags" => ["strings", "math", "hash-maps", "collections", "rest"],
+            "active_games" => LobbyView.render_active_games(current_user),
+            "live_tournaments" => live_tournaments,
+            "season_tournaments" => season_tournaments,
+            "completed_games" => [],
+            "leaderboard_users" => [],
+            "opponent" => opponent(params)
+          }
+        )
     end
   end
 

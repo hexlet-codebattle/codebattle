@@ -15,7 +15,10 @@ defmodule CodebattleWeb.GithubStarsHelpers do
           alt=""
           aria-hidden="true"
           class="github-stars-badge__icon"
+          decoding="async"
+          height="16"
           src={CodebattleWeb.Vite.static_asset_path("images/landing/github.svg")}
+          width="16"
         />
         <span class="github-stars-badge__label">Stars</span>
       </span>
