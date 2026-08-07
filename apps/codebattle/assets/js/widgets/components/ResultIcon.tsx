@@ -3,9 +3,7 @@ import React, { type ReactNode } from 'react';
 import { faFlag } from '@fortawesome/free-regular-svg-icons';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Tooltip from 'react-bootstrap/Tooltip';
-
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
+import { Tooltip } from '@mantine/core';
 
 type ResultIconName = 'gaveUp' | 'won';
 
@@ -34,12 +32,9 @@ function ResultIcon({ icon = null }: ResultIconProps) {
   const renderIcon = iconRenderers[icon.name];
 
   return (
-    <OverlayTrigger
-      overlay={<Tooltip id={icon.tooltip.id}>{icon.tooltip.text}</Tooltip>}
-      placement="left"
-    >
+    <Tooltip label={icon.tooltip.text} position="left" withArrow>
       {renderIcon()}
-    </OverlayTrigger>
+    </Tooltip>
   );
 }
 

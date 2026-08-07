@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Dropdown } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
+import { Button, Menu } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { type AppDispatch } from '@/slices';
 
 import i18next from '../../../i18n';
@@ -69,72 +68,42 @@ function CheckResultButton({ onClick, status }: CheckResultButtonProps) {
   }
 }
 
-interface CustomToggleProps {
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  className?: string;
-  disabled?: boolean;
-}
-
-const CustomToggle = React.forwardRef<HTMLButtonElement, CustomToggleProps>(
-  ({ onClick, className, disabled }, ref) => (
-    <button
-      type="button"
-      ref={ref}
-      className={(className ?? '').replace('dropdown-toggle', '')}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <FontAwesomeIcon icon="ellipsis-v" />
-    </button>
-  ),
-);
-
 interface DropdownItemProps {
   onSelect?: () => void;
   status: string;
 }
 
 function GiveUpButtonDropdownItem({ onSelect, status }: DropdownItemProps) {
-  // react-bootstrap's Dropdown.Item onSelect/as props don't match our simple
-  // handler shape; spread through a component-props cast (see conventions rule 7).
-  const commonProps = {
-    as: 'a',
-    href: '#',
-    title: i18next.t('Give Up'),
-    onSelect,
-    disabled: status === 'disabled',
-    className: 'cb-dropdown-item',
-  } as unknown as React.ComponentProps<typeof Dropdown.Item>;
-
   return (
-    <Dropdown.Item key="giveUp" {...commonProps}>
+    <Menu.Item
+      key="giveUp"
+      title={i18next.t('Give Up')}
+      onClick={onSelect}
+      disabled={status === 'disabled'}
+      className="cb-dropdown-item"
+    >
       <span className={status === 'disabled' ? 'text-muted' : 'text-danger'}>
         <FontAwesomeIcon icon={['far', 'flag']} className="mr-1" />
         {i18next.t('Give up')}
       </span>
-    </Dropdown.Item>
+    </Menu.Item>
   );
 }
 
 function ResetButtonDropDownItem({ onSelect, status }: DropdownItemProps) {
-  // react-bootstrap's Dropdown.Item onSelect/as props don't match our simple
-  // handler shape; spread through a component-props cast (see conventions rule 7).
-  const commonProps = {
-    as: 'a',
-    href: '#',
-    title: i18next.t('Reset solution'),
-    onSelect,
-    disabled: status === 'disabled',
-    className: 'cb-dropdown-item',
-  } as unknown as React.ComponentProps<typeof Dropdown.Item>;
-
   return (
-    <Dropdown.Item key="reset" {...commonProps}>
+    <Menu.Item
+      key="reset"
+      title={i18next.t('Reset solution')}
+      onClick={onSelect}
+      disabled={status === 'disabled'}
+      className="cb-dropdown-item"
+    >
       <span className="text-white">
         <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
         {i18next.t('Reset solution')}
       </span>
-    </Dropdown.Item>
+    </Menu.Item>
   );
 }
 
@@ -177,15 +146,15 @@ function GameActionButtons({
   };
 
   const renderModal = () => (
-    <Modal show={modalShowing} onHide={modalHide} contentClassName="cb-bg-panel cb-text">
+    <Modal show={modalShowing} onHide={modalHide} contentClassName="cb-text">
       <Modal.Body className="text-center cb-bg-panel">
         {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>
       <Modal.Footer className="mx-auto border-0">
-        <Button onClick={handleGiveUp} className="btn-danger cb-rounded">
+        <Button onClick={handleGiveUp} color="red" radius="md">
           {i18next.t('Give up')}
         </Button>
-        <Button onClick={modalHide} className="btn-secondary cb-btn-secondary cb-rounded">
+        <Button onClick={modalHide} color="cbSecondary" radius="md">
           {i18next.t('Cancel')}
         </Button>
       </Modal.Footer>
@@ -195,23 +164,20 @@ function GameActionButtons({
   return (
     <div className="d-flex py-2" role="group" aria-label={i18next.t('Game actions')}>
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
-      <Dropdown title={i18next.t('Other actions')}>
-        <Dropdown.Toggle
-          as={CustomToggle}
-          className="btn btm-sm btn-secondary cb-btn-secondary cb-rounded mx-1"
-          split
-          id="dropdown-actions"
-        >
-          <FontAwesomeIcon icon="ellipsis-v" className="mr-1" />
-        </Dropdown.Toggle>
+      <Menu>
+        <Menu.Target>
+          <Button color="cbSecondary" radius="md" className="mx-1" id="dropdown-actions">
+            <FontAwesomeIcon icon="ellipsis-v" />
+          </Button>
+        </Menu.Target>
 
-        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-blur">
+        <Menu.Dropdown className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-blur">
           <ResetButtonDropDownItem onSelect={handleReset} status={resetBtnStatus} />
           {showGiveUpBtn && (
             <GiveUpButtonDropdownItem onSelect={modalShow} status={giveUpBtnStatus} />
           )}
-        </Dropdown.Menu>
-      </Dropdown>
+        </Menu.Dropdown>
+      </Menu>
       {renderModal()}
     </div>
   );

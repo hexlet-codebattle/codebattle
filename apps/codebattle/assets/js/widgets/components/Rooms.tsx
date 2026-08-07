@@ -1,9 +1,7 @@
 import React from 'react';
 
-import cn from 'classnames';
+import { Button, Menu } from '@mantine/core';
 import i18next from 'i18next';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../selectors';
@@ -19,35 +17,30 @@ export default function Rooms({ disabled }: RoomsProps) {
   const rooms = useSelector(selectors.roomsSelector);
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
-  const dropdownClassName = cn(
-    'h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel',
-  );
-
   return (
-    <Dropdown as={ButtonGroup} title="" disabled={disabled}>
-      <Dropdown.Toggle
-        className="rounded-top cb-btn-secondary"
-        split
-        variant="secondary"
-        id="dropdown-rooms"
-        disabled={disabled}
-      >
-        <span className="mr-2">{i18next.t(activeRoom.name)}</span>
-      </Dropdown.Toggle>
+    <Menu disabled={disabled} width="target">
+      <Menu.Target>
+        <Button
+          className="rounded-top cb-btn-secondary"
+          color="cbSecondary"
+          id="dropdown-rooms"
+          disabled={disabled}
+        >
+          <span className="mr-2">{i18next.t(activeRoom.name)}</span>
+        </Button>
+      </Menu.Target>
 
-      <Dropdown.Menu className={dropdownClassName}>
+      <Menu.Dropdown className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel">
         {rooms.map((room) => (
-          <Dropdown.Item
-            as="a"
-            href="#"
+          <Menu.Item
             className="cb-text"
             key={room.targetUserId || room.name}
-            onSelect={() => dispatch(actions.setActiveRoom(room))}
+            onClick={() => dispatch(actions.setActiveRoom(room))}
           >
             {i18next.t(room.name)}
-          </Dropdown.Item>
+          </Menu.Item>
         ))}
-      </Dropdown.Menu>
-    </Dropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

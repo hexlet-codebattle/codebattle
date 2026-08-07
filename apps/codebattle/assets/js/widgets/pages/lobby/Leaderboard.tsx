@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 
-import Table from 'react-bootstrap/Table';
+import { Table } from '@mantine/core';
 import { useSelector, useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
@@ -58,7 +58,7 @@ function Leaderboard() {
   }, [period]);
 
   return (
-    <Table striped className="cb-bg-panel cb-border-color rounded shadow-sm m-0">
+    <Table className="table table-striped cb-bg-panel cb-border-color rounded shadow-sm m-0">
       <thead>
         <tr aria-label={i18n.t('Leaderboard header')}>
           <th

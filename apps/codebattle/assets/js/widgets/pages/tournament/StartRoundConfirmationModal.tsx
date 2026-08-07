@@ -1,9 +1,8 @@
 import React, { useCallback, useRef, memo, useContext } from 'react';
 
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button } from '@mantine/core';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
 import i18n from '../../../i18n';
@@ -55,14 +54,8 @@ function StartRoundConfirmationModal({
 
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-  const cancelBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  const confirmBtnClassName = cn('btn text-white cb-rounded', {
-    'btn-success cb-btn-success': !hasCustomEventStyle,
-    'cb-custom-event-btn-success': hasCustomEventStyle,
-  });
+  const cancelBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
+  const confirmBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-success' : undefined;
 
   const handleConfirmation = useCallback(() => {
     switch (modalShowing) {
@@ -86,7 +79,7 @@ function StartRoundConfirmationModal({
   const text = getModalText(modalShowing);
 
   return (
-    <Modal show={!!modalShowing} onHide={onClose} contentClassName="cb-bg-panel cb-text">
+    <Modal show={!!modalShowing} onHide={onClose} contentClassName="cb-text">
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -115,13 +108,15 @@ function StartRoundConfirmationModal({
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-between w-100">
-          <Button onClick={onClose} className={cancelBtnClassName}>
+          <Button onClick={onClose} color="cbSecondary" radius="md" className={cancelBtnClassName}>
             {i18n.t('Cancel')}
           </Button>
           <div className="d-flex">
             <Button
               ref={confirmBtnRef}
               onClick={handleConfirmation}
+              color="cbSuccess"
+              radius="md"
               className={confirmBtnClassName}
             >
               {i18n.t('Confirm')}

@@ -2,11 +2,10 @@ import React, { memo, useContext } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Button } from '@mantine/core';
 import i18next from 'i18next';
-import Button from 'react-bootstrap/Button';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import ModalCodes from '../../config/modalCodes';
@@ -21,14 +20,11 @@ const TournamentDescriptionModal = NiceModal.create(
 
     const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-    const closeBtnClassName = cn('btn text-white rounded-lg', {
-      'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-      'cb-custom-event-btn-secondary': hasCustomEventStyle,
-    });
+    const closeBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
 
     return (
       <Modal
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
         centered
         show={modal.visible}
         onHide={modal.hide}
@@ -39,8 +35,13 @@ const TournamentDescriptionModal = NiceModal.create(
         <Modal.Body>{description}</Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-end w-100">
-            <Button onClick={modal.hide} className={closeBtnClassName}>
-              <FontAwesomeIcon icon="times" className="mr-2" />
+            <Button
+              onClick={modal.hide}
+              color="cbSecondary"
+              radius="md"
+              className={closeBtnClassName}
+              leftSection={<FontAwesomeIcon icon="times" />}
+            >
               {i18next.t('Close')}
             </Button>
           </div>

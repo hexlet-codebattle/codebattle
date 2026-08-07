@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import ModalCodes from '../../config/modalCodes';
 
@@ -18,7 +18,7 @@ const EventStageConfirmationModal = NiceModal.create<EventStageConfirmationModal
     const modal = useModal(ModalCodes.eventStageModal);
 
     return (
-      <Modal contentClassName="cb-bg-panel cb-text" show={modal.visible} onHide={modal.hide}>
+      <Modal contentClassName="cb-text" show={modal.visible} onHide={modal.hide}>
         <Modal.Header closeButton>
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>

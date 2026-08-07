@@ -87,6 +87,10 @@ $cb-rookie-bg: $iron;
 }
 
 @import 'bootstrap/scss/bootstrap';
+// Mantine core styles are wrapped in `@layer mantine`. Unlayered Bootstrap above
+// always wins on conflicts, so existing Bootstrap-styled UI is unaffected while
+// Mantine components still get their own styling.
+@import '@mantine/core/styles.layer.css';
 @import 'nprogress/nprogress.css';
 @import 'gamePreview';
 @import 'skeleton';

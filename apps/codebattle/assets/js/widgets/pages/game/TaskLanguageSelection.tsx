@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Button, Menu } from '@mantine/core';
 
 interface TaskLanguagesSelectionProps {
   avaibleLanguages: string[];
@@ -18,30 +18,33 @@ function TaskLanguagesSelection({
   }
 
   const renderLanguage = (language: string) => (
-    <Dropdown.Item
-      as="button"
+    <Menu.Item
       key={language}
-      active={language === displayLanguage}
       onClick={handleSetLanguage(language)}
       className="cb-dropdown-item"
+      data-active={language === displayLanguage || undefined}
     >
       <span translate="no">{`${language.toUpperCase()}`}</span>
-    </Dropdown.Item>
+    </Menu.Item>
   );
 
   return (
-    <Dropdown className="d-flex">
-      <Dropdown.Toggle
-        id="tasklang-dropdown-toggle"
-        className="shadow-none cb-rounded p-1 btn btn-sm btn-outline-secondary cb-btn-outline-secondary"
-        variant="none"
-      >
-        {displayLanguage.toUpperCase()}
-      </Dropdown.Toggle>
-      <Dropdown.Menu id="tasklang-dropdown-menu" className="cb-blur">
+    <Menu>
+      <Menu.Target>
+        <Button
+          id="tasklang-dropdown-toggle"
+          className="shadow-none cb-rounded p-1 btn btn-sm btn-outline-secondary cb-btn-outline-secondary"
+          variant="outline"
+          color="cbSecondary"
+          size="xs"
+        >
+          {displayLanguage.toUpperCase()}
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown id="tasklang-dropdown-menu" className="cb-blur">
         {avaibleLanguages.map(renderLanguage)}
-      </Dropdown.Menu>
-    </Dropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 

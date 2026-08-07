@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo, memo, useContext } from 'react';
 
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button } from '@mantine/core';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getOpponentId from '@/utils/matches';
 import { makeGameUrl } from '@/utils/urlBuilders';
@@ -150,14 +149,8 @@ function MatchConfirmationModal({
   }, [openMatch]);
 
   const title = i18next.t('Next match will be opened. Show now?');
-  const closeBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
-    'cb-custom-event-btn-info': hasCustomEventStyles,
-  });
-  const openBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
-    'cb-custom-event-btn-primary': hasCustomEventStyles,
-  });
+  const closeBtnClassName = hasCustomEventStyles ? 'cb-custom-event-btn-info' : undefined;
+  const openBtnClassName = hasCustomEventStyles ? 'cb-custom-event-btn-primary' : undefined;
 
   return (
     <Modal
@@ -190,11 +183,22 @@ function MatchConfirmationModal({
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-between w-100">
-          <Button onClick={handleCancel} className={closeBtnClassName}>
+          <Button
+            onClick={handleCancel}
+            color="cbSecondary"
+            radius="md"
+            className={closeBtnClassName}
+          >
             {i18next.t('Cancel')}
           </Button>
           <div className="d-flex">
-            <Button ref={confirmBtnRef} onClick={handleConfirmation} className={openBtnClassName}>
+            <Button
+              ref={confirmBtnRef}
+              onClick={handleConfirmation}
+              color="cbSecondary"
+              radius="md"
+              className={openBtnClassName}
+            >
               {i18next.t('Open')}
             </Button>
           </div>

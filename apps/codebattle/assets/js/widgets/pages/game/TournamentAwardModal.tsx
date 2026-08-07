@@ -1,10 +1,10 @@
 import React, { memo, useRef, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import Button from 'react-bootstrap/Button';
+import { Button } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import i18next from '../../../i18n';
 import ModalCodes from '../../config/modalCodes';
@@ -70,7 +70,7 @@ const TournamentAwardModal = NiceModal.create((params: TournamentAwardModalProps
       {!onlyShowAward && (
         <Modal.Footer>
           <div className="d-flex justify-content-end w-100">
-            <Button ref={submitBtnRef} className="btn btn-primary cb-rounded" onClick={modal.hide}>
+            <Button ref={submitBtnRef} color="blue" radius="md" onClick={modal.hide}>
               {waitType === 'tournament' ? i18next.t('Close') : i18next.t('Next game')}
             </Button>
           </div>

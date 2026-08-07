@@ -1,22 +1,23 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Alert } from '@mantine/core';
 import cn from 'classnames';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import capitalize from 'lodash/capitalize';
 import noop from 'lodash/noop';
-import Alert from 'react-bootstrap/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 import type { FormikHelpers } from 'formik';
 
 import type { RootState } from '@/slices/store';
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { getPageProp } from '@/inertia/pageProps';
 
 import i18n, { getSupportedLocale } from '../../../i18n';
 import { configureSound } from '../../lib/sound';
 import { userSettingsSelector } from '../../selectors';
 import { actions } from '../../slices';
+import { bootstrapAlertColor } from '../../ui/alert';
 
 import UserSettingsForm, {
   type PasswordSettingsFormValues,
@@ -181,8 +182,16 @@ function Notification({ notification, onClose }: NotificationProps) {
     return () => clearTimeout(timerId);
   }, [onClose, message]);
 
+  if (!message) {
+    return null;
+  }
+
   return (
-    <Alert show={!!message} variant={variant} className="alert-dark-theme rounded shadow-sm mb-2">
+    <Alert
+      color={bootstrapAlertColor(variant)}
+      variant="light"
+      className={`alert alert-${variant} alert-dark-theme rounded shadow-sm mb-2`}
+    >
       {message}
     </Alert>
   );

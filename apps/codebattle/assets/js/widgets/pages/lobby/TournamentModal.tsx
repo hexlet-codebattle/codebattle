@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Button } from '@mantine/core';
 import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import TournamentDescription from '@/components/TournamentDescription';
 import TournamentPreviewPanel from '@/components/TournamentPreviewPanel';
 import { grades } from '@/config/grades';
@@ -40,7 +40,7 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
       size="lg"
       show={modal.visible}
       onHide={modal.hide}
-      contentClassName="cb-bg-panel cb-text"
+      contentClassName="cb-text"
     >
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title className="d-flex flex-column">
@@ -81,7 +81,7 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
             {i18n.t('Open Tournament')}
           </a>
         )}
-        <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
+        <Button onClick={modal.hide} color="cbSecondary" radius="md">
           {i18n.t('Close')}
         </Button>
       </Modal.Footer>

@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
+import { Alert } from '@mantine/core';
 import { decamelizeKeys, camelizeKeys } from 'humps';
 import noop from 'lodash/noop';
-import Alert from 'react-bootstrap/Alert';
 
 import i18n from '../../../i18n';
 import Loading from '../../components/Loading';
+import { bootstrapAlertColor } from '../../ui/alert';
 
 import TournamentForm from './TournamentForm';
 import { formatDatetimeLocal, getBrowserTimezone } from './dateTime';
@@ -58,8 +59,16 @@ function Notification({ notification, onClose }: NotificationProps) {
     return () => clearTimeout(timerId);
   }, [onClose, message]);
 
+  if (!message) {
+    return null;
+  }
+
   return (
-    <Alert show={!!message} variant={variant} className="alert-dark-theme rounded shadow-sm mb-2">
+    <Alert
+      color={bootstrapAlertColor(variant)}
+      variant="light"
+      className={`alert alert-${variant} alert-dark-theme rounded shadow-sm mb-2`}
+    >
       {message}
     </Alert>
   );

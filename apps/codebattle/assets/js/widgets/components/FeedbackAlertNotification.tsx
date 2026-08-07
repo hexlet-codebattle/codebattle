@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 
+import { Alert } from '@mantine/core';
 import isEmpty from 'lodash/isEmpty';
-import Alert, { type AlertProps } from 'react-bootstrap/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 
 import i18n from '../../i18n';
 import AlertCodes from '../config/alertCodes';
 import { gameAlertsSelector } from '../selectors/index';
 import { actions } from '../slices';
+import { bootstrapAlertColor } from '../ui/alert';
 
 interface Notification {
   status?: string;
@@ -54,11 +55,12 @@ function FeedbackAlertNotification() {
 
     return (
       <Alert
-        dismissible
+        withCloseButton
         onClose={() => handleClose(key)}
         key={key}
-        variant={result.status as AlertProps['variant']}
-        className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show alert-dark-theme"
+        color={bootstrapAlertColor(result.status)}
+        variant="light"
+        className={`row mb-0 rounded-0 alert alert-${result.status} show alert-dark-theme`}
       >
         {result.message}
       </Alert>

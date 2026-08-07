@@ -1,13 +1,12 @@
 import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Tooltip } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import moment from 'moment';
-import Tooltip from 'react-bootstrap/Tooltip';
 import { useSelector } from 'react-redux';
 
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import { type UserNameUser } from '@/components/UserName';
@@ -342,43 +341,26 @@ function UsersMatchList({
                 {matchResult && matchResult.result !== 'undefined' && (
                   <div className={matchMetaClassName}>
                     {!showScore && (
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`tests-${match.id}`}>{i18next.t('Tests percent')}</Tooltip>
-                        }
-                      >
+                      <Tooltip label={i18next.t('Tests percent')} position="top" withArrow>
                         <span className={metaItemClassName}>
                           <span className={metaIconClassName}>
                             <FontAwesomeIcon className="text-success" icon="tasks" />
                           </span>
                           {matchResult.resultPercent}
                         </span>
-                      </OverlayTrigger>
+                      </Tooltip>
                     )}
                     {Number.isFinite(match.durationSec) && (
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`duration-${match.id}`}>
-                            {i18next.t('Duration (sec)')}
-                          </Tooltip>
-                        }
-                      >
+                      <Tooltip label={i18next.t('Duration (sec)')} position="top" withArrow>
                         <span className={metaItemClassName}>
                           <span className={metaIconClassName}>
                             <FontAwesomeIcon className="text-primary" icon="stopwatch" />
                           </span>
                           <span className="cb-tournament-match-duration">{match.durationSec}</span>
                         </span>
-                      </OverlayTrigger>
+                      </Tooltip>
                     )}
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`time-${match.id}`}>{i18next.t('Started - Finished')}</Tooltip>
-                      }
-                    >
+                    <Tooltip label={i18next.t('Started - Finished')} position="top" withArrow>
                       <span className={metaItemClassName}>
                         <span className={metaIconClassName}>
                           <FontAwesomeIcon className="text-primary" icon="flag-checkered" />
@@ -387,7 +369,7 @@ function UsersMatchList({
                         <span className="mx-1">-</span>
                         {match.finishedAt ? toLocalTime(match.finishedAt) : '-'}
                       </span>
-                    </OverlayTrigger>
+                    </Tooltip>
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 import React, { useCallback, memo, useMemo, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from 'react-bootstrap/Button';
+import { Button } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import i18n from '../../i18n';
@@ -9,7 +9,7 @@ import AlertCodes from '../config/alertCodes';
 import { currentUserNameSelector } from '../selectors/index';
 import { actions } from '../slices';
 
-import Modal from './BootstrapModal';
+import Modal from './CbModal';
 
 interface FeedbackPayload {
   attachments: {
@@ -108,7 +108,7 @@ function FeedbackWidget() {
         {i18n.t('Feedback')}
       </button>
       {isOpen && (
-        <Modal centered show={isOpen} onHide={closeModal} contentClassName="cb-bg-panel cb-text">
+        <Modal centered show={isOpen} onHide={closeModal} contentClassName="cb-text">
           <form onSubmit={onSubmit}>
             <Modal.Header className="cb-border-color" closeButton>
               <Modal.Title>{i18n.t('Send feedback')}</Modal.Title>
@@ -126,11 +126,10 @@ function FeedbackWidget() {
                     <button
                       key={option}
                       type="button"
-                      className={`btn btn-sm cb-rounded mr-2 mb-2 ${
-                        status === option
+                      className={`btn btn-sm cb-rounded mr-2 mb-2 ${status === option
                           ? 'btn-secondary cb-btn-secondary'
                           : 'btn-outline-secondary cb-btn-outline-secondary'
-                      }`}
+                        }`}
                       role="radio"
                       aria-checked={status === option}
                       onClick={() => setStatus(option)}
@@ -156,17 +155,14 @@ function FeedbackWidget() {
             <Modal.Footer className="cb-border-color">
               <Button
                 type="button"
-                className="btn btn-secondary cb-btn-secondary cb-rounded"
+                color="cbSecondary"
+                radius="md"
                 onClick={closeModal}
                 disabled={isSubmitting}
               >
                 {i18n.t('Cancel')}
               </Button>
-              <Button
-                type="submit"
-                className="btn btn-secondary cb-btn-secondary cb-rounded"
-                disabled={isSubmitDisabled}
-              >
+              <Button type="submit" color="cbSecondary" radius="md" disabled={isSubmitDisabled}>
                 {isSubmitting ? i18n.t('Sending...') : i18n.t('Send')}
               </Button>
             </Modal.Footer>

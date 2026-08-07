@@ -1,12 +1,14 @@
 import '@testing-library/jest-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React, { type ReactElement, type ReactNode } from 'react';
+import React, { type ReactElement } from 'react';
 import { Provider } from 'react-redux';
 
 import UserSettings from '../widgets/pages/settings';
 import reducers from '../widgets/slices';
+
+import { MantineTestProvider } from './helpers/mantine';
 
 vi.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: () => <span aria-hidden="true" />,
@@ -15,23 +17,6 @@ vi.mock('@fortawesome/react-fontawesome', () => ({
 vi.mock('calcite-react/Slider', () => ({ default: 'input' }));
 vi.mock('../widgets/components/LanguageIcon', () => ({
   default: ({ lang }: { lang?: string }) => <span data-testid={`language-icon-${lang}`} />,
-}));
-vi.mock('react-bootstrap/Alert', () => ({
-  __esModule: true,
-  default: ({
-    children,
-    variant,
-    show,
-  }: {
-    children?: ReactNode;
-    variant?: string;
-    show?: boolean;
-  }) =>
-    show ? (
-      <div role="alert" className={`alert-${variant}`}>
-        {children}
-      </div>
-    ) : null,
 }));
 
 vi.mock('../i18n', () => ({
@@ -109,7 +94,7 @@ describe('UserSettings test cases', () => {
   function setup(jsx: ReactElement) {
     return {
       user: userEvent.setup(),
-      ...render(jsx),
+      ...render(<MantineTestProvider>{jsx}</MantineTestProvider>),
     };
   }
 
@@ -316,17 +301,15 @@ describe('UserSettings test cases', () => {
     });
   });
 
-  test('shows language icons in the settings language menu', async () => {
-    const { getByTestId, getAllByTestId, user } = setup(
+  test('shows language icons in the settings language menu', () => {
+    setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
 
-    await user.click(getByTestId('code-langSelect'));
-
-    expect(getAllByTestId('language-icon-js').length).toBeGreaterThan(0);
-    expect(getAllByTestId('language-icon-python').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('language-icon-js').length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('language-icon-python').length).toBeGreaterThan(0);
   });
 
   test('changes a password without sending password fields to the settings endpoint', async () => {
@@ -490,7 +473,7 @@ describe('UserSettings test cases', () => {
   });
 
   test('archives the account only after typing the confirmation text', async () => {
-    const { getByLabelText, getByRole, user } = setup(
+    const { getByRole, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
@@ -499,16 +482,16 @@ describe('UserSettings test cases', () => {
 
     await user.click(archiveButton);
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(getByRole('dialog')).toBeInTheDocument();
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
 
-    const confirmButton = getByRole('button', { name: 'Archive permanently' });
+    const confirmButton = screen.getByRole('button', { name: 'Archive permanently' });
     expect(confirmButton).toBeDisabled();
 
-    await user.type(getByLabelText('Type ARCHIVE to confirm'), 'archive');
+    await user.type(screen.getByLabelText('Type ARCHIVE to confirm'), 'archive');
     expect(confirmButton).toBeDisabled();
 
-    await user.clear(getByLabelText('Type ARCHIVE to confirm'));
-    await user.type(getByLabelText('Type ARCHIVE to confirm'), 'ARCHIVE');
+    await user.clear(screen.getByLabelText('Type ARCHIVE to confirm'));
+    await user.type(screen.getByLabelText('Type ARCHIVE to confirm'), 'ARCHIVE');
     expect(confirmButton).toBeEnabled();
 
     fetchMock.mockImplementationOnce(() => new Promise(() => {}));

@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { getPageProp } from '@/inertia/pageProps';
 import * as lobbyMiddlewares from '@/middlewares/Lobby';
 import * as selectors from '@/selectors';
@@ -194,7 +194,6 @@ function LobbyWidget() {
       <Modal
         show={showCreateGameModal}
         onHide={handleCloseCreateGameModal}
-        contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title className="w-100 text-center pr-4">{i18n.t('Create a game')}</Modal.Title>
@@ -207,7 +206,6 @@ function LobbyWidget() {
         show={showJoinGameModal}
         onHide={handleCloseJoinGameModal}
         dialogClassName="cb-join-game-modal"
-        contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title>{i18n.t('Join a game')}</Modal.Title>

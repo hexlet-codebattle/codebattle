@@ -1,11 +1,11 @@
 import React, { memo, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Button } from '@mantine/core';
 import i18n from 'i18next';
-import Button from 'react-bootstrap/Button';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import Loading from '@/components/Loading';
 import { type RootState } from '@/slices';
 
@@ -62,7 +62,7 @@ const AnimationModal = NiceModal.create(() => {
   const buttonText = result === 'won' ? i18n.t('GG') : i18n.t("I'll be back");
 
   return (
-    <Modal show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
+    <Modal show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
@@ -92,7 +92,7 @@ const AnimationModal = NiceModal.create(() => {
         {/*     Back to tournament */}
         {/*   </a> */}
         {/* )} */}
-        <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
+        <Button onClick={modal.hide} color="cbSecondary" radius="md">
           {buttonText}
         </Button>
       </Modal.Footer>

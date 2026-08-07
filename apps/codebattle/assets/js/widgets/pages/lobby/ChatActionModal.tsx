@@ -2,7 +2,7 @@ import React, { useCallback, type RefObject } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import { type UserNameUser } from '../../components/UserName';
 import UserInfo from '../../components/UserInfo';
@@ -77,7 +77,7 @@ function ChatActionModal({
 
   return (
     <Modal
-      contentClassName="cb-bg-panel cb-text h-75"
+      contentClassName="cb-text h-75"
       show={modalShowing.opened}
       onHide={handleCloseModal}
     >

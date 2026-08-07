@@ -2,10 +2,10 @@ import React, { useState, useCallback, memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from 'react-bootstrap/Button';
+import { Button } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { sendPremiumRequest } from '@/middlewares/Users';
 import { currentUserIdSelector, userSettingsSelector } from '@/selectors';
 import { type AppDispatch } from '@/slices';
@@ -40,7 +40,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
       centered
       show={modal.visible}
       onHide={modal.hide}
-      contentClassName="cb-bg-panel cb-text"
+      contentClassName="cb-text"
     >
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{i18n.t('Restricted Content')}</Modal.Title>
@@ -100,8 +100,12 @@ const PremiumRestrictionModal = NiceModal.create(() => {
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-end w-100">
-          <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
-            <FontAwesomeIcon icon="times" className="mr-2" />
+          <Button
+            onClick={modal.hide}
+            color="cbSecondary"
+            radius="md"
+            leftSection={<FontAwesomeIcon icon="times" />}
+          >
             {i18n.t('Close')}
           </Button>
         </div>

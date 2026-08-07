@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
+import { Button, Menu } from '@mantine/core';
 import cn from 'classnames';
 import { Field, Form, Formik, useField, type FormikHelpers } from 'formik';
 import capitalize from 'lodash/capitalize';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
-import Dropdown from 'react-bootstrap/Dropdown';
 import * as Icon from 'react-feather';
 import * as Yup from 'yup';
 
@@ -202,27 +202,28 @@ function LanguageSelect({ lang, view, currentView, items, onSelect }: LanguageSe
   return (
     <div className={cn({ 'd-none': view !== currentView })}>
       <div className="h6">{i18n.t('Your weapon')}</div>
-      <Dropdown className="w-100">
-        <Dropdown.Toggle
-          id={`${view}-language-dropdown`}
-          data-testid={`${view}-langSelect`}
-          aria-label={i18n.t('Programming language select')}
-          className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
-        >
-          <LanguageIcon
-            className="mr-2 flex-shrink-0"
-            lang={selectedSlug}
-            style={{ width: '24px', height: '24px' }}
-          />
-          <span>{capitalize(selectedName)}</span>
-        </Dropdown.Toggle>
-        <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+      <Menu width="target" keepMounted>
+        <Menu.Target>
+          <Button
+            id={`${view}-language-dropdown`}
+            data-testid={`${view}-langSelect`}
+            aria-label={i18n.t('Programming language select')}
+            variant="default"
+            className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
+          >
+            <LanguageIcon
+              className="mr-2 flex-shrink-0"
+              lang={selectedSlug}
+              style={{ width: '24px', height: '24px' }}
+            />
+            <span>{capitalize(selectedName)}</span>
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown className="w-100 cb-bg-highlight-panel">
           {items.map(([slug, languageName]) => (
-            <Dropdown.Item
+            <Menu.Item
               key={slug}
-              as="button"
-              type="button"
-              active={selectedSlug === slug}
+              data-active={selectedSlug === slug || undefined}
               className="cb-dropdown-item d-flex align-items-center"
               onClick={() => {
                 helpers.setValue(slug);
@@ -235,10 +236,10 @@ function LanguageSelect({ lang, view, currentView, items, onSelect }: LanguageSe
                 style={{ width: '24px', height: '24px' }}
               />
               {capitalize(languageName)}
-            </Dropdown.Item>
+            </Menu.Item>
           ))}
-        </Dropdown.Menu>
-      </Dropdown>
+        </Menu.Dropdown>
+      </Menu>
     </div>
   );
 }
@@ -259,23 +260,23 @@ function LocaleSelect({ onSelect }: { onSelect: (locale: string) => void }) {
   const currentLocaleLabel = locales.find(([value]) => value === field.value)?.[1] || locales[0][1];
 
   return (
-    <Dropdown>
-      <Dropdown.Toggle
-        id="locale-dropdown"
-        data-testid="localeSelect"
-        aria-label={i18n.t('Locale')}
-        type="button"
-        className="btn cb-bg-panel cb-border-color text-white w-100 text-left"
-      >
-        {currentLocaleLabel}
-      </Dropdown.Toggle>
-      <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+    <Menu width="target">
+      <Menu.Target>
+        <Button
+          id="locale-dropdown"
+          data-testid="localeSelect"
+          aria-label={i18n.t('Locale')}
+          variant="default"
+          className="btn cb-bg-panel cb-border-color text-white w-100 text-left"
+        >
+          {currentLocaleLabel}
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown className="w-100 cb-bg-highlight-panel">
         {locales.map(([value, label]) => (
-          <Dropdown.Item
+          <Menu.Item
             key={value}
-            as="button"
-            type="button"
-            active={field.value === value}
+            data-active={field.value === value || undefined}
             className="cb-dropdown-item"
             onClick={() => {
               helpers.setValue(value);
@@ -283,10 +284,10 @@ function LocaleSelect({ onSelect }: { onSelect: (locale: string) => void }) {
             }}
           >
             {label}
-          </Dropdown.Item>
+          </Menu.Item>
         ))}
-      </Dropdown.Menu>
-    </Dropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 

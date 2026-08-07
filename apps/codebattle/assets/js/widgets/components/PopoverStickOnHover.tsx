@@ -1,8 +1,10 @@
-// SEE: https://gist.github.com/lou/571b7c0e7797860d6c555a9fdc0496f9
-import React, { useState, useEffect, useRef, type ReactElement, type ReactNode } from 'react';
+// Hover-triggered popover that stays open while the pointer is over the dropdown.
+// Backed by Mantine HoverCard (was react-bootstrap Overlay + Popover).
+import React, { type ReactNode } from 'react';
 
-import Overlay, { type OverlayProps } from 'react-bootstrap/Overlay';
-import Popover from 'react-bootstrap/Popover';
+import { HoverCard, type FloatingPosition } from '@mantine/core';
+
+export type Placement = FloatingPosition;
 
 interface PopoverStickOnHoverProps {
   id: string;
@@ -10,89 +12,31 @@ interface PopoverStickOnHoverProps {
   onMouseEnter?: () => void;
   children: ReactNode;
   component: ReactNode;
-  placement?: OverlayProps['placement'];
+  placement?: Placement;
 }
 
 function PopoverStickOnHover({
   id,
   delay = 0,
-  onMouseEnter = () => {},
+  onMouseEnter,
   children,
   component,
-  placement,
+  placement = 'bottom',
 }: PopoverStickOnHoverProps) {
-  const [showPopover, setShowPopover] = useState(false);
-  const childNode = useRef<unknown>(null);
-  const showTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(
-    () => () => {
-      if (showTimeout.current) {
-        clearTimeout(showTimeout.current);
-      }
-    },
-    [],
-  );
-
-  const handleMouseEnter = () => {
-    if (showTimeout.current) {
-      clearTimeout(showTimeout.current);
-    }
-
-    showTimeout.current = setTimeout(() => {
-      setShowPopover(true);
-      onMouseEnter();
-    }, delay);
-  };
-
-  const handleMouseLeave = () => {
-    if (showTimeout.current) {
-      clearTimeout(showTimeout.current);
-      showTimeout.current = null;
-    }
-
-    setShowPopover(false);
-  };
-
-  const displayChild = React.Children.map(children, (child) =>
-    React.cloneElement(
-      child as ReactElement,
-      {
-        onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave,
-        ref: (node: unknown) => {
-          childNode.current = node;
-          const { ref } = child as ReactElement & { ref?: unknown };
-          if (typeof ref === 'function') {
-            ref(node);
-          }
-        },
-      } as Partial<unknown>,
-    ),
-  )?.[0];
-
   return (
-    <>
-      {displayChild}
-      <Overlay
-        show={showPopover}
-        placement={placement}
-        target={childNode as OverlayProps['target']}
-        {...({ shouldUpdatePosition: true } as Record<string, unknown>)}
-      >
-        <Popover
-          className="cb-blur cb-text cb-rounded"
-          onMouseEnter={() => {
-            setShowPopover(true);
-          }}
-          onMouseLeave={handleMouseLeave}
-          id={id}
-          {...({ trigger: 'click' } as Record<string, unknown>)}
-        >
-          {component}
-        </Popover>
-      </Overlay>
-    </>
+    <HoverCard
+      openDelay={delay}
+      position={placement}
+      onOpen={onMouseEnter}
+      withinPortal
+      shadow="md"
+      radius="md"
+    >
+      <HoverCard.Target>{children}</HoverCard.Target>
+      <HoverCard.Dropdown id={id} className="cb-blur cb-text cb-rounded" p={0}>
+        {component}
+      </HoverCard.Dropdown>
+    </HoverCard>
   );
 }
 

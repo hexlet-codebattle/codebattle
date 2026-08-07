@@ -4,6 +4,7 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 
 import { setPageProps } from './inertia/pageProps';
+import { withMantine } from './widgets/ui/withMantine';
 
 type InertiaPageModule = {
   default: ComponentType;
@@ -78,7 +79,7 @@ export const initializeInertiaApp = () => {
     },
     setup({ App, el, props }) {
       setPageProps(props.initialPage.props);
-      createRoot(el).render(<App {...props} />);
+      createRoot(el).render(withMantine(<App {...props} />));
     },
   });
 };

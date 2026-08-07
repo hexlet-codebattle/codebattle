@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Tooltip } from '@mantine/core';
 import cn from 'classnames';
 import uniqueId from 'lodash/uniqueId';
-import Tooltip from 'react-bootstrap/Tooltip';
-
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
 
 import i18n from '../../i18n';
 import statusColorMap from '../config/statusColor';
@@ -199,18 +197,13 @@ function SubMenu({
             <span className={`badge badge-${statusColor} mr-3 ${fontClassName}`}>
               {assert.status}
             </span>
-            <OverlayTrigger
-              overlay={<Tooltip id={String(assert.id)}>{i18n.t('Execution Time')}</Tooltip>}
-              placement="top"
-            >
-              {executionTime !== undefined && Number(executionTime) !== 0 ? (
+            {executionTime !== undefined && Number(executionTime) !== 0 ? (
+              <Tooltip label={i18n.t('Execution Time')} position="top" withArrow>
                 <span className={`badge badge-secondary mr-3 ${fontClassName}`}>
                   {executionTime}
                 </span>
-              ) : (
-                <></>
-              )}
-            </OverlayTrigger>
+              </Tooltip>
+            ) : null}
             {assert.output && (
               <button
                 className="btn btn-sm btn-outline-info badge rounded-lg"

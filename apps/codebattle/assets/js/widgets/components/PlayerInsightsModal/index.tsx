@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 
+import { Loader } from '@mantine/core';
 import cn from 'classnames';
-import Spinner from 'react-bootstrap/Spinner';
 import {
   ResponsiveContainer,
   BarChart,
@@ -24,7 +24,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import i18n from '../../../i18n';
 import LanguageIcon from '../LanguageIcon';
@@ -457,7 +457,7 @@ function PlayerInsightsModal({
       onHide={onHide}
       size="xl"
       centered
-      contentClassName="bg-dark text-light border-secondary"
+      contentClassName="text-light"
       dialogClassName="modal-90w"
     >
       <Modal.Header
@@ -562,7 +562,7 @@ function PlayerInsightsModal({
         {/* Loading State */}
         {loading && (
           <div className="text-center py-5">
-            <Spinner animation="border" variant="info" />
+            <Loader color="blue" />
             <p className="text-muted mt-2">{i18n.t('Loading detailed stats...')}</p>
           </div>
         )}
@@ -856,7 +856,7 @@ function PlayerInsightsModal({
                                   player: Math.min(
                                     (player.tournaments_count /
                                       Math.max(medianStats.tournaments, 1)) *
-                                      50,
+                                    50,
                                     100,
                                   ),
                                   median: 50,
