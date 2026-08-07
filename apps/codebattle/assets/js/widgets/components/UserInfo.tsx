@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
+import { Text } from '@mantine/core';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
@@ -123,11 +124,19 @@ function UserInfo({
   const content = useMemo(() => (user.isBot ? 'bot' : <UserPopoverContent user={user} />), [user]);
 
   if (!user?.id) {
-    return <span className="text-white">John Doe</span>;
+    return (
+      <Text component="span" c="white">
+        John Doe
+      </Text>
+    );
   }
 
   if (user?.id === 0) {
-    return <span className="text-white">{user.name}</span>;
+    return (
+      <Text component="span" c="white">
+        {user.name}
+      </Text>
+    );
   }
 
   const isOnline = (presenceList as Array<{ id?: string | number }>).some(

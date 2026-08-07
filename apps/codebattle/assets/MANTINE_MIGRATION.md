@@ -116,14 +116,23 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (20 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (24 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
-`ChatHeader`, `Message`, `Messages`, and `TournamentDescription` (layout only —
-its `.card.cb-card` ranking panel is left as Bootstrap; see below). Plus the
+`ChatHeader`, `Message`, `Messages`, `TournamentDescription` (layout only —
+its `.card.cb-card` ranking panel is left as Bootstrap; see below), and the
+`UserInfo` / `UserName` / `UserLabel` / `UserStats` cluster. Plus the
 theme border-token work (gotcha #7 / `theme.ts`). The chat cluster is
 effectively done.
+
+The `User*` cluster keeps the string `className`/`linkClassName` **passthrough
+props** (used by ~12 page callers that still pass Bootstrap color classes like
+`text-white`/`text-secondary`/`text-decoration-none`); those leftovers get
+cleaned when the pages convert. Only the components' own internal utility
+classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
+props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
+`cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
 **Remaining leaves — each needs a decision or a browser pass, not a plain swap:**
 - **Button/alert/card theming (port `cb-*` → theme first):** `Rooms` button
@@ -133,8 +142,6 @@ effectively done.
 - **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle` /
   `DropdownMenuDefault` (Mantine `Menu` items), `EmojiTooltip` (native
   `<select size=4>`).
-- **Convert as a set (they thread `className` strings into each other):**
-  `UserInfo` / `UserName` / `UserLabel` / `UserStats`.
 - **Larger:** `AccordeonBox`, `ChatContextMenu`, `InvitesContainer` /
   `InvitesList`, `SeasonLeaderboard`, `PlayerInsightsModal`.
 
