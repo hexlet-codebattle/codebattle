@@ -414,15 +414,19 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   the responsive `d-none d-md-block` as `display={{ base:'none', md:'block' }}`;
   the mobile `<HorizontalScrollControls>` (already Mantine) wrapped in a
   `<Box hiddenFrom="md">` (was `d-md-none`); empty-state → `<Flex>`/`<Text>`/
-  `<Anchor>`. They still render `ShowButton` + `TournamentCard` as **Bootstrap**
-  (deferred — see coupling below).
-- **Coupling to untangle next:** `ShowButton` (native `btn btn-secondary`
-  anchor) is shared by `GameActionButton`, `GameCard`, `TournamentCard`, and the
-  tournament lists. `GameActionButton.test` renders it **without**
-  `MantineTestProvider` and asserts a Bootstrap `w-100` class on its own link, so
-  converting `ShowButton` → Mantine `<Button component="a">` must also wrap that
-  test (and likely convert `GameActionButton`). Do `ShowButton` +
-  `GameActionButton` + `GameCard` + `TournamentCard` together as one slice.
+  `<Anchor>`.
+- Done: `ShowButton` (shared "Show" anchor) → `<Button component="a"
+  color="cbSecondary" size="sm" radius="md">` (the `type==='table'` variant adds
+  `px="lg" ml="xs"`). Safe as a standalone leaf — no test renders it
+  provider-less (`GameActionButton.test` hits the `ContinueButton` branch, not
+  `ShowButton`).
+- **Next slice (still Bootstrap):** `GameActionButton` + `GameCard` +
+  `TournamentCard`. `GameActionButton` is the heavy one: Bootstrap-JS tooltips
+  (`data-toggle="tooltip"` → Mantine `<Tooltip>`), `btn-group` (→ `Button.Group`),
+  icon `btn`s (`far fa-copy` / `fas fa-times` → `<ActionIcon>`), and Phoenix
+  `data-method`/`data-to` links (keep the attrs). `GameActionButton.test` asserts
+  a Bootstrap `w-100` class on the card `ContinueButton` link — that assertion
+  must change (→ Mantine `fullWidth`) when `ContinueButton` converts.
 - **Deferred (react-select):** `TaskChoice` uses react-select — leave with
   `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
 
