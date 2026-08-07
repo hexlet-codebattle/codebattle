@@ -1,5 +1,6 @@
 import React, { useState, useCallback, memo } from 'react';
 
+import { Box, Button, Grid, Title } from '@mantine/core';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import qs from 'qs';
@@ -215,7 +216,7 @@ interface LevelButtonGroupProps {
 const LevelButtonGroup = memo(({ value, onChange }: LevelButtonGroupProps) => {
   const getLevelClassName = (level: string) => {
     const isLevelActive = level === value;
-    return cn('btn border-0 bg-gray cb-rounded w-100', {
+    return cn('bg-gray', {
       'bg-orange': isLevelActive,
       'btn-outline-orange': !isLevelActive,
     });
@@ -227,22 +228,21 @@ const LevelButtonGroup = memo(({ value, onChange }: LevelButtonGroupProps) => {
   };
 
   return (
-    <div className="row px-sm-3 px-md-5 mx-n1">
+    <Grid gap="xs" px={{ base: 0, sm: 'md', md: 'xl' }}>
       {gameLevels.map((level) => (
-        <div key={level} className="col-6 col-sm-3 px-1 mb-2">
-          <button
-            type="button"
+        <Grid.Col key={level} span={{ base: 6, sm: 3 }}>
+          <Button
+            fullWidth
+            p={0}
             className={getLevelClassName(level)}
             onClick={() => changeGameLevel(level)}
-            data-toggle="tooltip"
-            data-placement="right"
             title={level}
           >
             <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-          </button>
-        </div>
+          </Button>
+        </Grid.Col>
       ))}
-    </div>
+    </Grid>
   );
 });
 
@@ -254,26 +254,26 @@ interface GameTypeButtonGroupProps {
 const GameTypeButtonGroup = memo(({ value, onChange }: GameTypeButtonGroupProps) => {
   const getGameTypeClassName = (gameType: string) => {
     const isGameTypeActive = gameType === value;
-    return cn('btn cb-rounded w-100', {
-      'bg-orange text-white': isGameTypeActive,
+    return cn({
+      'bg-orange': isGameTypeActive,
       'btn-outline-orange': !isGameTypeActive,
     });
   };
 
   return (
-    <div className="row px-sm-3 px-md-5 mt-3 mx-n1">
+    <Grid gap="xs" mt="md" px={{ base: 0, sm: 'md', md: 'xl' }}>
       {gameTypeCodes.map((gameTypeCode) => (
-        <div key={gameTypeCode} className="col-12 col-md-4 px-1 mb-2">
-          <button
-            type="button"
+        <Grid.Col key={gameTypeCode} span={{ base: 12, md: 4 }}>
+          <Button
+            fullWidth
             className={getGameTypeClassName(gameTypeCode)}
             onClick={() => onChange(gameTypeCode)}
           >
             {gameTypeNames[gameTypeCode as keyof typeof gameTypeNames]}
-          </button>
-        </div>
+          </Button>
+        </Grid.Col>
       ))}
-    </div>
+    </Grid>
   );
 });
 
@@ -346,51 +346,63 @@ function CreateGameDialog({ hideModal }: CreateGameDialogProps) {
     <div className="cb-create-game">
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title">
-          <h5 className="mb-0">{i18n.t('Level')}</h5>
+          <Title order={5} mb={0}>
+            {i18n.t('Level')}
+          </Title>
         </div>
         <LevelButtonGroup value={gameLevel} onChange={switchGameLevel} />
       </div>
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title">
-          <h5 className="mb-0">{i18n.t('Game Type')}</h5>
+          <Title order={5} mb={0}>
+            {i18n.t('Game Type')}
+          </Title>
         </div>
         <GameTypeButtonGroup value={gameType} onChange={setGameType} />
       </div>
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title cb-create-game__section-title--with-value">
-          <h5 className="mb-0">{i18n.t('Time control')}</h5>
+          <Title order={5} mb={0}>
+            {i18n.t('Time control')}
+          </Title>
           <span className="cb-create-game__time-value">
             {i18n.t('%{count} min', { count: timeoutMinutes })}
           </span>
         </div>
-        <div className="px-sm-3 px-md-5 mt-3">
+        <Box mt="md" px={{ base: 0, sm: 'md', md: 'xl' }}>
           <input
             type="range"
             aria-label={i18n.t('Time control')}
-            className="form-range w-100 cb-range"
+            className="cb-range"
             value={timeoutMinutes}
             onChange={handleTimeoutChange}
             min={TIMEOUT_MIN}
             max={TIMEOUT_MAX}
             step="1"
             id="customRange3"
-            style={{ '--range-progress': `${timeoutPercent}%` } as React.CSSProperties}
+            style={
+              { width: '100%', '--range-progress': `${timeoutPercent}%` } as React.CSSProperties
+            }
           />
-        </div>
+        </Box>
       </div>
       {isInvite && (
         <div className="cb-create-game__section">
           <div className="cb-create-game__section-title">
-            <h5 className="mb-0">{i18n.t('Choose opponent')}</h5>
+            <Title order={5} mb={0}>
+              {i18n.t('Choose opponent')}
+            </Title>
           </div>
-          <div className="px-sm-3 px-md-5 mt-3">
+          <Box mt="md" px={{ base: 0, sm: 'md', md: 'xl' }}>
             <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
-          </div>
+          </Box>
         </div>
       )}
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title">
-          <h5 className="mb-0">{i18n.t('Choose task by name or tags')}</h5>
+          <Title order={5} mb={0}>
+            {i18n.t('Choose task by name or tags')}
+          </Title>
         </div>
         <TaskChoice
           chosenTask={chosenTask}
@@ -401,14 +413,9 @@ function CreateGameDialog({ hideModal }: CreateGameDialogProps) {
         />
       </div>
       <div className="cb-create-game__footer">
-        <button
-          type="button"
-          className="btn btn-secondary cb-btn-secondary cb-rounded px-4"
-          onClick={createGame}
-          disabled={isInvite && !opponent}
-        >
+        <Button color="cbSecondary" px="lg" onClick={createGame} disabled={isInvite && !opponent}>
           {isInvite ? i18n.t('Create invite') : i18n.t('Create battle')}
-        </button>
+        </Button>
       </div>
     </div>
   );

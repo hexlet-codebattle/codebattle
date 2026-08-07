@@ -13,6 +13,7 @@ import CreateGameDialog from '../widgets/pages/lobby/CreateGameDialog';
 import reducers from '../widgets/slices';
 
 import { getTestData } from './helpers';
+import { MantineTestProvider } from './helpers/mantine';
 
 vi.mock('@/inertia/pageProps', () => {
   const pageProps = {
@@ -125,7 +126,9 @@ beforeAll(() => {
 
   vdom = (
     <Provider store={store}>
-      <CreateGameDialog hideModal={noop} />
+      <MantineTestProvider>
+        <CreateGameDialog hideModal={noop} />
+      </MantineTestProvider>
     </Provider>
   );
 });
