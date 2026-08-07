@@ -8,7 +8,7 @@ import i18n from '../../i18n';
 import AlertCodes from '../config/alertCodes';
 import { gameAlertsSelector } from '../selectors/index';
 import { actions } from '../slices';
-import { bootstrapAlertColor } from '../ui/alert';
+import { bootstrapAlertColor, darkThemeAlertStyles } from '../ui/alert';
 
 interface Notification {
   status?: string;
@@ -59,8 +59,9 @@ function FeedbackAlertNotification() {
         onClose={() => handleClose(key)}
         key={key}
         color={bootstrapAlertColor(result.status)}
-        variant="light"
-        className={`row mb-0 rounded-0 alert alert-${result.status} show alert-dark-theme`}
+        radius={0}
+        mb={0}
+        styles={darkThemeAlertStyles(result.status)}
       >
         {result.message}
       </Alert>

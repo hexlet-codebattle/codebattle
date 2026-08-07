@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (31 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (32 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -179,6 +179,16 @@ oxlint's `interactive-supports-focus` can't see that a Mantine `<Button>`
 renders a focusable `<button>`, so a custom component with a role + handler
 trips the rule (native `<button>` didn't).
 
+Also done: **`FeedbackAlertNotification`**. The shared `.alert-dark-theme`
+gradient design (used by 4 React alerts + 3 heex) now has a **real home in TS**:
+`ui/alert.ts` exports `darkThemeAlertStyles(status)` returning the Mantine
+`<Alert>` `styles` (per-variant gradient bg, colored `border-left`, blurred
+backdrop, text color) — no CSS module needed. `FeedbackAlertNotification` drops
+`row mb-0 rounded-0 alert alert-${status} show alert-dark-theme` for
+`radius={0} mb={0} styles={darkThemeAlertStyles(...)}`. The other three alerts
+(`UserSettings`, `EditTournament`, `GameResult`) can adopt the same helper and
+drop `alert-dark-theme` when their pages convert.
+
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
@@ -191,10 +201,8 @@ props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
 **Remaining leaves — each needs a decision or a browser pass, not a plain swap:**
-- **Button/alert/card theming:** `FeedbackAlertNotification` (`alert-dark-theme`
-  set — coupled to per-variant `.alert-*` gradients, wants a CSS-module home),
-  the `cb-card` / `cb-bg-highlight-panel` leftovers (e.g. inside
-  `TournamentDescription`). (`Rooms` done — see above; remaining
+- **Card theming:** the `cb-card` / `cb-bg-highlight-panel` leftovers (e.g.
+  inside `TournamentDescription`). (`Rooms` done — see above; remaining
   `cb-btn-secondary` call sites drop their class as their pages convert, now
   that the hover is in the theme.)
 - **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle`
