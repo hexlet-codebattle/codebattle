@@ -42,7 +42,7 @@ const NextStageGroupTournamentModal = NiceModal.create(
         show={modal.visible}
         backdrop="static"
         keyboard={false}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header closeButton>
           <Modal.Title>{headerText}</Modal.Title>

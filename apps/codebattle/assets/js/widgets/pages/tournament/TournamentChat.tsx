@@ -35,7 +35,7 @@ function TournamentChat() {
   }, [messages]);
 
   return (
-    <div className="cb-tournament-chat my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column shadow-sm">
+    <div className="cb-tournament-chat my-2 mt-lg-0 cb-bg-panel cb-rounded position-relative d-flex flex-column shadow-sm">
       <div className="cb-tournament-chat-header">
         <div className="d-flex flex-column min-w-0">
           <span className="cb-tournament-chat-title">{i18next.t('Tournament chat')}</span>

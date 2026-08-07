@@ -132,7 +132,7 @@ function TournamentMainControlButtons({
       <Modal
         show={restartConfirmationModalShowing}
         onHide={closeRestartConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Reset tournament progress')}</Modal.Title>
@@ -172,7 +172,7 @@ function TournamentMainControlButtons({
       <Modal
         show={retryConfirmationModalShowing}
         onHide={closeRetryConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Retry tournament')}</Modal.Title>
@@ -211,7 +211,7 @@ function TournamentMainControlButtons({
       <Modal
         show={finishConfirmationModalShowing}
         onHide={closeFinishConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Finish tournament')}</Modal.Title>

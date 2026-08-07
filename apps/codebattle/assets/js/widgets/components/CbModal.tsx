@@ -1,6 +1,6 @@
 import React, { type CSSProperties, type ReactNode } from 'react';
 
-import { Box, Modal as MantineModal } from '@mantine/core';
+import { Box, Modal as MantineModal, ScrollArea } from '@mantine/core';
 import cn from 'classnames';
 
 // App modal wrapper: exposes a compound API (<CbModal>, CbModal.Header/Title/
@@ -19,6 +19,7 @@ interface CbModalProps {
 }
 
 interface HeaderProps {
+  style?: CSSProperties;
   closeButton?: boolean;
   className?: string;
   children?: ReactNode;
@@ -35,9 +36,9 @@ interface SectionProps {
   children?: ReactNode;
 }
 
-function Header({ closeButton, className, children }: HeaderProps) {
+function Header({ closeButton, className, children, style = {} }: HeaderProps) {
   return (
-    <MantineModal.Header style={{ display: 'flex' }} className={className}>
+    <MantineModal.Header style={{ display: 'flex', flexShrink: 0, ...style }} className={className} >
       {children}
       {closeButton && <MantineModal.CloseButton />}
     </MantineModal.Header>
@@ -48,9 +49,16 @@ function Title({ className, children }: TitleProps) {
   return <MantineModal.Title className={className}>{children}</MantineModal.Title>;
 }
 
-function Body({ className, style, children }: SectionProps) {
+function Body({ className, style = {}, children }: SectionProps) {
   return (
-    <MantineModal.Body className={className} style={style}>
+    <MantineModal.Body
+      className={className}
+      style={{
+        maxHeight: '70vh',
+        overflowX: 'hidden',
+        ...style
+      }}
+    >
       {children}
     </MantineModal.Body>
   );
@@ -64,6 +72,7 @@ function Footer({ className, style, children }: SectionProps) {
       style={{
         display: 'flex',
         alignItems: 'center',
+        flexShrink: 0,
         justifyContent: 'flex-end',
         gap: 'var(--mantine-spacing-sm)',
         padding: 'var(--mantine-spacing-md)',
@@ -83,7 +92,7 @@ interface CbModalComponent extends React.FC<CbModalProps> {
   Footer: typeof Footer;
 }
 
-const noop = () => {};
+const noop = () => { };
 
 const CbModal = (({
   show,
@@ -107,7 +116,7 @@ const CbModal = (({
     className={className}
   >
     <MantineModal.Overlay />
-    <MantineModal.Content className={cn(contentClassName, dialogClassName)}>
+    <MantineModal.Content style={{ overflow: 'hidden' }} className={cn(contentClassName, dialogClassName)}>
       {children}
     </MantineModal.Content>
   </MantineModal.Root>

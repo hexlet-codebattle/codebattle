@@ -97,7 +97,7 @@ function MatchConfirmationModal({
   useEffect(() => {
     if (nextMatch?.gameId && !modalShowing && redirectImmediatly) {
       openNextMatch(nextMatch);
-      return () => {};
+      return () => { };
     }
 
     if (nextMatch?.gameId && !modalShowing) {
@@ -132,7 +132,7 @@ function MatchConfirmationModal({
       };
     }
 
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextMatch?.gameId]);
 
@@ -154,7 +154,7 @@ function MatchConfirmationModal({
 
   return (
     <Modal
-      contentClassName="cb-bg-panel cb-text cb-match-confirmation-modal"
+      contentClassName="cb-text cb-match-confirmation-modal"
       show={modalShowing}
       onHide={handleCancel}
     >

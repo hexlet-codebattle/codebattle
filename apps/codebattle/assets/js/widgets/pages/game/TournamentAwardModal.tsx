@@ -46,7 +46,7 @@ const TournamentAwardModal = NiceModal.create((params: TournamentAwardModalProps
   }, [modal.visible, onlyShowAward]);
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
+    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
       <Modal.Header closeButton>
         <Modal.Title>{i18next.t('Award')}</Modal.Title>
       </Modal.Header>

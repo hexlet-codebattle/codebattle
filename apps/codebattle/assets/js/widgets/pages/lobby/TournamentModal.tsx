@@ -42,12 +42,14 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
           {tournament.grade !== grades.open && (
             <span className="text-white">Codebattle League 2025</span>
           )}
-          {i18n.t('Tournament: %{name}', {
-            name: localizeTournamentName(tournament.name, tournament.grade),
-          })}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="position-relative">
+        <h3 className='text-center'>
+          {i18n.t('Tournament: %{name}', {
+            name: localizeTournamentName(tournament.name, tournament.grade),
+          })}
+        </h3>
         <div className="d-flex flex-column">
           <TournamentPreviewPanel
             className="d-flex justify-content-center w-100 h-100"

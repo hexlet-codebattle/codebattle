@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
 
 import { Button } from '@mantine/core';
 import moment from 'moment';
@@ -98,6 +98,10 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   const [showRawJson, setShowRawJson] = useState(false);
 
+  const toggleJsonView = useCallback(() => {
+    setShowRawJson((v) => !v)
+  }, [setShowRawJson])
+
   const detailSections = useMemo(() => {
     const sections = [
       {
@@ -187,7 +191,7 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const handleCancel = useCallback(() => setModalShowing(false), [setModalShowing]);
 
   return (
-    <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
+    <Modal contentClassName="cb-text" show={modalShowing} onHide={handleCancel}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{i18n.t('Tournament details')}</Modal.Title>
       </Modal.Header>
@@ -213,9 +217,8 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
         <Button
           variant="outline"
           color="cbSecondary"
-          size="xs"
           radius="md"
-          onClick={() => setShowRawJson((v) => !v)}
+          onClick={toggleJsonView}
         >
           {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
         </Button>
