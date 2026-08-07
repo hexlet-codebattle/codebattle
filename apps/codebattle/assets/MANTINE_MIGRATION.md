@@ -200,21 +200,43 @@ classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
-**Remaining leaves — each needs a decision or a browser pass, not a plain swap:**
-- **Card theming:** the `cb-card` / `cb-bg-highlight-panel` leftovers (e.g.
-  inside `TournamentDescription`). (`Rooms` done — see above; remaining
-  `cb-btn-secondary` call sites drop their class as their pages convert, now
-  that the hover is in the theme.)
-- **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle`
-  (its `menu` variant renders a Bootstrap `dropdown-item` **inside a server
-  heex dropdown** — that half is Phase 3, not a React-side swap), `EmojiTooltip`
-  (native `<select size=4>` acting as a keyboard-nav listbox — the Bootstrap
-  `custom-select` styling has no clean Mantine equivalent without rewriting the
-  interaction), `ChatContextMenu` (built on `react-contexify`, not Mantine — only
-  utility classes to strip, no primitive to swap to). `DropdownMenuDefault` was
-  **dead code** (no consumers anywhere in `js/`) — **deleted**, not converted.
-- **Larger:** `SeasonLeaderboard`, `PlayerInsightsModal` (each ~800–1100 lines;
-  one focused slice apiece).
+**Remaining leaves: 7** (audited 2026-08-07 with a whole-word Bootstrap-token
+grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
+classes and `User*` passthrough props). Only 3 are "just do the work"; the
+other 4 need a decision or belong to Phase 3. Each needs a browser pass, not a
+plain swap:
+
+- **Cleanly convertible (3):**
+  - `ChatInput` — Bootstrap `input-group` / `input-group-append` /
+    `invalid-tooltip` around the chat message field. Smallest of the three; the
+    last plain form leaf. (Surfaced in the 2026-08-07 audit — wasn't on earlier
+    remaining lists.)
+  - `SeasonLeaderboard` (~794 lines) — Bootstrap `table table-dark table-striped`
+    + `pagination` + `bi bi-*` Bootstrap-Icons + native `form-select`s. One
+    focused slice (Mantine `Table`/`Pagination`, icon-font decision).
+  - `PlayerInsightsModal` (~1135 lines) — the biggest single leaf; its own slice.
+- **Blocked on a lib swap / behavior change (3):**
+  - `LanguagePickerView` — react-select.
+  - `EmojiTooltip` — native `<select size=4>` keyboard-nav listbox; Bootstrap
+    `custom-select` styling has no clean Mantine equivalent without rewriting the
+    interaction.
+  - `ChatContextMenu` — built on `react-contexify`, not Mantine; only utility
+    classes to strip, no primitive to swap to.
+- **Really Phase 3 (1):** `SoundToggle` — its `menu` variant renders a Bootstrap
+  `dropdown-item` **inside a server heex dropdown**, so it can't be a pure
+  React-side swap.
+
+Plus one small **design leftover** (not a whole leaf): the `.card.cb-card`
+ranking panel inside the already-converted `TournamentDescription`, and the
+`cb-card` / `cb-bg-highlight-panel` card-theming leftovers generally. (`Rooms`
+done above; remaining `cb-btn-secondary` call sites drop their class as their
+pages convert, now that the hover is in the theme.)
+
+Audit false positives (already done — do **not** re-open): `EditorGameBar`,
+`Messages` (only a commented-out line matched), `InvitesList`/`InvitesContainer`,
+`FeedbackWidget`, `PictureInPicture`, `UserInfo` — their remaining `className`
+hits are kept `cb-*` design classes or passthrough props. `DropdownMenuDefault`
+was **dead code** and was **deleted**, not converted.
 
 **Verification gap:** slices are toolchain-verified only. Headless browser
 verification isn't feasible here (auth + live game/tournament state), so all
