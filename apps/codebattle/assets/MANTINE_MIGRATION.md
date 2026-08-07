@@ -408,6 +408,24 @@ uppercase/bold, fill the width (`grow`), and join the bordered content box below
 Also: heatmap `NativeSelect` may add a chevron over the native arrow (as in
 `SeasonLeaderboard`); the avatar corner radius (was `rounded`, now inline `sm`).
 
+In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
+- Done: `LiveTournaments` + `CompletedTournaments` (twin tournament-list
+  sections) — `table table-striped` → `<Table striped>` in a `<Box>` that keeps
+  the responsive `d-none d-md-block` as `display={{ base:'none', md:'block' }}`;
+  the mobile `<HorizontalScrollControls>` (already Mantine) wrapped in a
+  `<Box hiddenFrom="md">` (was `d-md-none`); empty-state → `<Flex>`/`<Text>`/
+  `<Anchor>`. They still render `ShowButton` + `TournamentCard` as **Bootstrap**
+  (deferred — see coupling below).
+- **Coupling to untangle next:** `ShowButton` (native `btn btn-secondary`
+  anchor) is shared by `GameActionButton`, `GameCard`, `TournamentCard`, and the
+  tournament lists. `GameActionButton.test` renders it **without**
+  `MantineTestProvider` and asserts a Bootstrap `w-100` class on its own link, so
+  converting `ShowButton` → Mantine `<Button component="a">` must also wrap that
+  test (and likely convert `GameActionButton`). Do `ShowButton` +
+  `GameActionButton` + `GameCard` + `TournamentCard` together as one slice.
+- **Deferred (react-select):** `TaskChoice` uses react-select — leave with
+  `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |

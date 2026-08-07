@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import { Anchor, Box, Flex, Table, Text } from '@mantine/core';
 import isEmpty from 'lodash/isEmpty';
 import orderBy from 'lodash/orderBy';
 import moment from 'moment';
@@ -19,55 +20,71 @@ function LiveTournaments({ tournaments = [] }: LiveTournamentsProps) {
 
   if (isEmpty(tournaments)) {
     return (
-      <div className="d-flex flex-column text-center">
-        <span className="mb-0 mt-3 p-3 text-muted">
+      <Flex direction="column" ta="center">
+        <Text mb={0} mt="md" p="md" c="dimmed">
           {i18n.t('There are no active tournaments right now')}
-        </span>
-        <a className="text-primary" href="/tournaments/#create">
+        </Text>
+        <Anchor href="/tournaments/#create">
           <u>{i18n.t('You may want to create one')}</u>
-        </a>
-      </div>
+        </Anchor>
+      </Flex>
     );
   }
 
   return (
-    <div className="table-responsive">
-      <h2 className="text-center mt-3">{i18n.t('Live tournaments')}</h2>
-      <div className="d-none d-md-block table-responsive rounded-bottom">
-        <table className="table table-striped">
-          <thead className="">
-            <tr>
-              <th className="p-3 border-0">{i18n.t('Title')}</th>
-              <th className="p-3 border-0">{i18n.t('Starts at')}</th>
-              <th className="p-3 border-0">{i18n.t('Actions')}</th>
-            </tr>
-          </thead>
-          <tbody className="">
+    <Box style={{ overflowX: 'auto' }}>
+      <Box component="h2" ta="center" mt="md">
+        {i18n.t('Live tournaments')}
+      </Box>
+      <Box
+        display={{ base: 'none', md: 'block' }}
+        style={{
+          overflowX: 'auto',
+          borderBottomLeftRadius: 'var(--mantine-radius-md)',
+          borderBottomRightRadius: 'var(--mantine-radius-md)',
+        }}
+      >
+        <Table
+          striped
+          verticalSpacing="md"
+          horizontalSpacing="md"
+          styles={{ td: { verticalAlign: 'middle' } }}
+        >
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>{i18n.t('Title')}</Table.Th>
+              <Table.Th>{i18n.t('Starts at')}</Table.Th>
+              <Table.Th>{i18n.t('Actions')}</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {sortedTournaments.map((tournament) => (
-              <tr key={tournament.id}>
-                <td className="p-3 align-middle">{tournament.name}</td>
-                <td className="p-3 align-middle text-nowrap">
+              <Table.Tr key={tournament.id}>
+                <Table.Td>{tournament.name}</Table.Td>
+                <Table.Td style={{ whiteSpace: 'nowrap' }}>
                   {moment.utc(tournament.startsAt).local().format('YYYY-MM-DD HH:mm')}
-                </td>
-                <td className="p-3 align-middle">
+                </Table.Td>
+                <Table.Td>
                   <ShowButton url={`/tournaments/${tournament.id}/`} />
-                </td>
-              </tr>
+                </Table.Td>
+              </Table.Tr>
             ))}
-          </tbody>
-        </table>
-      </div>
-      <HorizontalScrollControls className="d-md-none m-2">
-        {sortedTournaments.map((tournament) => (
-          <TournamentCard key={`card-${tournament.id}`} type="active" tournament={tournament} />
-        ))}
-      </HorizontalScrollControls>
-      <div className="text-center mt-3">
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Box hiddenFrom="md" m="sm">
+        <HorizontalScrollControls>
+          {sortedTournaments.map((tournament) => (
+            <TournamentCard key={`card-${tournament.id}`} type="active" tournament={tournament} />
+          ))}
+        </HorizontalScrollControls>
+      </Box>
+      <Box ta="center" mt="md">
         <a href="/tournaments">
           <u>{i18n.t('Tournaments Info')}</u>
         </a>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
