@@ -1,8 +1,9 @@
 # Bootstrap → Mantine migration
 
 Living spec for moving the React frontend off Bootstrap/react-bootstrap onto
-Mantine. Phases 0–1 are **done**; Phases 2–3 are **planned** and described here
-in enough detail to resume without re-discovery.
+Mantine. Phases 0–1 are **done**; Phase 2 is **in progress** (shared leaf
+components converted — see the progress log under Phase 2); Phase 3 is
+**planned**. Described here in enough detail to resume without re-discovery.
 
 ## Scope & standing decisions
 
@@ -23,7 +24,7 @@ in enough detail to resume without re-discovery.
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | ⬜ planned |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -42,6 +43,12 @@ in enough detail to resume without re-discovery.
   (#3a3f50), `cbSuccess` (#46a077), `brand` (orange #ee3737). **Spacing scale is
   matched to Bootstrap-4 spacers**: `xs=.25rem, sm=.5rem, md=1rem, lg=1.5rem,
   xl=3rem` — so `mb-2 → mb="sm"`, `p-3 → p="md"`, etc. keep the same rhythm.
+  Also exports **`cssVariablesResolver`** (Phase 2) that sets
+  `--mantine-color-default-border` = `#4c4c5a` (`$cb-border-color`) in the dark
+  scheme, so `<Paper/Card withBorder>` matches the legacy `.cb-border-color`
+  panels. It is passed to `MantineProvider` in **both** `withMantine.tsx` and the
+  test provider `helpers/mantine.tsx`. `cb-rounded` (`$cb-border-radius` 0.5rem)
+  → Mantine `radius="md"` (md = 0.5rem).
 - `assets/js/widgets/ui/withMantine.tsx` — provider wrapper; applied to every
   React root in `widgets/index.tsx` and the Inertia root in `inertia.tsx`.
   `forceColorScheme="dark"` (single baked-in dark look, no runtime toggle).
@@ -79,6 +86,22 @@ in enough detail to resume without re-discovery.
    rendered items always; Mantine `Menu.Dropdown` mounts on open. Use
    `keepMounted` if a test/behavior depends on items being in the DOM while
    closed (see `UserSettingsForm` language menu).
+7. **Unlayered Bootstrap beats Mantine — watch `border-radius` on buttons.**
+   Bootstrap is imported unlayered (`style.scss` `@import 'bootstrap/scss/bootstrap'`)
+   while Mantine is in `@layer mantine`, so **any** unlayered rule wins over
+   Mantine regardless of specificity. Concretely, `style.scss` has
+   `.btn { border-radius: unset }` and utilities like `rounded-top`. A Mantine
+   `<Button radius="…">` that still carries Bootstrap classes (e.g. `Rooms`'
+   `rounded-top cb-btn-secondary`) will **ignore** the Mantine `radius` — the
+   unlayered rule overrides it. Fix = drop the Bootstrap button classes and port
+   `cb-btn-secondary` to the theme (button-theming pass). Pure Mantine buttons
+   (no leftover BS classes) round correctly.
+8. **`grep` over-counts Phase-2 targets.** Substring matches inflate the count:
+   `card` matches the `Card` component, `badge` matches `cb-achievement-badge`,
+   etc. Filter to whole-word Bootstrap tokens. Also: the *remaining* leaves are
+   rarely plain spacing swaps — they're coupled to custom `cb-*` design classes
+   (need theme/CSS-module homes) or to non-Mantine libs (react-select, native
+   `<select>`), so budget per-component judgement, not a blanket sweep.
 
 ---
 
@@ -86,6 +109,44 @@ in enough detail to resume without re-discovery.
 
 **Goal:** remove Bootstrap utility classes from React components, replacing them
 with Mantine primitives + style props. ~244 files; work per-widget.
+
+### Progress (updated 2026-08-07)
+
+Working in small per-slice commits (convert → wrap affected tests in
+`MantineTestProvider` → typecheck + vitest + build + lint). Started with the
+shared leaf components in `widgets/components/`.
+
+**Done (20 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+`MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
+`GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
+`UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
+`ChatHeader`, `Message`, `Messages`, and `TournamentDescription` (layout only —
+its `.card.cb-card` ranking panel is left as Bootstrap; see below). Plus the
+theme border-token work (gotcha #7 / `theme.ts`). The chat cluster is
+effectively done.
+
+**Remaining leaves — each needs a decision or a browser pass, not a plain swap:**
+- **Button/alert/card theming (port `cb-*` → theme first):** `Rooms` button
+  (`cb-btn-secondary` + `rounded-top`, hits gotcha #7), `FeedbackAlertNotification`
+  (`alert-dark-theme` set), the `cb-card` / `cb-bg-highlight-panel` leftovers
+  (e.g. inside `TournamentDescription`).
+- **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle` /
+  `DropdownMenuDefault` (Mantine `Menu` items), `EmojiTooltip` (native
+  `<select size=4>`).
+- **Convert as a set (they thread `className` strings into each other):**
+  `UserInfo` / `UserName` / `UserLabel` / `UserStats`.
+- **Larger:** `AccordeonBox`, `ChatContextMenu`, `InvitesContainer` /
+  `InvitesList`, `SeasonLeaderboard`, `PlayerInsightsModal`.
+
+**Verification gap:** slices are toolchain-verified only. Headless browser
+verification isn't feasible here (auth + live game/tournament state), so all
+Phase 2 UI still needs a **manual browser QA pass** — especially buttons
+(gotcha #7), bordered panels/cards, and chat layout (flex spacing, scroll
+button, username truncation).
+
+**Note:** icon-only Bootstrap `btn`s convert to Mantine `<ActionIcon>` (keep the
+custom `cb-*` class, drop `btn`); this preserves the click behavior that tests
+assert (see `ChatMessageDelete` / `TournamentChatMessage`).
 
 ### Conversion vocabulary
 
