@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (33 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (34 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -207,6 +207,28 @@ line up; and the default-variant joined-pill look (input rounded-left, send
 rounded-right, square emoji in the middle). `TournamentChatInput.test` now wraps
 in `MantineTestProvider`.
 
+Also done: **`SeasonLeaderboard`** (the seasons/hall-of-fame leaderboard;
+consumed by `SeasonShowPage` + `HallOfFamePage`). The Bootstrap
+`table table-dark table-striped table-hover` → Mantine `<Table striped
+highlightOnHover>` inside `<Table.ScrollContainer>` (thead/tbody/tr/th/td →
+`Table.*`); the hand-rolled `pagination` `<ul>` (first/prev/window/next/last +
+ellipsis) → a single Mantine `<Pagination withEdges>`; native `form-select`s →
+Mantine `<NativeSelect>` (kept native so the `cb-season-filter-control` design
+class still styles them); the `input-group` search field → `<Flex>` +
+`<TextInput>` + `<UnstyledButton>` clear, keeping the `cb-season-filter-*`
+pill design classes; `row`/`col-*` → `<Grid>`/`<Grid.Col>`. **Icon-font
+decision:** the `bi bi-*` Bootstrap-Icons were **dead** (no `bootstrap-icons`
+package/CSS is imported anywhere — they rendered as empty `<i>`), so `bi-search`
+/ `bi-bar-chart-line` became FontAwesome `faMagnifyingGlass` / `faChartLine`
+(the app's icon system). Kept all `cb-custom-event-*` / `cb-table` /
+`cb-gold|silver|bronze-place-bg` design classes (routed to `Table.Td` via a
+shared `cellProps`). The exported helper functions (`getPlaceBadgeClass` etc.)
+still return Bootstrap classes — untouched, since `PlayerInsightsModal` (still
+Bootstrap) consumes them. ⚠️ QA: Mantine `NativeSelect` may add its own chevron
+on top of the native one; the Mantine pagination window/ellipsis differs
+slightly from the old fixed 5-page window; and confirm `striped` doesn't fight
+the top-3 place-bg rows (place-bg is unlayered → should win).
+
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
@@ -218,16 +240,13 @@ classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
-**Remaining leaves: 6** (audited 2026-08-07 with a whole-word Bootstrap-token
+**Remaining leaves: 5** (audited 2026-08-07 with a whole-word Bootstrap-token
 grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
-classes and `User*` passthrough props). Only 2 are "just do the work"; the
+classes and `User*` passthrough props). Only 1 is "just do the work"; the
 other 4 need a decision or belong to Phase 3. Each needs a browser pass, not a
 plain swap:
 
-- **Cleanly convertible (2):**
-  - `SeasonLeaderboard` (~794 lines) — Bootstrap `table table-dark table-striped`
-    + `pagination` + `bi bi-*` Bootstrap-Icons + native `form-select`s. One
-    focused slice (Mantine `Table`/`Pagination`, icon-font decision).
+- **Cleanly convertible (1):**
   - `PlayerInsightsModal` (~1135 lines) — the biggest single leaf; its own slice.
 - **Blocked on a lib swap / behavior change (3):**
   - `LanguagePickerView` — react-select.
