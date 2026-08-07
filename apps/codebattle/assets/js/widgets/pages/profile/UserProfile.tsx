@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
+import { Anchor, Box, Flex, Grid, Tabs, Text } from '@mantine/core';
 import { camelizeKeys } from 'humps';
 import sum from 'lodash/sum';
 import { useDispatch } from 'react-redux';
@@ -149,36 +150,44 @@ function UserProfile() {
   const hasChartsData = gamesCount > 0 || tournamentWinsCount > 0;
 
   return (
-    <div className="row cb-bg-panel cb-rounded py-4">
-      <div className="col-12 col-md-3 my-4">
-        <div className="pl-md-2 text-center">
-          <div className="mb-2 mb-sm-4">
+    <Grid className="cb-bg-panel cb-rounded" py="lg">
+      <Grid.Col span={{ base: 12, md: 3 }} my="lg">
+        <Box ta="center" pl={{ base: 0, md: 'sm' }}>
+          <Box mb={{ base: 'sm', sm: 'lg' }}>
             <img
-              className="cb-profile-avatar rounded"
+              className="cb-profile-avatar"
+              style={{ borderRadius: 'var(--mantine-radius-sm)' }}
               src={user.avatarUrl}
               alt={i18n.t('User avatar')}
             />
-          </div>
+          </Box>
           <div>
-            <h1 className="cb-heading text-break font-weight-bold">{user.name}</h1>
+            <h1 className="cb-heading" style={{ wordBreak: 'break-word', fontWeight: 700 }}>
+              {user.name}
+            </h1>
             <hr className="cb-border-color" />
             <h3 className="cb-heading">
               <span>{i18n.t('Lang')}:</span>
               <LanguageIcon
-                className="ml-2"
                 lang={user.lang}
-                style={{ width: '30px', height: '30px' }}
+                style={{ marginLeft: '0.5rem', width: '30px', height: '30px' }}
               />
             </h3>
             <hr className="cb-border-color" />
-            <div className="text-center">
-              <p className="mb-1 small text-uppercase text-muted">{i18n.t('Clan')}</p>
+            <Box ta="center">
+              <Text mb="xs" size="sm" tt="uppercase" c="dimmed">
+                {i18n.t('Clan')}
+              </Text>
               {hasClan ? (
-                <span className="cb-heading text-break font-weight-bold">
+                <Text
+                  component="span"
+                  className="cb-heading"
+                  fw={700}
+                  style={{ wordBreak: 'break-word' }}
+                >
                   {user.clanId ? (
                     <a
-                      className="text-decoration-none"
-                      style={{ color: 'inherit' }}
+                      style={{ color: 'inherit', textDecoration: 'none' }}
                       href={`/clans/${user.clanId}`}
                     >
                       {user.clan}
@@ -186,245 +195,234 @@ function UserProfile() {
                   ) : (
                     user.clan
                   )}
-                </span>
+                </Text>
               ) : (
-                <span className="text-muted">{i18n.t('No clan')}</span>
+                <Text component="span" c="dimmed">
+                  {i18n.t('No clan')}
+                </Text>
               )}
-            </div>
+            </Box>
             <hr className="cb-border-color" />
-            <p className="mb-2 small text-monospace text-muted">
+            <Text mb="sm" size="sm" ff="monospace" c="dimmed">
               {i18n.t('joined at %{date}', { date: userInsertedAt })}
-            </p>
+            </Text>
             {user.githubName && (
-              <h3 className="h1">
-                <a
+              <Box component="h3" className="h1">
+                <Anchor
                   title={i18n.t('Github account')}
-                  className="text-muted"
+                  c="dimmed"
                   href={`https://github.com/${user.githubName}`}
                   aria-label={i18n.t('Github account')}
                 >
                   <span className="fab fa-github" />
-                </a>
-              </h3>
+                </Anchor>
+              </Box>
             )}
             {visibleAchievements.length > 0 && (
               <>
-                <hr className="mt-2" />
-                <h3 className="text-break cb-heading">{i18n.t('Achievements')}</h3>
-                <div className="cb-achievements-grid mt-3">
+                <Box component="hr" mt="sm" />
+                <h3 className="cb-heading" style={{ wordBreak: 'break-word' }}>
+                  {i18n.t('Achievements')}
+                </h3>
+                <Box className="cb-achievements-grid" mt="md">
                   {visibleAchievements.map((item) => (
                     <Achievement key={item.type} achievement={item} />
                   ))}
-                </div>
+                </Box>
               </>
             )}
             {seasonResults.length > 0 && (
               <>
-                <hr className="mt-3" />
-                <h3 className="text-break cb-heading">{i18n.t('Seasons')}</h3>
-                <div className="mt-2 text-left">
+                <Box component="hr" mt="md" />
+                <h3 className="cb-heading" style={{ wordBreak: 'break-word' }}>
+                  {i18n.t('Seasons')}
+                </h3>
+                <Box mt="sm" ta="left">
                   {seasonResults.map((result) => (
-                    <div
+                    <Box
                       key={result.seasonId}
-                      className="mb-2 p-2 cb-rounded"
+                      className="cb-rounded"
+                      mb="sm"
+                      p="sm"
                       style={{
                         backgroundColor: getSeasonPlaceColor(result.place),
                         border: '1px solid rgba(47, 52, 64, 0.25)',
                       }}
                     >
-                      <div className="font-weight-bold">
+                      <Box fw={700}>
                         <a
                           href={`/seasons/${result.seasonId}`}
-                          className="text-decoration-none"
-                          style={{ color: '#2f3440' }}
+                          style={{ color: '#2f3440', textDecoration: 'none' }}
                         >
                           {`${result.seasonName} ${result.seasonYear}`}
                         </a>
-                      </div>
-                      <div className="small" style={{ color: '#2f3440' }}>
+                      </Box>
+                      <Text size="sm" style={{ color: '#2f3440' }}>
                         {i18n.t('Place: #%{place}', { place: result.place })}
-                      </div>
-                    </div>
+                      </Text>
+                    </Box>
                   ))}
-                </div>
+                </Box>
               </>
             )}
           </div>
-        </div>
-      </div>
-      <div className="col-12 col-md-9 my-4">
-        <div className="pr-md-2 min-h-100 d-flex flex-column">
-          <nav>
-            <div
-              id="nav-tab"
-              role="tablist"
-              className="nav nav-tabs justify-content-around border-bottom cb-border-color"
-            >
-              <a
-                className="nav-item nav-link active text-uppercase border-0 text-center font-weight-bold rounded-0 flex-fill p-3"
-                id="statistics-tab"
-                data-toggle="tab"
-                href="#statistics"
-                role="tab"
-                aria-controls="statistics"
-                aria-selected="true"
-                onClick={() => setActiveTab('statistics')}
-              >
-                {i18n.t('Statistics')}
-              </a>
-              <a
-                className="nav-item nav-link text-uppercase border-0 text-center font-weight-bold rounded-0 flex-fill p-3"
-                id="tournaments-tab"
-                data-toggle="tab"
-                href="#tournaments"
-                role="tab"
-                aria-controls="tournaments"
-                aria-selected="false"
-                onClick={() => setActiveTab('tournaments')}
-              >
-                {i18n.t('Tournaments')}
-              </a>
-              <a
-                className="nav-item nav-link text-uppercase border-0 text-center font-weight-bold rounded-0 flex-fill p-3"
-                id="completedGames-tab"
-                data-toggle="tab"
-                href="#completedGames"
-                role="tab"
-                aria-controls="completedGames"
-                aria-selected="false"
-                onClick={() => setActiveTab('completedGames')}
-              >
-                {i18n.t('Completed games')}
-              </a>
-            </div>
-          </nav>
-          <div
-            className="tab-content border cb-border-color border-top-0 rounded-bottom flex-grow-1 basis-0"
-            id="nav-tabContent"
+        </Box>
+      </Grid.Col>
+      <Grid.Col span={{ base: 12, md: 9 }} my="lg">
+        <Flex className="min-h-100" direction="column" pr={{ base: 0, md: 'sm' }}>
+          <Tabs
+            value={activeTab}
+            onChange={(value) => setActiveTab(value ?? 'statistics')}
+            style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
           >
-            <div
-              className="tab-pane fade show active"
-              id="statistics"
-              role="tabpanel"
-              aria-labelledby="statistics-tab"
+            <Tabs.List grow>
+              <Tabs.Tab value="statistics" tt="uppercase" fw={700}>
+                {i18n.t('Statistics')}
+              </Tabs.Tab>
+              <Tabs.Tab value="tournaments" tt="uppercase" fw={700}>
+                {i18n.t('Tournaments')}
+              </Tabs.Tab>
+              <Tabs.Tab value="completedGames" tt="uppercase" fw={700}>
+                {i18n.t('Completed games')}
+              </Tabs.Tab>
+            </Tabs.List>
+            <Box
+              className="basis-0"
+              style={{
+                flexGrow: 1,
+                border: '1px solid var(--mantine-color-default-border)',
+                borderTop: 0,
+                borderBottomLeftRadius: 'var(--mantine-radius-md)',
+                borderBottomRightRadius: 'var(--mantine-radius-md)',
+              }}
             >
-              <div className="row mt-5 px-3 justify-content-center">
-                <div className="col col-md-3 text-center">
-                  <div className="h1 cb-stats-number">{user.rating}</div>
-                  <p className="lead">{i18n.t('(Elo Rating)')}</p>
-                </div>
-                {!user.isBot && (
-                  <div className="col col-md-3 text-center">
-                    <div className="h1 cb-stats-number">{`#${user.rank}`}</div>
-                    <p className="lead">{i18n.t('Place')}</p>
-                  </div>
+              <Tabs.Panel value="statistics" keepMounted>
+                <Grid mt="xl" px="md" justify="center">
+                  <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
+                    <div className="h1 cb-stats-number">{user.rating}</div>
+                    <p className="lead">{i18n.t('(Elo Rating)')}</p>
+                  </Grid.Col>
+                  {!user.isBot && (
+                    <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
+                      <div className="h1 cb-stats-number">{`#${user.rank}`}</div>
+                      <p className="lead">{i18n.t('Place')}</p>
+                    </Grid.Col>
+                  )}
+                  <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
+                    <div className="h1 cb-stats-number">{user.points || 0}</div>
+                    <p className="lead">{i18n.t('Points')}</p>
+                  </Grid.Col>
+                </Grid>
+                {hasChartsData && (
+                  <UserStatCharts gameStats={gameStats} tournamentStats={tournamentStats} />
                 )}
-                <div className="col col-md-3 text-center">
-                  <div className="h1 cb-stats-number">{user.points || 0}</div>
-                  <p className="lead">{i18n.t('Points')}</p>
-                </div>
-              </div>
-              {hasChartsData && (
-                <UserStatCharts gameStats={gameStats} tournamentStats={tournamentStats} />
-              )}
-              {rivalsStatus === 'loading' && (
-                <div className="row mt-5 px-3 justify-content-center">
-                  <div className="col-12 col-lg-10">
-                    <div className="small text-center text-muted mb-2">{i18n.t('Rivals')}</div>
-                    <Loading small />
-                  </div>
-                </div>
-              )}
-              {rivalsStatus === 'loaded' && topRivals.length > 0 && (
-                <div className="row mt-5 px-3 justify-content-center">
-                  <div className="col-12 col-lg-10">
-                    <div className="small text-center text-muted mb-2">{i18n.t('Rivals')}</div>
-                    <div className="d-flex flex-wrap justify-content-center">
-                      {topRivals.map((rival) => (
-                        <a
-                          key={rival.id}
-                          href={`/users/${rival.id}`}
-                          className="m-1 px-3 py-2 cb-rounded font-weight-bold text-decoration-none d-block"
-                          style={{
-                            backgroundColor: '#c2c9d6',
-                            border: '1px solid #a4aab3',
-                            color: '#2f3440',
-                            minWidth: '180px',
-                            textAlign: 'center',
-                          }}
-                        >
-                          <div>{rival.name}</div>
-                          <div className="small">
-                            {i18n.t('Clan: %{clan}', { clan: rival.clan || '-' })}
-                          </div>
-                          <div className="small">
-                            {i18n.t('W/L/T: %{wins}/%{losses}/%{timeouts}', {
-                              wins: rival.winsCount,
-                              losses: rival.lossesCount,
-                              timeouts: rival.timeoutsCount,
-                            })}
-                          </div>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-              {languageGamesCount > 0 && (
-                <div className="row mt-5 px-3 justify-content-center">
-                  <div className="col-12 col-lg-10">
-                    <div className="small text-center text-muted mb-2">{i18n.t('Languages')}</div>
-                    <div className="d-flex flex-wrap justify-content-center">
-                      {languageEntries.map(([lang, count]) => (
-                        <div
-                          key={lang}
-                          className="m-1 px-3 py-2 cb-rounded font-weight-bold"
-                          style={{
-                            backgroundColor: '#c2c9d6',
-                            border: '1px solid #a4aab3',
-                            color: '#2f3440',
-                            minWidth: '88px',
-                            textAlign: 'center',
-                          }}
-                        >
-                          {`${lang} · ${count}`}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div className="row mt-5 mb-md-3 mb-lg-4">
-                <div className="col-12">
-                  <div className="small text-center text-muted mb-2">{i18n.t('Activity')}</div>
-                  <Heatmap />
-                </div>
-              </div>
-            </div>
-            <div
-              className="tab-pane fade min-h-100"
-              id="tournaments"
-              role="tabpanel"
-              aria-labelledby="tournaments-tab"
-            >
-              <div className="h-100 d-flex flex-column justify-content-center">
-                <UserTournaments isActive={activeTab === 'tournaments'} />
-              </div>
-            </div>
-            <div
-              className="tab-pane fade min-h-100"
-              id="completedGames"
-              role="tabpanel"
-              aria-labelledby="completedGames-tab"
-            >
-              <div className="h-100 d-flex flex-column justify-content-center">
-                <CompletedGames className="h-100" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                {rivalsStatus === 'loading' && (
+                  <Grid mt="xl" px="md" justify="center">
+                    <Grid.Col span={{ base: 12, lg: 10 }}>
+                      <Text size="sm" ta="center" c="dimmed" mb="sm">
+                        {i18n.t('Rivals')}
+                      </Text>
+                      <Loading small />
+                    </Grid.Col>
+                  </Grid>
+                )}
+                {rivalsStatus === 'loaded' && topRivals.length > 0 && (
+                  <Grid mt="xl" px="md" justify="center">
+                    <Grid.Col span={{ base: 12, lg: 10 }}>
+                      <Text size="sm" ta="center" c="dimmed" mb="sm">
+                        {i18n.t('Rivals')}
+                      </Text>
+                      <Flex wrap="wrap" justify="center">
+                        {topRivals.map((rival) => (
+                          <Anchor
+                            key={rival.id}
+                            href={`/users/${rival.id}`}
+                            className="cb-rounded"
+                            display="block"
+                            td="none"
+                            m="xs"
+                            px="md"
+                            py="sm"
+                            fw={700}
+                            style={{
+                              backgroundColor: '#c2c9d6',
+                              border: '1px solid #a4aab3',
+                              color: '#2f3440',
+                              minWidth: '180px',
+                              textAlign: 'center',
+                            }}
+                          >
+                            <div>{rival.name}</div>
+                            <Text size="sm">
+                              {i18n.t('Clan: %{clan}', { clan: rival.clan || '-' })}
+                            </Text>
+                            <Text size="sm">
+                              {i18n.t('W/L/T: %{wins}/%{losses}/%{timeouts}', {
+                                wins: rival.winsCount,
+                                losses: rival.lossesCount,
+                                timeouts: rival.timeoutsCount,
+                              })}
+                            </Text>
+                          </Anchor>
+                        ))}
+                      </Flex>
+                    </Grid.Col>
+                  </Grid>
+                )}
+                {languageGamesCount > 0 && (
+                  <Grid mt="xl" px="md" justify="center">
+                    <Grid.Col span={{ base: 12, lg: 10 }}>
+                      <Text size="sm" ta="center" c="dimmed" mb="sm">
+                        {i18n.t('Languages')}
+                      </Text>
+                      <Flex wrap="wrap" justify="center">
+                        {languageEntries.map(([lang, count]) => (
+                          <Box
+                            key={lang}
+                            className="cb-rounded"
+                            m="xs"
+                            px="md"
+                            py="sm"
+                            fw={700}
+                            style={{
+                              backgroundColor: '#c2c9d6',
+                              border: '1px solid #a4aab3',
+                              color: '#2f3440',
+                              minWidth: '88px',
+                              textAlign: 'center',
+                            }}
+                          >
+                            {`${lang} · ${count}`}
+                          </Box>
+                        ))}
+                      </Flex>
+                    </Grid.Col>
+                  </Grid>
+                )}
+                <Grid mt="xl" mb={{ md: 'md', lg: 'lg' }}>
+                  <Grid.Col span={12}>
+                    <Text size="sm" ta="center" c="dimmed" mb="sm">
+                      {i18n.t('Activity')}
+                    </Text>
+                    <Heatmap />
+                  </Grid.Col>
+                </Grid>
+              </Tabs.Panel>
+              <Tabs.Panel value="tournaments" className="min-h-100" keepMounted>
+                <Flex h="100%" direction="column" justify="center">
+                  <UserTournaments isActive={activeTab === 'tournaments'} />
+                </Flex>
+              </Tabs.Panel>
+              <Tabs.Panel value="completedGames" className="min-h-100" keepMounted>
+                <Flex h="100%" direction="column" justify="center">
+                  <CompletedGames className="h-100" />
+                </Flex>
+              </Tabs.Panel>
+            </Box>
+          </Tabs>
+        </Flex>
+      </Grid.Col>
+    </Grid>
   );
 }
 

@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages started (`settings` done) |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages started (`settings`, `profile` done) |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -372,6 +372,42 @@ the two volume range sliders fill/spacing (`Flex gap="md"` replaced `mx-3`); the
 social-link card padding/border still renders (now via `> *`); the archive
 section's red border/icon.
 
+Done: **`profile`** page (`UserProfile` container + `UserStatCharts` +
+`UserTournaments` + `Heatmap`; `Achievement` was already clean). Split into two
+commits (leaves, then container).
+- Leaves: `UserStatCharts` `row`/`col-*` → `<Grid>`; `UserTournaments`
+  `table table-striped` → `<Table striped stickyHeader>` (Mantine's row borders
+  already use the resolved `--mantine-color-default-border` = `cb-border-color`,
+  so the per-cell `cb-border-color` classes were dropped) inside the original
+  scroll `<Box>` (infinite-scroll listener + `mvh-100`/`cb-overflow-y-scroll`
+  kept); `Heatmap` responsive header → `<Flex>` with responsive `direction`/
+  `justify`/`mb`, native `custom-select` → `<NativeSelect>` keeping the
+  `cb-profile-heatmap-select` design class via `classNames={{ input }}`.
+- Container: sidebar `row`/`col-md-*` → `<Grid>`; the **Bootstrap-JS tab system**
+  (`nav-tabs` + `tab-pane` + `data-toggle="tab"` + `.active`/`.show`) was
+  rewritten as a controlled Mantine `<Tabs value={activeTab}>` — this removes the
+  page's dependency on Bootstrap's JS tab plugin. All three `Tabs.Panel`s use
+  `keepMounted` to preserve the old always-in-DOM behavior (so `UserTournaments`'
+  `isActive` fetch-gate and `CompletedGames` still mount as before). The bordered
+  tab-content box is reproduced with a `<Box>` wrapper (`border` + `borderTop:0` +
+  bottom radius). Pills/links → `<Anchor>`/`<Box>` + style props; `hr` colored
+  dividers keep `cb-border-color`. `UserProfile.test` now wraps in
+  `MantineTestProvider` (the container gained Mantine components — gotcha #1).
+- **Intentional Bootstrap leftovers (kept):** the typography-size classes `.h1`
+  (stat numbers, github icon) and `.lead` (stat captions) are **coupled to
+  responsive `cb-*` overrides** — base size comes from `.h1`/`.lead`, then
+  `.cb-stats-number` / `.lead` shrink them inside `@media` queries. Inlining the
+  base size would beat the media-query override (inline wins), breaking the
+  responsive shrink, and these aren't in the Phase-2 DoD grep. Also kept the
+  `fab fa-github` icon-font span. Port these to CSS (self-sufficient
+  `.cb-stats-number`) in a later pass if the size classes must go.
+
+⚠️ QA (profile): the **tab bar restyle** is the big one — Mantine `<Tabs>` uses an
+underline indicator vs the old bordered `nav-tabs`; confirm the tabs still read as
+uppercase/bold, fill the width (`grow`), and join the bordered content box below.
+Also: heatmap `NativeSelect` may add a chevron over the native arrow (as in
+`SeasonLeaderboard`); the avatar corner radius (was `rounded`, now inline `sm`).
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -411,7 +447,7 @@ don't inline:
 
 1. Shared leaf components in `widgets/components/` (buttons already Mantine;
    convert their surrounding layout, badges, cards).
-2. Pages, roughly by risk: `settings` ✅, then `profile`, `lobby`, `registration`,
+2. Pages, roughly by risk: `settings` ✅, `profile` ✅, then `lobby`, `registration`,
    `tournament` / `tournamentPlayer` / `groupTournament`, `game` / `gameMl`,
    `admin`, `event`, then `schedule`, `seasonsPage`, `hallOfFamePage`,
    `headToHeadPage`, `taskPreview`.

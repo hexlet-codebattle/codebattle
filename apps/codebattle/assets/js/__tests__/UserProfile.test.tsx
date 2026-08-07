@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 import UserProfile from '../widgets/pages/profile';
 import reducers from '../widgets/slices';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 // jsdom URL the profile page reads the user id from (was @jest-environment-options).
 window.history.pushState({}, '', '/users/42');
 
@@ -101,9 +103,11 @@ describe('UserProfile', () => {
   test('does not render or request holopin resources on the profile page', async () => {
     const store = configureStore({ reducer });
     const { container, getByLabelText, queryByText } = render(
-      <Provider store={store}>
-        <UserProfile />
-      </Provider>,
+      <MantineTestProvider>
+        <Provider store={store}>
+          <UserProfile />
+        </Provider>
+      </MantineTestProvider>,
     );
 
     await waitFor(() => {
