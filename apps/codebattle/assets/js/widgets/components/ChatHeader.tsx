@@ -1,6 +1,6 @@
 import React from 'react';
 
-import cn from 'classnames';
+import { Button, Group } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import i18n from '../../i18n';
@@ -23,23 +23,27 @@ export default function ChatHeader({ showRooms = false, disabled = false }: Chat
 
   const showBorder = showRooms || (currentUserIsAdmin && !disabled);
 
-  const headerClassName = cn('d-flex align-items-center', {
-    'border-bottom cb-border-color': showBorder,
-  });
-
   return (
-    <div className={headerClassName}>
+    <Group
+      align="center"
+      gap="xs"
+      style={
+        showBorder ? { borderBottom: '1px solid var(--mantine-color-default-border)' } : undefined
+      }
+    >
       {showRooms && !disabled && <Rooms disabled={disabled} />}
       {currentUserIsAdmin && !disabled && (
-        <button
-          type="button"
-          className="btn btn-sm btn-link text-danger cb-rounded"
+        <Button
+          variant="subtle"
+          color="red"
+          size="xs"
+          radius="md"
           onClick={handleCleanBanned}
           disabled={disabled}
         >
           {i18n.t('Clean banned')}
-        </button>
+        </Button>
       )}
-    </div>
+    </Group>
   );
 }
