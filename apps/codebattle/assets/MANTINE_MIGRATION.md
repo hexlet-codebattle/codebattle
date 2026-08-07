@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (34 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (35 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -229,6 +229,25 @@ on top of the native one; the Mantine pagination window/ellipsis differs
 slightly from the old fixed 5-page window; and confirm `striped` doesn't fight
 the top-3 place-bg rows (place-bg is unlayered → should win).
 
+Also done: **`PlayerInsightsModal`** (the ~1135-line season player-stats modal;
+opened from `SeasonLeaderboard`'s Stats button). All Bootstrap layout/utility
+markup → Mantine: `row`/`col-md-*` → `<Grid>`/`<Grid.Col>`; the stat/comparison
+`card cb-bg-panel border-0` panels → `<Card className="cb-bg-panel">` (design
+class kept); the two inner `table table-dark table-sm` → `<Table>` in
+`Table.ScrollContainer`; `badge` + `getPlaceBadgeClass` → Mantine `<Badge>` via
+a **local** `placeBadgeColor` map (gold/silver/bronze/blue); the 4 tab
+`btn btn-info`/`btn-outline-secondary` → a Mantine `<Button>` toggle group
+(`variant` filled/default); `alert alert-warning` → `<Alert color="yellow">`;
+`Loader`, all Recharts charts, and the fetch/median logic are unchanged. The
+Bootstrap semantic text colors (`text-warning`/`success`/`info`/`danger`/
+`muted`) map to Mantine named colors (`yellow`/`green`/`cyan`/`red`/`dimmed`).
+The dead `modal-90w`/`text-light` classes were dropped — `modal-90w` had no CSS,
+so its 90%-width intent is now honoured by Mantine `size="90%"`. **Left the
+exported `getPlaceBadgeClass` / `getMedalEmoji` helpers in `SeasonLeaderboard`
+untouched** — the still-Bootstrap `HallOfFamePage` consumes them. ⚠️ QA: the
+gold/bronze `<Badge>` text contrast, the sticky tab bar's `bg="dark.7"` against
+the modal body, and that the semantic-color remap reads the same as the charts.
+
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
@@ -240,14 +259,12 @@ classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
-**Remaining leaves: 5** (audited 2026-08-07 with a whole-word Bootstrap-token
+**Remaining leaves: 4** (audited 2026-08-07 with a whole-word Bootstrap-token
 grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
-classes and `User*` passthrough props). Only 1 is "just do the work"; the
-other 4 need a decision or belong to Phase 3. Each needs a browser pass, not a
-plain swap:
+classes and `User*` passthrough props). All 4 now need a decision or belong to
+Phase 3 — the "just do the work" leaves are done. Each needs a browser pass,
+not a plain swap:
 
-- **Cleanly convertible (1):**
-  - `PlayerInsightsModal` (~1135 lines) — the biggest single leaf; its own slice.
 - **Blocked on a lib swap / behavior change (3):**
   - `LanguagePickerView` — react-select.
   - `EmojiTooltip` — native `<select size=4>` keyboard-nav listbox; Bootstrap

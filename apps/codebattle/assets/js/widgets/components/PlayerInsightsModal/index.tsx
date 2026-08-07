@@ -1,7 +1,19 @@
 import React, { useState, useMemo, useEffect } from 'react';
 
-import { Loader } from '@mantine/core';
-import cn from 'classnames';
+import {
+  Alert,
+  Anchor,
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Card,
+  Grid,
+  Group,
+  Loader,
+  Table,
+  Text,
+} from '@mantine/core';
 import {
   ResponsiveContainer,
   BarChart,
@@ -31,13 +43,37 @@ import LanguageIcon from '../LanguageIcon';
 import {
   GRADE_COLORS,
   ALL_GRADES,
-  getPlaceBadgeClass,
   getMedalEmoji,
   formatTime,
   formatGradeName,
   formatDate,
   type LeaderboardResult,
 } from '../SeasonLeaderboard';
+
+// Mantine `<Badge>` color for a leaderboard place (gold / silver / bronze /
+// default). Mirrors the Bootstrap `getPlaceBadgeClass` still used by the not-yet
+// converted HallOfFamePage, but as Mantine colors instead of BS bg classes.
+const placeBadgeColor = (place?: number) => {
+  switch (place) {
+    case 1:
+      return 'yellow';
+    case 2:
+      return 'gray';
+    case 3:
+      return '#cd7f32';
+    default:
+      return 'blue';
+  }
+};
+
+// Shared section heading used across the modal (was `h6.text-muted.text-uppercase`).
+function SectionHeading({ children, size = 'sm' }: { children: React.ReactNode; size?: string }) {
+  return (
+    <Text size={size} c="dimmed" tt="uppercase" fw={600} mb="md">
+      {children}
+    </Text>
+  );
+}
 
 interface GradeStat {
   grade: string;
@@ -117,8 +153,8 @@ function GradeStatsChart({ gradeStats }: { gradeStats?: GradeStat[] }) {
   }));
 
   return (
-    <div className="mb-4">
-      <h6 className="text-muted text-uppercase mb-3">{i18n.t('Points by Tournament Grade')}</h6>
+    <Box mb="lg">
+      <SectionHeading>{i18n.t('Points by Tournament Grade')}</SectionHeading>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={chartData} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -135,7 +171,7 @@ function GradeStatsChart({ gradeStats }: { gradeStats?: GradeStat[] }) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </Box>
   );
 }
 
@@ -148,7 +184,7 @@ function WinRateChart({ wins, total }: { wins: number; total: number }) {
   ];
 
   return (
-    <div className="text-center">
+    <Box ta="center">
       <ResponsiveContainer width="100%" height={150}>
         <PieChart>
           <Pie
@@ -168,11 +204,15 @@ function WinRateChart({ wins, total }: { wins: number; total: number }) {
           <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }} />
         </PieChart>
       </ResponsiveContainer>
-      <div style={{ marginTop: '-40px', position: 'relative' }}>
-        <div className="fs-4 fw-bold text-success">{winRate}%</div>
-        <div className="text-muted small">{i18n.t('Win Rate')}</div>
-      </div>
-    </div>
+      <Box style={{ marginTop: '-40px', position: 'relative' }}>
+        <Text fz="1.5rem" fw={700} c="green">
+          {winRate}%
+        </Text>
+        <Text c="dimmed" size="sm">
+          {i18n.t('Win Rate')}
+        </Text>
+      </Box>
+    </Box>
   );
 }
 
@@ -188,8 +228,8 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
   }));
 
   return (
-    <div className="mb-4">
-      <h6 className="text-muted text-uppercase mb-3">{i18n.t('Weekly Performance Trend')}</h6>
+    <Box mb="lg">
+      <SectionHeading>{i18n.t('Weekly Performance Trend')}</SectionHeading>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -218,7 +258,7 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </Box>
   );
 }
 
@@ -226,59 +266,61 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
 function GradeStatsTable({ gradeStats }: { gradeStats?: GradeStat[] }) {
   if (!gradeStats || gradeStats.length === 0) {
     return (
-      <div className="text-center text-muted py-3">
+      <Box ta="center" c="dimmed" py="md">
         {i18n.t('No tournament data by grade available')}
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-dark table-sm mb-0">
-        <thead>
-          <tr className="text-muted small">
-            <th>{i18n.t('Grade')}</th>
-            <th className="text-center">{i18n.t('Tournaments')}</th>
-            <th className="text-center">{i18n.t('Points')}</th>
-            <th className="text-center">{i18n.t('Wins')}</th>
-            <th className="text-center">{i18n.t('Best')}</th>
-            <th className="text-center">{i18n.t('Avg')}</th>
-            <th className="text-center">{i18n.t('Podiums')}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Table.ScrollContainer minWidth={520}>
+      <Table verticalSpacing="xs" mb={0}>
+        <Table.Thead>
+          <Table.Tr c="dimmed" fz="sm">
+            <Table.Th>{i18n.t('Grade')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Tournaments')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Points')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Wins')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Best')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Avg')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Podiums')}</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {gradeStats.map((g) => (
-            <tr key={g.grade}>
-              <td>
-                <span className="fw-bold" style={{ color: GRADE_COLORS[g.grade] || '#666' }}>
+            <Table.Tr key={g.grade}>
+              <Table.Td>
+                <Text component="span" fw={700} style={{ color: GRADE_COLORS[g.grade] || '#666' }}>
                   {formatGradeName(g.grade)}
-                </span>
-              </td>
-              <td className="text-center">{g.tournaments_count}</td>
-              <td className="text-center fw-bold text-warning">{g.total_points}</td>
-              <td className="text-center text-success">{g.total_wins}</td>
-              <td className="text-center">
+                </Text>
+              </Table.Td>
+              <Table.Td ta="center">{g.tournaments_count}</Table.Td>
+              <Table.Td ta="center" fw={700} c="yellow">
+                {g.total_points}
+              </Table.Td>
+              <Table.Td ta="center" c="green">
+                {g.total_wins}
+              </Table.Td>
+              <Table.Td ta="center">
                 {g.best_place ? (
-                  <span className={cn('badge badge-sm', getPlaceBadgeClass(g.best_place))}>
+                  <Badge size="sm" color={placeBadgeColor(g.best_place)}>
                     {g.best_place}
-                  </span>
+                  </Badge>
                 ) : (
                   '-'
                 )}
-              </td>
-              <td className="text-center">{g.avg_place?.toFixed(1) || '-'}</td>
-              <td className="text-center">
-                {g.podium_finishes && g.podium_finishes.length > 0 ? (
-                  <span>{g.podium_finishes.map((p) => getMedalEmoji(p)).join('')}</span>
-                ) : (
-                  '-'
-                )}
-              </td>
-            </tr>
+              </Table.Td>
+              <Table.Td ta="center">{g.avg_place?.toFixed(1) || '-'}</Table.Td>
+              <Table.Td ta="center">
+                {g.podium_finishes && g.podium_finishes.length > 0
+                  ? g.podium_finishes.map((p) => getMedalEmoji(p)).join('')
+                  : '-'}
+              </Table.Td>
+            </Table.Tr>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
   );
 }
 
@@ -286,54 +328,62 @@ function GradeStatsTable({ gradeStats }: { gradeStats?: GradeStat[] }) {
 function TournamentsTable({ tournaments }: { tournaments?: TournamentResult[] }) {
   if (!tournaments || tournaments.length === 0) {
     return (
-      <div className="text-center text-muted py-3">{i18n.t('No tournament data available')}</div>
+      <Box ta="center" c="dimmed" py="md">
+        {i18n.t('No tournament data available')}
+      </Box>
     );
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-dark table-sm table-hover mb-0">
-        <thead className="bg-dark">
-          <tr className="text-muted small">
-            <th>{i18n.t('Tournament')}</th>
-            <th className="text-center">{i18n.t('Grade')}</th>
-            <th className="text-center">{i18n.t('Place')}</th>
-            <th className="text-center">{i18n.t('Points')}</th>
-            <th className="text-center">{i18n.t('W/G')}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Table.ScrollContainer minWidth={520}>
+      <Table verticalSpacing="xs" highlightOnHover mb={0}>
+        <Table.Thead>
+          <Table.Tr c="dimmed" fz="sm">
+            <Table.Th>{i18n.t('Tournament')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Grade')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Place')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('Points')}</Table.Th>
+            <Table.Th ta="center">{i18n.t('W/G')}</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {tournaments.map((t) => (
-            <tr key={t.tournament_id}>
-              <td>
-                <a
-                  href={`/tournaments/${t.tournament_id}`}
-                  className="text-light text-decoration-none"
-                >
+            <Table.Tr key={t.tournament_id}>
+              <Table.Td>
+                <Anchor href={`/tournaments/${t.tournament_id}`} c="gray.4" underline="never">
                   {t.tournament_name || i18n.t('Tournament #%{id}', { id: t.tournament_id })}
-                  <small className="text-muted ml-2">{formatDate(t.started_at)}</small>
-                </a>
-              </td>
-              <td className="text-center">
-                <span className="fw-bold" style={{ color: GRADE_COLORS[t.grade] || '#666' }}>
+                  <Text component="span" c="dimmed" fz="xs" ml="sm">
+                    {formatDate(t.started_at)}
+                  </Text>
+                </Anchor>
+              </Table.Td>
+              <Table.Td ta="center">
+                <Text component="span" fw={700} style={{ color: GRADE_COLORS[t.grade] || '#666' }}>
                   {formatGradeName(t.grade)}
-                </span>
-              </td>
-              <td className="text-center">
-                <span className={cn('badge badge-sm', getPlaceBadgeClass(t.place))}>
+                </Text>
+              </Table.Td>
+              <Table.Td ta="center">
+                <Badge size="sm" color={placeBadgeColor(t.place)}>
                   {t.place <= 3 ? getMedalEmoji(t.place) : `#${t.place}`}
-                </span>
-                <small className="text-muted ml-1">/{t.total_participants}</small>
-              </td>
-              <td className="text-center fw-bold text-warning">{t.points}</td>
-              <td className="text-center">
-                <span className="text-success">{t.wins_count}</span>/{t.games_count}
-              </td>
-            </tr>
+                </Badge>
+                <Text component="span" c="dimmed" fz="xs" ml={4}>
+                  /{t.total_participants}
+                </Text>
+              </Table.Td>
+              <Table.Td ta="center" fw={700} c="yellow">
+                {t.points}
+              </Table.Td>
+              <Table.Td ta="center">
+                <Text component="span" c="green">
+                  {t.wins_count}
+                </Text>
+                /{t.games_count}
+              </Table.Td>
+            </Table.Tr>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
   );
 }
 
@@ -343,6 +393,21 @@ interface PlayerInsightsModalProps {
   player?: Player | null;
   allResults: LeaderboardResult[];
   season?: Season | null;
+}
+
+interface StatRowProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+// One row of the overview stats list (was `d-flex justify-content-between mb-2`).
+function StatRow({ label, children }: StatRowProps) {
+  return (
+    <Group justify="space-between" mb="sm">
+      <Text c="dimmed">{label}</Text>
+      {children}
+    </Group>
+  );
 }
 
 // Player Insights Modal with API loading
@@ -452,328 +517,293 @@ function PlayerInsightsModal({
       : 0;
 
   return (
-    <Modal
-      show={show}
-      onHide={onHide}
-      size="xl"
-      centered
-      contentClassName="text-light"
-      dialogClassName="modal-90w"
-    >
+    <Modal show={show} onHide={onHide} size="90%" centered>
       <Modal.Header
         closeButton
-        className="border-secondary"
-        // `closeVariant` is not typed on this react-bootstrap version's
-        // ModalHeaderProps; passed through as an extra prop.
-        {...({ closeVariant: 'white' } as { closeVariant: string })}
+        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
       >
-        <div className="w-100">
-          <div className="d-flex align-items-center justify-content-between">
+        <Box w="100%">
+          <Group align="center" justify="space-between" wrap="nowrap">
             {/* Left: Rank + Avatar + Name */}
-            <div className="d-flex align-items-center">
-              <div className="text-center mr-3" style={{ minWidth: '60px' }}>
-                <div className={cn('badge fs-4 px-3 py-2', getPlaceBadgeClass(player.place))}>
+            <Group align="center" wrap="nowrap">
+              <Box ta="center" miw={60}>
+                <Badge size="xl" color={placeBadgeColor(player.place)}>
                   {getMedalEmoji(player.place) || `#${player.place}`}
-                </div>
-              </div>
+                </Badge>
+              </Box>
               {player.avatar_url && (
-                <img
-                  src={player.avatar_url}
-                  alt={player.user_name}
-                  className="rounded mr-3"
-                  style={{ width: '48px', height: '48px' }}
-                />
+                <Avatar src={player.avatar_url} alt={player.user_name} size={48} radius="md" />
               )}
-              <div>
-                <h4 className="mb-0 text-white">{player.user_name}</h4>
-                <div className="text-muted small">
+              <Box>
+                <Text fz="1.5rem" fw={700} c="white">
+                  {player.user_name}
+                </Text>
+                <Text c="dimmed" size="sm">
                   {season?.name} {season?.year}
-                  {player.clan_name && <span className="text-info ml-2">{player.clan_name}</span>}
-                </div>
-              </div>
-            </div>
+                  {player.clan_name && (
+                    <Text component="span" c="cyan" ml="sm">
+                      {player.clan_name}
+                    </Text>
+                  )}
+                </Text>
+              </Box>
+            </Group>
 
             {/* Right: Quick Stats */}
-            <div className="d-flex mr-5">
-              <div className="text-center px-4">
-                <div className="fs-4 fw-bold text-warning">
+            <Group mr="xl" gap="xl" wrap="nowrap">
+              <Box ta="center">
+                <Text fz="1.5rem" fw={700} c="yellow">
                   {player.total_points.toLocaleString()}
-                </div>
-                <div className="text-muted small text-uppercase">{i18n.t('Points')}</div>
-              </div>
-              <div className="text-center px-4">
-                <div className="fs-4 fw-bold text-success">{player.total_wins_count}</div>
-                <div className="text-muted small text-uppercase">{i18n.t('Wins')}</div>
-              </div>
-              <div className="text-center px-4">
-                <div className="fs-4 fw-bold text-info">{player.tournaments_count}</div>
-                <div className="text-muted small text-uppercase">{i18n.t('Tournaments')}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+                </Text>
+                <Text c="dimmed" size="sm" tt="uppercase">
+                  {i18n.t('Points')}
+                </Text>
+              </Box>
+              <Box ta="center">
+                <Text fz="1.5rem" fw={700} c="green">
+                  {player.total_wins_count}
+                </Text>
+                <Text c="dimmed" size="sm" tt="uppercase">
+                  {i18n.t('Wins')}
+                </Text>
+              </Box>
+              <Box ta="center">
+                <Text fz="1.5rem" fw={700} c="cyan">
+                  {player.tournaments_count}
+                </Text>
+                <Text c="dimmed" size="sm" tt="uppercase">
+                  {i18n.t('Tournaments')}
+                </Text>
+              </Box>
+            </Group>
+          </Group>
+        </Box>
       </Modal.Header>
 
-      <Modal.Body className="p-0" style={{ maxHeight: '75vh', overflowY: 'auto' }}>
+      <Modal.Body style={{ padding: 0, maxHeight: '75vh', overflowY: 'auto' }}>
         {/* Tabs */}
-        <div className="d-flex justify-content-center p-3 border-bottom border-secondary sticky-top bg-dark">
-          <button
-            type="button"
-            className={cn('btn btn-sm mr-2', {
-              'btn-info': activeTab === 'overview',
-              'btn-outline-secondary': activeTab !== 'overview',
-            })}
-            onClick={() => setActiveTab('overview')}
-          >
-            {i18n.t('Overview')}
-          </button>
-          <button
-            type="button"
-            className={cn('btn btn-sm mr-2', {
-              'btn-info': activeTab === 'grades',
-              'btn-outline-secondary': activeTab !== 'grades',
-            })}
-            onClick={() => setActiveTab('grades')}
-          >
-            {i18n.t('By Grade')}
-          </button>
-          <button
-            type="button"
-            className={cn('btn btn-sm mr-2', {
-              'btn-info': activeTab === 'tournaments',
-              'btn-outline-secondary': activeTab !== 'tournaments',
-            })}
-            onClick={() => setActiveTab('tournaments')}
-          >
-            {i18n.t('Tournaments')}
-          </button>
-          <button
-            type="button"
-            className={cn('btn btn-sm', {
-              'btn-info': activeTab === 'trends',
-              'btn-outline-secondary': activeTab !== 'trends',
-            })}
-            onClick={() => setActiveTab('trends')}
-          >
-            {i18n.t('Trends')}
-          </button>
-        </div>
+        <Group
+          justify="center"
+          gap="sm"
+          p="md"
+          pos="sticky"
+          top={0}
+          bg="dark.7"
+          style={{ borderBottom: '1px solid var(--mantine-color-default-border)', zIndex: 2 }}
+        >
+          {[
+            ['overview', i18n.t('Overview')],
+            ['grades', i18n.t('By Grade')],
+            ['tournaments', i18n.t('Tournaments')],
+            ['trends', i18n.t('Trends')],
+          ].map(([key, label]) => (
+            <Button
+              key={key}
+              size="xs"
+              color="cyan"
+              variant={activeTab === key ? 'filled' : 'default'}
+              onClick={() => setActiveTab(key)}
+            >
+              {label}
+            </Button>
+          ))}
+        </Group>
 
         {/* Loading State */}
         {loading && (
-          <div className="text-center py-5">
+          <Box ta="center" py="xl">
             <Loader color="blue" />
-            <p className="text-muted mt-2">{i18n.t('Loading detailed stats...')}</p>
-          </div>
+            <Text c="dimmed" mt="sm">
+              {i18n.t('Loading detailed stats...')}
+            </Text>
+          </Box>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <div className="alert alert-warning m-3">
+          <Alert color="yellow" m="md">
             {error}. {i18n.t('Showing basic stats only.')}
-          </div>
+          </Alert>
         )}
 
         {/* Tab Content */}
         {!loading && (
-          <div className="p-3">
+          <Box p="md">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
-              <div className="row">
+              <Grid>
                 {/* Left Column - Weapon + Stats */}
-                <div className="col-md-5">
+                <Grid.Col span={{ base: 12, md: 5 }}>
                   {/* Weapon Section */}
                   {player.user_lang && (
-                    <div className="mb-4 text-center">
-                      <h6 className="text-muted text-uppercase mb-3">{i18n.t('Weapon')}</h6>
+                    <Box mb="lg" ta="center">
+                      <SectionHeading>{i18n.t('Weapon')}</SectionHeading>
                       <LanguageIcon
                         lang={player.user_lang}
                         style={{ width: '80px', height: '80px' }}
                       />
-                      <div className="fs-5 text-white text-capitalize mt-2">{player.user_lang}</div>
-                    </div>
+                      <Text fz="1.25rem" c="white" tt="capitalize" mt="sm">
+                        {player.user_lang}
+                      </Text>
+                    </Box>
                   )}
 
                   {/* Stats List */}
-                  <div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Season Rank')}</span>
-                      <span className="fw-bold text-warning">
+                  <Box>
+                    <StatRow label={i18n.t('Season Rank')}>
+                      <Text fw={700} c="yellow">
                         #{player.place}{' '}
-                        <small className="text-muted">
+                        <Text component="span" c="dimmed" fz="sm">
                           {i18n.t('/ Top %{percent}%', { percent: 100 - percentile })}
-                        </small>
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Total Points')}</span>
-                      <span className="fw-bold text-warning">
+                        </Text>
+                      </Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Total Points')}>
+                      <Text fw={700} c="yellow">
                         {player.total_points.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Total Score')}</span>
-                      <span className="fw-bold text-info">
+                      </Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Total Score')}>
+                      <Text fw={700} c="cyan">
                         {player.total_score.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Total Wins')}</span>
-                      <span className="fw-bold text-success">{player.total_wins_count}</span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Total Games')}</span>
-                      <span className="fw-bold">{player.total_games_count}</span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Tournaments')}</span>
-                      <span className="fw-bold">{player.tournaments_count}</span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Best Finish')}</span>
-                      <span>
-                        {player.best_place ? (
-                          <span className={cn('badge', getPlaceBadgeClass(player.best_place))}>
-                            #{player.best_place}
-                          </span>
-                        ) : (
-                          '-'
-                        )}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Avg Finish')}</span>
-                      <span className="fw-bold">
+                      </Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Total Wins')}>
+                      <Text fw={700} c="green">
+                        {player.total_wins_count}
+                      </Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Total Games')}>
+                      <Text fw={700}>{player.total_games_count}</Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Tournaments')}>
+                      <Text fw={700}>{player.tournaments_count}</Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Best Finish')}>
+                      {player.best_place ? (
+                        <Badge color={placeBadgeColor(player.best_place)}>
+                          #{player.best_place}
+                        </Badge>
+                      ) : (
+                        <Text component="span">-</Text>
+                      )}
+                    </StatRow>
+                    <StatRow label={i18n.t('Avg Finish')}>
+                      <Text fw={700}>
                         #{player.avg_place ? Number(player.avg_place).toFixed(1) : '-'}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">{i18n.t('Time Played')}</span>
-                      <span className="fw-bold">{formatTime(player.total_time)}</span>
-                    </div>
-                  </div>
-                </div>
+                      </Text>
+                    </StatRow>
+                    <StatRow label={i18n.t('Time Played')}>
+                      <Text fw={700}>{formatTime(player.total_time)}</Text>
+                    </StatRow>
+                  </Box>
+                </Grid.Col>
 
                 {/* Right Column - Win Rate + Grades + Comparison */}
-                <div className="col-md-7">
+                <Grid.Col span={{ base: 12, md: 7 }}>
                   {/* Win Rate Chart */}
                   <WinRateChart wins={player.total_wins_count} total={player.total_games_count} />
 
                   {/* Tournaments by Grade */}
-                  <div className="card cb-bg-panel border-0 mb-3 mt-3">
-                    <div className="card-body">
-                      <h6 className="text-muted text-uppercase mb-3">
-                        {i18n.t('Tournaments by Grade')}
-                      </h6>
-                      <div className="row">
-                        {ALL_GRADES.map((grade) => (
-                          <div key={grade} className="col-6 col-md-4">
-                            <div className="d-flex align-items-center">
-                              <span
-                                className="fw-bold"
-                                style={{ color: GRADE_COLORS[grade], minWidth: '90px' }}
-                              >
-                                {formatGradeName(grade)}
-                              </span>
-                              <span className="fw-bold text-white ml-2">
-                                {gradeWins[grade] || 0}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <Card className="cb-bg-panel" p="md" radius="md" mb="md" mt="md">
+                    <SectionHeading>{i18n.t('Tournaments by Grade')}</SectionHeading>
+                    <Grid>
+                      {ALL_GRADES.map((grade) => (
+                        <Grid.Col key={grade} span={{ base: 6, md: 4 }}>
+                          <Group align="center" gap="sm" wrap="nowrap">
+                            <Text fw={700} style={{ color: GRADE_COLORS[grade], minWidth: '90px' }}>
+                              {formatGradeName(grade)}
+                            </Text>
+                            <Text fw={700} c="white">
+                              {gradeWins[grade] || 0}
+                            </Text>
+                          </Group>
+                        </Grid.Col>
+                      ))}
+                    </Grid>
+                  </Card>
 
                   {/* Quick comparison with median */}
                   {medianStats && (
-                    <div className="card cb-bg-panel border-0">
-                      <div className="card-body">
-                        <h6 className="text-muted text-uppercase mb-3">
-                          {i18n.t('vs Median Player')}
-                        </h6>
-                        <div className="row small">
-                          <div className="col-6">
-                            <span className="text-muted">{i18n.t('Points:')} </span>
-                            <span
-                              className={cn(
-                                'fw-bold',
-                                player.total_points >= medianStats.points
-                                  ? 'text-success'
-                                  : 'text-danger',
-                              )}
-                            >
-                              {player.total_points >= medianStats.points ? '+' : ''}
-                              {(player.total_points - medianStats.points).toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="col-6">
-                            <span className="text-muted">{i18n.t('Win Rate:')} </span>
-                            <span
-                              className={cn(
-                                'fw-bold',
-                                playerWinRate >= medianStats.winRate
-                                  ? 'text-success'
-                                  : 'text-danger',
-                              )}
-                            >
-                              {playerWinRate >= medianStats.winRate ? '+' : ''}
-                              {(playerWinRate - medianStats.winRate).toFixed(1)}%
-                            </span>
-                          </div>
-                          <div className="col-6">
-                            <span className="text-muted">{i18n.t('Wins:')} </span>
-                            <span
-                              className={cn(
-                                'fw-bold',
-                                player.total_wins_count >= medianStats.wins
-                                  ? 'text-success'
-                                  : 'text-danger',
-                              )}
-                            >
-                              {player.total_wins_count >= medianStats.wins ? '+' : ''}
-                              {player.total_wins_count - medianStats.wins}
-                            </span>
-                          </div>
-                          <div className="col-6">
-                            <span className="text-muted">{i18n.t('Tournaments:')} </span>
-                            <span
-                              className={cn(
-                                'fw-bold',
-                                player.tournaments_count >= medianStats.tournaments
-                                  ? 'text-success'
-                                  : 'text-danger',
-                              )}
-                            >
-                              {player.tournaments_count >= medianStats.tournaments ? '+' : ''}
-                              {player.tournaments_count - medianStats.tournaments}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <Card className="cb-bg-panel" p="md" radius="md">
+                      <SectionHeading>{i18n.t('vs Median Player')}</SectionHeading>
+                      <Grid fz="sm">
+                        <Grid.Col span={6}>
+                          <Text component="span" c="dimmed">
+                            {i18n.t('Points:')}{' '}
+                          </Text>
+                          <Text
+                            component="span"
+                            fw={700}
+                            c={player.total_points >= medianStats.points ? 'green' : 'red'}
+                          >
+                            {player.total_points >= medianStats.points ? '+' : ''}
+                            {(player.total_points - medianStats.points).toLocaleString()}
+                          </Text>
+                        </Grid.Col>
+                        <Grid.Col span={6}>
+                          <Text component="span" c="dimmed">
+                            {i18n.t('Win Rate:')}{' '}
+                          </Text>
+                          <Text
+                            component="span"
+                            fw={700}
+                            c={playerWinRate >= medianStats.winRate ? 'green' : 'red'}
+                          >
+                            {playerWinRate >= medianStats.winRate ? '+' : ''}
+                            {(playerWinRate - medianStats.winRate).toFixed(1)}%
+                          </Text>
+                        </Grid.Col>
+                        <Grid.Col span={6}>
+                          <Text component="span" c="dimmed">
+                            {i18n.t('Wins:')}{' '}
+                          </Text>
+                          <Text
+                            component="span"
+                            fw={700}
+                            c={player.total_wins_count >= medianStats.wins ? 'green' : 'red'}
+                          >
+                            {player.total_wins_count >= medianStats.wins ? '+' : ''}
+                            {player.total_wins_count - medianStats.wins}
+                          </Text>
+                        </Grid.Col>
+                        <Grid.Col span={6}>
+                          <Text component="span" c="dimmed">
+                            {i18n.t('Tournaments:')}{' '}
+                          </Text>
+                          <Text
+                            component="span"
+                            fw={700}
+                            c={
+                              player.tournaments_count >= medianStats.tournaments ? 'green' : 'red'
+                            }
+                          >
+                            {player.tournaments_count >= medianStats.tournaments ? '+' : ''}
+                            {player.tournaments_count - medianStats.tournaments}
+                          </Text>
+                        </Grid.Col>
+                      </Grid>
+                    </Card>
                   )}
-                </div>
-              </div>
+                </Grid.Col>
+              </Grid>
             )}
 
             {/* Grades Tab */}
             {activeTab === 'grades' && (
               <>
-                <h6 className="text-muted text-uppercase mb-3">
-                  {i18n.t('Tournament Performance by Grade')}
-                </h6>
+                <SectionHeading>{i18n.t('Tournament Performance by Grade')}</SectionHeading>
                 {detailedStats?.grade_stats ? (
                   <>
                     <GradeStatsTable gradeStats={detailedStats.grade_stats} />
-                    <div className="mt-4">
+                    <Box mt="lg">
                       <GradeStatsChart gradeStats={detailedStats.grade_stats} />
-                    </div>
+                    </Box>
                   </>
                 ) : (
-                  <div className="text-center text-muted py-3">
+                  <Box ta="center" c="dimmed" py="md">
                     {i18n.t(loading ? 'Loading...' : 'No grade stats available')}
-                  </div>
+                  </Box>
                 )}
               </>
             )}
@@ -781,13 +811,13 @@ function PlayerInsightsModal({
             {/* Tournaments Tab */}
             {activeTab === 'tournaments' && (
               <>
-                <h6 className="text-muted text-uppercase mb-3">{i18n.t('Tournament Results')}</h6>
+                <SectionHeading>{i18n.t('Tournament Results')}</SectionHeading>
                 {detailedStats?.recent_tournaments ? (
                   <TournamentsTable tournaments={detailedStats.recent_tournaments} />
                 ) : (
-                  <div className="text-center text-muted py-3">
+                  <Box ta="center" c="dimmed" py="md">
                     {i18n.t(loading ? 'Loading...' : 'No tournament data available')}
-                  </div>
+                  </Box>
                 )}
               </>
             )}
@@ -795,337 +825,307 @@ function PlayerInsightsModal({
             {/* Trends Tab */}
             {activeTab === 'trends' && (
               <>
-                <h6 className="text-muted text-uppercase mb-3">
-                  {i18n.t('Performance Over Time')}
-                </h6>
+                <SectionHeading>{i18n.t('Performance Over Time')}</SectionHeading>
                 {detailedStats?.performance_trend && detailedStats.performance_trend.length > 0 ? (
                   <PerformanceTrendChart trend={detailedStats.performance_trend} />
                 ) : (
-                  <div className="text-center text-muted py-3">
+                  <Box ta="center" c="dimmed" py="md">
                     {i18n.t(loading ? 'Loading...' : 'Not enough data for trend analysis')}
-                  </div>
+                  </Box>
                 )}
 
                 {/* Comparison Charts with Median */}
                 {medianStats && (
-                  <div className="row mt-4">
+                  <Grid mt="lg">
                     {/* Radar Chart - Overall Comparison */}
-                    <div className="col-md-6 mb-4">
-                      <div className="card cb-bg-panel border-0 h-100">
-                        <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">
-                            {i18n.t('Stats vs Median (Normalized)')}
-                          </h6>
-                          <ResponsiveContainer width="100%" height={250}>
-                            <RadarChart
-                              data={[
-                                {
-                                  stat: i18n.t('Points'),
-                                  player: Math.min(
-                                    (player.total_points / Math.max(medianStats.points, 1)) * 50,
-                                    100,
-                                  ),
-                                  median: 50,
-                                },
-                                {
-                                  stat: i18n.t('Wins'),
-                                  player: Math.min(
-                                    (player.total_wins_count / Math.max(medianStats.wins, 1)) * 50,
-                                    100,
-                                  ),
-                                  median: 50,
-                                },
-                                {
-                                  stat: i18n.t('Win Rate'),
-                                  player: Math.min(
-                                    (playerWinRate / Math.max(medianStats.winRate, 1)) * 50,
-                                    100,
-                                  ),
-                                  median: 50,
-                                },
-                                {
-                                  stat: i18n.t('Score'),
-                                  player: Math.min(
-                                    (player.total_score / Math.max(medianStats.score, 1)) * 50,
-                                    100,
-                                  ),
-                                  median: 50,
-                                },
-                                {
-                                  stat: i18n.t('Tournaments'),
-                                  player: Math.min(
-                                    (player.tournaments_count /
-                                      Math.max(medianStats.tournaments, 1)) *
-                                      50,
-                                    100,
-                                  ),
-                                  median: 50,
-                                },
-                              ]}
-                            >
-                              <PolarGrid stroke="#444" />
-                              <PolarAngleAxis
-                                dataKey="stat"
-                                stroke="#999"
-                                tick={{ fontSize: 11 }}
-                              />
-                              <PolarRadiusAxis
-                                angle={90}
-                                domain={[0, 100]}
-                                tick={false}
-                                axisLine={false}
-                              />
-                              <Radar
-                                name={i18n.t('You')}
-                                dataKey="player"
-                                stroke="#0dcaf0"
-                                fill="#0dcaf0"
-                                fillOpacity={0.5}
-                              />
-                              <Radar
-                                name={i18n.t('Median')}
-                                dataKey="median"
-                                stroke="#6c757d"
-                                fill="#6c757d"
-                                fillOpacity={0.2}
-                              />
-                              <Legend />
-                            </RadarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
+                    <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
+                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                        <SectionHeading>{i18n.t('Stats vs Median (Normalized)')}</SectionHeading>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <RadarChart
+                            data={[
+                              {
+                                stat: i18n.t('Points'),
+                                player: Math.min(
+                                  (player.total_points / Math.max(medianStats.points, 1)) * 50,
+                                  100,
+                                ),
+                                median: 50,
+                              },
+                              {
+                                stat: i18n.t('Wins'),
+                                player: Math.min(
+                                  (player.total_wins_count / Math.max(medianStats.wins, 1)) * 50,
+                                  100,
+                                ),
+                                median: 50,
+                              },
+                              {
+                                stat: i18n.t('Win Rate'),
+                                player: Math.min(
+                                  (playerWinRate / Math.max(medianStats.winRate, 1)) * 50,
+                                  100,
+                                ),
+                                median: 50,
+                              },
+                              {
+                                stat: i18n.t('Score'),
+                                player: Math.min(
+                                  (player.total_score / Math.max(medianStats.score, 1)) * 50,
+                                  100,
+                                ),
+                                median: 50,
+                              },
+                              {
+                                stat: i18n.t('Tournaments'),
+                                player: Math.min(
+                                  (player.tournaments_count /
+                                    Math.max(medianStats.tournaments, 1)) *
+                                    50,
+                                  100,
+                                ),
+                                median: 50,
+                              },
+                            ]}
+                          >
+                            <PolarGrid stroke="#444" />
+                            <PolarAngleAxis dataKey="stat" stroke="#999" tick={{ fontSize: 11 }} />
+                            <PolarRadiusAxis
+                              angle={90}
+                              domain={[0, 100]}
+                              tick={false}
+                              axisLine={false}
+                            />
+                            <Radar
+                              name={i18n.t('You')}
+                              dataKey="player"
+                              stroke="#0dcaf0"
+                              fill="#0dcaf0"
+                              fillOpacity={0.5}
+                            />
+                            <Radar
+                              name={i18n.t('Median')}
+                              dataKey="median"
+                              stroke="#6c757d"
+                              fill="#6c757d"
+                              fillOpacity={0.2}
+                            />
+                            <Legend />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </Card>
+                    </Grid.Col>
 
                     {/* Bar Chart - Points Comparison */}
-                    <div className="col-md-6 mb-4">
-                      <div className="card cb-bg-panel border-0 h-100">
-                        <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">
-                            {i18n.t('Your Stats vs Median')}
-                          </h6>
-                          <ResponsiveContainer width="100%" height={250}>
-                            <BarChart
-                              data={[
-                                {
-                                  name: i18n.t('Points'),
-                                  you: player.total_points,
-                                  median: medianStats.points,
-                                },
-                                {
-                                  name: i18n.t('Score'),
-                                  you: player.total_score,
-                                  median: medianStats.score,
-                                },
-                                {
-                                  name: i18n.t('Wins'),
-                                  you: player.total_wins_count,
-                                  median: medianStats.wins,
-                                },
-                                {
-                                  name: i18n.t('Games'),
-                                  you: player.total_games_count,
-                                  median: medianStats.games,
-                                },
-                              ]}
-                              layout="vertical"
-                            >
-                              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                              <XAxis type="number" stroke="#999" />
-                              <YAxis type="category" dataKey="name" stroke="#999" width={60} />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: '#1a1a1a',
-                                  border: '1px solid #333',
-                                }}
-                              />
-                              <Legend />
-                              <Bar dataKey="you" name={i18n.t('You')} fill="#0dcaf0" />
-                              <Bar dataKey="median" name={i18n.t('Median')} fill="#6c757d" />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
+                    <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
+                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                        <SectionHeading>{i18n.t('Your Stats vs Median')}</SectionHeading>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <BarChart
+                            data={[
+                              {
+                                name: i18n.t('Points'),
+                                you: player.total_points,
+                                median: medianStats.points,
+                              },
+                              {
+                                name: i18n.t('Score'),
+                                you: player.total_score,
+                                median: medianStats.score,
+                              },
+                              {
+                                name: i18n.t('Wins'),
+                                you: player.total_wins_count,
+                                median: medianStats.wins,
+                              },
+                              {
+                                name: i18n.t('Games'),
+                                you: player.total_games_count,
+                                median: medianStats.games,
+                              },
+                            ]}
+                            layout="vertical"
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <XAxis type="number" stroke="#999" />
+                            <YAxis type="category" dataKey="name" stroke="#999" width={60} />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#1a1a1a',
+                                border: '1px solid #333',
+                              }}
+                            />
+                            <Legend />
+                            <Bar dataKey="you" name={i18n.t('You')} fill="#0dcaf0" />
+                            <Bar dataKey="median" name={i18n.t('Median')} fill="#6c757d" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </Card>
+                    </Grid.Col>
 
                     {/* Win Rate Comparison */}
-                    <div className="col-md-6 mb-4">
-                      <div className="card cb-bg-panel border-0 h-100">
-                        <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">
-                            {i18n.t('Win Rate Comparison')}
-                          </h6>
-                          <ResponsiveContainer width="100%" height={200}>
-                            <BarChart
-                              data={[
-                                {
-                                  name: i18n.t('Win Rate %'),
-                                  you: playerWinRate,
-                                  median: Math.round(medianStats.winRate),
-                                },
-                              ]}
-                            >
-                              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                              <XAxis dataKey="name" stroke="#999" />
-                              <YAxis stroke="#999" domain={[0, 100]} />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: '#1a1a1a',
-                                  border: '1px solid #333',
-                                }}
-                                formatter={(value) => [`${value}%`, '']}
-                              />
-                              <Legend />
-                              <Bar dataKey="you" name={i18n.t('You')} fill="#198754" />
-                              <Bar dataKey="median" name={i18n.t('Median')} fill="#6c757d" />
-                              <ReferenceLine
-                                y={50}
-                                stroke="#ffc107"
-                                strokeDasharray="3 3"
-                                label={{ value: '50%', fill: '#ffc107', fontSize: 10 }}
-                              />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
+                    <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
+                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                        <SectionHeading>{i18n.t('Win Rate Comparison')}</SectionHeading>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <BarChart
+                            data={[
+                              {
+                                name: i18n.t('Win Rate %'),
+                                you: playerWinRate,
+                                median: Math.round(medianStats.winRate),
+                              },
+                            ]}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <XAxis dataKey="name" stroke="#999" />
+                            <YAxis stroke="#999" domain={[0, 100]} />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#1a1a1a',
+                                border: '1px solid #333',
+                              }}
+                              formatter={(value) => [`${value}%`, '']}
+                            />
+                            <Legend />
+                            <Bar dataKey="you" name={i18n.t('You')} fill="#198754" />
+                            <Bar dataKey="median" name={i18n.t('Median')} fill="#6c757d" />
+                            <ReferenceLine
+                              y={50}
+                              stroke="#ffc107"
+                              strokeDasharray="3 3"
+                              label={{ value: '50%', fill: '#ffc107', fontSize: 10 }}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </Card>
+                    </Grid.Col>
 
                     {/* Percentile Gauge */}
-                    <div className="col-md-6 mb-4">
-                      <div className="card cb-bg-panel border-0 h-100">
-                        <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">
-                            {i18n.t('Your Ranking Percentile')}
-                          </h6>
-                          <ResponsiveContainer width="100%" height={200}>
-                            <PieChart>
-                              <Pie
-                                data={[
-                                  {
-                                    name: i18n.t('Your Percentile'),
-                                    value: percentile,
-                                    fill: '#0dcaf0',
-                                  },
-                                  {
-                                    name: i18n.t('Above You'),
-                                    value: 100 - percentile,
-                                    fill: '#2d2d2d',
-                                  },
-                                ]}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={50}
-                                outerRadius={70}
-                                startAngle={180}
-                                endAngle={0}
-                                dataKey="value"
-                              >
-                                <Cell fill="#0dcaf0" />
-                                <Cell fill="#2d2d2d" />
-                              </Pie>
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: '#1a1a1a',
-                                  border: '1px solid #333',
-                                }}
-                              />
-                            </PieChart>
-                          </ResponsiveContainer>
-                          <div className="text-center" style={{ marginTop: '-60px' }}>
-                            <div className="fs-3 fw-bold text-info">
-                              {i18n.t('Top %{percent}%', { percent: 100 - percentile })}
-                            </div>
-                            <div className="text-muted small">
-                              {i18n.t('Better than %{percent}% of players', {
-                                percent: percentile,
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
+                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                        <SectionHeading>{i18n.t('Your Ranking Percentile')}</SectionHeading>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <PieChart>
+                            <Pie
+                              data={[
+                                {
+                                  name: i18n.t('Your Percentile'),
+                                  value: percentile,
+                                  fill: '#0dcaf0',
+                                },
+                                {
+                                  name: i18n.t('Above You'),
+                                  value: 100 - percentile,
+                                  fill: '#2d2d2d',
+                                },
+                              ]}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={70}
+                              startAngle={180}
+                              endAngle={0}
+                              dataKey="value"
+                            >
+                              <Cell fill="#0dcaf0" />
+                              <Cell fill="#2d2d2d" />
+                            </Pie>
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#1a1a1a',
+                                border: '1px solid #333',
+                              }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <Box ta="center" style={{ marginTop: '-60px' }}>
+                          <Text fz="1.75rem" fw={700} c="cyan">
+                            {i18n.t('Top %{percent}%', { percent: 100 - percentile })}
+                          </Text>
+                          <Text c="dimmed" size="sm">
+                            {i18n.t('Better than %{percent}% of players', {
+                              percent: percentile,
+                            })}
+                          </Text>
+                        </Box>
+                      </Card>
+                    </Grid.Col>
+                  </Grid>
                 )}
 
                 {/* Points distribution bar chart */}
                 {detailedStats?.grade_stats && (
-                  <div className="row mt-2">
-                    <div className="col-md-6">
-                      <div className="card cb-bg-panel border-0">
-                        <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">
-                            {i18n.t('Points Distribution by Grade')}
-                          </h6>
-                          <ResponsiveContainer width="100%" height={200}>
-                            <BarChart
-                              data={ALL_GRADES.map((grade) => {
-                                const gradeData = detailedStats.grade_stats?.find(
-                                  (g) => g.grade === grade,
-                                );
-                                return {
-                                  name: formatGradeName(grade),
-                                  points: gradeData?.total_points || 0,
-                                  fill: GRADE_COLORS[grade],
-                                };
-                              })}
-                            >
-                              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                              <XAxis dataKey="name" stroke="#999" tick={{ fontSize: 10 }} />
-                              <YAxis stroke="#999" />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: '#1a1a1a',
-                                  border: '1px solid #333',
-                                }}
-                                formatter={(value) => [
-                                  Number(value).toLocaleString(),
-                                  i18n.t('Points'),
-                                ]}
-                              />
-                              <Bar dataKey="points" name={i18n.t('Points')}>
-                                {ALL_GRADES.map((grade) => (
-                                  <Cell key={`cell-${grade}`} fill={GRADE_COLORS[grade]} />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="card cb-bg-panel border-0">
-                        <div className="card-body">
-                          <h6 className="text-muted small text-uppercase">
-                            {i18n.t('Wins by Grade')}
-                          </h6>
-                          <ResponsiveContainer width="100%" height={200}>
-                            <BarChart
-                              data={detailedStats.grade_stats.map((g) => ({
-                                name: formatGradeName(g.grade),
-                                wins: g.total_wins,
-                                games: g.total_games,
-                                fill: GRADE_COLORS[g.grade],
-                              }))}
-                            >
-                              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                              <XAxis dataKey="name" stroke="#999" tick={{ fontSize: 10 }} />
-                              <YAxis stroke="#999" />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: '#1a1a1a',
-                                  border: '1px solid #333',
-                                }}
-                              />
-                              <Bar dataKey="wins" name={i18n.t('Wins')} fill="#198754" />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <Grid mt="sm">
+                    <Grid.Col span={{ base: 12, md: 6 }}>
+                      <Card className="cb-bg-panel" p="md" radius="md">
+                        <SectionHeading>{i18n.t('Points Distribution by Grade')}</SectionHeading>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <BarChart
+                            data={ALL_GRADES.map((grade) => {
+                              const gradeData = detailedStats.grade_stats?.find(
+                                (g) => g.grade === grade,
+                              );
+                              return {
+                                name: formatGradeName(grade),
+                                points: gradeData?.total_points || 0,
+                                fill: GRADE_COLORS[grade],
+                              };
+                            })}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <XAxis dataKey="name" stroke="#999" tick={{ fontSize: 10 }} />
+                            <YAxis stroke="#999" />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#1a1a1a',
+                                border: '1px solid #333',
+                              }}
+                              formatter={(value) => [
+                                Number(value).toLocaleString(),
+                                i18n.t('Points'),
+                              ]}
+                            />
+                            <Bar dataKey="points" name={i18n.t('Points')}>
+                              {ALL_GRADES.map((grade) => (
+                                <Cell key={`cell-${grade}`} fill={GRADE_COLORS[grade]} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </Card>
+                    </Grid.Col>
+                    <Grid.Col span={{ base: 12, md: 6 }}>
+                      <Card className="cb-bg-panel" p="md" radius="md">
+                        <SectionHeading>{i18n.t('Wins by Grade')}</SectionHeading>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <BarChart
+                            data={detailedStats.grade_stats.map((g) => ({
+                              name: formatGradeName(g.grade),
+                              wins: g.total_wins,
+                              games: g.total_games,
+                              fill: GRADE_COLORS[g.grade],
+                            }))}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <XAxis dataKey="name" stroke="#999" tick={{ fontSize: 10 }} />
+                            <YAxis stroke="#999" />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#1a1a1a',
+                                border: '1px solid #333',
+                              }}
+                            />
+                            <Bar dataKey="wins" name={i18n.t('Wins')} fill="#198754" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </Card>
+                    </Grid.Col>
+                  </Grid>
                 )}
               </>
             )}
-          </div>
+          </Box>
         )}
       </Modal.Body>
     </Modal>
