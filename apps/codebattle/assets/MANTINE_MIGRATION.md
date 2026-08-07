@@ -130,8 +130,22 @@ gradient `cb-*-scroll-control` design classes kept),
 dropping the manual `role`/`tabIndex`/`onKeyPress` a11y shims and the custom
 `.btn-link{color:white}` override), and the
 `UserInfo` / `UserName` / `UserLabel` / `UserStats` cluster. Plus the
-theme border-token work (gotcha #7 / `theme.ts`). The chat cluster is
-effectively done.
+theme border-token work (gotcha #7 / `theme.ts`) and the first slice of the
+**button-theming pass**: `.cb-btn-secondary`'s lighten-on-hover
+(`$cb-secondary-hover-background` #4c5369) is ported into the theme via
+`components.Button = Button.extend({ vars })` keyed on `color="cbSecondary"`
+(Mantine's `--button-hover` var). `cbSuccess` needs no override — its tuple
+index 7 already equals `$cb-hovered-success`. With that in place `Rooms` is now
+**pure Mantine**: dropped `rounded-top` + `cb-btn-secondary` from the target
+`Button` (radius now comes from `defaultRadius`, hover from the theme), removed
+the pointless `mr-2` span wrapper, and dropped `h-auto` from the dropdown. The
+chat cluster is effectively done.
+
+> Blast radius of the theme `vars` override: it only changes buttons that carry
+> `color="cbSecondary"` **and** have already dropped the `cb-btn-secondary`
+> class (unlayered Bootstrap still wins where the class remains). Today that is
+> only `Rooms`; the other ~9 `cb-btn-secondary` consumers are unaffected until
+> their class is dropped in later slices.
 
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
@@ -145,13 +159,17 @@ props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
 **Remaining leaves — each needs a decision or a browser pass, not a plain swap:**
-- **Button/alert/card theming (port `cb-*` → theme first):** `Rooms` button
-  (`cb-btn-secondary` + `rounded-top`, hits gotcha #7), `FeedbackAlertNotification`
-  (`alert-dark-theme` set), the `cb-card` / `cb-bg-highlight-panel` leftovers
-  (e.g. inside `TournamentDescription`).
-- **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle` /
-  `DropdownMenuDefault` (Mantine `Menu` items), `EmojiTooltip` (native
-  `<select size=4>`).
+- **Button/alert/card theming:** `FeedbackAlertNotification` (`alert-dark-theme`
+  set — coupled to per-variant `.alert-*` gradients, wants a CSS-module home),
+  the `cb-card` / `cb-bg-highlight-panel` leftovers (e.g. inside
+  `TournamentDescription`). (`Rooms` done — see above; remaining
+  `cb-btn-secondary` call sites drop their class as their pages convert, now
+  that the hover is in the theme.)
+- **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle`
+  (its `menu` variant renders a Bootstrap `dropdown-item` **inside a server
+  heex dropdown** — that half is Phase 3, not a React-side swap), `EmojiTooltip`
+  (native `<select size=4>`). `DropdownMenuDefault` is **dead code** (no
+  consumers anywhere in `js/`) — delete it rather than convert.
 - **Larger:** `AccordeonBox`, `ChatContextMenu`, `InvitesContainer` /
   `InvitesList`, `SeasonLeaderboard`, `PlayerInsightsModal`.
 

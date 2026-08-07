@@ -20,17 +20,12 @@ export default function Rooms({ disabled }: RoomsProps) {
   return (
     <Menu disabled={disabled} width="target">
       <Menu.Target>
-        <Button
-          className="rounded-top cb-btn-secondary"
-          color="cbSecondary"
-          id="dropdown-rooms"
-          disabled={disabled}
-        >
-          <span className="mr-2">{i18next.t(activeRoom.name)}</span>
+        <Button color="cbSecondary" id="dropdown-rooms" disabled={disabled}>
+          {i18next.t(activeRoom.name)}
         </Button>
       </Menu.Target>
 
-      <Menu.Dropdown className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel">
+      <Menu.Dropdown className="cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel">
         {rooms.map((room) => (
           <Menu.Item
             className="cb-text"

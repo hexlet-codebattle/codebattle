@@ -1,4 +1,9 @@
-import { createTheme, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
+import {
+  Button,
+  createTheme,
+  type CSSVariablesResolver,
+  type MantineColorsTuple,
+} from '@mantine/core';
 
 // Brand accent — the app's `$orange` (rgba(238, 55, 55, 0.76) ≈ #ee3737).
 // Mantine needs a 10-shade tuple; index 6 is the default filled shade.
@@ -59,6 +64,17 @@ export const theme = createTheme({
     md: '1rem',
     lg: '1.5rem',
     xl: '3rem',
+  },
+  components: {
+    // Port of `.cb-btn-secondary`: `color="cbSecondary"` already fills index 6
+    // (#3a3f50), but Mantine darkens on hover while the app's design *lightens*
+    // to `$cb-secondary-hover-background`. Restore that so buttons no longer
+    // need the Bootstrap class. cbSuccess needs no override — its tuple index 7
+    // already equals `$cb-hovered-success`.
+    Button: Button.extend({
+      vars: (_theme, props) =>
+        props.color === 'cbSecondary' ? { root: { '--button-hover': '#4c5369' } } : { root: {} },
+    }),
   },
 });
 
