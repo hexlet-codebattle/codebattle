@@ -59,7 +59,11 @@ describe('presentational components', () => {
   });
 
   test('renders the lobby loading shell', () => {
-    const { container } = render(<LobbyLoading />);
+    const { container } = render(
+      <MantineTestProvider>
+        <LobbyLoading />
+      </MantineTestProvider>,
+    );
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading...');
     expect(screen.getByText('Preparing your arena')).toBeInTheDocument();
