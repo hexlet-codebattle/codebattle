@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (29 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (30 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -156,6 +156,19 @@ positioned `badge badge-danger` notification overlays → Mantine `<Badge
 color="red" pos="absolute">` (size/shape differs from the BS badge — flag in QA).
 Icons moved to `leftSection`. `DropdownMenuDefault` deleted as dead code.
 
+Also done: **`AccordeonBox`** (the game test-output panel, consumed by
+`pages/game/Output.tsx`). Only `SubMenu` + `Item` were actually rendered, so
+the dead root `.accordion` component, `Menu`, `renderFirstAssert`, and
+`getMessage` were **deleted** and the export collapsed to a plain
+`{ Item, SubMenu }` namespace. The live parts went to Mantine: `list-group-item`
+→ `Box` (dark `cb-bg-highlight-panel` kept, top/bottom borders via
+`--mantine-color-default-border`), `d-flex` → `Flex`, `badge badge-*` →
+`<Badge>` (status→Mantine color map), the STDOUT toggle `btn` → `<Button
+variant="outline">` driving a Mantine `<Collapse>` (⚠️ this Mantine build's
+`Collapse` prop is **`expanded`**, not `in`), and the Bootstrap `h1`–`h5` font
+zoom → a numeric-`fontSize`→rem map applied via `fz` / `--badge-fz` (replayer
+zoom fidelity is the main thing to eyeball in QA).
+
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
@@ -177,10 +190,13 @@ props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 - **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle`
   (its `menu` variant renders a Bootstrap `dropdown-item` **inside a server
   heex dropdown** — that half is Phase 3, not a React-side swap), `EmojiTooltip`
-  (native `<select size=4>`). `DropdownMenuDefault` was **dead code** (no
-  consumers anywhere in `js/`) — **deleted**, not converted.
-- **Larger:** `AccordeonBox`, `ChatContextMenu`, `SeasonLeaderboard`,
-  `PlayerInsightsModal`.
+  (native `<select size=4>` acting as a keyboard-nav listbox — the Bootstrap
+  `custom-select` styling has no clean Mantine equivalent without rewriting the
+  interaction), `ChatContextMenu` (built on `react-contexify`, not Mantine — only
+  utility classes to strip, no primitive to swap to). `DropdownMenuDefault` was
+  **dead code** (no consumers anywhere in `js/`) — **deleted**, not converted.
+- **Larger:** `SeasonLeaderboard`, `PlayerInsightsModal` (each ~800–1100 lines;
+  one focused slice apiece).
 
 **Verification gap:** slices are toolchain-verified only. Headless browser
 verification isn't feasible here (auth + live game/tournament state), so all
