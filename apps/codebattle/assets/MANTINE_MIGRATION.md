@@ -259,22 +259,39 @@ classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
-**Remaining leaves: 4** (audited 2026-08-07 with a whole-word Bootstrap-token
+**Remaining leaves: 2** (audited 2026-08-07 with a whole-word Bootstrap-token
 grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
-classes and `User*` passthrough props). All 4 now need a decision or belong to
-Phase 3 — the "just do the work" leaves are done. Each needs a browser pass,
-not a plain swap:
+classes and `User*` passthrough props). Both need a decision or belong to
+Phase 3 — the "just do the work" leaves are done, and the two lib-backed leaves
+that only needed their Bootstrap *classes* stripped are done too (see below):
 
-- **Blocked on a lib swap / behavior change (3):**
-  - `LanguagePickerView` — react-select.
-  - `EmojiTooltip` — native `<select size=4>` keyboard-nav listbox; Bootstrap
-    `custom-select` styling has no clean Mantine equivalent without rewriting the
-    interaction.
-  - `ChatContextMenu` — built on `react-contexify`, not Mantine; only utility
-    classes to strip, no primitive to swap to.
+- **Blocked on a lib swap / behavior change (1):**
+  - `LanguagePickerView` — react-select. Leave until all react-select sites
+    (`TaskChoice`, `PlayerPicker`, `ReportsPanel`) convert together, so the
+    dependency can be dropped in one PR. Still carries Bootstrap classes.
 - **Really Phase 3 (1):** `SoundToggle` — its `menu` variant renders a Bootstrap
   `dropdown-item` **inside a server heex dropdown**, so it can't be a pure
   React-side swap.
+
+Bootstrap-classes-stripped, non-Mantine lib kept on purpose (Phase-2 complete
+for these two — the eventual lib swap is tracked as future work, not a class
+migration):
+
+- **`EmojiTooltip`** — the emoji-autocomplete listbox in `ChatInput`. Kept the
+  native `<select size={4}>` and its hand-wired arrow/enter/escape keyboard nav
+  (`useKey`) **untouched**; only replaced the Bootstrap classes (`d-flex
+  flex-column position-absolute border rounded w-50 custom-select mb-2` + the
+  one-off `x-bottom-75`) with an inline `style`. Gave it an explicit dark
+  `backgroundColor` (`--mantine-color-dark-6`) so it no longer falls back to a
+  light native listbox on the dark chat — ⚠️ QA this looks right.
+- **`ChatContextMenu`** — the right-click username menu (`react-contexify`).
+  Kept `react-contexify` and the `cb-bg-panel`/`cb-border-color`/`cb-rounded`
+  design classes; stripped the Bootstrap `text-white`/`mr-2`/`text-muted`
+  utilities. `text-white` was load-bearing (items sit on a dark panel), so it
+  was replaced 1:1 with inline `color`/`marginRight` tokens at the same
+  elements (inline wins over react-contexify's own item-color rule — a
+  Menu-level color would not). No Mantine components added, so no test-provider
+  change needed.
 
 Plus one small **design leftover** (not a whole leaf): the `.card.cb-card`
 ranking panel inside the already-converted `TournamentDescription`, and the
