@@ -466,13 +466,53 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `col-*`-in-flex responsive grid → `<Flex>`/`<Box>` with responsive `w`/`p`/`m`
   props, `sr-only` → `<VisuallyHidden>`, all `cb-lobby-loading-*` /
   `cb-text-skeleton` design classes kept).
+- Done: `ChatActionModal` (player-select modal) — the `div role="button"` +
+  a11y shims (`tabIndex`/`onKeyPress`) player rows → native Mantine `<Button
+  color="cbSecondary" fullWidth justify="flex-start" h="auto" p="md">` (the
+  `data-user-id`/`data-user-name` + `onClick` reading `currentTarget.dataset`
+  survive on the real `<button>`); `d-flex flex-column` → `<Stack gap="sm">`.
+  Renders inside `CbModal` (already Mantine). No test.
+- Done: `TournamentListItem` (season/live tournament card) — layout utilities →
+  `Flex`/`Box` + style props; root `border cb-border-color cb-rounded` box →
+  `<Paper withBorder radius="md">` (theme resolves the border color); the main
+  action `<a>` → `<Button component="a" color="cbSecondary">` (still role=link,
+  test's `getByRole('link')` passes); the info `<button>` → `<ActionIcon
+  variant="transparent">` keeping `cb-tournament-info-icon-btn` (30×30 sizing +
+  `padding:0!important`) and `cb-btn-outline-secondary` (icon color, unlayered
+  wins over `--ai-color`); `text-white` → `c="white"`. Kept all `cb-tournament-*`
+  design classes, Bootstrap typography (`h5`) and `text-warning` icon color
+  (neither in the DoD grep). Test already wrapped in `MantineTestProvider`.
+- Done: `SeasonProfilePanel` (+ its `OpponentInfo` / `SeasonNearbyUsers` /
+  `UserLogo` sub-parts) — two-column responsive layout: `d-flex
+  flex-column-reverse flex-lg-row` → `<Flex direction={{ base:
+  'column-reverse', lg: 'row' }}>`, `col-12 col-lg-8`/`-4` → responsive `w`
+  percentages (`{ base: '100%', lg: '66.6667%' }`); the 3 action-link buttons →
+  `<Button component="a" color="cbSecondary" fullWidth>`; avatar `rounded-circle`
+  → inline `borderRadius:'50%'`; `text-white` → `c="white"`. **Kept the stat
+  internals untouched** (`stat-item`/`stat-value`/`stat-label`/`cb-text-*`/
+  `d-block`/`text-uppercase` carry no DoD-grep token) — only the `d-flex`
+  containers around them were converted. Kept all `cb-*`/`clan-*` design classes,
+  Bootstrap typography (`h1`/`h4`), `User*` passthrough props, and the `cn`
+  skeleton toggles. The `text-primary` "add clan" link → `<Anchor>` (brand
+  orange, per the standing decision). `SeasonProfilePanel.test` (renders only
+  `SeasonNearbyUsers`) now wraps in `MantineTestProvider`.
+- Done: `CodebattleLeagueDescription` (the league rules panel) — **rewrote the
+  Bootstrap-JS collapse + accordion** (`data-toggle="collapse"` /
+  `data-parent="#leagueAccordion"`) as a controlled Mantine `<Collapse
+  expanded={opened}>` (outer "See Rules & Details" toggle) wrapping a single-open
+  `<Accordion variant="separated" defaultValue="overview">` (7 items).
+  `card`/`card-header`/`card-body` → `Accordion.Item`/`Control`/`Panel`;
+  `row`/`col-md-6` → `Grid`/`Grid.Col span={{ base:12, md:6 }}`; `text-white` →
+  `c="white"` on each `Accordion.Panel`; `btn btn-secondary` → `Button
+  color="cbSecondary"`; `<h2>` → `<Title order={2}>`. ⚠️ this Mantine build's
+  `Collapse` prop is **`expanded`**, not `in` (same as `AccordeonBox`). Removes
+  this component's dependency on Bootstrap's JS collapse plugin; Mantine adds a
+  chevron the Bootstrap accordion didn't have (QA). No test.
 - **Deferred (react-select):** `TaskChoice` uses react-select — leave with
   `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
 - **Remaining lobby leaves/containers (still Bootstrap):** `LobbyChat`,
-  `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
-  `CodebattleLeagueDescription`, `LobbyWidget` (container), `TournamentModal`,
-  `ChatActionModal`. (`CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`
-  have tests — wrap in `MantineTestProvider` when converted.)
+  `CreateGameDialog`, `LobbyWidget` (container), `TournamentModal`.
+  (`CreateGameDialog` has a test — wrap in `MantineTestProvider` when converted.)
 
 ⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
 attached `btn-group`); the **cancel button still hidden until you hover the game
