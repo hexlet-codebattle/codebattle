@@ -92,7 +92,11 @@ test('localizes tournament preview dates and point labels', () => {
 });
 
 test('localizes tournament highlights and grade names', () => {
-  render(<TournamentDescription tournament={{ grade: 'rookie' }} />);
+  render(
+    <MantineTestProvider>
+      <TournamentDescription tournament={{ grade: 'rookie' }} />
+    </MantineTestProvider>,
+  );
 
   expect(screen.getByText('Главное о турнире:')).toBeInTheDocument();
   expect(screen.getByText('Задачи: 4 уникальных алгоритмических задач')).toBeInTheDocument();
