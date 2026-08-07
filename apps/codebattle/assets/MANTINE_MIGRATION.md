@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages started (`settings`, `profile` done) |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup) done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -408,7 +408,10 @@ uppercase/bold, fill the width (`grow`), and join the bordered content box below
 Also: heatmap `NativeSelect` may add a chevron over the native arrow (as in
 `SeasonLeaderboard`); the avatar corner radius (was `rounded`, now inline `sm`).
 
-In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
+Done (React markup): **`lobby`** page (large — ~26 files, converted per-leaf).
+All lobby React components are on Mantine; the **only** remaining lobby work is
+the deferred react-select lib swap (`TaskChoice` + `CreateGameDialog`'s
+`OpponentSelect`). Per-leaf log below.
 - Done: `LiveTournaments` + `CompletedTournaments` (twin tournament-list
   sections) — `table table-striped` → `<Table striped>` in a `<Box>` that keeps
   the responsive `d-none d-md-block` as `display={{ base:'none', md:'block' }}`;
@@ -508,17 +511,53 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `Collapse` prop is **`expanded`**, not `in` (same as `AccordeonBox`). Removes
   this component's dependency on Bootstrap's JS collapse plugin; Mantine adds a
   chevron the Bootstrap accordion didn't have (QA). No test.
-- **Deferred (react-select):** `TaskChoice` uses react-select — leave with
-  `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
-- **Remaining lobby leaves/containers (still Bootstrap):** `LobbyChat`,
-  `CreateGameDialog`, `LobbyWidget` (container), `TournamentModal`.
-  (`CreateGameDialog` has a test — wrap in `MantineTestProvider` when converted.)
+- Done: `TournamentModal` — title/body/footer → `Flex`/`Text`/`Title` + style
+  props; the footer "Open Tournament" anchor (`btn` + an invalid `disabled`-attr
+  hack + `cn`) → `<Button component="a" color="cbSecondary" disabled={isUpcoming}>`
+  (proper Mantine disabled state); body `position-relative` → `style` prop. Left
+  the `TournamentPreviewPanel` / `TournamentDescription` **passthrough classNames**
+  (`d-flex … w-100 h-100 p-3`) as documented leftovers — both already-converted
+  leaves only accept `className`, applied to a `Box`.
+- Done: `LobbyChat` — card/columns/sidebar → `Flex`/`Box` + style props
+  (responsive `direction` for the column→row breakpoint); the two icon-only
+  action `btn`s → `<ActionIcon variant="transparent">` (envelope gets `c="white"`
+  in place of the FontAwesome `text-white`); online-count `<p>` → `<Text>`. Kept
+  all `cb-lobby-*`/`cb-players-container`/`cb-border-color` design classes and the
+  responsive `rounded-*`/`h-sm-100`/`pb-sm-4` utilities. `ChatUserInfo`'s `mb-1`
+  passthrough removed by wrapping each row in `<Box mb="xs">`; **left `Messages`'
+  `text-white` passthrough** (theme default text isn't pure white — clean when
+  `Messages`/`ChatUserInfo` are handled).
+- Done: `CreateGameDialog` (**layout only**) — `row`/`col` grids → `Grid`/
+  `Grid.Col` (⚠️ this build's `Grid` gap prop is **`gap`**, not `gutter`); the
+  Level/GameType toggle `<button>`s → Mantine `<Button>` keeping the
+  `bg-orange`/`btn-outline-orange`/`bg-gray` design colors via conditional
+  `className` (dropped `btn`/`border-0`/`cb-rounded`/`w-100`; level buttons keep
+  `title` for the test's `getByTitle`, dropped the Bootstrap-JS `data-toggle`
+  tooltip); footer `btn` → `<Button color="cbSecondary">`; `h5` → `<Title
+  order={5}>`. **Kept the native range input** (+ `cb-range`, same reason as
+  settings `RangeInput`) and **both react-select widgets** — `OpponentSelect`'s
+  `AsyncSelect` and `TaskChoice` — untouched for the one-PR lib swap.
+  `CreateGameDialog.test` (10 tests) now wraps in `MantineTestProvider`.
+- Done: `LobbyWidget` (container) — Create/Join/Continue/experimental game
+  buttons → `<Button color="cbSecondary">` (removed the module-level `cn`
+  className consts); controls `Stack` + bottom two-column layout → `Flex`/`Box`
+  with responsive `direction`/`w`/`p` (`col-12 col-lg-8`/`-4` → responsive `w`
+  percentages); dropped the `text-white` passthrough on the forced-dark `CbModal`
+  headers/bodies (kept `cb-border-color`). No test.
+- **Deferred (react-select) — the only lobby work left:** `TaskChoice` **and**
+  `CreateGameDialog`'s `OpponentSelect` (`AsyncSelect`) both use react-select —
+  swap together with `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` in
+  the one-PR lib swap. **All other lobby React markup is converted.**
 
 ⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
 attached `btn-group`); the **cancel button still hidden until you hover the game
 row/card** (`btn-hover`); the `TournamentCard` white card's text stays dark on
 white (elements inherit color — no explicit dark text was set); Fight button is
-now brand orange (was `btn-orange`, same orange).
+now brand orange (was `btn-orange`, same orange). Also new this pass: the
+`CodebattleLeagueDescription` accordion now shows a Mantine chevron (was none);
+the `CreateGameDialog` Level/GameType button tiles are Mantine `<Button>`s
+carrying the orange design classes (confirm active/inactive states + level-icon
+tile sizing); the season-panel action buttons + `TournamentListItem` info icon.
 
 ### Conversion vocabulary
 
