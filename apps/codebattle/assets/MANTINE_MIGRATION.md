@@ -116,12 +116,15 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (24 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (25 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
 `ChatHeader`, `Message`, `Messages`, `TournamentDescription` (layout only —
-its `.card.cb-card` ranking panel is left as Bootstrap; see below), and the
+its `.card.cb-card` ranking panel is left as Bootstrap; see below),
+`SideScrollControls` (positioning/overflow utilities → `Box`/`Flex` +
+`pos`/`top`/`left`/`right`/`display` style props; icon `btn`s → `UnstyledButton`;
+gradient `cb-*-scroll-control` design classes kept), and the
 `UserInfo` / `UserName` / `UserLabel` / `UserStats` cluster. Plus the
 theme border-token work (gotcha #7 / `theme.ts`). The chat cluster is
 effectively done.
