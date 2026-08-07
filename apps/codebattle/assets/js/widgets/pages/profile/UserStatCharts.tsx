@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Grid, Text } from '@mantine/core';
 import {
   BarChart,
   Bar,
@@ -128,18 +129,12 @@ function UserStatCharts({ gameStats, tournamentStats }: UserStatChartsProps) {
   const totalTournamentWins = resultDataForTournamentBar.reduce((acc, item) => acc + item.value, 0);
 
   return (
-    <div className="row justify-content-center pb-4 px-3">
-      <div className="col-12 col-lg-6 mt-4 mb-4 mb-lg-0">
-        <div className="small text-center text-muted mb-2">
+    <Grid justify="center" pb="lg" px="md">
+      <Grid.Col span={{ base: 12, lg: 6 }} mt="lg" mb={{ base: 'lg', lg: 0 }}>
+        <Text size="sm" ta="center" c="dimmed" mb="sm">
           {i18n.t('Total games: %{count}', { count: totalGames })}
-        </div>
-        <ResponsiveContainer
-          className="text-white"
-          width="100%"
-          height={320}
-          minWidth={1}
-          minHeight={320}
-        >
+        </Text>
+        <ResponsiveContainer width="100%" height={320} minWidth={1} minHeight={320}>
           <BarChart
             data={resultDataForGameBar}
             margin={{
@@ -174,12 +169,12 @@ function UserStatCharts({ gameStats, tournamentStats }: UserStatChartsProps) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-      </div>
+      </Grid.Col>
 
-      <div className="col-12 col-lg-6 mt-4">
-        <div className="small text-center text-muted mb-2">
+      <Grid.Col span={{ base: 12, lg: 6 }} mt="lg">
+        <Text size="sm" ta="center" c="dimmed" mb="sm">
           {i18n.t('Total tournament wins: %{count}', { count: totalTournamentWins })}
-        </div>
+        </Text>
         <ResponsiveContainer width="100%" height={320} minWidth={1} minHeight={320}>
           <BarChart
             data={resultDataForTournamentBar}
@@ -215,8 +210,8 @@ function UserStatCharts({ gameStats, tournamentStats }: UserStatChartsProps) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-      </div>
-    </div>
+      </Grid.Col>
+    </Grid>
   );
 }
 
