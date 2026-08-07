@@ -420,15 +420,39 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `px="lg" ml="xs"`). Safe as a standalone leaf — no test renders it
   provider-less (`GameActionButton.test` hits the `ContinueButton` branch, not
   `ShowButton`).
-- **Next slice (still Bootstrap):** `GameActionButton` + `GameCard` +
-  `TournamentCard`. `GameActionButton` is the heavy one: Bootstrap-JS tooltips
-  (`data-toggle="tooltip"` → Mantine `<Tooltip>`), `btn-group` (→ `Button.Group`),
-  icon `btn`s (`far fa-copy` / `fas fa-times` → `<ActionIcon>`), and Phoenix
-  `data-method`/`data-to` links (keep the attrs). `GameActionButton.test` asserts
-  a Bootstrap `w-100` class on the card `ContinueButton` link — that assertion
-  must change (→ Mantine `fullWidth`) when `ContinueButton` converts.
+- Done: `GameActionButton` + `GameCard` + `TournamentCard` (the shared-button
+  cluster). `ContinueButton` → `<Button component="a" color="cbSuccess">`
+  (`w-100` on the card variant → `fullWidth`); the waiting-opponent `btn-group`s →
+  `<Group gap="xs" wrap="nowrap">` with a `<ContinueButton>` + two
+  tooltip-wrapped `<ActionIcon variant="subtle">` (copy / cancel) — the
+  Bootstrap-JS tooltips (`data-toggle="tooltip"`) became Mantine `<Tooltip>`, and
+  the **cancel icon keeps `className="btn-hover"`** so the `.game-item:hover
+  .btn-hover { visibility:visible }` reveal-on-hover still works. `Fight`
+  (`btn-orange` = brand orange) → default `<Button>`; the guest `Sign in`
+  (`btn-outline-success`) → `<Button variant="outline" color="cbSuccess">`. Both
+  keep their Phoenix `data-method`/`data-to`/`data-csrf` attrs (native
+  `<button>`). Icon-font `<i class="far fa-copy" / "fas fa-times">` spans kept
+  inside the ActionIcons. `GameCard` layout → `<Flex>` keeping
+  `game-item`/`cb-bg-panel`/`bg-gray`/`cb-border-color`/`cb-rounded` design
+  classes (and `game-item` for the hover selector + games-table row border);
+  `UserSimpleStats` buttons → `<Button color="cbSecondary|cbSuccess|red">`;
+  completed-card `Show` link → `<Button component="a" color="cbSecondary">`.
+  `TournamentCard` (mobile white card) → `<Paper bg="white" withBorder
+  shadow="sm">`. `GameActionButton.test` wrapped in `MantineTestProvider`; its
+  `w-100` assertion → `data-block="true"` (Mantine `fullWidth`).
 - **Deferred (react-select):** `TaskChoice` uses react-select — leave with
   `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
+- **Remaining lobby leaves/containers (still Bootstrap):** `ActiveGames`,
+  `CompletedGames`, `Leaderboard`, `Players`, `Announcement`, `LobbyChat`,
+  `LobbyLoading`, `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
+  `CodebattleLeagueDescription`, `LobbyWidget` (container), `TournamentModal`,
+  `ChatActionModal`, `GameRoomPreview`, `Announcement`.
+
+⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
+attached `btn-group`); the **cancel button still hidden until you hover the game
+row/card** (`btn-hover`); the `TournamentCard` white card's text stays dark on
+white (elements inherit color — no explicit dark text was set); Fight button is
+now brand orange (was `btn-orange`, same orange).
 
 ### Conversion vocabulary
 

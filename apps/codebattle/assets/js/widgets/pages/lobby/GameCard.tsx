@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { Box, Button, Flex, Text } from '@mantine/core';
+
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ResultIcon from '../../components/ResultIcon';
 import UserInfo from '../../components/UserInfo';
@@ -74,32 +76,30 @@ function UserSimpleStats({ user }: UserSimpleStatsProps) {
   return (
     <>
       {state === 'loading' && (
-        <button
-          type="button"
-          className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
-          disabled
-        >
+        <Button size="sm" color="cbSecondary" radius="md" disabled>
           Loading...
-        </button>
+        </Button>
       )}
       {state === 'closed' && (
-        <button
-          type="button"
-          className="btn btn-sm btn-success cb-btn-success cb-btn-success text-nowrap text-white cb-rounded"
+        <Button
+          size="sm"
+          color="cbSuccess"
+          radius="md"
           onClick={load}
+          style={{ whiteSpace: 'nowrap' }}
         >
           Show stats
-        </button>
+        </Button>
       )}
       {state === 'opened' && (
-        <span className="text-nowrap">
+        <Text component="span" style={{ whiteSpace: 'nowrap' }}>
           {`Won/Lost: ${getPerfomance(data?.won ?? 0, data?.lost ?? 0)}`}
-        </span>
+        </Text>
       )}
       {state === 'error' && (
-        <button type="button" className="btn btn-sm btn-danger cb-rounded" onClick={load}>
+        <Button size="sm" color="red" radius="md" onClick={load}>
           Reload
-        </button>
+        </Button>
       )}
     </>
   );
@@ -126,44 +126,57 @@ function GameCard({
   };
 
   return (
-    <div
+    <Flex
       key={`card-${game.id}`}
-      className="d-flex flex-column game-item cb-bg-panel shadow-sm p-2 mx-2 border cb-border-color cb-rounded"
+      className="game-item cb-bg-panel cb-border-color cb-rounded"
+      direction="column"
+      p="sm"
+      mx="sm"
+      style={{
+        boxShadow: 'var(--mantine-shadow-sm)',
+        border: '1px solid var(--mantine-color-default-border)',
+      }}
     >
-      <div className="d-flex mb-2 h-100">
-        <div className="d-flex flex-column justify-content-around mr-2 bg-gray p-2 cb-rounded">
-          <div className="mb-2">
+      <Flex mb="sm" h="100%">
+        <Flex
+          direction="column"
+          justify="space-around"
+          className="bg-gray cb-rounded"
+          mr="sm"
+          p="sm"
+        >
+          <Box mb="sm">
             <GameLevelBadge level={game.level} />
-          </div>
+          </Box>
           <GameStateBadge state={game.state} />
-        </div>
-        <div className="d-flex flex-column align-self-center">
+        </Flex>
+        <Flex direction="column" style={{ alignSelf: 'center' }}>
           {game.players.length === 1 ? (
-            <div className="d-flex flex-column align-items-center">
+            <Flex direction="column" align="center">
               <UserInfo user={player1.data} lang={player1.data.editorLang} />
               {currentUserId !== player1.data.id && <UserSimpleStats user={player1.data} />}
-            </div>
+            </Flex>
           ) : (
             <>
-              <div className="d-flex flex-column align-items-center position-relative">
-                <div className="d-flex align-items-center">
+              <Flex direction="column" align="center" pos="relative">
+                <Flex align="center">
                   <ResultIcon icon={player1.icon} />
                   <UserInfo user={player1.data} lang={player1.data.editorLang} />
-                </div>
+                </Flex>
                 {type === 'active' && <GameProgressBar player={player1.data} position="left" />}
-              </div>
-              <span className="text-center">VS</span>
-              <div className="d-flex flex-column align-items-center position-relative">
-                <div className="d-flex align-items-center">
+              </Flex>
+              <Text ta="center">VS</Text>
+              <Flex direction="column" align="center" pos="relative">
+                <Flex align="center">
                   <ResultIcon icon={player2.icon} />
                   <UserInfo user={player2.data} lang={player2.data.editorLang} />
-                </div>
+                </Flex>
                 {type === 'active' && <GameProgressBar player={player2.data} position="left" />}
-              </div>
+              </Flex>
             </>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
       {type === 'active' && (
         <GameActionButton
           type="card"
@@ -174,15 +187,11 @@ function GameCard({
         />
       )}
       {type === 'completed' && (
-        <a
-          type="button"
-          className="btn btn-secondary cb-btn-secondary btn-sm cb-rounded"
-          href={`/games/${game.id}`}
-        >
+        <Button component="a" color="cbSecondary" size="sm" radius="md" href={`/games/${game.id}`}>
           Show
-        </a>
+        </Button>
       )}
-    </div>
+    </Flex>
   );
 }
 

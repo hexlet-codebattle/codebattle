@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { ActionIcon, Button, Flex, Group, Tooltip } from '@mantine/core';
 import copy from 'copy-to-clipboard';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
@@ -36,13 +37,50 @@ interface ContinueButtonProps {
 
 function ContinueButton({ url, type = 'table' }: ContinueButtonProps) {
   return (
-    <a
-      type="button"
-      className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`}
+    <Button
+      component="a"
       href={url}
+      color="cbSuccess"
+      size="sm"
+      radius="md"
+      fullWidth={type !== 'table'}
     >
       {i18n.t('Continue')}
-    </a>
+    </Button>
+  );
+}
+
+function CopyLinkButton({ gameUrl }: { gameUrl: string }) {
+  return (
+    <Tooltip label={i18n.t('Copy link')} position="right">
+      <ActionIcon
+        variant="subtle"
+        color="gray"
+        size="lg"
+        onClick={() => copy(`${window.location.host}${gameUrl}`)}
+        aria-label={i18n.t('Copy link')}
+      >
+        <i className="far fa-copy" />
+      </ActionIcon>
+    </Tooltip>
+  );
+}
+
+function CancelGameButton({ isOnline, onCancel }: { isOnline?: boolean; onCancel: () => void }) {
+  return (
+    <Tooltip label={i18n.t('Cancel game')} position="right">
+      <ActionIcon
+        className="btn-hover"
+        variant="subtle"
+        color="gray"
+        size="lg"
+        onClick={onCancel}
+        aria-label={i18n.t('Cancel game')}
+        disabled={!isOnline}
+      >
+        <i className="fas fa-times" />
+      </ActionIcon>
+    </Tooltip>
   );
 }
 
@@ -65,6 +103,7 @@ function GameActionButton({
   const gameUrlJoin = makeGameUrl(game.id, 'join');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
+  const onCancel = lobbyMiddlewares.cancelGame(game.id);
 
   if (gameState === gameStateCodes.playing) {
     return havePlayer(currentUserId, game) ? (
@@ -79,91 +118,54 @@ function GameActionButton({
 
     if (playing && type === 'table') {
       return (
-        <div className="d-flex justify-content-center">
-          <div className="btn-group ml-5">
+        <Flex justify="center">
+          <Group gap="xs" wrap="nowrap" ml="xl">
             <ContinueButton url={gameUrl} />
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary border-0"
-              onClick={() => copy(`${window.location.host}${gameUrl}`)}
-              data-toggle="tooltip"
-              data-placement="right"
-              title={i18n.t('Copy link')}
-              aria-label={i18n.t('Copy link')}
-            >
-              <i className="far fa-copy" />
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-hover border-0"
-              onClick={lobbyMiddlewares.cancelGame(game.id)}
-              data-toggle="tooltip"
-              data-placement="right"
-              title={i18n.t('Cancel game')}
-              aria-label={i18n.t('Cancel game')}
-              disabled={!isOnline}
-            >
-              <i className="fas fa-times" />
-            </button>
-          </div>
-        </div>
+            <CopyLinkButton gameUrl={gameUrl} />
+            <CancelGameButton isOnline={isOnline} onCancel={onCancel} />
+          </Group>
+        </Flex>
       );
     }
 
     if (playing) {
       return (
-        <div className="btn-group">
+        <Group gap="xs" wrap="nowrap">
           <ContinueButton url={gameUrl} type={type} />
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary border-0"
-            onClick={() => copy(`${window.location.host}${gameUrl}`)}
-            data-toggle="tooltip"
-            data-placement="right"
-            title={i18n.t('Copy link')}
-            aria-label={i18n.t('Copy link')}
-          >
-            <i className="far fa-copy" />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-hover border-0"
-            onClick={lobbyMiddlewares.cancelGame(game.id)}
-            data-toggle="tooltip"
-            data-placement="right"
-            title={i18n.t('Cancel game')}
-            aria-label={i18n.t('Cancel game')}
-            disabled={!isOnline}
-          >
-            <i className="fas fa-times" />
-          </button>
-        </div>
+          <CopyLinkButton gameUrl={gameUrl} />
+          <CancelGameButton isOnline={isOnline} onCancel={onCancel} />
+        </Group>
       );
     }
 
     if (isGuest) {
       return (
-        <button
-          type="button"
-          className={`btn ${type === 'table' ? 'w-100' : ''} btn-outline-success btn-sm rounded-lg`}
+        <Button
+          variant="outline"
+          color="cbSuccess"
+          size="sm"
+          radius="md"
+          fullWidth={type === 'table'}
           data-method="get"
           data-to={signInUrl}
         >
           {i18n.t('Sign in with %{name}', { name: 'Github' })}
-        </button>
+        </Button>
       );
     }
 
     return (
-      <button
-        type="button"
-        className={`btn btn-orange btn-sm ${type === 'table' ? 'ml-1 px-4' : ''} rounded-lg`}
+      <Button
+        size="sm"
+        radius="md"
+        px={type === 'table' ? 'lg' : undefined}
+        ml={type === 'table' ? 'xs' : undefined}
         data-method="post"
         data-csrf={window.csrf_token}
         data-to={gameUrlJoin}
       >
         {i18n.t('Fight')}
-      </button>
+      </Button>
     );
   }
 
