@@ -440,18 +440,27 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `TournamentCard` (mobile white card) → `<Paper bg="white" withBorder
   shadow="sm">`. `GameActionButton.test` wrapped in `MantineTestProvider`; its
   `w-100` assertion → `data-block="true"` (Mantine `fullWidth`).
+- Done: `ActiveGames` + `CompletedGames` + `Players` (the games-table cluster).
+  Both tables → `<Table striped>` (desktop, `display={{base:'none',md:'block'}}`;
+  mobile `<HorizontalScrollControls>` cards wrapped in `<Box hiddenFrom="md">`).
+  `Players` now emits `<Table.Td>` (renders inside `ActiveGames`' `<Table>` via
+  Mantine's Table context) keeping `cb-username-td`; `ActiveGames` keeps
+  `game-item` on `<Table.Tr>` (for the `tr.game-item td` border + the
+  `.game-item:hover .btn-hover` cancel-reveal) and `bg-gray`/`cb-level-badge`/
+  `cb-rounded` on the level/state cells. `CompletedGames` keeps its scroll `<Box>`
+  + infinite-scroll listener + `className`/`tableClassName` passthrough props;
+  per-cell `cb-border-color` dropped (Mantine row borders already resolve to it);
+  `Show` link → `<Button component="a" color="cbSecondary">`; footer → `<Box>`.
+  `UserProfile.test` still passes (it mocks `CompletedGames`); no test renders
+  `ActiveGames`/`Players` directly.
 - **Deferred (react-select):** `TaskChoice` uses react-select — leave with
   `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
-- **Remaining lobby leaves/containers (still Bootstrap):** `ActiveGames`,
-  `CompletedGames`, `Leaderboard`, `Players`, `Announcement`, `LobbyChat`,
-  `LobbyLoading`, `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
-  `CodebattleLeagueDescription`, `LobbyWidget` (container), `TournamentModal`,
-  `ChatActionModal`, `GameRoomPreview`, `Announcement`.
-  - **Coupling for the next slice:** `Players` renders raw `<td>` cells (it's
-    dropped directly inside `ActiveGames`' `<tr>`), so converting `ActiveGames`'
-    table to `<Table>` means converting `Players` to emit `<Table.Td>` in the
-    same slice — otherwise those cells miss Mantine's row borders/spacing. Do
-    `ActiveGames` + `CompletedGames` + `Players` together.
+- **Remaining lobby leaves/containers (still Bootstrap):** `Leaderboard`,
+  `Announcement`, `LobbyChat`, `LobbyLoading`, `CreateGameDialog`,
+  `TournamentListItem`, `SeasonProfilePanel`, `CodebattleLeagueDescription`,
+  `LobbyWidget` (container), `TournamentModal`, `ChatActionModal`,
+  `GameRoomPreview`. (`CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`
+  have tests — wrap in `MantineTestProvider` when converted.)
 
 ⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
 attached `btn-group`); the **cancel button still hidden until you hover the game

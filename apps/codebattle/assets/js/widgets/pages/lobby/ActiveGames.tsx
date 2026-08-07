@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Box, Table, Text } from '@mantine/core';
 import find from 'lodash/find';
 import groupBy from 'lodash/groupBy';
 import isEmpty from 'lodash/isEmpty';
@@ -44,7 +45,7 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
   const filtetedGames = games.filter(filterGames);
 
   if (isEmpty(filtetedGames)) {
-    return <p className="text-center">{i18n.t('There are no active games right now.')}</p>;
+    return <Text ta="center">{i18n.t('There are no active games right now.')}</Text>;
   }
 
   const gamesSortByLevel = sortBy(filtetedGames, [
@@ -70,40 +71,47 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
 
   return (
     <>
-      <div className="d-none d-md-block rounded-bottom cb-rounded">
-        <table className="table table-striped mb-0">
-          <thead className="text-center text-white">
-            <tr>
-              <th className="p-3 border-0">{i18n.t('Level')}</th>
-              <th className="p-3 border-0">{i18n.t('State')}</th>
-              <th className="p-3 border-0 text-center" colSpan={2}>
-                {i18n.t('Players')}
-              </th>
-              <th className="p-3 border-0">{i18n.t('Actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
+      <Box display={{ base: 'none', md: 'block' }} className="cb-rounded">
+        <Table
+          striped
+          mb={0}
+          verticalSpacing="md"
+          horizontalSpacing="md"
+          styles={{
+            th: { textAlign: 'center', color: 'var(--mantine-color-white)' },
+            td: { verticalAlign: 'middle' },
+          }}
+        >
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>{i18n.t('Level')}</Table.Th>
+              <Table.Th>{i18n.t('State')}</Table.Th>
+              <Table.Th colSpan={2}>{i18n.t('Players')}</Table.Th>
+              <Table.Th>{i18n.t('Actions')}</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {sortedGames.map(
               (game) =>
                 isActiveGame(game) && (
-                  <tr key={game.id} className="game-item">
-                    <td className="cb-level-badge align-middle">
-                      <div className="p-3 bg-gray cb-rounded">
+                  <Table.Tr key={game.id} className="game-item">
+                    <Table.Td className="cb-level-badge">
+                      <Box className="bg-gray cb-rounded" p="md">
                         <GameLevelBadge level={game.level} />
-                      </div>
-                    </td>
-                    <td className="text-center align-middle">
-                      <div className="p-3 bg-gray cb-rounded">
+                      </Box>
+                    </Table.Td>
+                    <Table.Td ta="center">
+                      <Box className="bg-gray cb-rounded" p="md">
                         <GameStateBadge state={game.state} />
-                      </div>
-                    </td>
+                      </Box>
+                    </Table.Td>
                     <Players
                       gameId={game.id}
                       mode="dark"
                       players={game.players as unknown as LobbyPlayer[]}
                       isBot={game.isBot}
                     />
-                    <td className="p-3 align-middle text-center">
+                    <Table.Td ta="center">
                       <GameActionButton
                         type="table"
                         game={game}
@@ -111,28 +119,30 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
                         isGuest={isGuest}
                         isOnline={isOnline}
                       />
-                    </td>
-                  </tr>
+                    </Table.Td>
+                  </Table.Tr>
                 ),
             )}
-          </tbody>
-        </table>
-      </div>
-      <HorizontalScrollControls className="d-md-none m-2">
-        {sortedGames.map(
-          (game) =>
-            isActiveGame(game) && (
-              <GameCard
-                key={`card-${game.id}`}
-                type="active"
-                game={game}
-                currentUserId={currentUserId}
-                isGuest={isGuest}
-                isOnline={isOnline}
-              />
-            ),
-        )}
-      </HorizontalScrollControls>
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Box hiddenFrom="md" m="sm">
+        <HorizontalScrollControls>
+          {sortedGames.map(
+            (game) =>
+              isActiveGame(game) && (
+                <GameCard
+                  key={`card-${game.id}`}
+                  type="active"
+                  game={game}
+                  currentUserId={currentUserId}
+                  isGuest={isGuest}
+                  isOnline={isOnline}
+                />
+              ),
+          )}
+        </HorizontalScrollControls>
+      </Box>
     </>
   );
 }
