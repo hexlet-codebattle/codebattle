@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import { Anchor, Box, Button, Flex, Text } from '@mantine/core';
 import cn from 'classnames';
 import { getPageProp } from '@/inertia/pageProps';
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,13 +55,10 @@ function OpponentInfo({ id }: OpponentInfoProps) {
   const user = useSelector(userByIdSelector(id as number)) as SeasonUser | undefined;
 
   return (
-    <div className="d-flex align-items-center py-2 px-2 my-1 mx-1 stat-line cb-nearby-row">
-      <div
-        className="d-flex align-items-center flex-grow-1 pr-2 cb-nearby-user"
-        style={{ minWidth: 0 }}
-      >
+    <Flex align="center" py="sm" px="sm" my="xs" mx="xs" className="stat-line cb-nearby-row">
+      <Flex align="center" pr="sm" className="cb-nearby-user" style={{ minWidth: 0, flexGrow: 1 }}>
         <UserLogo user={user} size="25px" />
-        <div className="ml-2 cb-nearby-user-name">
+        <Box ml="sm" className="cb-nearby-user-name">
           {user ? (
             <UserInfo
               user={user as unknown as UserNameUser}
@@ -73,9 +71,15 @@ function OpponentInfo({ id }: OpponentInfoProps) {
           ) : (
             <span className="cb-text-skeleton w-100 d-block">&nbsp;</span>
           )}
-        </div>
-      </div>
-      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
+        </Box>
+      </Flex>
+      <Flex
+        direction="column"
+        ta="center"
+        py="xs"
+        px="xs"
+        className="flex-shrink-0 cb-nearby-metric"
+      >
         <a href="/hall_of_fame" className="stat-item py-1 w-100">
           <span
             className={cn('stat-value d-block cb-text-danger', {
@@ -86,8 +90,14 @@ function OpponentInfo({ id }: OpponentInfoProps) {
           </span>
           <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
         </a>
-      </div>
-      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
+      </Flex>
+      <Flex
+        direction="column"
+        ta="center"
+        py="xs"
+        px="xs"
+        className="flex-shrink-0 cb-nearby-metric"
+      >
         <div className="stat-item py-1 w-100">
           <span
             className={cn('stat-value d-block cb-text-danger', {
@@ -98,8 +108,8 @@ function OpponentInfo({ id }: OpponentInfoProps) {
           </span>
           <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
         </div>
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 }
 
@@ -142,14 +152,14 @@ export function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps)
   }
 
   return (
-    <div className="cb-bg-panel cb-rounded mt-2 cb-nearby-card">
-      <div className="d-flex flex-column">
-        <div className="cb-bg-highlight-panel text-center cb-rounded-top px-2">
-          <span className="text-white text-uppercase py-2 d-block">
+    <Box mt="sm" className="cb-bg-panel cb-rounded cb-nearby-card">
+      <Flex direction="column">
+        <Box ta="center" px="sm" className="cb-bg-highlight-panel cb-rounded-top">
+          <Text component="span" c="white" tt="uppercase" py="sm" display="block">
             {i18n.t('Closest Opponents')}
-          </span>
-        </div>
-        <div className="px-1 pb-1">
+          </Text>
+        </Box>
+        <Box px="xs" pb="xs">
           {loading ? (
             <>
               <OpponentInfo />
@@ -158,9 +168,9 @@ export function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps)
           ) : (
             nearbyUsers.map((id) => <OpponentInfo key={id} id={id} />)
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Flex>
+    </Box>
   );
 }
 
@@ -175,9 +185,8 @@ function UserLogo({ user, size = '70px' }: UserLogoProps) {
 
   return (
     <img
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, borderRadius: '50%' }}
       alt={i18n.t('Avatar Logo')}
-      className="rounded-circle"
       src={avatarUrl}
     />
   );
@@ -201,20 +210,36 @@ function SeasonProfilePanel({
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <div className="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2 cb-season-layout">
-      <div className="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
-        <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center cb-season-main-card">
+    <Flex
+      direction={{ base: 'column-reverse', lg: 'row' }}
+      my={{ base: 0, lg: 'sm' }}
+      className="cb-season-layout"
+    >
+      <Box
+        w={{ base: '100%', lg: '66.6667%' }}
+        p={0}
+        pr={{ base: 0, lg: 'sm' }}
+        my={{ base: 'sm', lg: 0 }}
+      >
+        <Flex
+          direction="column"
+          p="md"
+          h="100%"
+          w="100%"
+          ta="center"
+          className="cb-bg-panel cb-rounded cb-season-main-card"
+        >
           <CodebattleLeagueDescription />
           {seasonTournaments?.length || liveTournaments?.length ? (
             <div>
               {liveTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center align-items-center pt-2 cb-season-section-title">
-                    <span className="text-white text-uppercase h4">
+                  <Flex justify="center" align="center" pt="sm" className="cb-season-section-title">
+                    <Text component="span" c="white" tt="uppercase" className="h4">
                       {i18n.t('Live Tournaments')}
-                    </span>
-                  </div>
-                  <div className="d-flex flex-wrap cb-tournament-grid">
+                    </Text>
+                  </Flex>
+                  <Flex wrap="wrap" className="cb-tournament-grid">
                     {liveTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
@@ -222,17 +247,17 @@ function SeasonProfilePanel({
                         tournament={tournament}
                       />
                     ))}
-                  </div>
+                  </Flex>
                 </>
               )}
               {seasonTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center pt-2 cb-season-section-title">
-                    <span className="text-white text-uppercase h4">
+                  <Flex justify="center" pt="sm" className="cb-season-section-title">
+                    <Text component="span" c="white" tt="uppercase" className="h4">
                       {i18n.t('Upcoming Tournaments')}
-                    </span>
-                  </div>
-                  <div className="d-flex flex-wrap cb-tournament-grid">
+                    </Text>
+                  </Flex>
+                  <Flex wrap="wrap" className="cb-tournament-grid">
                     {seasonTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
@@ -240,57 +265,82 @@ function SeasonProfilePanel({
                         tournament={tournament}
                       />
                     ))}
-                  </div>
+                  </Flex>
                 </>
               )}
             </div>
           ) : (
-            <div className="pt-2 mt-2">{i18n.t('Competition not started yet')}</div>
+            <Box pt="sm" mt="sm">
+              {i18n.t('Competition not started yet')}
+            </Box>
           )}
-          <div className="d-flex flex-column flex-lg-row w-100 pt-2 mt-2 cb-season-actions">
-            <a
+          <Flex
+            direction={{ base: 'column', lg: 'row' }}
+            w="100%"
+            pt="sm"
+            mt="sm"
+            className="cb-season-actions"
+          >
+            <Button
+              component="a"
               href="/schedule#contest"
-              type="button"
-              className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+              color="cbSecondary"
+              fullWidth
+              mx={{ base: 0, md: 'sm' }}
+              className="text-nowrap"
             >
               {i18n.t('Contests History')}
-            </a>
-            <a
+            </Button>
+            <Button
+              component="a"
               href="/schedule#my"
-              type="button"
-              className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+              color="cbSecondary"
+              fullWidth
+              mx={{ base: 0, md: 'sm' }}
+              className="text-nowrap"
             >
               {i18n.t('My Tournaments')}
-            </a>
-            <a
+            </Button>
+            <Button
+              component="a"
               href="/tournaments"
-              type="button"
-              className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+              color="cbSecondary"
+              fullWidth
+              mx={{ base: 0, md: 'sm' }}
+              className="text-nowrap"
             >
               {i18n.t('Create a Tournament')}
-            </a>
-          </div>
-        </div>
-      </div>
-      <div className="col-12 col-lg-4 p-0 pl-lg-2 d-flex flex-column my-2 my-lg-0">
-        <div className="cb-bg-panel cb-rounded cb-season-profile-card">
-          <div className="text-center py-2">
+            </Button>
+          </Flex>
+        </Flex>
+      </Box>
+      <Flex
+        direction="column"
+        w={{ base: '100%', lg: '33.3333%' }}
+        p={0}
+        pl={{ base: 0, lg: 'sm' }}
+        my={{ base: 'sm', lg: 0 }}
+      >
+        <Box className="cb-bg-panel cb-rounded cb-season-profile-card">
+          <Box ta="center" py="sm">
             <UserLogo user={user} />
-            <span className="clan-tag mt-2">{user.name}</span>
-            <span className="h1 clan-title m-0 text-white text-uppercase">
+            <Text component="span" mt="sm" className="clan-tag">
+              {user.name}
+            </Text>
+            <Text component="span" m={0} c="white" tt="uppercase" className="h1 clan-title">
               {i18n.t('Clan')}
               {': '}
               {user.clanId ? (
                 user.clan
               ) : (
-                <a href="/settings" className="text-lowercase text-primary">
+                <Anchor href="/settings" tt="lowercase">
                   <small>{i18n.t('add clan')}</small>
-                </a>
+                </Anchor>
               )}
-            </span>
-          </div>
+            </Text>
+          </Box>
 
-          <div className="cb-bg-highlight-panel d-flex py-2 px-1 cb-season-stats">
+          <Flex py="sm" px="xs" className="cb-bg-highlight-panel cb-season-stats">
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">{user.rating}</span>
               <span className="stat-label text-uppercase">{i18n.t('(Elo Rating)')}</span>
@@ -307,23 +357,23 @@ function SeasonProfilePanel({
               <span className="stat-value d-block cb-text-danger">{user.points || 0}</span>
               <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
             </div>
-          </div>
+          </Flex>
 
           {contestDatesText && (
-            <div className="d-flex justify-content-center cb-font-size-small px-3 py-2 text-white">
+            <Flex justify="center" px="md" py="sm" c="white" className="cb-font-size-small">
               <span className="d-block">{contestDatesText}</span>
-            </div>
+            </Flex>
           )}
-        </div>
+        </Box>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
-        <div className="text-center mt-2 cb-hof-link">
+        <Box ta="center" mt="sm" className="cb-hof-link">
           <a href="/hall_of_fame" className="text-uppercase stat-label cb-rounded">
             {i18n.t('View Hall of Fame')}
           </a>
-        </div>
+        </Box>
         {controls}
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 }
 
