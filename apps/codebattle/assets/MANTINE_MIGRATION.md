@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (30 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (31 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -168,6 +168,16 @@ variant="outline">` driving a Mantine `<Collapse>` (⚠️ this Mantine build's
 `Collapse` prop is **`expanded`**, not `in`), and the Bootstrap `h1`–`h5` font
 zoom → a numeric-`fontSize`→rem map applied via `fz` / `--badge-fz` (replayer
 zoom fidelity is the main thing to eyeball in QA).
+
+Also done: **`FeedbackWidget`** — the floating trigger `btn` and the Type
+`btn`/`btn-outline` radios → Mantine `<Button>` (filled vs `variant="outline"`,
+`color="cbSecondary"`; the outline keeps `cb-btn-outline-secondary`), the
+`form-group`/`label`/`textarea` → `<Text component="label">` + `<Textarea>`
+(dark look now comes from the forced-dark theme, not `cb-bg-panel`/`text-white`).
+Note: the ARIA `role="radio"` buttons needed an explicit `tabIndex={0}` —
+oxlint's `interactive-supports-focus` can't see that a Mantine `<Button>`
+renders a focusable `<button>`, so a custom component with a role + handler
+trips the rule (native `<button>` didn't).
 
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
