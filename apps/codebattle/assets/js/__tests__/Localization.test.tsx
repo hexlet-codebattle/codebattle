@@ -11,6 +11,8 @@ import TournamentDescription from '../widgets/components/TournamentDescription';
 import TournamentPreviewPanel from '../widgets/components/TournamentPreviewPanel';
 import { localizeTournamentName } from '../widgets/utils/localizeTournamentName';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 const translations = [
   ['Points', 'Очки'],
   ['Today', 'Сегодня'],
@@ -75,11 +77,13 @@ test('localizes the empty invites state', () => {
 
 test('localizes tournament preview dates and point labels', () => {
   render(
-    <TournamentPreviewPanel
-      tournament={{ grade: 'rookie' }}
-      start="2026-08-05T02:00:00"
-      end="2026-08-05T02:15:00"
-    />,
+    <MantineTestProvider>
+      <TournamentPreviewPanel
+        tournament={{ grade: 'rookie' }}
+        start="2026-08-05T02:00:00"
+        end="2026-08-05T02:15:00"
+      />
+    </MantineTestProvider>,
   );
 
   expect(screen.getByText('Дата начала: 5 августа 2026')).toBeInTheDocument();

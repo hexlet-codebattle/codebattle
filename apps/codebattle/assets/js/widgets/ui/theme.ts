@@ -1,4 +1,4 @@
-import { createTheme, type MantineColorsTuple } from '@mantine/core';
+import { createTheme, type CSSVariablesResolver, type MantineColorsTuple } from '@mantine/core';
 
 // Brand accent — the app's `$orange` (rgba(238, 55, 55, 0.76) ≈ #ee3737).
 // Mantine needs a 10-shade tuple; index 6 is the default filled shade.
@@ -59,5 +59,17 @@ export const theme = createTheme({
     md: '1rem',
     lg: '1.5rem',
     xl: '3rem',
+  },
+});
+
+// Align Mantine's default border (used by `withBorder`, inputs, dividers, …)
+// with the app's `$cb-border-color`, so idiomatic `<Paper withBorder>` matches
+// the legacy `.cb-border-color` panels during the migration. `cb-rounded`
+// (= `$cb-border-radius` 0.5rem) maps to Mantine `radius="md"`.
+export const cssVariablesResolver: CSSVariablesResolver = () => ({
+  variables: {},
+  light: {},
+  dark: {
+    '--mantine-color-default-border': '#4c4c5a',
   },
 });
