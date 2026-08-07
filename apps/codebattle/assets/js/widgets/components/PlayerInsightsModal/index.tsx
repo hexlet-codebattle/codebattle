@@ -856,7 +856,7 @@ function PlayerInsightsModal({
                                   player: Math.min(
                                     (player.tournaments_count /
                                       Math.max(medianStats.tournaments, 1)) *
-                                    50,
+                                      50,
                                     100,
                                   ),
                                   median: 50,

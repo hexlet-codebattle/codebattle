@@ -126,10 +126,11 @@ function FeedbackWidget() {
                     <button
                       key={option}
                       type="button"
-                      className={`btn btn-sm cb-rounded mr-2 mb-2 ${status === option
+                      className={`btn btn-sm cb-rounded mr-2 mb-2 ${
+                        status === option
                           ? 'btn-secondary cb-btn-secondary'
                           : 'btn-outline-secondary cb-btn-outline-secondary'
-                        }`}
+                      }`}
                       role="radio"
                       aria-checked={status === option}
                       onClick={() => setStatus(option)}

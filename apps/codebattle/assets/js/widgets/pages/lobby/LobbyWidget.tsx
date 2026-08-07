@@ -191,12 +191,9 @@ function LobbyWidget() {
 
   return (
     <div>
-      <Modal
-        show={showCreateGameModal}
-        onHide={handleCloseCreateGameModal}
-      >
+      <Modal show={showCreateGameModal} onHide={handleCloseCreateGameModal}>
         <Modal.Header className="cb-border-color text-white" closeButton>
-          <Modal.Title className="w-100 text-center pr-4">{i18n.t('Create a game')}</Modal.Title>
+          <Modal.Title>{i18n.t('Create a game')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
           <CreateGameDialog hideModal={handleCloseCreateGameModal} />

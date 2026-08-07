@@ -37,7 +37,7 @@ interface SectionProps {
 
 function Header({ closeButton, className, children }: HeaderProps) {
   return (
-    <MantineModal.Header className={className}>
+    <MantineModal.Header style={{ display: 'flex' }} className={className}>
       {children}
       {closeButton && <MantineModal.CloseButton />}
     </MantineModal.Header>
@@ -83,7 +83,7 @@ interface CbModalComponent extends React.FC<CbModalProps> {
   Footer: typeof Footer;
 }
 
-const noop = () => { };
+const noop = () => {};
 
 const CbModal = (({
   show,

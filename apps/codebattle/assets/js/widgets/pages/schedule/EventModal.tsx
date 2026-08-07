@@ -53,12 +53,7 @@ export const EventModal = NiceModal.create(
     }, [modal, clearEvent]);
 
     return (
-      <Modal
-        size="lg"
-        show={modal.visible}
-        onHide={modal.hide}
-        contentClassName="cb-text"
-      >
+      <Modal size="lg" show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title className="d-flex flex-column">
             {event.resourse.grade !== grades.open && (

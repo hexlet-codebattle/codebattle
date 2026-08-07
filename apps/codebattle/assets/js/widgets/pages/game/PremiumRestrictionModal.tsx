@@ -35,13 +35,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
   );
 
   return (
-    <Modal
-      size="xl"
-      centered
-      show={modal.visible}
-      onHide={modal.hide}
-      contentClassName="cb-text"
-    >
+    <Modal size="xl" centered show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{i18n.t('Restricted Content')}</Modal.Title>
       </Modal.Header>
