@@ -2,7 +2,7 @@ import React, { memo, useEffect, useMemo, useCallback } from 'react';
 
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { ActionIcon, Box, Flex, Text } from '@mantine/core';
 import groupBy from 'lodash/groupBy';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -44,13 +44,13 @@ function UsersList({ list, title, displayMenu, mode }: UsersListProps) {
     <>
       {list.length !== 0 && <div>{`${i18n.t(title)}: `}</div>}
       {list.map((player) => (
-        <ChatUserInfo
-          mode={mode}
-          key={player.id}
-          user={player.user}
-          displayMenu={displayMenu as ChatUserInfoDisplayMenu}
-          className="mb-1"
-        />
+        <Box mb="xs" key={player.id}>
+          <ChatUserInfo
+            mode={mode}
+            user={player.user}
+            displayMenu={displayMenu as ChatUserInfoDisplayMenu}
+          />
+        </Box>
       ))}
     </>
   );
@@ -97,11 +97,7 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }: ChatGroupedPlaye
   );
 }
 
-const chatHeaderClassName = cn(
-  'd-flex flex-column position-relative',
-  'p-0 rounded-left h-sm-100 cb-lobby-widget-container w-100',
-  'cb-lobby-chat-main',
-);
+const chatHeaderClassName = 'rounded-left h-sm-100 cb-lobby-widget-container cb-lobby-chat-main';
 
 interface ModalShowingState {
   opened: boolean;
@@ -170,8 +166,12 @@ function LobbyChat({
       inputRef={inputRef as React.RefObject<HTMLInputElement>}
       request={menuRequest}
     >
-      <div className="d-flex flex-column flex-lg-row cb-bg-panel cb-rounded shadow-sm mt-2 cb-lobby-chat-card">
-        <div className={chatHeaderClassName}>
+      <Flex
+        direction={{ base: 'column', lg: 'row' }}
+        mt="sm"
+        className="cb-bg-panel cb-rounded shadow-sm cb-lobby-chat-card"
+      >
+        <Flex direction="column" pos="relative" p={0} w="100%" className={chatHeaderClassName}>
           <ChatHeader disabled={!isOnline} showRooms />
           <Messages
             className="text-white"
@@ -188,43 +188,45 @@ function LobbyChat({
             disabled={!isOnline}
             inputRef={inputRef as React.RefObject<HTMLInputElement>}
           />
-        </div>
-        <div
-          className={cn(
-            'p-0 pb-3 pb-sm-4 cb-players-container',
-            'border-left cb-border-color rounded-right',
-            'cb-lobby-chat-sidebar',
-          )}
+        </Flex>
+        <Box
+          p={0}
+          pb="md"
+          className="pb-sm-4 cb-players-container border-left cb-border-color rounded-right cb-lobby-chat-sidebar"
         >
-          <div className="d-flex flex-column h-100">
-            <div className="d-flex justify-content-between">
+          <Flex direction="column" h="100%">
+            <Flex justify="space-between">
               {isOnline ? (
-                <p className="px-3 pt-2 mb-2 text-nowrap">
+                <Text px="md" pt="sm" mb="sm" className="text-nowrap">
                   {i18n.t('Online players: %{count}', { count: presenceList.length })}
-                </p>
+                </Text>
               ) : (
-                <div className="px-3 pt-2 mb-2 text-nowrap">
+                <Box px="md" pt="sm" mb="sm" className="text-nowrap">
                   <Loading adaptive />
-                </div>
+                </Box>
               )}
-              <div className="d-flex justify-items-center p-2">
-                <button
-                  type="button"
-                  className="btn btn-sm p-0 cb-rounded mr-1 cb-lobby-chat-action"
+              <Flex p="sm" className="justify-items-center">
+                <ActionIcon
+                  variant="transparent"
+                  c="white"
+                  p={0}
+                  mr="xs"
                   onClick={openSendMessageModal}
                   disabled={!isOnline || presenceList.length <= 1}
                   aria-label={i18n.t('Send message')}
                   title={i18n.t('Send message')}
+                  className="cb-lobby-chat-action"
                 >
-                  <FontAwesomeIcon aria-hidden="true" className="text-white" icon={faEnvelope} />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm p-0 cb-rounded cb-lobby-chat-action"
+                  <FontAwesomeIcon aria-hidden="true" icon={faEnvelope} />
+                </ActionIcon>
+                <ActionIcon
+                  variant="transparent"
+                  p={0}
                   onClick={openSendInviteModal}
                   disabled={!isOnline || presenceList.length <= 1}
                   aria-label={i18n.t('Send fight invite')}
                   title={i18n.t('Send fight invite')}
+                  className="cb-lobby-chat-action"
                 >
                   <img
                     alt=""
@@ -232,19 +234,19 @@ function LobbyChat({
                     style={{ width: '16px', height: '16px' }}
                     src={fightSvg}
                   />
-                </button>
-              </div>
-            </div>
-            <div className="d-flex px-3 flex-column align-items-start overflow-auto">
+                </ActionIcon>
+              </Flex>
+            </Flex>
+            <Flex direction="column" px="md" align="flex-start" className="overflow-auto">
               <ChatGroupedPlayersList
                 mode={mode}
                 players={presenceList}
                 displayMenu={displayMenu}
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </Flex>
+          </Flex>
+        </Box>
+      </Flex>
     </ChatContextMenu>
   );
 }
