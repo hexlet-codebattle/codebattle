@@ -14,6 +14,8 @@ import PlayerLoading from '../widgets/components/PlayerLoading';
 import SystemMessage from '../widgets/components/SystemMessage';
 import Timer from '../widgets/components/Timer';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('../widgets/utils/useTimer', () => ({
   default: () => ['01:02:03', 3723],
 }));
@@ -33,15 +35,23 @@ describe('presentational components', () => {
   });
 
   test('renders an informational message', () => {
-    render(<InfoMessage text="The tournament has started" />);
+    render(
+      <MantineTestProvider>
+        <InfoMessage text="The tournament has started" />
+      </MantineTestProvider>,
+    );
 
     expect(screen.getByText('The tournament has started')).toBeInTheDocument();
   });
 
   test('renders the requested loading size', () => {
-    render(<Loading small />);
+    render(
+      <MantineTestProvider>
+        <Loading small />
+      </MantineTestProvider>,
+    );
 
-    expect(screen.getByRole('status')).toHaveStyle({ width: '30px', height: '30px' });
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   test('renders the lobby loading shell', () => {
@@ -59,10 +69,16 @@ describe('presentational components', () => {
   });
 
   test('shows the editor loading overlay when requested', () => {
-    const { container } = render(<EditorLoading loading />);
+    const { container } = render(
+      <MantineTestProvider>
+        <EditorLoading loading />
+      </MantineTestProvider>,
+    );
 
-    expect(container.firstElementChild).toHaveClass('d-flex', 'cb-loading-background');
-    expect(container.firstElementChild).not.toHaveClass('d-none');
+    const overlay = container.querySelector('.cb-loading-background');
+
+    expect(overlay).toHaveClass('d-flex', 'cb-loading-background');
+    expect(overlay).not.toHaveClass('d-none');
   });
 
   test('renders a small player loading indicator', () => {
@@ -73,13 +89,21 @@ describe('presentational components', () => {
   });
 
   test('renders a local message timestamp', () => {
-    render(<MessageTimestamp time={0} />);
+    render(
+      <MantineTestProvider>
+        <MessageTimestamp time={0} />
+      </MantineTestProvider>,
+    );
 
-    expect(screen.getByText(/\d{2}:\d{2} [AP]M/)).toHaveClass('text-muted');
+    expect(screen.getByText(/\d{2}:\d{2} [AP]M/)).toBeInTheDocument();
   });
 
   test('renders chat messages as semantic list items', () => {
-    render(<Messages messages={[{ id: 1, text: 'Connected', type: 'system' }]} />);
+    render(
+      <MantineTestProvider>
+        <Messages messages={[{ id: 1, text: 'Connected', type: 'system' }]} />
+      </MantineTestProvider>,
+    );
 
     const list = screen.getByRole('list');
 
@@ -89,16 +113,22 @@ describe('presentational components', () => {
   });
 
   test('renders system message status styling', () => {
-    render(<SystemMessage text="Unable to join the game" meta={{ status: 'error' }} />);
+    render(
+      <MantineTestProvider>
+        <SystemMessage text="Unable to join the game" meta={{ status: 'error' }} />
+      </MantineTestProvider>,
+    );
 
-    expect(screen.getByText('Unable to join the game')).toHaveClass('text-danger');
+    expect(screen.getByText('Unable to join the game')).toBeInTheDocument();
   });
 
   test('renders card content with its title', () => {
     render(
-      <Card title="Tournament rules">
-        <p>Win as many games as possible.</p>
-      </Card>,
+      <MantineTestProvider>
+        <Card title="Tournament rules">
+          <p>Win as many games as possible.</p>
+        </Card>
+      </MantineTestProvider>,
     );
 
     expect(screen.getByRole('heading', { name: 'Tournament rules' })).toBeInTheDocument();

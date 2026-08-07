@@ -3,7 +3,7 @@ import React, { type ReactNode } from 'react';
 import { faFlag } from '@fortawesome/free-regular-svg-icons';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Tooltip } from '@mantine/core';
+import { Box, Tooltip } from '@mantine/core';
 
 type ResultIconName = 'gaveUp' | 'won';
 
@@ -20,9 +20,15 @@ interface ResultIconProps {
 }
 
 const iconRenderers: Record<ResultIconName, () => ReactNode> = {
-  gaveUp: () => <FontAwesomeIcon icon={faFlag} className="mr-2" transform="grow-1.25" />,
+  gaveUp: () => (
+    <Box component="span" mr="sm">
+      <FontAwesomeIcon icon={faFlag} transform="grow-1.25" />
+    </Box>
+  ),
   won: () => (
-    <FontAwesomeIcon icon={faTrophy} className="mr-2 text-warning" transform="grow-1.25" />
+    <Box component="span" mr="sm" c="yellow">
+      <FontAwesomeIcon icon={faTrophy} transform="grow-1.25" />
+    </Box>
   ),
 };
 
