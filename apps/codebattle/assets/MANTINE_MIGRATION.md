@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (32 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (33 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -189,6 +189,24 @@ backdrop, text color) — no CSS module needed. `FeedbackAlertNotification` drop
 (`UserSettings`, `EditTournament`, `GameResult`) can adopt the same helper and
 drop `alert-dark-theme` when their pages convert.
 
+Also done: **`ChatInput`** (the chat message composer, both `default` and
+`tournament` variants). The Bootstrap `input-group`/`input-group-append` form →
+`<Flex component="form" pos="relative">` (relative so the emoji tooltip/picker
+and the length-error overlay still anchor to it); native `<input>` → Mantine
+`<TextInput flex={1}>`; the two native `btn`s → Mantine `<Button>` (emoji =
+`variant="default"`/`subtle`, send = `color="cbSecondary"` — dropping
+`cb-btn-secondary` now that the hover lives in the theme, so the default send
+button is pure Mantine). The `is-invalid` + Bootstrap `invalid-tooltip` became
+`<TextInput error>` (red border, no message node → no layout shift) plus an
+absolutely-positioned Mantine `<Text bg="red.7">` overlay above the field. Both
+variants keep their `cb-tournament-chat-*` design classes (routed to the input
+via `classNames={{ input }}`); default-variant corner-joining is done with
+per-corner `borderRadius` in `styles` and buttons stretch via `h="100%"`.
+⚠️ QA: the tournament input is 44px tall (design class) — confirm the buttons
+line up; and the default-variant joined-pill look (input rounded-left, send
+rounded-right, square emoji in the middle). `TournamentChatInput.test` now wraps
+in `MantineTestProvider`.
+
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
@@ -200,17 +218,13 @@ classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
-**Remaining leaves: 7** (audited 2026-08-07 with a whole-word Bootstrap-token
+**Remaining leaves: 6** (audited 2026-08-07 with a whole-word Bootstrap-token
 grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
-classes and `User*` passthrough props). Only 3 are "just do the work"; the
+classes and `User*` passthrough props). Only 2 are "just do the work"; the
 other 4 need a decision or belong to Phase 3. Each needs a browser pass, not a
 plain swap:
 
-- **Cleanly convertible (3):**
-  - `ChatInput` — Bootstrap `input-group` / `input-group-append` /
-    `invalid-tooltip` around the chat message field. Smallest of the three; the
-    last plain form leaf. (Surfaced in the 2026-08-07 audit — wasn't on earlier
-    remaining lists.)
+- **Cleanly convertible (2):**
   - `SeasonLeaderboard` (~794 lines) — Bootstrap `table table-dark table-striped`
     + `pagination` + `bi bi-*` Bootstrap-Icons + native `form-select`s. One
     focused slice (Mantine `Table`/`Pagination`, icon-font decision).
