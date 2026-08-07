@@ -9,6 +9,7 @@ import React, {
   type UIEvent,
 } from 'react';
 
+import { Box } from '@mantine/core';
 import cn from 'classnames';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -114,45 +115,36 @@ function Messages({
     }
   }, []);
 
-  const scrollButtonClass = cn(
-    'scroll-button',
-    'position-absolute',
-    'rounded-circle',
-    'cb-bg-secondary',
-    'p-0',
-    'border-0',
-    {
-      invisible: !isScrollButtonVisible,
-    },
-  );
-
-  const messageClassName = cn(
-    className,
-    'overflow-auto pt-0 pl-3 pr-2',
-    'position-relative cb-messages-list flex-grow-1 list-unstyled',
-  );
+  const messageClassName = cn(className, 'cb-messages-list', 'list-unstyled');
 
   if (disabled) {
     return (
-      <div
+      <Box
         title={i18n.t('Chat is disabled')}
-        className="h-100 position-relative"
+        h="100%"
+        pos="relative"
         ref={listRef as React.RefObject<HTMLDivElement>}
       >
         {/* <span className="d-flex text-muted position-absolute h-100 w-100 justify-content-center align-items-center"> */}
         {/*   <FontAwesomeIcon className="h-25 w-25" icon="comment-slash" /> */}
         {/* </span> */}
         {/* <div className="position-absolute h-100 w-100 bg-dark cb-opacity-50 rounded-left" /> */}
-      </div>
+      </Box>
     );
   }
 
   return (
     <>
-      <ul
+      <Box
+        component="ul"
         ref={listRef as React.RefObject<HTMLUListElement>}
         className={messageClassName}
         onScroll={scrollHandler}
+        pos="relative"
+        pt={0}
+        pl="md"
+        pr="sm"
+        style={{ overflow: 'auto', flexGrow: 1 }}
       >
         {messages.map((message, index) => {
           const { id, userId, name, text, type, time, meta } = message;
@@ -178,10 +170,13 @@ function Messages({
             </li>
           );
         })}
-      </ul>
-      <button
+      </Box>
+      <Box
+        component="button"
         type="button"
-        className={scrollButtonClass}
+        className="scroll-button cb-bg-secondary"
+        pos="absolute"
+        p={0}
         onClick={() => {
           if (scrollBottom) {
             scrollBottom();
@@ -190,6 +185,11 @@ function Messages({
           }
         }}
         aria-label={i18n.t('Scroll to bottom')}
+        style={{
+          borderRadius: '50%',
+          border: 0,
+          visibility: isScrollButtonVisible ? 'visible' : 'hidden',
+        }}
       />
     </>
   );

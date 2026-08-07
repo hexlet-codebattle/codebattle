@@ -1,11 +1,11 @@
 import React, { memo, useCallback, useContext, useRef, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button } from '@mantine/core';
 import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
 import { useDispatch } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { type AppDispatch } from '@/slices';
 
@@ -104,14 +104,8 @@ function TournamentMainControlButtons({
     closeFinishConfirmationModal();
   }, [closeFinishConfirmationModal]);
 
-  const cancelBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  const confirmBtnClassName = cn('btn text-white cb-rounded', {
-    'btn-danger': !hasCustomEventStyle,
-    'cb-custom-event-btn-danger': hasCustomEventStyle,
-  });
+  const cancelBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
+  const confirmBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-danger' : undefined;
   const actionBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2', {
     'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
@@ -138,7 +132,7 @@ function TournamentMainControlButtons({
       <Modal
         show={restartConfirmationModalShowing}
         onHide={closeRestartConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Reset tournament progress')}</Modal.Title>
@@ -155,12 +149,19 @@ function TournamentMainControlButtons({
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-between w-100">
-            <Button onClick={closeRestartConfirmationModal} className={cancelBtnClassName}>
+            <Button
+              onClick={closeRestartConfirmationModal}
+              color="cbSecondary"
+              radius="md"
+              className={cancelBtnClassName}
+            >
               {i18n.t('Cancel')}
             </Button>
             <Button
               ref={confirmBtnRef}
               onClick={confirmRestartTournament}
+              color="red"
+              radius="md"
               className={confirmBtnClassName}
             >
               {i18n.t('Reset tournament')}
@@ -171,7 +172,7 @@ function TournamentMainControlButtons({
       <Modal
         show={retryConfirmationModalShowing}
         onHide={closeRetryConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Retry tournament')}</Modal.Title>
@@ -188,10 +189,20 @@ function TournamentMainControlButtons({
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-between w-100">
-            <Button onClick={closeRetryConfirmationModal} className={cancelBtnClassName}>
+            <Button
+              onClick={closeRetryConfirmationModal}
+              color="cbSecondary"
+              radius="md"
+              className={cancelBtnClassName}
+            >
               {i18n.t('Cancel')}
             </Button>
-            <Button onClick={confirmRetryTournament} className={confirmBtnClassName}>
+            <Button
+              onClick={confirmRetryTournament}
+              color="red"
+              radius="md"
+              className={confirmBtnClassName}
+            >
               {i18n.t('Retry tournament')}
             </Button>
           </div>
@@ -200,7 +211,7 @@ function TournamentMainControlButtons({
       <Modal
         show={finishConfirmationModalShowing}
         onHide={closeFinishConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Finish tournament')}</Modal.Title>
@@ -215,10 +226,20 @@ function TournamentMainControlButtons({
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           <div className="d-flex justify-content-between w-100">
-            <Button onClick={closeFinishConfirmationModal} className={cancelBtnClassName}>
+            <Button
+              onClick={closeFinishConfirmationModal}
+              color="cbSecondary"
+              radius="md"
+              className={cancelBtnClassName}
+            >
               {i18n.t('Cancel')}
             </Button>
-            <Button onClick={confirmFinishTournament} className={confirmBtnClassName}>
+            <Button
+              onClick={confirmFinishTournament}
+              color="red"
+              radius="md"
+              className={confirmBtnClassName}
+            >
               {i18n.t('Finish tournament')}
             </Button>
           </div>

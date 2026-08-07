@@ -1,16 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import uniqueId from 'lodash/uniqueId';
-import Tooltip from 'react-bootstrap/Tooltip';
-
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
+import { Badge, Box, Button, Collapse, Flex, Text, Tooltip } from '@mantine/core';
 
 import i18n from '../../i18n';
-import statusColorMap from '../config/statusColor';
-
-const color = statusColorMap as Record<string, string>;
 
 interface Assert {
   id?: string | number;
@@ -28,122 +21,19 @@ interface Assert {
   output?: string;
 }
 
-interface ResultData {
-  status: string;
-}
-
-const getMessage = (status: string) => {
-  switch (status) {
-    case 'error':
-      return i18n.t('Solution cannot be executed');
-    case 'failure':
-      return i18n.t('Test failed');
-    case 'ok':
-      return i18n.t('Yay! All tests passed!');
-    default:
-      return i18n.t('Opponent tests');
-  }
+// Maps a status color (info/danger/success/secondary) to the nearest Mantine color.
+const STATUS_COLORS: Record<string, string> = {
+  success: 'green',
+  danger: 'red',
+  info: 'blue',
+  secondary: 'gray',
 };
 
-interface AccordeonBoxProps {
-  children: React.ReactNode;
-}
-
-interface AccordeonBoxComponent extends React.FC<AccordeonBoxProps> {
-  Item: typeof Item;
-  Menu: typeof Menu;
-  SubMenu: typeof SubMenu;
-}
-
-const AccordeonBox = (({ children }: AccordeonBoxProps) => {
-  return (
-    <div className="accordion border-top cb-border-color" id="accordionExample">
-      {children}
-    </div>
-  );
-}) as AccordeonBoxComponent;
-
-const renderFirstAssert = (firstAssert: Assert) => (
-  <AccordeonBox.SubMenu
-    statusColor={color[firstAssert.status]}
-    assert={firstAssert}
-    hasOutput={firstAssert.output}
-  >
-    <AccordeonBox.Item output={firstAssert.output} />
-  </AccordeonBox.SubMenu>
-);
-
-interface MenuProps {
-  children: React.ReactNode;
-  firstAssert?: Assert;
-  resultData: ResultData;
-  assertsCount: number;
-  successCount: number;
-}
-
-function Menu({ children, firstAssert, resultData, assertsCount, successCount }: MenuProps) {
-  const [show, setShow] = useState(true);
-  const isSyntaxError = resultData.status === 'error';
-  const statusColor = color[resultData.status];
-  const message = getMessage(resultData.status);
-  const classCollapse = cn('collapse', { show });
-  const handleClick = () => {
-    setShow(!show);
-  };
-  const uniqIndex = uniqueId('heading');
-  const percent = (100 * successCount) / assertsCount;
-  const assertsStatusMessage = i18n.t(
-    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
-    {
-      successCount,
-      assertsCount,
-      percent,
-    },
-  );
-
-  useEffect(() => {
-    setShow(isSyntaxError);
-  }, [isSyntaxError]);
-
-  return (
-    <div className="card cb-card border-0 rounded-0">
-      {statusColor === 'warning' || statusColor === 'danger' ? (
-        <>
-          <div className="card-header" id={`heading${uniqIndex} `}>
-            <button
-              className="btn btn-sm btn-outline-secondary mr-3"
-              type="button"
-              onClick={handleClick}
-              data-toggle="collapse"
-              aria-expanded="true"
-              aria-controls={`collapse${uniqIndex}`}
-            >
-              {show ? (
-                <FontAwesomeIcon icon="arrow-circle-up" />
-              ) : (
-                <FontAwesomeIcon icon="arrow-circle-down" />
-              )}
-            </button>
-            {!isSyntaxError && (
-              <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>
-            )}
-            <span className={`badge badge-${statusColor}`}>{message}</span>
-          </div>
-          {firstAssert && renderFirstAssert(firstAssert)}
-        </>
-      ) : (
-        <span className={`badge badge-${statusColor}`}>{message}</span>
-      )}
-      <div
-        id={`collapse${uniqIndex}`}
-        className={classCollapse}
-        aria-labelledby={`heading${uniqIndex}`}
-      >
-        <div className="list-group list-group-flush">{children}</div>
-      </div>
-    </div>
-  );
-}
+// The old markup scaled its typography with Bootstrap heading classes (h1–h5),
+// driven by a numeric `fontSize` zoom (0 = default). Map it to the equivalent
+// rem font-size so the replayer zoom keeps working without those classes.
+const FONT_SIZES = ['', '1.25rem', '1.5rem', '1.75rem', '2rem', '2.5rem'];
+const fontSizeToRem = (fontSize: number) => FONT_SIZES[Math.min(fontSize, 5)] || undefined;
 
 interface SubMenuProps {
   children?: React.ReactNode;
@@ -165,73 +55,57 @@ function SubMenu({
   fontSize = 0,
 }: SubMenuProps) {
   const [isShowLog, setIsShowLog] = useState(true);
-  const classCollapse = cn('collapse', {
-    show: isShowLog,
-  });
 
   const { result = assert.value } = assert;
 
-  const fontClassName = cn({
-    h5: fontSize === 1,
-    h4: fontSize === 2,
-    h3: fontSize === 3,
-    h2: fontSize === 4,
-    h1: fontSize > 4,
-  });
-  const assertClassName = cn('d-block', fontClassName);
+  const fz = fontSizeToRem(fontSize);
+  const mc = STATUS_COLORS[statusColor ?? 'info'] ?? 'blue';
+  const badgeFzStyle = fz ? ({ '--badge-fz': fz } as React.CSSProperties) : undefined;
 
   return (
-    <div className="list-group-item border-left-0 cb-border-color border-right-0 cb-bg-highlight-panel text-white">
+    <Box
+      className="cb-bg-highlight-panel"
+      c="white"
+      style={{
+        padding: '0.75rem 1.25rem',
+        borderTop: '1px solid var(--mantine-color-default-border)',
+        borderBottom: '1px solid var(--mantine-color-default-border)',
+      }}
+    >
       <div id={`heading${uniqIndex}`}>
-        <div>
-          <div className="d-flex align-items-center">
-            {statusColor === 'success' ? (
-              <FontAwesomeIcon
-                className={`text-${statusColor} mr-2 ${fontClassName}`}
-                icon="check-circle"
-              />
-            ) : (
-              <FontAwesomeIcon
-                className={`text-${statusColor} mr-2 ${fontClassName}`}
-                icon="exclamation-circle"
-              />
-            )}
-            <span className={`badge badge-${statusColor} mr-3 ${fontClassName}`}>
-              {assert.status}
-            </span>
-            <OverlayTrigger
-              overlay={<Tooltip id={String(assert.id)}>{i18n.t('Execution Time')}</Tooltip>}
-              placement="top"
+        <Flex align="center">
+          <FontAwesomeIcon
+            icon={statusColor === 'success' ? 'check-circle' : 'exclamation-circle'}
+            color={`var(--mantine-color-${mc}-6)`}
+            style={{ marginRight: 'var(--mantine-spacing-sm)', fontSize: fz }}
+          />
+          <Badge color={mc} mr="md" style={badgeFzStyle}>
+            {assert.status}
+          </Badge>
+          {executionTime !== undefined && Number(executionTime) !== 0 ? (
+            <Tooltip label={i18n.t('Execution Time')} position="top" withArrow>
+              <Badge color="gray" mr="md" style={badgeFzStyle}>
+                {executionTime}
+              </Badge>
+            </Tooltip>
+          ) : null}
+          {assert.output && (
+            <Button
+              variant="outline"
+              color="blue"
+              size="compact-xs"
+              radius="md"
+              style={{ fontSize: fz }}
+              onClick={() => setIsShowLog(!isShowLog)}
+              leftSection={
+                <FontAwesomeIcon icon={isShowLog ? 'arrow-circle-up' : 'arrow-circle-down'} />
+              }
             >
-              {executionTime !== undefined && Number(executionTime) !== 0 ? (
-                <span className={`badge badge-secondary mr-3 ${fontClassName}`}>
-                  {executionTime}
-                </span>
-              ) : (
-                <></>
-              )}
-            </OverlayTrigger>
-            {assert.output && (
-              <button
-                className="btn btn-sm btn-outline-info badge rounded-lg"
-                type="button"
-                onClick={() => setIsShowLog(!isShowLog)}
-                data-toggle="collapse"
-                aria-expanded="true"
-                aria-controls={`collapse${uniqIndex}`}
-              >
-                <span className={fontClassName}>
-                  <FontAwesomeIcon
-                    icon={isShowLog ? 'arrow-circle-up' : 'arrow-circle-down'}
-                    className="mr-1"
-                  />
-                  {i18n.t('STDOUT')}
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-        <pre className="my-1">
+              {i18n.t('STDOUT')}
+            </Button>
+          )}
+        </Flex>
+        <Box component="pre" my="xs">
           {(() => {
             const labels = [i18n.t('Receive:'), i18n.t('Expected:'), i18n.t('Arguments:')];
             const width = Math.max(...labels.map((l) => l.length));
@@ -240,24 +114,16 @@ function SubMenu({
             );
             return (
               <>
-                <span className={assertClassName}>{`${receiveLabel} ${result}`}</span>
-                <span className={assertClassName}>{`${expectedLabel} ${assert.expected}`}</span>
-                <span className={assertClassName}>{`${argumentsLabel} ${assert.arguments}`}</span>
+                <Text span display="block" fz={fz}>{`${receiveLabel} ${result}`}</Text>
+                <Text span display="block" fz={fz}>{`${expectedLabel} ${assert.expected}`}</Text>
+                <Text span display="block" fz={fz}>{`${argumentsLabel} ${assert.arguments}`}</Text>
               </>
             );
           })()}
-        </pre>
-        {hasOutput && (
-          <div
-            id={`collapse${uniqIndex}`}
-            className={classCollapse}
-            aria-labelledby={`heading${uniqIndex}`}
-          >
-            {children}
-          </div>
-        )}
+        </Box>
+        {hasOutput && <Collapse expanded={isShowLog}>{children}</Collapse>}
       </div>
-    </div>
+    </Box>
   );
 }
 
@@ -271,22 +137,24 @@ function Item({ output, fontSize = 0 }: ItemProps) {
     return null;
   }
 
-  const fontClassName = cn({
-    h5: fontSize === 1,
-    h4: fontSize === 2,
-    h3: fontSize === 3,
-    h2: fontSize === 4,
-    h1: fontSize > 4,
-  });
+  const fz = fontSizeToRem(fontSize);
 
   return (
-    <div className={`alert text-white mb-0 ${fontClassName}`}>
+    <Box
+      c="white"
+      mb={0}
+      fz={fz}
+      style={{
+        padding: '0.75rem 1.25rem',
+        border: '1px solid transparent',
+        borderRadius: '0.25rem',
+      }}
+    >
       <pre>{output}</pre>
-    </div>
+    </Box>
   );
 }
 
-AccordeonBox.Item = Item;
-AccordeonBox.Menu = Menu;
-AccordeonBox.SubMenu = SubMenu;
+const AccordeonBox = { Item, SubMenu };
+
 export default AccordeonBox;

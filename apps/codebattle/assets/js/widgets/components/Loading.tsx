@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Center, Loader } from '@mantine/core';
+
 import i18n from '../../i18n';
 
 interface LoadingProps {
@@ -25,15 +27,9 @@ function Loading(props: LoadingProps) {
   const size = getSize(props);
 
   return (
-    <div className="d-flex my-0 py-1 justify-content-center">
-      <div
-        className="spinner-border text-secondary"
-        style={{ width: `${size}px`, height: `${size}px` }}
-        role="status"
-      >
-        <span className="sr-only">{i18n.t('Loading...')}</span>
-      </div>
-    </div>
+    <Center py="xs">
+      <Loader size={size} color="gray" role="status" aria-label={i18n.t('Loading...')} />
+    </Center>
   );
 }
 

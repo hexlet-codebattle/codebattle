@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 
-import Table from 'react-bootstrap/Table';
+import { Box, Flex, SegmentedControl, Table } from '@mantine/core';
 import { useSelector, useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
@@ -14,6 +14,12 @@ interface LeaderboardUser extends UserNameUser {
   rating?: number;
 }
 
+const periodOptions = [
+  { value: periodTypes.WEEKLY, label: i18n.t(periodTypes.WEEKLY) },
+  { value: periodTypes.MONTHLY, label: i18n.t(periodTypes.MONTHLY) },
+  { value: periodTypes.ALL, label: i18n.t(periodTypes.ALL) },
+];
+
 function Leaderboard() {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -23,28 +29,6 @@ function Leaderboard() {
     () => [...(users as LeaderboardUser[])].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
     [users],
   );
-
-  const handlePeriodClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const {
-      currentTarget: { dataset },
-    } = e;
-    const periodValue = dataset.period || periodTypes.ALL;
-    switch (periodValue) {
-      case periodTypes.ALL:
-        dispatch(actions.changePeriod(periodTypes.ALL));
-        break;
-      case periodTypes.MONTHLY:
-        dispatch(actions.changePeriod(periodTypes.MONTHLY));
-        break;
-
-      case periodTypes.WEEKLY:
-        dispatch(actions.changePeriod(periodTypes.WEEKLY));
-        break;
-
-      default:
-        throw new Error(`Unknown period: ${periodValue}`);
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -58,80 +42,64 @@ function Leaderboard() {
   }, [period]);
 
   return (
-    <Table striped className="cb-bg-panel cb-border-color rounded shadow-sm m-0">
-      <thead>
-        <tr aria-label={i18n.t('Leaderboard header')}>
-          <th
+    <Table
+      striped
+      m={0}
+      className="cb-bg-panel cb-border-color"
+      style={{ borderRadius: 'var(--mantine-radius-md)', boxShadow: 'var(--mantine-shadow-sm)' }}
+    >
+      <Table.Thead>
+        <Table.Tr aria-label={i18n.t('Leaderboard header')}>
+          <Table.Th
             scope="col"
             aria-label={i18n.t('Leaderboard')}
-            className="text-uppercase py-1 px-0 text-white cb-border-color"
+            tt="uppercase"
+            py={4}
+            px={0}
             colSpan={2}
           >
-            <div className="d-flex flex-column align-items-center flex-nowrap">
-              <div className="d-flex align-items-center">
-                <img alt={i18n.t('Rating')} src="/assets/images/topPlayers.svg" className="m-2" />
-                <span className="d-flex">{i18n.t('Leaderboard')}</span>
-              </div>
-              <nav className="w-100">
-                <div
-                  id="nav-tab"
-                  role="tablist"
-                  className="nav nav-tabs border-0 d-flex flex-nowrap justify-content-around"
-                >
-                  <button
-                    type="button"
-                    role="tab"
-                    data-toggle="tab"
-                    data-period={periodTypes.WEEKLY}
-                    className="nav-item cb-nav-item nav-link border-0 text-center w-100 active"
-                    onClick={handlePeriodClick}
-                  >
-                    {i18n.t(periodTypes.WEEKLY)}
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    data-toggle="tab"
-                    data-period={periodTypes.MONTHLY}
-                    className="nav-item cb-nav-item nav-link border-0 text-center w-100"
-                    onClick={handlePeriodClick}
-                  >
-                    {i18n.t(periodTypes.MONTHLY)}
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    data-toggle="tab"
-                    data-period={periodTypes.ALL}
-                    className="nav-item cb-nav-item nav-link border-0 text-center w-100"
-                    onClick={handlePeriodClick}
-                  >
-                    {i18n.t(periodTypes.ALL)}
-                  </button>
-                </div>
-              </nav>
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
+            <Flex direction="column" align="center" wrap="nowrap">
+              <Flex align="center">
+                <img
+                  alt={i18n.t('Rating')}
+                  src="/assets/images/topPlayers.svg"
+                  style={{ margin: '0.5rem' }}
+                />
+                <span>{i18n.t('Leaderboard')}</span>
+              </Flex>
+              <Box w="100%" mt="xs">
+                <SegmentedControl
+                  fullWidth
+                  size="xs"
+                  value={period}
+                  onChange={(value) => dispatch(actions.changePeriod(value))}
+                  data={periodOptions}
+                />
+              </Box>
+            </Flex>
+          </Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
         {rating && rating.length > 0 ? (
           rating.map((item) => (
-            <tr key={item.name} className="cb-border-color">
-              <td className="cb-border-color pr-0">
-                <div className="d-flex">
+            <Table.Tr key={item.name}>
+              <Table.Td pr={0}>
+                <Flex>
                   <UserInfo user={item} truncate />
-                </div>
-              </td>
-              <td className="border-bottom cb-border-color text-right pl-0">{item.rating}</td>
-            </tr>
+                </Flex>
+              </Table.Td>
+              <Table.Td ta="right" pl={0}>
+                {item.rating}
+              </Table.Td>
+            </Table.Tr>
           ))
         ) : (
-          <tr className="text-center cb-border-color">
-            <td className="cb-border-color">{i18n.t('No rating')}</td>
-          </tr>
+          <Table.Tr>
+            <Table.Td ta="center">{i18n.t('No rating')}</Table.Td>
+          </Table.Tr>
         )}
-      </tbody>
+      </Table.Tbody>
     </Table>
   );
 }

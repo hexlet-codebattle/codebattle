@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import { type IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Group, Text } from '@mantine/core';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
@@ -20,19 +21,21 @@ function UserLabel({ user }: UserLabelProps) {
     () => presenceList.some((item) => (item as { id: string | number }).id === user.id),
     [presenceList, user.id],
   );
-  const onlineIndicatorClassName = cn('mr-1', {
+  const onlineIndicatorClassName = cn({
     'cb-user-online': isOnline,
     'cb-user-dark-offline': !isOnline,
   });
 
   return (
-    <span className="text-truncate">
+    <Group component="span" display="inline-flex" gap="xs" wrap="nowrap">
       <FontAwesomeIcon
         icon={['fa', 'circle'] as unknown as IconProp}
         className={onlineIndicatorClassName}
       />
-      <span>{user.name}</span>
-    </span>
+      <Text component="span" truncate>
+        {user.name}
+      </Text>
+    </Group>
   );
 }
 

@@ -1,11 +1,20 @@
 import React from 'react';
 
+import { Box, Flex, VisuallyHidden } from '@mantine/core';
+
 import i18n from '../../../i18n';
 
 function LobbyLoading() {
   return (
-    <div className="container-lg cb-text cb-lobby-loading" role="status" aria-live="polite">
-      <span className="sr-only">{i18n.t('Loading...')}</span>
+    <Box
+      className="cb-text cb-lobby-loading"
+      role="status"
+      aria-live="polite"
+      mx="auto"
+      px="md"
+      maw={960}
+    >
+      <VisuallyHidden>{i18n.t('Loading...')}</VisuallyHidden>
       <div aria-hidden="true">
         <div className="cb-lobby-loading-hero">
           <div className="cb-lobby-loading-emblem">
@@ -23,50 +32,86 @@ function LobbyLoading() {
             </div>
           </div>
         </div>
-        <div className="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2">
-          <div className="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
-            <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 cb-lobby-loading-main">
-              <span className="cb-text-skeleton w-50 mx-auto mb-4" />
-              <span className="cb-text-skeleton w-100 mb-2" />
-              <span className="cb-text-skeleton w-75 mx-auto mb-4" />
-              <div className="d-flex flex-column flex-md-row mt-auto">
-                <span className="cb-text-skeleton flex-fill mx-md-2 mb-2 mb-md-0" />
-                <span className="cb-text-skeleton flex-fill mx-md-2 mb-2 mb-md-0" />
-                <span className="cb-text-skeleton flex-fill mx-md-2" />
-              </div>
-            </div>
-          </div>
-          <div className="col-12 col-lg-4 p-0 pl-lg-2 my-2 my-lg-0">
-            <div className="cb-bg-panel cb-rounded d-flex flex-column align-items-center p-3 cb-lobby-loading-profile">
-              <span className="cb-text-skeleton cb-lobby-loading-avatar mb-3" />
-              <span className="cb-text-skeleton w-50 mb-3" />
-              <div className="d-flex w-100 cb-bg-highlight-panel p-3">
-                <span className="cb-text-skeleton flex-fill mx-1" />
-                <span className="cb-text-skeleton flex-fill mx-1" />
-                <span className="cb-text-skeleton flex-fill mx-1" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="d-flex flex-column flex-lg-row p-0">
-          <div className="col-12 col-lg-8 p-0 pr-lg-2">
-            <div className="cb-bg-panel cb-rounded p-3 cb-lobby-loading-secondary">
-              <span className="cb-text-skeleton w-25 d-block mb-4" />
-              <span className="cb-text-skeleton w-100 d-block mb-3" />
-              <span className="cb-text-skeleton w-75 d-block mb-3" />
-              <span className="cb-text-skeleton w-50 d-block" />
-            </div>
-          </div>
-          <div className="col-12 col-lg-4 p-0 pl-lg-2 mt-2 mt-lg-0">
-            <div className="cb-bg-panel cb-rounded p-3 cb-lobby-loading-secondary">
-              <span className="cb-text-skeleton w-50 d-block mb-4" />
-              <span className="cb-text-skeleton w-100 d-block mb-3" />
-              <span className="cb-text-skeleton w-75 d-block" />
-            </div>
-          </div>
-        </div>
+        <Flex direction={{ base: 'column-reverse', lg: 'row' }} my={{ base: 0, lg: 'sm' }}>
+          <Box
+            w={{ base: '100%', lg: '66.6667%' }}
+            p={0}
+            pr={{ lg: 'sm' }}
+            my={{ base: 'sm', lg: 0 }}
+          >
+            <Flex
+              className="cb-bg-panel cb-rounded cb-lobby-loading-main"
+              direction="column"
+              p="md"
+            >
+              <Box component="span" className="cb-text-skeleton" w="50%" mx="auto" mb="lg" />
+              <Box component="span" className="cb-text-skeleton" w="100%" mb="sm" />
+              <Box component="span" className="cb-text-skeleton" w="75%" mx="auto" mb="lg" />
+              <Flex direction={{ base: 'column', md: 'row' }} mt="auto">
+                <Box
+                  component="span"
+                  className="cb-text-skeleton"
+                  flex={1}
+                  mx={{ md: 'sm' }}
+                  mb={{ base: 'sm', md: 0 }}
+                />
+                <Box
+                  component="span"
+                  className="cb-text-skeleton"
+                  flex={1}
+                  mx={{ md: 'sm' }}
+                  mb={{ base: 'sm', md: 0 }}
+                />
+                <Box component="span" className="cb-text-skeleton" flex={1} mx={{ md: 'sm' }} />
+              </Flex>
+            </Flex>
+          </Box>
+          <Box
+            w={{ base: '100%', lg: '33.3333%' }}
+            p={0}
+            pl={{ lg: 'sm' }}
+            my={{ base: 'sm', lg: 0 }}
+          >
+            <Flex
+              className="cb-bg-panel cb-rounded cb-lobby-loading-profile"
+              direction="column"
+              align="center"
+              p="md"
+            >
+              <Box component="span" className="cb-text-skeleton cb-lobby-loading-avatar" mb="md" />
+              <Box component="span" className="cb-text-skeleton" w="50%" mb="md" />
+              <Flex className="cb-bg-highlight-panel" w="100%" p="md">
+                <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
+                <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
+                <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
+              </Flex>
+            </Flex>
+          </Box>
+        </Flex>
+        <Flex direction={{ base: 'column', lg: 'row' }} p={0}>
+          <Box w={{ base: '100%', lg: '66.6667%' }} p={0} pr={{ lg: 'sm' }}>
+            <Box className="cb-bg-panel cb-rounded cb-lobby-loading-secondary" p="md">
+              <Box component="span" className="cb-text-skeleton" display="block" w="25%" mb="lg" />
+              <Box component="span" className="cb-text-skeleton" display="block" w="100%" mb="md" />
+              <Box component="span" className="cb-text-skeleton" display="block" w="75%" mb="md" />
+              <Box component="span" className="cb-text-skeleton" display="block" w="50%" />
+            </Box>
+          </Box>
+          <Box
+            w={{ base: '100%', lg: '33.3333%' }}
+            p={0}
+            pl={{ lg: 'sm' }}
+            mt={{ base: 'sm', lg: 0 }}
+          >
+            <Box className="cb-bg-panel cb-rounded cb-lobby-loading-secondary" p="md">
+              <Box component="span" className="cb-text-skeleton" display="block" w="50%" mb="lg" />
+              <Box component="span" className="cb-text-skeleton" display="block" w="100%" mb="md" />
+              <Box component="span" className="cb-text-skeleton" display="block" w="75%" />
+            </Box>
+          </Box>
+        </Flex>
       </div>
-    </div>
+    </Box>
   );
 }
 

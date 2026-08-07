@@ -1,7 +1,7 @@
 import React, { useCallback, memo, useMemo, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from 'react-bootstrap/Button';
+import { Box, Button, Group, Text, Textarea } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import i18n from '../../i18n';
@@ -9,7 +9,7 @@ import AlertCodes from '../config/alertCodes';
 import { currentUserNameSelector } from '../selectors/index';
 import { actions } from '../slices';
 
-import Modal from './BootstrapModal';
+import Modal from './CbModal';
 
 interface FeedbackPayload {
   attachments: {
@@ -92,81 +92,67 @@ function FeedbackWidget() {
 
   return (
     <>
-      <button
-        type="button"
+      <Button
         onClick={() => setIsOpen(true)}
-        className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded d-flex align-items-center"
-        style={{
-          position: 'fixed',
-          right: '16px',
-          bottom: '16px',
-          zIndex: 1080,
-          gap: '8px',
-        }}
+        color="cbSecondary"
+        size="sm"
+        radius="md"
+        leftSection={<FontAwesomeIcon icon={['fas', 'rss']} />}
+        style={{ position: 'fixed', right: '16px', bottom: '16px', zIndex: 1080 }}
       >
-        <FontAwesomeIcon icon={['fas', 'rss']} />
         {i18n.t('Feedback')}
-      </button>
+      </Button>
       {isOpen && (
-        <Modal centered show={isOpen} onHide={closeModal} contentClassName="cb-bg-panel cb-text">
+        <Modal centered show={isOpen} onHide={closeModal} contentClassName="cb-text">
           <form onSubmit={onSubmit}>
             <Modal.Header className="cb-border-color" closeButton>
               <Modal.Title>{i18n.t('Send feedback')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <div className="form-group">
-                <label htmlFor="feedback-status">{i18n.t('Type')}</label>
-                <div
-                  id="feedback-status"
-                  className="d-flex flex-wrap"
-                  role="radiogroup"
-                  aria-label={i18n.t('Type')}
-                >
+              <Box mb="md">
+                <Text component="label" htmlFor="feedback-status" size="sm" mb="xs" display="block">
+                  {i18n.t('Type')}
+                </Text>
+                <Group gap="xs" id="feedback-status" role="radiogroup" aria-label={i18n.t('Type')}>
                   {STATUS_OPTIONS.map((option) => (
-                    <button
+                    <Button
                       key={option}
-                      type="button"
-                      className={`btn btn-sm cb-rounded mr-2 mb-2 ${
-                        status === option
-                          ? 'btn-secondary cb-btn-secondary'
-                          : 'btn-outline-secondary cb-btn-outline-secondary'
-                      }`}
+                      size="sm"
+                      radius="md"
+                      color="cbSecondary"
+                      variant={status === option ? 'filled' : 'outline'}
+                      className={status === option ? undefined : 'cb-btn-outline-secondary'}
                       role="radio"
                       aria-checked={status === option}
+                      tabIndex={0}
                       onClick={() => setStatus(option)}
                     >
                       {i18n.t(option)}
-                    </button>
+                    </Button>
                   ))}
-                </div>
-              </div>
-              <div className="form-group mb-0">
-                <label htmlFor="feedback-text">{i18n.t('Message')}</label>
-                <textarea
-                  id="feedback-text"
-                  aria-label={i18n.t('Message')}
-                  className="form-control cb-bg-panel cb-border-color text-white cb-rounded"
-                  rows={5}
-                  value={text}
-                  onChange={(event) => setText(event.target.value)}
-                  required
-                />
-              </div>
+                </Group>
+              </Box>
+              <Textarea
+                id="feedback-text"
+                label={i18n.t('Message')}
+                aria-label={i18n.t('Message')}
+                rows={5}
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                required
+              />
             </Modal.Body>
             <Modal.Footer className="cb-border-color">
               <Button
                 type="button"
-                className="btn btn-secondary cb-btn-secondary cb-rounded"
+                color="cbSecondary"
+                radius="md"
                 onClick={closeModal}
                 disabled={isSubmitting}
               >
                 {i18n.t('Cancel')}
               </Button>
-              <Button
-                type="submit"
-                className="btn btn-secondary cb-btn-secondary cb-rounded"
-                disabled={isSubmitDisabled}
-              >
+              <Button type="submit" color="cbSecondary" radius="md" disabled={isSubmitDisabled}>
                 {isSubmitting ? i18n.t('Sending...') : i18n.t('Send')}
               </Button>
             </Modal.Footer>

@@ -1,11 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
+import {
+  Anchor,
+  Box,
+  Button,
+  Flex,
+  Menu,
+  Text,
+  TextInput as MantineTextInput,
+} from '@mantine/core';
 import cn from 'classnames';
 import { Field, Form, Formik, useField, type FormikHelpers } from 'formik';
 import capitalize from 'lodash/capitalize';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
-import Dropdown from 'react-bootstrap/Dropdown';
 import * as Icon from 'react-feather';
 import * as Yup from 'yup';
 
@@ -158,30 +166,26 @@ const getPlaceholder = ({
 
 function TextInput({ label, ...props }: TextInputProps) {
   const [field, meta] = useField(props);
-  const { name, disabled, hint, hintHref = '', ...inputProps } = props;
-
-  const labelClassName = cn('h6', {
-    'text-muted': disabled,
-  });
+  const { disabled, hint, hintHref = '', ...inputProps } = props;
 
   return (
-    <div className="form-group mb-3">
-      <label className={labelClassName} htmlFor={name}>
-        {label}
-        {hint && (
-          <a className="text-primary pl-2" href={hintHref}>
-            <small>{hint}</small>
-          </a>
-        )}
-      </label>
-      <input
-        {...field}
-        {...inputProps}
-        placeholder={getPlaceholder(props)}
-        className="form-control cb-bg-panel cb-border-color text-white"
-      />
-      {meta.touched && meta.error && <div className="invalid-feedback">{meta.error}</div>}
-    </div>
+    <MantineTextInput
+      {...field}
+      {...inputProps}
+      disabled={disabled}
+      placeholder={getPlaceholder(props)}
+      error={meta.touched && meta.error ? meta.error : undefined}
+      label={
+        <>
+          {label}
+          {hint && (
+            <Anchor href={hintHref} size="xs" ml="xs">
+              {hint}
+            </Anchor>
+          )}
+        </>
+      }
+    />
   );
 }
 
@@ -200,46 +204,44 @@ function LanguageSelect({ lang, view, currentView, items, onSelect }: LanguageSe
   const selectedName = items.find(([slug]) => slug === selectedSlug)?.[1] || selectedSlug;
 
   return (
-    <div className={cn({ 'd-none': view !== currentView })}>
-      <div className="h6">{i18n.t('Your weapon')}</div>
-      <Dropdown className="w-100">
-        <Dropdown.Toggle
-          id={`${view}-language-dropdown`}
-          data-testid={`${view}-langSelect`}
-          aria-label={i18n.t('Programming language select')}
-          className="btn cb-bg-panel cb-border-color text-white w-100 d-flex align-items-center"
-        >
-          <LanguageIcon
-            className="mr-2 flex-shrink-0"
-            lang={selectedSlug}
-            style={{ width: '24px', height: '24px' }}
-          />
-          <span>{capitalize(selectedName)}</span>
-        </Dropdown.Toggle>
-        <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+    <Box display={view === currentView ? undefined : 'none'}>
+      <Text size="sm" fw={500} mb={4}>
+        {i18n.t('Your weapon')}
+      </Text>
+      <Menu width="target" keepMounted>
+        <Menu.Target>
+          <Button
+            id={`${view}-language-dropdown`}
+            data-testid={`${view}-langSelect`}
+            aria-label={i18n.t('Programming language select')}
+            variant="default"
+            fullWidth
+            justify="flex-start"
+            leftSection={
+              <LanguageIcon lang={selectedSlug} style={{ width: '24px', height: '24px' }} />
+            }
+          >
+            {capitalize(selectedName)}
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown className="cb-bg-highlight-panel">
           {items.map(([slug, languageName]) => (
-            <Dropdown.Item
+            <Menu.Item
               key={slug}
-              as="button"
-              type="button"
-              active={selectedSlug === slug}
-              className="cb-dropdown-item d-flex align-items-center"
+              data-active={selectedSlug === slug || undefined}
+              className="cb-dropdown-item"
+              leftSection={<LanguageIcon lang={slug} style={{ width: '24px', height: '24px' }} />}
               onClick={() => {
                 helpers.setValue(slug);
                 onSelect(fieldName, slug);
               }}
             >
-              <LanguageIcon
-                className="mr-2 flex-shrink-0"
-                lang={slug}
-                style={{ width: '24px', height: '24px' }}
-              />
               {capitalize(languageName)}
-            </Dropdown.Item>
+            </Menu.Item>
           ))}
-        </Dropdown.Menu>
-      </Dropdown>
-    </div>
+        </Menu.Dropdown>
+      </Menu>
+    </Box>
   );
 }
 
@@ -259,23 +261,24 @@ function LocaleSelect({ onSelect }: { onSelect: (locale: string) => void }) {
   const currentLocaleLabel = locales.find(([value]) => value === field.value)?.[1] || locales[0][1];
 
   return (
-    <Dropdown>
-      <Dropdown.Toggle
-        id="locale-dropdown"
-        data-testid="localeSelect"
-        aria-label={i18n.t('Locale')}
-        type="button"
-        className="btn cb-bg-panel cb-border-color text-white w-100 text-left"
-      >
-        {currentLocaleLabel}
-      </Dropdown.Toggle>
-      <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+    <Menu width="target">
+      <Menu.Target>
+        <Button
+          id="locale-dropdown"
+          data-testid="localeSelect"
+          aria-label={i18n.t('Locale')}
+          variant="default"
+          fullWidth
+          justify="flex-start"
+        >
+          {currentLocaleLabel}
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown className="cb-bg-highlight-panel">
         {locales.map(([value, label]) => (
-          <Dropdown.Item
+          <Menu.Item
             key={value}
-            as="button"
-            type="button"
-            active={field.value === value}
+            data-active={field.value === value || undefined}
             className="cb-dropdown-item"
             onClick={() => {
               helpers.setValue(value);
@@ -283,10 +286,10 @@ function LocaleSelect({ onSelect }: { onSelect: (locale: string) => void }) {
             }}
           >
             {label}
-          </Dropdown.Item>
+          </Menu.Item>
         ))}
-      </Dropdown.Menu>
-    </Dropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 
@@ -314,8 +317,8 @@ function RangeInput({ className, min = 0, max = 100, style, ...props }: RangeInp
       min={min}
       max={max}
       value={currentValue}
-      className={cn('form-range w-100 cb-range', className)}
-      style={{ ...style, '--range-progress': `${progress}%` } as React.CSSProperties}
+      className={cn('cb-range', className)}
+      style={{ ...style, width: '100%', '--range-progress': `${progress}%` } as React.CSSProperties}
     />
   );
 }
@@ -443,20 +446,16 @@ function UserSettingsForm({
                 </div>
 
                 <div className="cb-settings-section-actions">
-                  <button
+                  <Button
+                    type="submit"
+                    radius="md"
+                    px="lg"
+                    loading={isSubmitting}
                     disabled={!profileChanged || !profileIsValid || isSubmitting}
                     aria-label={i18n.t('Update profile')}
-                    type="submit"
-                    className="btn btn-primary rounded-lg px-4"
                   >
-                    {isSubmitting ? (
-                      <div className="spinner-border spinner-border-sm" role="status">
-                        <span className="sr-only">{i18n.t('Loading...')}</span>
-                      </div>
-                    ) : (
-                      i18n.t('Update profile')
-                    )}
-                  </button>
+                    {i18n.t('Update profile')}
+                  </Button>
                 </div>
               </section>
 
@@ -505,14 +504,14 @@ function UserSettingsForm({
                   <span className="cb-settings-section-icon" aria-hidden="true">
                     <Icon.Volume2 size={20} />
                   </span>
-                  <div className="flex-grow-1">
+                  <Box style={{ flexGrow: 1 }}>
                     <h3 id="sound-settings-title">{i18n.t('Sound settings')}</h3>
                     <p>{i18n.t('Choose how game and tournament notifications sound.')}</p>
-                  </div>
+                  </Box>
                   <SoundToggle variant="settings" />
                 </div>
 
-                <fieldset className="mb-4">
+                <Box component="fieldset" mb="lg">
                   <legend className="cb-settings-label">{i18n.t('Sound theme')}</legend>
                   <div className="cb-settings-sound-types">
                     {soundTypes.map(({ value, label, icon: SoundIcon }) => (
@@ -536,7 +535,7 @@ function UserSettingsForm({
                       </div>
                     ))}
                   </div>
-                </fieldset>
+                </Box>
 
                 <div className="cb-settings-volume-grid">
                   <div className="cb-settings-volume-card">
@@ -544,7 +543,7 @@ function UserSettingsForm({
                       <span>{i18n.t('Game sound level')}</span>
                       <strong>{values.soundSettings.level}/10</strong>
                     </div>
-                    <div className="d-flex align-items-center">
+                    <Flex align="center" gap="md">
                       <Icon.VolumeX size={18} aria-hidden="true" />
                       <RangeInput
                         type="range"
@@ -563,10 +562,9 @@ function UserSettingsForm({
                             Number(e.currentTarget.value) * 0.1,
                           );
                         }}
-                        className="mx-3"
                       />
                       <Icon.Volume2 size={18} aria-hidden="true" />
-                    </div>
+                    </Flex>
                   </div>
 
                   <div className="cb-settings-volume-card">
@@ -574,7 +572,7 @@ function UserSettingsForm({
                       <span>{i18n.t('Tournament sound level')}</span>
                       <strong>{values.soundSettings.tournamentLevel}/10</strong>
                     </div>
-                    <div className="d-flex align-items-center">
+                    <Flex align="center" gap="md">
                       <Icon.VolumeX size={18} aria-hidden="true" />
                       <RangeInput
                         type="range"
@@ -593,10 +591,9 @@ function UserSettingsForm({
                             Number(e.currentTarget.value) * 0.1,
                           );
                         }}
-                        className="mx-3"
                       />
                       <Icon.Volume2 size={18} aria-hidden="true" />
-                    </div>
+                    </Flex>
                   </div>
                 </div>
               </section>
@@ -653,20 +650,16 @@ function UserSettingsForm({
                   />
                 </div>
                 <div className="cb-settings-section-actions">
-                  <button
+                  <Button
+                    type="submit"
+                    radius="md"
+                    px="lg"
+                    loading={isSubmitting}
                     disabled={!dirty || !isValid || isSubmitting}
                     aria-label={i18n.t('Change password')}
-                    type="submit"
-                    className="btn btn-primary rounded-lg px-4"
                   >
-                    {isSubmitting ? (
-                      <div className="spinner-border spinner-border-sm" role="status">
-                        <span className="sr-only">{i18n.t('Loading...')}</span>
-                      </div>
-                    ) : (
-                      i18n.t('Change password')
-                    )}
-                  </button>
+                    {i18n.t('Change password')}
+                  </Button>
                 </div>
               </section>
             </Form>

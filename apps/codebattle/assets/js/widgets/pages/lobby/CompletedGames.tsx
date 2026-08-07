@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef, useCallback } from 'react';
 
+import { Box, Button, Flex, Table, Text } from '@mantine/core';
 import cn from 'classnames';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,9 +20,6 @@ import getGamePlayersData from '../../utils/gamePlayers';
 
 import { type LobbyGame } from './GameActionButton';
 import GameCard from './GameCard';
-
-const commonTableClassName = 'table table-striped mb-0';
-const commonClassName = 'table-responsive d-none d-md-block mvh-100 cb-overflow-y-scroll';
 
 interface LobbyCompletedGame extends LobbyGame {
   finishesAt?: string;
@@ -81,19 +79,33 @@ const InfiniteScrollableGames = memo(
 
     return (
       <>
-        <div ref={tableRef} className={className} data-testid="scroll">
-          <table className={tableClassName}>
-            <thead className="cb-text sticky-top">
-              <tr>
-                <th className="p-3 border-0">{i18n.t('Level')}</th>
-                <th className="px-1 py-3 border-0 text-center" colSpan={2}>
+        <Box
+          ref={tableRef}
+          className={cn('mvh-100 cb-overflow-y-scroll', className)}
+          display={{ base: 'none', md: 'block' }}
+          style={{ overflowX: 'auto' }}
+          data-testid="scroll"
+        >
+          <Table
+            className={tableClassName}
+            striped
+            stickyHeader
+            mb={0}
+            verticalSpacing="md"
+            horizontalSpacing="md"
+            styles={{ td: { verticalAlign: 'middle', whiteSpace: 'nowrap' } }}
+          >
+            <Table.Thead className="cb-text">
+              <Table.Tr>
+                <Table.Th>{i18n.t('Level')}</Table.Th>
+                <Table.Th ta="center" colSpan={2}>
                   {i18n.t('Players')}
-                </th>
-                <th className="px-1 py-3 border-0">{i18n.t('Date')}</th>
-                <th className="px-1 py-3 border-0">{i18n.t('Actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
+                </Table.Th>
+                <Table.Th>{i18n.t('Date')}</Table.Th>
+                <Table.Th>{i18n.t('Actions')}</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
               {games.map((game) => {
                 const { player1, player2 } = getGamePlayersData(game) as unknown as {
                   player1: CompletedGamePlayer;
@@ -101,55 +113,53 @@ const InfiniteScrollableGames = memo(
                 };
 
                 return (
-                  <tr key={game.id}>
-                    <td className="p-3 align-middle text-nowrap cb-border-color">
+                  <Table.Tr key={game.id}>
+                    <Table.Td>
                       <GameLevelBadge level={game.level} />
-                    </td>
-                    <td className="p-3 align-middle text-nowrap cb-username-td cb-border-color">
-                      <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
-                        <div
-                          className="d-flex align-items-center justify-content-center mr-2"
-                          style={{ width: '1rem' }}
-                        >
+                    </Table.Td>
+                    <Table.Td className="cb-username-td">
+                      <Flex align="center" style={{ minWidth: 0 }}>
+                        <Flex align="center" justify="center" mr="sm" style={{ width: '1rem' }}>
                           <ResultIcon icon={player1.icon} />
-                        </div>
+                        </Flex>
                         <UserInfo user={player1.data} truncate />
-                      </div>
-                    </td>
-                    <td className="p-3 align-middle text-nowrap cb-username-td cb-border-color">
-                      <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
-                        <div
-                          className="d-flex align-items-center justify-content-center mr-2"
-                          style={{ width: '1rem' }}
-                        >
+                      </Flex>
+                    </Table.Td>
+                    <Table.Td className="cb-username-td">
+                      <Flex align="center" style={{ minWidth: 0 }}>
+                        <Flex align="center" justify="center" mr="sm" style={{ width: '1rem' }}>
                           <ResultIcon icon={player2.icon} />
-                        </div>
+                        </Flex>
                         <UserInfo user={player2.data} truncate />
-                      </div>
-                    </td>
-                    <td className="px-1 py-3 align-middle text-nowrap text-white cb-border-color">
+                      </Flex>
+                    </Table.Td>
+                    <Table.Td>
                       {moment.utc(game.finishesAt).local().format('YYYY.MM.DD HH:mm')}
-                    </td>
-                    <td className="px-1 py-3 align-middle cb-border-color">
-                      <a
-                        type="button"
-                        className="btn btn-secondary cb-btn-secondary btn-sm cb-rounded"
+                    </Table.Td>
+                    <Table.Td>
+                      <Button
+                        component="a"
+                        color="cbSecondary"
+                        size="sm"
+                        radius="md"
                         href={`/games/${game.id}`}
                       >
                         {i18n.t('Show')}
-                      </a>
-                    </td>
-                  </tr>
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-        <HorizontalScrollControls className="d-md-none my-2" onScroll={onCardsScroll}>
-          {games.map((game) => (
-            <GameCard key={`card-${game.id}`} type="completed" game={game} />
-          ))}
-        </HorizontalScrollControls>
+            </Table.Tbody>
+          </Table>
+        </Box>
+        <Box hiddenFrom="md" my="sm">
+          <HorizontalScrollControls onScroll={onCardsScroll}>
+            {games.map((game) => (
+              <GameCard key={`card-${game.id}`} type="completed" game={game} />
+            ))}
+          </HorizontalScrollControls>
+        </Box>
       </>
     );
   },
@@ -172,20 +182,32 @@ function CompletedGames({ className, tableClassName = '' }: CompletedGamesProps)
     return status === fetchionStatuses.loading ? (
       <Loading />
     ) : (
-      <div className="py-5 text-center text-muted">{i18n.t('No completed games')}</div>
+      <Text py="xl" ta="center" c="dimmed">
+        {i18n.t('No completed games')}
+      </Text>
     );
   }
 
   return (
     <>
       <InfiniteScrollableGames
-        className={cn(commonClassName, className)}
-        tableClassName={cn(commonTableClassName, tableClassName)}
+        className={className}
+        tableClassName={tableClassName}
         games={completedGames as unknown as LobbyCompletedGame[]}
       />
-      <div className="mt-auto border-top cb-border-color py-2 px-5 font-weight-bold rounded-bottom">
+      <Box
+        mt="auto"
+        py="sm"
+        px="xl"
+        fw={700}
+        style={{
+          borderTop: '1px solid var(--mantine-color-default-border)',
+          borderBottomLeftRadius: 'var(--mantine-radius-md)',
+          borderBottomRightRadius: 'var(--mantine-radius-md)',
+        }}
+      >
         {i18n.t('Total games: %{count}', { count: totalGames })}
-      </div>
+      </Box>
     </>
   );
 }

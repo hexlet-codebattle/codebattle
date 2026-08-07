@@ -5,8 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
 import LanguageIcon from '../../components/LanguageIcon';
-import PopoverStickOnHover from '../../components/PopoverStickOnHover';
-import type { OverlayProps } from 'react-bootstrap/Overlay';
+import PopoverStickOnHover, { type Placement } from '../../components/PopoverStickOnHover';
 import Placements from '../../config/placements';
 import { actions } from '../../slices';
 import { type AppDispatch } from '../../slices';
@@ -29,8 +28,6 @@ export interface HeadToHeadPageProps {
     winner_id?: number | null;
   } | null;
 }
-
-type Placement = OverlayProps['placement'];
 
 const colors = {
   gold: '#e0bf7a',

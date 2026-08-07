@@ -1,10 +1,10 @@
 import React, { memo, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Button } from '@mantine/core';
 import i18n from 'i18next';
-import Button from 'react-bootstrap/Button';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import ModalCodes from '../../config/modalCodes';
 
@@ -42,7 +42,7 @@ const NextStageGroupTournamentModal = NiceModal.create(
         show={modal.visible}
         backdrop="static"
         keyboard={false}
-        contentClassName="cb-bg-panel cb-text"
+        contentClassName="cb-text"
       >
         <Modal.Header closeButton>
           <Modal.Title>{headerText}</Modal.Title>
@@ -54,7 +54,7 @@ const NextStageGroupTournamentModal = NiceModal.create(
           {/* <Button variant="secondary" onClick={modal.hide}> */}
           {/*   {i18n.t("Later")} */}
           {/* </Button> */}
-          <Button as="a" href={href} variant="primary">
+          <Button component="a" href={href} color="blue" radius="md">
             {i18n.t('Go to AI-round group tournament')}
           </Button>
         </Modal.Footer>

@@ -1,5 +1,21 @@
 import React, { memo, useMemo, useCallback } from 'react';
 
+import { faChartLine, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Group,
+  NativeSelect,
+  Pagination as MantinePagination,
+  Table,
+  Text,
+  TextInput,
+  UnstyledButton,
+} from '@mantine/core';
 import cn from 'classnames';
 
 import i18n from '../../../i18n';
@@ -60,15 +76,26 @@ export const getRowBorderStyle = (place?: number): React.CSSProperties => {
 };
 
 const getLeaderboardRowClassName = (place?: number) =>
-  cn('font-weight-bold cb-custom-event-tr-border', {
+  cn('cb-custom-event-tr-border', {
     'cb-gold-place-bg': place === 1,
     'cb-silver-place-bg': place === 2,
     'cb-bronze-place-bg': place === 3,
   });
 
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-);
+// Shared Table.Td props: keep the `cb-custom-event-td` design class (its column
+// dividers via ::after and rounded first/last cells need position:relative),
+// and port the Bootstrap `p-1 pl-4 align-middle text-nowrap border-0` to props.
+const cellProps = {
+  className: 'cb-custom-event-td',
+  p: 'xs',
+  pl: 'lg',
+  style: {
+    position: 'relative' as const,
+    verticalAlign: 'middle',
+    whiteSpace: 'nowrap',
+    border: 0,
+  },
+};
 
 export const formatTime = (seconds?: number) => {
   if (!seconds) return '0s';
@@ -138,20 +165,19 @@ export function SortableHeader({ label, sortKey, currentSort, onSort }: Sortable
   const nextDirection = isActive && currentSort.direction === 'asc' ? 'desc' : 'asc';
 
   return (
-    <th
+    <Table.Th
       scope="col"
-      className="cursor-pointer user-select-none"
-      style={{ cursor: 'pointer' }}
       onClick={() => onSort(sortKey, nextDirection)}
       title={i18n.t('Sort by %{label}', { label })}
+      style={{ cursor: 'pointer', userSelect: 'none' }}
     >
-      <div className="d-flex align-items-center">
+      <Group gap={4} align="center" wrap="nowrap">
         {label}
-        <span className={cn('ml-1', { 'opacity-25': !isActive })}>
+        <Text component="span" style={{ opacity: isActive ? 1 : 0.25 }}>
           {isActive && currentSort.direction === 'asc' ? '↑' : '↓'}
-        </span>
-      </div>
-    </th>
+        </Text>
+      </Group>
+    </Table.Th>
   );
 }
 
@@ -173,118 +199,46 @@ export function Pagination({
   itemsPerPage,
   onItemsPerPageChange,
 }: PaginationProps) {
-  const pages = useMemo(() => {
-    const result = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i += 1) {
-      result.push(i);
-    }
-    return result;
-  }, [currentPage, totalPages]);
-
   if (totalPages <= 1 && totalItems <= ITEMS_PER_PAGE_OPTIONS[0]) {
     return null;
   }
 
   return (
-    <div className="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top border-secondary">
-      <div className="d-flex align-items-center mb-2 mb-md-0">
-        <span className="text-muted small mr-2">{i18n.t('Show')}</span>
-        <select
-          className="form-select form-select-sm bg-dark text-light border-secondary mx-2"
-          style={{ width: 'auto' }}
-          value={itemsPerPage}
-          onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-        >
-          {ITEMS_PER_PAGE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-        <span className="text-muted small">
+    <Flex
+      direction={{ base: 'column', md: 'row' }}
+      justify="space-between"
+      align="center"
+      p="md"
+      style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+    >
+      <Group gap="xs" mb={{ base: 'sm', md: 0 }}>
+        <Text c="dimmed" size="sm">
+          {i18n.t('Show')}
+        </Text>
+        <NativeSelect
+          size="xs"
+          w="auto"
+          aria-label={i18n.t('Show')}
+          value={String(itemsPerPage)}
+          onChange={(e) => onItemsPerPageChange(Number(e.currentTarget.value))}
+          data={ITEMS_PER_PAGE_OPTIONS.map(String)}
+        />
+        <Text c="dimmed" size="sm">
           {i18n.t('of %{count} players', { count: totalItems })}
-        </span>
-      </div>
+        </Text>
+      </Group>
 
       {totalPages > 1 && (
-        <nav aria-label={i18n.t('Leaderboard pagination')}>
-          <ul className="pagination pagination-sm mb-0">
-            <li className={cn('page-item', { disabled: currentPage === 1 })}>
-              <button
-                type="button"
-                className="page-link bg-dark text-light border-secondary"
-                onClick={() => onPageChange(1)}
-                disabled={currentPage === 1}
-              >
-                «
-              </button>
-            </li>
-            <li className={cn('page-item', { disabled: currentPage === 1 })}>
-              <button
-                type="button"
-                className="page-link bg-dark text-light border-secondary"
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                ‹
-              </button>
-            </li>
-            {pages[0] > 1 && (
-              <li className="page-item disabled">
-                <span className="page-link bg-dark text-light border-secondary">...</span>
-              </li>
-            )}
-            {pages.map((page) => (
-              <li key={page} className={cn('page-item', { active: page === currentPage })}>
-                <button
-                  type="button"
-                  className={cn('page-link border-secondary', {
-                    'bg-info text-dark': page === currentPage,
-                    'bg-dark text-light': page !== currentPage,
-                  })}
-                  onClick={() => onPageChange(page)}
-                >
-                  {page}
-                </button>
-              </li>
-            ))}
-            {pages[pages.length - 1] < totalPages && (
-              <li className="page-item disabled">
-                <span className="page-link bg-dark text-light border-secondary">...</span>
-              </li>
-            )}
-            <li className={cn('page-item', { disabled: currentPage === totalPages })}>
-              <button
-                type="button"
-                className="page-link bg-dark text-light border-secondary"
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                ›
-              </button>
-            </li>
-            <li className={cn('page-item', { disabled: currentPage === totalPages })}>
-              <button
-                type="button"
-                className="page-link bg-dark text-light border-secondary"
-                onClick={() => onPageChange(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                »
-              </button>
-            </li>
-          </ul>
-        </nav>
+        <MantinePagination
+          size="sm"
+          withEdges
+          value={currentPage}
+          total={totalPages}
+          onChange={onPageChange}
+          aria-label={i18n.t('Leaderboard pagination')}
+        />
       )}
-    </div>
+    </Flex>
   );
 }
 
@@ -315,78 +269,80 @@ export function SearchFilterBar({
   const hasFilters = searchQuery || clanFilter || langFilter;
 
   return (
-    <div className="p-3 border-bottom border-secondary cb-season-leaderboard-filters">
-      <div className="row align-items-end g-2">
-        <div className="col-12 col-md-4">
-          <div className="input-group input-group-sm cb-season-filter-input-group">
-            <span className="input-group-text bg-dark border-secondary text-muted cb-season-filter-prefix">
-              <i className="bi bi-search" />
-            </span>
-            <input
+    <Box
+      p="md"
+      className="cb-season-leaderboard-filters"
+      style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+    >
+      <Grid gap="xs" align="flex-end">
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <Flex align="center" wrap="nowrap" className="cb-season-filter-input-group">
+            <Box
+              className="cb-season-filter-prefix"
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+            </Box>
+            <TextInput
               id="search-player"
-              type="text"
+              flex={1}
               aria-label={i18n.t('Search player')}
-              className="form-control bg-dark text-light border-secondary cb-season-filter-control"
+              classNames={{ input: 'cb-season-filter-control' }}
               placeholder={i18n.t('Search by name...')}
               value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(e) => onSearchChange(e.currentTarget.value)}
             />
             {searchQuery && (
-              <button
-                type="button"
-                className="btn btn-outline-secondary cb-season-filter-clear-btn"
+              <UnstyledButton
+                className="cb-season-filter-clear-btn"
+                aria-label={i18n.t('Clear search')}
                 onClick={() => onSearchChange('')}
               >
                 ×
-              </button>
+              </UnstyledButton>
             )}
-          </div>
-        </div>
-        <div className="col-6 col-md-3">
-          <select
+          </Flex>
+        </Grid.Col>
+        <Grid.Col span={{ base: 6, md: 3 }}>
+          <NativeSelect
             id="filter-clan"
             aria-label={i18n.t('Filter by clan')}
-            className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
+            classNames={{ input: 'cb-season-filter-control' }}
             value={clanFilter}
-            onChange={(e) => onClanFilterChange(e.target.value)}
-          >
-            <option value="">{i18n.t('All Clans')}</option>
-            {uniqueClans.map((clan) => (
-              <option key={clan} value={clan}>
-                {clan}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-6 col-md-3">
-          <select
+            onChange={(e) => onClanFilterChange(e.currentTarget.value)}
+            data={[
+              { value: '', label: i18n.t('All Clans') },
+              ...uniqueClans.map((clan) => String(clan)),
+            ]}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 6, md: 3 }}>
+          <NativeSelect
             id="filter-lang"
             aria-label={i18n.t('Filter by language')}
-            className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
+            classNames={{ input: 'cb-season-filter-control' }}
             value={langFilter}
-            onChange={(e) => onLangFilterChange(e.target.value)}
-          >
-            <option value="">{i18n.t('All Languages')}</option>
-            {uniqueLangs.map((lang) => (
-              <option key={lang} value={lang}>
-                {lang}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-12 col-md-2">
+            onChange={(e) => onLangFilterChange(e.currentTarget.value)}
+            data={[
+              { value: '', label: i18n.t('All Languages') },
+              ...uniqueLangs.map((lang) => String(lang)),
+            ]}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 2 }}>
           {hasFilters && (
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary w-100 cb-season-filter-reset-btn"
+            <Button
+              variant="default"
+              w="100%"
+              className="cb-season-filter-reset-btn"
               onClick={onReset}
             >
               {i18n.t('Clear Filters')}
-            </button>
+            </Button>
           )}
-        </div>
-      </div>
-    </div>
+        </Grid.Col>
+      </Grid>
+    </Box>
   );
 }
 
@@ -415,19 +371,16 @@ const LeaderboardRow = memo(
     };
 
     return (
-      <tr className={getLeaderboardRowClassName(result.place)}>
-        <th scope="row" className={tableDataCellClassName}>
-          <span className="text-white">{result.place}</span>
-        </th>
-        <td className={tableDataCellClassName}>
-          <div className="d-flex align-items-center">
+      <Table.Tr className={getLeaderboardRowClassName(result.place)} fw={700}>
+        <Table.Th scope="row" {...cellProps}>
+          <Text component="span" c="white">
+            {result.place}
+          </Text>
+        </Table.Th>
+        <Table.Td {...cellProps}>
+          <Group gap="sm" wrap="nowrap">
             {result.avatar_url && (
-              <img
-                src={result.avatar_url}
-                alt={result.user_name}
-                className="rounded-circle mr-2"
-                style={{ width: '32px', height: '32px' }}
-              />
+              <Avatar src={result.avatar_url} alt={result.user_name} size={32} radius="xl" />
             )}
             <UserInfo
               user={user}
@@ -444,37 +397,43 @@ const LeaderboardRow = memo(
                 'text-light': result.place > 3,
               })}
             />
-          </div>
-        </td>
-        <td className={tableDataCellClassName}>
+          </Group>
+        </Table.Td>
+        <Table.Td {...cellProps}>
           {result.clan_name ? (
-            <span className="text-white" title={result.clan_name}>
+            <Text component="span" c="white" title={result.clan_name}>
               {displayClan}
-            </span>
+            </Text>
           ) : (
-            <span className="text-muted">-</span>
+            <Text component="span" c="dimmed">
+              -
+            </Text>
           )}
-        </td>
-        <td className={cn(tableDataCellClassName, 'fw-bold text-white')}>{result.total_points}</td>
-        <td className={tableDataCellClassName}>{result.total_wins_count}</td>
-        <td className={tableDataCellClassName}>{result.total_score}</td>
-        <td className={tableDataCellClassName}>{result.tournaments_count}</td>
-        <td className={tableDataCellClassName}>
+        </Table.Td>
+        <Table.Td {...cellProps} fw={700} c="white">
+          {result.total_points}
+        </Table.Td>
+        <Table.Td {...cellProps}>{result.total_wins_count}</Table.Td>
+        <Table.Td {...cellProps}>{result.total_score}</Table.Td>
+        <Table.Td {...cellProps}>{result.tournaments_count}</Table.Td>
+        <Table.Td {...cellProps}>
           {result.avg_place ? Number(result.avg_place).toFixed(1) : '-'}
-        </td>
+        </Table.Td>
         {showInsightsButton && (
-          <td className={cn(tableDataCellClassName, 'text-center')}>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-light"
+          <Table.Td {...cellProps} ta="center">
+            <Button
+              size="compact-sm"
+              variant="outline"
+              color="gray"
               onClick={() => onShowInsights(result)}
               title={i18n.t('View player insights')}
+              leftSection={<FontAwesomeIcon icon={faChartLine} />}
             >
-              <i className="bi bi-bar-chart-line" /> {i18n.t('Stats')}
-            </button>
-          </td>
+              {i18n.t('Stats')}
+            </Button>
+          </Table.Td>
         )}
-      </tr>
+      </Table.Tr>
     );
   },
 );
@@ -531,9 +490,11 @@ export function LeaderboardTable({
 }: LeaderboardTableProps) {
   if (results.length === 0) {
     return (
-      <div className="text-center py-5">
-        <p className="text-muted mb-0">{i18n.t('No results yet')}</p>
-      </div>
+      <Box ta="center" py="xl">
+        <Text c="dimmed" mb={0}>
+          {i18n.t('No results yet')}
+        </Text>
+      </Box>
     );
   }
 
@@ -552,21 +513,19 @@ export function LeaderboardTable({
       />
 
       {displayedResults.length === 0 ? (
-        <div className="text-center py-5">
-          <p className="text-muted mb-0">{i18n.t('No players match your filters')}</p>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary mt-2"
-            onClick={onResetFilters}
-          >
+        <Box ta="center" py="xl">
+          <Text c="dimmed" mb={0}>
+            {i18n.t('No players match your filters')}
+          </Text>
+          <Button size="compact-sm" variant="outline" color="gray" mt="sm" onClick={onResetFilters}>
             {i18n.t('Clear Filters')}
-          </button>
-        </div>
+          </Button>
+        </Box>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-dark table-striped table-hover mb-0 cb-table cb-custom-event-table">
-            <thead>
-              <tr>
+        <Table.ScrollContainer minWidth={800}>
+          <Table striped highlightOnHover mb={0} className="cb-table cb-custom-event-table">
+            <Table.Thead>
+              <Table.Tr>
                 <SortableHeader
                   label="#"
                   sortKey="place"
@@ -616,13 +575,13 @@ export function LeaderboardTable({
                   onSort={onSort}
                 />
                 {showInsightsButton && (
-                  <th scope="col" className="text-center">
+                  <Table.Th scope="col" ta="center">
                     {i18n.t('Insights')}
-                  </th>
+                  </Table.Th>
                 )}
-              </tr>
-            </thead>
-            <tbody>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
               {displayedResults.map((result) => (
                 <LeaderboardRow
                   key={result.user_id}
@@ -631,9 +590,9 @@ export function LeaderboardTable({
                   showInsightsButton={showInsightsButton}
                 />
               ))}
-            </tbody>
-          </table>
-        </div>
+            </Table.Tbody>
+          </Table>
+        </Table.ScrollContainer>
       )}
 
       <Pagination

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import cn from 'classnames';
-// import { Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import editorModes from '../../config/editorModes';

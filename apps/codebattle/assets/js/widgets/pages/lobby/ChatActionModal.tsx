@@ -1,8 +1,9 @@
 import React, { useCallback, type RefObject } from 'react';
 
+import { Button, Stack } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 
 import { type UserNameUser } from '../../components/UserName';
 import UserInfo from '../../components/UserInfo';
@@ -41,7 +42,7 @@ function ChatActionModal({
     setModalShowing({ opened: false });
   }, [setModalShowing]);
   const createBattleInvite = useCallback(
-    (event: React.SyntheticEvent<HTMLDivElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
       const { userId, userName } = event.currentTarget.dataset;
@@ -56,7 +57,7 @@ function ChatActionModal({
     [dispatch, setModalShowing],
   );
   const openDirect = useCallback(
-    (event: React.SyntheticEvent<HTMLDivElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
       const { userId, userName } = event.currentTarget.dataset;
@@ -76,35 +77,32 @@ function ChatActionModal({
     modalShowing.action === 'sendMessage' ? openDirect : createBattleInvite;
 
   return (
-    <Modal
-      contentClassName="cb-bg-panel cb-text h-75"
-      show={modalShowing.opened}
-      onHide={handleCloseModal}
-    >
+    <Modal contentClassName="cb-text h-75" show={modalShowing.opened} onHide={handleCloseModal}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="overflow-auto">
         {modalShowing.action && (
-          <div className="d-flex flex-column">
+          <Stack gap="sm">
             {presenceList.map(
               (presenceUser) =>
                 currentUserId !== presenceUser.id && (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="btn btn-secondary cb-btn-secondary cb-rounded mb-2 p-3"
+                  <Button
+                    color="cbSecondary"
+                    fullWidth
+                    justify="flex-start"
+                    h="auto"
+                    p="md"
                     key={presenceUser.id}
                     data-user-id={presenceUser.id}
                     data-user-name={presenceUser.user.name}
                     onClick={handleSelectPlayer}
-                    onKeyPress={handleSelectPlayer}
                   >
                     <UserInfo user={presenceUser.user} hideInfo hideOnlineIndicator />
-                  </div>
+                  </Button>
                 ),
             )}
-          </div>
+          </Stack>
         )}
       </Modal.Body>
     </Modal>

@@ -2,7 +2,7 @@ import React from 'react';
 
 import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { ActionIcon, Box, Button, Flex, Paper, Text } from '@mantine/core';
 
 import getIconForGrade from '@/components/icons/Grades';
 import TournamentTimer from '@/components/TournamentTimer';
@@ -55,24 +55,31 @@ function TournamentTitle({ tournament }: TournamentTitleProps) {
 
   if (tournament.grade === grades.open) {
     return (
-      <span
+      <Text
+        component="span"
         title={title}
-        className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block cb-tournament-title"
+        fw={700}
+        c="white"
+        mb="xs"
+        truncate
+        className="h5 cb-tournament-title"
       >
         {title}
-      </span>
+      </Text>
     );
   }
 
   const subtitle = formatDate(tournament.startsAt, `MMM D, YYYY [${i18n.t('at')}] HH:mm`);
 
   return (
-    <div className="d-flex flex-column align-items-baseline">
-      <span className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block">
+    <Flex direction="column" align="baseline">
+      <Text component="span" fw={700} c="white" mb="xs" truncate className="h5">
         {title}
-      </span>
-      <span className="small">{subtitle}</span>
-    </div>
+      </Text>
+      <Text component="span" size="sm">
+        {subtitle}
+      </Text>
+    </Flex>
   );
 }
 
@@ -89,35 +96,30 @@ function TournamentAction({ tournament, isAdmin = false }: TournamentActionProps
     NiceModal.show(ModalCodes.tournamentModal, { tournament });
   };
 
-  const infoClassName = cn(
-    'btn btn-outline-secondary cb-btn-outline-secondary cb-tournament-info-icon-btn',
-    'px-2 cb-rounded border-0',
-  );
-
-  const actionClassName = cn(
-    'btn btn-secondary cb-btn-secondary cb-tournament-main-action',
-    'text-nowrap px-2 cb-rounded',
-  );
-
   return (
-    <div className="align-content-center cb-tournament-top-actions">
-      <div className="d-flex cb-tournament-actions">
+    <Box className="cb-tournament-top-actions">
+      <Flex className="cb-tournament-actions">
         {showTournamentLink && (
-          <a type="button" className={actionClassName} href={getTournamentUrl(tournament.id)}>
+          <Button
+            component="a"
+            color="cbSecondary"
+            href={getTournamentUrl(tournament.id)}
+            className="cb-tournament-main-action"
+          >
             {text}
-          </a>
+          </Button>
         )}
-        <button
-          type="button"
-          className={infoClassName}
+        <ActionIcon
+          variant="transparent"
           onClick={openTournamentInfo}
           aria-label={i18n.t('Tournament details')}
           title={i18n.t('Tournament details')}
+          className="cb-tournament-info-icon-btn cb-btn-outline-secondary"
         >
           <FontAwesomeIcon icon="info" />
-        </button>
-      </div>
-    </div>
+        </ActionIcon>
+      </Flex>
+    </Box>
   );
 }
 
@@ -141,71 +143,112 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
   );
 
   return (
-    <div className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2 cb-tournament-card">
-      <div className="d-flex flex-column p-3 align-content-center align-items-baseline cb-tournament-card-body">
-        <div className="d-flex align-items-center cb-tournament-title-wrap">
-          <div className="d-none d-lg-block d-md-block mr-2 mb-3">
+    <Paper
+      withBorder
+      radius="md"
+      my="sm"
+      mr="sm"
+      className="cb-subtle-background cb-tournament-card"
+    >
+      <Flex direction="column" p="md" align="baseline" className="cb-tournament-card-body">
+        <Flex align="center" className="cb-tournament-title-wrap">
+          <Box visibleFrom="md" mr="sm" mb="md">
             {getIconForGrade(tournament.grade ?? '')}
-          </div>
+          </Box>
           <TournamentTitle tournament={tournament} />
-        </div>
-        <div className="cb-separator mb-2" />
-        <div className="d-flex w-100 justify-content-between cb-tournament-meta-row">
-          <div className="d-flex flex-column align-items-baseline cb-tournament-meta">
+        </Flex>
+        <Box className="cb-separator" mb="sm" />
+        <Flex w="100%" justify="space-between" className="cb-tournament-meta-row">
+          <Flex direction="column" align="baseline" className="cb-tournament-meta">
             {tournament.grade !== grades.open && (
-              <span title={title} className="d-inline-flex mt-2 text-white text-nowrap">
+              <Flex
+                component="span"
+                display="inline-flex"
+                gap="xs"
+                mt="sm"
+                c="white"
+                title={title}
+                style={{ whiteSpace: 'nowrap' }}
+              >
                 <span className="cb-tournament-points-value">
                   {getRankingPoints(tournament.grade ?? '')[0]}
                 </span>
-                <span className="ml-1">{i18n.t('Ranking Points')}</span>
-              </span>
+                <span>{i18n.t('Ranking Points')}</span>
+              </Flex>
             )}
-            <span className="d-flex flex-wrap">
+            <Flex component="span" wrap="wrap">
               {tournament.state !== 'upcoming' && (
-                <span className="mr-2 d-inline-flex mt-2 text-white text-nowrap">
+                <Flex
+                  component="span"
+                  display="inline-flex"
+                  gap="sm"
+                  mr="sm"
+                  mt="sm"
+                  c="white"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
                   <FontAwesomeIcon
                     icon="flag-checkered"
-                    className="mr-2 text-warning"
+                    className="text-warning"
                     style={iconSize}
                   />
                   {tournament.state ? i18n.t(mapTournamentTitleByState[tournament.state]) : null}
-                </span>
+                </Flex>
               )}
               {tournamentStates.canceled !== tournament.state &&
                 tournament.state !== 'upcoming' && (
-                  <span className="d-inline-flex mt-2 text-white text-nowrap">
-                    <FontAwesomeIcon icon="user" className="mr-2 text-warning" style={iconSize} />
+                  <Flex
+                    component="span"
+                    display="inline-flex"
+                    gap="sm"
+                    mt="sm"
+                    c="white"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    <FontAwesomeIcon icon="user" className="text-warning" style={iconSize} />
                     {tournament.playersCount}
-                  </span>
+                  </Flex>
                 )}
-            </span>
+            </Flex>
             {showStartsAt(tournament.state) && (
               <>
                 {dayjs(tournament.startsAt).diff(dayjs(), 'hours') <= 24 && (
-                  <span className="d-inline-flex mt-2 text-nowrap cb-tournament-starts-in">
-                    <FontAwesomeIcon
-                      icon="clock"
-                      className="mr-2 cb-tournament-gold"
-                      style={iconSize}
-                    />
+                  <Flex
+                    component="span"
+                    display="inline-flex"
+                    gap="sm"
+                    mt="sm"
+                    style={{ whiteSpace: 'nowrap' }}
+                    className="cb-tournament-starts-in"
+                  >
+                    <FontAwesomeIcon icon="clock" className="cb-tournament-gold" style={iconSize} />
                     <TournamentTimer label={i18n.t('starts in')} date={tournament.startsAt}>
                       {formatTournamentDate(tournament.startsAt, tournament.grade)}
                     </TournamentTimer>
-                  </span>
+                  </Flex>
                 )}
               </>
             )}
             {tournament.state === tournamentStates.finished && finishedAt && (
-              <span className="d-none d-lg-inline-flex d-md-inline-flex d-sm-inline-flex pr-2 mt-2 text-white text-nowrap">
-                <FontAwesomeIcon icon="clock" className="mr-2 text-warning" style={iconSize} />
+              <Flex
+                component="span"
+                display="inline-flex"
+                visibleFrom="sm"
+                gap="sm"
+                pr="sm"
+                mt="sm"
+                c="white"
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                <FontAwesomeIcon icon="clock" className="text-warning" style={iconSize} />
                 {finishedAt}
-              </span>
+              </Flex>
             )}
-          </div>
+          </Flex>
           <TournamentAction tournament={tournament} isAdmin={isAdmin} />
-        </div>
-      </div>
-    </div>
+        </Flex>
+      </Flex>
+    </Paper>
   );
 }
 

@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
 import qs from 'qs';
 import { Menu, Item, Separator } from 'react-contexify';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,6 +16,11 @@ import { getLobbyUrl, getUserProfileUrl } from '@/utils/urlBuilders';
 
 const blackSwordSrc = '/assets/images/fight-black.png';
 const whiteSwordSrc = '/assets/images/fight-white.png';
+
+// react-contexify items sit on the dark `cb-bg-panel`; set white text inline
+// (was Bootstrap `text-white`) so it beats the library's own item color rule.
+const textStyle = { color: 'var(--mantine-color-white)' };
+const iconStyle = { marginRight: 'var(--mantine-spacing-sm)', color: 'var(--mantine-color-white)' };
 
 interface ChatContextMenuUser {
   name?: string | null;
@@ -148,14 +152,14 @@ function ChatContextMenu({
   return (
     <>
       {children}
-      <Menu className="cb-bg-panel cb-border-color cb-rounded text-white" role="menu" id={menuId}>
+      <Menu className="cb-bg-panel cb-border-color cb-rounded" role="menu" id={menuId}>
         <Item role="menuitem" tabIndex={-1} aria-label={i18n.t('Copy Name')} onClick={handleCopy}>
-          <FontAwesomeIcon className="mr-2 text-white" icon="copy" />
-          <span className="text-white">{i18n.t('Copy Name')}</span>
+          <FontAwesomeIcon style={iconStyle} icon="copy" />
+          <span style={textStyle}>{i18n.t('Copy Name')}</span>
         </Item>
         <Item role="menuitem" tabIndex={-1} aria-label={i18n.t('Info')} onClick={handleShowInfo}>
-          <FontAwesomeIcon className="mr-2 text-white" icon="user" />
-          <span className="text-white">{i18n.t('Info')}</span>
+          <FontAwesomeIcon style={iconStyle} icon="user" />
+          <span style={textStyle}>{i18n.t('Info')}</span>
         </Item>
         {githubName && (
           <Item
@@ -164,8 +168,8 @@ function ChatContextMenu({
             aria-label={i18n.t('Github account')}
             onClick={handleShowGithubProfile}
           >
-            <FontAwesomeIcon className="mr-2 text-white" icon={['fab', 'github']} />
-            <span className="text-white">{i18n.t('Github account')}</span>
+            <FontAwesomeIcon style={iconStyle} icon={['fab', 'github']} />
+            <span style={textStyle}>{i18n.t('Github account')}</span>
           </Item>
         )}
         {!isCurrentUser && (
@@ -175,8 +179,8 @@ function ChatContextMenu({
             aria-label={i18n.t(isFollowing ? 'Unfollow' : 'Follow')}
             onClick={handleFollow}
           >
-            <FontAwesomeIcon className="mr-2 text-white" icon="binoculars" />
-            <span className="text-white">{i18n.t(isFollowing ? 'Unfollow' : 'Follow')}</span>
+            <FontAwesomeIcon style={iconStyle} icon="binoculars" />
+            <span style={textStyle}>{i18n.t(isFollowing ? 'Unfollow' : 'Follow')}</span>
           </Item>
         )}
         {canCreatePrivateRoom ? (
@@ -186,8 +190,8 @@ function ChatContextMenu({
             onClick={handleOpenDirect}
             disabled={!canCreatePrivateRoom}
           >
-            <FontAwesomeIcon className="mr-2 text-white" icon="comment-alt" />
-            <span className="text-white">{i18n.t('Direct message')}</span>
+            <FontAwesomeIcon style={iconStyle} icon="comment-alt" />
+            <span style={textStyle}>{i18n.t('Direct message')}</span>
           </Item>
         ) : null}
         {canInvite && (
@@ -204,19 +208,16 @@ function ChatContextMenu({
             <img
               alt={i18n.t('Invite')}
               src={whiteSwordSrc}
-              style={{ width: 14, height: 16 }}
-              className={cn('mr-2', {
-                'text-muted': !inviteSendDisabled,
-              })}
+              style={{ width: 14, height: 16, marginRight: 'var(--mantine-spacing-sm)' }}
             />
-            <span className="text-white">{i18n.t('Send an invite')}</span>
+            <span style={textStyle}>{i18n.t('Send an invite')}</span>
           </Item>
         )}
         {currentUserIsAdmin && <Separator />}
         {currentUserIsAdmin && (
           <Item aria-label={i18n.t('Ban')} onClick={handleBanClick} disabled={isBot}>
-            <FontAwesomeIcon className="mr-2 text-white" icon="ban" />
-            <span className="text-white">{i18n.t('Ban')}</span>
+            <FontAwesomeIcon style={iconStyle} icon="ban" />
+            <span style={textStyle}>{i18n.t('Ban')}</span>
           </Item>
         )}
       </Menu>

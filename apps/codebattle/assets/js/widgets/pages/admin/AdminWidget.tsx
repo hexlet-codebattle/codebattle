@@ -2,7 +2,7 @@ import { currentUserIsAdminSelector, lobbyDataSelector } from '@/selectors';
 import React, { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { type AppDispatch } from '@/slices';
 
 import { broadcastRedirect, fetchTournamentPlayerIds } from '../../middlewares/Main';
@@ -207,7 +207,7 @@ interface ConnectionModalProps {
 
 function ConnectionModal({ connection, onHide }: ConnectionModalProps) {
   return (
-    <Modal contentClassName="cb-bg-panel cb-text" show={!!connection} onHide={onHide}>
+    <Modal contentClassName="cb-text" show={!!connection} onHide={onHide}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>Connection details</Modal.Title>
       </Modal.Header>

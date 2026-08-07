@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
+import { Text } from '@mantine/core';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
-
-import type { OverlayProps } from 'react-bootstrap/Overlay';
 
 import type { AppDispatch } from '@/slices/store';
 
@@ -12,7 +11,7 @@ import Placements from '../config/placements';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
-import PopoverStickOnHover from './PopoverStickOnHover';
+import PopoverStickOnHover, { type Placement } from './PopoverStickOnHover';
 import UserName, { type UserNameUser } from './UserName';
 import UserStats from './UserStats';
 
@@ -103,7 +102,7 @@ interface UserInfoProps {
   hideRank?: boolean;
   displayName?: string;
   loading?: boolean;
-  placement?: OverlayProps['placement'];
+  placement?: Placement;
 }
 
 function UserInfo({
@@ -119,17 +118,25 @@ function UserInfo({
   hideOnlineIndicator = false,
   displayName,
   loading = false,
-  placement = Placements.bottomStart as OverlayProps['placement'],
+  placement = Placements.bottomStart as Placement,
 }: UserInfoProps) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const content = useMemo(() => (user.isBot ? 'bot' : <UserPopoverContent user={user} />), [user]);
 
   if (!user?.id) {
-    return <span className="text-white">John Doe</span>;
+    return (
+      <Text component="span" c="white">
+        John Doe
+      </Text>
+    );
   }
 
   if (user?.id === 0) {
-    return <span className="text-white">{user.name}</span>;
+    return (
+      <Text component="span" c="white">
+        {user.name}
+      </Text>
+    );
   }
 
   const isOnline = (presenceList as Array<{ id?: string | number }>).some(

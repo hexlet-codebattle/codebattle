@@ -1,23 +1,26 @@
 import React from 'react';
 
-import cn from 'classnames';
+import { Group, Text } from '@mantine/core';
 
 interface SystemMessageProps {
   meta?: { status?: string } | null;
   text: string;
 }
 
-function SystemMessage({ text, meta }: SystemMessageProps) {
-  const statusClassName = cn('text-small', {
-    'text-danger': ['error', 'failure'].includes(meta?.status ?? ''),
-    'cb-text-success': meta?.status === 'success',
-    'text-muted': meta?.status === 'event',
-  });
+const statusColor = (status?: string) => {
+  if (['error', 'failure'].includes(status ?? '')) return 'red';
+  if (status === 'success') return 'cbSuccess';
+  if (status === 'event') return 'dimmed';
+  return undefined;
+};
 
+function SystemMessage({ text, meta }: SystemMessageProps) {
   return (
-    <div className="d-flex align-items-baseline flex-wrap">
-      <small className={statusClassName}>{text}</small>
-    </div>
+    <Group align="baseline" gap="xs">
+      <Text component="small" size="sm" c={statusColor(meta?.status)}>
+        {text}
+      </Text>
+    </Group>
   );
 }
 

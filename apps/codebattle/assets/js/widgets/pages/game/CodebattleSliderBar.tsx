@@ -1,9 +1,7 @@
 import React from 'react';
 
 import cn from 'classnames';
-import Tooltip from 'react-bootstrap/Tooltip';
-
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
+import { Tooltip } from '@mantine/core';
 
 import { formatDuration } from './ControlPanel';
 
@@ -65,14 +63,10 @@ function SliderAction({ value, className, event, setGameState, startTime }: Slid
 
   return (
     <div>
-      <OverlayTrigger
-        placement="top"
-        overlay={
-          <Tooltip id="tooltip-top">
-            {`Check started by ${event.userName}`}
-            {durationLabel ? ` · ${durationLabel}` : ''}
-          </Tooltip>
-        }
+      <Tooltip
+        position="top"
+        withArrow
+        label={`Check started by ${event.userName}${durationLabel ? ` · ${durationLabel}` : ''}`}
       >
         <div
           role="button"
@@ -85,7 +79,7 @@ function SliderAction({ value, className, event, setGameState, startTime }: Slid
             left: `${value * 100}%`,
           }}
         />
-      </OverlayTrigger>
+      </Tooltip>
     </div>
   );
 }

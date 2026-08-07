@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { ActionIcon, Box, Group, Stack, Text } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectDefaultAvatarUrl } from '@/selectors';
@@ -87,8 +87,10 @@ const tournamentGrades: { key: keyof TournamentStats; label: string }[] = [
 
 function StatsRow({ items }: { items: StatsRowItem[] }) {
   return (
-    <div
-      className="text-muted small mt-1"
+    <Box
+      c="dimmed"
+      fz="sm"
+      mt={4}
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
@@ -96,13 +98,15 @@ function StatsRow({ items }: { items: StatsRowItem[] }) {
       }}
     >
       {items.map(({ key, label, value }) => (
-        <span key={key} className="text-nowrap">
+        <Text key={key} component="span" style={{ whiteSpace: 'nowrap' }}>
           {label}
           {': '}
-          <b className="text-white">{value}</b>
-        </span>
+          <Text component="b" c="white">
+            {value}
+          </Text>
+        </Text>
       ))}
-    </div>
+    </Box>
   );
 }
 
@@ -139,100 +143,98 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
   }, [userInfo.id, userInfo.name, followId, dispatch]);
 
   return (
-    <div className="container-fluid p-2">
-      <div className="row">
-        <div className="col">
-          <div className="d-flex flex-column w-100">
-            <div className="d-flex align-items-start justify-content-between">
-              <div className="d-flex align-items-center text-white">
-                <img
-                  className="img-fluid cb-rounded mr-2"
-                  style={{ maxHeight: '42px', width: '42px' }}
-                  src={avatarUrl}
-                  alt={i18next.t('User avatar')}
-                />
-                <div className="d-flex flex-column">
-                  <div className="d-flex align-items-center">
-                    <LanguageIcon className="mr-1" lang={lang} />
-                    <span className="font-weight-bold">{name}</span>
-                    {userInfo.githubName && (
-                      <a
-                        href={`https://github.com/${userInfo.githubName}`}
-                        title={i18next.t('Github account')}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-white ml-2"
-                      >
-                        <FontAwesomeIcon icon={['fab', 'github']} />
-                      </a>
-                    )}
-                  </div>
-                  {clan && <span className="text-muted small">{clan}</span>}
-                </div>
-              </div>
-              <div>
-                <button
-                  type="button"
-                  title={i18next.t('play active game')}
-                  className={cn('btn btn-sm text-primary border-0 cb-rounded', {
-                    'text-primary': !!activeGameId,
-                    'text-muted': !activeGameId,
-                  })}
-                  onClick={handlePlayClick}
-                  disabled={!activeGameId}
-                >
-                  <FontAwesomeIcon icon="play" />
-                </button>
-                <button
-                  type="button"
-                  title={i18next.t('follow user')}
-                  className={cn('btn btn-sm border-0 cb-rounded', {
-                    'text-primary': followId !== userInfo.id,
-                    'text-danger': followId === userInfo.id,
-                  })}
-                  onClick={toggleFollowClick}
-                >
-                  <FontAwesomeIcon icon="binoculars" />
-                </button>
-              </div>
-            </div>
+    <Box p="sm">
+      <Stack gap={0} w="100%">
+        <Group align="flex-start" justify="space-between" wrap="nowrap">
+          <Group align="center" gap="sm" wrap="nowrap" c="white">
+            <img
+              className="cb-rounded"
+              style={{ maxHeight: '42px', width: '42px' }}
+              src={avatarUrl}
+              alt={i18next.t('User avatar')}
+            />
+            <Stack gap={0}>
+              <Group align="center" gap={4} wrap="nowrap">
+                <LanguageIcon lang={lang} />
+                <Text component="span" fw={700}>
+                  {name}
+                </Text>
+                {userInfo.githubName && (
+                  <Text
+                    component="a"
+                    href={`https://github.com/${userInfo.githubName}`}
+                    title={i18next.t('Github account')}
+                    target="_blank"
+                    rel="noreferrer"
+                    c="white"
+                    ml="sm"
+                  >
+                    <FontAwesomeIcon icon={['fab', 'github']} />
+                  </Text>
+                )}
+              </Group>
+              {clan && (
+                <Text c="dimmed" fz="sm">
+                  {clan}
+                </Text>
+              )}
+            </Stack>
+          </Group>
+          <Group gap={4} wrap="nowrap">
+            <ActionIcon
+              variant="transparent"
+              title={i18next.t('play active game')}
+              c={activeGameId ? 'blue' : 'dimmed'}
+              onClick={handlePlayClick}
+              disabled={!activeGameId}
+            >
+              <FontAwesomeIcon icon="play" />
+            </ActionIcon>
+            <ActionIcon
+              variant="transparent"
+              title={i18next.t('follow user')}
+              c={followId === userInfo.id ? 'red' : 'blue'}
+              onClick={toggleFollowClick}
+            >
+              <FontAwesomeIcon icon="binoculars" />
+            </ActionIcon>
+          </Group>
+        </Group>
+        <StatsRow
+          items={[
+            { key: 'place', label: i18next.t('Place'), value: rank ?? '####' },
+            { key: 'points', label: i18next.t('Points'), value: points ?? '####' },
+            { key: 'rating', label: i18next.t('Rating'), value: rating ?? '####' },
+          ]}
+        />
+        {data && (
+          <>
+            <StatsRow
+              items={tournamentGrades.slice(0, 3).map(({ key, label }) => ({
+                key,
+                label,
+                value: tournamentsStats[key] ?? 0,
+              }))}
+            />
+            <StatsRow
+              items={tournamentGrades.slice(3, 6).map(({ key, label }) => ({
+                key,
+                label,
+                value: tournamentsStats[key] ?? 0,
+              }))}
+            />
             <StatsRow
               items={[
-                { key: 'place', label: i18next.t('Place'), value: rank ?? '####' },
-                { key: 'points', label: i18next.t('Points'), value: points ?? '####' },
-                { key: 'rating', label: i18next.t('Rating'), value: rating ?? '####' },
+                { key: 'won', label: i18next.t('Won'), value: gameStats.won },
+                { key: 'lost', label: i18next.t('Lost'), value: gameStats.lost },
+                { key: 'gaveUp', label: i18next.t('GaveUp'), value: gameStats.gaveUp },
               ]}
             />
-            {data && (
-              <>
-                <StatsRow
-                  items={tournamentGrades.slice(0, 3).map(({ key, label }) => ({
-                    key,
-                    label,
-                    value: tournamentsStats[key] ?? 0,
-                  }))}
-                />
-                <StatsRow
-                  items={tournamentGrades.slice(3, 6).map(({ key, label }) => ({
-                    key,
-                    label,
-                    value: tournamentsStats[key] ?? 0,
-                  }))}
-                />
-                <StatsRow
-                  items={[
-                    { key: 'won', label: i18next.t('Won'), value: gameStats.won },
-                    { key: 'lost', label: i18next.t('Lost'), value: gameStats.lost },
-                    { key: 'gaveUp', label: i18next.t('GaveUp'), value: gameStats.gaveUp },
-                  ]}
-                />
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+          </>
+        )}
+      </Stack>
       {!data ? <Loading small /> : <UserAchievements achievements={data.achievements} />}
-    </div>
+    </Box>
   );
 }
 

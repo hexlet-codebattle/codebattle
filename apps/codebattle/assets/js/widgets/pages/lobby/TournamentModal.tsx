@@ -1,11 +1,10 @@
 import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button, Flex, Text, Title } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import TournamentDescription from '@/components/TournamentDescription';
 import TournamentPreviewPanel from '@/components/TournamentPreviewPanel';
 import { grades } from '@/config/grades';
@@ -36,24 +35,23 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
   }
 
   return (
-    <Modal
-      size="lg"
-      show={modal.visible}
-      onHide={modal.hide}
-      contentClassName="cb-bg-panel cb-text"
-    >
+    <Modal size="lg" show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
       <Modal.Header className="cb-border-color" closeButton>
-        <Modal.Title className="d-flex flex-column">
+        <Modal.Title>
           {tournament.grade !== grades.open && (
-            <span className="text-white">Codebattle League 2025</span>
+            <Text component="span" c="white">
+              Codebattle League 2025
+            </Text>
           )}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ position: 'relative' }}>
+        <Title order={3} ta="center">
           {i18n.t('Tournament: %{name}', {
             name: localizeTournamentName(tournament.name, tournament.grade),
           })}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body className="position-relative">
-        <div className="d-flex flex-column">
+        </Title>
+        <Flex direction="column">
           <TournamentPreviewPanel
             className="d-flex justify-content-center w-100 h-100"
             tournament={tournament as unknown as { grade: string }}
@@ -64,24 +62,20 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
             className="d-flex flex-column align-items-center cb-rounded w-100 h-100 p-3"
             tournament={tournament as unknown as { grade: string; description?: string }}
           />
-        </div>
+        </Flex>
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
         {tournament.id && (
-          <a
+          <Button
+            component="a"
+            color="cbSecondary"
+            disabled={isUpcoming}
             href={isAdmin || !isUpcoming ? `/tournaments/${tournament.id}` : 'blank'}
-            className={cn('btn btn-secondary cb-btn-secondary pr-2 cb-rounded', {
-              disabled: isUpcoming,
-            })}
-            // `disabled` is not a valid anchor attribute but was present in the
-            // original markup; preserve behavior without a type error.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            {...({ disabled: isUpcoming } as any)}
           >
             {i18n.t('Open Tournament')}
-          </a>
+          </Button>
         )}
-        <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
+        <Button onClick={modal.hide} color="cbSecondary" radius="md">
           {i18n.t('Close')}
         </Button>
       </Modal.Footer>

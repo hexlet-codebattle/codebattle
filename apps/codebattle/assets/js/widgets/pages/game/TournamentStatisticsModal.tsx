@@ -3,7 +3,7 @@ import React, { useEffect, memo, useMemo, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import {
   tournamentSelector,
   firstPlayerSelector,
@@ -70,7 +70,7 @@ const TournamentStatisticsModal = NiceModal.create(() => {
   );
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
+    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

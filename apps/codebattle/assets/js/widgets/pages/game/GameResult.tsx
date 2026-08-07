@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 
+import { Alert } from '@mantine/core';
 import find from 'lodash/find';
 import hasIn from 'lodash/hasIn';
-import Alert from 'react-bootstrap/Alert';
 import { useSelector } from 'react-redux';
 
 import { type RootState } from '@/slices';
@@ -11,6 +11,7 @@ import i18n from '../../../i18n';
 import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
 import * as selectors from '../../selectors';
+import { bootstrapAlertColor } from '../../ui/alert';
 
 function GameResult() {
   const currentUserId = useSelector((state: RootState) => selectors.currentUserIdSelector(state));
@@ -56,9 +57,13 @@ function GameResult() {
   }, [currentUserId, players, isCurrentUserPlayer, gameStatus.state, gameMode]);
 
   if (result) {
-    const alertClassName = `mt-2 alert-dark-theme${result.isWin ? ' cb-game-win-alert' : ''}`;
+    const alertClassName = `mt-2 alert alert-${result.alertStyle} alert-dark-theme${result.isWin ? ' cb-game-win-alert' : ''}`;
     return (
-      <Alert className={alertClassName} variant={result.alertStyle}>
+      <Alert
+        className={alertClassName}
+        color={bootstrapAlertColor(result.alertStyle)}
+        variant="light"
+      >
         {result.msg}
       </Alert>
     );

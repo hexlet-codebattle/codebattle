@@ -1,10 +1,9 @@
-import React, { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
 
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button } from '@mantine/core';
 import moment from 'moment';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { type TournamentState } from '@/slices/initial';
 
 import i18n from '../../../i18n';
@@ -99,10 +98,9 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   const [showRawJson, setShowRawJson] = useState(false);
 
-  const closeBtnClassName = cn('btn rounded-lg', {
-    'btn-secondary': !hasCustomEventStyles,
-    'cb-custome-event-btn-secondary': !hasCustomEventStyles,
-  });
+  const toggleJsonView = useCallback(() => {
+    setShowRawJson((v) => !v)
+  }, [setShowRawJson])
 
   const detailSections = useMemo(() => {
     const sections = [
@@ -193,7 +191,7 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const handleCancel = useCallback(() => setModalShowing(false), [setModalShowing]);
 
   return (
-    <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
+    <Modal contentClassName="cb-text" show={modalShowing} onHide={handleCancel}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{i18n.t('Tournament details')}</Modal.Title>
       </Modal.Header>
@@ -217,14 +215,19 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       </Modal.Body>
       <Modal.Footer className="cb-border-color d-flex justify-content-between">
         <Button
-          variant="outline-secondary"
-          size="sm"
-          className="rounded-lg"
-          onClick={() => setShowRawJson((v) => !v)}
+          variant="outline"
+          color="cbSecondary"
+          radius="md"
+          onClick={toggleJsonView}
         >
           {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
         </Button>
-        <Button onClick={handleCancel} className={closeBtnClassName}>
+        <Button
+          onClick={handleCancel}
+          color="cbSecondary"
+          radius="md"
+          className={hasCustomEventStyles ? 'cb-custom-event-btn-secondary' : undefined}
+        >
           {i18n.t('Close')}
         </Button>
       </Modal.Footer>

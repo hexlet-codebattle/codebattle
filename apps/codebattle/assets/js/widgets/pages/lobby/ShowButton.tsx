@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
+
 import i18n from '../../../i18n';
 
 interface ShowButtonProps {
@@ -9,13 +11,17 @@ interface ShowButtonProps {
 
 function ShowButton({ url, type = 'table' }: ShowButtonProps) {
   return (
-    <a
-      type="button"
-      className={`btn ${type === 'table' ? 'px-4 ml-1' : ''} btn-secondary btn-sm rounded-lg`}
+    <Button
+      component="a"
       href={url}
+      color="cbSecondary"
+      size="sm"
+      radius="md"
+      px={type === 'table' ? 'lg' : undefined}
+      ml={type === 'table' ? 'xs' : undefined}
     >
       {i18n.t('Show')}
-    </a>
+    </Button>
   );
 }
 

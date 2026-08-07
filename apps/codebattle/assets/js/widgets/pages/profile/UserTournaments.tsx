@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { Box, Flex, Table, Text } from '@mantine/core';
 import { camelizeKeys } from 'humps';
 import unionBy from 'lodash/unionBy';
 import moment from 'moment';
@@ -179,33 +180,49 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
 
     if (status === 'error') {
       return (
-        <div className="py-5 text-center text-muted">{i18n.t('Failed to load tournaments')}</div>
+        <Text py="xl" ta="center" c="dimmed">
+          {i18n.t('Failed to load tournaments')}
+        </Text>
       );
     }
 
-    return <div className="py-5 text-center text-muted">{i18n.t('No tournaments played yet')}</div>;
+    return (
+      <Text py="xl" ta="center" c="dimmed">
+        {i18n.t('No tournaments played yet')}
+      </Text>
+    );
   }
 
   return (
-    <div className="h-100 d-flex flex-column">
-      <div ref={tableRef} className="table-responsive mvh-100 cb-overflow-y-scroll">
-        <table className="table table-striped mb-0">
-          <thead className="cb-text sticky-top">
-            <tr>
-              <th className="p-3 border-0">{i18n.t('Grade')}</th>
-              <th className="p-3 border-0">{i18n.t('Place')}</th>
-              <th className="p-3 border-0">{i18n.t('Points')}</th>
-              <th className="p-3 border-0">{i18n.t('Score')}</th>
-              <th className="p-3 border-0">{i18n.t('Games')}</th>
-              <th className="p-3 border-0">{i18n.t('Wins')}</th>
-              <th className="p-3 border-0">{i18n.t('Time')}</th>
-              <th className="p-3 border-0">{i18n.t('Lang')}</th>
-              <th className="p-3 border-0">{i18n.t('Date')}</th>
-            </tr>
-          </thead>
-          <tbody className="cb-text">
+    <Flex h="100%" direction="column">
+      <Box ref={tableRef} className="mvh-100 cb-overflow-y-scroll" style={{ overflowX: 'auto' }}>
+        <Table
+          striped
+          stickyHeader
+          mb={0}
+          verticalSpacing="md"
+          horizontalSpacing="md"
+          styles={{
+            td: { whiteSpace: 'nowrap', verticalAlign: 'middle' },
+            th: { whiteSpace: 'nowrap' },
+          }}
+        >
+          <Table.Thead className="cb-text">
+            <Table.Tr>
+              <Table.Th>{i18n.t('Grade')}</Table.Th>
+              <Table.Th>{i18n.t('Place')}</Table.Th>
+              <Table.Th>{i18n.t('Points')}</Table.Th>
+              <Table.Th>{i18n.t('Score')}</Table.Th>
+              <Table.Th>{i18n.t('Games')}</Table.Th>
+              <Table.Th>{i18n.t('Wins')}</Table.Th>
+              <Table.Th>{i18n.t('Time')}</Table.Th>
+              <Table.Th>{i18n.t('Lang')}</Table.Th>
+              <Table.Th>{i18n.t('Date')}</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody className="cb-text">
             {tournaments.map((item) => (
-              <tr
+              <Table.Tr
                 key={item.tournamentId}
                 role="link"
                 tabIndex={0}
@@ -218,10 +235,11 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
                   }
                 }}
               >
-                <td className="p-3 align-middle text-nowrap cb-border-color">
+                <Table.Td>
                   <span
-                    className="px-2 py-1 cb-rounded"
+                    className="cb-rounded"
                     style={{
+                      padding: '0.25rem 0.5rem',
                       backgroundColor:
                         (item.tournamentGrade && gradeColors[item.tournamentGrade]) || '#8a919c',
                       color: '#1f2530',
@@ -230,30 +248,37 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
                   >
                     {formatGrade(item.tournamentGrade || 'open')}
                   </span>
-                </td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{`#${item.place}`}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{item.points}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{item.score}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{item.gamesCount}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{item.winsCount}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">
-                  {formatTime(item.totalTime)}
-                </td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">
-                  {item.userLang || '-'}
-                </td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">
+                </Table.Td>
+                <Table.Td>{`#${item.place}`}</Table.Td>
+                <Table.Td>{item.points}</Table.Td>
+                <Table.Td>{item.score}</Table.Td>
+                <Table.Td>{item.gamesCount}</Table.Td>
+                <Table.Td>{item.winsCount}</Table.Td>
+                <Table.Td>{formatTime(item.totalTime)}</Table.Td>
+                <Table.Td>{item.userLang || '-'}</Table.Td>
+                <Table.Td>
                   {moment.utc(item.tournamentStartedAt).local().format('YYYY.MM.DD HH:mm')}
-                </td>
-              </tr>
+                </Table.Td>
+              </Table.Tr>
             ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-auto border-top cb-border-color py-2 px-3 font-weight-bold text-muted rounded-bottom">
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Box
+        mt="auto"
+        py="sm"
+        px="md"
+        fw={700}
+        c="dimmed"
+        style={{
+          borderTop: '1px solid var(--mantine-color-default-border)',
+          borderBottomLeftRadius: 'var(--mantine-radius-md)',
+          borderBottomRightRadius: 'var(--mantine-radius-md)',
+        }}
+      >
         {i18n.t('Total tournaments: %{count}', { count: pageInfo.totalEntries })}
-      </div>
-    </div>
+      </Box>
+    </Flex>
   );
 }
 

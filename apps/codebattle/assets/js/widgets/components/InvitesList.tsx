@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Box, Button, Flex, Text } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import { type AppDispatch } from '@/slices';
@@ -29,7 +30,11 @@ interface InvitesListProps {
 }
 
 function NoInvites() {
-  return <div className="p-2 text-center">{i18n.t('No Invites')}</div>;
+  return (
+    <Text p="sm" ta="center">
+      {i18n.t('No Invites')}
+    </Text>
+  );
 }
 
 function InvitesList({ list, followId, currentUserId }: InvitesListProps) {
@@ -51,48 +56,69 @@ function InvitesList({ list, followId, currentUserId }: InvitesListProps) {
       ) => number,
     )
     .map(({ id, creatorId, recipientId, creator, recipient, gameParams }) => (
-      <div key={id} className="d-flex align-items-center p-2">
-        <div className="mx-1">
+      <Flex key={id} align="center" p="sm">
+        <Box mx="xs">
           <GameLevelBadge level={gameParams.level} />
-        </div>
+        </Box>
         {currentUserId === recipientId && (
           <>
-            <span className="text-truncate small mx-2 mr-auto">
-              <span className="font-weight-bold">{creator.name}</span>
-              <span className="mr-2"> {i18n.t('invited you')}</span>
-            </span>
-            <button
-              type="submit"
-              className="btn btn-outline-danger cb-rounded small px-1 mx-1"
+            <Text truncate size="sm" mx="sm" mr="auto">
+              <Text span fw={700}>
+                {creator.name}
+              </Text>
+              <Text span mr="sm">
+                {' '}
+                {i18n.t('invited you')}
+              </Text>
+            </Text>
+            <Button
+              variant="outline"
+              color="red"
+              radius="md"
+              size="compact-sm"
+              px="xs"
+              mx="xs"
               onClick={() => dispatch(acceptInvite(id))}
             >
               {i18n.t('Accept')}
-            </button>
-            <button
-              type="submit"
-              className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded small px-1 mx-1"
+            </Button>
+            <Button
+              variant="outline"
+              color="cbSecondary"
+              className="cb-btn-outline-secondary"
+              radius="md"
+              size="compact-sm"
+              px="xs"
+              mx="xs"
               onClick={() => dispatch(declineInvite(id, creator.name))}
             >
               {i18n.t('Decline')}
-            </button>
+            </Button>
           </>
         )}
         {currentUserId === creatorId && (
           <>
-            <span className="text-truncate small ml-2 mr-auto">
+            <Text truncate size="sm" ml="sm" mr="auto">
               {i18n.t('You invited ')}
-              <span className="font-weight-bold mr-2">{recipient.name}</span>
-            </span>
-            <button
-              type="submit"
-              className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded small mx-1 px-1"
+              <Text span fw={700} mr="sm">
+                {recipient.name}
+              </Text>
+            </Text>
+            <Button
+              variant="outline"
+              color="cbSecondary"
+              className="cb-btn-outline-secondary"
+              radius="md"
+              size="compact-sm"
+              px="xs"
+              mx="xs"
               onClick={() => dispatch(cancelInvite(id, recipient.name))}
             >
               {i18n.t('Cancel')}
-            </button>
+            </Button>
           </>
         )}
-      </div>
+      </Flex>
     ));
 }
 
