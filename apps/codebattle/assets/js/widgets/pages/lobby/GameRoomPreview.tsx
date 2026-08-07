@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Box, Flex } from '@mantine/core';
 import { getPageProp } from '@/inertia/pageProps';
 import { useSelector } from 'react-redux';
 
@@ -30,11 +31,11 @@ function GameRoomPreview({ pageName }: GameRoomPreviewProps) {
 
   if (pageName === 'builder') {
     return (
-      <div className="preview container-fluid slideInLeft">
-        <div className="preview__container w-100 d-flex align-items-center">
+      <Box className="preview slideInLeft" w="100%" px="md">
+        <Flex className="preview__container" w="100%" align="center">
           <span className="preview__info">{i18n.t('Template Task is Loading')}</span>
-        </div>
-      </div>
+        </Flex>
+      </Box>
     );
   }
 
@@ -49,8 +50,8 @@ function GameRoomPreview({ pageName }: GameRoomPreviewProps) {
   const player2 = players[1] || defaultPlayer;
 
   return (
-    <div className="preview container-fluid slideInLeft">
-      <div className="preview__container w-100 d-flex align-items-center">
+    <Box className="preview slideInLeft" w="100%" px="md">
+      <Flex className="preview__container" w="100%" align="center">
         <div className="player1">
           <img
             src={player1.avatar_url || defaultPreviewAvatarUrl}
@@ -84,8 +85,8 @@ function GameRoomPreview({ pageName }: GameRoomPreviewProps) {
             <span className="preview__info">{player2.rating}</span>
           </div>
         </div>
-      </div>
-    </div>
+      </Flex>
+    </Box>
   );
 }
 

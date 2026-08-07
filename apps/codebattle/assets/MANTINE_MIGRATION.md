@@ -460,13 +460,19 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `cb-border-color`; dropped per-row `cb-border-color` (Mantine row border
   resolves to it). `Announcement` returns `null` (all Bootstrap dead-commented) —
   nothing to convert.
+- Done: `GameRoomPreview` (dropped `container-fluid` / `w-100 d-flex
+  align-items-center` → `<Box w="100%" px="md">` / `<Flex align="center">`, kept
+  all `preview`/`player*` BEM design classes) and `LobbyLoading` (skeleton — the
+  `col-*`-in-flex responsive grid → `<Flex>`/`<Box>` with responsive `w`/`p`/`m`
+  props, `sr-only` → `<VisuallyHidden>`, all `cb-lobby-loading-*` /
+  `cb-text-skeleton` design classes kept).
 - **Deferred (react-select):** `TaskChoice` uses react-select — leave with
   `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
 - **Remaining lobby leaves/containers (still Bootstrap):** `LobbyChat`,
-  `LobbyLoading`, `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
+  `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
   `CodebattleLeagueDescription`, `LobbyWidget` (container), `TournamentModal`,
-  `ChatActionModal`, `GameRoomPreview`. (`CreateGameDialog`, `TournamentListItem`,
-  `SeasonProfilePanel` have tests — wrap in `MantineTestProvider` when converted.)
+  `ChatActionModal`. (`CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`
+  have tests — wrap in `MantineTestProvider` when converted.)
 
 ⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
 attached `btn-group`); the **cancel button still hidden until you hover the game
