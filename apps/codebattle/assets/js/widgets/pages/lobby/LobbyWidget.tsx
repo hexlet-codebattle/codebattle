@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import cn from 'classnames';
+import { Box, Button, Flex } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from '@/components/CbModal';
@@ -21,20 +21,6 @@ import LobbyChat from './LobbyChat';
 import SeasonProfilePanel from './SeasonProfilePanel';
 import { type LobbyTournament } from './TournamentCard';
 
-const createBtnClassName = cn('btn cb-rounded');
-
-const createBasicGameBtnClassName = cn(
-  createBtnClassName,
-  'btn-secondary cb-btn-secondary w-100 mr-2',
-);
-
-const joinGameBtnClassName = cn(createBtnClassName, 'btn-secondary cb-btn-secondary w-100');
-
-const createExperementalGameBtnClassName = cn(
-  createBtnClassName,
-  'btn-secondary cb-btn-secondary mt-2 pl-2',
-);
-
 interface CreateExperimentalGameButtonProps {
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   isOnline?: boolean;
@@ -47,15 +33,16 @@ function CreateExperimentalGameButton({
   type = 'css',
 }: CreateExperimentalGameButtonProps) {
   return (
-    <button
-      type="button"
-      className={createExperementalGameBtnClassName}
+    <Button
+      color="cbSecondary"
+      mt="sm"
+      pl="sm"
       data-type={type}
       onClick={onClick}
       disabled={!isOnline}
     >
       {type === 'css' ? i18n.t('Create a CSS Game') : i18n.t('Create a SQL Game')}
-    </button>
+    </Button>
   );
 }
 
@@ -65,9 +52,9 @@ interface JoinGameButtonProps {
 
 function JoinGameButton({ onClick }: JoinGameButtonProps) {
   return (
-    <button type="button" className={joinGameBtnClassName} onClick={onClick}>
+    <Button color="cbSecondary" fullWidth onClick={onClick}>
       {i18n.t('Join a battle')}
-    </button>
+    </Button>
   );
 }
 
@@ -79,14 +66,9 @@ interface CreateGameButtonProps {
 
 function CreateGameButton({ onClick, isOnline, isContinue }: CreateGameButtonProps) {
   return (
-    <button
-      type="button"
-      className={createBasicGameBtnClassName}
-      onClick={onClick}
-      disabled={!isOnline}
-    >
+    <Button color="cbSecondary" fullWidth mr="sm" onClick={onClick} disabled={!isOnline}>
       {isContinue ? i18n.t('Continue battle') : i18n.t('Create a battle')}
-    </button>
+    </Button>
   );
 }
 
@@ -192,10 +174,10 @@ function LobbyWidget() {
   return (
     <div>
       <Modal show={showCreateGameModal} onHide={handleCloseCreateGameModal}>
-        <Modal.Header className="cb-border-color text-white" closeButton>
+        <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Create a game')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="text-white">
+        <Modal.Body>
           <CreateGameDialog hideModal={handleCloseCreateGameModal} />
         </Modal.Body>
       </Modal>
@@ -204,10 +186,10 @@ function LobbyWidget() {
         onHide={handleCloseJoinGameModal}
         dialogClassName="cb-join-game-modal"
       >
-        <Modal.Header className="cb-border-color text-white" closeButton>
+        <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Join a game')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="text-white">
+        <Modal.Body>
           <ActiveGames
             games={activeGames as unknown as LobbyGame[]}
             currentUserId={currentUserId ?? 0}
@@ -228,15 +210,15 @@ function LobbyWidget() {
         user={currentUser as React.ComponentProps<typeof SeasonProfilePanel>['user']}
         nearbyUsers={nearbyUsers as number[]}
         controls={
-          <div className="d-flex flex-column mt-2 cb-lobby-controls">
-            <div className="d-flex w-100 cb-lobby-controls-primary">
+          <Flex direction="column" mt="sm" className="cb-lobby-controls">
+            <Flex w="100%" className="cb-lobby-controls-primary">
               <CreateGameButton
                 onClick={handleCreateGameBtnClick}
                 isOnline={online}
                 isContinue={!!activeGame}
               />
               <JoinGameButton onClick={handleJoinGameBtnClick} />
-            </div>
+            </Flex>
             {!hideExperimentGamesButtons && (
               <>
                 <CreateExperimentalGameButton
@@ -251,24 +233,24 @@ function LobbyWidget() {
                 />
               </>
             )}
-          </div>
+          </Flex>
         }
       />
 
-      <div className="d-flex flex-column flex-lg-row p-0 cb-lobby-bottom-layout">
-        <div className="col-12 col-lg-8 p-0 pr-lg-2">
+      <Flex direction={{ base: 'column', lg: 'row' }} p={0} className="cb-lobby-bottom-layout">
+        <Box w={{ base: '100%', lg: '66.6667%' }} p={0} pr={{ base: 0, lg: 'sm' }}>
           <LobbyChat
             setOpenActionModalShowing={setActionModalShowing}
             presenceList={presenceList as React.ComponentProps<typeof LobbyChat>['presenceList']}
             inputRef={chatInputRef}
           />
-        </div>
-        <div className="col-12 col-lg-4 p-0 pl-lg-2">
-          <div className="mt-2">
+        </Box>
+        <Box w={{ base: '100%', lg: '33.3333%' }} p={0} pl={{ base: 0, lg: 'sm' }}>
+          <Box mt="sm">
             <Announcement />
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Flex>
     </div>
   );
 }
