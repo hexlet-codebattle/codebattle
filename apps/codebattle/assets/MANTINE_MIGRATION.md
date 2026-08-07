@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (25 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (26 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -124,10 +124,17 @@ shared leaf components in `widgets/components/`.
 its `.card.cb-card` ranking panel is left as Bootstrap; see below),
 `SideScrollControls` (positioning/overflow utilities → `Box`/`Flex` +
 `pos`/`top`/`left`/`right`/`display` style props; icon `btn`s → `UnstyledButton`;
-gradient `cb-*-scroll-control` design classes kept), and the
+gradient `cb-*-scroll-control` design classes kept),
+`ScheduleNavigationBar` (`d-flex`→`Flex`, `pr-2`/`pl-2`→`Group gap`; the
+`div role="button" .btn-link` prev/next controls → real `UnstyledButton c="white"`,
+dropping the manual `role`/`tabIndex`/`onKeyPress` a11y shims and the custom
+`.btn-link{color:white}` override), and the
 `UserInfo` / `UserName` / `UserLabel` / `UserStats` cluster. Plus the
 theme border-token work (gotcha #7 / `theme.ts`). The chat cluster is
 effectively done.
+
+Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
+`cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
 The `User*` cluster keeps the string `className`/`linkClassName` **passthrough
 props** (used by ~12 page callers that still pass Bootstrap color classes like
