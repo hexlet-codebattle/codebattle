@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages started (`settings` done) |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -315,6 +315,63 @@ button, username truncation).
 custom `cb-*` class, drop `btn`); this preserves the click behavior that tests
 assert (see `ChatMessageDelete` / `TournamentChatMessage`).
 
+### Pages progress
+
+Sequencing stage 2 (pages, leaf → container). First page done:
+
+Done: **`settings`** page (`UserSettings` container + `UserSettingsForm` +
+`EmailSettingsForm`, one slice).
+- Formik text inputs (the shared `TextInput` in `UserSettingsForm`, the
+  `FormikTextInput` in `EmailSettingsForm`, and the archive-confirm field) →
+  Mantine `<TextInput>` wired to Formik via `useField`; `invalid-feedback` →
+  the `error` prop. **Dropped** `form-control cb-bg-panel cb-border-color
+  text-white` entirely rather than routing the design classes: `.cb-bg-panel`
+  is coupled to `.form-control` in SCSS (`&.form-control { background: … }`),
+  so keeping only `cb-bg-panel` would change the bg. The forced-dark theme +
+  the `--mantine-color-default-border` resolver already give the right dark
+  input look, so plain Mantine inputs are the idiomatic home.
+- `LanguageSelect` / `LocaleSelect` Menu triggers → `<Button variant="default"
+  fullWidth justify="flex-start">` with the `LanguageIcon` in `leftSection`
+  (dropped `btn cb-bg-panel cb-border-color text-white w-100 d-flex
+  align-items-center` / `text-left`); kept the `cb-dropdown-item` /
+  `cb-bg-highlight-panel` design classes. `d-none` view-toggle → `Box display`.
+- `RangeInput` stays a **native `<input type="range">`** + `cb-range` design
+  class — the sound tests `fireEvent.input(…)` a real range and the `onInput`
+  handler drives autosave, so a Mantine `<Slider>` would break both. Only
+  dropped `form-range w-100` (→ `width:100%` in style).
+- **Primary submit buttons** (`Update profile` / `Change password` / `Send
+  verification`) → plain Mantine `<Button>` = **brand orange**, per the standing
+  decision (see below). `loading={isSubmitting}` replaces the hand-rolled
+  `spinner-border` + `sr-only`.
+- `Notification` `<Alert>` adopted `darkThemeAlertStyles(variant)` and dropped
+  `alert alert-${variant} alert-dark-theme rounded shadow-sm mb-2` (now the 4th
+  React consumer of the shared helper; `radius="md" mb="sm"`). The two
+  `UserSettings.test` assertions that keyed on `.alert-success` / `.alert-danger`
+  now assert message **text** (the classes are gone).
+- `SocialButtons` rows `d-flex mb-2 align-items-center` → `<Group>`; **the SCSS
+  `.cb-settings-social-links > .d-flex` card style was retargeted to `> *`** so
+  it no longer depends on the Bootstrap utility class. Kept the `bind-social`
+  design/behavior class (Phoenix `data-method` unlink).
+- Device-remove / archive / cancel / confirm buttons → Mantine `<Button>`
+  (`variant="outline" color="red" size="compact-sm"`, `variant="outline"
+  color="red"`, `variant="default"`, `color="red"`). `badge badge-success` →
+  `<Badge color="green">`. Sessions `text-muted`/`<small>` → `<Text c="dimmed"
+  size="xs">`. `border-danger` / `text-danger` → inline `#dc3545` (exact BS
+  danger). The page root `container` class was **dropped** — `cb-settings-page`
+  already sets `max-width:1120px; margin:0 auto`, so `container` was redundant;
+  `py-4 px-3 px-md-4` → `py="lg" px={{ base: 'md', md: 'lg' }}`.
+
+**Standing decision (applies to all pages):** Bootstrap `btn-primary` →
+plain Mantine `<Button>` (theme `primaryColor="brand"`, orange #ee3737), **not**
+an explicit `color="blue"` to preserve the old Bootstrap-blue look. The app brand
+is orange; the old blue was incidental (Bootstrap default, no app override).
+
+⚠️ QA (settings): primary submit buttons recolor **blue→orange**; input dark look
+now comes from the theme, not `cb-bg-panel` (confirm bg/border match the panels);
+the two volume range sliders fill/spacing (`Flex gap="md"` replaced `mx-3`); the
+social-link card padding/border still renders (now via `> *`); the archive
+section's red border/icon.
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -354,7 +411,7 @@ don't inline:
 
 1. Shared leaf components in `widgets/components/` (buttons already Mantine;
    convert their surrounding layout, badges, cards).
-2. Pages, roughly by risk: `settings`, `profile`, `lobby`, `registration`,
+2. Pages, roughly by risk: `settings` ✅, then `profile`, `lobby`, `registration`,
    `tournament` / `tournamentPlayer` / `groupTournament`, `game` / `gameMl`,
    `admin`, `event`, then `schedule`, `seasonsPage`, `hallOfFamePage`,
    `headToHeadPage`, `taskPreview`.

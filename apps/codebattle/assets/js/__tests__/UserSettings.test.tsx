@@ -143,7 +143,7 @@ describe('UserSettings test cases', () => {
         clan: '',
         name: 'Dmitry',
       });
-      expect(getByRole('alert')).toHaveClass('alert-success');
+      expect(getByRole('alert')).toHaveTextContent('Settings changed successfully');
     });
   });
 
@@ -247,7 +247,7 @@ describe('UserSettings test cases', () => {
     await user.type(nameInput, 'CoolUserName');
     await user.click(submitButton);
 
-    expect(await findByRole('alert')).toHaveClass('alert-danger');
+    expect(await findByRole('alert')).toHaveTextContent('Something went wrong');
   });
 
   test('does not offer the legacy Silent sound type', () => {

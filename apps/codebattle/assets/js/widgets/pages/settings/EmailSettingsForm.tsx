@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { ErrorMessage, Field, Form, Formik, type FormikHelpers } from 'formik';
+import { Button, Stack, TextInput } from '@mantine/core';
+import { Form, Formik, useField, type FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 
 import i18n from '../../../i18n';
@@ -19,6 +20,25 @@ interface EmailSettingsFormProps {
   ) => void | Promise<void>;
 }
 
+interface FormikTextInputProps {
+  label: React.ReactNode;
+  name: string;
+  [key: string]: unknown;
+}
+
+function FormikTextInput({ label, name, ...props }: FormikTextInputProps) {
+  const [field, meta] = useField(name);
+
+  return (
+    <TextInput
+      {...field}
+      {...props}
+      label={label}
+      error={meta.touched && meta.error ? meta.error : undefined}
+    />
+  );
+}
+
 function EmailSettingsForm({ currentEmail, onSubmit }: EmailSettingsFormProps) {
   return (
     <Formik
@@ -34,56 +54,40 @@ function EmailSettingsForm({ currentEmail, onSubmit }: EmailSettingsFormProps) {
             </div>
           </div>
           <div className="cb-settings-security-grid">
-            <div>
-              <div className="form-group mb-3">
-                <label className="h6" htmlFor="currentEmail">
-                  {i18n.t('Current email')}
-                </label>
-                <input
-                  id="currentEmail"
-                  className="form-control cb-bg-panel cb-border-color text-white"
-                  value={currentEmail}
-                  readOnly
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label className="h6" htmlFor="email">
-                  {i18n.t('New email')}
-                </label>
-                <Field
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  data-testid="newEmailInput"
-                  className="form-control cb-bg-panel cb-border-color text-white"
-                  placeholder={i18n.t('Enter new email')}
-                />
-                <ErrorMessage name="email" component="div" className="invalid-feedback" />
-              </div>
-              <div className="form-group mb-3">
-                <label className="h6" htmlFor="emailCurrentPassword">
-                  {i18n.t('Current password')}
-                </label>
-                <Field
-                  id="emailCurrentPassword"
-                  name="currentPassword"
-                  type="password"
-                  autoComplete="current-password"
-                  data-testid="emailCurrentPasswordInput"
-                  className="form-control cb-bg-panel cb-border-color text-white"
-                  placeholder={i18n.t('Enter current password')}
-                />
-                <ErrorMessage name="currentPassword" component="div" className="invalid-feedback" />
-              </div>
-              <button
+            <Stack gap="md">
+              <TextInput
+                id="currentEmail"
+                label={i18n.t('Current email')}
+                value={currentEmail}
+                readOnly
+              />
+              <FormikTextInput
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                data-testid="newEmailInput"
+                label={i18n.t('New email')}
+                placeholder={i18n.t('Enter new email')}
+              />
+              <FormikTextInput
+                id="emailCurrentPassword"
+                name="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                data-testid="emailCurrentPasswordInput"
+                label={i18n.t('Current password')}
+                placeholder={i18n.t('Enter current password')}
+              />
+              <Button
                 type="submit"
+                radius="md"
                 disabled={!dirty || !isValid || isSubmitting}
-                className="btn py-1 btn-primary rounded-lg"
+                style={{ alignSelf: 'flex-start' }}
               >
                 {isSubmitting ? i18n.t('Sending...') : i18n.t('Send verification email')}
-              </button>
-            </div>
+              </Button>
+            </Stack>
           </div>
         </Form>
       )}

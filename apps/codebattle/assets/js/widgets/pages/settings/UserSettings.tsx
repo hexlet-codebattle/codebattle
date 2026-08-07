@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Alert } from '@mantine/core';
-import cn from 'classnames';
+import { Alert, Badge, Box, Button, Group, Stack, Text, TextInput } from '@mantine/core';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import capitalize from 'lodash/capitalize';
 import noop from 'lodash/noop';
@@ -17,7 +16,7 @@ import i18n, { getSupportedLocale } from '../../../i18n';
 import { configureSound } from '../../lib/sound';
 import { userSettingsSelector } from '../../selectors';
 import { actions } from '../../slices';
-import { bootstrapAlertColor } from '../../ui/alert';
+import { bootstrapAlertColor, darkThemeAlertStyles } from '../../ui/alert';
 
 import UserSettingsForm, {
   type PasswordSettingsFormValues,
@@ -190,7 +189,9 @@ function Notification({ notification, onClose }: NotificationProps) {
     <Alert
       color={bootstrapAlertColor(variant)}
       variant="light"
-      className={`alert alert-${variant} alert-dark-theme rounded shadow-sm mb-2`}
+      radius="md"
+      mb="sm"
+      styles={darkThemeAlertStyles(variant)}
     >
       {message}
     </Alert>
@@ -208,9 +209,9 @@ function SocialButtons({ settings }: SocialButtonsProps) {
     const formatedProviderName = capitalize(provider);
 
     return (
-      <div key={provider} className="d-flex mb-2 align-items-center">
+      <Group key={provider} gap="xs" mb="sm">
         <FontAwesomeIcon
-          className={cn('mr-2', { 'text-muted': isLinked })}
+          style={isLinked ? { color: 'var(--mantine-color-dimmed)' } : undefined}
           icon={['fab', provider]}
         />
         {isLinked ? (
@@ -229,7 +230,7 @@ function SocialButtons({ settings }: SocialButtonsProps) {
             {i18n.t('Link %{provider}', { provider: formatedProviderName })}
           </a>
         )}
-      </div>
+      </Group>
     );
   });
 }
@@ -400,7 +401,7 @@ function UserSettings() {
   );
 
   return (
-    <div className="container cb-settings-page cb-text py-4 px-3 px-md-4">
+    <Box className="cb-settings-page cb-text" py="lg" px={{ base: 'md', md: 'lg' }}>
       <Notification notification={notification} onClose={setNotification} />
       <header className="cb-settings-page-header">
         <h2>{i18n.t('Settings')}</h2>
@@ -416,7 +417,12 @@ function UserSettings() {
         <EmailSettingsForm currentEmail={settings.email} onSubmit={handleEmailChange} />
       )}
       <div className="cb-settings-account-grid">
-        <section className="cb-settings-section mb-0" aria-labelledby="social-settings-title">
+        <Box
+          component="section"
+          className="cb-settings-section"
+          mb={0}
+          aria-labelledby="social-settings-title"
+        >
           <div className="cb-settings-section-heading">
             <span className="cb-settings-section-icon" aria-hidden="true">
               <FontAwesomeIcon icon="link" />
@@ -429,9 +435,14 @@ function UserSettings() {
           <div className="cb-settings-social-links">
             <SocialButtons settings={settings} />
           </div>
-        </section>
+        </Box>
 
-        <section className="cb-settings-section mb-0" aria-labelledby="sessions-settings-title">
+        <Box
+          component="section"
+          className="cb-settings-section"
+          mb={0}
+          aria-labelledby="sessions-settings-title"
+        >
           <div className="cb-settings-section-heading">
             <span className="cb-settings-section-icon" aria-hidden="true">
               <FontAwesomeIcon icon="laptop-code" />
@@ -442,27 +453,30 @@ function UserSettings() {
             </div>
           </div>
           {sessions.length === 0 ? (
-            <div className="text-muted">{i18n.t('No active devices')}</div>
+            <Text c="dimmed">{i18n.t('No active devices')}</Text>
           ) : (
-            <div className="d-flex flex-column">
+            <Stack gap={0}>
               {sessions.map((session) => (
                 <div key={session.id} className="cb-settings-device">
-                  <div className="mr-3 text-break">
+                  <Box style={{ wordBreak: 'break-word' }}>
                     <div>
                       {session.userAgent || i18n.t('Unknown device')}
                       {session.current && (
-                        <span className="badge badge-success ml-2">{i18n.t('Current device')}</span>
+                        <Badge color="green" ml="xs">
+                          {i18n.t('Current device')}
+                        </Badge>
                       )}
                     </div>
-                    <small className="text-muted">
+                    <Text component="small" size="xs" c="dimmed">
                       {[session.ip, new Date(session.lastSeenAt).toLocaleString()]
                         .filter(Boolean)
                         .join(' · ')}
-                    </small>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn-outline-danger btn-sm"
+                    </Text>
+                  </Box>
+                  <Button
+                    variant="outline"
+                    color="red"
+                    size="compact-sm"
                     disabled={revokingSessionId === session.id}
                     onClick={() => handleDeleteSession(session)}
                     aria-label={i18n.t('Remove device %{device}', {
@@ -470,19 +484,26 @@ function UserSettings() {
                     })}
                   >
                     {session.current ? i18n.t('Sign out') : i18n.t('Remove')}
-                  </button>
+                  </Button>
                 </div>
               ))}
-            </div>
+            </Stack>
           )}
-        </section>
+        </Box>
       </div>
-      <section
-        className="cb-settings-section border-danger mt-4"
+      <Box
+        component="section"
+        className="cb-settings-section"
+        mt="lg"
+        style={{ borderColor: '#dc3545' }}
         aria-labelledby="archive-account-title"
       >
         <div className="cb-settings-section-heading">
-          <span className="cb-settings-section-icon text-danger" aria-hidden="true">
+          <span
+            className="cb-settings-section-icon"
+            style={{ color: '#dc3545' }}
+            aria-hidden="true"
+          >
             <FontAwesomeIcon icon="user-minus" />
           </span>
           <div>
@@ -494,15 +515,15 @@ function UserSettings() {
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          className="btn btn-outline-danger"
+        <Button
+          variant="outline"
+          color="red"
           disabled={isArchiving}
           onClick={() => setShowArchiveConfirmation(true)}
         >
           {i18n.t('Archive account')}
-        </button>
-      </section>
+        </Button>
+      </Box>
       <Modal
         show={showArchiveConfirmation}
         onHide={() => {
@@ -521,10 +542,9 @@ function UserSettings() {
               'This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account.',
             )}
           </p>
-          <label htmlFor="archive-account-confirmation">{i18n.t('Type ARCHIVE to confirm')}</label>
-          <input
+          <TextInput
             id="archive-account-confirmation"
-            className="form-control"
+            label={i18n.t('Type ARCHIVE to confirm')}
             type="text"
             autoComplete="off"
             value={archiveConfirmation}
@@ -533,9 +553,8 @@ function UserSettings() {
           />
         </Modal.Body>
         <Modal.Footer>
-          <button
-            type="button"
-            className="btn btn-secondary"
+          <Button
+            variant="default"
             disabled={isArchiving}
             onClick={() => {
               setShowArchiveConfirmation(false);
@@ -543,18 +562,17 @@ function UserSettings() {
             }}
           >
             {i18n.t('Cancel')}
-          </button>
-          <button
-            type="button"
-            className="btn btn-danger"
+          </Button>
+          <Button
+            color="red"
             disabled={archiveConfirmation !== 'ARCHIVE' || isArchiving}
             onClick={handleArchiveAccount}
           >
             {isArchiving ? i18n.t('Archiving account...') : i18n.t('Archive permanently')}
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </Box>
   );
 }
 
