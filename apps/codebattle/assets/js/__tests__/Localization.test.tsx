@@ -68,7 +68,9 @@ test('localizes the empty invites state', () => {
 
   render(
     <Provider store={store}>
-      <InvitesList list={[]} currentUserId={1} />
+      <MantineTestProvider>
+        <InvitesList list={[]} currentUserId={1} />
+      </MantineTestProvider>
     </Provider>,
   );
 

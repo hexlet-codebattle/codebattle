@@ -116,7 +116,7 @@ Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
 shared leaf components in `widgets/components/`.
 
-**Done (26 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
+**Done (29 leaf components):** `Card`, `InfoMessage`, `SystemMessage`, `Loading`,
 `MessageTimestamp`, `ResultIcon`, `OnlineContainer`, `Editor` (Vim status bar),
 `GamesHeatmap`, `TournamentPreviewPanel`, `PlayerLoading`, `EditorLoading`,
 `UserAchievements`, `MessageTag`, `TournamentTimer`, `GameLevelBadge`,
@@ -147,6 +147,15 @@ chat cluster is effectively done.
 > only `Rooms`; the other ~9 `cb-btn-secondary` consumers are unaffected until
 > their class is dropped in later slices.
 
+Also done: the **Invites cluster** (`InvitesList` + `InvitesContainer`) —
+layout → `Flex`/`Group`, native `btn`s → Mantine `<Button variant="outline">`
+(`size="compact-sm"`; keeping `cb-btn-outline-secondary` so the secondary
+buttons' look is preserved, `btn-outline-danger` → `color="red"`), the
+`d-none`/`sr-only` a11y spans → `<VisuallyHidden>`, and the two absolutely-
+positioned `badge badge-danger` notification overlays → Mantine `<Badge
+color="red" pos="absolute">` (size/shape differs from the BS badge — flag in QA).
+Icons moved to `leftSection`. `DropdownMenuDefault` deleted as dead code.
+
 Note: `AchievementBadge` is **not** a Phase-2 target — it only carries
 `cb-achievement-badge*` design classes (a `grep` false positive per gotcha #8).
 
@@ -168,10 +177,10 @@ props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 - **Non-Mantine libs:** `LanguagePickerView` (react-select), `SoundToggle`
   (its `menu` variant renders a Bootstrap `dropdown-item` **inside a server
   heex dropdown** — that half is Phase 3, not a React-side swap), `EmojiTooltip`
-  (native `<select size=4>`). `DropdownMenuDefault` is **dead code** (no
-  consumers anywhere in `js/`) — delete it rather than convert.
-- **Larger:** `AccordeonBox`, `ChatContextMenu`, `InvitesContainer` /
-  `InvitesList`, `SeasonLeaderboard`, `PlayerInsightsModal`.
+  (native `<select size=4>`). `DropdownMenuDefault` was **dead code** (no
+  consumers anywhere in `js/`) — **deleted**, not converted.
+- **Larger:** `AccordeonBox`, `ChatContextMenu`, `SeasonLeaderboard`,
+  `PlayerInsightsModal`.
 
 **Verification gap:** slices are toolchain-verified only. Headless browser
 verification isn't feasible here (auth + live game/tournament state), so all

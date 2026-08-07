@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Popover, UnstyledButton } from '@mantine/core';
+import { Badge, Button, Group, Popover, UnstyledButton, VisuallyHidden } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { unfollowUser, followUser, pauseFollow } from '@/middlewares/Main';
@@ -79,46 +79,55 @@ function InvitesContainer() {
       radius="md"
     >
       <Popover.Target>
-        <UnstyledButton onClick={() => setOpened((o) => !o)} className="attachment mx-2">
+        <UnstyledButton onClick={() => setOpened((o) => !o)} className="attachment" mx="sm">
           <img alt={i18n.t('Invites')} src={fightSvg} style={{ width: '46px', height: '46px' }} />
           {followId && (
-            <span className="position-absolute badge badge-danger" style={{ top: '74%' }}>
+            <Badge color="red" pos="absolute" style={{ top: '74%' }}>
               <FontAwesomeIcon icon={followPaused ? 'pause' : 'binoculars'} />
-            </span>
+            </Badge>
           )}
           {invites.length !== 0 ? (
             <>
-              <span className="position-absolute badge badge-danger">{invites.length}</span>
-              <span className="sr-only">{i18n.t('Your invites')}</span>
+              <Badge color="red" pos="absolute">
+                {invites.length}
+              </Badge>
+              <VisuallyHidden>{i18n.t('Your invites')}</VisuallyHidden>
             </>
           ) : (
-            <span className="sr-only">{i18n.t('No invites')}</span>
+            <VisuallyHidden>{i18n.t('No invites')}</VisuallyHidden>
           )}
         </UnstyledButton>
       </Popover.Target>
       <Popover.Dropdown className="cb-bg-panel cb-border-color cb-text cb-rounded" p={0}>
         {followId && (
-          <div className="d-flex justify-content-center align-items-center p-2">
+          <Group justify="center" p="sm">
             {followName
               ? i18n.t('You are following %{followName}', { followName })
               : i18n.t('You are following ID: %{followId}', { followId })}
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mx-1"
+            <Button
+              variant="outline"
+              color="cbSecondary"
+              className="cb-btn-outline-secondary"
+              size="compact-sm"
+              radius="md"
+              mx="xs"
+              leftSection={<FontAwesomeIcon icon={followPaused ? 'play' : 'pause'} />}
               onClick={togglePausedfollowClick}
             >
-              <FontAwesomeIcon icon={followPaused ? 'play' : 'pause'} className="mr-1" />
               {followPaused ? i18n.t('Unpause') : i18n.t('Pause')}
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-danger cb-rounded mx-1"
+            </Button>
+            <Button
+              variant="outline"
+              color="red"
+              size="compact-sm"
+              radius="md"
+              mx="xs"
+              leftSection={<FontAwesomeIcon icon="binoculars" />}
               onClick={handleUnfollowClick}
             >
-              <FontAwesomeIcon icon="binoculars" className="mr-1" />
               {i18n.t('Unfollow')}
-            </button>
-          </div>
+            </Button>
+          </Group>
         )}
         <InvitesList
           followId={followId}
