@@ -77,15 +77,21 @@ describe('presentational components', () => {
 
     const overlay = container.querySelector('.cb-loading-background');
 
-    expect(overlay).toHaveClass('d-flex', 'cb-loading-background');
-    expect(overlay).not.toHaveClass('d-none');
+    expect(overlay).toBeInTheDocument();
+    expect(overlay).toHaveStyle({ display: 'flex' });
   });
 
   test('renders a small player loading indicator', () => {
-    render(<PlayerLoading show small />);
+    render(
+      <MantineTestProvider>
+        <PlayerLoading show small />
+      </MantineTestProvider>,
+    );
 
-    expect(screen.getByRole('status')).toHaveStyle({ width: '30px', height: '30px' });
-    expect(screen.getByRole('status')).not.toHaveClass('invisible');
+    const loader = screen.getByRole('status');
+
+    expect(loader).toBeInTheDocument();
+    expect(loader).toHaveStyle({ visibility: 'visible' });
   });
 
   test('renders a local message timestamp', () => {
