@@ -26,7 +26,11 @@ vi.mock('../widgets/utils/useStayScrolled', () => ({
 
 describe('presentational components', () => {
   test('renders a game level badge', () => {
-    render(<GameLevelBadge level="easy" />);
+    render(
+      <MantineTestProvider>
+        <GameLevelBadge level="easy" />
+      </MantineTestProvider>,
+    );
 
     expect(screen.getByRole('img', { name: 'easy' })).toHaveAttribute(
       'src',
