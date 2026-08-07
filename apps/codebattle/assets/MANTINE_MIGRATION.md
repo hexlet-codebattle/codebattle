@@ -453,14 +453,20 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `Show` link → `<Button component="a" color="cbSecondary">`; footer → `<Box>`.
   `UserProfile.test` still passes (it mocks `CompletedGames`); no test renders
   `ActiveGames`/`Players` directly.
+- Done: `Leaderboard` — raw `thead/tr/th/td` → `Table.*`; the Bootstrap-JS
+  `nav-tabs` period selector (`data-toggle="tab"`, hardcoded `active` on Weekly)
+  → a controlled Mantine `<SegmentedControl>` bound to the Redux `period` (also
+  fixes the active state to reflect the real period). Kept `cb-bg-panel`/
+  `cb-border-color`; dropped per-row `cb-border-color` (Mantine row border
+  resolves to it). `Announcement` returns `null` (all Bootstrap dead-commented) —
+  nothing to convert.
 - **Deferred (react-select):** `TaskChoice` uses react-select — leave with
   `LanguagePickerView` / `PlayerPicker` / `ReportsPanel` for the one-PR lib swap.
-- **Remaining lobby leaves/containers (still Bootstrap):** `Leaderboard`,
-  `Announcement`, `LobbyChat`, `LobbyLoading`, `CreateGameDialog`,
-  `TournamentListItem`, `SeasonProfilePanel`, `CodebattleLeagueDescription`,
-  `LobbyWidget` (container), `TournamentModal`, `ChatActionModal`,
-  `GameRoomPreview`. (`CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`
-  have tests — wrap in `MantineTestProvider` when converted.)
+- **Remaining lobby leaves/containers (still Bootstrap):** `LobbyChat`,
+  `LobbyLoading`, `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
+  `CodebattleLeagueDescription`, `LobbyWidget` (container), `TournamentModal`,
+  `ChatActionModal`, `GameRoomPreview`. (`CreateGameDialog`, `TournamentListItem`,
+  `SeasonProfilePanel` have tests — wrap in `MantineTestProvider` when converted.)
 
 ⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
 attached `btn-group`); the **cancel button still hidden until you hover the game
