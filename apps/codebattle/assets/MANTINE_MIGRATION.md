@@ -447,6 +447,11 @@ In progress: **`lobby`** page (large — ~26 files, converting per-leaf).
   `LobbyLoading`, `CreateGameDialog`, `TournamentListItem`, `SeasonProfilePanel`,
   `CodebattleLeagueDescription`, `LobbyWidget` (container), `TournamentModal`,
   `ChatActionModal`, `GameRoomPreview`, `Announcement`.
+  - **Coupling for the next slice:** `Players` renders raw `<td>` cells (it's
+    dropped directly inside `ActiveGames`' `<tr>`), so converting `ActiveGames`'
+    table to `<Table>` means converting `Players` to emit `<Table.Td>` in the
+    same slice — otherwise those cells miss Mantine's row borders/spacing. Do
+    `ActiveGames` + `CompletedGames` + `Players` together.
 
 ⚠️ QA (lobby cluster): the games-table Continue/copy/cancel row (Group vs the old
 attached `btn-group`); the **cancel button still hidden until you hover the game
