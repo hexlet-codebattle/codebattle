@@ -6,6 +6,7 @@ import React, { type ReactElement } from 'react';
 import Registration from '../widgets/pages/registration';
 
 import { getTestData } from './helpers';
+import { MantineTestProvider } from './helpers/mantine';
 
 // jsdom URL the registration page reads (was @jest-environment-options).
 window.history.pushState({}, '', '/users/new');
@@ -27,7 +28,7 @@ describe('sign up', () => {
   function setup(jsx: ReactElement) {
     return {
       user: userEvent.setup(),
-      ...render(jsx),
+      ...render(<MantineTestProvider>{jsx}</MantineTestProvider>),
     };
   }
 
@@ -136,6 +137,6 @@ describe('sign up', () => {
       'We have sent you an email with instructions on how to reset your password',
     );
 
-    expect(confirmation).toHaveClass('text-white');
+    expect(confirmation).toBeInTheDocument();
   });
 });

@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup) done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration` done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -559,6 +559,41 @@ the `CreateGameDialog` Level/GameType button tiles are Mantine `<Button>`s
 carrying the orange design classes (confirm active/inactive states + level-icon
 tile sizing); the season-panel action buttons + `TournamentListItem` info icon.
 
+Done: **`registration`** page (`Registration.tsx` — the Sign In / Sign Up /
+Reset Password forms, all three routes off one file). The `.card.cb-card` wrapper
+(`container-fluid`/`row justify-content-center`/`col-lg-5…`/`card…`) → `<Flex
+justify="center">` + a responsive-width `<Box w={{ base:'100%', sm:'41.6667%' }}>`
++ `<Paper withBorder radius="md" shadow="sm" bg="transparent">` (border color from
+the resolver; `overflow:hidden` so the footer bg respects the corners). `card-body`
+→ `<Box p={{ base:'md', lg:'lg', xl:'xl' }}>`; `card-footer py-2` + `text-center`
+→ a `<Box className="cb-bg-highlight-panel" py="sm" px="md" ta="center" c="white">`
+with a `--mantine-color-default-border` top border (kept the highlight-panel
+design class — the `.card.cb-card` header/footer bg had no other home). The Formik
+`form-control custom-control cb-bg-panel cb-border-color text-white` inputs →
+Mantine `<TextInput>` wired via the existing `formik.getFieldProps(id)` spread
+(**dropped** all four Bootstrap classes, same rationale as `settings`: the forced-
+dark theme + border resolver give the right dark input look, and `cb-bg-panel` is
+SCSS-coupled to `.form-control`); `invalid-feedback` → the `error` prop; the
+hidden `base` field stays a native `<input type="hidden">` + a `<Text c="red">`
+for server base-errors. **The password reveal** dropped the hand-positioned
+`cb-password-input`/`cb-password-toggle`(`-invalid`) absolute-overlay button for
+Mantine's `rightSection={<ActionIcon>}` (keeps the `aria-label`/`aria-pressed`/
+`title` the test asserts). Submit `input[type=submit]` (`btn btn-secondary
+cb-btn-secondary btn-block cb-rounded`) → `<Button type="submit" color="cbSecondary"
+fullWidth>` (kept `aria-label="Submit form"`; dropped the Rails-UJS
+`data-disable-with`, dead here — this is a fetch form). Social `<a class="btn …
+btn-outline-secondary cb-btn-outline-secondary">` → `<Button component="a"
+variant="outline" color="cbSecondary" className="cb-btn-outline-secondary">` in a
+`<Stack>`; `alert alert-info` → `<Alert color={bootstrapAlertColor('info')}>`; the
+`small` invitations → `<Text size="sm" className="cb-text">` + `<Anchor>` (Sign In
+= `c="white"`, Sign Up / forgot-password = brand-orange default per the standing
+decision, was `text-primary`). `Registration.test` now wraps `setup()` in
+`MantineTestProvider`; the reset-password assertion keyed on `.text-white` → a
+plain `toBeInTheDocument()` (the class is gone). ⚠️ QA: the card is now
+`bg="transparent"` (was `.cb-card` transparent — same intent); the password
+eye now sits in a Mantine `rightSection` (not overlapping the field);
+primary/submit + social button hover; the highlight-panel footer border radius.
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -598,10 +633,10 @@ don't inline:
 
 1. Shared leaf components in `widgets/components/` (buttons already Mantine;
    convert their surrounding layout, badges, cards).
-2. Pages, roughly by risk: `settings` ✅, `profile` ✅, then `lobby`, `registration`,
-   `tournament` / `tournamentPlayer` / `groupTournament`, `game` / `gameMl`,
-   `admin`, `event`, then `schedule`, `seasonsPage`, `hallOfFamePage`,
-   `headToHeadPage`, `taskPreview`.
+2. Pages, roughly by risk: `settings` ✅, `profile` ✅, `lobby` ✅ (React markup),
+   `registration` ✅, then `tournament` / `tournamentPlayer` / `groupTournament`,
+   `game` / `gameMl`, `admin`, `event`, then `schedule`, `seasonsPage`,
+   `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
 3. Per slice: convert → wrap affected tests in `MantineTestProvider` + fix
    portal/`findBy` queries → **verify in browser** (dev server) → merge.
 
