@@ -38,7 +38,7 @@ interface SectionProps {
 
 function Header({ closeButton, className, children, style = {} }: HeaderProps) {
   return (
-    <MantineModal.Header style={{ display: 'flex', flexShrink: 0, ...style }} className={className} >
+    <MantineModal.Header style={{ display: 'flex', flexShrink: 0, ...style }} className={className}>
       {children}
       {closeButton && <MantineModal.CloseButton />}
     </MantineModal.Header>
@@ -56,7 +56,7 @@ function Body({ className, style = {}, children }: SectionProps) {
       style={{
         maxHeight: '70vh',
         overflowX: 'hidden',
-        ...style
+        ...style,
       }}
     >
       {children}
@@ -92,7 +92,7 @@ interface CbModalComponent extends React.FC<CbModalProps> {
   Footer: typeof Footer;
 }
 
-const noop = () => { };
+const noop = () => {};
 
 const CbModal = (({
   show,
@@ -102,7 +102,7 @@ const CbModal = (({
   keyboard,
   size,
   className,
-  contentClassName,
+  contentClassName = 'cb-text',
   dialogClassName,
   children,
 }: CbModalProps) => (
@@ -116,7 +116,10 @@ const CbModal = (({
     className={className}
   >
     <MantineModal.Overlay />
-    <MantineModal.Content style={{ overflow: 'hidden' }} className={cn(contentClassName, dialogClassName)}>
+    <MantineModal.Content
+      style={{ overflow: 'hidden' }}
+      className={cn(contentClassName, dialogClassName)}
+    >
       {children}
     </MantineModal.Content>
   </MantineModal.Root>
