@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
+import { Alert, Box, Stack } from '@mantine/core';
 import i18next from 'i18next';
 import reverse from 'lodash/reverse';
 
@@ -50,7 +51,10 @@ function PlayerStatsPanel({
   }
 
   return (
-    <div className="d-flex flex-column cb-rounded shadow-sm cb-bg-panel">
+    <Box
+      className="cb-rounded shadow-sm cb-bg-panel"
+      style={{ display: 'flex', flexDirection: 'column' }}
+    >
       <Top200RedirectButton
         currentRoundPosition={currentRoundPosition}
         player={currentPlayer}
@@ -58,11 +62,11 @@ function PlayerStatsPanel({
         type={type}
       />
       {currentPlayer.state === 'banned' && (
-        <div className="alert alert-warning m-2 mb-0" role="alert">
+        <Alert color="yellow" m="xs" mb={0}>
           {i18next.t(
             'Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.',
           )}
-        </div>
+        </Alert>
       )}
       <UsersMatchList
         currentUserId={currentUserId}
@@ -73,7 +77,7 @@ function PlayerStatsPanel({
         hideBots={hideBots}
         showScoreFormula={type === 'ladder'}
       />
-    </div>
+    </Box>
   );
 }
 

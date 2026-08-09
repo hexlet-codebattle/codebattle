@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useState } from 'react';
 
+import { Box, Flex, Pagination, Table, Text, Title } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
@@ -32,7 +33,7 @@ interface FinishedLeaderboardProps {
 
 const getCustomEventTrClassName = (item: LeaderboardItem, selectedId: number | undefined) =>
   cn(
-    'font-weight-bold cb-custom-event-tr-border',
+    'fw-bold cb-custom-event-tr-border',
     {
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
@@ -45,7 +46,7 @@ const getCustomEventTrClassName = (item: LeaderboardItem, selectedId: number | u
   );
 
 const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+  'p-1 pl-4 my-2 align-middle text-nowrap pos-relative cb-custom-event-td border-0',
 );
 
 function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
@@ -59,24 +60,6 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
     () => leaderboard.slice((safePageNumber - 1) * pageSize, safePageNumber * pageSize),
     [leaderboard, pageSize, safePageNumber],
   );
-  const canGoPrev = safePageNumber > 1;
-  const canGoNext = safePageNumber < totalPages;
-  const maxPageButtons = 7;
-  const pageButtons = useMemo(() => {
-    if (totalPages <= maxPageButtons) {
-      return Array.from({ length: totalPages }, (_, index) => index + 1);
-    }
-
-    const halfWindow = Math.floor(maxPageButtons / 2);
-    let start = Math.max(1, safePageNumber - halfWindow);
-    const end = Math.min(totalPages, start + maxPageButtons - 1);
-
-    if (end - start + 1 < maxPageButtons) {
-      start = Math.max(1, end - maxPageButtons + 1);
-    }
-
-    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-  }, [safePageNumber, totalPages]);
 
   const handlePageChange = (nextPage: number) => {
     if (nextPage < 1 || nextPage > totalPages || nextPage === safePageNumber) {
@@ -86,39 +69,58 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
   };
 
   return (
-    <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
-      <div className="my-2">
-        <div
-          className={cn('d-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left')}
-        >
-          <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
-            <span className="font-weight-bold">{i18next.t('Leaderboard')}</span>
-          </div>
+    <Box className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
+      <Box my="xs">
+        <Flex direction="column" flex={1} pos="relative" py="xs" className="mh-100 rounded-left">
+          <Flex
+            justify="space-between"
+            pb="xs"
+            px="md"
+            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+          >
+            <Text fw={700}>{i18next.t('Leaderboard')}</Text>
+          </Flex>
           <div className="d-flex cb-overflow-x-auto">
-            <table className="table cb-text-light table-striped cb-custom-event-table m-1">
-              <thead>
-                <tr>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Player')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Wins')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Games')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Avg Result')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Total Time')}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table striped className="cb-text-light cb-custom-event-table m-1">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Place')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Player')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Clan')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Score')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Wins')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Games')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Avg Result')}
+                  </Table.Th>
+                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    {i18next.t('Total Time')}
+                  </Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {pagedLeaderboard.map((item) => (
                   <React.Fragment key={item.userId}>
-                    <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                    <tr
+                    <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+                    <Table.Tr
                       className={getCustomEventTrClassName(
                         item,
                         currentUserClanId as number | undefined,
                       )}
                     >
-                      <td
+                      <Table.Td
                         style={{
                           borderTopLeftRadius: '0.5rem',
                           borderBottomLeftRadius: '0.5rem',
@@ -126,8 +128,8 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                         className={tableDataCellClassName}
                       >
                         {item.place}
-                      </td>
-                      <td className={tableDataCellClassName}>
+                      </Table.Td>
+                      <Table.Td className={tableDataCellClassName}>
                         <div
                           title={item?.userName}
                           className="cb-custom-event-name"
@@ -149,8 +151,8 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                               ((item?.userName?.length ?? 0) > 11 ? '...' : '')}
                           </a>
                         </div>
-                      </td>
-                      <td title={item?.clanLongName} className={tableDataCellClassName}>
+                      </Table.Td>
+                      <Table.Td title={item?.clanLongName} className={tableDataCellClassName}>
                         <div
                           className="cb-custom-event-name"
                           style={{
@@ -166,14 +168,14 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                             item?.clanName
                           )}
                         </div>
-                      </td>
-                      <td className={tableDataCellClassName}>{item.score}</td>
-                      <td className={tableDataCellClassName}>{item.winsCount}</td>
-                      <td className={tableDataCellClassName}>{item.gamesCount}</td>
-                      <td className={tableDataCellClassName}>
+                      </Table.Td>
+                      <Table.Td className={tableDataCellClassName}>{item.score}</Table.Td>
+                      <Table.Td className={tableDataCellClassName}>{item.winsCount}</Table.Td>
+                      <Table.Td className={tableDataCellClassName}>{item.gamesCount}</Table.Td>
+                      <Table.Td className={tableDataCellClassName}>
                         {parseFloat(item.avgResultPercent as string).toFixed(1)}%
-                      </td>
-                      <td
+                      </Table.Td>
+                      <Table.Td
                         style={{
                           borderTopRightRadius: '0.5rem',
                           borderBottomRightRadius: '0.5rem',
@@ -181,73 +183,31 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                         className={tableDataCellClassName}
                       >
                         {item.totalTime}
-                      </td>
-                    </tr>
+                      </Table.Td>
+                    </Table.Tr>
                   </React.Fragment>
                 ))}
-              </tbody>
-            </table>
+              </Table.Tbody>
+            </Table>
           </div>
-        </div>
-      </div>
-      <div className="d-flex align-items-center flex-wrap justify-content-start">
-        <h6 className="mb-2 mr-5 text-nowrap">
+        </Flex>
+      </Box>
+      <Flex align="center" wrap="wrap" justify="flex-start">
+        <Title order={6} mb="xs" mr="xl">
           {`${i18next.t('Total players')}: ${totalEntries}`}
-        </h6>
+        </Title>
         {totalPages > 1 && (
-          <div className="d-flex align-items-center mb-2 cb-ranking-pagination">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoPrev}
-              onClick={() => handlePageChange(1)}
-            >
-              «
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoPrev}
-              onClick={() => handlePageChange(safePageNumber - 1)}
-            >
-              ‹
-            </button>
-            <div className="d-flex align-items-center">
-              {pageButtons.map((page) => (
-                <button
-                  type="button"
-                  key={`leaderboard-page-${page}`}
-                  className={cn('btn btn-sm cb-ranking-page-btn', {
-                    'btn-secondary': page === safePageNumber,
-                    'btn-outline-secondary': page !== safePageNumber,
-                  })}
-                  onClick={() => handlePageChange(page)}
-                  disabled={page === safePageNumber}
-                >
-                  {page}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoNext}
-              onClick={() => handlePageChange(safePageNumber + 1)}
-            >
-              ›
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoNext}
-              onClick={() => handlePageChange(totalPages)}
-            >
-              »
-            </button>
-          </div>
+          <Flex align="center" mb="xs">
+            <Pagination
+              value={safePageNumber}
+              total={totalPages}
+              onChange={handlePageChange}
+              withEdges
+            />
+          </Flex>
         )}
-      </div>
-    </div>
+      </Flex>
+    </Box>
   );
 }
 

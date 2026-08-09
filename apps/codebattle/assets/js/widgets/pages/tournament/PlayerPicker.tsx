@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import { Button } from '@mantine/core';
 import Select, { type StylesConfig } from 'react-select';
 
 import { type Player } from '@/slices/initial';
@@ -58,9 +59,9 @@ function PlayerPicker({ players, activePlayer, changePlayer, isDisabled }: Playe
 
   if (isDisabled) {
     return (
-      <button className="btn btn-sm" type="button" disabled>
+      <Button size="xs" variant="subtle" disabled>
         <UserInfo user={activePlayer} truncate />
-      </button>
+      </Button>
     );
   }
 

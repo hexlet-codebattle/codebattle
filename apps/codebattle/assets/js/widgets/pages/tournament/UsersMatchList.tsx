@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Tooltip } from '@mantine/core';
+import { Box, Flex, Text, Tooltip } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import moment from 'moment';
@@ -50,7 +50,6 @@ const matchBodyClassName = 'cb-tournament-match-body';
 const matchSummaryClassName = 'cb-tournament-match-summary';
 const matchHeaderClassName = 'cb-tournament-match-header';
 const matchPlayersClassName = 'cb-tournament-match-players';
-const playerSlotClassName = cn('d-flex align-items-center text-nowrap');
 const matchMetaClassName = 'cb-tournament-match-meta';
 const metaItemClassName = 'cb-tournament-match-meta-item';
 const metaIconClassName = 'cb-tournament-match-meta-icon';
@@ -213,7 +212,7 @@ interface MatchPlayerProps {
 
 function MatchPlayer({ userId, score, testPercent }: MatchPlayerProps) {
   return (
-    <div className={playerSlotClassName}>
+    <Flex align="center" wrap="nowrap">
       <UserTournamentInfo userId={userId} />
       {Number.isFinite(score) && (
         <span className="cb-tournament-match-score" title={i18next.t('Score')}>
@@ -225,7 +224,7 @@ function MatchPlayer({ userId, score, testPercent }: MatchPlayerProps) {
           {testPercent}%
         </span>
       )}
-    </div>
+    </Flex>
   );
 }
 
@@ -270,20 +269,37 @@ function UsersMatchList({
   }
 
   return (
-    <div className="d-flex flex-column">
+    <Flex direction="column">
       {!hideStats && matches.length > 0 && (
-        <div className="d-flex py-2 border-bottom cb-border-color align-items-center overflow-auto">
-          <span className="ml-2">
+        <Flex
+          py="xs"
+          align="center"
+          style={{
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+            overflow: 'auto',
+          }}
+        >
+          <Text component="span" ml="xs">
             {i18next.t('Wins:')} {player.winMatches.length}
-          </span>
-          <span className="ml-1 pl-1 border-left cb-border-color">
+          </Text>
+          <Text
+            component="span"
+            ml="xs"
+            pl="xs"
+            style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
+          >
             {i18next.t('AVG Tests:')} {Math.ceil(player.avgTests)}%
-          </span>
-          <span className="ml-1 pl-1 border-left cb-border-color">
+          </Text>
+          <Text
+            component="span"
+            ml="xs"
+            pl="xs"
+            style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
+          >
             {i18next.t('AVG Duration:')} {Math.ceil(player.avgDuration)}
             {` ${i18next.t('sec')}`}
-          </span>
-        </div>
+          </Text>
+        </Flex>
       )}
       {matches.map((match) => {
         const currentUserIsPlayer =
@@ -387,7 +403,7 @@ function UsersMatchList({
           </div>
         );
       })}
-    </div>
+    </Flex>
   );
 }
 

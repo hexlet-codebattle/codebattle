@@ -58,6 +58,7 @@ function InfoPanel({
                 value="task"
                 id="task-tab"
                 aria-controls="task"
+                c="white"
                 style={{ flex: '0 0 25%', borderRadius: 0 }}
                 px="xs"
                 py="sm"
@@ -69,6 +70,7 @@ function InfoPanel({
                 id={`${idOutput}-tab`}
                 aria-controls={idOutput}
                 style={{ flex: '0 0 25%', borderRadius: 0 }}
+                c="white"
                 px="xs"
                 py="sm"
               >
@@ -79,6 +81,7 @@ function InfoPanel({
                   flex: '0 0 50%',
                   textAlign: 'center',
                   borderLeft: '1px solid var(--mantine-color-default-border)',
+                  position: 'relative',
                 }}
                 c="white"
                 px="xs"
@@ -93,6 +96,7 @@ function InfoPanel({
               id="task"
               role="tabpanel"
               aria-labelledby="task-tab"
+              c="white"
               style={{
                 flexGrow: 1,
                 overflow: 'auto',

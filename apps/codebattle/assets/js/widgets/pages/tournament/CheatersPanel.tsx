@@ -1,6 +1,7 @@
 import React, { memo, useMemo, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Anchor, Box, Button, Card, Flex, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -73,115 +74,132 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
   };
 
   return (
-    <div className="d-flex flex-column my-2">
-      <div className="card cb-card border cb-border-color">
-        <div className="card-header cb-bg-panel cb-text d-flex justify-content-between align-items-center">
-          <span>{i18next.t('Cheaters')}</span>
-          <span className="text-white-50 small">
-            {i18next.t('Total')}: {cheaters.length}
-          </span>
-        </div>
-        <div className="card-body p-0">
+    <Box my="xs" style={{ display: 'flex', flexDirection: 'column' }}>
+      <Card withBorder radius="md" p={0} className="cb-bg-panel">
+        <Card.Section withBorder p="md" className="cb-bg-panel">
+          <Flex justify="space-between" align="center">
+            <Text fw={700}>{i18next.t('Cheaters')}</Text>
+            <Text size="xs" c="dimmed">
+              {i18next.t('Total')}: {cheaters.length}
+            </Text>
+          </Flex>
+        </Card.Section>
+        <Card.Section p={0}>
           {cheaters.length === 0 ? (
-            <div className="p-3 text-white-50">{i18next.t('No cheaters marked yet')}</div>
+            <Text p="md" c="dimmed">
+              {i18next.t('No cheaters marked yet')}
+            </Text>
           ) : (
-            <table className="table cb-text-light table-striped cb-custom-event-table mb-0">
-              <thead>
-                <tr>
-                  <th className="border-0 cb-text-light">{i18next.t('Player')}</th>
-                  <th className="border-0 cb-text-light">{i18next.t('Clan')}</th>
-                  <th className="border-0 cb-text-light">{i18next.t('Games')}</th>
-                  <th className="border-0 cb-text-light">{i18next.t('Reports')}</th>
-                  <th className="border-0 cb-text-light">{i18next.t('Actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table striped className="cb-text-light cb-custom-event-table mb-0">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th className="border-0 cb-text-light">{i18next.t('Player')}</Table.Th>
+                  <Table.Th className="border-0 cb-text-light">{i18next.t('Clan')}</Table.Th>
+                  <Table.Th className="border-0 cb-text-light">{i18next.t('Games')}</Table.Th>
+                  <Table.Th className="border-0 cb-text-light">{i18next.t('Reports')}</Table.Th>
+                  <Table.Th className="border-0 cb-text-light">{i18next.t('Actions')}</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {cheaters.map((player) => {
                   const playerReports = reportsByOffenderId[player.id] || [];
                   const isExpanded = !!expandedPlayerIds[player.id];
 
                   return (
                     <React.Fragment key={`cheater-${player.id}`}>
-                      <tr>
-                        <td className="align-middle cb-text-light">
+                      <Table.Tr>
+                        <Table.Td className="align-middle cb-text-light">
                           <UserInfo user={player} banned hideOnlineIndicator hideLink />
-                        </td>
-                        <td className="align-middle cb-text-light">
+                        </Table.Td>
+                        <Table.Td className="align-middle cb-text-light">
                           {(player.clan as string) || '-'}
-                        </td>
-                        <td className="align-middle cb-text-light">
+                        </Table.Td>
+                        <Table.Td className="align-middle cb-text-light">
                           {(player.matchesIds as unknown[])?.length ??
                             (player.matches_ids as unknown[])?.length ??
                             0}
-                        </td>
-                        <td className="align-middle cb-text-light">
+                        </Table.Td>
+                        <Table.Td className="align-middle cb-text-light">
                           {playerReports.length === 0 ? (
-                            <span className="text-white-50">{i18next.t('No reports yet')}</span>
+                            <Text component="span" c="dimmed">
+                              {i18next.t('No reports yet')}
+                            </Text>
                           ) : (
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center"
+                            <Button
+                              size="compact-xs"
+                              variant="outline"
+                              color="gray"
                               onClick={toggleReports(player.id)}
+                              leftSection={
+                                <FontAwesomeIcon
+                                  icon={isExpanded ? 'chevron-up' : 'chevron-down'}
+                                />
+                              }
                             >
-                              <FontAwesomeIcon
-                                icon={isExpanded ? 'chevron-up' : 'chevron-down'}
-                                className="mr-2"
-                              />
                               {i18next.t('Reports')} ({playerReports.length})
-                            </button>
+                            </Button>
                           )}
-                        </td>
-                        <td className="align-middle">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-success"
+                        </Table.Td>
+                        <Table.Td className="align-middle">
+                          <Button
+                            size="compact-xs"
+                            variant="outline"
+                            color="green"
                             onClick={handleToggleCheater(player.id, true)}
                           >
                             {i18next.t('Unban')}
-                          </button>
-                        </td>
-                      </tr>
+                          </Button>
+                        </Table.Td>
+                      </Table.Tr>
                       {isExpanded && playerReports.length > 0 && (
-                        <tr aria-label={i18next.t('Reports')}>
-                          <td colSpan={5} className="border-top-0 pt-0">
-                            <div className="px-3 pb-3 pt-2">
+                        <Table.Tr aria-label={i18next.t('Reports')}>
+                          <Table.Td colSpan={5} className="border-top-0 pt-0">
+                            <Box px="md" pb="md" pt="xs">
                               {playerReports.map((report) => {
                                 const reporter = players[report.reporterId];
 
                                 return (
-                                  <div
+                                  <Flex
                                     key={`cheater-${player.id}-report-${report.id}`}
-                                    className="d-flex align-items-center flex-wrap py-2 cb-text-light"
+                                    align="center"
+                                    wrap="wrap"
+                                    py="xs"
+                                    className="cb-text-light"
                                   >
-                                    <span className="mr-3">
+                                    <Box mr="md">
                                       <UserInfo user={reporter} hideOnlineIndicator hideLink />
-                                    </span>
-                                    <span className="mr-3 text-white-50">
+                                    </Box>
+                                    <Text mr="md" c="dimmed">
                                       {dayjs(report.insertedAt).format('YYYY-MM-DD HH:mm:ss')}
-                                    </span>
-                                    <span className="mr-3 text-capitalize">{report.state}</span>
-                                    <a
+                                    </Text>
+                                    <Text mr="md" tt="capitalize">
+                                      {report.state}
+                                    </Text>
+                                    <Button
+                                      component="a"
                                       href={`/games/${report.gameId}`}
-                                      className="btn btn-sm btn-outline-secondary"
+                                      size="compact-xs"
+                                      variant="outline"
+                                      color="gray"
                                     >
                                       {i18next.t('Game')} #{report.gameId}
-                                    </a>
-                                  </div>
+                                    </Button>
+                                  </Flex>
                                 );
                               })}
-                            </div>
-                          </td>
-                        </tr>
+                            </Box>
+                          </Table.Td>
+                        </Table.Tr>
                       )}
                     </React.Fragment>
                   );
                 })}
-              </tbody>
-            </table>
+              </Table.Tbody>
+            </Table>
           )}
-        </div>
-      </div>
-    </div>
+        </Card.Section>
+      </Card>
+    </Box>
   );
 }
 

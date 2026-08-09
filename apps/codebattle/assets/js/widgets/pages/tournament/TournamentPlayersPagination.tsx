@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useCallback, useEffect } from 'react';
 
-import ReactPaginate from 'react-paginate';
+import { Pagination, Group } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { currentUserCanModerateTournament, tournamentSelector } from '../../selectors';
@@ -49,10 +49,9 @@ function TournamentPlayersPagination({
   }, [dispatch, pageCount, safePageNumber]);
 
   const onChangePageNumber = useCallback(
-    ({ selected }: { selected: number }) => {
-      const nextPage = selected + 1;
-      if (nextPage !== safePageNumber) {
-        dispatch(actions.changeTournamentPageNumber(nextPage));
+    (page: number) => {
+      if (page !== safePageNumber) {
+        dispatch(actions.changeTournamentPageNumber(page));
       }
     },
     [dispatch, safePageNumber],
@@ -63,26 +62,14 @@ function TournamentPlayersPagination({
   }
 
   return (
-    <ReactPaginate
-      className="d-flex justify-content-center pagination"
-      forcePage={safePageNumber - 1}
-      pageCount={pageCount}
-      pageRangeDisplayed={5}
-      marginPagesDisplayed={1}
-      previousLabel="<"
-      nextLabel=">"
-      breakLabel="..."
-      onPageChange={onChangePageNumber}
-      pageClassName="page-item"
-      pageLinkClassName="page-link"
-      previousClassName="page-item"
-      previousLinkClassName="page-link"
-      nextClassName="page-item"
-      nextLinkClassName="page-link"
-      breakClassName="page-item"
-      breakLinkClassName="page-link"
-      activeClassName="active"
-    />
+    <Group justify="center" my="sm">
+      <Pagination
+        value={safePageNumber}
+        total={pageCount}
+        onChange={onChangePageNumber}
+        withEdges
+      />
+    </Group>
   );
 }
 

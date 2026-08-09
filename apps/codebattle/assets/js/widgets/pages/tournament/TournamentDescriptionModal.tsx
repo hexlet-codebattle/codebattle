@@ -2,7 +2,7 @@ import React, { memo, useContext } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from '@mantine/core';
+import { Button, Flex } from '@mantine/core';
 import i18next from 'i18next';
 
 import Modal from '@/components/CbModal';
@@ -29,7 +29,7 @@ const TournamentDescriptionModal = NiceModal.create(
         </Modal.Header>
         <Modal.Body>{description}</Modal.Body>
         <Modal.Footer className="cb-border-color">
-          <div className="d-flex justify-content-end w-100">
+          <Flex justify="flex-end" w="100%">
             <Button
               onClick={modal.hide}
               color="cbSecondary"
@@ -39,7 +39,7 @@ const TournamentDescriptionModal = NiceModal.create(
             >
               {i18next.t('Close')}
             </Button>
-          </div>
+          </Flex>
         </Modal.Footer>
       </Modal>
     );

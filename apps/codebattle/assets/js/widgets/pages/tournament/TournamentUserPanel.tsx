@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useContext, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ActionIcon, Badge, Box, Collapse, Flex } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,16 +48,11 @@ function TournamentUserPanel({
 
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
-  const searchBadge = cn('badge mr-2', {
-    'badge-primary': !hasCustomEventStyles,
-    'cb-custom-event-badge-primary': hasCustomEventStyles,
-  });
-  const playerBadge = cn('badge text-white mr-2', {
-    'badge-success': !hasCustomEventStyles,
-    'cb-custom-event-badge-success': hasCustomEventStyles,
-  });
+  const searchBadgeClass = hasCustomEventStyles ? 'cb-custom-event-badge-primary' : undefined;
+  const playerBadgeClass = hasCustomEventStyles ? 'cb-custom-event-badge-success' : undefined;
+
   const panelClassName = cn(
-    'd-flex flex-column border cb-border-color shadow-sm rounded-lg mb-2 overflow-auto',
+    'cb-border-color shadow-sm rounded-lg mb-2 overflow-auto',
     hasCustomEventStyles
       ? {
           'cb-custom-event-border-success': userId === currentUserId,
@@ -67,8 +63,6 @@ function TournamentUserPanel({
           'border-primary': userId === searchedUserId,
         },
   );
-
-  const titleClassName = cn('d-flex align-items-center justify-content-start px-2 py-1');
 
   const handleOpenMatches = useCallback(
     (event: React.MouseEvent) => {
@@ -89,13 +83,24 @@ function TournamentUserPanel({
   }, [open, dispatch, userId]);
 
   return (
-    <div className={panelClassName}>
-      <div
-        className={titleClassName}
+    <Box
+      className={panelClassName}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        border: '1px solid var(--mantine-color-default-border)',
+      }}
+    >
+      <Flex
+        align="center"
+        justify="flex-start"
+        px="xs"
+        py={4}
         onClick={handleOpenMatches}
         aria-hidden
         aria-expanded={open}
         aria-controls={`collapse-matches-${userId}`}
+        style={{ cursor: 'pointer' }}
       >
         <div className="cb-user-panel-head flex-grow-1 min-w-0">
           {place != null && place > 0 && (
@@ -105,9 +110,15 @@ function TournamentUserPanel({
           )}
           <span className="cb-user-panel-name text-nowrap" title={name}>
             {searchedUserId === userId && (
-              <span className={searchBadge}>{i18next.t('Search')}</span>
+              <Badge color="blue" className={searchBadgeClass} mr="xs">
+                {i18next.t('Search')}
+              </Badge>
             )}
-            {currentUserId === userId && <span className={playerBadge}>{i18next.t('you')}</span>}
+            {currentUserId === userId && (
+              <Badge color="green" className={playerBadgeClass} mr="xs">
+                {i18next.t('you')}
+              </Badge>
+            )}
             <LanguageIcon className="mr-1" lang={lang} />
             {name}
             {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
@@ -123,14 +134,17 @@ function TournamentUserPanel({
             <strong className="cb-user-panel-stat-value">{winsCount ?? 0}</strong>
           </span>
         </div>
-        <div className="d-flex ml-1">
-          <button type="button" className="btn" onClick={handleOpenMatches}>
+        <Flex ml="xs">
+          <ActionIcon variant="transparent" onClick={handleOpenMatches}>
             <FontAwesomeIcon className="cb-text" icon={open ? 'chevron-up' : 'chevron-down'} />
-          </button>
-        </div>
-      </div>
-      {open && (
-        <div id={`collapse-matches-${userId}`} className="border-top cb-border-color">
+          </ActionIcon>
+        </Flex>
+      </Flex>
+      <Collapse expanded={open}>
+        <Box
+          id={`collapse-matches-${userId}`}
+          style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+        >
           <UsersMatchList
             currentUserId={currentUserId}
             playerId={userId}
@@ -143,9 +157,9 @@ function TournamentUserPanel({
             // original JS; spread to bypass JSX excess-property checks without changing runtime.
             {...({ isBanned, canBan: canModerate && userId !== currentUserId } as object)}
           />
-        </div>
-      )}
-    </div>
+        </Box>
+      </Collapse>
+    </Box>
   );
 }
 

@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Anchor, Box, Table, Text } from '@mantine/core';
 import cn from 'classnames';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +24,7 @@ import i18next from '../../../i18n';
 const customEventTrClassName = cn('cb-custom-event-tr align-items-center');
 
 const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 ml-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+  'p-1 pl-4 my-2 ml-2 align-middle text-nowrap pos-relative cb-custom-event-td border-0',
 );
 
 interface ReportStateOption {
@@ -105,37 +106,51 @@ function ReportsPanel() {
   }
 
   return (
-    <div className="d-flex my-2">
-      <table className="table table-striped cb-custom-event-table border cb-border-color border-secondary cb-rounded">
-        <thead className="cb-text">
-          <tr>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Offender')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Reporter')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('State')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Inserted At')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Box my="xs" style={{ display: 'flex' }}>
+      <Table
+        striped
+        className="cb-custom-event-table cb-rounded"
+        style={{ border: '1px solid var(--mantine-color-default-border)' }}
+      >
+        <Table.Thead className="cb-text">
+          <Table.Tr>
+            <Table.Th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Offender')}
+            </Table.Th>
+            <Table.Th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Reporter')}
+            </Table.Th>
+            <Table.Th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('State')}
+            </Table.Th>
+            <Table.Th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Inserted At')}
+            </Table.Th>
+            <Table.Th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Actions')}
+            </Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {sortedReports.map((item) => {
             const offender = players[item.offenderId];
             const reporter = players[item.reporterId];
             return (
               <React.Fragment key={`report-${item.id}`}>
-                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                <tr className={customEventTrClassName}>
-                  <td className={tableDataCellClassName}>
+                <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+                <Table.Tr className={customEventTrClassName}>
+                  <Table.Td className={tableDataCellClassName}>
                     <UserInfo
                       user={offender}
                       banned={offender?.state === 'banned'}
                       hideOnlineIndicator
                       hideLink
                     />
-                  </td>
-                  <td className={tableDataCellClassName}>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName}>
                     <UserInfo user={reporter} hideOnlineIndicator hideLink />
-                  </td>
-                  <td className={tableDataCellClassName}>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName}>
                     <Select<ReportStateOption>
                       styles={
                         customStyle as unknown as React.ComponentProps<
@@ -149,24 +164,22 @@ function ReportsPanel() {
                       onChange={changeReportState(item.id)}
                       options={reportStatusOptions}
                     />
-                  </td>
-                  <td className={tableDataCellClassName}>
-                    <span className="text-white">
-                      {dayjs(item.insertedAt).format('YYYY-MM-DD HH:mm:ss')}
-                    </span>
-                  </td>
-                  <td className={tableDataCellClassName}>
-                    <a href={`/games/${item.gameId}?realtime=true`}>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName}>
+                    <Text c="white">{dayjs(item.insertedAt).format('YYYY-MM-DD HH:mm:ss')}</Text>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName}>
+                    <Anchor href={`/games/${item.gameId}?realtime=true`}>
                       <FontAwesomeIcon icon="link" />
-                    </a>
-                  </td>
-                </tr>
+                    </Anchor>
+                  </Table.Td>
+                </Table.Tr>
               </React.Fragment>
             );
           })}
-        </tbody>
-      </table>
-    </div>
+        </Table.Tbody>
+      </Table>
+    </Box>
   );
 }
 

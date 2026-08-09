@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, memo, useContext } from 'react';
 
-import { Button } from '@mantine/core';
+import { Button, Flex, Stack, Text, Title } from '@mantine/core';
 
 import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
@@ -84,34 +84,36 @@ function StartRoundConfirmationModal({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="cb-border-color">
-        <div className="d-flex flex-column justify-content-between align-items-center">
-          <h4 className="mb-4">{text}</h4>
-          <div className="d-flex flex-column justify-content-center">
-            <div className="d-flex justify-content-center">
-              <span title={i18n.t('Round timeout seconds')} className="mr-2">
+        <Stack align="center" justify="space-between">
+          <Title order={4} mb="lg">
+            {text}
+          </Title>
+          <Stack align="center" justify="center">
+            <Flex justify="center">
+              <Text title={i18n.t('Round timeout seconds')} mr="xs">
                 {i18n.t('Seconds:')} {matchTimeoutSeconds}
                 {', '}
-              </span>
+              </Text>
               {taskProvider === 'task_pack' && (
-                <span title={i18n.t('Round task pack id')}>
+                <Text title={i18n.t('Round task pack id')}>
                   {i18n.t('Task pack name:')} {taskPackName}
-                </span>
+                </Text>
               )}
               {taskProvider === 'level' && (
-                <span title={i18n.t('Round task level')}>
+                <Text title={i18n.t('Round task level')}>
                   {i18n.t('Task level:')} {level ? i18n.t(level) : level}
-                </span>
+                </Text>
               )}
-            </div>
-          </div>
-        </div>
+            </Flex>
+          </Stack>
+        </Stack>
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
-        <div className="d-flex justify-content-between w-100">
+        <Flex justify="space-between" w="100%">
           <Button onClick={onClose} color="cbSecondary" radius="md" className={cancelBtnClassName}>
             {i18n.t('Cancel')}
           </Button>
-          <div className="d-flex">
+          <Flex>
             <Button
               ref={confirmBtnRef}
               onClick={handleConfirmation}
@@ -121,8 +123,8 @@ function StartRoundConfirmationModal({
             >
               {i18n.t('Confirm')}
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </Modal.Footer>
     </Modal>
   );

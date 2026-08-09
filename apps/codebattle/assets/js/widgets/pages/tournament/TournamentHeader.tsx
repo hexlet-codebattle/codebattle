@@ -1,6 +1,7 @@
 import React, { memo, useContext, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Badge, Box, Button, Flex, Group, Stack, Text, Title } from '@mantine/core';
 import cn from 'classnames';
 import moment from 'moment';
 
@@ -223,34 +224,28 @@ function TournamentHeader({
   );
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-  const stateClassName = cn(
-    'badge mr-2',
-    hasCustomEventStyle
-      ? {
-          'cb-custom-event-badge-warning': state === TournamentStates.waitingParticipants,
-          'cb-custom-event-badge-success':
-            !hideResults && (breakState === 'off' || state === TournamentStates.finished),
-          'cb-custom-event-badge-light': state === TournamentStates.canceled,
-          'cb-custom-event-badge-danger': breakState === 'on',
-          'cb-custom-event-badge-primary': hideResults && state === TournamentStates.finished,
-        }
-      : {
-          'badge-warning': state === TournamentStates.waitingParticipants,
-          'badge-success':
-            !hideResults && (breakState === 'off' || state === TournamentStates.finished),
-          'badge-light': state === TournamentStates.canceled,
-          'badge-danger': breakState === 'on',
-          'badge-primary': hideResults && state === TournamentStates.finished,
-        },
-  );
-  const copyBtnClassName = cn('btn btn-sm rounded-right', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  // const backBtnClassName = cn('btn rounded-lg ml-lg-2 mr-2', {
-  //   'btn-primary': !hasCustomEventStyle,
-  //   'cb-custom-event-btn-primary': hasCustomEventStyle,
-  // });
+  const customBadgeClass = useMemo(() => {
+    if (!hasCustomEventStyle) return undefined;
+    if (state === TournamentStates.waitingParticipants) return 'cb-custom-event-badge-warning';
+    if (!hideResults && (breakState === 'off' || state === TournamentStates.finished))
+      return 'cb-custom-event-badge-success';
+    if (state === TournamentStates.canceled) return 'cb-custom-event-badge-light';
+    if (breakState === 'on') return 'cb-custom-event-badge-danger';
+    if (hideResults && state === TournamentStates.finished) return 'cb-custom-event-badge-primary';
+    return undefined;
+  }, [hasCustomEventStyle, state, breakState, hideResults]);
+
+  const badgeColor = useMemo(() => {
+    if (state === TournamentStates.waitingParticipants) return 'yellow';
+    if (!hideResults && (breakState === 'off' || state === TournamentStates.finished))
+      return 'green';
+    if (state === TournamentStates.canceled) return 'gray';
+    if (breakState === 'on') return 'red';
+    if (hideResults && state === TournamentStates.finished) return 'blue';
+    return 'gray';
+  }, [state, breakState, hideResults]);
+
+  const copyBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
 
   const canStart = isLive && state === TournamentStates.waitingParticipants && playersCount > 0;
   const canStartRound = isLive && state === TournamentStates.active && breakState === 'on';
@@ -278,37 +273,40 @@ function TournamentHeader({
   return (
     <>
       {showHeaderPane && (
-        <div className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2">
-          <div className="d-flex flex-column">
-            <div className="d-flex align-items-center mb-3">
+        <Box className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2">
+          <Flex direction="column">
+            <Flex align="center" mb="md">
               {isGradeTournament && (
-                <div className="d-flex flex-shrink-0 mr-3" aria-label={`${gradeName} grade`}>
+                <Box mr="md" style={{ flexShrink: 0 }} aria-label={`${gradeName} grade`}>
                   {getIconForGrade(gradeName)}
-                </div>
+                </Box>
               )}
-              <div className="d-flex flex-column min-w-0">
-                <h2
+              <Flex direction="column" style={{ minWidth: 0 }}>
+                <Title
+                  order={2}
                   title={tournamentName}
                   className="cb-tournament-header-title pb-1 m-0 text-capitalize text-nowrap cb-overflow-x-auto cb-overflow-y-hidden"
                 >
                   {tournamentName}
-                </h2>
+                </Title>
                 {firstPlaceRankingPoints != null && (
-                  <span className="text-white text-nowrap">
+                  <Text c="white" className="text-nowrap">
                     <span className="cb-tournament-points-value">{firstPlaceRankingPoints}</span>
                     <span className="ml-1">{i18next.t('Ranking Points')}</span>
-                  </span>
+                  </Text>
                 )}
-              </div>
+              </Flex>
               {accessType === 'token' && (
-                <div title={i18next.t('Private tournament')} className="text-center ml-2">
+                <Box title={i18next.t('Private tournament')} ml="xs" ta="center">
                   <FontAwesomeIcon icon="lock" />
-                </div>
+                </Box>
               )}
-            </div>
-            <div className="d-flex align-items-center flex-wrap overflow-auto">
-              <span className={stateClassName}>{stateBadgeTitle}</span>
-              <span className="h6 mb-0 text-nowrap">
+            </Flex>
+            <Flex align="center" wrap="wrap" style={{ overflow: 'auto' }}>
+              <Badge color={badgeColor} className={customBadgeClass} mr="xs">
+                {stateBadgeTitle}
+              </Badge>
+              <Text fw={700} component="span" className="text-nowrap">
                 <TournamentStateDescription
                   state={state}
                   startsAt={startsAt}
@@ -321,8 +319,8 @@ function TournamentHeader({
                   isOver={isOver}
                   isOnline={isOnline}
                 />
-              </span>
-            </div>
+              </Text>
+            </Flex>
             {(playersCount != null || level) && (
               <div className="cb-tournament-header-meta">
                 {playersCount != null && (
@@ -339,25 +337,28 @@ function TournamentHeader({
                 )}
               </div>
             )}
-          </div>
-        </div>
+          </Flex>
+        </Box>
       )}
       {showAdminPanel && (
-        <div className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2 overflow-auto">
-          <div className="d-flex flex-column">
-            <div className="d-flex flex-column flex-lg-row align-items-lg-start">
+        <Box className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2 overflow-auto">
+          <Flex direction="column">
+            <Flex
+              direction={{ base: 'column', lg: 'row' }}
+              align={{ base: 'stretch', lg: 'flex-start' }}
+            >
               {showAdminJoinButton && (
-                <div className="mb-3 mb-lg-0 mr-lg-3">
+                <Box mb={{ base: 'md', lg: 0 }} mr={{ base: 0, lg: 'md' }}>
                   <JoinButton
                     isShow
                     isShowLeave={state === TournamentStates.waitingParticipants}
                     isParticipant={!!players[currentUserId]}
                     disabled={!isOnline}
                   />
-                </div>
+                </Box>
               )}
               {canModerate && (
-                <div className="flex-grow-1">
+                <Box style={{ flexGrow: 1 }}>
                   <TournamentMainControlButtons
                     accessType={accessType}
                     streamMode={streamMode}
@@ -376,34 +377,42 @@ function TournamentHeader({
                     toggleShowBots={toggleShowBots}
                     toggleStreamMode={toggleStreamMode}
                   />
-                </div>
+                </Box>
               )}
-            </div>
+            </Flex>
             {canModerate && !streamMode && accessType === 'token' && (
-              <div
-                className={cn(
-                  'd-flex justify-content-end mt-2 pt-2',
-                  'cb-grid-divider overflow-auto border-top cb-border-color',
-                )}
+              <Flex
+                justify="flex-end"
+                mt="xs"
+                pt="xs"
+                className="cb-grid-divider overflow-auto"
+                style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
               >
-                <div className="d-flex input-group">
-                  <div title={i18next.t('Access token')} className="input-group-prepend">
-                    <span className="input-group-text cb-bg-highlight-panel cb-border-color cb-text">
+                <Flex align="center">
+                  <Box title={i18next.t('Access token')} mr="xs">
+                    <Text
+                      component="span"
+                      p="xs"
+                      className="cb-bg-highlight-panel cb-text cb-rounded"
+                    >
                       <FontAwesomeIcon icon="key" />
-                    </span>
-                  </div>
+                    </Text>
+                  </Box>
                   <CopyButton
                     className={copyBtnClassName}
                     value={tournamentAccessUrl}
                     disabled={!isLive || !isOnline}
                   />
-                </div>
-              </div>
+                </Flex>
+              </Flex>
             )}
             {showDeadTournamentWarning && (
-              <div
+              <Box
+                mt="xs"
+                px="md"
+                py="xs"
                 className={cn(
-                  'mt-2 px-3 py-2 rounded small font-weight-bold border',
+                  'rounded small font-weight-bold border',
                   hasCustomEventStyle
                     ? 'cb-bg-highlight-panel cb-border-color cb-text'
                     : 'border-warning text-warning',
@@ -412,10 +421,10 @@ function TournamentHeader({
                 {i18next.t(
                   'Tournament process is dead. Click Restart to make it live again so users can join.',
                 )}
-              </div>
+              </Box>
             )}
-          </div>
-        </div>
+          </Flex>
+        </Box>
       )}
     </>
   );

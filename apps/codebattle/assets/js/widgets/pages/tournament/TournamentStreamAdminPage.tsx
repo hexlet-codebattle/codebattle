@@ -1,5 +1,19 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 
+import {
+  Anchor,
+  Badge,
+  Box,
+  Button,
+  Card,
+  Flex,
+  Group,
+  Paper,
+  SegmentedControl,
+  Text,
+  Title,
+} from '@mantine/core';
+
 import { getPageProp } from '@/inertia/pageProps';
 
 import socket from '../../../socket';
@@ -44,15 +58,15 @@ const matchSorter = (a: StreamMatch, b: StreamMatch) => {
 const stateColor = (state: string) => {
   switch (state) {
     case 'playing':
-      return '#22c55e';
+      return 'green';
     case 'pending':
-      return '#94a3b8';
+      return 'gray';
     case 'timeout':
-      return '#f59e0b';
+      return 'yellow';
     case 'canceled':
-      return '#64748b';
+      return 'gray';
     default:
-      return '#a4aab3';
+      return 'gray';
   }
 };
 
@@ -71,46 +85,56 @@ function StreamLinksPanel({ tournamentId }: StreamLinksPanelProps) {
   };
 
   return (
-    <div className="card mb-3">
-      <div className="card-header py-2">
-        <strong>OBS / stream URLs</strong>
-      </div>
-      <ul className="list-group list-group-flush">
-        {WIDGETS.map((w) => {
-          const url = `${base}&widget=${w.key}${w.params ? `&${w.params}` : ''}`;
-          return (
-            <li
-              key={w.key}
-              className="list-group-item d-flex align-items-center justify-content-between"
-            >
-              <div className="text-truncate mr-2" style={{ minWidth: 0 }}>
-                <strong className="mr-2">{w.label}</strong>
-                <code className="text-muted" style={{ fontSize: '12px' }}>
-                  {url}
-                </code>
-              </div>
-              <div className="flex-shrink-0">
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn btn-sm btn-outline-primary mr-2"
-                >
-                  Open
-                </a>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={() => copy(url)}
-                >
-                  Copy
-                </button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <Card withBorder radius="md" mb="md" p={0}>
+      <Card.Section withBorder p="xs" px="md">
+        <Text fw={700}>OBS / stream URLs</Text>
+      </Card.Section>
+      <Card.Section p={0}>
+        <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+          {WIDGETS.map((w) => {
+            const url = `${base}&widget=${w.key}${w.params ? `&${w.params}` : ''}`;
+            return (
+              <Box
+                component="li"
+                key={w.key}
+                p="xs"
+                px="md"
+                style={{
+                  borderBottom: '1px solid var(--mantine-color-default-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Box mr="xs" style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <Text fw={700} component="span" mr="xs">
+                    {w.label}
+                  </Text>
+                  <Text c="dimmed" component="code" style={{ fontSize: '12px' }}>
+                    {url}
+                  </Text>
+                </Box>
+                <Group gap="xs" style={{ flexShrink: 0 }}>
+                  <Button
+                    component="a"
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    variant="outline"
+                    size="xs"
+                  >
+                    Open
+                  </Button>
+                  <Button variant="default" size="xs" onClick={() => copy(url)}>
+                    Copy
+                  </Button>
+                </Group>
+              </Box>
+            );
+          })}
+        </Box>
+      </Card.Section>
+    </Card>
   );
 }
 
@@ -132,74 +156,87 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }: Match
   );
 
   return (
-    <li
-      className="list-group-item d-flex align-items-center justify-content-between"
+    <Box
+      component="li"
+      p="xs"
+      px="md"
       style={{
+        borderBottom: '1px solid var(--mantine-color-default-border)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         background: isActive ? 'rgba(34,197,94,0.12)' : undefined,
         borderLeft: isActive ? '4px solid #22c55e' : '4px solid transparent',
       }}
     >
       <div style={{ minWidth: 0 }}>
-        <div className="d-flex align-items-center" style={{ gap: 10 }}>
-          <span
-            className="badge text-uppercase"
-            style={{
-              background: stateColor(match.state),
-              color: '#0b1220',
-              fontWeight: 700,
-            }}
-          >
+        <Flex align="center" gap="xs">
+          <Badge color={stateColor(match.state)} tt="uppercase" fw={700} c="dark">
             {match.state}
-          </span>
-          <span style={{ fontFamily: 'Menlo, Monaco, Consolas, monospace', fontSize: 13 }}>
+          </Badge>
+          <Text
+            component="span"
+            style={{ fontFamily: 'Menlo, Monaco, Consolas, monospace', fontSize: 13 }}
+          >
             round {match.round_id ?? match.round_position ?? '?'} · match #{match.id}
-          </span>
+          </Text>
           {match.game_id ? (
-            <span className="text-muted" style={{ fontSize: 12 }}>
+            <Text component="span" c="dimmed" style={{ fontSize: 12 }}>
               game #{match.game_id}
-            </span>
+            </Text>
           ) : null}
-        </div>
-        <div className="mt-1" style={{ fontSize: 15 }}>
+        </Flex>
+        <Box mt={4} style={{ fontSize: 15 }}>
           {players.length ? (
             players.map((p, i) => (
               <span key={p.id}>
-                {i > 0 ? <span className="text-muted mx-2">vs</span> : null}
-                <strong>{p.name}</strong>
+                {i > 0 ? (
+                  <Text component="span" c="dimmed" mx="xs">
+                    vs
+                  </Text>
+                ) : null}
+                <Text component="span" fw={700}>
+                  {p.name}
+                </Text>
                 {p.lang || p.editor_lang ? (
-                  <span className="text-muted ml-1" style={{ fontSize: 12 }}>
+                  <Text component="span" c="dimmed" ml={4} style={{ fontSize: 12 }}>
                     [{p.lang || p.editor_lang}]
-                  </span>
+                  </Text>
                 ) : null}
               </span>
             ))
           ) : (
-            <span className="text-muted">no players</span>
+            <Text component="span" c="dimmed">
+              no players
+            </Text>
           )}
-        </div>
+        </Box>
       </div>
-      <div className="flex-shrink-0 d-flex align-items-center" style={{ gap: 6 }}>
+      <Flex align="center" gap={6} style={{ flexShrink: 0 }}>
         {match.game_id ? (
-          <a
+          <Button
+            component="a"
             href={`/games/${match.game_id}`}
             target="_blank"
             rel="noreferrer"
-            className="btn btn-sm btn-outline-secondary"
+            variant="default"
+            size="xs"
           >
             Game
-          </a>
+          </Button>
         ) : null}
-        <button
-          type="button"
-          className={`btn btn-sm ${isActive ? 'btn-success' : 'btn-outline-success'}`}
+        <Button
+          size="xs"
+          color="green"
+          variant={isActive ? 'filled' : 'outline'}
           onClick={() => onSetActive(match.game_id)}
           disabled={disabled || !match.game_id}
           title={!match.game_id ? 'match has no game yet' : 'show on stream'}
         >
           {isActive ? '✓ Live' : 'Set Live'}
-        </button>
-      </div>
-    </li>
+        </Button>
+      </Flex>
+    </Box>
   );
 }
 
@@ -321,55 +358,60 @@ function TournamentStreamAdminPage() {
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between mb-3">
+      <Flex align="center" justify="space-between" mb="md">
         <div>
-          <h3 className="mb-0">Stream Admin · {tournamentName}</h3>
-          <small className="text-muted">
+          <Title order={3} mb={0}>
+            Stream Admin · {tournamentName}
+          </Title>
+          <Text size="xs" c="dimmed">
             Status: {status} · playing matches: {playingCount} · active game:{' '}
             {activeGameId ? `#${activeGameId}` : '—'}
-          </small>
+          </Text>
         </div>
-        <div className="d-flex align-items-center" style={{ gap: 8 }}>
-          <a
-            className="btn btn-sm btn-outline-primary"
+        <Group gap="xs">
+          <Button
+            component="a"
+            variant="outline"
+            size="xs"
             href={`/tournaments/${tournamentId}/stream?fullscreen=true`}
             target="_blank"
             rel="noreferrer"
           >
             Open full stream
-          </a>
-          <button type="button" className="btn btn-sm btn-outline-danger" onClick={clearActive}>
+          </Button>
+          <Button variant="outline" color="red" size="xs" onClick={clearActive}>
             Clear active
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Group>
+      </Flex>
 
       <StreamLinksPanel tournamentId={tournamentId} />
 
-      <div className="card">
-        <div className="card-header d-flex align-items-center justify-content-between py-2">
-          <strong>Matches</strong>
-          <div className="btn-group btn-group-sm" role="group">
-            {[
-              ['playing', 'Playing'],
-              ['live', 'Live + Active'],
-              ['all', 'All'],
-            ].map(([key, label]) => (
-              <button
-                key={key}
-                type="button"
-                className={`btn ${filter === key ? 'btn-primary' : 'btn-outline-primary'}`}
-                onClick={() => setFilter(key)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
+      <Card withBorder radius="md" p={0}>
+        <Card.Section
+          withBorder
+          p="xs"
+          px="md"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <Text fw={700}>Matches</Text>
+          <SegmentedControl
+            size="xs"
+            value={filter}
+            onChange={setFilter}
+            data={[
+              { value: 'playing', label: 'Playing' },
+              { value: 'live', label: 'Live + Active' },
+              { value: 'all', label: 'All' },
+            ]}
+          />
+        </Card.Section>
         {matchList.length === 0 ? (
-          <div className="card-body text-center text-muted py-4">No matches to show.</div>
+          <Text py="xl" ta="center" c="dimmed">
+            No matches to show.
+          </Text>
         ) : (
-          <ul className="list-group list-group-flush">
+          <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
             {matchList.map((m) => (
               <MatchRow
                 key={m.id}
@@ -380,9 +422,9 @@ function TournamentStreamAdminPage() {
                 disabled={status !== 'connected'}
               />
             ))}
-          </ul>
+          </Box>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

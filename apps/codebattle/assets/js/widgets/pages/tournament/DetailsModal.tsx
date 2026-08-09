@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
+import React, { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
 
-import { Button } from '@mantine/core';
+import { Box, Button, Grid, Group, Stack, Text } from '@mantine/core';
 import moment from 'moment';
 
 import Modal from '@/components/CbModal';
@@ -54,17 +54,23 @@ function DetailSection({ title, items }: DetailSectionProps) {
   }
 
   return (
-    <div className="cb-bg-highlight-panel cb-rounded p-3 h-100">
-      <div className="small text-uppercase text-muted font-weight-bold mb-3">{title}</div>
-      <div className="row mx-n2">
+    <Box className="cb-bg-highlight-panel cb-rounded p-3 h-100">
+      <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
+        {title}
+      </Text>
+      <Grid gap="xs">
         {items.map(({ label, value }) => (
-          <div key={label} className="col-12 col-sm-6 px-2 mb-3">
-            <div className="small text-muted mb-1">{label}</div>
-            <div className="font-weight-bold text-break">{value}</div>
-          </div>
+          <Grid.Col span={{ base: 12, sm: 6 }} key={label}>
+            <Text size="xs" c="dimmed" mb={4}>
+              {label}
+            </Text>
+            <Text fw={700} style={{ wordBreak: 'break-word' }}>
+              {value}
+            </Text>
+          </Grid.Col>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
 }
 
@@ -99,8 +105,8 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const [showRawJson, setShowRawJson] = useState(false);
 
   const toggleJsonView = useCallback(() => {
-    setShowRawJson((v) => !v)
-  }, [setShowRawJson])
+    setShowRawJson((v) => !v);
+  }, [setShowRawJson]);
 
   const detailSections = useMemo(() => {
     const sections = [
@@ -197,39 +203,36 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       </Modal.Header>
       <Modal.Body>
         {tournament.description ? (
-          <div className="cb-bg-highlight-panel cb-rounded p-3 mb-3">
-            <div className="small text-uppercase text-muted font-weight-bold mb-2">
+          <Box className="cb-bg-highlight-panel cb-rounded p-3 mb-3">
+            <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
               {i18n.t('Description')}
-            </div>
-            <div className="mb-0 text-break">{tournament.description as ReactNode}</div>
-          </div>
+            </Text>
+            <Box style={{ wordBreak: 'break-word' }}>{tournament.description as ReactNode}</Box>
+          </Box>
         ) : null}
-        <div className="row mx-n2">
+        <Grid gap="md">
           {detailSections.map(({ title, items }) => (
-            <div key={title} className="col-12 col-lg-6 px-2 mb-3">
+            <Grid.Col span={{ base: 12, lg: 6 }} key={title}>
               <DetailSection title={title} items={items} />
-            </div>
+            </Grid.Col>
           ))}
-        </div>
+        </Grid>
         {showRawJson && <RawJsonSection tournament={tournament} />}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color d-flex justify-content-between">
-        <Button
-          variant="outline"
-          color="cbSecondary"
-          radius="md"
-          onClick={toggleJsonView}
-        >
-          {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
-        </Button>
-        <Button
-          onClick={handleCancel}
-          color="cbSecondary"
-          radius="md"
-          className={hasCustomEventStyles ? 'cb-custom-event-btn-secondary' : undefined}
-        >
-          {i18n.t('Close')}
-        </Button>
+      <Modal.Footer className="cb-border-color">
+        <Group justify="space-between" w="100%">
+          <Button variant="outline" color="cbSecondary" radius="md" onClick={toggleJsonView}>
+            {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
+          </Button>
+          <Button
+            onClick={handleCancel}
+            color="cbSecondary"
+            radius="md"
+            className={hasCustomEventStyles ? 'cb-custom-event-btn-secondary' : undefined}
+          >
+            {i18n.t('Close')}
+          </Button>
+        </Group>
       </Modal.Footer>
     </Modal>
   );
