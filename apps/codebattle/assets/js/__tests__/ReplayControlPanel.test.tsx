@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 import playbackModes from '../widgets/config/playbackModes';
 import ControlPanel from '../widgets/pages/game/ControlPanel';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 const { copyMock } = vi.hoisted(() => ({
   copyMock: vi.fn().mockResolvedValue(true),
 }));
@@ -35,21 +37,23 @@ describe('replay control panel', () => {
     const onChangePlaybackMode = vi.fn();
 
     render(
-      <Provider store={store}>
-        <ControlPanel
-          roomMachineState={makeRoomState()}
-          onPauseClick={vi.fn()}
-          onPlayClick={vi.fn()}
-          onChangeSpeed={onChangeSpeed}
-          playbackMode={playbackModes.realtime}
-          onChangePlaybackMode={onChangePlaybackMode}
-          nextRecordId={12}
-          currentTime={2_000}
-          totalDuration={10_000}
-        >
-          <div data-testid="timeline" />
-        </ControlPanel>
-      </Provider>,
+      <MantineTestProvider>
+        <Provider store={store}>
+          <ControlPanel
+            roomMachineState={makeRoomState()}
+            onPauseClick={vi.fn()}
+            onPlayClick={vi.fn()}
+            onChangeSpeed={onChangeSpeed}
+            playbackMode={playbackModes.realtime}
+            onChangePlaybackMode={onChangePlaybackMode}
+            nextRecordId={12}
+            currentTime={2_000}
+            totalDuration={10_000}
+          >
+            <div data-testid="timeline" />
+          </ControlPanel>
+        </Provider>
+      </MantineTestProvider>,
     );
 
     expect(screen.getByRole('button', { name: 'Play replay' })).toBeInTheDocument();

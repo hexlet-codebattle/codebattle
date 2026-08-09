@@ -13,6 +13,7 @@ import {
   Plus,
   Settings,
 } from 'react-feather';
+import { Text } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
@@ -293,14 +294,16 @@ function ControlPanel({
         <div className="cb-replayer-controls__timeline">
           {children}
           {totalDuration !== null && totalDuration !== undefined && (
-            <span
-              className="cb-replayer-controls__time text-monospace"
+            <Text
+              component="span"
+              ff="monospace"
+              className="cb-replayer-controls__time"
               aria-label={i18n.t('Playback time')}
             >
               {formatDuration(currentTime)}
               <span aria-hidden="true"> / </span>
               {formatDuration(totalDuration)}
-            </span>
+            </Text>
           )}
         </div>
 

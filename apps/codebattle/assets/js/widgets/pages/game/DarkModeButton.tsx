@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { ActionIcon } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import editorThemes from '../../config/editorThemes';
@@ -14,7 +14,7 @@ interface DarkModeButtonProps {
   player?: unknown;
 }
 
-function DarkModeButton({ className = 'btn btn-sm rounded-right' }: DarkModeButtonProps) {
+function DarkModeButton({ className }: DarkModeButtonProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   const currentTheme = useSelector(editorsThemeSelector);
@@ -22,20 +22,21 @@ function DarkModeButton({ className = 'btn btn-sm rounded-right' }: DarkModeButt
   const isDarkMode = currentTheme === editorThemes.dark;
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
 
-  const btnClassName = cn(className, {
-    'btn-light': isDarkMode,
-    'btn-secondary': !isDarkMode,
-  });
-
   const handleToggleDarkMode = () => {
     dispatch(actions.switchEditorsTheme(mode));
   };
 
   return (
-    <button type="button" className={btnClassName} onClick={handleToggleDarkMode}>
+    <ActionIcon
+      variant={isDarkMode ? 'filled' : 'default'}
+      size="sm"
+      className={className}
+      onClick={handleToggleDarkMode}
+      aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
       <span className="invisible">1</span>
       <FontAwesomeIcon style={{ marginLeft: '-8px' }} icon={isDarkMode ? 'sun' : 'moon'} />
-    </button>
+    </ActionIcon>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 
+import { Badge, Box, Button, Flex, Group, Paper } from '@mantine/core';
 import MonacoEditor from '@monaco-editor/react';
 import i18next from 'i18next';
 
@@ -1865,229 +1866,223 @@ function ThreejsGamePage({
   const inFullscreen = isFullscreen || forceFullscreen;
 
   return (
-    <div className={inFullscreen ? '' : 'container-fluid px-2 py-2'}>
-      <div className="row">
-        <div className="col-12">
-          <div
-            ref={arenaRef}
-            className={inFullscreen ? '' : 'card shadow-sm border-0'}
-            style={{ minHeight: inFullscreen ? '100vh' : '78vh' }}
+    <Box px={inFullscreen ? undefined : 'sm'} py={inFullscreen ? undefined : 'sm'}>
+      <Paper
+        ref={arenaRef}
+        shadow={inFullscreen ? undefined : 'sm'}
+        radius={inFullscreen ? 0 : 'md'}
+        style={{ minHeight: inFullscreen ? '100vh' : '78vh', overflow: 'hidden' }}
+      >
+        {!inFullscreen && (
+          <Flex
+            justify="space-between"
+            align="center"
+            p="md"
+            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
           >
-            {!inFullscreen && (
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <strong>{i18next.t('Matrix Broadcast Arena')}</strong>
-                <div className="d-flex align-items-center">
-                  <span className="badge badge-secondary text-uppercase mr-2">
-                    {battleState.gameState}
-                  </span>
-                  <button
-                    type="button"
-                    className={`btn btn-sm mr-2 ${editMode ? 'btn-warning' : 'btn-outline-warning'}`}
-                    onClick={() => setEditMode((v) => !v)}
-                  >
-                    {editMode ? i18next.t('Done') : i18next.t('Edit Layout')}
-                  </button>
-                  {editMode && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger mr-2"
-                      onClick={resetPreset}
-                    >
-                      {i18next.t('Reset')}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={toggleFullscreen}
-                  >
-                    {i18next.t('Fullscreen')}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div
-              className="cb-threejs-arena-hover"
-              style={{
-                position: 'relative',
-                height: inFullscreen ? '100vh' : '68vh',
-                minHeight: inFullscreen ? '100vh' : '68vh',
-                background: '#000',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                ref={fxRef}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  pointerEvents: 'none',
-                  zIndex: 2,
-                }}
-              />
-
-              <div
-                ref={stageRef}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  zIndex: 3,
-                }}
+            <strong>{i18next.t('Matrix Broadcast Arena')}</strong>
+            <Group gap="sm" align="center">
+              <Badge color="gray" tt="uppercase">
+                {battleState.gameState}
+              </Badge>
+              <Button
+                size="compact-sm"
+                color="yellow"
+                variant={editMode ? 'filled' : 'outline'}
+                onClick={() => setEditMode((v) => !v)}
               >
-                {layouts && (
-                  <>
-                    {taskDescription && (
-                      <Pane
-                        title={taskName || i18next.t('Task')}
-                        accent={brand.gold}
-                        layout={layouts.task}
-                        zIndex={zOrder.task}
-                        fontSize={fontSizes.task}
-                        onIncreaseFont={() => adjustFont('task', 1)}
-                        onDecreaseFont={() => adjustFont('task', -1)}
-                        onDragStart={startInteraction('task', 'drag')}
-                        onResizeStart={startInteraction('task', 'resize')}
-                        onBringToFront={bringToFront('task')}
-                        editMode={editMode}
-                        showHeader={paneHeaders.task}
-                        onToggleHeader={() => togglePaneHeader('task')}
-                      >
-                        <TaskBody description={taskDescription} fontSize={fontSizes.task} />
-                      </Pane>
-                    )}
+                {editMode ? i18next.t('Done') : i18next.t('Edit Layout')}
+              </Button>
+              {editMode && (
+                <Button size="compact-sm" color="red" variant="outline" onClick={resetPreset}>
+                  {i18next.t('Reset')}
+                </Button>
+              )}
+              <Button size="compact-sm" variant="default" onClick={toggleFullscreen}>
+                {i18next.t('Fullscreen')}
+              </Button>
+            </Group>
+          </Flex>
+        )}
 
-                    <Pane
-                      title={i18next.t('Timer')}
-                      accent={brand.cyan}
-                      layout={layouts.timer}
-                      zIndex={zOrder.timer}
-                      onDragStart={startInteraction('timer', 'drag')}
-                      onResizeStart={startInteraction('timer', 'resize')}
-                      onBringToFront={bringToFront('timer')}
-                      editMode={editMode}
-                      showHeader={paneHeaders.timer}
-                      onToggleHeader={() => togglePaneHeader('timer')}
-                    >
-                      <TimerBody deadlineMs={deadlineMs} gameState={battleState.gameState} />
-                    </Pane>
+        <div
+          className="cb-threejs-arena-hover"
+          style={{
+            position: 'relative',
+            height: inFullscreen ? '100vh' : '68vh',
+            minHeight: inFullscreen ? '100vh' : '68vh',
+            background: '#000',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            ref={fxRef}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          />
 
-                    {taskExamples && (
-                      <Pane
-                        title={i18next.t('Examples')}
-                        accent={brand.silver}
-                        layout={layouts.examples}
-                        zIndex={zOrder.examples}
-                        fontSize={fontSizes.examples}
-                        onIncreaseFont={() => adjustFont('examples', 1)}
-                        onDecreaseFont={() => adjustFont('examples', -1)}
-                        onDragStart={startInteraction('examples', 'drag')}
-                        onResizeStart={startInteraction('examples', 'resize')}
-                        onBringToFront={bringToFront('examples')}
-                        editMode={editMode}
-                        showHeader={paneHeaders.examples}
-                        onToggleHeader={() => togglePaneHeader('examples')}
-                      >
-                        <ExamplesBody examples={taskExamples} fontSize={fontSizes.examples} />
-                      </Pane>
-                    )}
-
-                    <Pane
-                      key={`leftEditor-${getPlayerId(leftPlayer) || 'none'}`}
-                      title={`${getPlayerName(leftPlayer)} [${getPlayerLang(leftPlayer)}]`}
-                      accent={editorThemes[0].header}
-                      border={leftBorder}
-                      layout={layouts.leftEditor}
-                      zIndex={zOrder.leftEditor}
-                      fontSize={fontSizes.leftEditor}
-                      onIncreaseFont={() => adjustFont('leftEditor', 2)}
-                      onDecreaseFont={() => adjustFont('leftEditor', -2)}
-                      onDragStart={startInteraction('leftEditor', 'drag')}
-                      onResizeStart={startInteraction('leftEditor', 'resize')}
-                      onBringToFront={bringToFront('leftEditor')}
-                      editMode={editMode}
-                      showHeader={paneHeaders.leftEditor}
-                      onToggleHeader={() => togglePaneHeader('leftEditor')}
-                    >
-                      <EditorBody
-                        player={leftPlayer}
-                        fontSize={fontSizes.leftEditor}
-                        onMount={registerEditor(getPlayerId(leftPlayer))}
-                        isWinner={leftPlayer?.result === 'won'}
-                        theme={monacoTheme}
-                      />
-                    </Pane>
-
-                    <Pane
-                      key={`rightEditor-${getPlayerId(rightPlayer) || 'none'}`}
-                      title={`${getPlayerName(rightPlayer)} [${getPlayerLang(rightPlayer)}]`}
-                      accent={editorThemes[1].header}
-                      border={rightBorder}
-                      layout={layouts.rightEditor}
-                      zIndex={zOrder.rightEditor}
-                      fontSize={fontSizes.rightEditor}
-                      onIncreaseFont={() => adjustFont('rightEditor', 2)}
-                      onDecreaseFont={() => adjustFont('rightEditor', -2)}
-                      onDragStart={startInteraction('rightEditor', 'drag')}
-                      onResizeStart={startInteraction('rightEditor', 'resize')}
-                      onBringToFront={bringToFront('rightEditor')}
-                      editMode={editMode}
-                      showHeader={paneHeaders.rightEditor}
-                      onToggleHeader={() => togglePaneHeader('rightEditor')}
-                    >
-                      <EditorBody
-                        player={rightPlayer}
-                        fontSize={fontSizes.rightEditor}
-                        onMount={registerEditor(getPlayerId(rightPlayer))}
-                        isWinner={rightPlayer?.result === 'won'}
-                        theme={monacoTheme}
-                      />
-                    </Pane>
-
-                    <Pane
-                      title={`${leftPlayer?.result === 'won' ? '🏆 ' : ''}${getPlayerName(leftPlayer)} — Tests`}
-                      accent={editorThemes[0].header}
-                      layout={layouts.leftTests}
-                      zIndex={zOrder.leftTests}
-                      onDragStart={startInteraction('leftTests', 'drag')}
-                      onResizeStart={startInteraction('leftTests', 'resize')}
-                      onBringToFront={bringToFront('leftTests')}
-                      editMode={editMode}
-                      showHeader={paneHeaders.leftTests}
-                      onToggleHeader={() => togglePaneHeader('leftTests')}
-                    >
-                      <TestsBody
-                        tests={testsFor(leftPlayer)}
-                        isWinner={leftPlayer?.result === 'won'}
-                      />
-                    </Pane>
-
-                    <Pane
-                      title={`${rightPlayer?.result === 'won' ? '🏆 ' : ''}${getPlayerName(rightPlayer)} — Tests`}
-                      accent={editorThemes[1].header}
-                      layout={layouts.rightTests}
-                      zIndex={zOrder.rightTests}
-                      onDragStart={startInteraction('rightTests', 'drag')}
-                      onResizeStart={startInteraction('rightTests', 'resize')}
-                      onBringToFront={bringToFront('rightTests')}
-                      editMode={editMode}
-                      showHeader={paneHeaders.rightTests}
-                      onToggleHeader={() => togglePaneHeader('rightTests')}
-                    >
-                      <TestsBody
-                        tests={testsFor(rightPlayer)}
-                        isWinner={rightPlayer?.result === 'won'}
-                      />
-                    </Pane>
-                  </>
+          <div
+            ref={stageRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 3,
+            }}
+          >
+            {layouts && (
+              <>
+                {taskDescription && (
+                  <Pane
+                    title={taskName || i18next.t('Task')}
+                    accent={brand.gold}
+                    layout={layouts.task}
+                    zIndex={zOrder.task}
+                    fontSize={fontSizes.task}
+                    onIncreaseFont={() => adjustFont('task', 1)}
+                    onDecreaseFont={() => adjustFont('task', -1)}
+                    onDragStart={startInteraction('task', 'drag')}
+                    onResizeStart={startInteraction('task', 'resize')}
+                    onBringToFront={bringToFront('task')}
+                    editMode={editMode}
+                    showHeader={paneHeaders.task}
+                    onToggleHeader={() => togglePaneHeader('task')}
+                  >
+                    <TaskBody description={taskDescription} fontSize={fontSizes.task} />
+                  </Pane>
                 )}
-              </div>
 
-              <div className={`cb-threejs-floating-tools${editMode ? ' cb-active' : ''}`}>
-                <style>{`
+                <Pane
+                  title={i18next.t('Timer')}
+                  accent={brand.cyan}
+                  layout={layouts.timer}
+                  zIndex={zOrder.timer}
+                  onDragStart={startInteraction('timer', 'drag')}
+                  onResizeStart={startInteraction('timer', 'resize')}
+                  onBringToFront={bringToFront('timer')}
+                  editMode={editMode}
+                  showHeader={paneHeaders.timer}
+                  onToggleHeader={() => togglePaneHeader('timer')}
+                >
+                  <TimerBody deadlineMs={deadlineMs} gameState={battleState.gameState} />
+                </Pane>
+
+                {taskExamples && (
+                  <Pane
+                    title={i18next.t('Examples')}
+                    accent={brand.silver}
+                    layout={layouts.examples}
+                    zIndex={zOrder.examples}
+                    fontSize={fontSizes.examples}
+                    onIncreaseFont={() => adjustFont('examples', 1)}
+                    onDecreaseFont={() => adjustFont('examples', -1)}
+                    onDragStart={startInteraction('examples', 'drag')}
+                    onResizeStart={startInteraction('examples', 'resize')}
+                    onBringToFront={bringToFront('examples')}
+                    editMode={editMode}
+                    showHeader={paneHeaders.examples}
+                    onToggleHeader={() => togglePaneHeader('examples')}
+                  >
+                    <ExamplesBody examples={taskExamples} fontSize={fontSizes.examples} />
+                  </Pane>
+                )}
+
+                <Pane
+                  key={`leftEditor-${getPlayerId(leftPlayer) || 'none'}`}
+                  title={`${getPlayerName(leftPlayer)} [${getPlayerLang(leftPlayer)}]`}
+                  accent={editorThemes[0].header}
+                  border={leftBorder}
+                  layout={layouts.leftEditor}
+                  zIndex={zOrder.leftEditor}
+                  fontSize={fontSizes.leftEditor}
+                  onIncreaseFont={() => adjustFont('leftEditor', 2)}
+                  onDecreaseFont={() => adjustFont('leftEditor', -2)}
+                  onDragStart={startInteraction('leftEditor', 'drag')}
+                  onResizeStart={startInteraction('leftEditor', 'resize')}
+                  onBringToFront={bringToFront('leftEditor')}
+                  editMode={editMode}
+                  showHeader={paneHeaders.leftEditor}
+                  onToggleHeader={() => togglePaneHeader('leftEditor')}
+                >
+                  <EditorBody
+                    player={leftPlayer}
+                    fontSize={fontSizes.leftEditor}
+                    onMount={registerEditor(getPlayerId(leftPlayer))}
+                    isWinner={leftPlayer?.result === 'won'}
+                    theme={monacoTheme}
+                  />
+                </Pane>
+
+                <Pane
+                  key={`rightEditor-${getPlayerId(rightPlayer) || 'none'}`}
+                  title={`${getPlayerName(rightPlayer)} [${getPlayerLang(rightPlayer)}]`}
+                  accent={editorThemes[1].header}
+                  border={rightBorder}
+                  layout={layouts.rightEditor}
+                  zIndex={zOrder.rightEditor}
+                  fontSize={fontSizes.rightEditor}
+                  onIncreaseFont={() => adjustFont('rightEditor', 2)}
+                  onDecreaseFont={() => adjustFont('rightEditor', -2)}
+                  onDragStart={startInteraction('rightEditor', 'drag')}
+                  onResizeStart={startInteraction('rightEditor', 'resize')}
+                  onBringToFront={bringToFront('rightEditor')}
+                  editMode={editMode}
+                  showHeader={paneHeaders.rightEditor}
+                  onToggleHeader={() => togglePaneHeader('rightEditor')}
+                >
+                  <EditorBody
+                    player={rightPlayer}
+                    fontSize={fontSizes.rightEditor}
+                    onMount={registerEditor(getPlayerId(rightPlayer))}
+                    isWinner={rightPlayer?.result === 'won'}
+                    theme={monacoTheme}
+                  />
+                </Pane>
+
+                <Pane
+                  title={`${leftPlayer?.result === 'won' ? '🏆 ' : ''}${getPlayerName(leftPlayer)} — Tests`}
+                  accent={editorThemes[0].header}
+                  layout={layouts.leftTests}
+                  zIndex={zOrder.leftTests}
+                  onDragStart={startInteraction('leftTests', 'drag')}
+                  onResizeStart={startInteraction('leftTests', 'resize')}
+                  onBringToFront={bringToFront('leftTests')}
+                  editMode={editMode}
+                  showHeader={paneHeaders.leftTests}
+                  onToggleHeader={() => togglePaneHeader('leftTests')}
+                >
+                  <TestsBody tests={testsFor(leftPlayer)} isWinner={leftPlayer?.result === 'won'} />
+                </Pane>
+
+                <Pane
+                  title={`${rightPlayer?.result === 'won' ? '🏆 ' : ''}${getPlayerName(rightPlayer)} — Tests`}
+                  accent={editorThemes[1].header}
+                  layout={layouts.rightTests}
+                  zIndex={zOrder.rightTests}
+                  onDragStart={startInteraction('rightTests', 'drag')}
+                  onResizeStart={startInteraction('rightTests', 'resize')}
+                  onBringToFront={bringToFront('rightTests')}
+                  editMode={editMode}
+                  showHeader={paneHeaders.rightTests}
+                  onToggleHeader={() => togglePaneHeader('rightTests')}
+                >
+                  <TestsBody
+                    tests={testsFor(rightPlayer)}
+                    isWinner={rightPlayer?.result === 'won'}
+                  />
+                </Pane>
+              </>
+            )}
+          </div>
+
+          <div className={`cb-threejs-floating-tools${editMode ? ' cb-active' : ''}`}>
+            <style>{`
                   @keyframes cb-cup-bounce {
                     0%, 100% { transform: translateY(0) rotate(-6deg); }
                     50% { transform: translateY(-4px) rotate(6deg); }
@@ -2139,49 +2134,47 @@ function ThreejsGamePage({
                     color: #000;
                   }
                 `}</style>
-                <button
-                  type="button"
-                  className={editMode ? 'cb-active' : ''}
-                  onClick={() => setEditMode((v) => !v)}
-                  title={editMode ? i18next.t('Done editing') : i18next.t('Edit Layout')}
-                  aria-label={i18next.t('Edit layout')}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="3" />
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                  </svg>
-                </button>
-                {editMode && (
-                  <button
-                    type="button"
-                    onClick={resetPreset}
-                    title={i18next.t('Reset layout')}
-                    className="cb-reset"
-                    style={{
-                      borderColor: brand.red,
-                      width: 'auto',
-                      padding: '0 14px',
-                      borderRadius: '20px',
-                    }}
-                  >
-                    {i18next.t('Reset')}
-                  </button>
-                )}
-              </div>
-            </div>
+            <button
+              type="button"
+              className={editMode ? 'cb-active' : ''}
+              onClick={() => setEditMode((v) => !v)}
+              title={editMode ? i18next.t('Done editing') : i18next.t('Edit Layout')}
+              aria-label={i18next.t('Edit layout')}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </button>
+            {editMode && (
+              <button
+                type="button"
+                onClick={resetPreset}
+                title={i18next.t('Reset layout')}
+                className="cb-reset"
+                style={{
+                  borderColor: brand.red,
+                  width: 'auto',
+                  padding: '0 14px',
+                  borderRadius: '20px',
+                }}
+              >
+                {i18next.t('Reset')}
+              </button>
+            )}
           </div>
         </div>
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 }
 

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
+
 interface PlayerGame {
   id: number;
   gameId: number;
@@ -20,9 +22,9 @@ function GoToNextGame({ currentUserId, tournamentsInfo: { playerGames } }: GoToN
   return (
     <>
       {nextGame && (
-        <a className="btn btn-success cb-btn-success btn-block" href={`/games/${nextGame.gameId}`}>
+        <Button component="a" href={`/games/${nextGame.gameId}`} color="cbSuccess" fullWidth>
           Go to next game
-        </a>
+        </Button>
       )}
     </>
   );

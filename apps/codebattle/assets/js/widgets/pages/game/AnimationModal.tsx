@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Button } from '@mantine/core';
+import { Button, Flex, Text } from '@mantine/core';
 import i18n from 'i18next';
 import { useSelector } from 'react-redux';
 
@@ -23,10 +23,10 @@ function TournamentInfoPanel() {
       return i18n.t('Round is over, wait for the next round');
     case 'rematch':
       return (
-        <div className="d-flex flex-row">
+        <Flex align="center">
           <Loading adaptive />
-          <span className="pl-2">{i18n.t('Loading next game')}</span>
-        </div>
+          <Text ml="sm">{i18n.t('Loading next game')}</Text>
+        </Flex>
       );
     default:
       return <></>;
@@ -62,25 +62,25 @@ const AnimationModal = NiceModal.create(() => {
   const buttonText = result === 'won' ? i18n.t('GG') : i18n.t("I'll be back");
 
   return (
-    <Modal show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
+    <Modal show={modal.visible} onHide={modal.hide}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="d-flex justify-content-center">
+        <Flex justify="center">
           <img
-            className="w-100 cb-rounded"
-            style={{ maxWidth: '400px' }}
+            className="cb-rounded"
+            style={{ maxWidth: '400px', width: '100%' }}
             src={gifs[result]}
             alt={i18n.t('animation')}
           />
-        </div>
+        </Flex>
         {Boolean(tournamentId) && (
-          <div className="d-flex text-center text-white justify-content-center">
-            <span className="py-2 h4">
+          <Flex justify="center" py="sm">
+            <Text ta="center" fz="h4">
               <TournamentInfoPanel />
-            </span>
-          </div>
+            </Text>
+          </Flex>
         )}
       </Modal.Body>
       <Modal.Footer className="cb-border-color">

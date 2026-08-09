@@ -2,7 +2,7 @@ import React from 'react';
 
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Button, Group, Text } from '@mantine/core';
 import { connect } from 'react-redux';
 
 import { type RootState } from '@/slices';
@@ -39,59 +39,58 @@ const RematchButton = ({
   disabled,
 }: RematchButtonProps) => {
   const renderBtnAfterReject = () => (
-    <button type="button" className="btn btn-danger btn-block" disabled={disabled}>
+    <Button color="red" fullWidth disabled={disabled}>
       {i18n.t('Rejected Offer')}
-    </button>
+    </Button>
   );
 
   const renderBtnAfterSendOffer = () => {
     const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
-    const classNames = cn('btn btn-block', {
-      'btn-secondary cb-btn-secondary': isOpponentInGame,
-      'btn-warning': !isOpponentInGame,
-    });
     return (
-      <button type="button" className={classNames} disabled>
+      <Button color={isOpponentInGame ? 'cbSecondary' : 'yellow'} fullWidth disabled>
         {i18n.t(text)}
-      </button>
+      </Button>
     );
   };
 
   const renderBtnAfterRecieveOffer = () => (
-    <div className="d-flex flex-nowrap mb-3 w-100">
-      <div className="flex-grow-1 border py-1 px-2 text-center">{i18n.t('Rematch?')}</div>
-      <div className="d-flex">
-        <button
-          className="btn btn-outline-secondary cb-btn-outline-secondary mr-1"
-          type="button"
+    <Group wrap="nowrap" mb="md" w="100%">
+      <Text flex={1} style={{ border: '1px solid' }} py="xs" px="sm" ta="center">
+        {i18n.t('Rematch?')}
+      </Text>
+      <Group gap="xs" wrap="nowrap">
+        <Button
+          variant="outline"
+          color="cbSecondary"
           onClick={sendAcceptToRematch}
           title={i18n.t('Accept')}
           aria-label={i18n.t('Accept')}
         >
           <FontAwesomeIcon icon={faCheck} />
-        </button>
-        <button
-          className="btn btn-outline-secondary cb-btn-outline-secondary"
-          type="button"
+        </Button>
+        <Button
+          variant="outline"
+          color="cbSecondary"
           onClick={sendRejectToRematch}
           title={i18n.t('Decline')}
           aria-label={i18n.t('Decline')}
         >
           <FontAwesomeIcon icon={faXmark} />
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Group>
+    </Group>
   );
 
   const renderBtnByDefault = () => (
-    <button
-      type="button"
-      className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
+    <Button
+      color="cbSecondary"
+      radius="md"
+      fullWidth
       onClick={sendOfferToRematch}
       disabled={disabled}
     >
       {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
-    </button>
+    </Button>
   );
 
   const mapRematchStateToButtons: Record<string, React.ReactNode> = {

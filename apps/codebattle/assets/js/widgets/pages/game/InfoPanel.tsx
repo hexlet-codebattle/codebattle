@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 
+import { Box, Tabs } from '@mantine/core';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
@@ -28,60 +29,85 @@ function InfoPanel({
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const isTournamentGame = !!tournamentId;
 
+  const [activeTab, setActiveTab] = useState<string | null>('task');
+
   return (
     <>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        <div className="d-flex shadow-sm flex-column h-100 cb-bg-panel cb-rounded">
-          <nav>
-            <div
-              className="nav nav-tabs cb-border-color text-uppercase font-weight-bold text-center"
+        <Box
+          className="cb-bg-panel cb-rounded"
+          h="100%"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: 'var(--mantine-shadow-sm)',
+          }}
+        >
+          <Tabs
+            value={activeTab}
+            onChange={setActiveTab}
+            keepMounted
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          >
+            <Tabs.List
+              className="cb-border-color"
+              style={{ textTransform: 'uppercase', fontWeight: 700, textAlign: 'center' }}
               id="nav-tab"
-              role="tablist"
             >
-              <a
-                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
+              <Tabs.Tab
+                value="task"
                 id="task-tab"
-                data-toggle="tab"
-                href="#task"
-                role="tab"
                 aria-controls="task"
-                aria-selected="true"
+                style={{ flex: '0 0 25%', borderRadius: 0 }}
+                px="xs"
+                py="sm"
               >
                 {i18next.t('Task')}
-              </a>
-              <a
-                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
+              </Tabs.Tab>
+              <Tabs.Tab
+                value={idOutput}
                 id={`${idOutput}-tab`}
-                data-toggle="tab"
-                href={`#${idOutput}`}
-                role="tab"
-                aria-controls={`${idOutput}`}
-                aria-selected="false"
+                aria-controls={idOutput}
+                style={{ flex: '0 0 25%', borderRadius: 0 }}
+                px="xs"
+                py="sm"
               >
                 {i18next.t('Output')}
-              </a>
-              <div className="rounded-0 text-center border-left cb-border-color col-6 text-white px-1 py-2">
+              </Tabs.Tab>
+              <Box
+                style={{
+                  flex: '0 0 50%',
+                  textAlign: 'center',
+                  borderLeft: '1px solid var(--mantine-color-default-border)',
+                }}
+                c="white"
+                px="xs"
+                py="sm"
+              >
                 <TimerContainer />
-              </div>
-            </div>
-          </nav>
-          <div
-            className="tab-content flex-grow-1 rounded-bottom overflow-auto "
-            id="nav-tabContent"
-          >
-            <div
-              className="tab-pane fade show active h-100"
+              </Box>
+            </Tabs.List>
+
+            <Tabs.Panel
+              value="task"
               id="task"
               role="tabpanel"
               aria-labelledby="task-tab"
+              style={{
+                flexGrow: 1,
+                overflow: 'auto',
+                borderRadius: '0 0 var(--mantine-radius-md) var(--mantine-radius-md)',
+              }}
             >
               <TaskAssignment {...taskPanelProps} />
-            </div>
-            <div
-              className="tab-pane h-100 user-select-none"
+            </Tabs.Panel>
+            <Tabs.Panel
+              value={idOutput}
               id={idOutput}
               role="tabpanel"
               aria-labelledby={`${idOutput}-tab`}
+              h="100%"
+              style={{ userSelect: 'none' }}
             >
               {canShowOutputPanel && (
                 <>
@@ -89,9 +115,9 @@ function InfoPanel({
                   <Output sideOutput={outputData} />
                 </>
               )}
-            </div>
-          </div>
-        </div>
+            </Tabs.Panel>
+          </Tabs>
+        </Box>
       </div>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
         {isTournamentGame ? <TournamentCurrentPlayerRankingPanel /> : <ChatWidget />}

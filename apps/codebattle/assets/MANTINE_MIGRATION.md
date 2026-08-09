@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration` done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game` done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -594,6 +594,68 @@ plain `toBeInTheDocument()` (the class is gone). ⚠️ QA: the card is now
 eye now sits in a Mantine `rightSection` (not overlapping the field);
 primary/submit + social button hover; the highlight-panel footer border radius.
 
+Done: **`game`** page (large — 42 files, converted in one parallel pass across 6
+clusters). All game React markup is on Mantine except the documented leftovers
+below. Cluster log:
+- **Buttons (13 files)** — `ApprovePlaybookButtons`, `BackToEvent/Home/Tournament
+  Button`, `DarkModeButton`, `EditorHeightButtons`, `GameActionButtons`,
+  `GoToNextGame`, `NewGameButton`, `RematchButton`, `ReplayerControlButton`,
+  `SignUpButton`, `StartTrainingButton`. The pervasive `btn btn-secondary
+  cb-btn-secondary btn-block cb-rounded` → `<Button color="cbSecondary"
+  radius="md" fullWidth>` (class dropped — hover is in the theme); link-buttons →
+  `<Button component="a">` (stays role=link for tests); icon-only → `<ActionIcon>`.
+  `CheckResultButton` dropped `cb-btn-outline-success` and the dead Bootstrap-JS
+  `data-toggle="tooltip"`, keeping `data-guide-id`. All Phoenix
+  `data-method`/`data-csrf`/`data-to` preserved.
+- **Modals (6)** — `AnimationModal`, `NextStageGroupTournamentModal`,
+  `PremiumRestrictionModal`, `TaskDescriptionModal`, `TournamentAwardModal`,
+  `TournamentStatisticsModal`. All still render through `CbModal`; the now-default
+  `contentClassName="cb-text"` made the `text-white` passthroughs redundant, so
+  they were dropped. Two `color="blue"` CTAs → plain `<Button>` (brand orange) per
+  the standing decision.
+- **Widgets/containers (5)** — `ChatWidget`, `ControlPanel`, `GameWidget`,
+  `InfoWidget`, `PanelSplitPane`. `GameWidget`'s and `InfoWidget`'s Bootstrap-JS
+  `nav-tabs` (`data-toggle="tab"`/`tab-pane`) → controlled Mantine `<Tabs>`,
+  removing another Bootstrap-JS dependency. `ControlPanel` (replayer) kept its
+  **native `<input type="range">`** — `ReplayControlPanel.test` fires real range
+  events (same trap as settings `RangeInput`). `PanelSplitPane` kept all
+  split-pane sizing math, moving layout classes into its existing inline `style`.
+- **Info panels (8)** — `ContributorsList`, `CssBattleInfoPanel`,
+  `GameRoomLockPanel`, `InfoPanel`, `SideInfoPanel`, `TimeoutGameInfo`,
+  `UserHeadToHead`, `WaitingOpponentInfo`. `InfoPanel`'s Bootstrap-JS tabs → a
+  `keepMounted` Mantine `<Tabs>`; `GameRoomLockPanel`'s `form-control is-invalid`
+  → `<TextInput error>`; `jumbotron` → `Flex`/`Box`.
+- **Editor/output (6)** — `EditorContainer`, `EditorToolbar`, `Output`,
+  `OutputTab`, `TaskAssignment`, `TaskLanguageSelection`. `EditorToolbar`'s three
+  `*ClassNames` string props were deleted in favour of internal Mantine layout.
+  `TaskLanguageSelection` was a live **gotcha #7** case — a Mantine `<Button>`
+  still carrying `btn btn-sm btn-outline-secondary` that was being silently
+  overridden; the Bootstrap classes are now gone.
+- **Tournament panels (2)** + `ThreejsGamePage` — ranking `table table-striped` →
+  `<Table striped>` in a `Table.ScrollContainer`, keeping the
+  `cb-gold|silver|bronze-place-bg` classes; `ThreejsGamePage`'s arena card header
+  (its only 9 hits in 2188 lines) → `Paper`/`Flex`/`Group`/`Badge`/`Button`.
+
+**Intentional game leftovers (kept, documented):**
+- The `col-12 col-lg-6 p-1` / `col-12 col-xl-8 col-lg-6` wrappers in `InfoPanel`,
+  `InfoWidget`, `GameWidget`, `SideInfoPanel` — these are children of the
+  Bootstrap `row no-gutters cb-game` in **`RoomWidget`**. Convert the row and its
+  children together in a later slice; converting either side alone breaks the grid.
+- `WaitingOpponentInfo`'s `CopyButton` keeps `btn btn-secondary cb-btn-secondary`
+  — `CopyButton` is **shared with the still-Bootstrap `TournamentHeader`**, so its
+  swap belongs to the tournament slice. Its sibling Cancel button did convert.
+- `TaskAssignment`'s `h1`–`h5` task-zoom classes (same responsive-coupling
+  rationale as the profile page) and the `fas`/`fab` icon-font spans.
+
+⚠️ QA (game): the **replayer control bar** and split-pane sizing (highest risk —
+live game UI); the three rewritten tab bars (`GameWidget` right side, `InfoPanel`,
+`InfoWidget` CSS-battle) now use Mantine's underline indicator instead of
+`nav-tabs`; the Run/Check button lost its `cb-btn-outline-success` override;
+`DarkModeButton` lost `rounded-right` (check the button-group join in
+`SpectatorEditor`); `bg-warning` → `yellow-4` on the checking state; and the
+`WaitingOpponentInfo` URL/Copy/Cancel pill join (Copy is still a Bootstrap button
+between two Mantine ones).
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -634,8 +696,8 @@ don't inline:
 1. Shared leaf components in `widgets/components/` (buttons already Mantine;
    convert their surrounding layout, badges, cards).
 2. Pages, roughly by risk: `settings` ✅, `profile` ✅, `lobby` ✅ (React markup),
-   `registration` ✅, then `tournament` / `tournamentPlayer` / `groupTournament`,
-   `game` / `gameMl`, `admin`, `event`, then `schedule`, `seasonsPage`,
+   `registration` ✅, `game` ✅, then `tournament` / `tournamentPlayer` /
+   `groupTournament`, `gameMl`, `admin`, `event`, then `schedule`, `seasonsPage`,
    `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
 3. Per slice: convert → wrap affected tests in `MantineTestProvider` + fix
    portal/`findBy` queries → **verify in browser** (dev server) → merge.

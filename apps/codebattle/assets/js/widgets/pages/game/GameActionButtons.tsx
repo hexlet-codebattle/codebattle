@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Menu } from '@mantine/core';
+import { Button, Flex, Menu } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import Modal from '@/components/CbModal';
@@ -18,54 +18,48 @@ interface CheckResultButtonProps {
 
 function CheckResultButton({ onClick, status }: CheckResultButtonProps) {
   const dispatch = useDispatch();
-  const commonProps = {
-    type: 'button' as const,
-    className: 'btn btn-sm btn-outline-success cb-btn-outline-success btn-check cb-rounded',
-    title: `${i18next.t('Check solution')}&#013;Ctrl + Enter`,
-    'data-toggle': 'tooltip',
-    'data-guide-id': 'CheckResultButton',
-    'data-placement': 'top',
-  };
 
-  const commonEnabledProps = {
-    ...commonProps,
-    onClick,
-  };
-
-  switch (status) {
-    case 'enabled':
-      return (
-        <button {...commonEnabledProps}>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
-          {i18next.t('Run')}
-        </button>
-      );
-    case 'charging':
-      return (
-        <button {...commonProps} disabled>
-          <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
-          {i18next.t('Charging...')}
-        </button>
-      );
-    case 'checking':
-      return (
-        <button {...commonProps} disabled>
-          <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
-          {i18next.t('Running...')}
-        </button>
-      );
-    case 'disabled':
-      return (
-        <button {...commonProps} disabled>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
-          {i18next.t('Run')}
-        </button>
-      );
-    default: {
-      dispatch(actions.setError(new Error('unnexpected check status')));
-      return null;
-    }
+  if (
+    status !== 'enabled' &&
+    status !== 'charging' &&
+    status !== 'checking' &&
+    status !== 'disabled'
+  ) {
+    dispatch(actions.setError(new Error('unnexpected check status')));
+    return null;
   }
+
+  const isDisabled = status === 'charging' || status === 'checking' || status === 'disabled';
+  const isSpinning = status === 'charging' || status === 'checking';
+  const label =
+    status === 'charging'
+      ? i18next.t('Charging...')
+      : status === 'checking'
+        ? i18next.t('Running...')
+        : i18next.t('Run');
+
+  return (
+    <Button
+      variant="outline"
+      color="cbSuccess"
+      size="sm"
+      radius="md"
+      title={`${i18next.t('Check solution')}&#013;Ctrl + Enter`}
+      data-guide-id="CheckResultButton"
+      data-placement="top"
+      onClick={onClick}
+      disabled={isDisabled}
+      leftSection={
+        <FontAwesomeIcon
+          icon={isSpinning ? 'spinner' : ['fas', 'play-circle']}
+          className={isSpinning ? undefined : 'success'}
+          pulse={isSpinning}
+        />
+      }
+    >
+      {label}
+    </Button>
+  );
 }
 
 interface DropdownItemProps {
@@ -82,8 +76,13 @@ function GiveUpButtonDropdownItem({ onSelect, status }: DropdownItemProps) {
       disabled={status === 'disabled'}
       className="cb-dropdown-item"
     >
-      <span className={status === 'disabled' ? 'text-muted' : 'text-danger'}>
-        <FontAwesomeIcon icon={['far', 'flag']} className="mr-1" />
+      <span
+        style={{
+          color:
+            status === 'disabled' ? 'var(--mantine-color-dimmed)' : 'var(--mantine-color-red-6)',
+        }}
+      >
+        <FontAwesomeIcon icon={['far', 'flag']} style={{ marginRight: '0.25rem' }} />
         {i18next.t('Give up')}
       </span>
     </Menu.Item>
@@ -99,8 +98,8 @@ function ResetButtonDropDownItem({ onSelect, status }: DropdownItemProps) {
       disabled={status === 'disabled'}
       className="cb-dropdown-item"
     >
-      <span className="text-white">
-        <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
+      <span style={{ color: 'white' }}>
+        <FontAwesomeIcon icon={['fas', 'sync']} style={{ marginRight: '0.25rem' }} />
         {i18next.t('Reset solution')}
       </span>
     </Menu.Item>
@@ -147,10 +146,10 @@ function GameActionButtons({
 
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide} contentClassName="cb-text">
-      <Modal.Body className="text-center cb-bg-panel">
+      <Modal.Body className="cb-bg-panel" style={{ textAlign: 'center' }}>
         {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>
-      <Modal.Footer className="mx-auto border-0">
+      <Modal.Footer style={{ justifyContent: 'center', borderTop: 0 }}>
         <Button onClick={handleGiveUp} color="red" radius="md">
           {i18next.t('Give up')}
         </Button>
@@ -162,11 +161,11 @@ function GameActionButtons({
   );
 
   return (
-    <div className="d-flex py-2" role="group" aria-label={i18next.t('Game actions')}>
+    <Flex py="sm" role="group" aria-label={i18next.t('Game actions')}>
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
       <Menu>
         <Menu.Target>
-          <Button color="cbSecondary" radius="md" className="mx-1" id="dropdown-actions">
+          <Button color="cbSecondary" radius="md" mx="xs" id="dropdown-actions">
             <FontAwesomeIcon icon="ellipsis-v" />
           </Button>
         </Menu.Target>
@@ -179,7 +178,7 @@ function GameActionButtons({
         </Menu.Dropdown>
       </Menu>
       {renderModal()}
-    </div>
+    </Flex>
   );
 }
 

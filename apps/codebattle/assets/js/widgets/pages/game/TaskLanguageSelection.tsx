@@ -33,10 +33,12 @@ function TaskLanguagesSelection({
       <Menu.Target>
         <Button
           id="tasklang-dropdown-toggle"
-          className="shadow-none cb-rounded p-1 btn btn-sm btn-outline-secondary cb-btn-outline-secondary"
+          className="cb-btn-outline-secondary"
           variant="outline"
           color="cbSecondary"
+          radius="md"
           size="xs"
+          p="xs"
         >
           {displayLanguage.toUpperCase()}
         </Button>

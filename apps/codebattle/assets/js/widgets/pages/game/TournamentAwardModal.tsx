@@ -1,7 +1,7 @@
 import React, { memo, useRef, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Button } from '@mantine/core';
+import { Button, Flex, Stack } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import Modal from '@/components/CbModal';
@@ -46,14 +46,14 @@ const TournamentAwardModal = NiceModal.create((params: TournamentAwardModalProps
   }, [modal.visible, onlyShowAward]);
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
+    <Modal centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>{i18next.t('Award')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="d-flex flex-row justify-content-center p-2">
+        <Flex justify="center" p="sm">
           {gameStatus?.state !== 'playing' && (
-            <div className="d-flex flex-column align-items-center">
+            <Stack align="center">
               {award && award.startsWith('http') ? (
                 <img
                   alt={i18next.t('Game award')}
@@ -63,17 +63,15 @@ const TournamentAwardModal = NiceModal.create((params: TournamentAwardModalProps
               ) : (
                 <span style={{ fontSize: '10rem' }}>{award}</span>
               )}
-            </div>
+            </Stack>
           )}
-        </div>
+        </Flex>
       </Modal.Body>
       {!onlyShowAward && (
         <Modal.Footer>
-          <div className="d-flex justify-content-end w-100">
-            <Button ref={submitBtnRef} color="blue" radius="md" onClick={modal.hide}>
-              {waitType === 'tournament' ? i18next.t('Close') : i18next.t('Next game')}
-            </Button>
-          </div>
+          <Button ref={submitBtnRef} radius="md" onClick={modal.hide}>
+            {waitType === 'tournament' ? i18next.t('Close') : i18next.t('Next game')}
+          </Button>
         </Modal.Footer>
       )}
     </Modal>

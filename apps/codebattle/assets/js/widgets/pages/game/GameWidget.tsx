@@ -1,6 +1,6 @@
 import React, { useState, useContext, memo, useMemo, type ReactNode } from 'react';
 
-import cn from 'classnames';
+import { Box, Flex, Tabs } from '@mantine/core';
 import i18next from 'i18next';
 import isEqual from 'lodash/isEqual';
 import { useSelector } from 'react-redux';
@@ -25,7 +25,12 @@ interface EditorWrapperProps {
 
 function EditorWrapper({ children, id, className }: EditorWrapperProps) {
   return (
-    <div id={id} translate="no" className={className}>
+    <div
+      id={id}
+      translate="no"
+      className={className}
+      style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, position: 'relative' }}
+    >
       {children}
     </div>
   );
@@ -41,55 +46,34 @@ function RightSide({ output, children }: RightSideProps) {
   const isShowOutput = output && output.status;
   const content =
     showTab === 'editor' ? (
-      <EditorWrapper
-        id="editor"
-        className="d-flex flex-column flex-grow-1 position-relative cb-editor-height"
-      >
+      <EditorWrapper id="editor" className="cb-editor-height">
         {children}
       </EditorWrapper>
     ) : (
-      <div className="d-flex flex-column flex-grow-1 overflow-auto" style={{ maxHeight: '375px' }}>
-        <div className="h-auto user-select-none">
+      <Flex direction="column" flex={1} style={{ overflowY: 'auto', maxHeight: '375px' }}>
+        <Box h="auto" style={{ userSelect: 'none' }}>
           {isShowOutput && <Output sideOutput={output} />}
-        </div>
-      </div>
+        </Box>
+      </Flex>
     );
 
   return (
     <>
       {content}
-      <nav>
-        <div
-          className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold"
+      <Tabs value={showTab} onChange={(value) => setShowTab(value ?? 'editor')} variant="default">
+        <Tabs.List
+          className="bg-gray text-uppercase text-center font-weight-bold"
           id="nav-tab"
-          role="tablist"
+          grow
         >
-          <a
-            className={cn('nav-item nav-link flex-grow-1 rounded-0 px-2 px-sm-5', {
-              active: showTab === 'editor',
-            })}
-            href="#Editor"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowTab('editor');
-            }}
-          >
+          <Tabs.Tab value="editor" px={{ base: 'xs', sm: 'xl' }} style={{ borderRadius: 0 }}>
             {i18next.t('Editor')}
-          </a>
-          <a
-            className={cn('nav-item nav-link flex-grow-1 rounded-0 p-2 block', {
-              active: showTab === 'output',
-            })}
-            href="#Output"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowTab('output');
-            }}
-          >
+          </Tabs.Tab>
+          <Tabs.Tab value="output" p="xs" style={{ borderRadius: 0 }}>
             {isShowOutput && <OutputTab sideOutput={output} side="right" />}
-          </a>
-        </div>
-      </nav>
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
     </>
   );
 }
@@ -136,10 +120,7 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
             {...editors[0]}
           >
             {(params) => (
-              <EditorWrapper
-                id="main-editor"
-                className="d-flex flex-column flex-grow-1 position-relative cb-editor-height"
-              >
+              <EditorWrapper id="main-editor" className="cb-editor-height">
                 <ExtendedEditor {...params} />
               </EditorWrapper>
             )}
@@ -160,8 +141,10 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
         </>
       )}
       {viewMode === BattleRoomViewModes.single && (
-        <div
-          className="d-flex flex-column col-12 col-xl-8 col-lg-6 px-1"
+        <Flex
+          direction="column"
+          className="col-12 col-xl-8 col-lg-6"
+          px="xs"
           style={{ height: 'calc(100vh - 92px)' }}
         >
           <EditorContainer
@@ -172,15 +155,12 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
             {...editors[0]}
           >
             {(params) => (
-              <EditorWrapper
-                id="main-editor"
-                className="d-flex flex-column flex-grow-1 position-relative"
-              >
+              <EditorWrapper id="main-editor">
                 <ExtendedEditor {...params} />
               </EditorWrapper>
             )}
           </EditorContainer>
-        </div>
+        </Flex>
       )}
     </>
   );

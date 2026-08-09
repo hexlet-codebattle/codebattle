@@ -1,6 +1,7 @@
 import React, { useEffect, memo, useMemo, useState } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Group, Stack, Text } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import Modal from '@/components/CbModal';
@@ -70,37 +71,57 @@ const TournamentStatisticsModal = NiceModal.create(() => {
   );
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
+    <Modal centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="d-flex justify-content-between">
-          <div className="d-flex flex-column align-items-center p-2">
-            <span className="h4 mb-2">{firstPlayer?.name}</span>
-            <span className="h4 mb-2">{player.winMatches.length}</span>
-            <span className="h4 mb-2">{Math.ceil(player.avgTests)}%</span>
-            <span className="h4 mb-2">
+        <Group justify="space-between" align="flex-start">
+          <Stack align="center" p="sm">
+            <Text fz="h4" mb="sm">
+              {firstPlayer?.name}
+            </Text>
+            <Text fz="h4" mb="sm">
+              {player.winMatches.length}
+            </Text>
+            <Text fz="h4" mb="sm">
+              {Math.ceil(player.avgTests)}%
+            </Text>
+            <Text fz="h4" mb="sm">
               {Math.ceil(player.avgDuration)}
               {` ${i18n.t('sec')}`}
-            </span>
-          </div>
-          <div className="d-flex flex-column align-items-center p-2">
-            <span className="h4 mb-2">{i18n.t('Player')}</span>
-            <span className="h4 mb-2">{i18n.t('Wins')}</span>
-            <span className="h4 mb-2">{i18n.t('AVG Tests')}</span>
-            <span className="h4 mb-2 text-nowrap">{i18n.t('AVG Solving speed')}</span>
-          </div>
-          <div className="d-flex flex-column align-items-center p-2">
-            <span className="h4 mb-2">{secondPlayer?.name}</span>
-            <span className="h4 mb-2">{opponent.winMatches.length}</span>
-            <span className="h4 mb-2">{Math.ceil(opponent.avgTests)}%</span>
-            <span className="h4 mb-2">
+            </Text>
+          </Stack>
+          <Stack align="center" p="sm">
+            <Text fz="h4" mb="sm">
+              {i18n.t('Player')}
+            </Text>
+            <Text fz="h4" mb="sm">
+              {i18n.t('Wins')}
+            </Text>
+            <Text fz="h4" mb="sm">
+              {i18n.t('AVG Tests')}
+            </Text>
+            <Text fz="h4" mb="sm" style={{ whiteSpace: 'nowrap' }}>
+              {i18n.t('AVG Solving speed')}
+            </Text>
+          </Stack>
+          <Stack align="center" p="sm">
+            <Text fz="h4" mb="sm">
+              {secondPlayer?.name}
+            </Text>
+            <Text fz="h4" mb="sm">
+              {opponent.winMatches.length}
+            </Text>
+            <Text fz="h4" mb="sm">
+              {Math.ceil(opponent.avgTests)}%
+            </Text>
+            <Text fz="h4" mb="sm">
               {Math.ceil(opponent.avgDuration)}
               {` ${i18n.t('sec')}`}
-            </span>
-          </div>
-        </div>
+            </Text>
+          </Stack>
+        </Group>
       </Modal.Body>
       {/* <Modal.Footer>
         <div className="d-flex justify-content-end w-100">

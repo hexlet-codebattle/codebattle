@@ -1,5 +1,6 @@
 import React, { type ReactElement } from 'react';
 
+import { Box } from '@mantine/core';
 import Split from 'react-split';
 
 import useWindowDimensions from '@/utils/useWindowDimensions';
@@ -16,20 +17,24 @@ function PanelsSplitPane({ children, viewMode }: PanelsSplitPaneProps) {
 
   return (
     <Split
-      style={{ maxHeight: 'calc(100vh - 77px)' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        maxHeight: 'calc(100vh - 77px)',
+      }}
       sizes={[35, 60]}
-      className="d-flex flex-column w-100"
       direction="vertical"
       gutterSize={5}
       gutterAlign="center"
       cursor="row-resize"
     >
-      <div style={{ minHeight: 100 }} className="d-flex w-100">
+      <Box display="flex" w="100%" style={{ minHeight: 100 }}>
         {children[0]}
-      </div>
-      <div style={{ minHeight: 200 }} className="d-flex w-100 cb-overflow-y-hidden">
+      </Box>
+      <Box display="flex" w="100%" className="cb-overflow-y-hidden" style={{ minHeight: 200 }}>
         {children[1]}
-      </div>
+      </Box>
     </Split>
   );
 }
