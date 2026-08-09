@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament` done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer` done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -651,10 +651,57 @@ below. Cluster log:
 live game UI); the three rewritten tab bars (`GameWidget` right side, `InfoPanel`,
 `InfoWidget` CSS-battle) now use Mantine's underline indicator instead of
 `nav-tabs`; the Run/Check button lost its `cb-btn-outline-success` override;
-`DarkModeButton` lost `rounded-right` (check the button-group join in
-`SpectatorEditor`); `bg-warning` → `yellow-4` on the checking state; and the
+`DarkModeButton` lost `rounded-right` (its `SpectatorEditor` button-group join is
+resolved — that toolbar is now Mantine, see `tournamentPlayer` below);
+`bg-warning` → `yellow-4` on the checking state; and the
 `WaitingOpponentInfo` URL/Copy/Cancel pill join (Copy is still a Bootstrap button
 between two Mantine ones).
+
+Done: **`tournamentPlayer`** page (`TournamentPlayer` container + `SpectatorEditor`
+— the OBS/stream spectator view, reached via `?editor` / `?timer` search params).
+- `SpectatorEditor`: the `panelClassName` prop is now **layout-free** — it only
+  carries the `spectator` design class (the Monaco `margin-top` fix); the old
+  `h-100 p-1 overflow-hidden` part of the string moved into the component as
+  `h="100%" p="xs"` + a new optional `style` prop. `bg-warning` (the is-checking
+  flash) → `bg="yellow.4"`, matching the game page's checking state. `card
+  shadow-sm h-100` → `<Paper shadow="sm" radius="sm" h="100%">`; the
+  `rounded-top border-bottom` toolbar → a `<Box>` with inline top radii + a
+  `--mantine-color-default-border` bottom border (same shape as `EditorToolbar`).
+  `btn-toolbar` → `<Group role="toolbar">`; the font-size `btn-group`
+  (`btn-light` +/- with `rounded-left`/`rounded-right`) → a Mantine
+  `<Button.Group>` of two `variant="default" size="compact-sm"` buttons (the
+  attached-pill join now comes from `Button.Group`, not the Bootstrap radius
+  utilities — a live **gotcha #7** case, since those `rounded-*` classes were
+  beating any Mantine radius). The `form-control custom-select rounded-lg` Monaco
+  theme picker → `<NativeSelect radius="md" data={[...]}>` (the hand-rolled
+  `<option>` list collapsed into the `data` prop; kept native so the existing
+  `onChange` handler signature is unchanged). The eye/hide-controls `btn btn-sm
+  rounded-lg` with its `btn-primary`/`btn-light` active toggle → `<ActionIcon
+  variant={!hidingControls ? 'filled' : 'default'}>` — **note this recolors the
+  active state blue→brand orange** per the standing decision. `<h5>` → `<Title
+  order={5}>`.
+- `TournamentPlayer`: both `cn()` layout consts were deleted — the
+  `spectatorDisplayClassName` row/row-reverse branches and the
+  `spectatorGameStatusClassName` `flex-row-reverse` branch were **both entirely
+  commented out upstream**, so they were static strings pretending to be
+  conditional; replaced with a plain `<Flex direction="column" h="100vh">` and an
+  inline `<Flex justify="space-around" align="center" w="100%" p="sm">`, and the
+  now-pointless `spectatorGameStatusClassName` prop was dropped from `GamePanel`.
+  `container-fluid` → `<Box w="100%" px="md">` (same as `GameRoomPreview`).
+- **`cb-card` dropped, not kept:** all three `GamePanel` cards were `card cb-card
+  border-0`, and the `.card.cb-card` rule needs **both** classes — with `card`
+  gone the class is inert. Its only live contribution here was
+  `background: transparent` (the `border-color` was cancelled by `border-0`, and
+  none of these cards render a `card-header`/`card-footer`), which is now
+  `bg="transparent"` on the `<Paper>`. Kept `cb-overflow-y-auto` and `spectator`.
+
+⚠️ QA (tournamentPlayer): this is a **stream/OBS view** — verify at capture size,
+not just a desktop window. The font-size +/- pair is now a Mantine
+`Button.Group` (confirm the two buttons still read as one attached control), the
+eye toggle's active state is **orange, was blue**, and the Monaco theme
+`NativeSelect` may add a chevron over the native arrow (same as
+`SeasonLeaderboard` / heatmap). Also confirm the toolbar bottom border and the
+transparent card backgrounds still match now that `cb-card` is gone.
 
 ### Conversion vocabulary
 
@@ -696,7 +743,7 @@ don't inline:
 1. Shared leaf components in `widgets/components/` (buttons already Mantine;
    convert their surrounding layout, badges, cards).
 2. Pages, roughly by risk: `settings` ✅, `profile` ✅, `lobby` ✅ (React markup),
-   `registration` ✅, `game` ✅, then `tournament` / `tournamentPlayer` /
+   `registration` ✅, `game` ✅, `tournament` ✅, `tournamentPlayer` ✅, then
    `groupTournament`, `gameMl`, `admin`, `event`, then `schedule`, `seasonsPage`,
    `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
 3. Per slice: convert → wrap affected tests in `MantineTestProvider` + fix

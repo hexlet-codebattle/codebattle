@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Box, Flex, Paper } from '@mantine/core';
 import { useActorRef } from '@xstate/react';
-import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { type RootState, type AppDispatch } from '@/slices';
@@ -146,7 +146,6 @@ interface GamePanelProps {
   handleSetLanguage: (lang: string) => () => void;
   changeTaskDescriptionSizes: (size: number) => void;
   hidingControls: boolean;
-  spectatorGameStatusClassName: string;
   output: unknown;
 }
 
@@ -158,12 +157,11 @@ function GamePanel({
   handleSetLanguage,
   changeTaskDescriptionSizes,
   hidingControls,
-  spectatorGameStatusClassName,
   output,
 }: GamePanelProps) {
   return !spectatorStatus ? (
     <>
-      <div className="card cb-card border-0 shadow-sm">
+      <Paper shadow="sm" radius="md" bg="transparent">
         <TaskAssignment
           task={task as GameTask}
           taskSize={taskSize}
@@ -174,19 +172,19 @@ function GamePanel({
           hidingControls={hidingControls}
           fullSize
         />
-      </div>
-      <div className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto">
-        <div className={spectatorGameStatusClassName}>
+      </Paper>
+      <Paper className="cb-overflow-y-auto" shadow="sm" radius="md" bg="transparent" mt={4}>
+        <Flex justify="space-around" align="center" w="100%" p="sm">
           <OutputTab sideOutput={output as OutputData} large />
-        </div>
-      </div>
+        </Flex>
+      </Paper>
     </>
   ) : (
-    <div className="card cb-card border-0 w-100">
-      <div className="d-flex justify-content-center align-items-center w-100">
+    <Paper radius="md" bg="transparent" w="100%">
+      <Flex justify="center" align="center" w="100%">
         {spectatorStatus}
-      </div>
-    </div>
+      </Flex>
+    </Paper>
   );
 }
 
@@ -324,17 +322,8 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
     return () => {};
   }, [gameId, spectatorService, dispatch]);
 
-  const spectatorDisplayClassName = cn('d-flex flex-column vh-100', 'vh-100', {
-    // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
-    // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
-  });
-
-  const spectatorGameStatusClassName = cn(
-    'd-flex justify-content-around align-items-center w-100 p-2',
-    {
-      // 'flex-row-reverse': switchedWidgetsStatus,
-    },
-  );
+  // Layout note: the row/row-reverse widget swap is commented out upstream
+  // (`switchedWidgetsStatus`), so the panel stacks in a single column.
 
   // const MatchesPannel = () => {
   //   const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
@@ -400,7 +389,8 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
   if (activeEditorMode) {
     return (
       <SpectatorEditor
-        panelClassName="spectator h-100 p-1 overflow-hidden"
+        panelClassName="spectator"
+        style={{ overflow: 'hidden' }}
         switchedWidgetsStatus={switchedWidgetsStatus}
         handleSwitchWidgets={handleSwitchWidgets}
         hidingControls={hidingControls}
@@ -422,9 +412,9 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
   }
 
   return (
-    <div className="container-fluid d-flex flex-column">
-      <div className={spectatorDisplayClassName}>
-        <div className="d-flex flex-column p-1">
+    <Box w="100%" px="md">
+      <Flex direction="column" h="100vh">
+        <Flex direction="column" p="xs">
           <GamePanel
             spectatorStatus={spectatorStatus}
             task={task}
@@ -433,13 +423,12 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
             handleSetLanguage={handleSetLanguage}
             changeTaskDescriptionSizes={changeTaskDescriptionSizes}
             hidingControls={hidingControls}
-            spectatorGameStatusClassName={spectatorGameStatusClassName}
             output={output}
           />
           {/* <MatchesPannel /> */}
-        </div>
+        </Flex>
         <SpectatorEditor
-          panelClassName="spectator h-100 p-1"
+          panelClassName="spectator"
           switchedWidgetsStatus={switchedWidgetsStatus}
           handleSwitchWidgets={handleSwitchWidgets}
           hidingControls={hidingControls}
@@ -447,8 +436,8 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
           spectatorService={spectatorService}
           playerId={playerId}
         />
-      </div>
-    </div>
+      </Flex>
+    </Box>
   );
 }
 
