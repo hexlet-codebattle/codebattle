@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer` done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament` done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -703,6 +703,114 @@ eye toggle's active state is **orange, was blue**, and the Monaco theme
 `SeasonLeaderboard` / heatmap). Also confirm the toolbar bottom border and the
 transparent card backgrounds still match now that `cb-card` is gone.
 
+Done: **`groupTournament`** page (28 files, one pass across 5 clusters; no tests
+mount any of these components, so no `MantineTestProvider` changes were needed).
+Cluster log:
+- **Leaderboard cluster (9)** — `LeaderboardRatingTable` / `RatingTableRow` /
+  `RatingRoundCell` raw `<table>`/`tr`/`td` → Mantine `<Table striped>` in
+  `Table.Thead/Tbody/Tr/Th/Td` (rows are emitted into the table via Mantine's
+  Table context). The old `tdClassName` string is gone — replaced by an exported
+  **`tdCellProps`** in `utils/groupTournament.ts` (SeasonLeaderboard-style:
+  `className: 'cb-custom-event-td'` + `p="xs" pl="lg"` + inline
+  position-relative/verticalAlign/nowrap/border-0, for the `::after` column
+  dividers and rounded first/last cells). `trClassName` kept but
+  `font-weight-bold` moved out (`fw={700}` on `<Table.Tr>`), place-bg / border
+  design classes intact. `badge badge-warning text-dark` → `<Badge
+  color="yellow" c="black">` ("You" pill in `LeaderboardSliceItem`),
+  `badge badge-secondary` → `<Badge color="gray">` ("Left"). `text-muted`
+  rows → `c="dimmed"`. `LeaderboardSlicePlayerRow`'s **dead `cb-current-user-row`
+  class was dropped** — it has no CSS definition anywhere (the yellow outline is
+  inline already). `LeaderboardSliceRoundView` `btn btn-sm btn-outline-light`
+  (Show all/less) → `<Button size="compact-sm" variant="default">`;
+  `text-center`/`text-muted` → props. `LeaderboardTabs` → the shared
+  `TabButton` (below). `Leaderboard` container `row/col` utilities →
+  `Box`/`px`/`py` props, `rounded-left`/`mh-100` inlined.
+- **The tab pills** (`tabBtnClass`/`tabBtnStyle` deleted from utils) are now a
+  shared **`TabButton`** component in the page folder: a Mantine `<Button
+  variant="subtle" size="sm" radius="xl" px="lg" py="sm">` keeping the
+  `cb-tab-btn` / `cb-tab-btn--active` design classes (the unlayered `!important`
+  bg still wins). The inactive 50%-white text is inlined
+  (`rgba(255,255,255,0.5)`) so the unlayered `cb-tab-btn:hover { color:#fff !
+  important }` still beats it on hover; the blue active underline style is kept
+  inline. Used by `LeaderboardTabs` + `MainPanelTabs` (whose settings
+  `badge badge-*` → `<Badge color={ready?'green':'yellow'}>`).
+- **Run/Evolution cluster (2)** — `RunItem` keeps the fully-styled native
+  `<button className="cb-run-item">` (dropped the redundant `d-flex
+  flex-column align-items-start w-100` — the CSS already sets those); inner
+  utilities → `Flex`/`Text` props (`text-white-50`/`text-muted` → inline
+  50%-white / `c="dimmed"`; `text-nowrap` inlined; dead
+  `cb-run-item__title--*` classes dropped — no CSS). `EvolutionPanel` header →
+  `Flex` + `<Title order={5}>`, panel boxes → `Box`; the three Add Solution
+  links/button → `<Button className="cb-evolution-panel-add-solution btn-yellow"
+  w="100%" h="auto" radius="xl">` (dropped `btn`, `rounded-pill`, `text-center`
+  — `btn-yellow` is a **standalone custom class**, not coupled to `.btn`).
+  The commented-out stub `RunItem` block and the now-unused
+  `getStubRoundPosition` were **deleted** as dead code.
+- **MainPanel cluster (7)** — `MainPanelRunActions`'s `span role="button"` +
+  `tabIndex`/`onKeyPress` a11y shims → `<UnstyledButton c="white" underline
+  style>` (the `d-flex` wrapper was redundant with one child). `MainPanelRunViewer`
+  spinners → `<Loader color="yellow"/"cyan" size="lg">` (per the
+  `text-warning→yellow`, `text-info→cyan` semantic map), `h5` → `<Title
+  order={5}>`, `text-white-50` → inline 50%-white. `MainPanelDescription` dropped
+  the dead `cb-markdown` class (no CSS definition; `text-white` → `c="white"`).
+  `MainPanelSettings`/`AdminExternalSetupPanel` — `mb-1` rows → `<Box mb="xs">`
+  inside `<Text size="sm">`, `text-danger` pre → `c="#dc3545"` (exact BS danger,
+  per settings precedent). `MainPanel` container `d-flex … flex-wrap w-100 py-1`
+  → `Flex` props on the kept `cb-custom-event-profile` class.
+- **Header (1)** — status pill (`border-success/`secondary + `text-white` +
+  `font-weight-bold`) → `<Badge color="green"/"gray" radius="xl" px="lg"
+  py="sm" c="white">` (waiting/loading keep their exact inline `#fffb47` style);
+  `text-muted`/monospace timer pills keep their inline colors, dropping
+  `text-monospace` for `style.fontFamily: 'var(--mantine-font-family-monospace)'`
+  and `rounded-pill px-4 py-2` for inline `padding: 0.5rem 1.5rem`,
+  `borderRadius: '999px'`. Support / Back to event
+  (`btn btn-outline-light rounded-pill px-4`) → `<Button component="a"
+  variant="default" radius="xl" px="lg">` — ⚠️ the outline-light look is
+  approximated with the default variant (gray border/text instead of white).
+  The Pip timer pills (`border border-secondary bg-secondary text-white` /
+  `border border-warning text-warning`) keep exact inline colors. `h4` →
+  `<Title order={4}>`, `d-flex` rows → `Flex`, centered timer wrapper keeps its
+  inline `left/top/transform`.
+- **InvitationPanel** — `container-fluid`/`row`/`col-*` → `Box`/`Flex` +
+  responsive `w` (`col-lg-9` → `w={{base:'100%', lg:'75%'}}`); the `h1` keeps
+  the `cb-custom-event-title` design class (font-family/size), `text-white` →
+  `c="white"`, the details link → `<Anchor underline="always">`; step buttons
+  (`btn btn-yellow rounded-pill px-4`, incl. the anchor variant) → `<Button
+  className="btn-yellow" radius="xl" px="lg" h="auto">` with the Phoenix-style
+  `disabled` states preserved.
+- **EditorPanel** — `.card.cb-card` → `<Paper withBorder radius="md"
+  shadow="sm" bg="transparent">` (`cb-card` dropped — inert without `.card`;
+  the transparent bg is now explicit); `card-header`/`card-footer` →
+  `cb-bg-highlight-panel` `Group`/`Box` with
+  `--mantine-color-default-border` separators; `btn btn-sm btn-success` →
+  `<Button size="compact-sm" color="cbSuccess">` (both headers reuse one
+  `submitButton`; the fullscreen one keeps `mr="sm"`); the `span role="button"`
+  Fullscreen link → `<UnstyledButton>`; the lang `<select>` stays **native**
+  (dropped `form-control form-control-sm d-inline-block w-auto ml-2`, kept the
+  dark inline style + `marginLeft:8`); the fullscreen overlay (`position-fixed
+  d-flex flex-column`, `zIndex:1050`) → `<Flex pos="fixed">` with the same
+  inline insets/bg; `text-danger` → `c="red"`.
+- **ExternalPlatformErrorPanel / FullscreenGroupBattleViewer** —
+  `container-fluid row col-*` centering → `Flex justify="center" align="center"`
+  + responsive `w`; the panel → `<Paper className="cb-bg-panel" shadow="sm"
+  radius="md" p="xl">`; Retry keeps `cb-btn-outline-secondary` (`variant="outline"
+  color="cbSecondary" radius="md"`); Close Fullscreen → `<Button variant="default"
+  radius="md">`; `position-fixed d-flex flex-column` → `Flex pos="fixed"`.
+- **Container `GroupTournamentPage`** — both `row`s and the `col-*` split →
+  `Box`/`Flex` + responsive `w` (`col-lg-2 col-md-3` → `w={{base:'100%',
+  md:'25%', lg:'16.6667%'}}`, counterpart 83.3333%), `mt-3` → `mt="md"`,
+  `p-1 pb-4` → `p="xs" pb="lg"`, `h-100` → `h="100%"`.
+
+⚠️ QA (groupTournament): the **live-game views** (editor card + fullscreen
+overlay, run viewer center column) are the highest-risk; the `btn-yellow` Add
+Solution / step pills must read as pills (Mantine `Button` `h="auto"` +
+`classNames` interplay with the unlayered `padding: 12px 24px`); the tab pills
+now show the Mantine subtle-button hover shape under `cb-tab-btn`; the Header
+status badge is now a Mantine Badge (circle-ish shape vs the old square pill);
+the Support/Back `outline-light` approximation; `Loader` vs the old
+`spinner-border`; the leaderboard `Table` striping/padding vs the old
+`table-sm` cells; and `InvitationPanel`'s `cb-custom-event-title` h1 centering.
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -743,9 +851,9 @@ don't inline:
 1. Shared leaf components in `widgets/components/` (buttons already Mantine;
    convert their surrounding layout, badges, cards).
 2. Pages, roughly by risk: `settings` ✅, `profile` ✅, `lobby` ✅ (React markup),
-   `registration` ✅, `game` ✅, `tournament` ✅, `tournamentPlayer` ✅, then
-   `groupTournament`, `gameMl`, `admin`, `event`, then `schedule`, `seasonsPage`,
-   `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
+   `registration` ✅, `game` ✅, `tournament` ✅, `tournamentPlayer` ✅,
+   `groupTournament` ✅, then `gameMl`, `admin`, `event`, then `schedule`,
+   `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
 3. Per slice: convert → wrap affected tests in `MantineTestProvider` + fix
    portal/`findBy` queries → **verify in browser** (dev server) → merge.
 

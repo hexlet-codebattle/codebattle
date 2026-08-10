@@ -19,26 +19,28 @@ interface GroupTournamentLike {
 }
 
 export const trClassName = (place: number) =>
-  cn('font-weight-bold cb-custom-event-tr-border', {
+  cn('cb-custom-event-tr-border', {
     'cb-gold-place-bg': place === 1,
     'cb-silver-place-bg': place === 2,
     'cb-bronze-place-bg': place === 3,
     'cb-bg-panel': !place || place > 3,
   });
 
-export const tdClassName =
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0';
-
-export const tabBtnClass = (active: boolean) =>
-  cn('btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn', {
-    'text-white cb-tab-btn--active': active,
-    'text-white-50': !active,
-  });
-
-export const tabBtnStyle = (active: boolean) => ({
-  borderBottom: active ? '3px solid #3182ce' : '3px solid transparent',
-  transition: 'all 0.2s ease-in-out',
-});
+// Shared Table.Td props for the rating-table cluster: keep the
+// `cb-custom-event-td` design class (its column dividers via ::after and
+// rounded first/last cells need position:relative), and port the Bootstrap
+// `p-1 pl-4 align-middle text-nowrap border-0` utilities to style props.
+export const tdCellProps = {
+  className: 'cb-custom-event-td',
+  p: 'xs',
+  pl: 'lg',
+  style: {
+    position: 'relative' as const,
+    verticalAlign: 'middle',
+    whiteSpace: 'nowrap',
+    border: 0,
+  },
+};
 
 export function roundLabel(roundNumber: number) {
   if (roundNumber === 1) return i18n.t('Seed');

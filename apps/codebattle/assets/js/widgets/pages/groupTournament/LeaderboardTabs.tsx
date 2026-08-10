@@ -1,6 +1,8 @@
 import React from 'react';
+import { Flex } from '@mantine/core';
 import i18n from '../../../i18n';
-import { tabBtnClass, tabBtnStyle, roundLabel } from '../../utils/groupTournament';
+import { roundLabel } from '../../utils/groupTournament';
+import TabButton from './TabButton';
 
 interface LeaderboardTabsProps {
   activeTab: string;
@@ -9,27 +11,20 @@ interface LeaderboardTabsProps {
 }
 
 const LeaderboardTabs = ({ activeTab, setActiveTab, rounds }: LeaderboardTabsProps) => (
-  <div className="d-flex flex-wrap px-3 pt-2">
-    <button
-      type="button"
-      className={tabBtnClass(activeTab === 'rating')}
-      style={tabBtnStyle(activeTab === 'rating')}
-      onClick={() => setActiveTab('rating')}
-    >
+  <Flex wrap="wrap" px="md" pt="sm">
+    <TabButton active={activeTab === 'rating'} onClick={() => setActiveTab('rating')}>
       {i18n.t('Leaderboard')}
-    </button>
+    </TabButton>
     {rounds.map((r) => (
-      <button
+      <TabButton
         key={`tab-${r}`}
-        type="button"
-        className={tabBtnClass(activeTab === `round-${r}`)}
-        style={tabBtnStyle(activeTab === `round-${r}`)}
+        active={activeTab === `round-${r}`}
         onClick={() => setActiveTab(`round-${r}`)}
       >
         {roundLabel(r)}
-      </button>
+      </TabButton>
     ))}
-  </div>
+  </Flex>
 );
 
 export default LeaderboardTabs;

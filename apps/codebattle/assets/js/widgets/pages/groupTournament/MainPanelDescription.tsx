@@ -1,5 +1,6 @@
 import React from 'react';
 import Markdown from 'react-markdown';
+import { Box, Text } from '@mantine/core';
 import i18n from '../../../i18n';
 
 interface MainPanelDescriptionProps {
@@ -7,17 +8,23 @@ interface MainPanelDescriptionProps {
 }
 
 const MainPanelDescription = ({ description }: MainPanelDescriptionProps) => (
-  <div className="mt-3 p-3 w-100 overflow-auto cb-group-tournament-leaderboard-container">
+  <Box
+    mt="lg"
+    p="md"
+    w="100%"
+    className="cb-group-tournament-leaderboard-container"
+    style={{ overflow: 'auto' }}
+  >
     {description ? (
-      <div className="cb-markdown text-white mb-0">
+      <Box c="white" m={0}>
         <Markdown>{description}</Markdown>
-      </div>
+      </Box>
     ) : (
-      <div className="small text-white-50">
+      <Text c="rgba(255, 255, 255, 0.5)" size="sm">
         {i18n.t('No description provided for this tournament.')}
-      </div>
+      </Text>
     )}
-  </div>
+  </Box>
 );
 
 export default MainPanelDescription;

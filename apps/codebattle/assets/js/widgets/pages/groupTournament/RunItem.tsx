@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import cn from 'classnames';
+import { Box, Flex, Text } from '@mantine/core';
 import i18n from '../../../i18n';
 import {
   formatDuration,
@@ -18,6 +19,8 @@ interface RunItemProps {
   leaderboard?: LeaderboardEntry[];
   currentUserId?: number;
 }
+
+const mutedColor = 'rgba(255, 255, 255, 0.5)';
 
 const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }: RunItemProps) => {
   const isActive = runId === item.id;
@@ -51,64 +54,55 @@ const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }: R
     'cb-run-item--disabled': isDisabled,
   });
 
-  const titleClasses = cn('mr-2 font-weight-bold', {
-    'cb-run-item__title--group': roundRun,
-    'cb-run-item__title--test': !roundRun,
-  });
-
   return (
-    <div key={item.id} className="mb-2">
-      <button
-        type="button"
-        disabled={isDisabled}
-        onClick={onClick}
-        className={cn(buttonClasses, 'd-flex flex-column align-items-start w-100')}
-      >
-        <div className="d-flex align-items-center justify-content-between w-100">
-          <span className={titleClasses}>{title}</span>
+    <Box key={item.id} mb="sm">
+      <button type="button" disabled={isDisabled} onClick={onClick} className={buttonClasses}>
+        <Flex align="center" justify="space-between" w="100%">
+          <Text span fw={700} mr="sm">
+            {title}
+          </Text>
           {sliceLabel && (
-            <span className={`small ${isActive ? 'text-white-50' : 'text-muted'}`}>
+            <Text span size="sm" c={isActive ? mutedColor : 'dimmed'}>
               {sliceLabel}
-            </span>
+            </Text>
           )}
-        </div>
-        <div
-          className={`d-flex flex-wrap align-items-center small mt-1 w-100 ${isActive ? 'text-white-50' : 'text-muted'}`}
+        </Flex>
+        <Flex
+          wrap="wrap"
+          align="center"
+          fz="sm"
+          mt="xs"
+          w="100%"
+          c={isActive ? mutedColor : 'dimmed'}
         >
           {item.isStub ? null : pending ? ( // </span> //     : i18n.t("Group contest soon")} //     ? i18n.t("Group assignment soon") //   {item.kind === "seed" // > //   style={{ opacity: 0.75 }} //   className="font-weight-bold mr-3 text-nowrap text-white" // <span
             i18n.t('Running…')
           ) : (
             <>
-              <span
-                className="font-weight-bold mr-3 text-nowrap text-white"
-                style={{ opacity: 0.75 }}
-              >
+              <Text span fw={700} mr="md" style={{ whiteSpace: 'nowrap', opacity: 0.75 }}>
                 {item.status === 'error' && i18n.t('Error')}
                 {item.status === 'timeout' && i18n.t('Time Limit')}
                 {item.status !== 'error' &&
                   item.status !== 'timeout' &&
                   i18n.t('Score: %{score}', { score: item.score ?? 0 })}
-              </span>
+              </Text>
               {roundRun && place && (
-                <span
-                  className="font-weight-bold ml-auto text-nowrap text-white"
-                  style={{ opacity: 0.75 }}
-                >
+                <Text span fw={700} ml="auto" style={{ whiteSpace: 'nowrap', opacity: 0.75 }}>
                   {Number.isInteger(place)
                     ? i18n.t('Place: #%{place}', { place })
                     : i18n.t('Place: pending')}
-                </span>
+                </Text>
               )}
               {duration && !roundRun && (
-                <span className="ml-auto text-nowrap">
+                <Text span ml="auto" style={{ whiteSpace: 'nowrap' }}>
                   {i18n.t('Time: %{duration}', { duration })}
-                </span>
+                </Text>
               )}
             </>
           )}
-        </div>
+        </Flex>
       </button>
-    </div>
+    </Box>
   );
 };
 

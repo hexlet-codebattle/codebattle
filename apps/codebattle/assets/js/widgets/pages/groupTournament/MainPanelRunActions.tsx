@@ -1,4 +1,5 @@
 import React from 'react';
+import { UnstyledButton } from '@mantine/core';
 import i18n from '../../../i18n';
 import { type Run } from './types';
 
@@ -18,22 +19,18 @@ const MainPanelRunActions = ({
   if (activeTab !== 'run' || !run) return null;
 
   return (
-    <div className="d-flex align-items-center">
-      {hasViewer ? (
-        <span
-          role="button"
-          tabIndex={0}
-          className="text-white mr-3"
+    <>
+      {hasViewer && (
+        <UnstyledButton
+          c="white"
+          mr="md"
           style={{ cursor: 'pointer', textDecoration: 'underline' }}
           onClick={() => setViewerFullscreen(true)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') setViewerFullscreen(true);
-          }}
         >
           {i18n.t('Fullscreen')}
-        </span>
-      ) : null}
-    </div>
+        </UnstyledButton>
+      )}
+    </>
   );
 };
 

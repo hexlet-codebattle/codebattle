@@ -1,5 +1,6 @@
 import MonacoEditor from '@monaco-editor/react';
 import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Flex, Group, Paper, Text, UnstyledButton } from '@mantine/core';
 import i18n from '../../../i18n';
 import languages from '../../config/languages';
 import useEditor from '../../utils/useEditor';
@@ -106,7 +107,6 @@ function EditorPanel({
 
   const langSelector = editable && langOptions.length > 0 && (
     <select
-      className="form-control form-control-sm d-inline-block w-auto ml-2"
       value={selectedLang}
       onChange={(e) => setSelectedLang(e.target.value)}
       disabled={submitting}
@@ -114,6 +114,10 @@ function EditorPanel({
         backgroundColor: '#2a2a35',
         color: '#fff',
         border: '1px solid #3a3f50',
+        borderRadius: '4px',
+        padding: '4px 8px',
+        fontSize: '0.875rem',
+        marginLeft: 8,
       }}
     >
       {langOptions.map((opt) => (
@@ -144,87 +148,95 @@ function EditorPanel({
     />
   );
 
+  const panelBorder = { borderBottom: '1px solid var(--mantine-color-default-border)' };
+
+  const submitButton = editable && (
+    <Button
+      size="compact-sm"
+      color="cbSuccess"
+      mr="sm"
+      onClick={handleSubmit}
+      disabled={submitting || !draft || !selectedLang}
+    >
+      {submitting ? i18n.t('Sending...') : i18n.t('Submit')}
+    </Button>
+  );
+
   return (
     <>
       {!inlineHidden && (
-        <div className="card cb-card border cb-border-color rounded shadow-sm">
-          <div className="card-header py-2 border-bottom cb-border-color">
-            <h6 className="cb-text mb-0 d-flex align-items-center justify-content-between">
-              <span className="d-flex align-items-center">
-                {titleText}
-                {langSelector}
-              </span>
-              <span className="d-flex align-items-center">
-                {editable && (
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-success mr-3"
-                    onClick={handleSubmit}
-                    disabled={submitting || !draft || !selectedLang}
-                  >
-                    {submitting ? i18n.t('Sending...') : i18n.t('Submit')}
-                  </button>
-                )}
-                <span
-                  role="button"
-                  tabIndex={0}
-                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                  onClick={() => setEditorFullscreen(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') setEditorFullscreen(true);
-                  }}
-                >
-                  {i18n.t('Fullscreen')}
-                </span>
-              </span>
-            </h6>
-          </div>
-          <div className="card-body p-0 border-top cb-border-color" style={{ height: '80vh' }}>
-            {editor}
-          </div>
+        <Paper withBorder radius="md" shadow="sm" bg="transparent">
+          <Group
+            justify="space-between"
+            align="center"
+            px="md"
+            py="sm"
+            className="cb-bg-highlight-panel"
+            style={panelBorder}
+          >
+            <Group gap="xs" align="center" c="white">
+              <Text size="sm">{titleText}</Text>
+              {langSelector}
+            </Group>
+            <Group gap="xs" align="center">
+              {submitButton}
+              <UnstyledButton
+                c="white"
+                style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => setEditorFullscreen(true)}
+              >
+                {i18n.t('Fullscreen')}
+              </UnstyledButton>
+            </Group>
+          </Group>
+          <Box style={{ height: '80vh' }}>{editor}</Box>
           {editable && submitError && (
-            <div className="card-footer py-2 border-top cb-border-color">
-              <small className="text-danger">{submitError}</small>
-            </div>
+            <Box
+              px="md"
+              py="sm"
+              className="cb-bg-highlight-panel"
+              style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+            >
+              <Text size="sm" c="red">
+                {submitError}
+              </Text>
+            </Box>
           )}
-        </div>
+        </Paper>
       )}
 
       {editorFullscreen && (
-        <div
-          className="position-fixed d-flex flex-column"
+        <Flex
+          pos="fixed"
+          direction="column"
           style={{ top: 0, left: 0, right: 0, bottom: 0, zIndex: 1050, background: '#1e1e1e' }}
         >
-          <div
-            className="d-flex justify-content-between align-items-center px-3 py-2"
+          <Flex
+            justify="space-between"
+            align="center"
+            px="md"
+            py="sm"
             style={{ background: '#252526' }}
           >
-            <h6 className="text-white mb-0 d-flex align-items-center">
-              {titleText}
+            <Flex align="center" c="white" gap="xs">
+              <Text size="sm" fw={600}>
+                {titleText}
+              </Text>
               {langSelector}
-            </h6>
-            <div className="d-flex align-items-center">
-              {editable && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-success mr-2"
-                  onClick={handleSubmit}
-                  disabled={submitting || !draft || !selectedLang}
-                >
-                  {submitting ? i18n.t('Sending...') : i18n.t('Submit')}
-                </button>
-              )}
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-light"
+            </Flex>
+            <Flex align="center">
+              {submitButton}
+              <Button
+                size="compact-sm"
+                variant="default"
                 onClick={() => setEditorFullscreen(false)}
               >
                 {i18n.t('Close')}
-              </button>
-            </div>
-          </div>
-          <div className="flex-grow-1">{editor}</div>
-        </div>
+              </Button>
+            </Flex>
+          </Flex>
+          <Box style={{ flexGrow: 1 }}>{editor}</Box>
+        </Flex>
       )}
     </>
   );

@@ -1,6 +1,8 @@
 import React from 'react';
+import { Flex, Table } from '@mantine/core';
 import i18n from '../../../i18n';
 import LeaderboardRatingTableRow from './LeaderboardRatingTableRow';
+import { tdCellProps } from '../../utils/groupTournament';
 import { type LeaderboardEntry } from './types';
 
 interface LeaderboardRatingTableProps {
@@ -14,25 +16,33 @@ const LeaderboardRatingTable = ({
   rounds,
   currentUserId,
 }: LeaderboardRatingTableProps) => (
-  <div className="d-flex cb-overflow-x-auto">
-    <table className="table cb-text-light table-striped cb-custom-event-table m-1">
-      <thead>
-        <tr>
-          <th className="p-1 pl-4 font-weight-light border-0">#</th>
-          <th className="p-1 pl-4 font-weight-light border-0">{i18n.t('Player')}</th>
-          <th className="p-1 pl-4 font-weight-light border-0">{i18n.t('Clan')}</th>
-          <th className="p-1 pl-4 font-weight-light border-0 text-center">{i18n.t('Slice')}</th>
+  <Flex className="cb-overflow-x-auto">
+    <Table className="cb-text-light cb-custom-event-table" striped verticalSpacing="xs" m="xs">
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th {...tdCellProps} scope="col" fw={300}>
+            #
+          </Table.Th>
+          <Table.Th {...tdCellProps} scope="col" fw={300}>
+            {i18n.t('Player')}
+          </Table.Th>
+          <Table.Th {...tdCellProps} scope="col" fw={300}>
+            {i18n.t('Clan')}
+          </Table.Th>
+          <Table.Th {...tdCellProps} scope="col" fw={300} ta="center">
+            {i18n.t('Slice')}
+          </Table.Th>
           {rounds.map((r) => (
-            <th key={`r-${r}`} className="p-1 pl-4 font-weight-light border-0 text-center">
+            <Table.Th key={`r-${r}`} {...tdCellProps} scope="col" fw={300} ta="center">
               {r === 1 ? i18n.t('Seed') : i18n.t('Round %{n}', { n: r - 1 })}
-            </th>
+            </Table.Th>
           ))}
-          <th className="p-1 pl-4 font-weight-light border-0 text-center text-nowrap">
+          <Table.Th {...tdCellProps} scope="col" fw={300} ta="center">
             {i18n.t('Total')}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
+          </Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
         {leaderboard.map((entry, index) => (
           <LeaderboardRatingTableRow
             key={entry.userId}
@@ -42,9 +52,9 @@ const LeaderboardRatingTable = ({
             currentUserId={currentUserId}
           />
         ))}
-      </tbody>
-    </table>
-  </div>
+      </Table.Tbody>
+    </Table>
+  </Flex>
 );
 
 export default LeaderboardRatingTable;
