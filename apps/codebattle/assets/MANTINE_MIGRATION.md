@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament` done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event` done |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -110,7 +110,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 **Goal:** remove Bootstrap utility classes from React components, replacing them
 with Mantine primitives + style props. ~244 files; work per-widget.
 
-### Progress (updated 2026-08-07)
+### Progress (updated 2026-08-10)
 
 Working in small per-slice commits (convert → wrap affected tests in
 `MantineTestProvider` → typecheck + vitest + build + lint). Started with the
@@ -811,6 +811,99 @@ the Support/Back `outline-light` approximation; `Loader` vs the old
 `spinner-border`; the leaderboard `Table` striping/padding vs the old
 `table-sm` cells; and `InvitationPanel`'s `cb-custom-event-title` h1 centering.
 
+Done: **`gameMl`** page (single file, `GameMlPage.tsx` — the bot/human signal
+review view, an Inertia page). All Bootstrap markup → Mantine: the per-player
+`card cb-card border cb-border-color rounded shadow-sm` → `<Paper withBorder
+radius="md" shadow="sm" mb="md">` (kept the colored `borderLeft` accent;
+`cb-card` dropped — inert without `.card` per the `tournamentPlayer`
+precedent); `card-header` → a `cb-bg-highlight-panel` `<Group>` with a
+`--mantine-color-default-border` bottom separator (EditorPanel-style); the
+RISK `badge badge-*` map → `{ label, color }` consumed by `<Badge
+color=…>` (success→green, info→cyan, warning→yellow, danger→red); the `bot`
+`badge badge-secondary` → `<Badge color="gray">`; the avatar
+`img rounded-circle` → `<Avatar size={28} radius="50%">`; `h4`/`h6` →
+`<Title order={4/6}>`; `row`/`col-md-6` → `<Grid>`/`<Grid.Col span={{ base:
+12, md: 6 }}>` (incl. the 220px chart columns via `h={220}`); `StatRow`'s
+`d-flex justify-content-between py-1 border-bottom border-secondary` →
+`<Flex>` + inline `borderBottom: 1px solid #6c757d` (exact BS `border-secondary`
+— no theme token; ⚠️ Mantine has no `bb` style prop, use `style`), `text-white
+text-monospace` → `c="white" ff="var(--mantine-font-family-monospace)"`,
+`small`/`text-muted` → `size="xs"`/`c="dimmed"`; the two
+`alert alert-warning/secondary` → `<Alert color="yellow"/"gray" py="xs">`, the
+Signals `<ul>` → `<List size="xs">`; the `<details>/<summary>` keep their
+native element shape via `<Box component="details">` + `<Text
+component="summary">` (the `<pre>` keeps its existing inline style, dropping
+`mt-2 p-2 small text-white` for `mt="xs" p="xs" size="xs" c="white"`); the
+`container-fluid py-3` root → `<Box w="100%" px="md" py="sm">` (GameRoomPreview
+pattern); `Re-analyze` (`btn btn-sm btn-outline-info`) → `<Button size="compact-sm"
+variant="outline" color="cyan" component="a" href="?refresh=1">`, `Back to game`
+(`btn btn-sm btn-outline-light` on the dark bg) → `<Button size="compact-sm"
+variant="default" component="a">` (the groupTournament `outline-light`
+approximation); the muted explainer `<p>` → `<Text c="dimmed" size="xs">`.
+Charts/recharts and all telemetry logic untouched. No test exists for this
+page. ⚠️ QA: the `border-secondary` row dividers and the badge colors on the
+dark card header; `Badge` vertical alignment next to the player name; the
+compact Alert paddings.
+
+Done: **`admin`** page (`AdminWidget.tsx`). The presence UserCard chips
+(`div role="button"` + `tabIndex`/`onKeyPress` a11y shims) → `<UnstyledButton>`
+(`text-truncate` → `<Text truncate>`, `text-muted` icon → inline
+`var(--mantine-color-dimmed)`); connection detail rows (`d-flex` +
+`text-break`) → `<Flex gap="md">` + inline
+`wordBreak: 'break-word'; fontFamily: var(--mantine-font-family-monospace)'`;
+the Redirect panel → `<Paper>` (kept the custom white-alpha border/bg inline
+styles) with the `form-control` text input/textarea/select →
+`<TextInput>`/`<Textarea>`/`<NativeSelect>` (data prop from `REDIRECT_ROUTES`,
+`onChange` reads `currentTarget.value`), `d-flex flex-wrap` forms →
+`<Flex wrap="wrap" gap="xs" component="form">`, `btn btn-secondary`/`btn
+btn-primary` → `<Button color="cbSecondary">` / plain `<Button>` (brand
+orange, per the standing decision), `text-success`/`text-danger` status →
+`<Text c="green"/c="red">`; the header `d-flex` + `h2` → `<Flex
+justify="space-between">` + `<Title order={2}>`; `text-center text-muted
+py-5` empty state → `<Text ta="center" c="dimmed" py="xl">`. No test. ⚠️ QA:
+the chips are now real `<button>`s, the native select still shows its dark
+look, and the inline white-alpha panel rounding.
+
+Done: **`event`** page. **Deleted as dead code** (blocked in `EventWidget`,
+referenced nowhere else — audited + user-confirmed): `EventCalendarPanel`,
+`EventRatingPanel`, `TopLeaderboardPanel`, `LeaderboardPagination`,
+`TournamentInfo`, `TournamentStatus` — 6 files, ~690 lines.
+- `EventWidget`: dropped the `cn()` `contentClassName`/`loadingClassName`
+  consts and the commented-out panels/selectors that only existed to feed
+  them; the flex-reversing content wrapper is gone (single child now), the
+  loading overlay (`d-flex … position-absolute w-100`) renders conditionally
+  as `<Flex justify="center" align="center" pos="absolute" w="100%">` (no more
+  `hidden` class dance), content keeps `cb-opacity-50` while loading;
+  `container-fluid` → `<Box w="100%" px="md">`.
+- `ParticipantDashboard`: `container-fluid position-relative overflow-hidden`
+  → `<Box … pos="relative" style={{overflow:'hidden'}}>` (⚠️ this Mantine
+  build has **no `ov` style prop** — inline `style`; same for `bb`, use
+  inline borders); the `row`/`col-*` grids → `<Grid>`/`<Grid.Col span={{
+  base: 12, sm: 12, md: 8, lg: 9 }}>` etc. (`my-5` → `my="xl"`, `my-3` →
+  `my="md"`); both `h1`s → `<Title order={1}>` keeping `cb-custom-event-title`;
+  `d-flex` rows/cells → `<Flex>` with matching `justify`/`align` — the
+  stage-grid's `!important` media overrides target the design classes
+  directly, so flex behavior is unchanged; the `d-none d-xl-block` stage
+  header → `display={{ base: 'none', xl: 'block' }}`; the four `btn
+  rounded-pill px-4` stage actions → `<Button radius="xl" px="lg">`
+  (`btn-secondary` → `color="cbSecondary"` (disabled variant), `btn-success` →
+  `color="cbSuccess"` (still `component="a"` role=link), `btn-warning` →
+  `color="yellow"`); the `d-block d-xl-none me-2 font-weight-bold` mobile
+  labels → `<Box display={{ base: 'block', xl: 'none' }} mr="xs" fw={700}>`;
+  `text-white` wrappers → `c="white"`; `user-info`/`action-button`/`cup`/all
+  `cb-custom-event-*` design classes kept; `ms-2` (BS 4.6 start-alias) →
+  `ml="xs"`.
+- `EventStageConfirmationModal`: `btn btn-warning` → `<Button color="yellow">`
+  keeping the Phoenix `data-method`/`data-csrf`/`data-to` attrs (native
+  `<button>`); `text-white` body → `<Text c="white">`.
+- `PassedIcon`/`NotPassedIcon` were already Bootstrap-free.
+- No tests mount any of these components. ⚠️ QA: the stage action pills
+  (Mantine `Button` radius vs the old `rounded-pill`, per InvitationPanel);
+  the header/Profile pill `Grid.Col` insets (Grid 12px vs `row`/`col-*` 15px
+  gutter) — the `cb-custom-event-profile` pills are narrower now; the
+  `cb-opacity-50` loading state; the loading overlay position (was after the
+  content, still `pos="absolute"` with no inset).
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -852,7 +945,7 @@ don't inline:
    convert their surrounding layout, badges, cards).
 2. Pages, roughly by risk: `settings` ✅, `profile` ✅, `lobby` ✅ (React markup),
    `registration` ✅, `game` ✅, `tournament` ✅, `tournamentPlayer` ✅,
-   `groupTournament` ✅, then `gameMl`, `admin`, `event`, then `schedule`,
+   `groupTournament` ✅, `gameMl` ✅, `admin` ✅, `event` ✅, then `schedule`,
    `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
 3. Per slice: convert → wrap affected tests in `MantineTestProvider` + fix
    portal/`findBy` queries → **verify in browser** (dev server) → merge.

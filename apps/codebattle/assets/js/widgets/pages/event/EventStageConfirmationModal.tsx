@@ -2,6 +2,8 @@ import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
+import { Button, Text } from '@mantine/core';
+
 import Modal from '@/components/CbModal';
 
 import ModalCodes from '../../config/modalCodes';
@@ -23,18 +25,18 @@ const EventStageConfirmationModal = NiceModal.create<EventStageConfirmationModal
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="text-white">{bodyText}</div>
+          <Text c="white">{bodyText}</Text>
         </Modal.Body>
         <Modal.Footer>
-          <button
+          <Button
             type="button"
-            className="btn btn-warning"
+            color="yellow"
             data-method="post"
             data-csrf={window.csrf_token}
             data-to={url}
           >
             {buttonText}
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
     );
