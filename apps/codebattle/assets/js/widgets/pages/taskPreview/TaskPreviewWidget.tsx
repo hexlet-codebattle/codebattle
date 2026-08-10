@@ -1,7 +1,24 @@
 import React, { useState, useCallback, useMemo, type ReactNode } from 'react';
 
-import cn from 'classnames';
 import { camelizeKeys, decamelizeKeys } from 'humps';
+import {
+  Badge,
+  Box,
+  Button,
+  Code,
+  Flex,
+  Grid,
+  Loader,
+  NativeSelect,
+  Paper,
+  Stack,
+  Table,
+  Text,
+  Textarea,
+  TextInput,
+  Title,
+  UnstyledButton,
+} from '@mantine/core';
 
 import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
@@ -75,19 +92,19 @@ const levelOptions = ['elementary', 'easy', 'medium', 'hard'];
 const visibilityOptions = ['public', 'hidden'];
 const stateOptions = ['blank', 'draft', 'on_moderation', 'active', 'disabled'];
 
-const levelBadgeClasses: Record<string, string> = {
-  elementary: 'badge-success',
-  easy: 'badge-info',
-  medium: 'badge-warning',
-  hard: 'badge-danger',
+const levelBadgeColors: Record<string, string> = {
+  elementary: 'green',
+  easy: 'cyan',
+  medium: 'yellow',
+  hard: 'red',
 };
 
-const stateLabels: Record<string, { label: string; cls: string }> = {
-  blank: { label: 'Blank', cls: 'badge-secondary' },
-  draft: { label: 'Draft', cls: 'badge-secondary' },
-  on_moderation: { label: 'On Moderation', cls: 'badge-warning' },
-  active: { label: 'Active', cls: 'badge-success' },
-  disabled: { label: 'Disabled', cls: 'badge-danger' },
+const stateLabels: Record<string, { label: string; color: string }> = {
+  blank: { label: 'Blank', color: 'gray' },
+  draft: { label: 'Draft', color: 'gray' },
+  on_moderation: { label: 'On Moderation', color: 'yellow' },
+  active: { label: 'Active', color: 'green' },
+  disabled: { label: 'Disabled', color: 'red' },
 };
 
 function formatDuration(seconds: number | null | undefined) {
@@ -131,18 +148,13 @@ interface EditableSelectProps {
 
 function EditableSelect({ value, options, onChange, disabled }: EditableSelectProps) {
   return (
-    <select
-      className="custom-select custom-select-sm cb-bg-panel cb-border-color text-white"
+    <NativeSelect
+      size="xs"
+      data={options.map((opt) => ({ value: opt, label: i18n.t(opt) }))}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => onChange(e.currentTarget.value)}
       disabled={disabled}
-    >
-      {options.map((opt) => (
-        <option key={opt} value={opt}>
-          {i18n.t(opt)}
-        </option>
-      ))}
-    </select>
+    />
   );
 }
 
@@ -173,29 +185,29 @@ function EditableTagsInput({ value, onChange, disabled, inputId }: EditableTagsI
 
   return (
     <div>
-      <div className="d-flex flex-wrap mb-1">
+      <Flex wrap="wrap" mb={4}>
         {value.map((tag) => (
-          <span key={tag} className="badge badge-dark mr-1 mb-1 d-flex align-items-center">
+          <Badge key={tag} mr={4} mb={4} style={{ backgroundColor: '#343a40', color: '#fff' }}>
             {tag}
             {!disabled && (
-              <button
-                type="button"
-                className="close ml-1 text-white"
+              <UnstyledButton
+                component="span"
+                ml={4}
+                c="white"
                 style={{ fontSize: '0.8rem', lineHeight: 1 }}
                 onClick={() => removeTag(tag)}
               >
                 &times;
-              </button>
+              </UnstyledButton>
             )}
-          </span>
+          </Badge>
         ))}
-      </div>
+      </Flex>
       {!disabled && (
-        <input
+        <TextInput
           id={inputId}
           aria-label={i18n.t('Add tag')}
-          type="text"
-          className="form-control form-control-sm cb-bg-panel cb-border-color text-white"
+          size="xs"
           placeholder={i18n.t('Add tag...')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
@@ -213,12 +225,14 @@ interface StatCardProps {
 
 function StatCard({ label, value }: StatCardProps) {
   return (
-    <div className="d-flex flex-column align-items-center p-3 cb-bg-highlight-panel cb-rounded flex-fill">
-      <small className="cb-text text-uppercase" style={{ letterSpacing: 1 }}>
+    <Stack align="center" gap={4} p="md" className="cb-bg-highlight-panel cb-rounded" flex={1}>
+      <Text size="xs" tt="uppercase" className="cb-text" style={{ letterSpacing: 1 }}>
         {label}
-      </small>
-      <span className="h4 mb-0 mt-1 text-white font-weight-bold">{value}</span>
-    </div>
+      </Text>
+      <Text fw={700} c="white" fz="lg">
+        {value}
+      </Text>
+    </Stack>
   );
 }
 
@@ -228,46 +242,53 @@ interface PercentileBarProps {
 
 function PercentileBar({ percentiles }: PercentileBarProps) {
   if (!percentiles || percentiles.count === 0) {
-    return <p className="cb-text font-italic py-2 mb-0">{i18n.t('No solve time data yet')}</p>;
+    return (
+      <Text fs="italic" className="cb-text" py="xs">
+        {i18n.t('No solve time data yet')}
+      </Text>
+    );
   }
 
   const entries = [
-    { key: 'p10', label: 'P10', cls: 'bg-success' },
-    { key: 'p30', label: 'P30', cls: 'bg-success' },
-    { key: 'p50', label: 'P50 (median)', cls: 'bg-warning' },
-    { key: 'p75', label: 'P75', cls: 'bg-warning' },
-    { key: 'p95', label: 'P95', cls: 'bg-danger' },
+    { key: 'p10', label: 'P10', color: '#28a745' },
+    { key: 'p30', label: 'P30', color: '#28a745' },
+    { key: 'p50', label: 'P50 (median)', color: '#ffc107' },
+    { key: 'p75', label: 'P75', color: '#ffc107' },
+    { key: 'p95', label: 'P95', color: '#dc3545' },
   ];
 
   const maxVal = percentiles.p95 || 1;
 
   return (
     <div>
-      {entries.map(({ key, label, cls }) => {
+      {entries.map(({ key, label, color }) => {
         const val = percentiles[key];
         if (val == null) return null;
         const pct = Math.min((val / maxVal) * 100, 100);
         return (
-          <div key={key} className="d-flex align-items-center mb-2">
-            <span className="cb-text small" style={{ width: 110, flexShrink: 0 }}>
+          <Flex key={key} align="center" mb="xs">
+            <Text size="xs" className="cb-text" style={{ width: 110, flexShrink: 0 }}>
               {label}
-            </span>
-            <div
-              className="flex-grow-1 cb-bg-highlight-panel rounded overflow-hidden"
-              style={{ height: 24 }}
+            </Text>
+            <Box
+              className="cb-bg-highlight-panel"
+              style={{ flexGrow: 1, height: 24, borderRadius: '0.25rem', overflow: 'hidden' }}
             >
-              <div
-                className={cn('h-100 rounded', cls)}
-                style={{ width: `${pct}%`, minWidth: 2, transition: 'width 0.5s ease' }}
+              <Box
+                style={{
+                  width: `${pct}%`,
+                  minWidth: 2,
+                  height: '100%',
+                  borderRadius: '0.25rem',
+                  backgroundColor: color,
+                  transition: 'width 0.5s ease',
+                }}
               />
-            </div>
-            <span
-              className="text-white small font-weight-bold text-right"
-              style={{ width: 70, flexShrink: 0 }}
-            >
+            </Box>
+            <Text c="white" size="xs" fw={700} ta="right" style={{ width: 70, flexShrink: 0 }}>
               {formatDuration(val)}
-            </span>
-          </div>
+            </Text>
+          </Flex>
         );
       })}
     </div>
@@ -290,21 +311,35 @@ function SignatureDisplay({ inputSignature, outputSignature }: SignatureDisplayP
   };
 
   return (
-    <div className="cb-bg-highlight-panel cb-rounded p-3 font-monospace small">
-      <span className="text-info">function</span>
+    <Box
+      className="cb-bg-highlight-panel cb-rounded"
+      p="md"
+      style={{ fontFamily: 'var(--mantine-font-family-monospace)' }}
+    >
+      <Text size="xs" component="span" c="cyan">
+        function
+      </Text>
       {' solution('}
       {inputSignature &&
         inputSignature.map((sig, i) => (
           <span key={sig.argumentName || i}>
             {i > 0 && ', '}
-            <span className="text-white">{sig.argumentName}</span>
-            <span className="cb-text">: </span>
-            <span className="text-warning">{formatType(sig)}</span>
+            <Text size="xs" component="span" c="white">
+              {sig.argumentName}
+            </Text>
+            <Text size="xs" component="span" className="cb-text">
+              :{' '}
+            </Text>
+            <Text size="xs" component="span" c="yellow">
+              {formatType(sig)}
+            </Text>
           </span>
         ))}
       {') -> '}
-      <span className="text-success">{outputSignature ? formatType(outputSignature) : 'void'}</span>
-    </div>
+      <Text size="xs" component="span" c="green">
+        {outputSignature ? formatType(outputSignature) : 'void'}
+      </Text>
+    </Box>
   );
 }
 
@@ -316,30 +351,47 @@ function ExamplesTable({ examples }: ExamplesTableProps) {
   if (!examples || examples.length === 0) return null;
 
   return (
-    <div className="table-responsive">
-      <table className="table table-sm mb-0">
-        <thead>
-          <tr className="cb-border-color border-bottom">
-            <th className="cb-text border-0 px-3 py-2">#</th>
-            <th className="cb-text border-0 px-3 py-2">{i18n.t('Arguments')}</th>
-            <th className="cb-text border-0 px-3 py-2">{i18n.t('Expected')}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Table.ScrollContainer minWidth={480}>
+      <Table withRowBorders>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th className="cb-text" px="md" py="xs">
+              #
+            </Table.Th>
+            <Table.Th className="cb-text" px="md" py="xs">
+              {i18n.t('Arguments')}
+            </Table.Th>
+            <Table.Th className="cb-text" px="md" py="xs">
+              {i18n.t('Expected')}
+            </Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {examples.map((ex, i) => (
-            <tr key={i} className="cb-border-color border-bottom">
-              <td className="border-0 px-3 py-2 cb-text font-monospace">{i + 1}</td>
-              <td className="border-0 px-3 py-2">
-                <code className="text-info bg-transparent">{JSON.stringify(ex.arguments)}</code>
-              </td>
-              <td className="border-0 px-3 py-2">
-                <code className="text-success bg-transparent">{JSON.stringify(ex.expected)}</code>
-              </td>
-            </tr>
+            <Table.Tr key={i}>
+              <Table.Td
+                className="cb-text"
+                px="md"
+                py="xs"
+                style={{ fontFamily: 'var(--mantine-font-family-monospace)' }}
+              >
+                {i + 1}
+              </Table.Td>
+              <Table.Td px="md" py="xs">
+                <Code c="cyan" bg="transparent">
+                  {JSON.stringify(ex.arguments)}
+                </Code>
+              </Table.Td>
+              <Table.Td px="md" py="xs">
+                <Code c="green" bg="transparent">
+                  {JSON.stringify(ex.expected)}
+                </Code>
+              </Table.Td>
+            </Table.Tr>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
   );
 }
 
@@ -351,51 +403,70 @@ function Leaderboard({ entries }: LeaderboardProps) {
   if (!entries || entries.length === 0) return null;
 
   return (
-    <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-      <div className="card-body">
-        <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Fastest Solutions')}</h5>
-        <div className="table-responsive">
-          <table className="table table-sm mb-0">
-            <thead>
-              <tr className="cb-border-color border-bottom">
-                <th className="cb-text border-0 px-2 py-2">#</th>
-                <th className="cb-text border-0 px-2 py-2">{i18n.t('Player')}</th>
-                <th className="cb-text border-0 px-2 py-2">{i18n.t('Time')}</th>
-                <th className="cb-text border-0 px-2 py-2">{i18n.t('Lang')}</th>
-                <th className="cb-text border-0 px-2 py-2">{i18n.t('Game')}</th>
-              </tr>
-            </thead>
-            <tbody>
+    <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+      <Box p="md">
+        <Title order={5} c="white" mb="md">
+          {i18n.t('Fastest Solutions')}
+        </Title>
+        <Table.ScrollContainer minWidth={600}>
+          <Table withRowBorders>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th className="cb-text" px="xs" py="xs">
+                  #
+                </Table.Th>
+                <Table.Th className="cb-text" px="xs" py="xs">
+                  {i18n.t('Player')}
+                </Table.Th>
+                <Table.Th className="cb-text" px="xs" py="xs">
+                  {i18n.t('Time')}
+                </Table.Th>
+                <Table.Th className="cb-text" px="xs" py="xs">
+                  {i18n.t('Lang')}
+                </Table.Th>
+                <Table.Th className="cb-text" px="xs" py="xs">
+                  {i18n.t('Game')}
+                </Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
               {entries.map((entry, i) => (
-                <tr key={entry.gameId} className="cb-border-color border-bottom">
-                  <td className="border-0 px-2 py-2 cb-text">{i + 1}</td>
-                  <td className="border-0 px-2 py-2">
-                    <a href={`/users/${entry.userId}`} className="text-white text-decoration-none">
+                <Table.Tr key={entry.gameId}>
+                  <Table.Td className="cb-text" px="xs" py="xs">
+                    {i + 1}
+                  </Table.Td>
+                  <Table.Td px="xs" py="xs">
+                    <Text component="a" href={`/users/${entry.userId}`} c="white" td="none">
                       {entry.userName}
-                    </a>
-                    <small className="ml-1 cb-text">({entry.rating})</small>
-                  </td>
-                  <td className="border-0 px-2 py-2 text-white font-weight-bold">
+                    </Text>
+                    <Text component="small" ml={4} className="cb-text">
+                      ({entry.rating})
+                    </Text>
+                  </Table.Td>
+                  <Table.Td c="white" fw={700} px="xs" py="xs">
                     {formatDuration(entry.durationSec)}
-                  </td>
-                  <td className="border-0 px-2 py-2 cb-text">{entry.lang}</td>
-                  <td className="border-0 px-2 py-2">
-                    <a
+                  </Table.Td>
+                  <Table.Td className="cb-text" px="xs" py="xs">
+                    {entry.lang}
+                  </Table.Td>
+                  <Table.Td px="xs" py="xs">
+                    <Text
+                      component="a"
                       href={`/games/${entry.gameId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-info"
+                      c="cyan"
                     >
                       #{entry.gameId}
-                    </a>
-                  </td>
-                </tr>
+                    </Text>
+                  </Table.Td>
+                </Table.Tr>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+            </Table.Tbody>
+          </Table>
+        </Table.ScrollContainer>
+      </Box>
+    </Paper>
   );
 }
 
@@ -406,10 +477,19 @@ interface MetaRowProps {
 
 function MetaRow({ label, children }: MetaRowProps) {
   return (
-    <div className="d-flex justify-content-between align-items-center py-2 cb-border-color border-bottom">
-      <dt className="cb-text font-weight-normal small mb-0">{label}</dt>
-      <dd className="mb-0 text-white small">{children}</dd>
-    </div>
+    <Flex
+      justify="space-between"
+      align="center"
+      py="xs"
+      style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+    >
+      <Text component="dt" className="cb-text" fw={400} size="xs">
+        {label}
+      </Text>
+      <Text component="dd" c="white" size="xs">
+        {children}
+      </Text>
+    </Flex>
   );
 }
 
@@ -422,27 +502,30 @@ function AssertsSection({ asserts }: AssertsSectionProps) {
   const displayAsserts = expanded ? asserts : asserts.slice(0, 3);
 
   return (
-    <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="mb-0 text-white font-weight-bold">
+    <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+      <Box p="md">
+        <Flex justify="space-between" align="center" mb="md">
+          <Title order={5} c="white">
             {i18n.t('Test Cases (%{count})', { count: asserts.length })}
-          </h5>
+          </Title>
           {asserts.length > 3 && (
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+            <Button
+              size="compact-sm"
+              variant="outline"
+              color="cbSecondary"
+              radius="md"
+              className="cb-btn-outline-secondary"
               onClick={() => setExpanded(!expanded)}
             >
               {expanded
                 ? i18n.t('Show less')
                 : i18n.t('Show all %{count}', { count: asserts.length })}
-            </button>
+            </Button>
           )}
-        </div>
+        </Flex>
         <ExamplesTable examples={displayAsserts} />
-      </div>
-    </div>
+      </Box>
+    </Paper>
   );
 }
 
@@ -527,176 +610,199 @@ function TaskPreviewWidget({
 
   if (!task) {
     return (
-      <div
-        className="d-flex justify-content-center align-items-center cb-text"
-        style={{ minHeight: '50vh' }}
-      >
+      <Flex justify="center" align="center" className="cb-text" style={{ minHeight: '50vh' }}>
         {i18n.t('Task not found')}
-      </div>
+      </Flex>
     );
   }
 
   const stateInfo = stateLabels[task.state] || stateLabels.blank;
 
   return (
-    <div className="cb-bg-panel cb-text min-vh-100">
+    <Box className="cb-bg-panel cb-text" mih="100vh">
       {/* Header */}
-      <div className="cb-bg-highlight-panel cb-border-color border-bottom py-4">
-        <div className="container">
-          <div className="d-flex align-items-center mb-3 small">
-            <a href="/tasks" className="text-info">
+      <Box
+        className="cb-bg-highlight-panel"
+        py="lg"
+        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+      >
+        <Box w="100%" maw={1140} mx="auto" px="md">
+          <Flex align="center" mb="md">
+            <Text component="a" href="/tasks" c="cyan" size="xs">
               {i18n.t('Tasks')}
-            </a>
-            <span className="mx-2 cb-text">/</span>
-            <span className="cb-text">{task.name}</span>
+            </Text>
+            <Text size="xs" mx="xs" className="cb-text">
+              /
+            </Text>
+            <Text size="xs" className="cb-text">
+              {task.name}
+            </Text>
             {isSaving && (
-              <span className="ml-2 text-warning small">
-                <span className="spinner-border spinner-border-sm mr-1" />
-                {i18n.t('Saving...')}
-              </span>
+              <Flex align="center" ml="xs">
+                <Loader size="xs" mr={4} />
+                <Text size="xs" c="yellow">
+                  {i18n.t('Saving...')}
+                </Text>
+              </Flex>
             )}
-          </div>
+          </Flex>
 
-          <div className="d-flex flex-wrap align-items-center mb-3">
+          <Flex wrap="wrap" align="center" mb="md">
             <GameLevelBadge level={task.level} />
-            <h1 className="mb-0 ml-3 h3 text-white font-weight-bold">{task.name}</h1>
-          </div>
+            <Title order={1} fz="h3" ml="md" c="white">
+              {task.name}
+            </Title>
+          </Flex>
 
-          <div className="d-flex flex-wrap align-items-center">
-            <span className={cn('badge mr-2 mb-1', levelBadgeClasses[task.level])}>
+          <Flex wrap="wrap" align="center">
+            <Badge color={levelBadgeColors[task.level] || 'gray'} mr="xs" mb={4}>
               {i18n.t(task.level)}
-            </span>
-            <span className={cn('badge mr-2 mb-1', stateInfo.cls)}>{i18n.t(stateInfo.label)}</span>
-            {task.origin && <span className="badge badge-dark mr-2 mb-1">{task.origin}</span>}
+            </Badge>
+            <Badge color={stateInfo.color} mr="xs" mb={4}>
+              {i18n.t(stateInfo.label)}
+            </Badge>
+            {task.origin && (
+              <Badge mr="xs" mb={4} style={{ backgroundColor: '#343a40', color: '#fff' }}>
+                {task.origin}
+              </Badge>
+            )}
             {task.visibility && (
-              <span
-                className={cn(
-                  'badge mr-2 mb-1',
-                  task.visibility === 'public' ? 'badge-success' : 'badge-secondary',
-                )}
-              >
+              <Badge color={task.visibility === 'public' ? 'green' : 'gray'} mr="xs" mb={4}>
                 {i18n.t(task.visibility)}
-              </span>
+              </Badge>
             )}
             {task.tags &&
               task.tags.map((tag) => (
-                <span key={tag} className="badge badge-dark mr-2 mb-1">
+                <Badge
+                  key={tag}
+                  mr="xs"
+                  mb={4}
+                  style={{ backgroundColor: '#343a40', color: '#fff' }}
+                >
                   {tag}
-                </span>
+                </Badge>
               ))}
-          </div>
-        </div>
-      </div>
+          </Flex>
+        </Box>
+      </Box>
 
-      <div className="container py-4">
-        <div className="row">
+      <Box w="100%" maw={1140} mx="auto" px="md" py="lg">
+        <Grid>
           {/* Main content */}
-          <div className="col-lg-8">
+          <Grid.Col span={{ base: 12, lg: 8 }}>
             {/* Description */}
-            <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="mb-0 text-white font-weight-bold">{i18n.t('Description')}</h5>
-                  <div className="d-flex align-items-center">
+            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+              <Box p="md">
+                <Flex justify="space-between" align="center" mb="md">
+                  <Title order={5} c="white">
+                    {i18n.t('Description')}
+                  </Title>
+                  <Flex align="center">
                     {hasRuDescription && (
-                      <div className="btn-group btn-group-sm mr-2">
-                        <button
-                          type="button"
-                          className={cn(
-                            'btn btn-sm',
-                            descLang === 'en'
-                              ? 'btn-primary'
-                              : 'btn-outline-secondary cb-btn-outline-secondary',
-                          )}
+                      <Button.Group mr="xs">
+                        <Button
+                          size="compact-sm"
+                          variant={descLang === 'en' ? 'filled' : 'outline'}
+                          color="cbSecondary"
+                          className={descLang === 'en' ? '' : 'cb-btn-outline-secondary'}
                           onClick={() => {
                             setDescLang('en');
                             setEditingDesc(false);
                           }}
                         >
                           EN
-                        </button>
-                        <button
-                          type="button"
-                          className={cn(
-                            'btn btn-sm',
-                            descLang === 'ru'
-                              ? 'btn-primary'
-                              : 'btn-outline-secondary cb-btn-outline-secondary',
-                          )}
+                        </Button>
+                        <Button
+                          size="compact-sm"
+                          variant={descLang === 'ru' ? 'filled' : 'outline'}
+                          color="cbSecondary"
+                          className={descLang === 'ru' ? '' : 'cb-btn-outline-secondary'}
                           onClick={() => {
                             setDescLang('ru');
                             setEditingDesc(false);
                           }}
                         >
                           RU
-                        </button>
-                      </div>
+                        </Button>
+                      </Button.Group>
                     )}
                     {canEditTask && !editingDesc && (
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                      <Button
+                        size="compact-sm"
+                        variant="outline"
+                        color="cbSecondary"
+                        radius="md"
+                        className="cb-btn-outline-secondary"
                         onClick={startEditDesc}
                       >
                         {i18n.t('Edit')}
-                      </button>
+                      </Button>
                     )}
-                  </div>
-                </div>
+                  </Flex>
+                </Flex>
                 {editingDesc ? (
                   <div>
-                    <textarea
+                    <Textarea
                       aria-label={i18n.t('Description')}
-                      className="form-control cb-bg-highlight-panel cb-border-color text-white mb-2"
                       rows={12}
                       value={descDraft}
                       onChange={(e) => setDescDraft(e.target.value)}
+                      mb="xs"
                     />
-                    <div className="d-flex justify-content-end">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+                    <Flex justify="flex-end">
+                      <Button
+                        size="compact-sm"
+                        variant="outline"
+                        color="cbSecondary"
+                        radius="md"
+                        className="cb-btn-outline-secondary"
+                        mr="xs"
                         onClick={() => setEditingDesc(false)}
                       >
                         {i18n.t('Cancel')}
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-success cb-rounded"
+                      </Button>
+                      <Button
+                        size="compact-sm"
+                        color="cbSuccess"
+                        radius="md"
                         onClick={saveDesc}
                         disabled={isSaving}
                       >
                         {i18n.t('Save')}
-                      </button>
-                    </div>
+                      </Button>
+                    </Flex>
                   </div>
                 ) : (
-                  <div className="text-white">
+                  <Box c="white">
                     <TaskDescriptionMarkdown description={description} />
-                  </div>
+                  </Box>
                 )}
-              </div>
-            </div>
+              </Box>
+            </Paper>
 
             {/* Signature */}
-            <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-              <div className="card-body">
-                <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Function Signature')}</h5>
+            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+              <Box p="md">
+                <Title order={5} c="white" mb="md">
+                  {i18n.t('Function Signature')}
+                </Title>
                 <SignatureDisplay
                   inputSignature={task.inputSignature}
                   outputSignature={task.outputSignature}
                 />
-              </div>
-            </div>
+              </Box>
+            </Paper>
 
             {/* Examples */}
             {task.assertsExamples && task.assertsExamples.length > 0 && (
-              <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-                <div className="card-body">
-                  <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Examples')}</h5>
+              <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+                <Box p="md">
+                  <Title order={5} c="white" mb="md">
+                    {i18n.t('Examples')}
+                  </Title>
                   <ExamplesTable examples={task.assertsExamples} />
-                </div>
-              </div>
+                </Box>
+              </Paper>
             )}
 
             {/* All asserts */}
@@ -704,62 +810,73 @@ function TaskPreviewWidget({
 
             {/* Stats */}
             {taskStats && (
-              <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-                <div className="card-body">
-                  <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Statistics')}</h5>
-                  <div className="d-flex mb-3" style={{ gap: 12 }}>
+              <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+                <Box p="md">
+                  <Title order={5} c="white" mb="md">
+                    {i18n.t('Statistics')}
+                  </Title>
+                  <Flex gap={12} mb="md">
                     <StatCard label={i18n.t('Games')} value={taskStats.gamesCount} />
                     <StatCard label={i18n.t('Winners')} value={taskStats.winnersCount} />
-                  </div>
+                  </Flex>
 
-                  <h6
-                    className="mt-3 mb-3 cb-text small text-uppercase"
+                  <Text
+                    className="cb-text"
+                    size="xs"
+                    tt="uppercase"
+                    mt="md"
+                    mb="md"
                     style={{ letterSpacing: 1 }}
                   >
                     {i18n.t('Solve Time (winners)')}
-                  </h6>
+                  </Text>
                   <PercentileBar percentiles={taskStats.percentiles} />
-                </div>
-              </div>
+                </Box>
+              </Paper>
             )}
 
             {/* Leaderboard */}
             {taskStats && <Leaderboard entries={taskStats.leaderboard} />}
-          </div>
+          </Grid.Col>
 
           {/* Sidebar */}
-          <div className="col-lg-4">
+          <Grid.Col span={{ base: 12, lg: 4 }}>
             {/* Play button */}
-            <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-              <div className="card-body">
-                <button
-                  type="button"
-                  className="btn btn-success btn-lg btn-block cb-rounded font-weight-bold"
+            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+              <Box p="md">
+                <Button
+                  fullWidth
+                  size="lg"
+                  color="cbSuccess"
+                  radius="md"
+                  fw={700}
                   onClick={handlePlayTask}
                   disabled={isCreating || task.state !== 'active'}
                 >
                   {isCreating ? (
                     <>
-                      <span className="spinner-border spinner-border-sm mr-2" />
+                      <Loader size="xs" mr="xs" />
                       {i18n.t('Creating game...')}
                     </>
                   ) : (
                     i18n.t('Play this task')
                   )}
-                </button>
+                </Button>
                 {task.state !== 'active' && (
-                  <small className="d-block text-center mt-2 cb-text">
+                  <Text size="xs" ta="center" mt="xs" className="cb-text">
                     {i18n.t('Task must be active to play')}
-                  </small>
+                  </Text>
                 )}
-              </div>
-            </div>
+              </Box>
+            </Paper>
 
             {/* Editable Details */}
-            <div className="card cb-bg-panel cb-border-color cb-rounded border mb-4">
-              <div className="card-body">
-                <h5 className="mb-3 text-white font-weight-bold">{i18n.t('Details')}</h5>
-                <dl className="mb-0">
+            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+              <Box p="md">
+                <Title order={5} c="white" mb="md">
+                  {i18n.t('Details')}
+                </Title>
+                <Box component="dl" mb={0}>
                   <MetaRow label={i18n.t('ID')}>{task.id}</MetaRow>
 
                   <MetaRow label={i18n.t('Level')}>
@@ -826,27 +943,37 @@ function TaskPreviewWidget({
                       {new Date(task.updatedAt).toLocaleDateString(i18n.language)}
                     </MetaRow>
                   )}
-                </dl>
+                </Box>
 
                 {canEditTask && (
-                  <div className="mt-3 pt-3 cb-border-color border-top">
-                    <label htmlFor="task-preview-tags-input" className="cb-text small mb-1">
+                  <Box
+                    mt="md"
+                    pt="md"
+                    style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+                  >
+                    <Text
+                      component="label"
+                      htmlFor="task-preview-tags-input"
+                      className="cb-text"
+                      size="xs"
+                      mb={4}
+                    >
                       {i18n.t('Tags')}
-                    </label>
+                    </Text>
                     <EditableTagsInput
                       inputId="task-preview-tags-input"
                       value={task.tags || []}
                       onChange={(v) => updateField('tags', v)}
                       disabled={isSaving}
                     />
-                  </div>
+                  </Box>
                 )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Box>
+            </Paper>
+          </Grid.Col>
+        </Grid>
+      </Box>
+    </Box>
   );
 }
 

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Box, Button, Flex, Loader, Stack, Text } from '@mantine/core';
+
 import { getGradeLabel } from '@/config/grades';
 
 import i18n from '../../../i18n';
@@ -53,86 +55,105 @@ const formatDuration = (t: HistoryTournament): string | null => {
 function TournamentHistoryList({ tournaments, loading }: TournamentHistoryListProps) {
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center py-5 cb-text">
-        <div className="spinner-border" role="status" aria-hidden="true" />
-        <span className="ml-3">{i18n.t('Loading...')}</span>
-      </div>
+      <Flex justify="center" align="center" py="xl" className="cb-text">
+        <Loader />
+        <Text ml="md">{i18n.t('Loading...')}</Text>
+      </Flex>
     );
   }
 
   if (tournaments.length === 0) {
     return (
-      <div className="d-flex justify-content-center align-items-center py-5 cb-text">
+      <Flex justify="center" align="center" py="xl" className="cb-text">
         {i18n.t('No finished tournaments yet')}
-      </div>
+      </Flex>
     );
   }
 
   return (
-    <div className="cb-schedule-list d-flex flex-column">
-      <div className="cb-schedule-list-head d-none d-md-flex align-items-center px-3 py-2">
+    <Stack className="cb-schedule-list" gap={0}>
+      <Flex
+        className="cb-schedule-list-head"
+        display={{ base: 'none', md: 'flex' }}
+        align="center"
+        px="md"
+        py="sm"
+      >
         <span className="cb-schedule-col-grade">{i18n.t('Tournament')}</span>
         <span className="cb-schedule-col-date">{i18n.t('Date')}</span>
         <span className="cb-schedule-col-duration">{i18n.t('Duration')}</span>
         <span className="cb-schedule-col-players">{i18n.t('Players')}</span>
         <span className="cb-schedule-col-winner">{i18n.t('Winner')}</span>
         <span className="cb-schedule-col-action" />
-      </div>
+      </Flex>
       {tournaments.map((t) => {
         const duration = formatDuration(t);
 
         return (
-          <a
+          <Flex
             key={t.id}
+            component="a"
             href={`/tournaments/${t.id}`}
-            className="cb-schedule-list-row d-flex flex-column flex-md-row align-items-md-center px-3 py-3"
+            className="cb-schedule-list-row"
+            direction={{ base: 'column', md: 'row' }}
+            align={{ md: 'center' }}
+            px="md"
+            py="md"
             style={{ '--cb-row-grade': `var(--cb-grade-${t.grade})` } as React.CSSProperties}
           >
-            <span className="cb-schedule-col-grade d-flex align-items-center">
-              <span
-                className="cb-schedule-grade-dot mr-2"
+            <Flex component="span" align="center" className="cb-schedule-col-grade">
+              <Box
+                component="span"
+                className="cb-schedule-grade-dot"
+                mr="sm"
                 style={{ backgroundColor: `var(--cb-grade-${t.grade})` }}
               />
-              <span className="d-flex flex-column">
+              <Flex component="span" direction="column">
                 <span className="cb-schedule-row-name">
                   {localizeTournamentName(t.name, t.grade)}
                 </span>
                 <small className="cb-schedule-row-grade-label">
                   {t.grade ? i18n.t(getGradeLabel(t.grade)) : null}
                 </small>
-              </span>
-            </span>
+              </Flex>
+            </Flex>
             <span className="cb-schedule-col-date">
               {t.startsAt ? dayjs(t.startsAt).format('MMM D, YYYY') : '—'}
             </span>
             <span className="cb-schedule-col-duration">{duration || '—'}</span>
-            <span className="cb-schedule-col-players">
-              <i className="fa fa-users mr-1" aria-hidden="true" />
+            <Flex component="span" align="center" gap="xs" className="cb-schedule-col-players">
+              <i className="fa fa-users" aria-hidden="true" />
               {t.playersCount ?? 0}
-            </span>
-            <span className="cb-schedule-col-winner d-flex align-items-center">
+            </Flex>
+            <Flex component="span" align="center" className="cb-schedule-col-winner">
               {t.winner ? (
                 <>
                   {t.winner.avatarUrl && (
-                    <img
+                    <Box
+                      component="img"
                       src={t.winner.avatarUrl}
                       alt={t.winner.name}
-                      className="cb-schedule-winner-avatar mr-2"
+                      className="cb-schedule-winner-avatar"
+                      mr="sm"
                     />
                   )}
-                  <span className="text-truncate">{t.winner.name}</span>
+                  <Text component="span" truncate>
+                    {t.winner.name}
+                  </Text>
                 </>
               ) : (
                 '—'
               )}
-            </span>
+            </Flex>
             <span className="cb-schedule-col-action">
-              <span className="btn btn-sm cb-btn-secondary cb-rounded">{i18n.t('Open')}</span>
+              <Button component="span" size="compact-sm" color="cbSecondary" radius="md">
+                {i18n.t('Open')}
+              </Button>
             </span>
-          </a>
+          </Flex>
         );
       })}
-    </div>
+    </Stack>
   );
 }
 

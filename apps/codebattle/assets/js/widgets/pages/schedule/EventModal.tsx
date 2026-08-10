@@ -1,8 +1,7 @@
 import React, { memo, useCallback, useState } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Button } from '@mantine/core';
-import cn from 'classnames';
+import { Button, Flex, Stack, Text } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import Modal from '@/components/CbModal';
@@ -55,15 +54,17 @@ export const EventModal = NiceModal.create(
     return (
       <Modal size="lg" show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
         <Modal.Header className="cb-border-color" closeButton>
-          <Modal.Title className="d-flex flex-column">
-            {event.resourse.grade !== grades.open && (
-              <span className="text-white">Codebattle League 2025</span>
-            )}
-            {i18n.t('Tournament: %{name}', { name: eventTitle })}
+          <Modal.Title>
+            <Stack gap={0}>
+              {event.resourse.grade !== grades.open && (
+                <Text c="white">Codebattle League 2025</Text>
+              )}
+              {i18n.t('Tournament: %{name}', { name: eventTitle })}
+            </Stack>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="d-flex flex-column">
+          <Flex direction="column">
             <ScheduleNavigationTab
               className="w-100 d-flex justify-content-between p-2"
               events={events}
@@ -80,20 +81,20 @@ export const EventModal = NiceModal.create(
               className="d-flex flex-column align-items-center cb-rounded w-100 h-100 p-3"
               tournament={event.resourse}
             />
-          </div>
+          </Flex>
         </Modal.Body>
         <Modal.Footer className="cb-border-color">
           {event.resourse.id && (
-            <a
+            <Button
+              component="a"
               href={isAdmin || !isUpcoming ? `/tournaments/${event.resourse.id}` : 'blank'}
-              className={cn('btn btn-secondary cb-btn-secondary pr-2 cb-rounded', {
-                disabled: isUpcoming,
-              })}
-              // @ts-expect-error anchors don't support `disabled`; preserved to keep runtime markup unchanged
+              color="cbSecondary"
+              radius="md"
+              pr="xs"
               disabled={isUpcoming}
             >
               {i18n.t('Open Tournament')}
-            </a>
+            </Button>
           )}
           <Button onClick={handleClose} color="cbSecondary" radius="md">
             {i18n.t('Close')}

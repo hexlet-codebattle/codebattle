@@ -235,7 +235,7 @@
   z-index: 0;
 }
 
-.cb-hof-podium-card .card-body {
+.cb-hof-podium-card > * {
   position: relative;
   z-index: 1;
 }

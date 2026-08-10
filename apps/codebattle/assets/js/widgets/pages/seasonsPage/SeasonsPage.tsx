@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 
 import { Link } from '@inertiajs/react';
+import { Box, Button, Flex, Grid, Paper, SimpleGrid, Text } from '@mantine/core';
 import cn from 'classnames';
 
 import i18n from '../../../i18n';
@@ -51,37 +52,53 @@ function PodiumPlace({ result, size = 'normal' }: PodiumPlaceProps) {
   const isLarge = size === 'large';
 
   return (
-    <div
-      className={cn('card h-100 border-0 shadow-sm cb-hof-podium-card cb-seasons-podium-card', {
+    <Paper
+      h="100%"
+      radius="sm"
+      shadow="sm"
+      className={cn('cb-hof-podium-card cb-seasons-podium-card', {
         'cb-gold-place-bg': result.place === 1,
         'cb-silver-place-bg': result.place === 2,
         'cb-bronze-place-bg': result.place === 3,
         'cb-seasons-podium-card-large': isLarge,
       })}
     >
-      <div className={cn('card-body text-center', isLarge ? 'py-4' : 'py-3')}>
-        <div className={cn('mb-2 cb-seasons-podium-medal', isLarge ? 'fs-2' : 'fs-4')}>
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        ta="center"
+        flex={1}
+        px={{ base: 'xs', md: 'md' }}
+        py={isLarge ? 'lg' : 'md'}
+      >
+        <Box mb="sm" className="cb-seasons-podium-medal">
           {getMedalEmoji(result.place)}
-        </div>
-        <h6 className={cn('text-white mb-2 cb-seasons-podium-name', isLarge && 'fs-5 fw-bold')}>
-          {result.user_name}
-        </h6>
-        {result.clan_name && (
-          <div className="mb-2 cb-seasons-podium-clan-wrap">
-            <span className="small text-muted cb-seasons-podium-clan">{result.clan_name}</span>
-          </div>
-        )}
-        <div
-          className={cn(
-            'fw-bold cb-seasons-podium-points',
-            isLarge ? 'fs-4 text-warning' : 'fs-5 text-white',
-          )}
+        </Box>
+        <Text
+          component="h6"
+          c="white"
+          mb="sm"
+          fw={isLarge ? 700 : 500}
+          className="cb-seasons-podium-name"
         >
+          {result.user_name}
+        </Text>
+        {result.clan_name && (
+          <Box mb="sm" className="cb-seasons-podium-clan-wrap">
+            <Text size="xs" c="dimmed" className="cb-seasons-podium-clan">
+              {result.clan_name}
+            </Text>
+          </Box>
+        )}
+        <Text fw={700} c={isLarge ? 'yellow' : 'white'} className="cb-seasons-podium-points">
           {result.total_points}
-        </div>
-        <div className="text-muted small">{i18n.t('points')}</div>
-      </div>
-    </div>
+        </Text>
+        <Text size="xs" c="dimmed">
+          {i18n.t('points')}
+        </Text>
+      </Flex>
+    </Paper>
   );
 }
 
@@ -91,7 +108,11 @@ interface Top3PodiumProps {
 
 function Top3Podium({ top3 }: Top3PodiumProps) {
   if (!top3 || top3.length === 0) {
-    return <div className="text-muted text-center py-5">{i18n.t('No results yet')}</div>;
+    return (
+      <Text c="dimmed" ta="center" py="xl">
+        {i18n.t('No results yet')}
+      </Text>
+    );
   }
 
   const first = top3.find((r) => r.place === 1);
@@ -99,25 +120,27 @@ function Top3Podium({ top3 }: Top3PodiumProps) {
   const third = top3.find((r) => r.place === 3);
 
   return (
-    <div className="row mx-n2 align-items-end cb-seasons-podium-row">
-      <div className="col-4 px-2">
+    <Flex mx={{ base: -4, md: -8 }} align="flex-end" className="cb-seasons-podium-row">
+      <Box w="33.3334%" px={{ base: 4, md: 8 }}>
         {second && (
-          <div className="cb-seasons-podium-offset cb-seasons-podium-offset-second">
+          <Box className="cb-seasons-podium-offset cb-seasons-podium-offset-second">
             <PodiumPlace result={second} />
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
 
-      <div className="col-4 px-2">{first && <PodiumPlace result={first} size="large" />}</div>
+      <Box w="33.3334%" px={{ base: 4, md: 8 }}>
+        {first && <PodiumPlace result={first} size="large" />}
+      </Box>
 
-      <div className="col-4 px-2">
+      <Box w="33.3334%" px={{ base: 4, md: 8 }}>
         {third && (
-          <div className="cb-seasons-podium-offset cb-seasons-podium-offset-third">
+          <Box className="cb-seasons-podium-offset cb-seasons-podium-offset-third">
             <PodiumPlace result={third} />
-          </div>
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Flex>
   );
 }
 
@@ -127,76 +150,110 @@ interface SeasonCardProps {
 
 function SeasonCard({ season }: SeasonCardProps) {
   return (
-    <div className="cb-bg-panel cb-border-color cb-rounded shadow-sm border text-light h-100 cb-seasons-card">
-      <div className="p-3 p-lg-4 d-flex flex-column h-100">
-        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start mb-3 cb-seasons-card-header">
-          <div className="pr-sm-3">
-            <div className="text-uppercase small text-muted cb-seasons-card-kicker">
+    <Paper
+      withBorder
+      radius="md"
+      shadow="sm"
+      h="100%"
+      className="cb-bg-panel cb-rounded cb-seasons-card"
+    >
+      <Flex direction="column" h="100%" p={{ base: 'md', lg: 'lg' }}>
+        <Flex
+          direction={{ base: 'column', sm: 'row' }}
+          justify="space-between"
+          align={{ sm: 'flex-start' }}
+          mb="md"
+          className="cb-seasons-card-header"
+        >
+          <Box pr={{ sm: 'md' }}>
+            <Text tt="uppercase" size="xs" c="dimmed" className="cb-seasons-card-kicker">
               {i18n.t('Season')}
-            </div>
-            <h3 className="card-title text-gold mb-2 cb-seasons-card-title">
+            </Text>
+            <Text component="h3" className="text-gold cb-seasons-card-title" mb="sm" fw={500}>
               {season.name} {season.year}
-            </h3>
-            <div className="text-muted small cb-seasons-card-dates">
+            </Text>
+            <Text c="dimmed" className="cb-seasons-card-dates">
               {formatSeasonDates(season)}
-            </div>
-          </div>
-          <Link
+            </Text>
+          </Box>
+          <Button
+            component={Link}
             href={`/seasons/${season.id}`}
-            className="btn btn-sm btn-outline-gold mt-3 mt-sm-0 cb-seasons-action"
+            variant="outline"
+            size="compact-sm"
+            mt={{ base: 'md', sm: 0 }}
+            className="btn-outline-gold cb-seasons-action"
           >
             {i18n.t('View Results')}
-          </Link>
-        </div>
+          </Button>
+        </Flex>
 
-        <div className="cb-seasons-card-body">
+        <Box className="cb-seasons-card-body">
           <Top3Podium top3={season.top3} />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Flex>
+    </Paper>
   );
 }
 
 function SeasonsPage({ seasons }: SeasonsPageProps) {
   return (
-    <div className="cb-bg-panel cb-text min-vh-100 py-5 cb-seasons-page">
-      <div className="container">
-        <div className="cb-bg-panel cb-rounded shadow-sm px-3 px-lg-4 py-4 mb-4 cb-seasons-hero">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <div className="text-center text-md-left">
-              <div className="text-uppercase small text-muted cb-seasons-eyebrow">
+    <Box className="cb-bg-panel cb-text" mih="100vh" py="xl">
+      <Box w="100%" maw={1140} mx="auto" px="md">
+        <Paper
+          radius="md"
+          shadow="sm"
+          px={{ base: 'md', lg: 'lg' }}
+          py="lg"
+          mb="md"
+          className="cb-rounded cb-seasons-hero"
+        >
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            justify="space-between"
+            align={{ md: 'center' }}
+          >
+            <Box ta={{ base: 'center', md: 'left' }}>
+              <Text tt="uppercase" size="xs" c="dimmed" className="cb-seasons-eyebrow">
                 {i18n.t('Competition archive')}
-              </div>
-              <h1 className="text-gold fw-bold mb-2 cb-seasons-title">{i18n.t('Seasons')}</h1>
-              <p className="text-muted mb-0 cb-seasons-subtitle">
+              </Text>
+              <Text component="h1" className="text-gold cb-seasons-title" mb="sm" fw={700}>
+                {i18n.t('Seasons')}
+              </Text>
+              <Text c="dimmed" className="cb-seasons-subtitle">
                 {i18n.t('Browse finished seasons and open the full leaderboard for each one.')}
-              </p>
-            </div>
-            <div className="mt-3 mt-md-0">
-              <Link href="/hall_of_fame" className="btn btn-outline-gold cb-seasons-hero-action">
+              </Text>
+            </Box>
+            <Box mt={{ base: 'md', md: 0 }}>
+              <Button
+                component={Link}
+                href="/hall_of_fame"
+                variant="outline"
+                className="btn-outline-gold cb-seasons-hero-action"
+              >
                 {i18n.t('Hall of Fame')}
-              </Link>
-            </div>
-          </div>
-        </div>
+              </Button>
+            </Box>
+          </Flex>
+        </Paper>
 
         {seasons.length === 0 ? (
-          <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light cb-seasons-empty">
-            <div className="card-body text-center py-5">
-              <p className="text-muted mb-0">{i18n.t('No seasons found')}</p>
-            </div>
-          </div>
+          <Paper radius="md" shadow="sm" className="cb-bg-panel cb-rounded cb-seasons-empty">
+            <Box ta="center" py="xl">
+              <Text c="dimmed">{i18n.t('No seasons found')}</Text>
+            </Box>
+          </Paper>
         ) : (
-          <div className="row">
+          <Grid gap={30}>
             {seasons.map((season) => (
-              <div key={season.id} className="col-12 col-lg-6 mb-4">
+              <Grid.Col key={season.id} span={{ base: 12, lg: 6 }} mb="lg">
                 <SeasonCard season={season} />
-              </div>
+              </Grid.Col>
             ))}
-          </div>
+          </Grid>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

@@ -36,19 +36,6 @@ export const GRADE_COLORS: Record<string, string> = {
 
 export const ALL_GRADES = ['grand_slam', 'masters', 'elite', 'pro', 'challenger', 'rookie'];
 
-export const getPlaceBadgeClass = (place?: number) => {
-  switch (place) {
-    case 1:
-      return 'bg-warning text-dark';
-    case 2:
-      return 'bg-secondary';
-    case 3:
-      return 'bg-bronze';
-    default:
-      return 'bg-primary';
-  }
-};
-
 export const getMedalEmoji = (place?: number) => {
   switch (place) {
     case 1:

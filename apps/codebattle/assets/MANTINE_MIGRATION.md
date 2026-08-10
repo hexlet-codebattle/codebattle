@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event` done |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; remaining: react-select swap (`TaskChoice`, `LanguagePickerView`, `PlayerPicker`, `ReportsPanel`), `RoomWidget`'s Bootstrap row wrapper, and the documented passthrough/leaf leftovers |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -243,8 +243,9 @@ Bootstrap semantic text colors (`text-warning`/`success`/`info`/`danger`/
 `muted`) map to Mantine named colors (`yellow`/`green`/`cyan`/`red`/`dimmed`).
 The dead `modal-90w`/`text-light` classes were dropped — `modal-90w` had no CSS,
 so its 90%-width intent is now honoured by Mantine `size="90%"`. **Left the
-exported `getPlaceBadgeClass` / `getMedalEmoji` helpers in `SeasonLeaderboard`
-untouched** — the still-Bootstrap `HallOfFamePage` consumes them. ⚠️ QA: the
+exported `getMedalEmoji` helper in `SeasonLeaderboard` untouched** (still used by
+`SeasonShowPage` + this modal); `getPlaceBadgeClass` was **deleted** when
+`HallOfFamePage` converted (its last consumer — see below). ⚠️ QA: the
 gold/bronze `<Badge>` text contrast, the sticky tab bar's `bg="dark.7"` against
 the modal body, and that the semantic-color remap reads the same as the charts.
 
@@ -904,6 +905,94 @@ referenced nowhere else — audited + user-confirmed): `EventCalendarPanel`,
   `cb-opacity-50` loading state; the loading overlay position (was after the
   content, still `pos="absolute"` with no inset).
 
+Done (2026-08-11, last page slice): **`schedule`**, **`seasonsPage`**,
+**`hallOfFamePage`**, **`headToHeadPage`**, **`taskPreview`** — all React pages
+are now converted.
+
+- **`schedule`** page. `TournamentSchedule`: root `d-flex flex-column h-100 w-100
+  cb-bg-panel cb-rounded p-1 p-md-3 p-lg-3 position-relative cb-overflow-y-scroll`
+  → `<Flex direction="column" … p={{ base:'xs', md:'md', lg:'md' }}>`; the
+  `react-big-calendar`, routing, `cb-rbc-*` classes and the `cn` eventPropGetter
+  untouched. `ScheduleLegend` → `<Stack>`/`<Flex>` (kept its `cb-schedule-tabs` /
+  `cb-schedule-tab` / `cb-schedule-grade-*` design classes; tabs stay native
+  buttons since the design CSS owns them; `gap-3` → `gap="md"`).
+  `TournamentHistoryList`: `spinner-border` → `<Loader>`; list head/rows →
+  `<Stack>`/`<Flex>` with responsive `display`/`direction`; the row anchor →
+  `<Flex component="a">` (keeps `cb-schedule-list-row` + row-grade var);
+  `text-truncate` → `<Text truncate>`; `fa fa-users mr-1` → Flex `gap`; the
+  "Open" `span.btn` → `<Button component="span" size="compact-sm"
+  color="cbSecondary" radius="md">` (decorative — whole row navigates).
+  `EventModal`: modal title/subtitle + `text-white` → `<Stack>`/`<Text
+  c="white">`; body → `<Flex direction="column">` **keeping the 3 documented
+  passthrough classNames** of `ScheduleNavigationTab`/`TournamentPreviewPanel`/
+  `TournamentDescription`; footer "Open Tournament" `<a>` (btn + `disabled` hack
+  + `@ts-expect-error`) → `<Button component="a" color="cbSecondary"
+  radius="md" pr="xs" disabled={isUpcoming}>`. No tests mount these. ⚠️ QA: the
+  `cb-schedule-*` grid-column layout still lines up, and the "Open" button
+  inside the navigating row.
+- **`seasonsPage`** (`SeasonsPage` + `SeasonShowPage`; leaf `SeasonLeaderboard`
+  already done). ⚠️ First use of polymorphic `component={Link}` on a Mantine
+  `Button` (Inertia `Link` — SPA nav preserved). Podium cards: `card card-body`
+  + place-bg → `<Paper radius="sm" shadow>` + inner `<Flex>` implementing the
+  `.card-body` flex layout in props — the SCSS `.cb-seasons-podium-card
+  .card-body` rules are now dead (Phase-3 cleanup). **`cb-hof-podium-card`
+  retarget in custom.scss**: `.cb-hof-podium-card .card-body` →
+  `.cb-hof-podium-card > *` (`position:relative; z-index:1` for the gradient
+  overlay; the direct child is the body in every usage; still load-bearing for
+  all three podium pages). Drops of dead BS5-only classes: `fs-1/2/3/4/5`,
+  `display-4` (→ `fz={{base:40, md:56}}`), `mx-n2`, `min-w-0`. `container`/
+  `min-vh-100` → `Box maw={1140} mx="auto" px="md"` / `mih="100vh"`; `row
+  col-12 col-lg-6` → `<Grid gap={30}>` ⚠️ (this build uses `gap`, not `gutter`);
+  `text-muted`→`c="dimmed"`, `fw-bold`→`fw={700}`, `small`→`size="xs"`; `bi
+  bi-calendar3` (dead icon, no bootstrap-icons CSS) → FontAwesome `faCalendar`
+  per the season-page precedent; `badge bg-info|success|secondary` status →
+  `<Badge color="cyan|green|gray">`; leaderboard `card-header bg-transparent
+  border-bottom border-secondary` → `Flex` + inline `#6c757d` border (gameMl
+  precedent); `text-gold` / `btn-outline-gold` kept (custom classes).
+- **`hallOfFamePage`** (`HallOfFamePage`): same StatBox/PodiumCard/
+  ChampionsPodium conversions; `UserInfo` **passthrough props dropped**
+  (`className="text-white"`/`linkClassName` — its default already renders white
+  text); `avatar rounded-circle` → `<Avatar radius="50%">`; previous-season
+  mini-cards `card card-body` → `Paper`/`Box p="md"` with per-winner `badge` +
+  `getPlaceBadgeClass` → a local `placeBadgeColor` map (yellow/gray/#cd7f32/
+  blue — same as `PlayerInsightsModal`); **`getPlaceBadgeClass` deleted** from
+  `SeasonLeaderboard` (HallOfFamePage was its last consumer; `getMedalEmoji`
+  stays); `badge-dark`-style chips → `<Badge style={{backgroundColor:'#343a40',
+  color:'#fff'}}>`.
+- **`headToHeadPage`** (`HeadToHeadPage` — fully inline-styled design + a
+  handful of utilities): `row/col-*` → `<Grid gap={30}>`; `d-flex` variants →
+  `Flex`; `min-vh-100` → `mih="100vh"`; `display-4` → `fz={{base:40, md:56}}
+  lh={1.2}`; `min-w-0` was a dead BS5 class (BS4 has no `min-w-*`) — intent
+  safe-guarded with inline `minWidth:0`; the `<a>` → `<Text component="a"
+  c="white" td="none">`. No tests mount it.
+- **`taskPreview`** (`TaskPreviewWidget`, the biggest remaining page). Cards
+  (`card cb-bg-panel cb-border-color cb-rounded border`) → the standard
+  `<Paper withBorder radius="md" className="cb-bg-panel">`; `card-body` →
+  `Box p="md"`; `table-responsive`/`table table-sm` → `<Table.ScrollContainer>`
+  + `<Table withRowBorders>` (`cb-text` kept); the `h3`-styled `<h1>` title →
+  `Title order={1} fz="h3"`. `EditableSelect` (`custom-select … text-white`) →
+  `<NativeSelect size="xs">` (admin precedent); `EditableTagsInput` `badge
+  badge-dark` + `.close` × → `<Badge style={{backgroundColor:'#343a40'}}>` +
+  `<UnstyledButton>`; `<textarea>` → `<Textarea>`; `<TextInput size="xs">` for
+  the tag input. Level/state/visibility chips: `badge-success/info/warning/
+  danger/secondary` → Mantine **green/cyan/yellow/red/gray**. Buttons: `btn btn-sm
+  btn-outline-secondary cb-btn-outline-secondary cb-rounded` → `<Button
+  size="compact-sm" variant="outline" color="cbSecondary" radius="md">` keeping
+  `cb-btn-outline-secondary` (Invites precedent); EN/RU `btn-group btn-group-sm`
+  → `<Button.Group>` ⚠️ **this build has no `size` prop on `Button.Group`** —
+  size goes on the buttons (`size="compact-sm"`); active `btn-primary` tab →
+  `variant="filled"` (brand), `inactive` keeps outline (standing decision); Play
+  `btn btn-success btn-lg btn-block` → `<Button fullWidth size="lg"
+  color="cbSuccess">` + inline `<Loader size="xs">` when creating (kept the
+  swap-to-"Creating game…" label); `spinner-border(-sm)` → `<Loader size="xs">`;
+  `StatCard` `flex-fill` → `flex={1}`; `SignatureDisplay` `font-monospace small
+  text-info/warning/success` → mono `fontFamily` + `c="cyan|yellow|green"`;
+  `PercentileBar` `bg-success/warning/danger` → exact BS hex
+  (`#28a745`/`#ffc107`/`#dc3545`). Test already wrapped in `MantineTestProvider`
+  and passes (text-only assertions). ⚠️ QA: the tag-badge × hit area, the
+  `cb-btn-outline-secondary` outline still renders on the new compact buttons,
+  and the Table header against `cb-bg-panel` rows.
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -945,8 +1034,9 @@ don't inline:
    convert their surrounding layout, badges, cards).
 2. Pages, roughly by risk: `settings` ✅, `profile` ✅, `lobby` ✅ (React markup),
    `registration` ✅, `game` ✅, `tournament` ✅, `tournamentPlayer` ✅,
-   `groupTournament` ✅, `gameMl` ✅, `admin` ✅, `event` ✅, then `schedule`,
-   `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview`.
+   `groupTournament` ✅, `gameMl` ✅, `admin` ✅, `event` ✅, `schedule` ✅,
+   `seasonsPage` ✅, `hallOfFamePage` ✅, `headToHeadPage` ✅, `taskPreview` ✅ —
+   **all React pages done** (last slice: 2026-08-11).
 3. Per slice: convert → wrap affected tests in `MantineTestProvider` + fix
    portal/`findBy` queries → **verify in browser** (dev server) → merge.
 
