@@ -23,8 +23,8 @@ components converted — see the progress log under Phase 2); Phase 3 is
 | Phase | What | Status |
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
-| 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; remaining: react-select swap (`TaskChoice`, `LanguagePickerView`, `PlayerPicker`, `ReportsPanel`), `RoomWidget`'s Bootstrap row wrapper, and the documented passthrough/leaf leftovers |
+| 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done — **verified 2026-08-11**: no `react-bootstrap` import anywhere in source (single hit is a comment in `PopoverStickOnHover.tsx`), no dep in `apps/codebattle/package.json`, `@mantine/core`/`@mantine/hooks` at `^9.5.1`. `bootstrap@4.6.2` correctly retained (heex, Phase 3) |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; remaining: react-select swap (**5 sites**, see below), `RoomWidget`'s Bootstrap row wrapper + its `col-*` children, `SoundToggle` (really Phase 3), `TournamentStatisticsModal`'s footer button (missed by the game pass), and the documented passthrough/typography/design leftovers |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -268,8 +268,14 @@ that only needed their Bootstrap *classes* stripped are done too (see below):
 
 - **Blocked on a lib swap / behavior change (1):**
   - `LanguagePickerView` — react-select. Leave until all react-select sites
-    (`TaskChoice`, `PlayerPicker`, `ReportsPanel`) convert together, so the
-    dependency can be dropped in one PR. Still carries Bootstrap classes.
+    convert together, so the dependency can be dropped in one PR. Still carries
+    Bootstrap classes. **The swap is 5 component sites, not 4** (verified
+    2026-08-11 by grepping importers): `LanguagePickerView`, `TaskChoice`,
+    `PlayerPicker`, `ReportsPanel`, **and `CreateGameDialog`** (`OpponentSelect`'s
+    `AsyncSelect` — noted in the lobby log but previously missing from this
+    list). The same PR must also retire `js/__mocks__/react-select.tsx` and the
+    react-select usage in `__tests__/CreateGameDialog.test.tsx`, or
+    `react-select@^5.10.2` cannot actually leave `package.json`.
 - **Really Phase 3 (1):** `SoundToggle` — its `menu` variant renders a Bootstrap
   `dropdown-item` **inside a server heex dropdown**, so it can't be a pure
   React-side swap.
