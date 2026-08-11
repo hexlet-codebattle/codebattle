@@ -5,9 +5,18 @@ import { Tooltip } from '@mantine/core';
 
 import { formatDuration } from './ControlPanel';
 
-const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
-const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
-const sliderBarClassnames = 'cb-slider-bar position-absolute cb-rounded';
+const handleStyle = {
+  position: 'absolute',
+  borderRadius: '50%',
+} as const;
+
+const buttonStyle = {
+  position: 'absolute',
+  borderRadius: '50%',
+  background: '#dc3545',
+} as const;
+
+const sliderBarClassnames = 'cb-slider-bar cb-rounded';
 
 interface MainEvent {
   recordId: number;
@@ -19,6 +28,7 @@ interface MainEvent {
 interface SliderBarProps {
   value: number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 interface SliderActionProps {
@@ -76,7 +86,9 @@ function SliderAction({ value, className, event, setGameState, startTime }: Slid
           }}
           className={className}
           style={{
+            position: 'absolute',
             left: `${value * 100}%`,
+            background: '#ffc107',
           }}
         />
       </Tooltip>
@@ -89,10 +101,12 @@ function SliderHandle({ value, className }: SliderHandleProps) {
     <div
       className={className}
       style={{
+        position: 'absolute',
+        borderRadius: '50%',
         left: `${value * 100}%`,
       }}
     >
-      <div className={buttonClassnames} />
+      <div className="cb-slider-handle-button" style={buttonStyle} />
     </div>
   );
 }
@@ -108,26 +122,32 @@ function CodebattleSliderBar({
 }: CodebattleSliderBarProps) {
   return (
     <>
-      <div className="cb-slider-timeline position-absolute cb-rounded w-100 cb-bg-panel">
+      <div
+        className="cb-slider-timeline cb-rounded cb-bg-panel"
+        style={{ position: 'absolute', width: '100%' }}
+      >
         <SliderBar
           className={cn(sliderBarClassnames, {
             'x-intent-background': holded,
-            'bg-danger': !holded,
           })}
+          style={{
+            position: 'absolute',
+            background: !holded ? '#dc3545' : undefined,
+          }}
           value={holded ? lastIntent : handlerPosition}
         />
       </div>
       {mainEvents.map((event) => (
         <SliderAction
           value={event.recordId / recordsCount}
-          className="cb-slider-action position-absolute bg-warning cb-rounded"
+          className="cb-slider-action cb-rounded"
           key={event.recordId}
           event={event}
           setGameState={setGameState}
           startTime={startTime}
         />
       ))}
-      <SliderHandle className={handleClassnames} value={handlerPosition} />
+      <SliderHandle className="cb-slider-handle" value={handlerPosition} />
     </>
   );
 }

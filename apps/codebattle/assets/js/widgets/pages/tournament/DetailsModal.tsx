@@ -54,7 +54,7 @@ function DetailSection({ title, items }: DetailSectionProps) {
   }
 
   return (
-    <Box className="cb-bg-highlight-panel cb-rounded p-3 h-100">
+    <Box className="cb-bg-highlight-panel cb-rounded" style={{ padding: '1rem', height: '100%' }}>
       <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
         {title}
       </Text>
@@ -86,8 +86,16 @@ function RawJsonSection({ tournament }: RawJsonSectionProps) {
 
   return (
     <pre
-      className="cb-bg-highlight-panel cb-rounded p-3 mb-0 small cb-text"
-      style={{ maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+      className="cb-bg-highlight-panel cb-rounded cb-text"
+      style={{
+        maxHeight: 400,
+        overflow: 'auto',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        padding: '1rem',
+        marginBottom: 0,
+        fontSize: '0.8em',
+      }}
     >
       {json}
     </pre>
@@ -114,10 +122,22 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
         title: i18n.t('Overview'),
         items: [
           { label: i18n.t('Name'), value: formatValue(tournament.name) },
-          { label: i18n.t('State'), value: formatTranslatedValue(tournament.state) },
-          { label: i18n.t('Type'), value: formatTranslatedValue(tournament.type) },
-          { label: i18n.t('Level'), value: formatTranslatedValue(tournament.level) },
-          { label: i18n.t('Access'), value: formatTranslatedValue(tournament.accessType) },
+          {
+            label: i18n.t('State'),
+            value: formatTranslatedValue(tournament.state),
+          },
+          {
+            label: i18n.t('Type'),
+            value: formatTranslatedValue(tournament.type),
+          },
+          {
+            label: i18n.t('Level'),
+            value: formatTranslatedValue(tournament.level),
+          },
+          {
+            label: i18n.t('Access'),
+            value: formatTranslatedValue(tournament.accessType),
+          },
           {
             label: i18n.t('Ranking type'),
             value: formatTranslatedValue(tournament.rankingType),
@@ -127,11 +147,26 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       {
         title: i18n.t('Schedule'),
         items: [
-          { label: i18n.t('Starts at'), value: formatDate(tournament.startsAt) },
-          { label: i18n.t('Created at'), value: formatDate(tournament.insertedAt) },
-          { label: i18n.t('Updated at'), value: formatDate(tournament.updatedAt) },
-          { label: i18n.t('Rounds limit'), value: formatValue(tournament.roundsLimit) },
-          { label: i18n.t('Current round'), value: formatValue(tournament.currentRoundPosition) },
+          {
+            label: i18n.t('Starts at'),
+            value: formatDate(tournament.startsAt),
+          },
+          {
+            label: i18n.t('Created at'),
+            value: formatDate(tournament.insertedAt),
+          },
+          {
+            label: i18n.t('Updated at'),
+            value: formatDate(tournament.updatedAt),
+          },
+          {
+            label: i18n.t('Rounds limit'),
+            value: formatValue(tournament.roundsLimit),
+          },
+          {
+            label: i18n.t('Current round'),
+            value: formatValue(tournament.currentRoundPosition),
+          },
         ],
       },
       {
@@ -162,11 +197,26 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       {
         title: i18n.t('Participants'),
         items: [
-          { label: i18n.t('Players'), value: formatValue(tournament.playersCount) },
-          { label: i18n.t('Players limit'), value: formatValue(tournament.playersLimit) },
-          { label: i18n.t('Bots visible'), value: formatValue(tournament.showBots) },
-          { label: i18n.t('Chat enabled'), value: formatValue(tournament.useChat) },
-          { label: i18n.t('Clan mode'), value: formatValue(tournament.useClan) },
+          {
+            label: i18n.t('Players'),
+            value: formatValue(tournament.playersCount),
+          },
+          {
+            label: i18n.t('Players limit'),
+            value: formatValue(tournament.playersLimit),
+          },
+          {
+            label: i18n.t('Bots visible'),
+            value: formatValue(tournament.showBots),
+          },
+          {
+            label: i18n.t('Chat enabled'),
+            value: formatValue(tournament.useChat),
+          },
+          {
+            label: i18n.t('Clan mode'),
+            value: formatValue(tournament.useClan),
+          },
           { label: i18n.t('Live'), value: formatValue(tournament.isLive) },
         ],
       },
@@ -177,7 +227,10 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
             label: i18n.t('Task provider'),
             value: formatTranslatedValue(tournament.taskProvider),
           },
-          { label: i18n.t('Task pack'), value: formatValue(tournament.taskPackName) },
+          {
+            label: i18n.t('Task pack'),
+            value: formatValue(tournament.taskPackName),
+          },
           {
             label: i18n.t('Task strategy'),
             value: formatTranslatedValue(tournament.taskStrategy),
@@ -203,7 +256,10 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       </Modal.Header>
       <Modal.Body>
         {tournament.description ? (
-          <Box className="cb-bg-highlight-panel cb-rounded p-3 mb-3">
+          <Box
+            className="cb-bg-highlight-panel cb-rounded"
+            style={{ padding: '1rem', marginBottom: '1rem' }}
+          >
             <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
               {i18n.t('Description')}
             </Text>

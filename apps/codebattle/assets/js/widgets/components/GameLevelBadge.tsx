@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box } from '@mantine/core';
+import { Box, Tooltip } from '@mantine/core';
 
 interface GameLevelBadgeProps {
   level: string;
@@ -8,16 +8,11 @@ interface GameLevelBadgeProps {
 
 function GameLevelBadge({ level }: GameLevelBadgeProps) {
   return (
-    <Box
-      className="bg-gray cb-rounded"
-      p="xs"
-      ta="center"
-      data-toggle="tooltip"
-      data-placement="right"
-      title={level}
-    >
-      <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-    </Box>
+    <Tooltip label={level} position="right" withArrow>
+      <Box className="bg-gray cb-rounded" p="xs" ta="center" title={level}>
+        <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+      </Box>
+    </Tooltip>
   );
 }
 

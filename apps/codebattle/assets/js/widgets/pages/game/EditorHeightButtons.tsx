@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { faCompressArrowsAlt, faExpandArrowsAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ActionIcon, Group } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
@@ -24,7 +26,7 @@ function EditorHeightButtons({ editor: { userId } }: EditorHeightButtonsProps) {
         onClick={compressEditor(userId)}
         aria-label={i18n.t('Compress editor')}
       >
-        <i className="fas fa-compress-arrows-alt" aria-hidden="true" />
+        <FontAwesomeIcon icon={faCompressArrowsAlt} aria-hidden="true" />
       </ActionIcon>
       <ActionIcon
         variant="default"
@@ -32,7 +34,7 @@ function EditorHeightButtons({ editor: { userId } }: EditorHeightButtonsProps) {
         onClick={expandEditor(userId)}
         aria-label={i18n.t('Expand editor')}
       >
-        <i className="fas fa-expand-arrows-alt" aria-hidden="true" />
+        <FontAwesomeIcon icon={faExpandArrowsAlt} aria-hidden="true" />
       </ActionIcon>
     </Group>
   );

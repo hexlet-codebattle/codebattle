@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { Box, Flex } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 
@@ -24,14 +25,16 @@ function TournamentIndex({
   const browserTimezone = getBrowserTimezone(userTimezone);
 
   return (
-    <div className="cb-text mb-3">
-      <div className="d-flex justify-content-center mb-4">
+    <Box className="cb-text" mb="md">
+      <Flex justify="center" mb="lg">
         <div className="cb-schedule-tabs" role="tablist">
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'create'}
-            className={cn('cb-schedule-tab', { active: activeTab === 'create' })}
+            className={cn('cb-schedule-tab', {
+              active: activeTab === 'create',
+            })}
             onClick={() => setActiveTab('create')}
           >
             {i18next.t('Create tournament')}
@@ -46,9 +49,9 @@ function TournamentIndex({
             {i18next.t('My tournaments')}
           </button>
         </div>
-      </div>
+      </Flex>
 
-      <div className={cn({ 'd-none': activeTab !== 'create' })}>
+      <Box style={{ display: activeTab === 'create' ? undefined : 'none' }}>
         <CreateTournament
           lastTournament={lastTournament}
           taskPackNames={taskPackNames}
@@ -57,12 +60,12 @@ function TournamentIndex({
             window.location.href = `/tournaments/${tournament.id}`;
           }}
         />
-      </div>
+      </Box>
 
-      <div className={cn({ 'd-none': activeTab !== 'my' })}>
+      <Box style={{ display: activeTab === 'my' ? undefined : 'none' }}>
         <MyTournaments isActive={activeTab === 'my'} userTimezone={browserTimezone} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

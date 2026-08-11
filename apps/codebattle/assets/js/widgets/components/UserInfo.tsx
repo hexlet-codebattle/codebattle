@@ -89,36 +89,40 @@ function UserPopoverContent({ user }: UserPopoverContentProps) {
 }
 
 interface UserInfoProps {
-  className?: string;
-  linkClassName?: string;
-  user: UserNameUser;
   banned?: boolean;
-  lang?: string;
-  hovered?: boolean;
-  hideLink?: boolean;
+  className?: string;
+  color?: string;
+  displayName?: string;
+  fontWeight?: number;
   hideInfo?: boolean;
-  truncate?: boolean;
+  hideLink?: boolean;
   hideOnlineIndicator?: boolean;
   hideRank?: boolean;
-  displayName?: string;
+  hovered?: boolean;
+  lang?: string;
+  linkClassName?: string;
   loading?: boolean;
   placement?: Placement;
+  truncate?: boolean;
+  user: UserNameUser;
 }
 
 function UserInfo({
-  className,
-  linkClassName: linkClassNameProp,
-  user,
   banned = false,
-  lang,
-  hovered = false,
-  hideLink = false,
-  hideInfo = false,
-  truncate = false,
-  hideOnlineIndicator = false,
+  className,
+  color: colorProp,
   displayName,
+  fontWeight,
+  hideInfo = false,
+  hideLink = false,
+  hideOnlineIndicator = false,
+  hovered = false,
+  lang,
+  linkClassName: linkClassNameProp,
   loading = false,
   placement = Placements.bottomStart as Placement,
+  truncate = false,
+  user,
 }: UserInfoProps) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const content = useMemo(() => (user.isBot ? 'bot' : <UserPopoverContent user={user} />), [user]);
@@ -144,20 +148,17 @@ function UserInfo({
   );
   const userClassName = cn(className, {
     'cb-opacity-50': loading,
-    'text-danger': banned,
   });
-  const linkClassName = linkClassNameProp
-    ? cn(linkClassNameProp, { 'text-danger': banned })
-    : cn(className, {
-        'text-white': !banned,
-        'text-danger': banned,
-      });
+  const linkClassName = linkClassNameProp ? linkClassNameProp : cn(className);
+  const nameColor = banned ? '#dc3545' : (colorProp ?? '#ffffff');
 
   if (hideInfo) {
     return (
       <UserName
         className={userClassName}
         linkClassName={linkClassName}
+        color={nameColor}
+        fontWeight={fontWeight}
         hovered={hovered}
         user={user}
         lang={lang}

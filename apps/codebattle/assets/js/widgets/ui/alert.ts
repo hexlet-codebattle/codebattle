@@ -46,7 +46,26 @@ const DARK_THEME_VARIANTS: Record<string, DarkThemeVariant> = {
 // Mantine `styles` reproducing `.alert-dark-theme` for use on <Alert> in place
 // of the Bootstrap `alert alert-${status} alert-dark-theme` class set. Shared by
 // every dark-theme alert (feedback, settings, tournament edit, game result).
-export const darkThemeAlertStyles = (status?: string) => {
+// `isWin` reproduces the legacy `.alert-dark-theme.cb-game-win-alert.alert-success`
+// golden variant shown for the winning player on the game result screen.
+export const darkThemeAlertStyles = (status?: string, isWin = false) => {
+  if (isWin) {
+    const color = { color: '#ffffff' };
+    return {
+      root: {
+        border: 'none',
+        borderLeft: '4px solid #f0c75e',
+        background: 'linear-gradient(135deg, rgba(25, 135, 84, 0.95), rgba(240, 199, 94, 0.75))',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 0 0 1px rgba(240, 199, 94, 0.25), 0 10px 24px rgba(0, 0, 0, 0.35)',
+        ...color,
+      },
+      title: color,
+      message: color,
+      closeButton: color,
+    };
+  }
+
   const v = DARK_THEME_VARIANTS[status ?? ''] ?? DARK_THEME_VARIANTS.info;
   const color = { color: v.text };
   return {

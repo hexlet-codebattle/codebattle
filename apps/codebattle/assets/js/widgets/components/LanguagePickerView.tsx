@@ -4,6 +4,8 @@ import capitalize from 'lodash/capitalize';
 import { useSelector } from 'react-redux';
 import Select, { type StylesConfig } from 'react-select';
 
+import { Box, Button, Flex, Text } from '@mantine/core';
+
 import * as selectors from '../selectors';
 
 import LanguageIcon from './LanguageIcon';
@@ -82,11 +84,19 @@ export const customStyle: StylesConfig<LangOption, false> = {
 
 function LangTitle({ slug, name, version }: Language) {
   return (
-    <div translate="no" className="d-inline-flex align-items-center text-nowrap">
-      <LanguageIcon lang={slug} className="ml-1" />
-      <span className="text-white mx-1">{capitalize(name)}</span>
-      <span className="text-white">{version}</span>
-    </div>
+    <Flex
+      translate="no"
+      display="inline-flex"
+      align="center"
+      style={{ whiteSpace: 'nowrap' }}
+      gap="xs"
+    >
+      <Box ml="xs">
+        <LanguageIcon lang={slug} />
+      </Box>
+      <Text c="white">{capitalize(name)}</Text>
+      <Text c="white">{version}</Text>
+    </Flex>
   );
 }
 
@@ -129,9 +139,9 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }: Languag
 
   if (isDisabled || options.length < 2) {
     return (
-      <button className="btn btn-sm p-2" type="button" disabled>
+      <Button size="sm" p="sm" disabled variant="default">
         <LangTitle {...currentLang} />
-      </button>
+      </Button>
     );
   }
 

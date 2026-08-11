@@ -114,7 +114,10 @@ export const formatGradeName = (grade: string) => {
 export const formatDate = (dateStr?: string) => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
-  return date.toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
+  return date.toLocaleDateString(i18n.language, {
+    month: 'short',
+    day: 'numeric',
+  });
 };
 
 export interface SortConfig {
@@ -375,14 +378,8 @@ const LeaderboardRow = memo(
               hideOnlineIndicator
               hideRank
               displayName={displayName}
-              className={cn('text-decoration-none', {
-                'fw-bold text-white': result.place <= 3,
-                'text-light': result.place > 3,
-              })}
-              linkClassName={cn('text-decoration-none', {
-                'fw-bold text-white': result.place <= 3,
-                'text-light': result.place > 3,
-              })}
+              color={result.place <= 3 ? '#ffffff' : '#f8f9fa'}
+              fontWeight={result.place <= 3 ? 700 : undefined}
             />
           </Group>
         </Table.Td>

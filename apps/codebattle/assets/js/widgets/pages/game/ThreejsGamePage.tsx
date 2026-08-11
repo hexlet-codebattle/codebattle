@@ -422,10 +422,25 @@ const computeDefaultLayouts = (stage: HTMLElement): Record<WidgetId, Layout> => 
 
   return {
     task: { x: pad, y: pad, width: colW, height: topRowH },
-    examples: { x: pad + colW + gap, y: pad, width: examplesW, height: topRowH },
-    timer: { x: pad + colW + gap + examplesW + gap, y: pad, width: timerW, height: topRowH },
+    examples: {
+      x: pad + colW + gap,
+      y: pad,
+      width: examplesW,
+      height: topRowH,
+    },
+    timer: {
+      x: pad + colW + gap + examplesW + gap,
+      y: pad,
+      width: timerW,
+      height: topRowH,
+    },
     leftEditor: { x: pad, y: editorY, width: colW, height: editorH },
-    rightEditor: { x: pad + colW + gap, y: editorY, width: colW, height: editorH },
+    rightEditor: {
+      x: pad + colW + gap,
+      y: editorY,
+      width: colW,
+      height: editorH,
+    },
     leftTests: { x: pad, y: testsY, width: colW, height: testsH },
     rightTests: { x: pad + colW + gap, y: testsY, width: colW, height: testsH },
   };
@@ -528,7 +543,13 @@ function Pane({
             flexShrink: 0,
           }}
         >
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {title}
           </span>
           {editMode && (
@@ -547,7 +568,13 @@ function Pane({
                   >
                     −
                   </button>
-                  <span style={{ fontSize: '14px', minWidth: '28px', textAlign: 'center' }}>
+                  <span
+                    style={{
+                      fontSize: '14px',
+                      minWidth: '28px',
+                      textAlign: 'center',
+                    }}
+                  >
                     {fontSize}
                   </span>
                   <button
@@ -987,7 +1014,13 @@ function TimerBody({ deadlineMs, gameState, kiosk = false }: TimerBodyProps) {
       >
         {text}
       </div>
-      <div style={{ color: '#64748b', fontSize: stateFontSize, textTransform: 'uppercase' }}>
+      <div
+        style={{
+          color: '#64748b',
+          fontSize: stateFontSize,
+          textTransform: 'uppercase',
+        }}
+      >
         {gameState}
       </div>
     </div>
@@ -1336,7 +1369,10 @@ function ThreejsGamePage({
         editor.setPosition(position);
         editor.revealPositionInCenterIfOutsideViewport(position);
 
-        const store = remoteDecorationsRef.current[userId] || { cursor: [], selection: [] };
+        const store = remoteDecorationsRef.current[userId] || {
+          cursor: [],
+          selection: [],
+        };
         const cursorDecoration = {
           range: new monaco.Range(
             position.lineNumber,
@@ -1375,10 +1411,15 @@ function ThreejsGamePage({
 
         const start = model.getPositionAt(startOffset);
         const finish = model.getPositionAt(endOffset);
-        const store = remoteDecorationsRef.current[userId] || { cursor: [], selection: [] };
+        const store = remoteDecorationsRef.current[userId] || {
+          cursor: [],
+          selection: [],
+        };
         const selectionDecoration = {
           range: new monaco.Range(start.lineNumber, start.column, finish.lineNumber, finish.column),
-          options: { className: 'cb-editor-remote-selection cb-remote-opponent' },
+          options: {
+            className: 'cb-editor-remote-selection cb-remote-opponent',
+          },
         };
 
         store.selection = editor.deltaDecorations(store.selection, [selectionDecoration]);
@@ -1565,7 +1606,10 @@ function ThreejsGamePage({
       const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
       camera.position.set(0, 0, 10);
 
-      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+      });
       renderer.setClearColor(0x000000, 0);
       container.innerHTML = '';
       container.appendChild(renderer.domElement);
@@ -1857,7 +1901,14 @@ function ThreejsGamePage({
         : '#000';
 
     return (
-      <div style={{ position: 'fixed', inset: 0, background: kioskBackground, overflow: 'hidden' }}>
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: kioskBackground,
+          overflow: 'hidden',
+        }}
+      >
         {kioskBody}
       </div>
     );
@@ -1871,14 +1922,19 @@ function ThreejsGamePage({
         ref={arenaRef}
         shadow={inFullscreen ? undefined : 'sm'}
         radius={inFullscreen ? 0 : 'md'}
-        style={{ minHeight: inFullscreen ? '100vh' : '78vh', overflow: 'hidden' }}
+        style={{
+          minHeight: inFullscreen ? '100vh' : '78vh',
+          overflow: 'hidden',
+        }}
       >
         {!inFullscreen && (
           <Flex
             justify="space-between"
             align="center"
             p="md"
-            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+            style={{
+              borderBottom: '1px solid var(--mantine-color-default-border)',
+            }}
           >
             <strong>{i18next.t('Matrix Broadcast Arena')}</strong>
             <Group gap="sm" align="center">

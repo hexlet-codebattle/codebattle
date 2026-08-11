@@ -37,7 +37,13 @@ const userSlice = createSlice({
     },
     updateUsersStats: (
       state,
-      { payload }: PayloadAction<{ userId: number; stats: unknown; achievements: unknown }>,
+      {
+        payload,
+      }: PayloadAction<{
+        userId: number;
+        stats: unknown;
+        achievements: unknown;
+      }>,
     ) => {
       const { userId, stats, achievements } = payload;
       state.usersStats[userId] = { stats, achievements };

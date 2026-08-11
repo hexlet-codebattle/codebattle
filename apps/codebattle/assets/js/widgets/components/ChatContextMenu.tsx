@@ -20,7 +20,10 @@ const whiteSwordSrc = '/assets/images/fight-white.png';
 // react-contexify items sit on the dark `cb-bg-panel`; set white text inline
 // (was Bootstrap `text-white`) so it beats the library's own item color rule.
 const textStyle = { color: 'var(--mantine-color-white)' };
-const iconStyle = { marginRight: 'var(--mantine-spacing-sm)', color: 'var(--mantine-color-white)' };
+const iconStyle = {
+  marginRight: 'var(--mantine-spacing-sm)',
+  color: 'var(--mantine-color-white)',
+};
 
 interface ChatContextMenuUser {
   name?: string | null;
@@ -123,7 +126,11 @@ function ChatContextMenu({
         opponent_id: userId,
       });
       if (`/${window.location.hash}`.startsWith(getLobbyUrl())) {
-        dispatch(actions.showCreateGameInviteModal({ opponentInfo: { id: userId, name } }));
+        dispatch(
+          actions.showCreateGameInviteModal({
+            opponentInfo: { id: userId, name },
+          }),
+        );
       } else {
         window.location.href = getLobbyUrl(queryParamsString);
       }
@@ -208,7 +215,11 @@ function ChatContextMenu({
             <img
               alt={i18n.t('Invite')}
               src={whiteSwordSrc}
-              style={{ width: 14, height: 16, marginRight: 'var(--mantine-spacing-sm)' }}
+              style={{
+                width: 14,
+                height: 16,
+                marginRight: 'var(--mantine-spacing-sm)',
+              }}
             />
             <span style={textStyle}>{i18n.t('Send an invite')}</span>
           </Item>

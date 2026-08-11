@@ -141,10 +141,10 @@ function StageCard({
               getCustomEventPlayerDefaultImgUrl(opponent) ||
               tournamentEmptyPlayerUrl
             }
-            className="cb-tournament-profile-avatar p-2"
+            className="cb-tournament-profile-avatar"
             radius="md"
             visibleFrom="md"
-            style={{ alignSelf: 'center' }}
+            style={{ alignSelf: 'center', padding: '0.5rem' }}
           />
           <Flex
             direction="column"
@@ -152,15 +152,23 @@ function StageCard({
             align={{ base: 'center', md: 'flex-start' }}
             pl={{ base: 0, md: 'md' }}
           >
-            <Title order={6} className="cb-custom-event-name p-1" style={{ maxWidth: 300 }}>
+            <Title
+              order={6}
+              className="cb-custom-event-name"
+              style={{ maxWidth: 300, padding: '0.25rem' }}
+            >
               {`${i18next.t('Opponent')}: ${opponent.name}`}
             </Title>
             {opponent.clanId && (
-              <Title order={6} className="cb-custom-event-name p-1" style={{ maxWidth: 250 }}>
+              <Title
+                order={6}
+                className="cb-custom-event-name"
+                style={{ maxWidth: 250, padding: '0.25rem' }}
+              >
                 {`${i18next.t('Opponent clan')}: ${opponent.clan}`}
               </Title>
             )}
-            <Title order={6} className="p-1">
+            <Title order={6} p={4}>
               {`${i18next.t('Status')}: `}
               <StageStatus playerId={playerId} matchList={matchList} matchState={lastMatchState} />
             </Title>
@@ -201,18 +209,18 @@ function StageCard({
           <Image
             alt={i18next.t('Waiting opponent avatar')}
             src={tournamentEmptyPlayerUrl}
-            className="cb-tournament-profile-avatar bg-gray p-3"
+            className="cb-tournament-profile-avatar bg-gray"
             radius="md"
             visibleFrom="md"
-            style={{ alignSelf: 'center' }}
+            style={{ alignSelf: 'center', padding: '1rem' }}
           />
           <Flex direction="column" justify="center" pl={{ base: 0, md: 'md' }}>
-            <Title order={6} className="p-1">{`${i18next.t('Opponent')}: ?`}</Title>
-            <Title order={6} className="p-1">
+            <Title order={6} p={4}>{`${i18next.t('Opponent')}: ?`}</Title>
+            <Title order={6} p={4}>
               {`${i18next.t('Status')}: `}
               <span className="cb-tournament-status">{i18next.t('Waiting')}</span>
             </Title>
-            <Title order={6} className="p-1 text-muted">
+            <Title order={6} p={4} c="dimmed">
               {i18next.t('Wait round starts')}
             </Title>
           </Flex>

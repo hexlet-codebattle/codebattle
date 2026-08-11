@@ -44,6 +44,7 @@ const opponentSelectStyles = {
   }),
   container: (base: any) => ({
     ...base,
+    width: '100%',
     backgroundColor: '#1c1c24',
     color: 'white',
   }),
@@ -138,8 +139,13 @@ const OpponentSelect = memo(({ setOpponent, opponent }: OpponentSelectProps) => 
           return response.json();
         })
         .then((data) => {
-          const { users: apiUsers } = camelizeKeys(data) as { users: Opponent[] };
-          const presence = presenceList as Array<{ id: number | string; user: Opponent }>;
+          const { users: apiUsers } = camelizeKeys(data) as {
+            users: Opponent[];
+          };
+          const presence = presenceList as Array<{
+            id: number | string;
+            user: Opponent;
+          }>;
           const filteredApiUsers = apiUsers.filter(({ id }) => id !== currentUserId);
           const onlineUsersFromPresence = presence
             .map((p) => p.user)
@@ -187,7 +193,6 @@ const OpponentSelect = memo(({ setOpponent, opponent }: OpponentSelectProps) => 
 
   return (
     <AsyncSelect<OpponentOption>
-      className="w-100"
       styles={opponentSelectStyles}
       value={
         opponent
@@ -381,7 +386,10 @@ function CreateGameDialog({ hideModal }: CreateGameDialogProps) {
             step="1"
             id="customRange3"
             style={
-              { width: '100%', '--range-progress': `${timeoutPercent}%` } as React.CSSProperties
+              {
+                width: '100%',
+                '--range-progress': `${timeoutPercent}%`,
+              } as React.CSSProperties
             }
           />
         </Box>

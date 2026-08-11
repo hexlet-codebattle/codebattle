@@ -272,7 +272,12 @@ function PercentileBar({ percentiles }: PercentileBarProps) {
             </Text>
             <Box
               className="cb-bg-highlight-panel"
-              style={{ flexGrow: 1, height: 24, borderRadius: '0.25rem', overflow: 'hidden' }}
+              style={{
+                flexGrow: 1,
+                height: 24,
+                borderRadius: '0.25rem',
+                overflow: 'hidden',
+              }}
             >
               <Box
                 style={{
@@ -514,7 +519,6 @@ function AssertsSection({ asserts }: AssertsSectionProps) {
               variant="outline"
               color="cbSecondary"
               radius="md"
-              className="cb-btn-outline-secondary"
               onClick={() => setExpanded(!expanded)}
             >
               {expanded
@@ -624,7 +628,9 @@ function TaskPreviewWidget({
       <Box
         className="cb-bg-highlight-panel"
         py="lg"
-        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+        style={{
+          borderBottom: '1px solid var(--mantine-color-default-border)',
+        }}
       >
         <Box w="100%" maw={1140} mx="auto" px="md">
           <Flex align="center" mb="md">
@@ -704,7 +710,6 @@ function TaskPreviewWidget({
                           size="compact-sm"
                           variant={descLang === 'en' ? 'filled' : 'outline'}
                           color="cbSecondary"
-                          className={descLang === 'en' ? '' : 'cb-btn-outline-secondary'}
                           onClick={() => {
                             setDescLang('en');
                             setEditingDesc(false);
@@ -716,7 +721,6 @@ function TaskPreviewWidget({
                           size="compact-sm"
                           variant={descLang === 'ru' ? 'filled' : 'outline'}
                           color="cbSecondary"
-                          className={descLang === 'ru' ? '' : 'cb-btn-outline-secondary'}
                           onClick={() => {
                             setDescLang('ru');
                             setEditingDesc(false);
@@ -732,7 +736,6 @@ function TaskPreviewWidget({
                         variant="outline"
                         color="cbSecondary"
                         radius="md"
-                        className="cb-btn-outline-secondary"
                         onClick={startEditDesc}
                       >
                         {i18n.t('Edit')}
@@ -755,7 +758,6 @@ function TaskPreviewWidget({
                         variant="outline"
                         color="cbSecondary"
                         radius="md"
-                        className="cb-btn-outline-secondary"
                         mr="xs"
                         onClick={() => setEditingDesc(false)}
                       >
@@ -949,7 +951,9 @@ function TaskPreviewWidget({
                   <Box
                     mt="md"
                     pt="md"
-                    style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+                    style={{
+                      borderTop: '1px solid var(--mantine-color-default-border)',
+                    }}
                   >
                     <Text
                       component="label"

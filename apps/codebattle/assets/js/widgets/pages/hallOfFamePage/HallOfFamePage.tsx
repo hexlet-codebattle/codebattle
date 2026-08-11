@@ -411,7 +411,9 @@ function HallOfFamePage({
                     {i18n.t('Current Season Leaderboard')}
                   </Title>
                   <Badge color="gray">
-                    {i18n.t('%{count} players', { count: currentSeasonResults.length })}
+                    {i18n.t('%{count} players', {
+                      count: currentSeasonResults.length,
+                    })}
                   </Badge>
                 </Flex>
                 <Box>

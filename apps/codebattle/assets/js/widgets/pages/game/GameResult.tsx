@@ -11,7 +11,7 @@ import i18n from '../../../i18n';
 import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
 import * as selectors from '../../selectors';
-import { bootstrapAlertColor } from '../../ui/alert';
+import { bootstrapAlertColor, darkThemeAlertStyles } from '../../ui/alert';
 
 function GameResult() {
   const currentUserId = useSelector((state: RootState) => selectors.currentUserIdSelector(state));
@@ -57,12 +57,12 @@ function GameResult() {
   }, [currentUserId, players, isCurrentUserPlayer, gameStatus.state, gameMode]);
 
   if (result) {
-    const alertClassName = `mt-2 alert alert-${result.alertStyle} alert-dark-theme${result.isWin ? ' cb-game-win-alert' : ''}`;
     return (
       <Alert
-        className={alertClassName}
         color={bootstrapAlertColor(result.alertStyle)}
         variant="light"
+        styles={darkThemeAlertStyles(result.alertStyle, Boolean(result.isWin))}
+        style={{ borderRadius: 0, marginTop: '0.5rem' }}
       >
         {result.msg}
       </Alert>

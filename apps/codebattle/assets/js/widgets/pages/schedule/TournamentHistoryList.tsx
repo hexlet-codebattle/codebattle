@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Box, Button, Flex, Loader, Stack, Text } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getGradeLabel } from '@/config/grades';
 
@@ -99,7 +100,11 @@ function TournamentHistoryList({ tournaments, loading }: TournamentHistoryListPr
             align={{ md: 'center' }}
             px="md"
             py="md"
-            style={{ '--cb-row-grade': `var(--cb-grade-${t.grade})` } as React.CSSProperties}
+            style={
+              {
+                '--cb-row-grade': `var(--cb-grade-${t.grade})`,
+              } as React.CSSProperties
+            }
           >
             <Flex component="span" align="center" className="cb-schedule-col-grade">
               <Box
@@ -122,7 +127,7 @@ function TournamentHistoryList({ tournaments, loading }: TournamentHistoryListPr
             </span>
             <span className="cb-schedule-col-duration">{duration || '—'}</span>
             <Flex component="span" align="center" gap="xs" className="cb-schedule-col-players">
-              <i className="fa fa-users" aria-hidden="true" />
+              <FontAwesomeIcon icon="users" aria-hidden="true" />
               {t.playersCount ?? 0}
             </Flex>
             <Flex component="span" align="center" className="cb-schedule-col-winner">

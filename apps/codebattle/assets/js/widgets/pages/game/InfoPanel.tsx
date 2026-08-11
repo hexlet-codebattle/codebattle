@@ -33,7 +33,7 @@ function InfoPanel({
 
   return (
     <>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
+      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
         <Box
           className="cb-bg-panel cb-rounded"
           h="100%"
@@ -51,7 +51,11 @@ function InfoPanel({
           >
             <Tabs.List
               className="cb-border-color"
-              style={{ textTransform: 'uppercase', fontWeight: 700, textAlign: 'center' }}
+              style={{
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                textAlign: 'center',
+              }}
               id="nav-tab"
             >
               <Tabs.Tab
@@ -123,7 +127,7 @@ function InfoPanel({
           </Tabs>
         </Box>
       </div>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
+      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
         {isTournamentGame ? <TournamentCurrentPlayerRankingPanel /> : <ChatWidget />}
       </div>
     </>

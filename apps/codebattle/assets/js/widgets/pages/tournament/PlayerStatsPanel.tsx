@@ -52,8 +52,12 @@ function PlayerStatsPanel({
 
   return (
     <Box
-      className="cb-rounded shadow-sm cb-bg-panel"
-      style={{ display: 'flex', flexDirection: 'column' }}
+      className="cb-rounded cb-bg-panel"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        boxShadow: 'var(--mantine-shadow-sm)',
+      }}
     >
       <Top200RedirectButton
         currentRoundPosition={currentRoundPosition}

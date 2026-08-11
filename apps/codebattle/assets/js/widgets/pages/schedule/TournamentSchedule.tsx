@@ -126,7 +126,10 @@ function TournamentSchedule() {
     loading: true,
   });
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [history, setHistory] = useState<{ tournaments: HistoryTournament[]; loading: boolean }>({
+  const [history, setHistory] = useState<{
+    tournaments: HistoryTournament[];
+    loading: boolean;
+  }>({
     tournaments: [],
     loading: false,
   });

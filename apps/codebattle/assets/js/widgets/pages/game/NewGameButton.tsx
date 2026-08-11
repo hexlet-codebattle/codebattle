@@ -26,7 +26,11 @@ function NewGameButton(props: NewGameButtonProps) {
     gameMode === (GameTypeCodes as Record<string, string>).regular
       ? 'withRandomPlayer'
       : 'withFriend';
-  const queryParamsString = qs.stringify({ level, type, timeout_seconds: timeoutSeconds });
+  const queryParamsString = qs.stringify({
+    level,
+    type,
+    timeout_seconds: timeoutSeconds,
+  });
   const gameUrl = `/games?${queryParamsString}`;
 
   return (

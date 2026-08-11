@@ -245,8 +245,6 @@ function TournamentHeader({
     return 'gray';
   }, [state, breakState, hideResults]);
 
-  const copyBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
-
   const canStart = isLive && state === TournamentStates.waitingParticipants && playersCount > 0;
   const canStartRound = isLive && state === TournamentStates.active && breakState === 'on';
   const canFinishRound = isLive && state === TournamentStates.active && breakState === 'off';
@@ -273,7 +271,14 @@ function TournamentHeader({
   return (
     <>
       {showHeaderPane && (
-        <Box className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2">
+        <Box
+          className="cb-bg-panel cb-rounded"
+          style={{
+            boxShadow: 'var(--mantine-shadow-sm)',
+            padding: '1rem',
+            marginBottom: '0.5rem',
+          }}
+        >
           <Flex direction="column">
             <Flex align="center" mb="md">
               {isGradeTournament && (
@@ -285,14 +290,20 @@ function TournamentHeader({
                 <Title
                   order={2}
                   title={tournamentName}
-                  className="cb-tournament-header-title pb-1 m-0 text-capitalize text-nowrap cb-overflow-x-auto cb-overflow-y-hidden"
+                  className="cb-tournament-header-title cb-overflow-x-auto cb-overflow-y-hidden"
+                  style={{
+                    paddingBottom: '0.25rem',
+                    margin: 0,
+                    textTransform: 'capitalize',
+                    whiteSpace: 'nowrap',
+                  }}
                 >
                   {tournamentName}
                 </Title>
                 {firstPlaceRankingPoints != null && (
-                  <Text c="white" className="text-nowrap">
+                  <Text c="white" style={{ whiteSpace: 'nowrap' }}>
                     <span className="cb-tournament-points-value">{firstPlaceRankingPoints}</span>
-                    <span className="ml-1">{i18next.t('Ranking Points')}</span>
+                    <span style={{ marginLeft: 4 }}>{i18next.t('Ranking Points')}</span>
                   </Text>
                 )}
               </Flex>
@@ -306,7 +317,7 @@ function TournamentHeader({
               <Badge color={badgeColor} className={customBadgeClass} mr="xs">
                 {stateBadgeTitle}
               </Badge>
-              <Text fw={700} component="span" className="text-nowrap">
+              <Text fw={700} component="span" style={{ whiteSpace: 'nowrap' }}>
                 <TournamentStateDescription
                   state={state}
                   startsAt={startsAt}
@@ -330,7 +341,10 @@ function TournamentHeader({
                   </span>
                 )}
                 {level && (
-                  <span className="cb-tournament-header-meta-item text-capitalize">
+                  <span
+                    className="cb-tournament-header-meta-item"
+                    style={{ textTransform: 'capitalize' }}
+                  >
                     <FontAwesomeIcon className="cb-tournament-header-meta-icon" icon="signal" />
                     {i18next.t(level.charAt(0).toUpperCase() + level.slice(1))}
                   </span>
@@ -341,7 +355,15 @@ function TournamentHeader({
         </Box>
       )}
       {showAdminPanel && (
-        <Box className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2 overflow-auto">
+        <Box
+          className="cb-bg-panel cb-rounded"
+          style={{
+            boxShadow: 'var(--mantine-shadow-sm)',
+            padding: '1rem',
+            marginBottom: '0.5rem',
+            overflow: 'auto',
+          }}
+        >
           <Flex direction="column">
             <Flex
               direction={{ base: 'column', lg: 'row' }}
@@ -386,7 +408,9 @@ function TournamentHeader({
                 mt="xs"
                 pt="xs"
                 className="cb-grid-divider overflow-auto"
-                style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+                style={{
+                  borderTop: '1px solid var(--mantine-color-default-border)',
+                }}
               >
                 <Flex align="center">
                   <Box title={i18next.t('Access token')} mr="xs">
@@ -399,9 +423,17 @@ function TournamentHeader({
                     </Text>
                   </Box>
                   <CopyButton
-                    className={copyBtnClassName}
                     value={tournamentAccessUrl}
                     disabled={!isLive || !isOnline}
+                    style={
+                      hasCustomEventStyle
+                        ? {
+                            backgroundColor: '#8566ff',
+                            borderColor: '#8566ff',
+                            color: '#ffffff',
+                          }
+                        : undefined
+                    }
                   />
                 </Flex>
               </Flex>
@@ -412,11 +444,15 @@ function TournamentHeader({
                 px="md"
                 py="xs"
                 className={cn(
-                  'rounded small font-weight-bold border',
-                  hasCustomEventStyle
-                    ? 'cb-bg-highlight-panel cb-border-color cb-text'
-                    : 'border-warning text-warning',
+                  hasCustomEventStyle ? 'cb-bg-highlight-panel cb-border-color cb-text' : '',
                 )}
+                style={{
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  border: hasCustomEventStyle ? undefined : '1px solid #ffc107',
+                  color: hasCustomEventStyle ? undefined : '#ffc107',
+                }}
               >
                 {i18next.t(
                   'Tournament process is dead. Click Restart to make it live again so users can join.',

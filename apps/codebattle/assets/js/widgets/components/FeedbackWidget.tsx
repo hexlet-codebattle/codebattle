@@ -98,7 +98,12 @@ function FeedbackWidget() {
         size="sm"
         radius="md"
         leftSection={<FontAwesomeIcon icon={['fas', 'rss']} />}
-        style={{ position: 'fixed', right: '16px', bottom: '16px', zIndex: 1080 }}
+        style={{
+          position: 'fixed',
+          right: '16px',
+          bottom: '16px',
+          zIndex: 1080,
+        }}
       >
         {i18n.t('Feedback')}
       </Button>
@@ -121,7 +126,6 @@ function FeedbackWidget() {
                       radius="md"
                       color="cbSecondary"
                       variant={status === option ? 'filled' : 'outline'}
-                      className={status === option ? undefined : 'cb-btn-outline-secondary'}
                       role="radio"
                       aria-checked={status === option}
                       tabIndex={0}

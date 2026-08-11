@@ -26,9 +26,13 @@ function TournamentPlace({ place, title = '', withIcon = false }: TournamentPlac
       component="span"
       p={muteResults ? 4 : 0}
       bg={muteResults ? 'gray.1' : undefined}
-      style={{ borderRadius: muteResults ? 'var(--mantine-radius-md)' : undefined }}
+      style={{
+        borderRadius: muteResults ? 'var(--mantine-radius-md)' : undefined,
+      }}
     >
-      {withIcon && <FontAwesomeIcon className="text-warning" icon="trophy" />}
+      {withIcon && (
+        <FontAwesomeIcon icon="trophy" style={{ color: 'var(--mantine-color-yellow-6)' }} />
+      )}
       <Text component="span" c={muteResults ? 'dimmed' : undefined}>
         {i18next.t(title)}
         {prefix}

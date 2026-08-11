@@ -69,7 +69,9 @@ function ControlPanel({
   const [settingsView, setSettingsView] = useState<SettingsView>('main');
 
   const { speedMode } = roomMachineState.context;
-  const isPaused = !roomMachineState.matches({ replayer: replayerMachineStates.playing });
+  const isPaused = !roomMachineState.matches({
+    replayer: replayerMachineStates.playing,
+  });
   const speedValue = Math.min(4, Math.max(0.5, Number.parseFloat(speedMode) || 1));
 
   useEffect(() => {
@@ -87,7 +89,9 @@ function ControlPanel({
       case roomMachineState.matches({ replayer: replayerMachineStates.paused }):
         onPlayClick();
         break;
-      case roomMachineState.matches({ replayer: replayerMachineStates.playing }):
+      case roomMachineState.matches({
+        replayer: replayerMachineStates.playing,
+      }):
         onPauseClick();
         break;
       default:

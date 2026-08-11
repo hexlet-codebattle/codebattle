@@ -44,7 +44,7 @@ const renderTaskLink = (task: GameTask) => {
 
   return (
     <Text component="a" href={link} className="cb-text" display="inline-block">
-      <span className="fab fa-github" style={{ marginRight: 'var(--mantine-spacing-xs)' }} />
+      <FontAwesomeIcon icon="github" style={{ marginRight: 'var(--mantine-spacing-xs)' }} />
       link
     </Text>
   );
@@ -134,7 +134,6 @@ function TaskAssignment({
                 type="button"
                 variant="outline"
                 color="cbSecondary"
-                className="cb-btn-outline-secondary"
                 size="sm"
                 radius="md"
                 ml="sm"
@@ -161,7 +160,10 @@ function TaskAssignment({
                   size="sm"
                   variant="light"
                   onClick={handleTaskSizeDecrease}
-                  style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                  style={{
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  }}
                 >
                   -
                 </Button>

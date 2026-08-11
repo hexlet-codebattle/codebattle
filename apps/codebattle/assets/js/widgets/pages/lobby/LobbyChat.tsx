@@ -97,7 +97,12 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }: ChatGroupedPlaye
   );
 }
 
-const chatHeaderClassName = 'rounded-left h-sm-100 cb-lobby-widget-container cb-lobby-chat-main';
+const chatHeaderClassName = 'cb-lobby-widget-container cb-lobby-chat-main';
+
+const chatHeaderStyle = {
+  height: '100%',
+  borderRadius: '0.25rem 0 0 0.25rem',
+} as const;
 
 interface ModalShowingState {
   opened: boolean;
@@ -169,12 +174,20 @@ function LobbyChat({
       <Flex
         direction={{ base: 'column', lg: 'row' }}
         mt="sm"
-        className="cb-bg-panel cb-rounded shadow-sm cb-lobby-chat-card"
+        className="cb-bg-panel cb-rounded cb-lobby-chat-card"
+        style={{ boxShadow: 'var(--mantine-shadow-sm)' }}
       >
-        <Flex direction="column" pos="relative" p={0} w="100%" className={chatHeaderClassName}>
+        <Flex
+          direction="column"
+          pos="relative"
+          p={0}
+          w="100%"
+          className={chatHeaderClassName}
+          style={chatHeaderStyle}
+        >
           <ChatHeader disabled={!isOnline} showRooms />
           <Messages
-            className="text-white"
+            style={{ color: '#ffffff' }}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             displayMenu={displayMenu as any}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -192,20 +205,28 @@ function LobbyChat({
         <Box
           p={0}
           pb="md"
-          className="pb-sm-4 cb-players-container border-left cb-border-color rounded-right cb-lobby-chat-sidebar"
+          style={{
+            paddingBottom: '1.5rem',
+            borderLeft: '1px solid var(--mantine-color-default-border)',
+            borderTopRightRadius: 'var(--mantine-radius-md)',
+            borderBottomRightRadius: 'var(--mantine-radius-md)',
+          }}
+          className="cb-players-container cb-border-color cb-lobby-chat-sidebar"
         >
           <Flex direction="column" h="100%">
             <Flex justify="space-between">
               {isOnline ? (
-                <Text px="md" pt="sm" mb="sm" className="text-nowrap">
-                  {i18n.t('Online players: %{count}', { count: presenceList.length })}
+                <Text px="md" pt="sm" mb="sm" style={{ whiteSpace: 'nowrap' }}>
+                  {i18n.t('Online players: %{count}', {
+                    count: presenceList.length,
+                  })}
                 </Text>
               ) : (
-                <Box px="md" pt="sm" mb="sm" className="text-nowrap">
+                <Box px="md" pt="sm" mb="sm" style={{ whiteSpace: 'nowrap' }}>
                   <Loading adaptive />
                 </Box>
               )}
-              <Flex p="sm" className="justify-items-center">
+              <Flex p="sm">
                 <ActionIcon
                   variant="transparent"
                   c="white"
@@ -237,7 +258,7 @@ function LobbyChat({
                 </ActionIcon>
               </Flex>
             </Flex>
-            <Flex direction="column" px="md" align="flex-start" className="overflow-auto">
+            <Flex direction="column" px="md" align="flex-start" style={{ overflow: 'auto' }}>
               <ChatGroupedPlayersList
                 mode={mode}
                 players={presenceList}

@@ -15,6 +15,8 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import Modal from '@/components/CbModal';
 import { type AppDispatch } from '@/slices';
 
@@ -153,8 +155,8 @@ interface UserCardProps {
 function UserCard({ connection, onSelect }: UserCardProps) {
   return (
     <UnstyledButton style={userCardStyle} onClick={() => onSelect(connection)}>
-      <i
-        className="fas fa-user"
+      <FontAwesomeIcon
+        icon="user"
         style={{ fontSize: '11px', color: 'var(--mantine-color-dimmed)' }}
       />
       <Text truncate fw={600}>
@@ -201,7 +203,12 @@ function ConnectionRow({ label, value }: ConnectionRowProps) {
       <Text c="dimmed" style={{ minWidth: '110px', flexShrink: 0 }}>
         {label}
       </Text>
-      <Text style={{ wordBreak: 'break-word', fontFamily: 'var(--mantine-font-family-monospace)' }}>
+      <Text
+        style={{
+          wordBreak: 'break-word',
+          fontFamily: 'var(--mantine-font-family-monospace)',
+        }}
+      >
         {value ?? '—'}
       </Text>
     </Flex>
@@ -374,7 +381,10 @@ function RedirectPanel({ allUserIds }: RedirectPanelProps) {
       <Flex wrap="wrap" align="center" gap="xs" component="form" onSubmit={handleSubmit}>
         <NativeSelect
           style={{ maxWidth: '220px' }}
-          data={REDIRECT_ROUTES.map((item) => ({ label: item.label, value: item.value }))}
+          data={REDIRECT_ROUTES.map((item) => ({
+            label: item.label,
+            value: item.value,
+          }))}
           value={route}
           onChange={(event) => setRoute(event.currentTarget.value)}
         />
@@ -425,7 +435,11 @@ function AdminWidget() {
       (entry.userPresence || []).forEach((meta, index) => {
         const label = getPageLabel(meta.path);
         const phxRef = meta.phxRef || meta.phx_ref;
-        const group = map.get(label) || { label, userIds: new Set(), connections: [] };
+        const group = map.get(label) || {
+          label,
+          userIds: new Set(),
+          connections: [],
+        };
 
         group.userIds.add(entry.id);
         group.connections.push({

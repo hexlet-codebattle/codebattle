@@ -257,7 +257,14 @@ function Header({ name, status, groupTournament }: HeaderProps) {
         {name || i18n.t('Group Tournament')}
       </Title>
       {!groupTournament?.isInfinite && groupTournament?.type !== 'seed_only' && (
-        <Box pos="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+        <Box
+          pos="absolute"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
           {isWaiting ? (
             <WaitingStartTimer startsAt={groupTournament?.startsAt} />
           ) : (

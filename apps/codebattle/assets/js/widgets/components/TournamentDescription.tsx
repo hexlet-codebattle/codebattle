@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Center, Flex, Stack, Text } from '@mantine/core';
+import { Box, Center, Flex, Paper, Stack, Text } from '@mantine/core';
 
 import {
   getGradeLabel,
@@ -39,15 +39,16 @@ function GradeInfo({ grade, selected }: GradeInfoProps) {
 
 interface TournamentDescriptionProps {
   className?: string;
+  style?: React.CSSProperties;
   tournament: {
     grade: Grade | string;
     description?: string;
   };
 }
 
-function TournamentDescription({ className, tournament }: TournamentDescriptionProps) {
+function TournamentDescription({ className, style, tournament }: TournamentDescriptionProps) {
   return (
-    <Box className={className}>
+    <Box className={className} style={style}>
       {tournament.grade !== grades.open ? (
         <>
           <Text component="span" c="white">
@@ -63,14 +64,19 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
             <span>{i18n.t('Impact: Advancing in the Codebattle programmer rankings')}</span>
           </Stack>
           <Center w="100%">
-            {/* Bootstrap card retained: `.card.cb-card` styling (transparent bg,
-                header highlight-panel) is keyed on the card/card-header/card-body
-                structure — convert alongside the card theming, with a browser pass. */}
-            <div className="card cb-card mt-2">
-              <div className="card-header text-center">
-                {i18n.t('View League Ranking Points System')}
-              </div>
-              <div className="card-body">
+            <Paper
+              mt="sm"
+              radius="md"
+              withBorder
+              className="cb-border-color"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <Box className="cb-bg-highlight-panel cb-border-color" ta="center" p="xs">
+                <Text component="span" c="white" style={{ fontFamily: 'Arial, sans-serif' }}>
+                  {i18n.t('View League Ranking Points System')}
+                </Text>
+              </Box>
+              <Box p="md">
                 {[
                   grades.rookie,
                   grades.challenger,
@@ -81,8 +87,8 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
                 ].map((grade) => (
                   <GradeInfo key={grade} grade={grade} selected={tournament.grade} />
                 ))}
-              </div>
-            </div>
+              </Box>
+            </Paper>
           </Center>
         </>
       ) : (

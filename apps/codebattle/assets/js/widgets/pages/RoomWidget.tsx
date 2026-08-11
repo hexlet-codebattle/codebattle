@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
+
+import { Flex } from '@mantine/core';
 
 import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
 import FeedbackWidget from '../components/FeedbackWidget';
@@ -85,12 +86,13 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }: RoomW
             <NetworkAlert />
             <FeedbackAlertNotification />
             <div
-              className={cn('container-fluid', {
-                'd-none': roomLocked,
-                invisible: !visible,
-              })}
+              style={{
+                width: '100%',
+                display: roomLocked ? 'none' : undefined,
+                visibility: visible ? undefined : 'hidden',
+              }}
             >
-              <div className="row no-gutters cb-game px-1">
+              <Flex wrap="wrap" className="cb-game" px={4}>
                 {showBattleRoom && (
                   <>
                     <InfoWidget viewMode={viewMode} />
@@ -98,21 +100,28 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }: RoomW
                   </>
                 )}
                 {mute && (
-                  <div className="cb-rounded p-2 bg-dark cb-mute-icon">
+                  <div
+                    className="cb-rounded"
+                    style={{
+                      padding: '0.5rem',
+                      backgroundColor: '#212529',
+                    }}
+                  >
                     <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
                   </div>
                 )}
                 {!showReplayer && <FeedbackWidget />}
-              </div>
+              </Flex>
             </div>
             {showReplayer && <CodebattlePlayer roomMachineState={roomMachineState} />}
           </div>
           <div
-            style={{ minHeight: 'calc(100vh - 92px)' }}
-            className={cn('justify-content-center align-items-center', {
-              'd-none': !roomLocked,
-              'd-flex': roomLocked,
-            })}
+            style={{
+              minHeight: 'calc(100vh - 92px)',
+              display: roomLocked ? 'flex' : 'none',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
             <GameRoomLockPanel />
           </div>

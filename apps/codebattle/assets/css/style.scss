@@ -417,19 +417,6 @@ input[type='range'].cb-range {
   }
 }
 
-.alert-dark-theme.cb-game-win-alert.alert-success {
-  background: linear-gradient(
-    135deg,
-    rgba(25, 135, 84, 0.95),
-    rgba(240, 199, 94, 0.75)
-  );
-  color: #ffffff;
-  border-left: 4px solid #f0c75e;
-  box-shadow:
-    0 0 0 1px rgba(240, 199, 94, 0.25),
-    0 10px 24px rgba(0, 0, 0, 0.35);
-}
-
 .gutter-vertical {
   background-image: url('../static/images/verticalGutter.svg');
   cursor: col-resize;
@@ -2003,7 +1990,7 @@ $cb-bronze-bottom: #4a3223;
 
 .dropdown-menu,
 .cb-dropdown-menu {
-  & .dropdown-item.cb-dropdown-item {
+  & .cb-dropdown-item {
     color: white !important;
 
     &:hover:not(:active):not(.active),

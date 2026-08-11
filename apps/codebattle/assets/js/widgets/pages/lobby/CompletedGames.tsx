@@ -36,11 +36,12 @@ interface CompletedGamePlayer {
 interface InfiniteScrollableGamesProps {
   className?: string;
   tableClassName?: string;
+  h?: string;
   games: LobbyCompletedGame[];
 }
 
 const InfiniteScrollableGames = memo(
-  ({ className, tableClassName, games }: InfiniteScrollableGamesProps) => {
+  ({ className, tableClassName, games, h }: InfiniteScrollableGamesProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const tableRef = useRef<HTMLDivElement>(null);
 
@@ -83,7 +84,7 @@ const InfiniteScrollableGames = memo(
           ref={tableRef}
           className={cn('mvh-100 cb-overflow-y-scroll', className)}
           display={{ base: 'none', md: 'block' }}
-          style={{ overflowX: 'auto' }}
+          style={{ overflowX: 'auto', height: h }}
           data-testid="scroll"
         >
           <Table
@@ -168,9 +169,10 @@ const InfiniteScrollableGames = memo(
 interface CompletedGamesProps {
   className?: string;
   tableClassName?: string;
+  h?: string;
 }
 
-function CompletedGames({ className, tableClassName = '' }: CompletedGamesProps) {
+function CompletedGames({ className, tableClassName = '', h }: CompletedGamesProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { completedGames, totalGames, status } = useSelector(completedGamesSelector);
 
@@ -193,6 +195,7 @@ function CompletedGames({ className, tableClassName = '' }: CompletedGamesProps)
       <InfiniteScrollableGames
         className={className}
         tableClassName={tableClassName}
+        h={h}
         games={completedGames as unknown as LobbyCompletedGame[]}
       />
       <Box

@@ -237,9 +237,10 @@ function SpectatorEditor({
                 <FontAwesomeIcon icon="eye" />
               </ActionIcon>
               <LanguagePickerView
-                {...({ currentLangSlug: params.syntax, isDisabled: true } as React.ComponentProps<
-                  typeof LanguagePickerView
-                >)}
+                {...({
+                  currentLangSlug: params.syntax,
+                  isDisabled: true,
+                } as React.ComponentProps<typeof LanguagePickerView>)}
               />
             </Flex>
           </Group>

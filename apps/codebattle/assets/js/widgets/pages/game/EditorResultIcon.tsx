@@ -21,11 +21,7 @@ function EditorResultIcon({ children, mode = 'default' }: EditorResultIconProps)
           zIndex: '100',
         };
 
-  return (
-    <div className="position-absolute" style={style}>
-      {children}
-    </div>
-  );
+  return <div style={{ position: 'absolute', ...style }}>{children}</div>;
 }
 
 export default EditorResultIcon;

@@ -34,7 +34,7 @@ function DarkModeButton({ className }: DarkModeButtonProps) {
       onClick={handleToggleDarkMode}
       aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span className="invisible">1</span>
+      <span style={{ visibility: 'hidden' }}>1</span>
       <FontAwesomeIcon style={{ marginLeft: '-8px' }} icon={isDarkMode ? 'sun' : 'moon'} />
     </ActionIcon>
   );

@@ -29,7 +29,12 @@ function EditorWrapper({ children, id, className }: EditorWrapperProps) {
       id={id}
       translate="no"
       className={className}
-      style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, position: 'relative' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        position: 'relative',
+      }}
     >
       {children}
     </div>
@@ -61,11 +66,7 @@ function RightSide({ output, children }: RightSideProps) {
     <>
       {content}
       <Tabs value={showTab} onChange={(value) => setShowTab(value ?? 'editor')} variant="default">
-        <Tabs.List
-          className="bg-gray text-uppercase text-center font-weight-bold"
-          id="nav-tab"
-          grow
-        >
+        <Tabs.List className="bg-gray" id="nav-tab" grow tt="uppercase" fw={700} ta="center">
           <Tabs.Tab value="editor" px={{ base: 'xs', sm: 'xl' }} style={{ borderRadius: 0 }}>
             {i18next.t('Editor')}
           </Tabs.Tab>
@@ -114,8 +115,8 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
         <>
           <EditorContainer
             orientation="left"
-            cardClassName="card cb-card h-100 shadow-sm position-relative border-0"
-            editorContainerClassName="col-12 col-lg-6 p-1"
+            cardClassName="cb-card"
+            editorContainerClassName="cb-col-12 cb-col-lg-6"
             editorMachine={editorMachine}
             {...editors[0]}
           >
@@ -127,8 +128,8 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
           </EditorContainer>
           <EditorContainer
             orientation="right"
-            cardClassName="card cb-card h-100 shadow-sm position-relative border-0"
-            editorContainerClassName="col-12 col-lg-6 p-1"
+            cardClassName="cb-card"
+            editorContainerClassName="cb-col-12 cb-col-lg-6"
             editorMachine={editorMachine}
             {...editors[1]}
           >
@@ -143,14 +144,14 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
       {viewMode === BattleRoomViewModes.single && (
         <Flex
           direction="column"
-          className="col-12 col-xl-8 col-lg-6"
+          w={{ base: '100%', lg: '50%', xl: '66.6667%' }}
           px="xs"
           style={{ height: 'calc(100vh - 92px)' }}
         >
           <EditorContainer
             orientation="side"
-            cardClassName="card cb-card h-100 shadow-sm position-relative"
-            editorContainerClassName="col-12 p-1"
+            cardClassName="cb-card"
+            editorContainerClassName="cb-col-12"
             editorMachine={editorMachine}
             {...editors[0]}
           >

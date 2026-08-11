@@ -37,8 +37,13 @@ function TournamentChat() {
 
   return (
     <Box
-      className="cb-tournament-chat my-2 mt-lg-0 cb-bg-panel cb-rounded pos-relative shadow-sm"
-      style={{ display: 'flex', flexDirection: 'column' }}
+      className="cb-tournament-chat cb-bg-panel cb-rounded pos-relative"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        margin: '0.5rem 0',
+        boxShadow: 'var(--mantine-shadow-sm)',
+      }}
     >
       <div className="cb-tournament-chat-header">
         <Flex direction="column" style={{ minWidth: 0 }}>
@@ -62,9 +67,9 @@ function TournamentChat() {
       <Flex direction="column" flex={1} style={{ overflow: 'hidden' }}>
         <div
           ref={messagesContainerRef}
-          className="cb-tournament-chat-messages overflow-auto h-100"
+          className="cb-tournament-chat-messages"
           id="new-chat-message"
-          style={{ scrollBehavior: 'smooth' }}
+          style={{ scrollBehavior: 'smooth', overflow: 'auto', height: '100%' }}
         >
           <Messages
             messages={messages as unknown as React.ComponentProps<typeof Messages>['messages']}

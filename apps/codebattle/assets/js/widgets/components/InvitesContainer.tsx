@@ -107,7 +107,6 @@ function InvitesContainer() {
             <Button
               variant="outline"
               color="cbSecondary"
-              className="cb-btn-outline-secondary"
               size="compact-sm"
               radius="md"
               mx="xs"

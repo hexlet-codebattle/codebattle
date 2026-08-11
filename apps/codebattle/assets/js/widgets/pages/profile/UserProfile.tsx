@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
-import { Anchor, Box, Flex, Grid, Tabs, Text } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Anchor, Box, Flex, Grid, Tabs, Text, Title } from '@mantine/core';
 import { camelizeKeys } from 'humps';
 import sum from 'lodash/sum';
 import { useDispatch } from 'react-redux';
@@ -207,16 +208,16 @@ function UserProfile() {
               {i18n.t('joined at %{date}', { date: userInsertedAt })}
             </Text>
             {user.githubName && (
-              <Box component="h3" className="h1">
+              <Title order={3} fz="h1">
                 <Anchor
                   title={i18n.t('Github account')}
                   c="dimmed"
                   href={`https://github.com/${user.githubName}`}
                   aria-label={i18n.t('Github account')}
                 >
-                  <span className="fab fa-github" />
+                  <FontAwesomeIcon icon="github" />
                 </Anchor>
-              </Box>
+              </Title>
             )}
             {visibleAchievements.length > 0 && (
               <>
@@ -299,17 +300,21 @@ function UserProfile() {
               <Tabs.Panel value="statistics" keepMounted>
                 <Grid mt="xl" px="md" justify="center">
                   <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
-                    <div className="h1 cb-stats-number">{user.rating}</div>
+                    <Title order={1} className="cb-stats-number">
+                      {user.rating}
+                    </Title>
                     <p className="lead">{i18n.t('(Elo Rating)')}</p>
                   </Grid.Col>
                   {!user.isBot && (
                     <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
-                      <div className="h1 cb-stats-number">{`#${user.rank}`}</div>
+                      <Title order={1} className="cb-stats-number">{`#${user.rank}`}</Title>
                       <p className="lead">{i18n.t('Place')}</p>
                     </Grid.Col>
                   )}
                   <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
-                    <div className="h1 cb-stats-number">{user.points || 0}</div>
+                    <Title order={1} className="cb-stats-number">
+                      {user.points || 0}
+                    </Title>
                     <p className="lead">{i18n.t('Points')}</p>
                   </Grid.Col>
                 </Grid>
@@ -354,7 +359,9 @@ function UserProfile() {
                           >
                             <div>{rival.name}</div>
                             <Text size="sm">
-                              {i18n.t('Clan: %{clan}', { clan: rival.clan || '-' })}
+                              {i18n.t('Clan: %{clan}', {
+                                clan: rival.clan || '-',
+                              })}
                             </Text>
                             <Text size="sm">
                               {i18n.t('W/L/T: %{wins}/%{losses}/%{timeouts}', {
@@ -415,7 +422,7 @@ function UserProfile() {
               </Tabs.Panel>
               <Tabs.Panel value="completedGames" className="min-h-100" keepMounted>
                 <Flex h="100%" direction="column" justify="center">
-                  <CompletedGames className="h-100" />
+                  <CompletedGames h="100%" />
                 </Flex>
               </Tabs.Panel>
             </Box>

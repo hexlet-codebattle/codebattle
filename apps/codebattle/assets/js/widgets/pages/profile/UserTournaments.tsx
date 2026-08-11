@@ -276,7 +276,9 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
           borderBottomRightRadius: 'var(--mantine-radius-md)',
         }}
       >
-        {i18n.t('Total tournaments: %{count}', { count: pageInfo.totalEntries })}
+        {i18n.t('Total tournaments: %{count}', {
+          count: pageInfo.totalEntries,
+        })}
       </Box>
     </Flex>
   );

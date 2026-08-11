@@ -30,7 +30,6 @@ function ExternalPlatformErrorPanel({ requestInviteUpdates }: ExternalPlatformEr
                 type="button"
                 variant="outline"
                 color="cbSecondary"
-                className="cb-btn-outline-secondary"
                 radius="md"
                 onClick={requestInviteUpdates}
               >

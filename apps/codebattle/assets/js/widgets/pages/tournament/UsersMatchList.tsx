@@ -286,7 +286,9 @@ function UsersMatchList({
             component="span"
             ml="xs"
             pl="xs"
-            style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
+            style={{
+              borderLeft: '1px solid var(--mantine-color-default-border)',
+            }}
           >
             {i18next.t('AVG Tests:')} {Math.ceil(player.avgTests)}%
           </Text>
@@ -294,7 +296,9 @@ function UsersMatchList({
             component="span"
             ml="xs"
             pl="xs"
-            style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
+            style={{
+              borderLeft: '1px solid var(--mantine-color-default-border)',
+            }}
           >
             {i18next.t('AVG Duration:')} {Math.ceil(player.avgDuration)}
             {` ${i18next.t('sec')}`}
@@ -360,7 +364,10 @@ function UsersMatchList({
                       <Tooltip label={i18next.t('Tests percent')} position="top" withArrow>
                         <span className={metaItemClassName}>
                           <span className={metaIconClassName}>
-                            <FontAwesomeIcon className="text-success" icon="tasks" />
+                            <FontAwesomeIcon
+                              icon="tasks"
+                              style={{ color: 'var(--mantine-color-green-6)' }}
+                            />
                           </span>
                           {matchResult.resultPercent}
                         </span>
@@ -370,7 +377,10 @@ function UsersMatchList({
                       <Tooltip label={i18next.t('Duration (sec)')} position="top" withArrow>
                         <span className={metaItemClassName}>
                           <span className={metaIconClassName}>
-                            <FontAwesomeIcon className="text-primary" icon="stopwatch" />
+                            <FontAwesomeIcon
+                              icon="stopwatch"
+                              style={{ color: 'var(--mantine-color-blue-6)' }}
+                            />
                           </span>
                           <span className="cb-tournament-match-duration">{match.durationSec}</span>
                         </span>
@@ -379,10 +389,13 @@ function UsersMatchList({
                     <Tooltip label={i18next.t('Started - Finished')} position="top" withArrow>
                       <span className={metaItemClassName}>
                         <span className={metaIconClassName}>
-                          <FontAwesomeIcon className="text-primary" icon="flag-checkered" />
+                          <FontAwesomeIcon
+                            icon="flag-checkered"
+                            style={{ color: 'var(--mantine-color-blue-6)' }}
+                          />
                         </span>
                         {match.startedAt ? toLocalTime(match.startedAt) : '-'}
-                        <span className="mx-1">-</span>
+                        <span style={{ margin: '0 4px' }}>-</span>
                         {match.finishedAt ? toLocalTime(match.finishedAt) : '-'}
                       </span>
                     </Tooltip>

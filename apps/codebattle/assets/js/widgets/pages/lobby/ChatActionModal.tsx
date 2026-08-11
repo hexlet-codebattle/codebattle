@@ -77,11 +77,11 @@ function ChatActionModal({
     modalShowing.action === 'sendMessage' ? openDirect : createBattleInvite;
 
   return (
-    <Modal contentClassName="cb-text h-75" show={modalShowing.opened} onHide={handleCloseModal}>
+    <Modal contentClassName="cb-text" show={modalShowing.opened} onHide={handleCloseModal}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="overflow-auto">
+      <Modal.Body style={{ overflow: 'auto' }}>
         {modalShowing.action && (
           <Stack gap="sm">
             {presenceList.map(

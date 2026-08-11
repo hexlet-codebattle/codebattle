@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 
+import { Button, Flex, Paper, Title } from '@mantine/core';
+
 import { decamelizeKeys, camelizeKeys } from 'humps';
 import i18next from 'i18next';
 
@@ -11,7 +13,9 @@ interface TournamentResult {
   [key: string]: unknown;
 }
 
-type FormErrors = Partial<Record<string, string | string[]>> & { base?: string };
+type FormErrors = Partial<Record<string, string | string[]>> & {
+  base?: string;
+};
 
 interface ResponseErrorData {
   errors?: FormErrors;
@@ -141,7 +145,9 @@ function CreateTournament({
           if (errorData.errors) {
             setErrors(errorData.errors);
           } else {
-            setErrors({ base: 'An error occurred while creating the tournament' });
+            setErrors({
+              base: 'An error occurred while creating the tournament',
+            });
           }
         } else {
           setErrors({ base: 'Network error. Please try again.' });
@@ -157,28 +163,38 @@ function CreateTournament({
   }, []);
 
   return (
-    <div className="cb-bg-panel cb-text cb-rounded shadow-sm p-3 p-md-4">
-      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-2">
-        <h4 className="mb-0">{i18next.t('Create a New Tournament')}</h4>
+    <Paper className="cb-bg-panel cb-text cb-rounded" shadow="sm" p={{ base: 'md', md: 'lg' }}>
+      <Flex
+        direction={{ base: 'column', sm: 'row' }}
+        justify="space-between"
+        align={{ base: 'flex-start', sm: 'center' }}
+        mb="lg"
+        gap={8}
+      >
+        <Title order={4}>{i18next.t('Create a New Tournament')}</Title>
         {lastTournament && (
-          <div className="d-flex gap-2">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+          <Flex gap={8}>
+            <Button
+              size="compact-sm"
+              variant="outline"
+              color="cbSecondary"
+              radius="md"
               onClick={applyLastTournament}
             >
               {i18next.t("Use my last tournament's settings")}
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+            </Button>
+            <Button
+              size="compact-sm"
+              variant="outline"
+              color="cbSecondary"
+              radius="md"
               onClick={resetToDefaults}
             >
               {i18next.t('Reset to defaults')}
-            </button>
-          </div>
+            </Button>
+          </Flex>
         )}
-      </div>
+      </Flex>
       <TournamentForm
         key={formKey}
         initialValues={initialValues}
@@ -195,7 +211,7 @@ function CreateTournament({
           window.location.href = '/tournaments';
         }}
       />
-    </div>
+    </Paper>
   );
 }
 

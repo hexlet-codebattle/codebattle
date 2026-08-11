@@ -33,7 +33,6 @@ function TaskLanguagesSelection({
       <Menu.Target>
         <Button
           id="tasklang-dropdown-toggle"
-          className="cb-btn-outline-secondary"
           variant="outline"
           color="cbSecondary"
           radius="md"

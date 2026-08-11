@@ -73,7 +73,10 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                         color="cbSecondary"
                         size="sm"
                         radius="md"
-                        style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                        style={{
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                        }}
                         leftSection={<FontAwesomeIcon icon="check" />}
                         onClick={handleSendRequest}
                       >
@@ -86,7 +89,10 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                         color="cbSecondary"
                         size="sm"
                         radius="md"
-                        style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                        style={{
+                          borderTopLeftRadius: 0,
+                          borderBottomLeftRadius: 0,
+                        }}
                         leftSection={<FontAwesomeIcon icon="times" />}
                         onClick={handleSendRequest}
                       >

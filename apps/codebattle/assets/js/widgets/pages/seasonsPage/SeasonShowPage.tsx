@@ -317,7 +317,13 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
           onHide={handleCloseModal}
           player={selectedPlayer}
           allResults={results}
-          season={season as { id: number; name?: string; year?: number | string } | null}
+          season={
+            season as {
+              id: number;
+              name?: string;
+              year?: number | string;
+            } | null
+          }
         />
       </Box>
     </Box>

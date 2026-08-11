@@ -203,8 +203,16 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
         <StatsRow
           items={[
             { key: 'place', label: i18next.t('Place'), value: rank ?? '####' },
-            { key: 'points', label: i18next.t('Points'), value: points ?? '####' },
-            { key: 'rating', label: i18next.t('Rating'), value: rating ?? '####' },
+            {
+              key: 'points',
+              label: i18next.t('Points'),
+              value: points ?? '####',
+            },
+            {
+              key: 'rating',
+              label: i18next.t('Rating'),
+              value: rating ?? '####',
+            },
           ]}
         />
         {data && (
@@ -226,8 +234,16 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
             <StatsRow
               items={[
                 { key: 'won', label: i18next.t('Won'), value: gameStats.won },
-                { key: 'lost', label: i18next.t('Lost'), value: gameStats.lost },
-                { key: 'gaveUp', label: i18next.t('GaveUp'), value: gameStats.gaveUp },
+                {
+                  key: 'lost',
+                  label: i18next.t('Lost'),
+                  value: gameStats.lost,
+                },
+                {
+                  key: 'gaveUp',
+                  label: i18next.t('GaveUp'),
+                  value: gameStats.gaveUp,
+                },
               ]}
             />
           </>

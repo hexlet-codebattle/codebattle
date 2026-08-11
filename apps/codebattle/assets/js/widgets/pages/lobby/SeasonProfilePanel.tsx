@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Anchor, Box, Button, Flex, Text } from '@mantine/core';
+import { Anchor, Box, Button, Flex, Text, Title } from '@mantine/core';
 import cn from 'classnames';
 import { getPageProp } from '@/inertia/pageProps';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,14 +62,15 @@ function OpponentInfo({ id }: OpponentInfoProps) {
           {user ? (
             <UserInfo
               user={user as unknown as UserNameUser}
-              className="text-white text-truncate"
-              linkClassName="text-white"
+              color="#ffffff"
               truncate
               hideOnlineIndicator
               hideRank
             />
           ) : (
-            <span className="cb-text-skeleton w-100 d-block">&nbsp;</span>
+            <span className="cb-text-skeleton" style={{ display: 'block', width: '100%' }}>
+              &nbsp;
+            </span>
           )}
         </Box>
       </Flex>
@@ -78,36 +79,48 @@ function OpponentInfo({ id }: OpponentInfoProps) {
         ta="center"
         py="xs"
         px="xs"
-        className="flex-shrink-0 cb-nearby-metric"
+        style={{ flexShrink: 0 }}
+        className="cb-nearby-metric"
       >
-        <a href="/hall_of_fame" className="stat-item py-1 w-100">
-          <span
-            className={cn('stat-value d-block cb-text-danger', {
-              'd-inline cb-text-skeleton w-25 mx-auto': !user,
+        <Anchor href="/hall_of_fame" className="stat-item" py={4} w="100%">
+          <Text
+            component="span"
+            className={cn('stat-value cb-text-danger', {
+              'cb-text-skeleton': !user,
             })}
+            display="block"
+            style={!user ? { width: '25%', marginInline: 'auto' } : undefined}
           >
             #{user ? user.rank : ''}
-          </span>
-          <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
-        </a>
+          </Text>
+          <Text component="span" className="stat-label" tt="uppercase">
+            {i18n.t('Place')}
+          </Text>
+        </Anchor>
       </Flex>
       <Flex
         direction="column"
         ta="center"
         py="xs"
         px="xs"
-        className="flex-shrink-0 cb-nearby-metric"
+        style={{ flexShrink: 0 }}
+        className="cb-nearby-metric"
       >
-        <div className="stat-item py-1 w-100">
-          <span
-            className={cn('stat-value d-block cb-text-danger', {
-              'd-inline cb-text-skeleton w-25 mx-auto': !user,
+        <Box className="stat-item" py={4} w="100%">
+          <Text
+            component="span"
+            className={cn('stat-value cb-text-danger', {
+              'cb-text-skeleton': !user,
             })}
+            display="block"
+            style={!user ? { width: '25%', marginInline: 'auto' } : undefined}
           >
             {user ? user.points : ''}
-          </span>
-          <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
-        </div>
+          </Text>
+          <Text component="span" className="stat-label" tt="uppercase">
+            {i18n.t('Points')}
+          </Text>
+        </Box>
       </Flex>
     </Flex>
   );
@@ -235,9 +248,9 @@ function SeasonProfilePanel({
               {liveTournaments?.length !== 0 && (
                 <>
                   <Flex justify="center" align="center" pt="sm" className="cb-season-section-title">
-                    <Text component="span" c="white" tt="uppercase" className="h4">
+                    <Title order={4} c="white" tt="uppercase">
                       {i18n.t('Live Tournaments')}
-                    </Text>
+                    </Title>
                   </Flex>
                   <Flex wrap="wrap" className="cb-tournament-grid">
                     {liveTournaments.map((tournament) => (
@@ -253,9 +266,9 @@ function SeasonProfilePanel({
               {seasonTournaments?.length !== 0 && (
                 <>
                   <Flex justify="center" pt="sm" className="cb-season-section-title">
-                    <Text component="span" c="white" tt="uppercase" className="h4">
+                    <Title order={4} c="white" tt="uppercase">
                       {i18n.t('Upcoming Tournaments')}
-                    </Text>
+                    </Title>
                   </Flex>
                   <Flex wrap="wrap" className="cb-tournament-grid">
                     {seasonTournaments.map((tournament) => (
@@ -287,7 +300,7 @@ function SeasonProfilePanel({
               color="cbSecondary"
               fullWidth
               mx={{ base: 0, md: 'sm' }}
-              className="text-nowrap"
+              style={{ whiteSpace: 'nowrap' }}
             >
               {i18n.t('Contests History')}
             </Button>
@@ -297,7 +310,7 @@ function SeasonProfilePanel({
               color="cbSecondary"
               fullWidth
               mx={{ base: 0, md: 'sm' }}
-              className="text-nowrap"
+              style={{ whiteSpace: 'nowrap' }}
             >
               {i18n.t('My Tournaments')}
             </Button>
@@ -307,7 +320,7 @@ function SeasonProfilePanel({
               color="cbSecondary"
               fullWidth
               mx={{ base: 0, md: 'sm' }}
-              className="text-nowrap"
+              style={{ whiteSpace: 'nowrap' }}
             >
               {i18n.t('Create a Tournament')}
             </Button>
@@ -327,49 +340,67 @@ function SeasonProfilePanel({
             <Text component="span" mt="sm" className="clan-tag">
               {user.name}
             </Text>
-            <Text component="span" m={0} c="white" tt="uppercase" className="h1 clan-title">
+            <Title order={1} c="white" tt="uppercase" className="clan-title">
               {i18n.t('Clan')}
               {': '}
               {user.clanId ? (
                 user.clan
               ) : (
                 <Anchor href="/settings" tt="lowercase">
-                  <small>{i18n.t('add clan')}</small>
+                  <Text component="span" size="xs">
+                    {i18n.t('add clan')}
+                  </Text>
                 </Anchor>
               )}
-            </Text>
+            </Title>
           </Box>
 
           <Flex py="sm" px="xs" className="cb-bg-highlight-panel cb-season-stats">
-            <div className="stat-item py-1 w-100">
-              <span className="stat-value d-block cb-text-danger">{user.rating}</span>
-              <span className="stat-label text-uppercase">{i18n.t('(Elo Rating)')}</span>
-            </div>
-            <a href="/hall_of_fame" className="stat-item py-1 w-100">
-              {user.points ? (
-                <span className="stat-value d-block cb-text-success">#{user.rank}</span>
-              ) : (
-                <span className="stat-value d-block cb-text-danger">#0</span>
-              )}
-              <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
-            </a>
-            <div className="stat-item py-1 w-100">
-              <span className="stat-value d-block cb-text-danger">{user.points || 0}</span>
-              <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
-            </div>
+            <Box className="stat-item" py={4} w="100%">
+              <Text component="span" className="stat-value cb-text-danger" display="block">
+                {user.rating}
+              </Text>
+              <Text component="span" className="stat-label" tt="uppercase">
+                {i18n.t('(Elo Rating)')}
+              </Text>
+            </Box>
+            <Anchor href="/hall_of_fame" className="stat-item" py={4} w="100%">
+              <Text
+                component="span"
+                className={cn('stat-value cb-text-success', {
+                  'cb-text-skeleton': !user.points,
+                })}
+                display="block"
+              >
+                {user.points ? `#${user.rank}` : '#0'}
+              </Text>
+              <Text component="span" className="stat-label" tt="uppercase">
+                {i18n.t('Place')}
+              </Text>
+            </Anchor>
+            <Box className="stat-item" py={4} w="100%">
+              <Text component="span" className="stat-value cb-text-danger" display="block">
+                {user.points || 0}
+              </Text>
+              <Text component="span" className="stat-label" tt="uppercase">
+                {i18n.t('Points')}
+              </Text>
+            </Box>
           </Flex>
 
           {contestDatesText && (
             <Flex justify="center" px="md" py="sm" c="white" className="cb-font-size-small">
-              <span className="d-block">{contestDatesText}</span>
+              <Text component="span" display="block">
+                {contestDatesText}
+              </Text>
             </Flex>
           )}
         </Box>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
         <Box ta="center" mt="sm" className="cb-hof-link">
-          <a href="/hall_of_fame" className="text-uppercase stat-label cb-rounded">
+          <Anchor href="/hall_of_fame" tt="uppercase" className="stat-label cb-rounded">
             {i18n.t('View Hall of Fame')}
-          </a>
+          </Anchor>
         </Box>
         {controls}
       </Flex>

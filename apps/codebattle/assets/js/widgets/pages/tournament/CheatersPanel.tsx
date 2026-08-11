@@ -90,14 +90,14 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
               {i18next.t('No cheaters marked yet')}
             </Text>
           ) : (
-            <Table striped className="cb-text-light cb-custom-event-table mb-0">
+            <Table striped className="cb-text-light cb-custom-event-table">
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th className="border-0 cb-text-light">{i18next.t('Player')}</Table.Th>
-                  <Table.Th className="border-0 cb-text-light">{i18next.t('Clan')}</Table.Th>
-                  <Table.Th className="border-0 cb-text-light">{i18next.t('Games')}</Table.Th>
-                  <Table.Th className="border-0 cb-text-light">{i18next.t('Reports')}</Table.Th>
-                  <Table.Th className="border-0 cb-text-light">{i18next.t('Actions')}</Table.Th>
+                  <Table.Th className="cb-text-light">{i18next.t('Player')}</Table.Th>
+                  <Table.Th className="cb-text-light">{i18next.t('Clan')}</Table.Th>
+                  <Table.Th className="cb-text-light">{i18next.t('Games')}</Table.Th>
+                  <Table.Th className="cb-text-light">{i18next.t('Reports')}</Table.Th>
+                  <Table.Th className="cb-text-light">{i18next.t('Actions')}</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -108,18 +108,18 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
                   return (
                     <React.Fragment key={`cheater-${player.id}`}>
                       <Table.Tr>
-                        <Table.Td className="align-middle cb-text-light">
+                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
                           <UserInfo user={player} banned hideOnlineIndicator hideLink />
                         </Table.Td>
-                        <Table.Td className="align-middle cb-text-light">
+                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
                           {(player.clan as string) || '-'}
                         </Table.Td>
-                        <Table.Td className="align-middle cb-text-light">
+                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
                           {(player.matchesIds as unknown[])?.length ??
                             (player.matches_ids as unknown[])?.length ??
                             0}
                         </Table.Td>
-                        <Table.Td className="align-middle cb-text-light">
+                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
                           {playerReports.length === 0 ? (
                             <Text component="span" c="dimmed">
                               {i18next.t('No reports yet')}
@@ -140,7 +140,7 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
                             </Button>
                           )}
                         </Table.Td>
-                        <Table.Td className="align-middle">
+                        <Table.Td style={{ verticalAlign: 'middle' }}>
                           <Button
                             size="compact-xs"
                             variant="outline"
@@ -153,7 +153,7 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
                       </Table.Tr>
                       {isExpanded && playerReports.length > 0 && (
                         <Table.Tr aria-label={i18next.t('Reports')}>
-                          <Table.Td colSpan={5} className="border-top-0 pt-0">
+                          <Table.Td colSpan={5} pt={0}>
                             <Box px="md" pb="md" pt="xs">
                               {playerReports.map((report) => {
                                 const reporter = players[report.reporterId];

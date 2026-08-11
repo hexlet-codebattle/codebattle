@@ -11,6 +11,7 @@ import TournamentTimer from './TournamentTimer';
 
 interface TournamentPreviewPanelProps {
   className?: string;
+  style?: React.CSSProperties;
   tournament: { grade: string };
   start: string | number | Date;
   end: string | number | Date;
@@ -18,6 +19,7 @@ interface TournamentPreviewPanelProps {
 
 function TournamentPreviewPanel({
   className,
+  style,
   tournament,
   start,
   end,
@@ -28,11 +30,16 @@ function TournamentPreviewPanel({
   const endTime = dayjs(end).format(isRussian ? 'HH:mm' : 'hh:mm A');
 
   return (
-    <Box className={className}>
+    <Box className={className} style={style}>
       <Paper withBorder radius="md" p="md" bg="transparent">
         <Stack gap={0}>
           <span>{i18n.t('Start Date: %{date}', { date: startDate })}</span>
-          <span>{i18n.t('Time: %{start} - %{end}', { start: startTime, end: endTime })}</span>
+          <span>
+            {i18n.t('Time: %{start} - %{end}', {
+              start: startTime,
+              end: endTime,
+            })}
+          </span>
           {tournament.grade !== grades.open && (
             <span>
               {i18n.t('First Place Points: %{points} Ranking Points', {

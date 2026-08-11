@@ -22,22 +22,34 @@ function EditorGameBar({ userId, theme }: EditorGameBarProps) {
     selectors.executionOutputSelector(userId, undefined),
   ) as CheckResult;
 
-  const panelClassName = cn('d-flex position-absolute justify-content-center w-100', {
-    'bg-white': theme === EditorThemeCodes.light,
-    'bg-dark': theme === EditorThemeCodes.dark,
-  });
-  const editorBar = cn(
-    'cb-editor-game-progress-bar rounded-bottom bg-light border-top-0',
-    'd-flex justify-content-center pb-2 pt-1 px-4',
-    {
-      'bg-light': theme === EditorThemeCodes.light,
-      'bg-dark': theme === EditorThemeCodes.dark,
-    },
-  );
+  const backgroundColor = theme === EditorThemeCodes.light ? '#f8f9fa' : '#212529';
 
   return (
-    <div className={panelClassName} title={checkResult.status}>
-      <div className={editorBar}>
+    <div
+      title={checkResult.status}
+      style={{
+        display: 'flex',
+        position: 'absolute',
+        justifyContent: 'center',
+        width: '100%',
+        backgroundColor,
+      }}
+    >
+      <div
+        className="cb-editor-game-progress-bar"
+        style={{
+          borderRadius: '0 0 0.25rem 0.25rem',
+          borderTop: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          paddingBottom: '0.5rem',
+          paddingTop: '0.25rem',
+          paddingLeft: '1rem',
+          paddingRight: '1rem',
+          backgroundColor,
+          width: '100%',
+        }}
+      >
         <div className={getPregressbarClass({ checkResult })}>
           <div
             className="cb-asserts-progress"

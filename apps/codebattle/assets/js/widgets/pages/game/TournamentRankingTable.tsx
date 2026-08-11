@@ -76,7 +76,9 @@ function TournamentRankingTable() {
     >
       <Group
         justify="space-between"
-        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+        style={{
+          borderBottom: '1px solid var(--mantine-color-default-border)',
+        }}
         pb="sm"
         px="md"
       >

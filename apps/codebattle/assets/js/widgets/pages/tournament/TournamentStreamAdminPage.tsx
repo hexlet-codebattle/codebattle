@@ -19,8 +19,16 @@ import { getPageProp } from '@/inertia/pageProps';
 import socket from '../../../socket';
 
 const WIDGETS = [
-  { key: 'leftEditor', label: 'Left editor', params: 'font_size=24&editor_theme=cb-stream' },
-  { key: 'rightEditor', label: 'Right editor', params: 'font_size=24&editor_theme=cb-stream' },
+  {
+    key: 'leftEditor',
+    label: 'Left editor',
+    params: 'font_size=24&editor_theme=cb-stream',
+  },
+  {
+    key: 'rightEditor',
+    label: 'Right editor',
+    params: 'font_size=24&editor_theme=cb-stream',
+  },
   { key: 'timer', label: 'Timer', params: '' },
   { key: 'task', label: 'Task', params: 'font_size=22' },
   { key: 'examples', label: 'Examples', params: 'font_size=20' },
@@ -106,7 +114,14 @@ function StreamLinksPanel({ tournamentId }: StreamLinksPanelProps) {
                   justifyContent: 'space-between',
                 }}
               >
-                <Box mr="xs" style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <Box
+                  mr="xs"
+                  style={{
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
                   <Text fw={700} component="span" mr="xs">
                     {w.label}
                   </Text>
@@ -176,7 +191,10 @@ function MatchRow({ match, playersById, isActive, onSetActive, disabled }: Match
           </Badge>
           <Text
             component="span"
-            style={{ fontFamily: 'Menlo, Monaco, Consolas, monospace', fontSize: 13 }}
+            style={{
+              fontFamily: 'Menlo, Monaco, Consolas, monospace',
+              fontSize: 13,
+            }}
           >
             round {match.round_id ?? match.round_position ?? '?'} · match #{match.id}
           </Text>
@@ -392,7 +410,11 @@ function TournamentStreamAdminPage() {
           withBorder
           p="xs"
           px="md"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
           <Text fw={700}>Matches</Text>
           <SegmentedControl

@@ -89,8 +89,12 @@ const PictureInPicture = ({
 
         const pipContainer = pw.document.createElement('div');
         pipContainer.id = 'pip-root';
-        pipContainer.className =
-          'w-100 h-100 d-flex flex-column align-items-center justify-content-center';
+        pipContainer.style.width = '100%';
+        pipContainer.style.height = '100%';
+        pipContainer.style.display = 'flex';
+        pipContainer.style.flexDirection = 'column';
+        pipContainer.style.alignItems = 'center';
+        pipContainer.style.justifyContent = 'center';
         pw.document.body.appendChild(pipContainer);
 
         pw.addEventListener('pagehide', () => {

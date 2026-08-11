@@ -123,7 +123,9 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
         className="cb-bg-highlight-panel"
         py="sm"
         px="md"
-        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+        style={{
+          borderBottom: '1px solid var(--mantine-color-default-border)',
+        }}
       >
         <Group gap="xs" align="center">
           {player?.avatarUrl ? (
@@ -139,7 +141,8 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
               ) : null}
             </Title>
             <Text c="dimmed" size="xs">
-              id={player?.id} · rating={player?.rating ?? '—'} · lang={player?.lang ?? '—'}
+              id={player?.id} · rating={player?.rating ?? '—'} · lang=
+              {player?.lang ?? '—'}
             </Text>
           </Box>
         </Group>
@@ -240,7 +243,8 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
         {finalText && (
           <Box component="details" mb="md">
             <Text component="summary" c="dimmed" size="xs" style={{ cursor: 'pointer' }}>
-              Show final submitted code ({finalLength} chars, lang={player?.editorLang || '?'})
+              Show final submitted code ({finalLength} chars, lang=
+              {player?.editorLang || '?'})
             </Text>
             <Text
               component="pre"
@@ -342,7 +346,10 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                     <XAxis dataKey="startSec" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{ background: '#1f2937', border: '1px solid #3a3f50' }}
+                      contentStyle={{
+                        background: '#1f2937',
+                        border: '1px solid #3a3f50',
+                      }}
                       labelStyle={{ color: '#e5e7eb' }}
                     />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
@@ -361,7 +368,10 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                     <XAxis dataKey="startSec" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{ background: '#1f2937', border: '1px solid #3a3f50' }}
+                      contentStyle={{
+                        background: '#1f2937',
+                        border: '1px solid #3a3f50',
+                      }}
                       labelStyle={{ color: '#e5e7eb' }}
                     />
                     <Line

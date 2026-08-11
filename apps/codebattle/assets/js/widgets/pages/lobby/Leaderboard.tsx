@@ -46,7 +46,10 @@ function Leaderboard() {
       striped
       m={0}
       className="cb-bg-panel cb-border-color"
-      style={{ borderRadius: 'var(--mantine-radius-md)', boxShadow: 'var(--mantine-shadow-sm)' }}
+      style={{
+        borderRadius: 'var(--mantine-radius-md)',
+        boxShadow: 'var(--mantine-shadow-sm)',
+      }}
     >
       <Table.Thead>
         <Table.Tr aria-label={i18n.t('Leaderboard header')}>

@@ -17,7 +17,9 @@ export interface UserNameUser {
 
 export interface UserNameProps {
   className?: string;
+  color?: string;
   displayName?: string;
+  fontWeight?: number;
   hideLink?: boolean;
   hideOnlineIndicator?: boolean;
   hovered?: boolean;
@@ -31,6 +33,8 @@ export interface UserNameProps {
 function UserName({
   className = '',
   linkClassName = '',
+  color,
+  fontWeight,
   user,
   lang = user.lang,
   truncate = false,
@@ -48,7 +52,12 @@ function UserName({
   const shownName = displayName || user.name;
 
   const nameContent = (
-    <Text component="span" className={linkClassName} c={hovered ? 'blue' : undefined}>
+    <Text
+      component="span"
+      className={linkClassName}
+      c={hovered ? 'blue' : (color ?? undefined)}
+      fw={fontWeight}
+    >
       {shownName}
     </Text>
   );

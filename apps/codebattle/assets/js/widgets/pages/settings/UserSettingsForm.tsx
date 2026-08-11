@@ -318,7 +318,13 @@ function RangeInput({ className, min = 0, max = 100, style, ...props }: RangeInp
       max={max}
       value={currentValue}
       className={cn('cb-range', className)}
-      style={{ ...style, width: '100%', '--range-progress': `${progress}%` } as React.CSSProperties}
+      style={
+        {
+          ...style,
+          width: '100%',
+          '--range-progress': `${progress}%`,
+        } as React.CSSProperties
+      }
     />
   );
 }
@@ -493,7 +499,7 @@ function UserSettingsForm({
                     onSelect={(fieldName, value) => savePreference({ [fieldName]: value })}
                   />
                   <div>
-                    <div className="h6">{i18n.t('Locale')}</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 500 }}>{i18n.t('Locale')}</div>
                     <LocaleSelect onSelect={(locale) => savePreference({ locale })} />
                   </div>
                 </div>

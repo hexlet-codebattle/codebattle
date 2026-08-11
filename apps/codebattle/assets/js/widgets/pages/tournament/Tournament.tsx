@@ -9,6 +9,8 @@ import i18next from 'i18next';
 import Markdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Box, Flex, Grid, Paper, Text, Title } from '@mantine/core';
+
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import TournamentStates from '../../config/tournament';
 import { type TournamentState } from '../../slices/initial';
@@ -115,12 +117,12 @@ function TournamentJoinPanel({
   ].filter((item) => item.value != null && item.value !== '');
 
   return (
-    <div className="cb-join-hero text-white">
+    <Box className="cb-join-hero" c="white">
       <div className="cb-join-hero-head">
         <span className="cb-join-hero-icon">
           <FontAwesomeIcon icon="trophy" />
         </span>
-        <div className="min-w-0">
+        <div style={{ minWidth: 0 }}>
           <h3 className="cb-join-hero-title">{headline}</h3>
           <p className="cb-join-hero-subtitle">{subtitle}</p>
         </div>
@@ -138,7 +140,11 @@ function TournamentJoinPanel({
           ))}
         </div>
       )}
-      <div className={cn('cb-join-actions', { 'cb-join-primary-btn': !isParticipant })}>
+      <div
+        className={cn('cb-join-actions', {
+          'cb-join-primary-btn': !isParticipant,
+        })}
+      >
         <JoinButton
           isShow
           isShowLeave={showLeave}
@@ -151,7 +157,7 @@ function TournamentJoinPanel({
           <Markdown>{tournament.description}</Markdown>
         </div>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -178,27 +184,27 @@ function InfoPanel({
 
   const joinCta =
     showJoinCta && !canModerate ? (
-      <div className="mb-3 pb-2 border-bottom cb-border-color">
-        <p className="mb-2 text-muted">
+      <Box mb="md" pb="xs" style={{ borderBottom: '1px solid #4c4c5a' }}>
+        <Text mb="xs" c="dimmed">
           {isParticipant
             ? i18next.t('You are registered for this tournament. You can leave before it starts.')
             : i18next.t('Join this tournament to take part in the matches.')}
-        </p>
+        </Text>
         <JoinButton
           isShow
           isShowLeave={tournament.state === TournamentStates.waitingParticipants}
           isParticipant={isParticipant}
           disabled={!isOnline}
         />
-      </div>
+      </Box>
     ) : null;
 
   if (tournament.state === TournamentStates.waitingParticipants) {
     if (canModerate) {
       return (
-        <div className="h-100 text-white">
+        <Box h="100%" c="white">
           <Markdown>{tournament.description}</Markdown>
-        </div>
+        </Box>
       );
     }
 
@@ -295,9 +301,16 @@ function Tournament() {
     streamMode ||
     (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
 
-  const panelClassName = cn('mb-2', {
-    'container-fluid': !streamMode,
-  });
+  const panelStyle = !streamMode
+    ? {
+        width: '100%',
+        paddingLeft: '15px',
+        paddingRight: '15px',
+        marginRight: 'auto',
+        marginLeft: 'auto',
+        marginBottom: '0.5rem',
+      }
+    : { marginBottom: '0.5rem' };
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -421,19 +434,19 @@ function Tournament() {
           currentRoundPosition={tournament.currentRoundPosition}
           redirectImmediatly={activePresentationMode}
         />
-        <div className="d-flex flex-column justify-content-center align-items-center p-3">
+        <Flex direction="column" justify="center" align="center" p="md">
           {has(tournament.players, currentUserId) ||
           tournament.state !== TournamentStates.waitingParticipants ? (
-            <span className="h3">{getTournamentPresentationStatus(tournament.state)}</span>
+            <Text fz="h3">{getTournamentPresentationStatus(tournament.state)}</Text>
           ) : (
             <>
-              <span className="h3">{tournament.name}</span>
-              <div className="d-flex">
+              <Text fz="h3">{tournament.name}</Text>
+              <Flex justify="center">
                 <JoinButton isShow isParticipant={false} />
-              </div>
+              </Flex>
             </>
           )}
-        </div>
+        </Flex>
       </>
     );
   }
@@ -441,13 +454,15 @@ function Tournament() {
   if (isGuest) {
     return (
       <>
-        <h1 className="text-center">{tournament.name}</h1>
-        <p className="text-center">
+        <Title order={1} ta="center">
+          {tournament.name}
+        </Title>
+        <Text ta="center">
           <span>
             {i18next.t('Please')} <a href="/session/new">{i18next.t('sign in')}</a>{' '}
             {i18next.t('to see the tournament details')}
           </span>
-        </p>
+        </Text>
       </>
     );
   }
@@ -482,7 +497,7 @@ function Tournament() {
           currentRoundPosition={tournament.currentRoundPosition}
           redirectImmediatly={activePresentationMode}
         />
-        <div className={panelClassName}>
+        <div style={panelStyle}>
           {hiddenSidePanel && (
             <TournamentHeader
               id={tournament.id}
@@ -518,11 +533,11 @@ function Tournament() {
               showAdminPane={false}
             />
           )}
-          <div className="row flex-lg-row-reverse">
-            <div
-              className={cn('col-12 mb-2 mb-lg-0', {
-                'col-lg-8': !hiddenSidePanel,
-              })}
+          <Grid gap={30}>
+            <Grid.Col
+              span={{ base: 12, lg: hiddenSidePanel ? 12 : 8 }}
+              order={{ base: 1, lg: hiddenSidePanel ? 1 : 2 }}
+              mb={{ base: 'xs', lg: 0 }}
             >
               {canModerate && (
                 <TournamentHeader
@@ -559,7 +574,13 @@ function Tournament() {
                   showAdminPane
                 />
               )}
-              <div className="cb-bg-panel h-100 shadow-sm cb-rounded p-3 overflow-auto">
+              <Paper
+                className="cb-bg-panel cb-rounded"
+                h="100%"
+                shadow="sm"
+                p="md"
+                style={{ overflow: 'auto' }}
+              >
                 <InfoPanel
                   tournament={tournament}
                   playersCount={tournament.playersCount}
@@ -568,55 +589,57 @@ function Tournament() {
                   canModerate={canModerate}
                   isOnline={tournament.channel?.online ?? false}
                 />
-              </div>
-            </div>
+              </Paper>
+            </Grid.Col>
             {!hiddenSidePanel && (
-              <div className="d-flex flex-column col-12 col-lg-4 h-100">
-                <TournamentHeader
-                  id={tournament.id}
-                  streamMode={streamMode}
-                  accessToken={tournament.accessToken}
-                  accessType={tournament.accessType}
-                  breakDurationSeconds={tournament.breakDurationSeconds}
-                  breakState={tournament.breakState}
-                  currentUserId={currentUserId}
-                  isLive={tournament.isLive}
-                  isOnline={tournament.channel?.online ?? false}
-                  isOver={isOver}
-                  canModerate={canModerate}
-                  lastRoundEndedAt={tournament.lastRoundEndedAt}
-                  lastRoundStartedAt={tournament.lastRoundStartedAt}
-                  level={tournament.level}
-                  grade={tournament.grade}
-                  currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
-                  name={tournament.name}
-                  players={tournament.players}
-                  playersCount={tournament.playersCount}
-                  playersLimit={tournament.playersLimit}
-                  showBots={tournament.showBots}
-                  hideResults={hideResults}
-                  startsAt={tournament.startsAt}
-                  state={tournament.state}
-                  type={tournament.type}
-                  handleStartRound={handleStartRound}
-                  handleOpenDetails={handleOpenDetails}
-                  toggleShowBots={toggleShowBots}
-                  toggleStreamMode={toggleStreamMode}
-                  showHeaderPane
-                  showAdminPane={false}
-                />
-                {tournament.useChat && <TournamentChat />}
-                {tournament.useClan && <TournamentClanTable />}
-                {tournament.state !== TournamentStates.finished && !tournament.useClan && (
-                  <PlayersRankingPanel
+              <Grid.Col span={{ base: 12, lg: 4 }} order={{ base: 2, lg: 1 }}>
+                <Flex direction="column" h="100%">
+                  <TournamentHeader
+                    id={tournament.id}
+                    streamMode={streamMode}
+                    accessToken={tournament.accessToken}
+                    accessType={tournament.accessType}
+                    breakDurationSeconds={tournament.breakDurationSeconds}
+                    breakState={tournament.breakState}
+                    currentUserId={currentUserId}
+                    isLive={tournament.isLive}
+                    isOnline={tournament.channel?.online ?? false}
+                    isOver={isOver}
                     canModerate={canModerate}
+                    lastRoundEndedAt={tournament.lastRoundEndedAt}
+                    lastRoundStartedAt={tournament.lastRoundStartedAt}
+                    level={tournament.level}
+                    grade={tournament.grade}
+                    currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+                    name={tournament.name}
+                    players={tournament.players}
                     playersCount={tournament.playersCount}
-                    ranking={tournament.ranking}
+                    playersLimit={tournament.playersLimit}
+                    showBots={tournament.showBots}
+                    hideResults={hideResults}
+                    startsAt={tournament.startsAt}
+                    state={tournament.state}
+                    type={tournament.type}
+                    handleStartRound={handleStartRound}
+                    handleOpenDetails={handleOpenDetails}
+                    toggleShowBots={toggleShowBots}
+                    toggleStreamMode={toggleStreamMode}
+                    showHeaderPane
+                    showAdminPane={false}
                   />
-                )}
-              </div>
+                  {tournament.useChat && <TournamentChat />}
+                  {tournament.useClan && <TournamentClanTable />}
+                  {tournament.state !== TournamentStates.finished && !tournament.useClan && (
+                    <PlayersRankingPanel
+                      canModerate={canModerate}
+                      playersCount={tournament.playersCount}
+                      ranking={tournament.ranking}
+                    />
+                  )}
+                </Flex>
+              </Grid.Col>
             )}
-          </div>
+          </Grid>
         </div>
       </>
     </CustomEventStylesContext.Provider>

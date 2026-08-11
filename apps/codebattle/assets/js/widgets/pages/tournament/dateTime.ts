@@ -26,9 +26,10 @@ export const formatStartsAt = (value: string | undefined, userTimezone = DEFAULT
   try {
     return new Intl.DateTimeFormat(undefined, options).format(new Date(value));
   } catch (_error) {
-    return new Intl.DateTimeFormat(undefined, { ...options, timeZone: DEFAULT_TIMEZONE }).format(
-      new Date(value),
-    );
+    return new Intl.DateTimeFormat(undefined, {
+      ...options,
+      timeZone: DEFAULT_TIMEZONE,
+    }).format(new Date(value));
   }
 };
 

@@ -148,7 +148,9 @@ function EditorPanel({
     />
   );
 
-  const panelBorder = { borderBottom: '1px solid var(--mantine-color-default-border)' };
+  const panelBorder = {
+    borderBottom: '1px solid var(--mantine-color-default-border)',
+  };
 
   const submitButton = editable && (
     <Button
@@ -195,7 +197,9 @@ function EditorPanel({
               px="md"
               py="sm"
               className="cb-bg-highlight-panel"
-              style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+              style={{
+                borderTop: '1px solid var(--mantine-color-default-border)',
+              }}
             >
               <Text size="sm" c="red">
                 {submitError}
@@ -209,7 +213,14 @@ function EditorPanel({
         <Flex
           pos="fixed"
           direction="column"
-          style={{ top: 0, left: 0, right: 0, bottom: 0, zIndex: 1050, background: '#1e1e1e' }}
+          style={{
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1050,
+            background: '#1e1e1e',
+          }}
         >
           <Flex
             justify="space-between"

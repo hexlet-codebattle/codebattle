@@ -1,8 +1,10 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, Fragment } from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
+
+import { Box, Table, Text } from '@mantine/core';
 
 import { type AppDispatch } from '@/slices/store';
 
@@ -25,23 +27,22 @@ interface TaskRankingItem {
   max?: number;
 }
 
-const getCustomEventTrClassName = (level: string | undefined) =>
-  cn('cb-text-light font-weight-bold cb-custom-event-tr cursor-pointer', {
-    'cb-custom-event-bg-success': level === 'easy',
-    'cb-custom-event-bg-orange': level === 'elementary',
-    'cb-custom-event-bg-blue': level === 'medium',
-    'cb-custom-event-bg-brown': level === 'hard',
-  });
-
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-);
-
 interface TaskRankingPanelProps {
   type: string;
   state: string;
   handleTaskSelectClick: (event: React.MouseEvent<HTMLTableRowElement>) => void;
 }
+
+const tableDataCellProps = {
+  className: 'cb-custom-event-td',
+  p: 4,
+  pl: 24,
+  style: {
+    whiteSpace: 'nowrap' as const,
+    position: 'relative' as const,
+    verticalAlign: 'middle' as const,
+  },
+};
 
 function TaskRankingPanel({ type, state, handleTaskSelectClick }: TaskRankingPanelProps) {
   const dispatch = useDispatch<AppDispatch>();
@@ -56,65 +57,84 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }: TaskRankingPan
   useTournamentPanel(fetchData, state);
 
   return (
-    <div className="my-2 px-1 mt-lg-0 cb-rounded position-relative cb-overflow-x-auto cb-overflow-y-auto">
-      <table className="table table-striped cb-custom-event-table">
-        <thead className="text-muted">
-          <tr>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Round')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Task')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+    <Box
+      mt={{ base: 8, lg: 0 }}
+      mb={8}
+      px={4}
+      className="cb-rounded cb-overflow-x-auto cb-overflow-y-auto"
+      style={{ position: 'relative' }}
+    >
+      <Table striped className="cb-custom-event-table">
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
+              {i18next.t('Round')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
+              {i18next.t('Task')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('Count of solutions')}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('Fastest time to solve task (sec)')}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('%{percent}% (sec)', { percent: 25 })}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('%{percent}% (sec)', { percent: 50 })}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('%{percent}% (sec)', { percent: 75 })}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('%{percent}% (sec)', { percent: 85 })}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('%{percent}% (sec)', { percent: 95 })}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
+            </Table.Th>
+            <Table.Th c="dimmed" fw={300} p={4} pl={24}>
               {i18next.t('Slowest time to solve task (sec)')}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+            </Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {items.map((item) => (
-            <React.Fragment key={`${type}-task-${item.taskId}`}>
-              <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-              <tr
+            <Fragment key={`${type}-task-${item.taskId}`}>
+              <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+              <Table.Tr
                 onClick={handleTaskSelectClick}
                 data-task-id={item.taskId}
-                className={getCustomEventTrClassName(item.level)}
+                fw={700}
+                style={{ cursor: 'pointer' }}
+                className={cn('cb-text-light cb-custom-event-tr', {
+                  'cb-custom-event-bg-success': item.level === 'easy',
+                  'cb-custom-event-bg-orange': item.level === 'elementary',
+                  'cb-custom-event-bg-blue': item.level === 'medium',
+                  'cb-custom-event-bg-brown': item.level === 'hard',
+                })}
               >
-                <td className={tableDataCellClassName}>{item.roundPosition + 1}</td>
-                <td title={item.name} className={tableDataCellClassName}>
-                  <div className="cb-custom-event-name mr-1">{item.name}</div>
-                </td>
-                <td className={tableDataCellClassName}>{item.winsCount}</td>
-                <td className={tableDataCellClassName}>{item.min}</td>
-                <td className={tableDataCellClassName}>{item.p5}</td>
-                <td className={tableDataCellClassName}>{item.p25}</td>
-                <td className={tableDataCellClassName}>{item.p50}</td>
-                <td className={tableDataCellClassName}>{item.p75}</td>
-                <td className={tableDataCellClassName}>{item.p95}</td>
-                <td className={tableDataCellClassName}>{item.max}</td>
-              </tr>
-            </React.Fragment>
+                <Table.Td {...tableDataCellProps}>{item.roundPosition + 1}</Table.Td>
+                <Table.Td title={item.name} {...tableDataCellProps}>
+                  <Text className="cb-custom-event-name" mr="xs">
+                    {item.name}
+                  </Text>
+                </Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.winsCount}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.min}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.p5}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.p25}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.p50}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.p75}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.p95}</Table.Td>
+                <Table.Td {...tableDataCellProps}>{item.max}</Table.Td>
+              </Table.Tr>
+            </Fragment>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Table.Tbody>
+      </Table>
+    </Box>
   );
 }
 

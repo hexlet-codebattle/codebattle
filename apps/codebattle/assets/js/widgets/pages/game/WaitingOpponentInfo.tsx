@@ -45,10 +45,7 @@ function WaitingOpponentInfo({ gameUrl }: WaitingOpponentInfoProps) {
               >
                 {gameUrl}
               </Box>
-              {/* CopyButton is shared with the still-Bootstrap tournament page
-                  (TournamentHeader passes its own `btn btn-sm rounded-right`),
-                  so its Bootstrap classes stay until that page converts. */}
-              <CopyButton className="btn btn-secondary cb-btn-secondary" value={gameUrl} />
+              <CopyButton value={gameUrl} style={{ borderRadius: 0 }} />
               <Button
                 color="red"
                 radius={0}

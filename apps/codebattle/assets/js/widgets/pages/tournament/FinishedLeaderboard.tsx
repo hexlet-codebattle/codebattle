@@ -33,7 +33,7 @@ interface FinishedLeaderboardProps {
 
 const getCustomEventTrClassName = (item: LeaderboardItem, selectedId: number | undefined) =>
   cn(
-    'fw-bold cb-custom-event-tr-border',
+    'cb-custom-event-tr-border',
     {
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
@@ -45,9 +45,16 @@ const getCustomEventTrClassName = (item: LeaderboardItem, selectedId: number | u
     },
   );
 
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap pos-relative cb-custom-event-td border-0',
-);
+const tableDataCellProps = {
+  className: 'cb-custom-event-td',
+  p: 4,
+  pl: 24,
+  style: {
+    whiteSpace: 'nowrap' as const,
+    position: 'relative' as const,
+    verticalAlign: 'middle' as const,
+  },
+};
 
 function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
@@ -69,43 +76,59 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
   };
 
   return (
-    <Box className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
+    <Box
+      className="cb-bg-panel cb-rounded"
+      style={{
+        boxShadow: 'var(--mantine-shadow-sm)',
+        padding: '1rem',
+        overflow: 'auto',
+      }}
+    >
       <Box my="xs">
-        <Flex direction="column" flex={1} pos="relative" py="xs" className="mh-100 rounded-left">
+        <Flex
+          direction="column"
+          flex={1}
+          pos="relative"
+          py="xs"
+          mah="100%"
+          style={{ borderRadius: '0.375rem 0 0 0.375rem' }}
+        >
           <Flex
             justify="space-between"
             pb="xs"
             px="md"
-            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+            style={{
+              borderBottom: '1px solid var(--mantine-color-default-border)',
+            }}
           >
             <Text fw={700}>{i18next.t('Leaderboard')}</Text>
           </Flex>
-          <div className="d-flex cb-overflow-x-auto">
-            <Table striped className="cb-text-light cb-custom-event-table m-1">
+          <Flex className="cb-overflow-x-auto">
+            <Table striped className="cb-text-light cb-custom-event-table" m={4}>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Place')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Player')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Clan')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Score')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Wins')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Games')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Avg Result')}
                   </Table.Th>
-                  <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Total Time')}
                   </Table.Th>
                 </Table.Tr>
@@ -119,17 +142,18 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                         item,
                         currentUserClanId as number | undefined,
                       )}
+                      fw={700}
                     >
                       <Table.Td
+                        {...tableDataCellProps}
                         style={{
                           borderTopLeftRadius: '0.5rem',
                           borderBottomLeftRadius: '0.5rem',
                         }}
-                        className={tableDataCellClassName}
                       >
                         {item.place}
                       </Table.Td>
-                      <Table.Td className={tableDataCellClassName}>
+                      <Table.Td {...tableDataCellProps}>
                         <div
                           title={item?.userName}
                           className="cb-custom-event-name"
@@ -141,10 +165,11 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                           }}
                         >
                           {(item?.userLang || item?.user_lang || item?.lang) && (
-                            <LanguageIcon
-                              className="mr-1"
-                              lang={item?.userLang || item?.user_lang || item?.lang}
-                            />
+                            <>
+                              <LanguageIcon
+                                lang={item?.userLang || item?.user_lang || item?.lang}
+                              />{' '}
+                            </>
                           )}
                           <a href={`/users/${item.userId}`}>
                             {(item?.userName ?? '').slice(0, 9) +
@@ -152,7 +177,7 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                           </a>
                         </div>
                       </Table.Td>
-                      <Table.Td title={item?.clanLongName} className={tableDataCellClassName}>
+                      <Table.Td title={item?.clanLongName} {...tableDataCellProps}>
                         <div
                           className="cb-custom-event-name"
                           style={{
@@ -169,18 +194,18 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                           )}
                         </div>
                       </Table.Td>
-                      <Table.Td className={tableDataCellClassName}>{item.score}</Table.Td>
-                      <Table.Td className={tableDataCellClassName}>{item.winsCount}</Table.Td>
-                      <Table.Td className={tableDataCellClassName}>{item.gamesCount}</Table.Td>
-                      <Table.Td className={tableDataCellClassName}>
+                      <Table.Td {...tableDataCellProps}>{item.score}</Table.Td>
+                      <Table.Td {...tableDataCellProps}>{item.winsCount}</Table.Td>
+                      <Table.Td {...tableDataCellProps}>{item.gamesCount}</Table.Td>
+                      <Table.Td {...tableDataCellProps}>
                         {parseFloat(item.avgResultPercent as string).toFixed(1)}%
                       </Table.Td>
                       <Table.Td
+                        {...tableDataCellProps}
                         style={{
                           borderTopRightRadius: '0.5rem',
                           borderBottomRightRadius: '0.5rem',
                         }}
-                        className={tableDataCellClassName}
                       >
                         {item.totalTime}
                       </Table.Td>
@@ -189,7 +214,7 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                 ))}
               </Table.Tbody>
             </Table>
-          </div>
+          </Flex>
         </Flex>
       </Box>
       <Flex align="center" wrap="wrap" justify="flex-start">

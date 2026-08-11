@@ -164,7 +164,9 @@ function MatchConfirmationModal({
       <Modal.Body>
         {opponentId && (
           <Text ta="center" mb="sm">
-            {i18next.t('Your opponent is waiting: %{name}', { name: players[opponentId]?.name })}
+            {i18next.t('Your opponent is waiting: %{name}', {
+              name: players[opponentId]?.name,
+            })}
           </Text>
         )}
         {remainingTime !== null && (

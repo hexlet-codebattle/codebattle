@@ -506,7 +506,10 @@ export const activeGameReady =
       dispatch(actions.updateCheckStatus({ [userId]: false }));
 
       const payload = { state, award };
-      gameRoomService.send({ type: channelTopics.userCheckCompleteTopic, payload });
+      gameRoomService.send({
+        type: channelTopics.userCheckCompleteTopic,
+        payload,
+      });
     };
 
     const handleUserJoined = (data: any) => {
@@ -559,7 +562,10 @@ export const activeGameReady =
           timeoutSeconds,
         }),
       );
-      gameRoomService.send({ type: channelTopics.gameUserJoinedTopic, payload: data });
+      gameRoomService.send({
+        type: channelTopics.gameUserJoinedTopic,
+        payload: data,
+      });
     };
 
     const handleUserWon = (data: any) => {
@@ -576,16 +582,25 @@ export const activeGameReady =
       channel
         .push(channelMethods.gameHeadToHead, {})
         .receive('ok', (response: any) => dispatch(actions.setGameHeadToHead(response)));
-      gameRoomService.send({ type: channelTopics.userGiveUpTopic, payload: data });
+      gameRoomService.send({
+        type: channelTopics.userGiveUpTopic,
+        payload: data,
+      });
     };
 
     const handleRematchStatusUpdate = (data: any) => {
       dispatch(actions.updateRematchStatus(data));
-      gameRoomService.send({ type: channelTopics.rematchStatusUpdatedTopic, payload: data });
+      gameRoomService.send({
+        type: channelTopics.rematchStatusUpdatedTopic,
+        payload: data,
+      });
     };
 
     const handleRematchAccepted = ({ gameId: newGameId }: any) => {
-      gameRoomService.send({ type: channelTopics.rematchAcceptedTopic, newGameId });
+      gameRoomService.send({
+        type: channelTopics.rematchAcceptedTopic,
+        newGameId,
+      });
       redirectToNewGame(newGameId);
     };
 
@@ -606,7 +621,10 @@ export const activeGameReady =
 
     const handleTournamentGameCreated = (data: any) => {
       dispatch(actions.setTournamentsInfo(data));
-      gameRoomService.send({ type: channelTopics.tournamentGameCreatedTopic, payload: data });
+      gameRoomService.send({
+        type: channelTopics.tournamentGameCreatedTopic,
+        payload: data,
+      });
       if (!cancelRedirect) {
         setTimeout(() => {
           window.location.replace(makeGameUrl(data.gameId));

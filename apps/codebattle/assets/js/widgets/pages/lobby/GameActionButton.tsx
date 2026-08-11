@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { ActionIcon, Button, Flex, Group, Tooltip } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import copy from 'copy-to-clipboard';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
@@ -60,7 +61,7 @@ function CopyLinkButton({ gameUrl }: { gameUrl: string }) {
         onClick={() => copy(`${window.location.host}${gameUrl}`)}
         aria-label={i18n.t('Copy link')}
       >
-        <i className="far fa-copy" />
+        <FontAwesomeIcon aria-hidden="true" icon="copy" />
       </ActionIcon>
     </Tooltip>
   );
@@ -78,7 +79,7 @@ function CancelGameButton({ isOnline, onCancel }: { isOnline?: boolean; onCancel
         aria-label={i18n.t('Cancel game')}
         disabled={!isOnline}
       >
-        <i className="fas fa-times" />
+        <FontAwesomeIcon aria-hidden="true" icon="times" />
       </ActionIcon>
     </Tooltip>
   );

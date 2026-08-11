@@ -75,7 +75,7 @@ const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }: R
           w="100%"
           c={isActive ? mutedColor : 'dimmed'}
         >
-          {item.isStub ? null : pending ? ( // </span> //     : i18n.t("Group contest soon")} //     ? i18n.t("Group assignment soon") //   {item.kind === "seed" // > //   style={{ opacity: 0.75 }} //   className="font-weight-bold mr-3 text-nowrap text-white" // <span
+          {item.isStub ? null : pending ? (
             i18n.t('Running…')
           ) : (
             <>

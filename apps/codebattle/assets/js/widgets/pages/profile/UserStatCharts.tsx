@@ -173,7 +173,9 @@ function UserStatCharts({ gameStats, tournamentStats }: UserStatChartsProps) {
 
       <Grid.Col span={{ base: 12, lg: 6 }} mt="lg">
         <Text size="sm" ta="center" c="dimmed" mb="sm">
-          {i18n.t('Total tournament wins: %{count}', { count: totalTournamentWins })}
+          {i18n.t('Total tournament wins: %{count}', {
+            count: totalTournamentWins,
+          })}
         </Text>
         <ResponsiveContainer width="100%" height={320} minWidth={1} minHeight={320}>
           <BarChart

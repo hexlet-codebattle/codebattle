@@ -37,6 +37,7 @@ interface MessagesProps {
   currentUserId?: number | null;
   disabled?: boolean;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const getKey = (
@@ -61,6 +62,7 @@ function Messages({
   currentUserId,
   disabled = false,
   className = '',
+  style: styleProp,
 }: MessagesProps) {
   const listRef = useRef<HTMLElement>(null);
   const minScrollHeight = 20;
@@ -115,7 +117,7 @@ function Messages({
     }
   }, []);
 
-  const messageClassName = cn(className, 'cb-messages-list', 'list-unstyled');
+  const messageClassName = cn(className, 'cb-messages-list');
 
   if (disabled) {
     return (
@@ -144,7 +146,12 @@ function Messages({
         pt={0}
         pl="md"
         pr="sm"
-        style={{ overflow: 'auto', flexGrow: 1 }}
+        style={{
+          overflow: 'auto',
+          flexGrow: 1,
+          listStyle: 'none',
+          ...styleProp,
+        }}
       >
         {messages.map((message, index) => {
           const { id, userId, name, text, type, time, meta } = message;

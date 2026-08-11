@@ -60,7 +60,12 @@ function CssBattleInfoPanel() {
       >
         <Box
           className="cb-card"
-          style={{ ...frameStyle, display: 'flex', flexDirection: 'column', margin: '0 4px' }}
+          style={{
+            ...frameStyle,
+            display: 'flex',
+            flexDirection: 'column',
+            margin: '0 4px',
+          }}
         >
           <Box h="100%" pos="relative">
             {isLoading && (
@@ -79,32 +84,49 @@ function CssBattleInfoPanel() {
               <img
                 alt=""
                 title={i18n.t('Right editor solution picture')}
-                className={cn('position-absolute', 'cb-opacity-05', {
-                  invisible: isLoading,
-                })}
-                style={{ width: '100%', height: '100%' }}
+                className="cb-opacity-05"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                }}
                 ref={rightImgRef}
               />
               <img
                 alt=""
                 title={i18n.t('Left editor solution picture')}
-                className={cn('position-absolute', { invisible: isLoading })}
-                style={{ width: '100%', height: '100%' }}
+                style={{
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                  width: '100%',
+                  height: '100%',
+                }}
                 ref={leftImgRef}
               />
               <iframe
                 src="/cssbattle/builder"
                 title={i18n.t('left editor solution')}
-                className="position-absolute invisible"
-                style={{ border: 0, width: '100%', height: '100%' }}
+                style={{
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                  border: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
                 ref={leftSolutionIframe}
                 onLoad={handleLoadLeftIframe}
               />
               <iframe
                 src="/cssbattle/builder"
                 title={i18n.t('right editor solution')}
-                className="position-absolute invisible"
-                style={{ border: 0, width: '100%', height: '100%' }}
+                style={{
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                  border: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
                 ref={rightSolutionIframe}
                 onLoad={handleLoadRightIframe}
               />
@@ -114,7 +136,12 @@ function CssBattleInfoPanel() {
         <Box
           ref={ref}
           className="cb-card"
-          style={{ ...frameStyle, display: 'flex', flexDirection: 'column', margin: '0 4px' }}
+          style={{
+            ...frameStyle,
+            display: 'flex',
+            flexDirection: 'column',
+            margin: '0 4px',
+          }}
         >
           <Box h="100%" pos="relative">
             <Flex
@@ -152,11 +179,13 @@ function CssBattleInfoPanel() {
             <img
               alt=""
               title={i18n.t('target solution picture')}
-              className={cn('position-absolute', {
-                'cb-opacity-50 ': showStats,
-                invisible: showTargetControls || isLoading,
-              })}
-              style={{ width: '100%', height: '100%' }}
+              className={cn({ 'cb-opacity-50': showStats })}
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                visibility: showTargetControls || isLoading ? 'hidden' : 'visible',
+              }}
               ref={targetImgRef}
             />
           </Box>

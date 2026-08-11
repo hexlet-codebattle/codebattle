@@ -1,6 +1,16 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ActionIcon, Box, Button, Flex, Pagination, Table, Text, Title } from '@mantine/core';
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Flex,
+  Pagination,
+  Paper,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,7 +43,7 @@ interface Ranking {
 
 const getCustomEventTrClassName = (item: RankingItem, selectedId: number | null) =>
   cn(
-    'fw-bold cb-custom-event-tr-border',
+    'cb-custom-event-tr-border',
     {
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
@@ -45,9 +55,17 @@ const getCustomEventTrClassName = (item: RankingItem, selectedId: number | null)
     },
   );
 
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap pos-relative cb-custom-event-td border-0',
-);
+const tableDataCellClassName = 'pos-relative cb-custom-event-td';
+
+const tableDataCellStyle = {
+  padding: '0.25rem',
+  paddingLeft: '1.5rem',
+  marginTop: '0.5rem',
+  marginBottom: '0.5rem',
+  verticalAlign: 'middle',
+  whiteSpace: 'nowrap',
+  border: '0',
+} as const;
 
 interface PlayersRankingPanelProps {
   canModerate?: boolean;
@@ -153,48 +171,56 @@ function PlayersRankingPanel({
   };
 
   return (
-    <Box className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
+    <Paper className="cb-bg-panel cb-rounded" shadow="sm" p="md" style={{ overflow: 'auto' }}>
       <Box my="xs">
         {playersCount === 0 ? (
           <Text c="dimmed">{i18next.t('No players yet')}.</Text>
         ) : (
-          <Flex direction="column" flex={1} pos="relative" py="xs" className="mh-100 rounded-left">
+          <Flex
+            direction="column"
+            flex={1}
+            pos="relative"
+            py="xs"
+            style={{
+              borderTopLeftRadius: '0.5rem',
+              borderBottomLeftRadius: '0.5rem',
+              maxHeight: '100%',
+            }}
+          >
             <Flex
               justify="space-between"
               pb="xs"
               px="md"
-              style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+              style={{
+                borderBottom: '1px solid var(--mantine-color-default-border)',
+              }}
             >
               <Text fw={700}>{i18next.t('Ranking')}</Text>
               <Text size="xs" c="dimmed">
                 {i18next.t('Page')} {effectivePageNumber} {i18next.t('of')} {totalPages}
               </Text>
             </Flex>
-            <div className="d-flex cb-overflow-x-auto">
-              <Table className="cb-text-light cb-custom-event-table m-1" striped>
-                <colgroup>
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: canModerate ? '36%' : '40%' }} />
-                  <col style={{ width: canModerate ? '26%' : '30%' }} />
-                  <col style={{ width: canModerate ? '14%' : '18%' }} />
-                  <col style={{ width: canModerate ? '12%' : '0%' }} />
-                </colgroup>
+            <Flex className="cb-overflow-x-auto">
+              <Table className="cb-text-light cb-custom-event-table" striped>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
                       {i18next.t('Place')}
                     </Table.Th>
-                    <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
                       {i18next.t('Player')}
                     </Table.Th>
-                    <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
                       {i18next.t('Clan')}
                     </Table.Th>
-                    <Table.Th className="p-1 pl-4 font-weight-light border-0">
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
                       {i18next.t('Score')}
                     </Table.Th>
                     <Table.Th
-                      className="p-1 pl-4 font-weight-light border-0"
+                      c="dimmed"
+                      fw="normal"
+                      p="xs"
+                      pl={24}
                       aria-label={i18next.t('Actions')}
                     />
                   </Table.Tr>
@@ -208,17 +234,26 @@ function PlayersRankingPanel({
                           item,
                           currentUserClanId as number | null,
                         )}
+                        style={{ fontWeight: 700 }}
                       >
                         <Table.Td
                           style={{
+                            ...tableDataCellStyle,
                             borderTopLeftRadius: '0.5rem',
                             borderBottomLeftRadius: '0.5rem',
+                            width: '12%',
                           }}
                           className={tableDataCellClassName}
                         >
                           {item.place}
                         </Table.Td>
-                        <Table.Td className={tableDataCellClassName}>
+                        <Table.Td
+                          className={tableDataCellClassName}
+                          style={{
+                            ...tableDataCellStyle,
+                            width: canModerate ? '36%' : '40%',
+                          }}
+                        >
                           <div
                             title={item?.name}
                             className="cb-custom-event-name"
@@ -229,14 +264,20 @@ function PlayersRankingPanel({
                               maxWidth: '20ch',
                             }}
                           >
-                            {item?.lang && <LanguageIcon className="mr-1" lang={item.lang} />}
+                            {item?.lang && <LanguageIcon lang={item.lang} />}
                             <a href={`/users/${item.id}`}>
                               {(item?.name ?? '').slice(0, 10) +
                                 ((item?.name?.length ?? 0) > 10 ? '..' : '')}
                             </a>
                           </div>
                         </Table.Td>
-                        <Table.Td className={tableDataCellClassName}>
+                        <Table.Td
+                          className={tableDataCellClassName}
+                          style={{
+                            ...tableDataCellStyle,
+                            width: canModerate ? '26%' : '30%',
+                          }}
+                        >
                           <div
                             title={item?.clan}
                             className="cb-custom-event-name"
@@ -258,11 +299,21 @@ function PlayersRankingPanel({
                             )}
                           </div>
                         </Table.Td>
-                        <Table.Td className={tableDataCellClassName}>{item.score}</Table.Td>
+                        <Table.Td
+                          className={tableDataCellClassName}
+                          style={{
+                            ...tableDataCellStyle,
+                            width: canModerate ? '14%' : '18%',
+                          }}
+                        >
+                          {item.score}
+                        </Table.Td>
                         <Table.Td
                           style={{
+                            ...tableDataCellStyle,
                             borderTopRightRadius: '0.5rem',
                             borderBottomRightRadius: '0.5rem',
+                            width: canModerate ? '12%' : '0%',
                           }}
                           className={tableDataCellClassName}
                           aria-label={canModerate ? i18next.t('Actions') : i18next.t('Row spacer')}
@@ -285,7 +336,7 @@ function PlayersRankingPanel({
                   ))}
                 </Table.Tbody>
               </Table>
-            </div>
+            </Flex>
           </Flex>
         )}
       </Box>
@@ -304,7 +355,7 @@ function PlayersRankingPanel({
           </Flex>
         )}
       </Flex>
-    </Box>
+    </Paper>
   );
 }
 

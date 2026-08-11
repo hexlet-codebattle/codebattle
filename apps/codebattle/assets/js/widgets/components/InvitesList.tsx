@@ -85,7 +85,6 @@ function InvitesList({ list, followId, currentUserId }: InvitesListProps) {
             <Button
               variant="outline"
               color="cbSecondary"
-              className="cb-btn-outline-secondary"
               radius="md"
               size="compact-sm"
               px="xs"
@@ -107,7 +106,6 @@ function InvitesList({ list, followId, currentUserId }: InvitesListProps) {
             <Button
               variant="outline"
               color="cbSecondary"
-              className="cb-btn-outline-secondary"
               radius="md"
               size="compact-sm"
               px="xs"

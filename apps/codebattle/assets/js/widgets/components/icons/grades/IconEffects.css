@@ -2,7 +2,6 @@
 
 /* 1. Flicker (Rookie) */
 @keyframes flicker {
-
   0%,
   19%,
   21%,
@@ -43,7 +42,6 @@
 
 /* 3. Blink (Pro) - Applied to individual lines */
 @keyframes line-blink {
-
   0%,
   100% {
     stroke-opacity: 1;
@@ -68,14 +66,14 @@
 
 /* 4. Glow (Elite) & 6. Aura (Grand Slam) */
 @keyframes aura {
-
   0%,
   100% {
     filter: drop-shadow(0 0 5px currentColor);
   }
 
   50% {
-    filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+    filter: drop-shadow(0 0 15px currentColor)
+      drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
   }
 }
 
@@ -85,7 +83,6 @@
 
 /* 5. Pulsating (Masters) */
 @keyframes pulse {
-
   0%,
   100% {
     transform: scale(1);

@@ -115,7 +115,9 @@ function ChatWidget() {
           flex="0 1 auto"
           p={0}
           className="cb-border-color cb-game-control-container"
-          style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
+          style={{
+            borderLeft: '1px solid var(--mantine-color-default-border)',
+          }}
         >
           <Flex direction="column" justify="flex-start" style={{ overflowY: 'auto' }} h="100%">
             <Flex direction="column" px="md" py="md" w="100%">

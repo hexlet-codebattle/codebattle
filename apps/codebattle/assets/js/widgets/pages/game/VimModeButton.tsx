@@ -1,6 +1,6 @@
 import React from 'react';
 
-import cn from 'classnames';
+import { Button } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import editorModes from '../../config/editorModes';
@@ -23,22 +23,23 @@ function VimModeButton(_props: VimModeButtonProps) {
   // Use meaningful text, not just color, to indicate state
   const buttonText = isVimMode ? 'Vim' : 'Vim';
 
-  // Keep styling if desired, but ensure text clarifies the mode
-  const classNames = cn('btn btn-sm cb-rounded', {
-    'btn-outline-secondary cb-btn-outline-secondary': !isVimMode,
-    'btn-secondary cb-btn-secondary': isVimMode,
-  });
-
   return (
-    <button
+    <Button
       type="button"
-      className={classNames}
+      size="sm"
+      radius="md"
+      variant={isVimMode ? 'filled' : 'outline'}
+      style={{
+        backgroundColor: isVimMode ? '#3a3f50' : undefined,
+        borderColor: '#3a3f50',
+        color: isVimMode ? undefined : 'var(--mantine-color-dark-8)',
+      }}
       onClick={handleToggleVimMode}
       aria-pressed={isVimMode}
       title={isVimMode ? 'Disable Vim mode' : 'Enable Vim mode'}
     >
       {buttonText}
-    </button>
+    </Button>
   );
 }
 

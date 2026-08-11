@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Head } from '@inertiajs/react';
 
+import { Box } from '@mantine/core';
+
 import { TaskPreviewPage } from '../../widgets/App';
 
 type TaskPreviewPageProps = React.ComponentProps<typeof TaskPreviewPage>;
@@ -20,10 +22,10 @@ export default function TaskPreview({
   can_edit_task,
 }: TaskPreviewProps) {
   return (
-    <div className="w-100">
+    <Box w="100%">
       <Head title={page_title} />
       <TaskPreviewPage task={task} taskStats={task_stats} canEditTask={can_edit_task} />
       <div id="modal-root" style={{ left: 0, position: 'absolute', top: 0 }} />
-    </div>
+    </Box>
   );
 }

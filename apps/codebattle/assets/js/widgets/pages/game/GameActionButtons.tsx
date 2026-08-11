@@ -46,7 +46,6 @@ function CheckResultButton({ onClick, status }: CheckResultButtonProps) {
       radius="md"
       title={`${i18next.t('Check solution')}&#013;Ctrl + Enter`}
       data-guide-id="CheckResultButton"
-      data-placement="top"
       onClick={onClick}
       disabled={isDisabled}
       leftSection={
@@ -170,7 +169,10 @@ function GameActionButtons({
           </Button>
         </Menu.Target>
 
-        <Menu.Dropdown className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-blur">
+        <Menu.Dropdown
+          className="cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-blur"
+          style={{ height: 'auto' }}
+        >
           <ResetButtonDropDownItem onSelect={handleReset} status={resetBtnStatus} />
           {showGiveUpBtn && (
             <GiveUpButtonDropdownItem onSelect={modalShow} status={giveUpBtnStatus} />

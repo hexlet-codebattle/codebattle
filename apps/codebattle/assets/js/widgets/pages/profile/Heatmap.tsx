@@ -99,7 +99,10 @@ function Heatmap() {
   const { activities, meta } = activityData;
   const totalGames = activities.reduce((sum, activity) => sum + activity.count, 0);
   const title = meta.year
-    ? i18n.t('%{count} games in %{year}', { count: totalGames, year: meta.year })
+    ? i18n.t('%{count} games in %{year}', {
+        count: totalGames,
+        year: meta.year,
+      })
     : i18n.t('%{count} games in the last 365 days', { count: totalGames });
   const range = `${dayjs(meta.start_date).format('MMM D, YYYY')} - ${dayjs(meta.end_date).format('MMM D, YYYY')}`;
 
@@ -116,7 +119,10 @@ function Heatmap() {
 
     setTooltip({
       text: value
-        ? i18n.t('%{count} games on %{date}', { count: value.count, date: value.date })
+        ? i18n.t('%{count} games on %{date}', {
+            count: value.count,
+            date: value.date,
+          })
         : i18n.t('No games'),
       x: targetRect.left - wrapperRect.left + targetRect.width / 2,
       y: targetRect.top - wrapperRect.top - 8,

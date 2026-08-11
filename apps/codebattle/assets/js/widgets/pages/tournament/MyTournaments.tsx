@@ -156,30 +156,38 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
 
   return (
     <Flex direction="column" h="100%">
-      <Box ref={tableRef} className="table-responsive mvh-100 cb-overflow-y-scroll">
-        <Table striped className="mb-0">
-          <Table.Thead className="cb-text sticky-top">
+      <Box ref={tableRef} className="mvh-100 cb-overflow-y-scroll" style={{ overflowX: 'auto' }}>
+        <Table striped m={0}>
+          <Table.Thead className="cb-text" style={{ position: 'sticky', top: 0 }}>
             <Table.Tr>
-              <Table.Th className="p-3 border-0">{i18next.t('Name')}</Table.Th>
-              <Table.Th className="p-3 border-0">{i18next.t('Type')}</Table.Th>
-              <Table.Th className="p-3 border-0">{i18next.t('Level')}</Table.Th>
-              <Table.Th className="p-3 border-0">{i18next.t('State')}</Table.Th>
-              <Table.Th className="p-3 border-0">{i18next.t('Starts at')}</Table.Th>
-              <Table.Th className="p-3 border-0">{i18next.t('Actions')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Name')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Type')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Level')}</Table.Th>
+              <Table.Th p="md">{i18next.t('State')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Starts at')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Actions')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody className="cb-text">
             {tournaments.map((tournament) => (
               <Table.Tr key={tournament.id}>
-                <Table.Td className="p-3 align-middle cb-border-color">{tournament.name}</Table.Td>
-                <Table.Td className="p-3 align-middle text-break cb-border-color">
+                <Table.Td p="md" className="cb-border-color" style={{ verticalAlign: 'middle' }}>
+                  {tournament.name}
+                </Table.Td>
+                <Table.Td
+                  p="md"
+                  className="cb-border-color"
+                  style={{ verticalAlign: 'middle', wordBreak: 'break-word' }}
+                >
                   {tournament.type}
                 </Table.Td>
                 <Table.Td
-                  className="p-3 align-middle cb-border-color"
+                  p="md"
+                  className="cb-border-color"
+                  style={{ verticalAlign: 'middle' }}
                   aria-label={`Level: ${tournament.level}`}
                 >
-                  <Box className="bg-gray p-1 d-inline-block cb-rounded">
+                  <Box className="bg-gray cb-rounded" p={4} display="inline-block">
                     <Image
                       alt={tournament.level}
                       src={`/assets/images/levels/${tournament.level}.svg`}
@@ -188,13 +196,29 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
                     />
                   </Box>
                 </Table.Td>
-                <Table.Td className="p-3 align-middle text-break cb-border-color">
+                <Table.Td
+                  p="md"
+                  className="cb-border-color"
+                  style={{ verticalAlign: 'middle', wordBreak: 'break-word' }}
+                >
                   {tournament.state}
                 </Table.Td>
-                <Table.Td className="p-3 align-middle text-break text-nowrap cb-border-color">
+                <Table.Td
+                  p="md"
+                  className="cb-border-color"
+                  style={{
+                    verticalAlign: 'middle',
+                    whiteSpace: 'nowrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
                   {formatStartsAt(tournament.startsAt, userTimezone)}
                 </Table.Td>
-                <Table.Td className="p-3 align-middle text-nowrap cb-border-color">
+                <Table.Td
+                  p="md"
+                  className="cb-border-color"
+                  style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
+                >
                   <Button
                     component="a"
                     href={`/tournaments/${tournament.id}`}
@@ -212,7 +236,6 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
                     color="cbSecondary"
                     size="xs"
                     radius="md"
-                    className="cb-btn-outline-secondary"
                   >
                     {i18next.t('Edit')}
                   </Button>
@@ -232,7 +255,9 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
           borderTop: '1px solid var(--mantine-color-default-border)',
         }}
       >
-        {i18next.t('Total tournaments: %{count}', { count: pageInfo.totalEntries })}
+        {i18next.t('Total tournaments: %{count}', {
+          count: pageInfo.totalEntries,
+        })}
       </Box>
     </Flex>
   );

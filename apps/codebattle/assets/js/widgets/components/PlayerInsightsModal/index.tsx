@@ -161,7 +161,10 @@ function GradeStatsChart({ gradeStats }: { gradeStats?: GradeStat[] }) {
           <XAxis type="number" stroke="#999" />
           <YAxis type="category" dataKey="name" stroke="#999" width={100} />
           <Tooltip
-            contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}
+            contentStyle={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+            }}
             labelStyle={{ color: '#fff' }}
           />
           <Bar dataKey="points" name={i18n.t('Points')}>
@@ -201,7 +204,12 @@ function WinRateChart({ wins, total }: { wins: number; total: number }) {
               <Cell key={`cell-${entry.name}`} fill={entry.fill} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
       <Box style={{ marginTop: '-40px', position: 'relative' }}>
@@ -236,7 +244,10 @@ function PerformanceTrendChart({ trend }: { trend?: PerformanceTrendPoint[] }) {
           <XAxis dataKey="week" stroke="#999" />
           <YAxis stroke="#999" />
           <Tooltip
-            contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}
+            contentStyle={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+            }}
             labelStyle={{ color: '#fff' }}
           />
           <Legend />
@@ -520,7 +531,9 @@ function PlayerInsightsModal({
     <Modal show={show} onHide={onHide} size="90%" centered>
       <Modal.Header
         closeButton
-        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+        style={{
+          borderBottom: '1px solid var(--mantine-color-default-border)',
+        }}
       >
         <Box w="100%">
           <Group align="center" justify="space-between" wrap="nowrap">
@@ -589,7 +602,10 @@ function PlayerInsightsModal({
           pos="sticky"
           top={0}
           bg="dark.7"
-          style={{ borderBottom: '1px solid var(--mantine-color-default-border)', zIndex: 2 }}
+          style={{
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+            zIndex: 2,
+          }}
         >
           {[
             ['overview', i18n.t('Overview')],
@@ -654,7 +670,9 @@ function PlayerInsightsModal({
                       <Text fw={700} c="yellow">
                         #{player.place}{' '}
                         <Text component="span" c="dimmed" fz="sm">
-                          {i18n.t('/ Top %{percent}%', { percent: 100 - percentile })}
+                          {i18n.t('/ Top %{percent}%', {
+                            percent: 100 - percentile,
+                          })}
                         </Text>
                       </Text>
                     </StatRow>
@@ -711,7 +729,13 @@ function PlayerInsightsModal({
                       {ALL_GRADES.map((grade) => (
                         <Grid.Col key={grade} span={{ base: 6, md: 4 }}>
                           <Group align="center" gap="sm" wrap="nowrap">
-                            <Text fw={700} style={{ color: GRADE_COLORS[grade], minWidth: '90px' }}>
+                            <Text
+                              fw={700}
+                              style={{
+                                color: GRADE_COLORS[grade],
+                                minWidth: '90px',
+                              }}
+                            >
                               {formatGradeName(grade)}
                             </Text>
                             <Text fw={700} c="white">
@@ -994,7 +1018,11 @@ function PlayerInsightsModal({
                               y={50}
                               stroke="#ffc107"
                               strokeDasharray="3 3"
-                              label={{ value: '50%', fill: '#ffc107', fontSize: 10 }}
+                              label={{
+                                value: '50%',
+                                fill: '#ffc107',
+                                fontSize: 10,
+                              }}
                             />
                           </BarChart>
                         </ResponsiveContainer>
@@ -1041,7 +1069,9 @@ function PlayerInsightsModal({
                         </ResponsiveContainer>
                         <Box ta="center" style={{ marginTop: '-60px' }}>
                           <Text fz="1.75rem" fw={700} c="cyan">
-                            {i18n.t('Top %{percent}%', { percent: 100 - percentile })}
+                            {i18n.t('Top %{percent}%', {
+                              percent: 100 - percentile,
+                            })}
                           </Text>
                           <Text c="dimmed" size="sm">
                             {i18n.t('Better than %{percent}% of players', {

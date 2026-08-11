@@ -35,7 +35,11 @@ const meta = createSlice({
       state,
       {
         payload: { userId, langSlug },
-      }: PayloadAction<{ userId: number; langSlug: string; editorText?: string }>,
+      }: PayloadAction<{
+        userId: number;
+        langSlug: string;
+        editorText?: string;
+      }>,
     ) => {
       state[userId] = {
         ...state[userId],
@@ -47,7 +51,11 @@ const meta = createSlice({
       state,
       {
         payload: { userId, langSlug },
-      }: PayloadAction<{ userId: number; langSlug: string; editorText?: string }>,
+      }: PayloadAction<{
+        userId: number;
+        langSlug: string;
+        editorText?: string;
+      }>,
     ) => {
       state[userId] = {
         ...state[userId],

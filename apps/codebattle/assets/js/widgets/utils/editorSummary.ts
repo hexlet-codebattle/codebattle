@@ -178,7 +178,11 @@ export const updateTelemetryWindow = (
   const nextWindow =
     windowSummary ||
     createTelemetryWindow(
-      event as unknown as { offsetMs?: number; textLength?: number; langSlug?: string | null },
+      event as unknown as {
+        offsetMs?: number;
+        textLength?: number;
+        langSlug?: string | null;
+      },
     );
 
   nextWindow.eventCount += 1;

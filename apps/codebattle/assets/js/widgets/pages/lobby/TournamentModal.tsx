@@ -53,14 +53,26 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
         </Title>
         <Flex direction="column">
           <TournamentPreviewPanel
-            className="d-flex justify-content-center w-100 h-100"
             tournament={tournament as unknown as { grade: string }}
             start={start}
             end={end}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+            }}
           />
           <TournamentDescription
-            className="d-flex flex-column align-items-center cb-rounded w-100 h-100 p-3"
             tournament={tournament as unknown as { grade: string; description?: string }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%',
+              padding: '1rem',
+            }}
           />
         </Flex>
       </Modal.Body>

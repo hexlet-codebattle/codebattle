@@ -42,6 +42,27 @@
   /* Display ellipsis for overflow text */
 }
 
+.cb-custom-event-td {
+  position: relative;
+}
+
+.cb-col-12 {
+  width: 100%;
+  padding: 0.25rem;
+}
+
+@media (min-width: 992px) {
+  .cb-col-lg-6 {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .cb-col-xl-4 {
+    width: 33.3333%;
+  }
+}
+
 .cb-custom-event-td:not(:last-child)::after,
 .cb-custom-event-nav-item:not(:first-child)::after {
   content: '';

@@ -15,8 +15,12 @@ interface SideInfoPanelProps {
 function SideInfoPanel({ taskPanelProps, outputData }: SideInfoPanelProps) {
   return (
     <div
-      className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1"
-      style={{ height: 'calc(100vh - 92px)' }}
+      className="cb-col-12 cb-col-lg-6 cb-col-xl-4"
+      style={{
+        height: 'calc(100vh - 92px)',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
     >
       <div>
         <TaskAssignment {...taskPanelProps} />

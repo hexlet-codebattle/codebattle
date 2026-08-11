@@ -2,7 +2,7 @@ import React from 'react';
 
 import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ActionIcon, Box, Button, Flex, Paper, Text } from '@mantine/core';
+import { ActionIcon, Box, Button, Flex, Paper, Text, Title } from '@mantine/core';
 
 import getIconForGrade from '@/components/icons/Grades';
 import TournamentTimer from '@/components/TournamentTimer';
@@ -55,17 +55,19 @@ function TournamentTitle({ tournament }: TournamentTitleProps) {
 
   if (tournament.grade === grades.open) {
     return (
-      <Text
-        component="span"
-        title={title}
-        fw={700}
+      <Title
+        order={5}
         c="white"
         mb="xs"
-        truncate
-        className="h5 cb-tournament-title"
+        className="cb-tournament-title"
+        style={{
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+        }}
       >
         {title}
-      </Text>
+      </Title>
     );
   }
 
@@ -73,7 +75,7 @@ function TournamentTitle({ tournament }: TournamentTitleProps) {
 
   return (
     <Flex direction="column" align="baseline">
-      <Text component="span" fw={700} c="white" mb="xs" truncate className="h5">
+      <Text component="span" fw={700} c="white" mb="xs" truncate>
         {title}
       </Text>
       <Text component="span" size="sm">
@@ -114,7 +116,8 @@ function TournamentAction({ tournament, isAdmin = false }: TournamentActionProps
           onClick={openTournamentInfo}
           aria-label={i18n.t('Tournament details')}
           title={i18n.t('Tournament details')}
-          className="cb-tournament-info-icon-btn cb-btn-outline-secondary"
+          className="cb-tournament-info-icon-btn"
+          style={{ color: '#999', border: '1px solid #3a3f50' }}
         >
           <FontAwesomeIcon icon="info" />
         </ActionIcon>
@@ -189,8 +192,10 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
                 >
                   <FontAwesomeIcon
                     icon="flag-checkered"
-                    className="text-warning"
-                    style={iconSize}
+                    style={{
+                      ...iconSize,
+                      color: 'var(--mantine-color-yellow-6)',
+                    }}
                   />
                   {tournament.state ? i18n.t(mapTournamentTitleByState[tournament.state]) : null}
                 </Flex>
@@ -205,7 +210,13 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
                     c="white"
                     style={{ whiteSpace: 'nowrap' }}
                   >
-                    <FontAwesomeIcon icon="user" className="text-warning" style={iconSize} />
+                    <FontAwesomeIcon
+                      icon="user"
+                      style={{
+                        ...iconSize,
+                        color: 'var(--mantine-color-yellow-6)',
+                      }}
+                    />
                     {tournament.playersCount}
                   </Flex>
                 )}
@@ -240,7 +251,13 @@ function TournamentListItem({ tournament, isAdmin = false }: TournamentListItemP
                 c="white"
                 style={{ whiteSpace: 'nowrap' }}
               >
-                <FontAwesomeIcon icon="clock" className="text-warning" style={iconSize} />
+                <FontAwesomeIcon
+                  icon="clock"
+                  style={{
+                    ...iconSize,
+                    color: 'var(--mantine-color-yellow-6)',
+                  }}
+                />
                 {finishedAt}
               </Flex>
             )}

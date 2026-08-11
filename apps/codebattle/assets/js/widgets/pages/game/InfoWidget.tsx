@@ -90,7 +90,7 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
 
   return (
     <>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
+      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
         <Flex
           direction="column"
           h="100%"
@@ -99,7 +99,9 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
         >
           <Flex
             align="stretch"
-            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+            style={{
+              borderBottom: '1px solid var(--mantine-color-default-border)',
+            }}
           >
             <Tabs
               value={activeTab}
@@ -107,7 +109,7 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
               variant="default"
               style={{ flex: '0 0 50%' }}
             >
-              <Tabs.List className="text-uppercase font-weight-bold text-center" id="nav-tab">
+              <Tabs.List id="nav-tab" tt="uppercase" fw={700} ta="center">
                 <Tabs.Tab
                   value="task"
                   id="task-tab"
@@ -135,7 +137,9 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
               ta="center"
               px="xs"
               py="sm"
-              style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
+              style={{
+                borderLeft: '1px solid var(--mantine-color-default-border)',
+              }}
             >
               <TimerContainer />
             </Box>
@@ -166,7 +170,7 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
           </Box>
         </Flex>
       </div>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
+      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
         <ChatWidget />
       </div>
     </>

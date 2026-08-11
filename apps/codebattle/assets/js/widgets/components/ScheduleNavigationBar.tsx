@@ -13,12 +13,19 @@ interface ScheduleEvent {
 
 interface ScheduleNavigationTabProps {
   className?: string;
+  style?: React.CSSProperties;
   events: ScheduleEvent[];
   event?: ScheduleEvent;
   setEvent: (event?: ScheduleEvent) => void;
 }
 
-function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleNavigationTabProps) {
+function ScheduleNavigationTab({
+  className,
+  style,
+  events,
+  event,
+  setEvent,
+}: ScheduleNavigationTabProps) {
   const [prev, setPrevEvent] = useState<ScheduleEvent | undefined>();
   const [next, setNextEvent] = useState<ScheduleEvent | undefined>();
 
@@ -55,7 +62,7 @@ function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleN
   };
 
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       <Flex>
         {prev && (
           <UnstyledButton c="white" onClick={onClickPrev}>

@@ -60,7 +60,9 @@ function ScheduleLegend({ onChangeContext, loading, context }: ScheduleLegendPro
               type="button"
               role="tab"
               aria-selected={context === tab.context}
-              className={cn('cb-schedule-tab', { active: context === tab.context })}
+              className={cn('cb-schedule-tab', {
+                active: context === tab.context,
+              })}
               data-context={tab.context}
               onClick={onChangeContext}
               disabled={loading}

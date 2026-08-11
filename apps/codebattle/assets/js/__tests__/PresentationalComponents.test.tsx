@@ -121,7 +121,7 @@ describe('presentational components', () => {
 
     const list = screen.getByRole('list');
 
-    expect(list).toHaveClass('list-unstyled');
+    expect(list.style.listStyle).toBe('none');
     expect(list.children).toHaveLength(1);
     expect(list.firstElementChild).toHaveRole('listitem');
   });
