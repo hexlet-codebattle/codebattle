@@ -16,7 +16,7 @@ import i18n, { getSupportedLocale } from '../../../i18n';
 import { configureSound } from '../../lib/sound';
 import { userSettingsSelector } from '../../selectors';
 import { actions } from '../../slices';
-import { bootstrapAlertColor, darkThemeAlertStyles } from '../../ui/alert';
+import { alertVariantColor, darkThemeAlertStyles } from '../../ui/alert';
 
 import UserSettingsForm, {
   type PasswordSettingsFormValues,
@@ -187,7 +187,7 @@ function Notification({ notification, onClose }: NotificationProps) {
 
   return (
     <Alert
-      color={bootstrapAlertColor(variant)}
+      color={alertVariantColor(variant)}
       variant="light"
       radius="md"
       mb="sm"

@@ -19,19 +19,14 @@ import { type AppDispatch } from '@/slices';
 import { type Player } from '@/slices/initial';
 
 import i18next from '../../../i18n';
+import { rankingCellStyle } from '../../ui/table';
 
 const customEventTrClassName = 'cb-custom-event-tr';
 
 const tableDataCellStyle = {
-  padding: '0.25rem',
-  paddingLeft: '1.5rem',
-  marginTop: '0.5rem',
-  marginBottom: '0.5rem',
+  ...rankingCellStyle,
   marginLeft: '0.5rem',
-  verticalAlign: 'middle',
-  whiteSpace: 'nowrap',
-  border: '0',
-} as const;
+};
 
 interface ReportStateOption {
   label: string;

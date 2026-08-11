@@ -1,5 +1,5 @@
-// Maps a Bootstrap alert variant (success/danger/info/warning/secondary) to the
-// nearest Mantine color, used as the Mantine `color` fallback on <Alert>s.
+// Maps a legacy alert variant name (success/danger/info/warning/secondary) to
+// the nearest Mantine color, used as the Mantine `color` fallback on <Alert>s.
 const COLORS: Record<string, string> = {
   success: 'green',
   danger: 'red',
@@ -9,7 +9,7 @@ const COLORS: Record<string, string> = {
   primary: 'blue',
 };
 
-export const bootstrapAlertColor = (variant?: string) => COLORS[variant ?? ''] ?? 'blue';
+export const alertVariantColor = (variant?: string) => COLORS[variant ?? ''] ?? 'blue';
 
 interface DarkThemeVariant {
   gradient: readonly [string, string];

@@ -6,7 +6,7 @@ import noop from 'lodash/noop';
 
 import i18n from '../../../i18n';
 import Loading from '../../components/Loading';
-import { bootstrapAlertColor, darkThemeAlertStyles } from '../../ui/alert';
+import { alertVariantColor, darkThemeAlertStyles } from '../../ui/alert';
 
 import TournamentForm from './TournamentForm';
 import { formatDatetimeLocal, getBrowserTimezone } from './dateTime';
@@ -67,7 +67,7 @@ function Notification({ notification, onClose }: NotificationProps) {
 
   return (
     <Alert
-      color={bootstrapAlertColor(variant)}
+      color={alertVariantColor(variant)}
       variant="light"
       styles={darkThemeAlertStyles(variant)}
       style={{

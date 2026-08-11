@@ -19,7 +19,7 @@ import { type FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
 
 import i18n from '../../../i18n';
-import { bootstrapAlertColor } from '../../ui/alert';
+import { alertVariantColor } from '../../ui/alert';
 import schemas from '../../formik';
 
 // Sub-components are shared across forms with different value shapes, so the
@@ -330,7 +330,7 @@ function SignIn() {
         <Form onSubmit={formik.handleSubmit} id="login">
           <Title text="Sign In" />
           {searchParams.get('verification') === 'sent' && (
-            <Alert color={bootstrapAlertColor('info')} role="status" mb="md">
+            <Alert color={alertVariantColor('info')} role="status" mb="md">
               {i18n.t('We sent a verification email. Please confirm your email before signing in.')}
             </Alert>
           )}

@@ -11,7 +11,7 @@ import i18n from '../../../i18n';
 import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
 import * as selectors from '../../selectors';
-import { bootstrapAlertColor, darkThemeAlertStyles } from '../../ui/alert';
+import { alertVariantColor, darkThemeAlertStyles } from '../../ui/alert';
 
 function GameResult() {
   const currentUserId = useSelector((state: RootState) => selectors.currentUserIdSelector(state));
@@ -59,7 +59,7 @@ function GameResult() {
   if (result) {
     return (
       <Alert
-        color={bootstrapAlertColor(result.alertStyle)}
+        color={alertVariantColor(result.alertStyle)}
         variant="light"
         styles={darkThemeAlertStyles(result.alertStyle, Boolean(result.isWin))}
         style={{ borderRadius: 0, marginTop: '0.5rem' }}

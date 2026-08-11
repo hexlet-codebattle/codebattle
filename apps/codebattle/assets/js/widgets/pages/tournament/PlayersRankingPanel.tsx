@@ -22,6 +22,7 @@ import { type AppDispatch } from '@/slices';
 import LanguageIcon from '../../components/LanguageIcon';
 import { requestNearestRankingPage, requestRankingPage } from '../../middlewares/Tournament';
 import { kickTournamentPlayer } from '../../middlewares/TournamentAdmin';
+import { rankingCellClassName, rankingCellStyle } from '../../ui/table';
 
 interface RankingItem {
   id: number;
@@ -55,17 +56,9 @@ const getCustomEventTrClassName = (item: RankingItem, selectedId: number | null)
     },
   );
 
-const tableDataCellClassName = 'pos-relative cb-custom-event-td';
+const tableDataCellClassName = rankingCellClassName;
 
-const tableDataCellStyle = {
-  padding: '0.25rem',
-  paddingLeft: '1.5rem',
-  marginTop: '0.5rem',
-  marginBottom: '0.5rem',
-  verticalAlign: 'middle',
-  whiteSpace: 'nowrap',
-  border: '0',
-} as const;
+const tableDataCellStyle = rankingCellStyle;
 
 interface PlayersRankingPanelProps {
   canModerate?: boolean;

@@ -1,6 +1,5 @@
 import React, { useContext, memo, useState } from 'react';
 
-import cn from 'classnames';
 import i18next from 'i18next';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -89,7 +88,6 @@ function GameOverTimer({ timeoutSeconds, time, durationSec }: GameOverTimerProps
   const [hours, minutes, seconds] = remaining.split(':').map(Number);
   const remainingSeconds = hours * 3600 + minutes * 60 + seconds;
   const progress = timeoutSeconds ? 100 - Math.ceil((remainingSeconds / timeoutSeconds) * 100) : 0;
-  const progressBgColor = cn('cb-timer-progress');
   const progressBgStyle = {
     background:
       remainingSeconds > 45
@@ -104,7 +102,7 @@ function GameOverTimer({ timeoutSeconds, time, durationSec }: GameOverTimerProps
       <span style={{ fontFamily: 'monospace' }}>
         {i18next.t('game_over')}:{remaining}
       </span>
-      <div className={progressBgColor} style={{ width: `${progress}%`, ...progressBgStyle }} />
+      <div className="cb-timer-progress" style={{ width: `${progress}%`, ...progressBgStyle }} />
     </>
   );
 }
