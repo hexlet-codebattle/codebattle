@@ -96,7 +96,6 @@ interface EditorContainerProps {
   type?: string;
   orientation?: string;
   cardClassName?: string;
-  editorContainerClassName?: string;
   theme?: string;
   editorState?: EditorState | null;
   editorHeight?: unknown;
@@ -110,7 +109,6 @@ function EditorContainer({
   type,
   orientation,
   cardClassName,
-  editorContainerClassName,
   theme,
   editorState,
   editorHeight,
@@ -375,7 +373,7 @@ function EditorContainer({
   const isChecking = editorCurrent.matches('checking');
   const isWon = player?.result === 'won';
 
-  const pannelBackground = cn(editorContainerClassName, {
+  const pannelBackground = cn({
     'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
   });
 

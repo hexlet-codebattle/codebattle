@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done — **verified 2026-08-11**: no `react-bootstrap` import anywhere in source (single hit is a comment in `PopoverStickOnHover.tsx`), no dep in `apps/codebattle/package.json`, `@mantine/core`/`@mantine/hooks` at `^9.5.1`. `bootstrap@4.6.2` correctly retained (heex, Phase 3) |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; remaining: react-select swap (**5 sites**, see below), `RoomWidget`'s Bootstrap row wrapper + its `col-*` children, `SoundToggle` (really Phase 3), `TournamentStatisticsModal`'s footer button (missed by the game pass), and the documented passthrough/typography/design leftovers |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; remaining: `SoundToggle` (really Phase 3), and the documented passthrough/typography/design leftovers |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -260,22 +260,12 @@ classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
 `cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
 
-**Remaining leaves: 2** (audited 2026-08-07 with a whole-word Bootstrap-token
+**Remaining leaves: 1** (audited 2026-08-07 with a whole-word Bootstrap-token
 grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
-classes and `User*` passthrough props). Both need a decision or belong to
-Phase 3 — the "just do the work" leaves are done, and the two lib-backed leaves
-that only needed their Bootstrap *classes* stripped are done too (see below):
+classes and `User*` passthrough props). The lib-backed leaves only needed
+their Bootstrap *classes* stripped — done (see below); the react-select
+**dependency** swap landed 2026-08-12 (see Phase-2 log):
 
-- **Blocked on a lib swap / behavior change (1):**
-  - `LanguagePickerView` — react-select. Leave until all react-select sites
-    convert together, so the dependency can be dropped in one PR. Still carries
-    Bootstrap classes. **The swap is 5 component sites, not 4** (verified
-    2026-08-11 by grepping importers): `LanguagePickerView`, `TaskChoice`,
-    `PlayerPicker`, `ReportsPanel`, **and `CreateGameDialog`** (`OpponentSelect`'s
-    `AsyncSelect` — noted in the lobby log but previously missing from this
-    list). The same PR must also retire `js/__mocks__/react-select.tsx` and the
-    react-select usage in `__tests__/CreateGameDialog.test.tsx`, or
-    `react-select@^5.10.2` cannot actually leave `package.json`.
 - **Really Phase 3 (1):** `SoundToggle` — its `menu` variant renders a Bootstrap
   `dropdown-item` **inside a server heex dropdown**, so it can't be a pure
   React-side swap.
@@ -998,6 +988,40 @@ are now converted.
   and passes (text-only assertions). ⚠️ QA: the tag-badge × hit area, the
   `cb-btn-outline-secondary` outline still renders on the new compact buttons,
   and the Table header against `cb-bg-panel` rows.
+
+Done (2026-08-12): **react-select lib swap** + **the `RoomWidget` grid slice**
+— the last two structural Phase-2 leftovers.
+
+- **react-select swap.** New shared **`CbSelect`** component
+  (`widgets/components/CbSelect.tsx`) replaces react-select at all **5 sites**
+  (audited): `LanguagePickerView`, `TaskChoice`, `PlayerPicker`, `ReportsPanel`,
+  and `CreateGameDialog`'s `OpponentSelect` (`AsyncSelect`). `PlayerPicker` was
+  **deleted** (dead code — its consumer was already gone). The component is a
+  Mantine `Combobox` (single-select, searchable) with an `AsyncSelect`-style
+  `loadOptions` API, a dark-themed dropdown matching the app's look, and
+  keyboard support. The `react-select` mocks (`__mocks__/react-select.tsx`,
+  `__mocks__/react-select/async.tsx`) are **deleted**; `CreateGameDialog.test.tsx`
+  was updated to exercise the CbSelect UI directly (already wrapped in
+  `MantineTestProvider`); `react-select@^5.10.2` is **out of `package.json`**
+  and the lockfile.
+- **`RoomWidget` grid slice.** The already-converted `<Flex wrap="wrap"
+  className="cb-game">` wrapper (previous slice) and its `cb-col-*` children are
+  now fully Mantine. The four custom grid classes were **deleted from
+  custom.scss**: `.cb-col-12` (→ `w="100%" p="xs"`), `.cb-col-lg-6` (→
+  `w={{ base: '100%', lg: '50%' }}`), `.cb-col-xl-4` (→ `w={{ base: '100%',
+  lg: '50%', xl: '33.3333%' }}`); `.cb-height-info` was deleted from style.scss
+  (its 300px min-height + `h={{ base: 'auto', xs: 300 }}`, the `@media (max-width:
+  $sm)` height override becomes the `xs` responsive stop) and the
+  `.cb-game > [class*='col-'] { min-width: 0 }` rule (→ `miw={0}` per column).
+  `InfoPanel`, `InfoWidget`/`CssBattleInfoWidget`, `SideInfoPanel` now render
+  `<Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} …>` wrappers (SideInfoPanel
+  keeps its `h="calc(100vh - 92px)"` and adds the `xl` column stop);
+  `GameWidget` wraps both duel `EditorContainer`s in `Box` columns and drops the
+  now-unused `editorContainerClassName` prop (its `cn()` collapsed to just
+  `bg-winner`). ⚠️ QA: the battle-room two-column layout at `lg`+, the
+  `bg-winner` gold flash (now only on the inner card div, no longer bleeding
+  into the column padding), and the `SideInfoPanel` single-view (CSS-battle /
+  editor view) columns.
 
 ### Conversion vocabulary
 

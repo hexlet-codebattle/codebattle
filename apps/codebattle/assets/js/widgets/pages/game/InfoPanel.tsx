@@ -33,7 +33,7 @@ function InfoPanel({
 
   return (
     <>
-      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
+      <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
         <Box
           className="cb-bg-panel cb-rounded"
           h="100%"
@@ -126,10 +126,10 @@ function InfoPanel({
             </Tabs.Panel>
           </Tabs>
         </Box>
-      </div>
-      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
+      </Box>
+      <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
         {isTournamentGame ? <TournamentCurrentPlayerRankingPanel /> : <ChatWidget />}
-      </div>
+      </Box>
     </>
   );
 }

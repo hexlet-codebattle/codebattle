@@ -14,13 +14,12 @@ interface SideInfoPanelProps {
 
 function SideInfoPanel({ taskPanelProps, outputData }: SideInfoPanelProps) {
   return (
-    <div
-      className="cb-col-12 cb-col-lg-6 cb-col-xl-4"
-      style={{
-        height: 'calc(100vh - 92px)',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+    <Box
+      w={{ base: '100%', lg: '50%', xl: '33.3333%' }}
+      p="xs"
+      miw={0}
+      h="calc(100vh - 92px)"
+      style={{ display: 'flex', flexDirection: 'column' }}
     >
       <div>
         <TaskAssignment {...taskPanelProps} />
@@ -44,7 +43,7 @@ function SideInfoPanel({ taskPanelProps, outputData }: SideInfoPanelProps) {
           <Output hideContent={taskPanelProps.hideContent} sideOutput={outputData} />
         </Stack>
       </Box>
-    </div>
+    </Box>
   );
 }
 

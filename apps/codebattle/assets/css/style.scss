@@ -1661,10 +1661,6 @@ main > #app {
   min-width: 250px;
 }
 
-.cb-game > [class*='col-'] {
-  min-width: 0;
-}
-
 .cb-game-chat-layout,
 .cb-game-chat-container {
   min-width: 0;
@@ -2019,32 +2015,6 @@ $cb-bronze-bottom: #4a3223;
 
 div.cb-dropdown-menu {
   transform: translate3d(-100%, 0, 0);
-}
-
-.cb-height-info {
-  min-height: 300px;
-  height: 300px;
-
-  .nav-link.active {
-    color: white;
-    border-bottom: 1px;
-    background-color: $cb-secondary-hover-background;
-  }
-
-  .nav-link:hover {
-    color: white;
-    background-color: $cb-secondary-hover-background;
-  }
-
-  .nav-link:not(.active):hover {
-    color: white;
-    background-color: $cb-secondary-hover-background;
-    border-bottom: 1px;
-  }
-
-  @media (max-width: $sm) {
-    height: auto;
-  }
 }
 
 @keyframes scale {

@@ -123,18 +123,6 @@ const TournamentStatisticsModal = NiceModal.create(() => {
           </Stack>
         </Group>
       </Modal.Body>
-      {/* <Modal.Footer>
-        <div className="d-flex justify-content-end w-100">
-          <Button
-            onClick={toggleStatisticsMode}
-            className="btn btn-success text-white cb-rounded"
-          >
-            <FontAwesomeIcon icon={showFullStatistics ? 'toggle-on' : 'toggle-off'} className="mr-2" />
-            {showFullStatistics ? 'Open current round' : 'Open full statistics'}
-          </Button>
-        </div>
-      </Modal.Footer>
-      */}
     </Modal>
   );
 });

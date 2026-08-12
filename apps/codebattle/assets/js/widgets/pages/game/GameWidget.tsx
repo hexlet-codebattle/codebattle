@@ -113,32 +113,34 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
     <>
       {viewMode === BattleRoomViewModes.duel && (
         <>
-          <EditorContainer
-            orientation="left"
-            cardClassName="cb-card"
-            editorContainerClassName="cb-col-12 cb-col-lg-6"
-            editorMachine={editorMachine}
-            {...editors[0]}
-          >
-            {(params) => (
-              <EditorWrapper id="main-editor" className="cb-editor-height">
-                <ExtendedEditor {...params} />
-              </EditorWrapper>
-            )}
-          </EditorContainer>
-          <EditorContainer
-            orientation="right"
-            cardClassName="cb-card"
-            editorContainerClassName="cb-col-12 cb-col-lg-6"
-            editorMachine={editorMachine}
-            {...editors[1]}
-          >
-            {(params) => (
-              <RightSide output={editors[1].output}>
-                <ExtendedEditor {...params} />
-              </RightSide>
-            )}
-          </EditorContainer>
+          <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0}>
+            <EditorContainer
+              orientation="left"
+              cardClassName="cb-card"
+              editorMachine={editorMachine}
+              {...editors[0]}
+            >
+              {(params) => (
+                <EditorWrapper id="main-editor" className="cb-editor-height">
+                  <ExtendedEditor {...params} />
+                </EditorWrapper>
+              )}
+            </EditorContainer>
+          </Box>
+          <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0}>
+            <EditorContainer
+              orientation="right"
+              cardClassName="cb-card"
+              editorMachine={editorMachine}
+              {...editors[1]}
+            >
+              {(params) => (
+                <RightSide output={editors[1].output}>
+                  <ExtendedEditor {...params} />
+                </RightSide>
+              )}
+            </EditorContainer>
+          </Box>
         </>
       )}
       {viewMode === BattleRoomViewModes.single && (
@@ -148,19 +150,20 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
           px="xs"
           style={{ height: 'calc(100vh - 92px)' }}
         >
-          <EditorContainer
-            orientation="side"
-            cardClassName="cb-card"
-            editorContainerClassName="cb-col-12"
-            editorMachine={editorMachine}
-            {...editors[0]}
-          >
-            {(params) => (
-              <EditorWrapper id="main-editor">
-                <ExtendedEditor {...params} />
-              </EditorWrapper>
-            )}
-          </EditorContainer>
+          <Box w="100%" p="xs" miw={0}>
+            <EditorContainer
+              orientation="side"
+              cardClassName="cb-card"
+              editorMachine={editorMachine}
+              {...editors[0]}
+            >
+              {(params) => (
+                <EditorWrapper id="main-editor">
+                  <ExtendedEditor {...params} />
+                </EditorWrapper>
+              )}
+            </EditorContainer>
+          </Box>
         </Flex>
       )}
     </>

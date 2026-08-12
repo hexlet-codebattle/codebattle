@@ -90,7 +90,7 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
 
   return (
     <>
-      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
+      <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
         <Flex
           direction="column"
           h="100%"
@@ -169,10 +169,10 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
             )}
           </Box>
         </Flex>
-      </div>
-      <div className="cb-col-12 cb-col-lg-6 cb-height-info">
+      </Box>
+      <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
         <ChatWidget />
-      </div>
+      </Box>
     </>
   );
 }
