@@ -25,10 +25,13 @@ export default function Rooms({ disabled }: RoomsProps) {
         </Button>
       </Menu.Target>
 
-      <Menu.Dropdown className="cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel">
+      <Menu.Dropdown
+        className="cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat"
+        bg="cbHighlight"
+      >
         {rooms.map((room) => (
           <Menu.Item
-            className="cb-text"
+            c="cbText"
             key={room.targetUserId || room.name}
             onClick={() => dispatch(actions.setActiveRoom(room))}
           >

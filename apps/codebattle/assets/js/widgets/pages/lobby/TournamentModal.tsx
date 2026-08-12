@@ -35,7 +35,7 @@ export const TournamentModal = NiceModal.create(({ tournament }: TournamentModal
   }
 
   return (
-    <Modal size="lg" show={modal.visible} onHide={modal.hide} contentClassName="cb-text">
+    <Modal size="lg" show={modal.visible} onHide={modal.hide}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>
           {tournament.grade !== grades.open && (

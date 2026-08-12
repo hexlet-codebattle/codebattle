@@ -250,7 +250,7 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const handleCancel = useCallback(() => setModalShowing(false), [setModalShowing]);
 
   return (
-    <Modal contentClassName="cb-text" show={modalShowing} onHide={handleCancel}>
+    <Modal show={modalShowing} onHide={handleCancel}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{i18n.t('Tournament details')}</Modal.Title>
       </Modal.Header>

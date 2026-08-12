@@ -68,7 +68,9 @@ function UserName({
         <FontAwesomeIcon icon={faCircle} className={onlineIndicatorClassName} />
       )}
       {!user.isBot && <LanguageIcon lang={lang} />}
-      {user.isBot && <FontAwesomeIcon className="cb-text" icon={faRobot} transform="up-1" />}
+      {user.isBot && (
+        <FontAwesomeIcon icon={faRobot} transform="up-1" color="var(--mantine-color-cbText-6)" />
+      )}
       {hideLink ? (
         <Text
           component="span"

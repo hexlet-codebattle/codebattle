@@ -114,11 +114,7 @@ function TournamentMainControlButtons({
 
   return (
     <>
-      <Modal
-        show={restartConfirmationModalShowing}
-        onHide={closeRestartConfirmationModal}
-        contentClassName="cb-text"
-      >
+      <Modal show={restartConfirmationModalShowing} onHide={closeRestartConfirmationModal}>
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Reset tournament progress')}</Modal.Title>
         </Modal.Header>
@@ -156,11 +152,7 @@ function TournamentMainControlButtons({
           </Flex>
         </Modal.Footer>
       </Modal>
-      <Modal
-        show={retryConfirmationModalShowing}
-        onHide={closeRetryConfirmationModal}
-        contentClassName="cb-text"
-      >
+      <Modal show={retryConfirmationModalShowing} onHide={closeRetryConfirmationModal}>
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Retry tournament')}</Modal.Title>
         </Modal.Header>
@@ -197,11 +189,7 @@ function TournamentMainControlButtons({
           </Flex>
         </Modal.Footer>
       </Modal>
-      <Modal
-        show={finishConfirmationModalShowing}
-        onHide={closeFinishConfirmationModal}
-        contentClassName="cb-text"
-      >
+      <Modal show={finishConfirmationModalShowing} onHide={closeFinishConfirmationModal}>
         <Modal.Header className="cb-border-color" closeButton>
           <Modal.Title>{i18n.t('Finish tournament')}</Modal.Title>
         </Modal.Header>

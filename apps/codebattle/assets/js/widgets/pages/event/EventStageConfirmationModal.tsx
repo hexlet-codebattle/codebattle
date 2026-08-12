@@ -20,7 +20,7 @@ const EventStageConfirmationModal = NiceModal.create<EventStageConfirmationModal
     const modal = useModal(ModalCodes.eventStageModal);
 
     return (
-      <Modal contentClassName="cb-text" show={modal.visible} onHide={modal.hide}>
+      <Modal show={modal.visible} onHide={modal.hide}>
         <Modal.Header closeButton>
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>

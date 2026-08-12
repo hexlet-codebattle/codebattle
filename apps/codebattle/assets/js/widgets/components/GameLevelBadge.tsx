@@ -9,7 +9,13 @@ interface GameLevelBadgeProps {
 function GameLevelBadge({ level }: GameLevelBadgeProps) {
   return (
     <Tooltip label={level} position="right" withArrow>
-      <Box className="bg-gray cb-rounded" p="xs" ta="center" title={level}>
+      <Box
+        className="bg-gray"
+        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+        p="xs"
+        ta="center"
+        title={level}
+      >
         <img alt={level} src={`/assets/images/levels/${level}.svg`} />
       </Box>
     </Tooltip>

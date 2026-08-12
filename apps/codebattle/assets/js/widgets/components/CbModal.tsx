@@ -102,7 +102,7 @@ const CbModal = (({
   keyboard,
   size,
   className,
-  contentClassName = 'cb-text',
+  contentClassName,
   dialogClassName,
   children,
 }: CbModalProps) => (
@@ -117,7 +117,7 @@ const CbModal = (({
   >
     <MantineModal.Overlay />
     <MantineModal.Content
-      style={{ overflow: 'hidden' }}
+      style={{ overflow: 'hidden', color: 'var(--mantine-color-cbText-6)' }}
       className={cn(contentClassName, dialogClassName)}
     >
       {children}

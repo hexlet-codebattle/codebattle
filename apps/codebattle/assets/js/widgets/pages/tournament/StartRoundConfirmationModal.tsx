@@ -79,7 +79,7 @@ function StartRoundConfirmationModal({
   const text = getModalText(modalShowing);
 
   return (
-    <Modal show={!!modalShowing} onHide={onClose} contentClassName="cb-text">
+    <Modal show={!!modalShowing} onHide={onClose}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

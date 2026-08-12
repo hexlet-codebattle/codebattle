@@ -723,7 +723,13 @@ function PlayerInsightsModal({
                   <WinRateChart wins={player.total_wins_count} total={player.total_games_count} />
 
                   {/* Tournaments by Grade */}
-                  <Card className="cb-bg-panel" p="md" radius="md" mb="md" mt="md">
+                  <Card
+                    style={{ background: 'var(--cb-bg-panel-background)' }}
+                    p="md"
+                    radius="md"
+                    mb="md"
+                    mt="md"
+                  >
                     <SectionHeading>{i18n.t('Tournaments by Grade')}</SectionHeading>
                     <Grid>
                       {ALL_GRADES.map((grade) => (
@@ -749,7 +755,11 @@ function PlayerInsightsModal({
 
                   {/* Quick comparison with median */}
                   {medianStats && (
-                    <Card className="cb-bg-panel" p="md" radius="md">
+                    <Card
+                      style={{ background: 'var(--cb-bg-panel-background)' }}
+                      p="md"
+                      radius="md"
+                    >
                       <SectionHeading>{i18n.t('vs Median Player')}</SectionHeading>
                       <Grid fz="sm">
                         <Grid.Col span={6}>
@@ -863,7 +873,12 @@ function PlayerInsightsModal({
                   <Grid mt="lg">
                     {/* Radar Chart - Overall Comparison */}
                     <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
-                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                      <Card
+                        style={{ background: 'var(--cb-bg-panel-background)' }}
+                        p="md"
+                        radius="md"
+                        h="100%"
+                      >
                         <SectionHeading>{i18n.t('Stats vs Median (Normalized)')}</SectionHeading>
                         <ResponsiveContainer width="100%" height={250}>
                           <RadarChart
@@ -942,7 +957,12 @@ function PlayerInsightsModal({
 
                     {/* Bar Chart - Points Comparison */}
                     <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
-                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                      <Card
+                        style={{ background: 'var(--cb-bg-panel-background)' }}
+                        p="md"
+                        radius="md"
+                        h="100%"
+                      >
                         <SectionHeading>{i18n.t('Your Stats vs Median')}</SectionHeading>
                         <ResponsiveContainer width="100%" height={250}>
                           <BarChart
@@ -989,7 +1009,12 @@ function PlayerInsightsModal({
 
                     {/* Win Rate Comparison */}
                     <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
-                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                      <Card
+                        style={{ background: 'var(--cb-bg-panel-background)' }}
+                        p="md"
+                        radius="md"
+                        h="100%"
+                      >
                         <SectionHeading>{i18n.t('Win Rate Comparison')}</SectionHeading>
                         <ResponsiveContainer width="100%" height={200}>
                           <BarChart
@@ -1031,7 +1056,12 @@ function PlayerInsightsModal({
 
                     {/* Percentile Gauge */}
                     <Grid.Col span={{ base: 12, md: 6 }} mb="lg">
-                      <Card className="cb-bg-panel" p="md" radius="md" h="100%">
+                      <Card
+                        style={{ background: 'var(--cb-bg-panel-background)' }}
+                        p="md"
+                        radius="md"
+                        h="100%"
+                      >
                         <SectionHeading>{i18n.t('Your Ranking Percentile')}</SectionHeading>
                         <ResponsiveContainer width="100%" height={200}>
                           <PieChart>
@@ -1088,7 +1118,11 @@ function PlayerInsightsModal({
                 {detailedStats?.grade_stats && (
                   <Grid mt="sm">
                     <Grid.Col span={{ base: 12, md: 6 }}>
-                      <Card className="cb-bg-panel" p="md" radius="md">
+                      <Card
+                        style={{ background: 'var(--cb-bg-panel-background)' }}
+                        p="md"
+                        radius="md"
+                      >
                         <SectionHeading>{i18n.t('Points Distribution by Grade')}</SectionHeading>
                         <ResponsiveContainer width="100%" height={200}>
                           <BarChart
@@ -1126,7 +1160,11 @@ function PlayerInsightsModal({
                       </Card>
                     </Grid.Col>
                     <Grid.Col span={{ base: 12, md: 6 }}>
-                      <Card className="cb-bg-panel" p="md" radius="md">
+                      <Card
+                        style={{ background: 'var(--cb-bg-panel-background)' }}
+                        p="md"
+                        radius="md"
+                      >
                         <SectionHeading>{i18n.t('Wins by Grade')}</SectionHeading>
                         <ResponsiveContainer width="100%" height={200}>
                           <BarChart

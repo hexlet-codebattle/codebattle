@@ -77,7 +77,7 @@ function ChatActionModal({
     modalShowing.action === 'sendMessage' ? openDirect : createBattleInvite;
 
   return (
-    <Modal contentClassName="cb-text" show={modalShowing.opened} onHide={handleCloseModal}>
+    <Modal show={modalShowing.opened} onHide={handleCloseModal}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

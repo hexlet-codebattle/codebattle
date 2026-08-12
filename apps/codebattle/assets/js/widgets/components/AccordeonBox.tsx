@@ -64,7 +64,7 @@ function SubMenu({
 
   return (
     <Box
-      className="cb-bg-highlight-panel"
+      bg="cbHighlight"
       c="white"
       style={{
         padding: '0.75rem 1.25rem',

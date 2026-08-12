@@ -144,7 +144,7 @@ function GameActionButtons({
   };
 
   const renderModal = () => (
-    <Modal show={modalShowing} onHide={modalHide} contentClassName="cb-text">
+    <Modal show={modalShowing} onHide={modalHide}>
       <Modal.Body className="cb-bg-panel" style={{ textAlign: 'center' }}>
         {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>

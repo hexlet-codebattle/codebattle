@@ -98,7 +98,14 @@ function InvitesContainer() {
           )}
         </UnstyledButton>
       </Popover.Target>
-      <Popover.Dropdown className="cb-bg-panel cb-border-color cb-text cb-rounded" p={0}>
+      <Popover.Dropdown
+        style={{
+          background: 'var(--cb-bg-panel-background)',
+          borderRadius: 'var(--mantine-radius-md)',
+        }}
+        c="cbText"
+        p={0}
+      >
         {followId && (
           <Group justify="center" p="sm">
             {followName

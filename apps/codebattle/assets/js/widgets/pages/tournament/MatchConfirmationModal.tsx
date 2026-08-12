@@ -153,11 +153,7 @@ function MatchConfirmationModal({
   const openBtnClassName = hasCustomEventStyles ? 'cb-custom-event-btn-primary' : undefined;
 
   return (
-    <Modal
-      contentClassName="cb-text cb-match-confirmation-modal"
-      show={modalShowing}
-      onHide={handleCancel}
-    >
+    <Modal contentClassName="cb-match-confirmation-modal" show={modalShowing} onHide={handleCancel}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

@@ -108,9 +108,9 @@ function FeedbackWidget() {
         {i18n.t('Feedback')}
       </Button>
       {isOpen && (
-        <Modal centered show={isOpen} onHide={closeModal} contentClassName="cb-text">
+        <Modal centered show={isOpen} onHide={closeModal}>
           <form onSubmit={onSubmit}>
-            <Modal.Header className="cb-border-color" closeButton>
+            <Modal.Header closeButton>
               <Modal.Title>{i18n.t('Send feedback')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -146,7 +146,7 @@ function FeedbackWidget() {
                 required
               />
             </Modal.Body>
-            <Modal.Footer className="cb-border-color">
+            <Modal.Footer>
               <Button
                 type="button"
                 color="cbSecondary"

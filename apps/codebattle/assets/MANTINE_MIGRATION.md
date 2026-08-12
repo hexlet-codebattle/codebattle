@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done — **verified 2026-08-11**: no `react-bootstrap` import anywhere in source (single hit is a comment in `PopoverStickOnHover.tsx`), no dep in `apps/codebattle/package.json`, `@mantine/core`/`@mantine/hooks` at `^9.5.1`. `bootstrap@4.6.2` correctly retained (heex, Phase 3) |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; the react-select swap, the `RoomWidget` grid slice, the passthrough/typography leftovers, and the `TaskAssignment` task-zoom port are done (2026-08-12); remaining: `SoundToggle` (really Phase 3) and the kept `cb-*`/custom design classes |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; the react-select swap, the `RoomWidget` grid slice, the passthrough/typography leftovers, the `TaskAssignment` task-zoom port, and the **design-class theme port** (shared `cb-bg-panel`/`cb-bg-highlight-panel`/`cb-border-color`/`cb-rounded`/`cb-text`/`cb-text-light` now have `theme.ts` homes; `widgets/components/**` + all `CbModal` `contentClassName="cb-text"` callers converted, page-level class usages still work via SCSS until Phase 3) are done (2026-08-12); remaining: `SoundToggle` (really Phase 3) |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -1062,6 +1062,37 @@ last real Bootstrap-class usage in React markup.
   and the kept `cb-*`/custom design classes (`btn-yellow`, `btn-outline-gold`,
   `btn-hover`, `text-gold`, `bg-gray`, `.cb-card` etc.).
 
+Done (2026-08-12, design-class slice): **shared design classes get theme homes** —
+the React side of the shared `.cb-*` design classes moves into the Mantine theme;
+the SCSS definitions stay (heex templates + react-contexify `ChatContextMenu`
+still use them; Phase 3 deletes them).
+
+- `theme.ts` gains `cbPanel` (#2a2a35 = `$cb-bg-panel`), `cbHighlight`
+  (#1c1c24 = `$cb-bg-highlight-panel`), `cbText` (#999 = `$cb-text-color`),
+  `cbTextLight` (#ddd = `$cb-text-light-color`) color tuples; the
+  `cssVariablesResolver` exposes `--cb-bg-panel-background` (the legacy
+  `.cb-bg-panel` 135° gradient) as a theme var.
+- Converted `widgets/components/**`: `Rooms` (Menu.Dropdown bg + Menu.Item c),
+  `AccordeonBox`, `TournamentDescription` (Paper/Box), `UserName` (bot icon
+  color), `UserStats` (avatar radius), `InvitesContainer` + `PopoverStickOnHover`
+  (dropdown bg/color/radius), `GameLevelBadge` (radius), `PlayerInsightsModal`
+  (8 Card backgrounds via the gradient var). `cb-border-color` is redundant on
+  Mantine surfaces (default border already #4c4c5a) — dropped, not inlined.
+- `CbModal` bakes the `cb-text` color into `Modal.Content` (it was the default
+  `contentClassName`), and all 14 `contentClassName="cb-text"` callers
+  (`FeedbackWidget`, `EventModal`, `ChatActionModal`, `TournamentModal`,
+  `DetailsModal`, `TournamentDescriptionModal`, `TournamentMainControlButtons`,
+  `StartRoundConfirmationModal`, `AdminWidget`, `GameActionButtons`,
+  `EventStageConfirmationModal`, `MatchConfirmationModal`) dropped the redundant
+  prop. This is the design leftover from the 2026-08-12 leftover-slice note.
+- Kept on purpose: `bg-gray`/`btn-hover`/`btn-outline-gold`/`text-gold`/`cb-blur`
+  (custom, not in the "real homes" list), `ChatContextMenu`'s react-contexify
+  classes (lib boundary), and all page-level usages of the shared classes (still
+  work via SCSS; convert as pages touch them or Phase 3).
+- ⚠️ QA: `--cb-bg-panel-background` gradient vs flat `bg="cbPanel"` on the
+  `InvitesContainer`/`PlayerInsightsModal` surfaces; dropdown radius now uses
+  the Mantine radius var instead of the `.cb-rounded` class.
+
 ### Conversion vocabulary
 
 | Bootstrap | Mantine |
@@ -1091,11 +1122,22 @@ last real Bootstrap-class usage in React markup.
 
 Defined in `assets/css/style.scss` (~4.7k lines) and `external.scss`/`custom.scss`.
 These are **design**, not utilities — port to the Mantine theme or CSS modules,
-don't inline:
-`cb-bg-panel`, `cb-bg-highlight-panel`, `cb-border-color`, `cb-btn-secondary`,
-`cb-btn-success`, `cb-btn-outline-secondary`, `cb-custom-event-btn-*`,
-`cb-rounded`, `cb-text`/`cb-text-light`, `alert-dark-theme`, the `cb-tournament-*`
-/ `cb-schedule-*` / `cb-settings-*` / `cb-replayer-*` component styles.
+don't inline. Ported **2026-08-12** into `theme.ts` (React side stops using the
+SCSS classes; the SCSS definitions stay for the 53 heex templates + the
+react-contexify `ChatContextMenu` menu, and get deleted in Phase 3):
+`cb-bg-panel` → `bg="cbPanel"` / `style={{ background: 'var(--cb-bg-panel-background)' }}`
+(the legacy class's gradient is exposed as a theme CSS var),
+`cb-bg-highlight-panel` → `bg="cbHighlight"`,
+`cb-border-color` → default border (`--mantine-color-default-border` already
+#4c4c5a, so `withBorder`/`Modal.Header`/`Modal.Footer` need no class),
+`cb-rounded` → `style={{ borderRadius: 'var(--mantine-radius-md)' }}`
+(= `$cb-border-radius` 0.5rem),
+`cb-text` → `c="cbText"` / baked into `CbModal` content,
+`cb-text-light` → `c="cbTextLight"`.
+Still in SCSS (Phase 3 cleanup): `cb-btn-secondary`/`cb-btn-success`/`cb-btn-outline-secondary`
+(themes/Button vars already cover them — zero React call sites left),
+`cb-custom-event-btn-*`, `alert-dark-theme`, and the `cb-tournament-*` /
+`cb-schedule-*` / `cb-settings-*` / `cb-replayer-*` component styles.
 
 ### Sequencing (leaf → container, one PR each)
 

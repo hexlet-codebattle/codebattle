@@ -49,12 +49,69 @@ const cbSuccess: MantineColorsTuple = [
   '#1f5c3f',
 ];
 
+// Panel background (`$cb-bg-panel` #2a2a35 — normal surfaces).
+const cbPanel: MantineColorsTuple = [
+  '#f2f2f4',
+  '#e2e2e6',
+  '#c3c3cc',
+  '#a0a0ae',
+  '#7e7e90',
+  '#5c5c72',
+  '#2a2a35',
+  '#25252f',
+  '#202029',
+  '#1a1a22',
+];
+
+// Highlighted panel background (`$cb-bg-highlight-panel` #1c1c24 — darker,
+// used for headers/toolbars/dropdowns on top of `cbPanel`).
+const cbHighlight: MantineColorsTuple = [
+  '#f2f2f4',
+  '#e1e1e6',
+  '#c0c0cb',
+  '#9b9bad',
+  '#78788e',
+  '#55556c',
+  '#1c1c24',
+  '#18181f',
+  '#14141a',
+  '#0f0f15',
+];
+
+// Secondary text (`$cb-text-color` #999 — muted copy on panels).
+const cbText: MantineColorsTuple = [
+  '#f5f5f5',
+  '#eaeaea',
+  '#d4d4d4',
+  '#bfbfbf',
+  '#aaaaaa',
+  '#a2a2a2',
+  '#999999',
+  '#8c8c8c',
+  '#808080',
+  '#737373',
+];
+
+// Light secondary text (`$cb-text-light-color` #ddd — captions/hints).
+const cbTextLight: MantineColorsTuple = [
+  '#fdfdfd',
+  '#fafafa',
+  '#f3f3f3',
+  '#ececec',
+  '#e5e5e5',
+  '#e1e1e1',
+  '#dddddd',
+  '#c9c9c9',
+  '#b6b6b6',
+  '#a3a3a3',
+];
+
 // Spacing scale mirrors Bootstrap 4 spacers (0.25 / 0.5 / 1 / 1.5 / 3 rem) so
 // converting `mb-2 p-3 …` to Mantine style props (`mb="sm" p="md"`) keeps the
 // same visual rhythm during the incremental migration.
 export const theme = createTheme({
   primaryColor: 'brand',
-  colors: { brand, cbSecondary, cbSuccess },
+  colors: { brand, cbSecondary, cbSuccess, cbPanel, cbHighlight, cbText, cbTextLight },
   fontFamily: 'Montserrat, sans-serif',
   fontFamilyMonospace: "'Source Code Pro', monospace",
   defaultRadius: 'sm',
@@ -82,8 +139,13 @@ export const theme = createTheme({
 // with the app's `$cb-border-color`, so idiomatic `<Paper withBorder>` matches
 // the legacy `.cb-border-color` panels during the migration. `cb-rounded`
 // (= `$cb-border-radius` 0.5rem) maps to Mantine `radius="md"`.
+// `--cb-bg-panel-background` is the legacy `.cb-bg-panel` gradient (plain
+// `bg="cbPanel"` is flat; sites that used the bare `.cb-bg-panel` class get the
+// gradient via this var).
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
-  variables: {},
+  variables: {
+    '--cb-bg-panel-background': 'linear-gradient(135deg, #2a2a35 0%, #171720 100%)',
+  },
   light: {},
   dark: {
     '--mantine-color-default-border': '#4c4c5a',

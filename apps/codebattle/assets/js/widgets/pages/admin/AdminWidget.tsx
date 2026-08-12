@@ -222,7 +222,7 @@ interface ConnectionModalProps {
 
 function ConnectionModal({ connection, onHide }: ConnectionModalProps) {
   return (
-    <Modal contentClassName="cb-text" show={!!connection} onHide={onHide}>
+    <Modal show={!!connection} onHide={onHide}>
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>Connection details</Modal.Title>
       </Modal.Header>

@@ -64,14 +64,8 @@ function TournamentDescription({ className, style, tournament }: TournamentDescr
             <span>{i18n.t('Impact: Advancing in the Codebattle programmer rankings')}</span>
           </Stack>
           <Center w="100%">
-            <Paper
-              mt="sm"
-              radius="md"
-              withBorder
-              className="cb-border-color"
-              style={{ backgroundColor: 'transparent' }}
-            >
-              <Box className="cb-bg-highlight-panel cb-border-color" ta="center" p="xs">
+            <Paper mt="sm" radius="md" withBorder style={{ backgroundColor: 'transparent' }}>
+              <Box bg="cbHighlight" ta="center" p="xs">
                 <Text component="span" c="white" style={{ fontFamily: 'Arial, sans-serif' }}>
                   {i18n.t('View League Ranking Points System')}
                 </Text>

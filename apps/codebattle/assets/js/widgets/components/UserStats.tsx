@@ -148,8 +148,7 @@ function UserStats({ data, user: userInfo }: UserStatsProps) {
         <Group align="flex-start" justify="space-between" wrap="nowrap">
           <Group align="center" gap="sm" wrap="nowrap" c="white">
             <img
-              className="cb-rounded"
-              style={{ maxHeight: '42px', width: '42px' }}
+              style={{ maxHeight: '42px', width: '42px', borderRadius: 'var(--mantine-radius-md)' }}
               src={avatarUrl}
               alt={i18next.t('User avatar')}
             />
