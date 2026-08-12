@@ -255,10 +255,9 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
 
   return (
     <Box
-      
       h="100%"
       style={{
-          borderRadius: 'var(--mantine-radius-md)',
+        borderRadius: 'var(--mantine-radius-md)',
         background: `linear-gradient(145deg, ${colors.panelAlt} 0%, ${colors.ink} 100%)`,
         border: `1px solid ${accent}`,
         boxShadow: `0 16px 40px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04)`,
@@ -279,9 +278,9 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
             fw={700}
             px="xs"
             py={4}
-            
+
             style={{
-          borderRadius: 'var(--mantine-radius-md)',
+              borderRadius: 'var(--mantine-radius-md)',
               border: `1px solid ${accent}`,
               color: accent,
               backgroundColor: 'rgba(255, 255, 255, 0.02)',
@@ -294,10 +293,10 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
           <Flex
             align="center"
             justify="center"
-            
+
             mr="lg"
             style={{
-          borderRadius: 'var(--mantine-radius-md)',
+              borderRadius: 'var(--mantine-radius-md)',
               width: '92px',
               height: '92px',
               flexShrink: 0,
@@ -311,9 +310,13 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
               component="img"
               src={avatarUrl}
               alt={player.name}
-              
+
               style={{
-          borderRadius: 'var(--mantine-radius-md)', width: '72px', height: '72px', objectFit: 'cover' }}
+                borderRadius: 'var(--mantine-radius-md)',
+                width: '72px',
+                height: '72px',
+                objectFit: 'cover',
+              }}
             />
           </Flex>
           <Box flex={1} style={{ minWidth: 0 }}>
@@ -335,11 +338,11 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
               <Flex
                 align="center"
                 justify="center"
-                
+
                 mr="md"
                 mb="xs"
                 style={{
-          borderRadius: 'var(--mantine-radius-md)',
+                  borderRadius: 'var(--mantine-radius-md)',
                   width: '34px',
                   height: '34px',
                   color: colors.silver,
@@ -356,9 +359,9 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
                   mb="xs"
                   px="md"
                   py="xs"
-                  
+
                   style={{
-          borderRadius: 'var(--mantine-radius-md)',
+                    borderRadius: 'var(--mantine-radius-md)',
                     color: colors.platinum,
                     backgroundColor: 'rgba(164, 170, 179, 0.08)',
                     border: '1px solid rgba(164, 170, 179, 0.12)',
@@ -388,24 +391,23 @@ function MatchRow({ game, players }: MatchRowProps) {
   const gameStateTone = getGameStateTone(game.state);
   const firstResultStyle: React.CSSProperties = {
     background: firstResultTone.background,
-    borderRadius: "var(--mantine-radius-md)",
+    borderRadius: 'var(--mantine-radius-md)',
     color: firstResultTone.color,
     border: `1px solid ${firstResultTone.borderColor}`,
   };
   const secondResultStyle: React.CSSProperties = {
     background: secondResultTone.background,
-    borderRadius: "var(--mantine-radius-md)",
+    borderRadius: 'var(--mantine-radius-md)',
     color: secondResultTone.color,
     border: `1px solid ${secondResultTone.borderColor}`,
   };
 
   return (
     <Box
-      
       p={{ base: 'md', lg: 'lg' }}
       mb="md"
       style={{
-          borderRadius: 'var(--mantine-radius-md)',
+        borderRadius: 'var(--mantine-radius-md)',
         background: `linear-gradient(140deg, ${colors.panel} 0%, ${colors.ink} 100%)`,
         border: `1px solid ${colors.line}`,
         boxShadow: '0 14px 30px rgba(0, 0, 0, 0.18)',
@@ -466,7 +468,7 @@ function MatchRow({ game, players }: MatchRowProps) {
               fw={700}
               px="md"
               py="xs"
-              
+
               style={{
                 borderRadius: 'var(--mantine-radius-md)',
                 ...gameStateTone,
@@ -495,7 +497,8 @@ function MatchRow({ game, players }: MatchRowProps) {
         mt="md"
         pt="md"
         style={{
-          borderTop: `1px solid ${colors.line}` }}
+          borderTop: `1px solid ${colors.line}`,
+        }}
       >
         <Text size="xs" style={{ color: colors.platinum }}>
           {i18n.t('Duration: %{duration}', {
@@ -521,11 +524,10 @@ interface SummaryStatProps {
 function SummaryStat({ label, value, tone }: SummaryStatProps) {
   return (
     <Box
-      
       p="md"
       h="100%"
       style={{
-          borderRadius: 'var(--mantine-radius-md)',
+        borderRadius: 'var(--mantine-radius-md)',
         background: `linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01))`,
         border: `1px solid ${tone}`,
       }}
@@ -560,11 +562,10 @@ function HeadToHeadPage({ headToHead }: HeadToHeadPageProps) {
     >
       <Box w="100%" maw={1140} mx="auto" px="md">
         <Box
-          
           p={{ base: 'lg', lg: 'xl' }}
           mb="md"
           style={{
-          borderRadius: 'var(--mantine-radius-md)',
+            borderRadius: 'var(--mantine-radius-md)',
             background: `linear-gradient(135deg, ${colors.ink} 0%, ${colors.panel} 55%, ${colors.panelAlt} 100%)`,
             border: `1px solid ${colors.line}`,
             boxShadow: '0 24px 60px rgba(0, 0, 0, 0.28)',
@@ -630,11 +631,10 @@ function HeadToHeadPage({ headToHead }: HeadToHeadPageProps) {
 
         {games.length === 0 ? (
           <Box
-            
             p="lg"
             ta="center"
             style={{
-          borderRadius: 'var(--mantine-radius-md)',
+              borderRadius: 'var(--mantine-radius-md)',
               background: `linear-gradient(145deg, ${colors.panel} 0%, ${colors.ink} 100%)`,
               border: `1px solid ${colors.line}`,
             }}

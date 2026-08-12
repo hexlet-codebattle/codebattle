@@ -225,7 +225,14 @@ interface StatCardProps {
 
 function StatCard({ label, value }: StatCardProps) {
   return (
-    <Stack align="center" gap={4} p="md" bg="cbHighlight" flex={1} style={{ borderRadius: 'var(--mantine-radius-md)' }}>
+    <Stack
+      align="center"
+      gap={4}
+      p="md"
+      bg="cbHighlight"
+      flex={1}
+      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+    >
       <Text size="xs" tt="uppercase" c="cbText" style={{ letterSpacing: 1 }}>
         {label}
       </Text>

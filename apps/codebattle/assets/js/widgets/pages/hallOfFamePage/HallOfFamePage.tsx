@@ -359,12 +359,7 @@ function HallOfFamePage({
   const top3 = currentSeasonResults.slice(0, 3);
 
   return (
-    <Box
-      c="cbText"
-      mih="100vh"
-      py="xl"
-      style={{ background: "var(--cb-bg-panel-background)" }}
-    >
+    <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
       <Box w="100%" maw={1140} mx="auto" px="md">
         <Title order={1} className="text-gold" ta="center" mb="xl" fw={700}>
           {i18n.t('Hall of Fame')}

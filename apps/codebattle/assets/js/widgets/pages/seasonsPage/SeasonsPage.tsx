@@ -150,13 +150,7 @@ interface SeasonCardProps {
 
 function SeasonCard({ season }: SeasonCardProps) {
   return (
-    <Paper
-      withBorder
-      radius="md"
-      shadow="sm"
-      h="100%"
-      bg="cbPanel" className="cb-seasons-card"
-    >
+    <Paper withBorder radius="md" shadow="sm" h="100%" bg="cbPanel" className="cb-seasons-card">
       <Flex direction="column" h="100%" p={{ base: 'md', lg: 'lg' }}>
         <Flex
           direction={{ base: 'column', sm: 'row' }}
@@ -198,12 +192,7 @@ function SeasonCard({ season }: SeasonCardProps) {
 
 function SeasonsPage({ seasons }: SeasonsPageProps) {
   return (
-    <Box
-      c="cbText"
-      mih="100vh"
-      py="xl"
-      style={{ background: "var(--cb-bg-panel-background)" }}
-    >
+    <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
       <Box w="100%" maw={1140} mx="auto" px="md">
         <Paper
           radius="md"

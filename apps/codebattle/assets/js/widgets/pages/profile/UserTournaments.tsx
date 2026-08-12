@@ -237,7 +237,6 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
               >
                 <Table.Td>
                   <span
-                    
                     style={{
                       borderRadius: 'var(--mantine-radius-md)',
                       padding: '0.25rem 0.5rem',

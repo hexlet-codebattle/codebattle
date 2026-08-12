@@ -86,7 +86,7 @@ const AnimationModal = NiceModal.create(() => {
           </Flex>
         )}
       </Modal.Body>
-      <Modal.Footer >
+      <Modal.Footer>
         {/* {tournamentId && ( */}
         {/*   <a */}
         {/*     href={`/tournaments/${tournamentId}`} */}

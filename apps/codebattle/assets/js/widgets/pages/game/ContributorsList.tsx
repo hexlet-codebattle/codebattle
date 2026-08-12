@@ -32,7 +32,7 @@ const renderContributorsList = (contributors: Contributor[] | null) => (
       ? contributors.map(({ avatarLink, link }) => (
           <li key={avatarLink}>
             <a href={link}>
-<img
+              <img
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 width="40"
                 height="40"

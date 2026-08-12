@@ -411,13 +411,7 @@ function GameMlPage() {
   }, [batches]);
 
   return (
-    <Box
-      c="cbText"
-      w="100%"
-      px="md"
-      py="sm"
-      style={{ background: '#0f172a', minHeight: '100vh' }}
-    >
+    <Box c="cbText" w="100%" px="md" py="sm" style={{ background: '#0f172a', minHeight: '100vh' }}>
       <Flex justify="space-between" align="center" mb="md">
         <Title order={4} mb={0}>
           Game #{gameId} — bot/human signal review

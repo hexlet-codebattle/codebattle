@@ -106,7 +106,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
           </Stack>
         </Stack>
       </Modal.Body>
-      <Modal.Footer >
+      <Modal.Footer>
         <Button
           onClick={modal.hide}
           color="cbSecondary"

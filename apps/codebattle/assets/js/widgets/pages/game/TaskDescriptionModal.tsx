@@ -41,7 +41,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
           />
         </Card>
       </Modal.Body>
-      <Modal.Footer >
+      <Modal.Footer>
         <Button
           onClick={modal.hide}
           color="cbSecondary"

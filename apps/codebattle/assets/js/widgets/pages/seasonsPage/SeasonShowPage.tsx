@@ -184,12 +184,7 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
 
   if (!season) {
     return (
-      <Box
-      c="cbText"
-      mih="100vh"
-      py="xl"
-      style={{ background: "var(--cb-bg-panel-background)" }}
-    >
+      <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
         <Box w="100%" maw={1140} mx="auto" px="md">
           <Paper radius="md" shadow="sm" bg="cbPanel">
             <Box ta="center" py="xl">
@@ -228,12 +223,7 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
   }[seasonStatus];
 
   return (
-    <Box
-      c="cbText"
-      mih="100vh"
-      py="xl"
-      style={{ background: "var(--cb-bg-panel-background)" }}
-    >
+    <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
       <Box w="100%" maw={1140} mx="auto" px="md">
         {/* Header */}
         <Flex
