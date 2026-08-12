@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done — **verified 2026-08-11**: no `react-bootstrap` import anywhere in source (single hit is a comment in `PopoverStickOnHover.tsx`), no dep in `apps/codebattle/package.json`, `@mantine/core`/`@mantine/hooks` at `^9.5.1`. `bootstrap@4.6.2` correctly retained (heex, Phase 3) |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; the react-select swap, the `RoomWidget` grid slice, the passthrough/typography leftovers, the `TaskAssignment` task-zoom port, and the **design-class theme port** (shared `cb-bg-panel`/`cb-bg-highlight-panel`/`cb-border-color`/`cb-rounded`/`cb-text`/`cb-text-light` now have `theme.ts` homes; `widgets/components/**` + all `CbModal` `contentClassName="cb-text"` callers converted, page-level class usages still work via SCSS until Phase 3) are done (2026-08-12); remaining: `SoundToggle` (really Phase 3) |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | ✅ done — all React pages converted; the react-select swap, the `RoomWidget` grid slice, the passthrough/typography leftovers, the `TaskAssignment` task-zoom port, and the **design-class theme port** (shared `cb-bg-panel`/`cb-bg-highlight-panel`/`cb-border-color`/`cb-rounded`/`cb-text`/`cb-text-light` now have `theme.ts` homes; `widgets/components/**` + all `CbModal` `contentClassName="cb-text"` callers + **all page-level usages** converted, only heex/react-contexify use the SCSS classes until Phase 3) are done (2026-08-12); remaining: `SoundToggle` (really Phase 3) |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -1087,8 +1087,23 @@ still use them; Phase 3 deletes them).
   prop. This is the design leftover from the 2026-08-12 leftover-slice note.
 - Kept on purpose: `bg-gray`/`btn-hover`/`btn-outline-gold`/`text-gold`/`cb-blur`
   (custom, not in the "real homes" list), `ChatContextMenu`'s react-contexify
-  classes (lib boundary), and all page-level usages of the shared classes (still
-  work via SCSS; convert as pages touch them or Phase 3).
+  classes (lib boundary), and `cb-text-skeleton`/`cb-text-danger`/`cb-text-success`.
+- **Page sweep done (2026-08-12, follow-up slices):** all remaining page-level
+  usages of the shared design classes are ported — `game/`+`gameMl/` slice, an
+  "remaining page groups" slice (`inertia/pages/*`, `admin`, `seasonsPage`,
+  `hallOfFamePage`, `headToHeadPage`, `registration`, `profile`, `schedule`,
+  `settings`, `taskPreview`, `RoomWidget`), and a
+  `tournament`+`lobby`+`groupTournament` slice. Non-toolbar surfaces use the
+  `--cb-bg-panel-background` gradient var (page shells, big cards), small
+  panels use flat `bg="cbPanel"`; `cb-rounded` → `border-radius:
+  var(--mantine-radius-md)` (or the `radius`/`bg` props where the component
+  accepts them: Button/Paper/Card/Menu.Dropdown/Popover.Dropdown);
+  `cb-rounded-left`/`cb-rounded-top` → the two corner radius styles;
+  Table rows with the conditional `'cb-bg-panel'` cn() class now get a
+  conditional inline `backgroundColor` (FinishedLeaderboard/PlayersRankingPanel/
+  TournamentClanTable row background unchanged). Only `cb-text-skeleton`,
+  the react-contexify `Menu` in `ChatContextMenu`, comments, and the
+  `--cb-bg-panel-background` var references remain matching the sweep regex.
 - ⚠️ QA: `--cb-bg-panel-background` gradient vs flat `bg="cbPanel"` on the
   `InvitesContainer`/`PlayerInsightsModal` surfaces; dropdown radius now uses
   the Mantine radius var instead of the `.cb-rounded` class.
