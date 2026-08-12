@@ -134,7 +134,7 @@ newgrp docker
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=hexlet-codebattle/codebattle&type=Date)](https://star-history.com/#hexlet-codebattle/codebattle&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=hexlet-codebattle/codebattle&type=Date)](https://star-history.dera.page/#hexlet-codebattle/codebattle&Date)
 
 ---
 
