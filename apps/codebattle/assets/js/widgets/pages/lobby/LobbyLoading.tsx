@@ -7,7 +7,8 @@ import i18n from '../../../i18n';
 function LobbyLoading() {
   return (
     <Box
-      className="cb-text cb-lobby-loading"
+      className="cb-lobby-loading"
+      c="cbText"
       role="status"
       aria-live="polite"
       mx="auto"
@@ -40,7 +41,9 @@ function LobbyLoading() {
             my={{ base: 'sm', lg: 0 }}
           >
             <Flex
-              className="cb-bg-panel cb-rounded cb-lobby-loading-main"
+              className="cb-lobby-loading-main"
+              bg="cbPanel"
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
               direction="column"
               p="md"
             >
@@ -73,14 +76,16 @@ function LobbyLoading() {
             my={{ base: 'sm', lg: 0 }}
           >
             <Flex
-              className="cb-bg-panel cb-rounded cb-lobby-loading-profile"
+              className="cb-lobby-loading-profile"
+              bg="cbPanel"
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
               direction="column"
               align="center"
               p="md"
             >
               <Box component="span" className="cb-text-skeleton cb-lobby-loading-avatar" mb="md" />
               <Box component="span" className="cb-text-skeleton" w="50%" mb="md" />
-              <Flex className="cb-bg-highlight-panel" w="100%" p="md">
+              <Flex bg="cbHighlight" w="100%" p="md">
                 <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
                 <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
                 <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
@@ -90,7 +95,12 @@ function LobbyLoading() {
         </Flex>
         <Flex direction={{ base: 'column', lg: 'row' }} p={0}>
           <Box w={{ base: '100%', lg: '66.6667%' }} p={0} pr={{ lg: 'sm' }}>
-            <Box className="cb-bg-panel cb-rounded cb-lobby-loading-secondary" p="md">
+            <Box
+              className="cb-lobby-loading-secondary"
+              bg="cbPanel"
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              p="md"
+            >
               <Box component="span" className="cb-text-skeleton" display="block" w="25%" mb="lg" />
               <Box component="span" className="cb-text-skeleton" display="block" w="100%" mb="md" />
               <Box component="span" className="cb-text-skeleton" display="block" w="75%" mb="md" />
@@ -103,7 +113,12 @@ function LobbyLoading() {
             pl={{ lg: 'sm' }}
             mt={{ base: 'sm', lg: 0 }}
           >
-            <Box className="cb-bg-panel cb-rounded cb-lobby-loading-secondary" p="md">
+            <Box
+              className="cb-lobby-loading-secondary"
+              bg="cbPanel"
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              p="md"
+            >
               <Box component="span" className="cb-text-skeleton" display="block" w="50%" mb="lg" />
               <Box component="span" className="cb-text-skeleton" display="block" w="100%" mb="md" />
               <Box component="span" className="cb-text-skeleton" display="block" w="75%" />

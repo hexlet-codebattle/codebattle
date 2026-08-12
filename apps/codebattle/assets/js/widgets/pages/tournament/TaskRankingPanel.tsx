@@ -61,7 +61,7 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }: TaskRankingPan
       mt={{ base: 8, lg: 0 }}
       mb={8}
       px={4}
-      className="cb-rounded cb-overflow-x-auto cb-overflow-y-auto"
+      className="cb-overflow-x-auto cb-overflow-y-auto"
       style={{ position: 'relative' }}
     >
       <Table striped className="cb-custom-event-table">
@@ -107,8 +107,11 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }: TaskRankingPan
                 onClick={handleTaskSelectClick}
                 data-task-id={item.taskId}
                 fw={700}
-                style={{ cursor: 'pointer' }}
-                className={cn('cb-text-light cb-custom-event-tr', {
+                style={{
+                  cursor: 'pointer',
+                  color: 'var(--mantine-color-cbTextLight-6)',
+                }}
+                className={cn('cb-custom-event-tr', {
                   'cb-custom-event-bg-success': item.level === 'easy',
                   'cb-custom-event-bg-orange': item.level === 'elementary',
                   'cb-custom-event-bg-blue': item.level === 'medium',

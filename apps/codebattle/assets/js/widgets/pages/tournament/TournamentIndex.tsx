@@ -25,7 +25,7 @@ function TournamentIndex({
   const browserTimezone = getBrowserTimezone(userTimezone);
 
   return (
-    <Box className="cb-text" mb="md">
+    <Box c="cbText" mb="md">
       <Flex justify="center" mb="lg">
         <div className="cb-schedule-tabs" role="tablist">
           <button

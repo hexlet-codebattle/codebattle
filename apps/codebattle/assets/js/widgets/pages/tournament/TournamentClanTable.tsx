@@ -24,7 +24,6 @@ const getCustomEventTrClassName = (item: ClanRankingItem, selectedId: unknown) =
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
       'cb-bronze-place-bg': item?.place === 3,
-      'cb-bg-panel': !item?.place || item.place > 3,
     },
     {
       'cb-custom-event-tr-brown-border': item.id === selectedId,
@@ -89,7 +88,12 @@ function TournamentClanTable() {
                           fontWeight: 700,
                           color: 'var(--mantine-color-dark-8)',
                         }
-                      : undefined
+                      : {
+                          backgroundColor:
+                            !item?.place || item.place > 3
+                              ? 'var(--mantine-color-cbPanel-6)'
+                              : undefined,
+                        }
                   }
                 >
                   {rankingType !== 'byClan' && (

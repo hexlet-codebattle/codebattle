@@ -130,8 +130,7 @@ function TournamentGameCreatePanel({
       w="100%"
       p="md"
       mb="xs"
-      className="cb-rounded cb-border-color"
-      style={{ border: '1px solid #4c4c5a' }}
+      style={{ border: '1px solid #4c4c5a', borderRadius: 'var(--mantine-radius-md)' }}
     >
       {!selectedPlayer && (
         <>
@@ -140,8 +139,8 @@ function TournamentGameCreatePanel({
             alt={i18n.t('Waiting opponent avatar')}
             src={tournamentEmptyPlayerUrl}
             display={{ base: 'none', md: 'block' }}
-            className="cb-tournament-profile-avatar bg-gray cb-rounded"
-            style={{ padding: '1rem' }}
+            className="cb-tournament-profile-avatar bg-gray"
+            style={{ padding: '1rem', borderRadius: 'var(--mantine-radius-md)' }}
           />
           <Flex justify="space-between" align="center" direction="column">
             <NativeSelect
@@ -247,8 +246,8 @@ function TournamentGameCreatePanel({
                 alt={`${selectedPlayer.name} avatar`}
                 src={selectedPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(selectedPlayer)}
                 display={{ base: 'none', md: 'block' }}
-                className="cb-tournament-profile-avatar cb-rounded"
-                style={{ padding: '0.5rem' }}
+                className="cb-tournament-profile-avatar"
+                style={{ padding: '0.5rem', borderRadius: 'var(--mantine-radius-md)' }}
               />
               {opponentPlayer && (
                 <>
@@ -262,8 +261,8 @@ function TournamentGameCreatePanel({
                       tournamentEmptyPlayerUrl
                     }
                     display={{ base: 'none', md: 'block' }}
-                    className="cb-tournament-profile-avatar cb-rounded"
-                    style={{ padding: '0.5rem' }}
+                    className="cb-tournament-profile-avatar"
+                    style={{ padding: '0.5rem', borderRadius: 'var(--mantine-radius-md)' }}
                   />
                 </>
               )}

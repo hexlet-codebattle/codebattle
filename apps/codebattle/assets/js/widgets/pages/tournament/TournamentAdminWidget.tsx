@@ -232,7 +232,7 @@ function TournamentAdminWidget() {
       </Title>
 
       <Paper shadow="sm" mt="lg" withBorder>
-        <Box className="cb-bg-highlight-panel" p="md" style={{ borderBottom: '1px solid #4c4c5a' }}>
+        <Box bg="cbHighlight" p="md" style={{ borderBottom: '1px solid #4c4c5a' }}>
           <Title order={4} c="white" m={0}>
             Player Rankings & Matches
           </Title>

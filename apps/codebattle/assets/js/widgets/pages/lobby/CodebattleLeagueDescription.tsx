@@ -33,9 +33,13 @@ function CodebattleLeagueDescription() {
 
         <Collapse expanded={opened}>
           <Box id="leagueProtocol" mt="md" ta="left">
-            <Box p="sm" className="cb-bg-highlight-panel cb-rounded">
+            <Box p="sm" bg="cbHighlight" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
               <Accordion variant="separated" defaultValue="overview">
-                <Accordion.Item value="overview" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="overview"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Seasons, Grades, Points — Overview')}
@@ -72,7 +76,11 @@ function CodebattleLeagueDescription() {
                   </Accordion.Panel>
                 </Accordion.Item>
 
-                <Accordion.Item value="schedule" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="schedule"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Tournament Scheduling & Preemption')}
@@ -106,7 +114,11 @@ function CodebattleLeagueDescription() {
                   </Accordion.Panel>
                 </Accordion.Item>
 
-                <Accordion.Item value="limits" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="limits"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Player Limits & Rounds per Grade')}
@@ -144,7 +156,11 @@ function CodebattleLeagueDescription() {
                   </Accordion.Panel>
                 </Accordion.Item>
 
-                <Accordion.Item value="points" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="points"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Season Points Distribution')}
@@ -181,7 +197,11 @@ function CodebattleLeagueDescription() {
                   </Accordion.Panel>
                 </Accordion.Item>
 
-                <Accordion.Item value="tie" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="tie"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Season Leaderboard Tie-Breakers')}
@@ -196,7 +216,11 @@ function CodebattleLeagueDescription() {
                   </Accordion.Panel>
                 </Accordion.Item>
 
-                <Accordion.Item value="hof" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="hof"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Hall of Fame')}
@@ -209,7 +233,11 @@ function CodebattleLeagueDescription() {
                   </Accordion.Panel>
                 </Accordion.Item>
 
-                <Accordion.Item value="cbOverview" className="cb-bg-panel cb-rounded">
+                <Accordion.Item
+                  value="cbOverview"
+                  bg="cbPanel"
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                >
                   <Accordion.Control>
                     <Text component="span" tt="uppercase">
                       {i18n.t('Codebattle - Overview & Key Concepts')}

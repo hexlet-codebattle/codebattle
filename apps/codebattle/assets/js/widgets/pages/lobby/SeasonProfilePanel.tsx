@@ -165,9 +165,22 @@ export function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps)
   }
 
   return (
-    <Box mt="sm" className="cb-bg-panel cb-rounded cb-nearby-card">
+    <Box
+      mt="sm"
+      className="cb-nearby-card"
+      bg="cbPanel"
+      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+    >
       <Flex direction="column">
-        <Box ta="center" px="sm" className="cb-bg-highlight-panel cb-rounded-top">
+        <Box
+          ta="center"
+          px="sm"
+          bg="cbHighlight"
+          style={{
+            borderTopLeftRadius: 'var(--mantine-radius-md)',
+            borderTopRightRadius: 'var(--mantine-radius-md)',
+          }}
+        >
           <Text component="span" c="white" tt="uppercase" py="sm" display="block">
             {i18n.t('Closest Opponents')}
           </Text>
@@ -240,7 +253,9 @@ function SeasonProfilePanel({
           h="100%"
           w="100%"
           ta="center"
-          className="cb-bg-panel cb-rounded cb-season-main-card"
+          className="cb-season-main-card"
+          bg="cbPanel"
+          style={{ borderRadius: 'var(--mantine-radius-md)' }}
         >
           <CodebattleLeagueDescription />
           {seasonTournaments?.length || liveTournaments?.length ? (
@@ -334,7 +349,11 @@ function SeasonProfilePanel({
         pl={{ base: 0, lg: 'sm' }}
         my={{ base: 'sm', lg: 0 }}
       >
-        <Box className="cb-bg-panel cb-rounded cb-season-profile-card">
+        <Box
+          className="cb-season-profile-card"
+          bg="cbPanel"
+          style={{ borderRadius: 'var(--mantine-radius-md)' }}
+        >
           <Box ta="center" py="sm">
             <UserLogo user={user} />
             <Text component="span" mt="sm" className="clan-tag">
@@ -355,7 +374,7 @@ function SeasonProfilePanel({
             </Title>
           </Box>
 
-          <Flex py="sm" px="xs" className="cb-bg-highlight-panel cb-season-stats">
+          <Flex py="sm" px="xs" bg="cbHighlight" className="cb-season-stats">
             <Box className="stat-item" py={4} w="100%">
               <Text component="span" className="stat-value cb-text-danger" display="block">
                 {user.rating}
@@ -398,7 +417,12 @@ function SeasonProfilePanel({
         </Box>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
         <Box ta="center" mt="sm" className="cb-hof-link">
-          <Anchor href="/hall_of_fame" tt="uppercase" className="stat-label cb-rounded">
+          <Anchor
+            href="/hall_of_fame"
+            tt="uppercase"
+            className="stat-label"
+            style={{ borderRadius: 'var(--mantine-radius-md)' }}
+          >
             {i18n.t('View Hall of Fame')}
           </Anchor>
         </Box>

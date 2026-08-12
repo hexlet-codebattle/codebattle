@@ -179,9 +179,10 @@ function TaskRankingAdvancedPanel({
               <Table.Tbody>
                 {users.map((item) => (
                   <React.Fragment key={`${PanelModeCodes.topUserByTasksMode}-user-${item.userId}`}>
-                    <Table.Tr className="cb-text-light cb-custom-event-tr cb-bg-panel" fw={700}>
+                    <Table.Tr fw={700}>
                       <Table.Td
-                        className="cb-custom-event-td cb-text"
+                        className="cb-custom-event-td"
+                        c="cbText"
                         p={4}
                         pl={24}
                         style={{ whiteSpace: 'nowrap', position: 'relative' }}
@@ -209,7 +210,8 @@ function TaskRankingAdvancedPanel({
                       </Table.Td>
                       <Table.Td
                         title={item.clanLongName}
-                        className="cb-custom-event-td cb-text"
+                        className="cb-custom-event-td"
+                        c="cbText"
                         p={4}
                         pl={24}
                         style={{ whiteSpace: 'nowrap', position: 'relative' }}
@@ -220,7 +222,8 @@ function TaskRankingAdvancedPanel({
                       </Table.Td>
                       <Table.Td
                         w={100}
-                        className="cb-custom-event-td cb-text"
+                        className="cb-custom-event-td"
+                        c="cbText"
                         p={4}
                         pl={24}
                         style={{ whiteSpace: 'nowrap', position: 'relative' }}
@@ -229,7 +232,8 @@ function TaskRankingAdvancedPanel({
                       </Table.Td>
                       <Table.Td
                         w={100}
-                        className="cb-custom-event-td cb-text"
+                        className="cb-custom-event-td"
+                        c="cbText"
                         p={4}
                         pl={24}
                         style={{ whiteSpace: 'nowrap', position: 'relative' }}
@@ -237,7 +241,8 @@ function TaskRankingAdvancedPanel({
                         {item.durationSec}
                       </Table.Td>
                       <Table.Td
-                        className="cb-custom-event-td cb-text"
+                        className="cb-custom-event-td"
+                        c="cbText"
                         p={4}
                         pl={24}
                         style={{ whiteSpace: 'nowrap', position: 'relative' }}

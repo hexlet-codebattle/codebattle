@@ -40,7 +40,7 @@ function Leaderboard({
       className="cb-group-tournament-leaderboard-container"
       style={{ overflow: 'auto' }}
     >
-      <Box p="md" className="cb-rounded" style={{ overflow: 'auto' }}>
+      <Box p="md" style={{ overflow: 'auto', borderRadius: 'var(--mantine-radius-md)' }}>
         <Box my="sm">
           <Box
             py="sm"

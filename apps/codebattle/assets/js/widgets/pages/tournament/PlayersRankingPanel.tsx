@@ -49,7 +49,6 @@ const getCustomEventTrClassName = (item: RankingItem, selectedId: number | null)
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
       'cb-bronze-place-bg': item?.place === 3,
-      'cb-bg-panel': !item?.place || item?.place > 3,
     },
     {
       'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
@@ -164,7 +163,7 @@ function PlayersRankingPanel({
   };
 
   return (
-    <Paper className="cb-bg-panel cb-rounded" shadow="sm" p="md" style={{ overflow: 'auto' }}>
+    <Paper bg="cbPanel" shadow="sm" p="md" style={{ overflow: 'auto' }}>
       <Box my="xs">
         {playersCount === 0 ? (
           <Text c="dimmed">{i18next.t('No players yet')}.</Text>
@@ -194,7 +193,7 @@ function PlayersRankingPanel({
               </Text>
             </Flex>
             <Flex className="cb-overflow-x-auto">
-              <Table className="cb-text-light cb-custom-event-table" striped>
+              <Table c="cbTextLight" className="cb-custom-event-table" striped>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
@@ -227,7 +226,13 @@ function PlayersRankingPanel({
                           item,
                           currentUserClanId as number | null,
                         )}
-                        style={{ fontWeight: 700 }}
+                        style={{
+                          fontWeight: 700,
+                          backgroundColor:
+                            !item?.place || item?.place > 3
+                              ? 'var(--mantine-color-cbPanel-6)'
+                              : undefined,
+                        }}
                       >
                         <Table.Td
                           style={{

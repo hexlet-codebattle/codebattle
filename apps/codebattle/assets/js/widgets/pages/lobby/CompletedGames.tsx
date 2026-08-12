@@ -96,7 +96,7 @@ const InfiniteScrollableGames = memo(
             horizontalSpacing="md"
             styles={{ td: { verticalAlign: 'middle', whiteSpace: 'nowrap' } }}
           >
-            <Table.Thead className="cb-text">
+            <Table.Thead c="cbText">
               <Table.Tr>
                 <Table.Th>{i18n.t('Level')}</Table.Th>
                 <Table.Th ta="center" colSpan={2}>

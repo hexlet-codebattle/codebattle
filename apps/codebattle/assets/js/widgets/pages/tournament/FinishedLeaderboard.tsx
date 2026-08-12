@@ -38,7 +38,6 @@ const getCustomEventTrClassName = (item: LeaderboardItem, selectedId: number | u
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
       'cb-bronze-place-bg': item?.place === 3,
-      'cb-bg-panel': !item?.place || item?.place > 3,
     },
     {
       'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
@@ -77,7 +76,7 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
 
   return (
     <Box
-      className="cb-bg-panel cb-rounded"
+      bg="cbPanel"
       style={{
         boxShadow: 'var(--mantine-shadow-sm)',
         padding: '1rem',
@@ -104,7 +103,7 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
             <Text fw={700}>{i18next.t('Leaderboard')}</Text>
           </Flex>
           <Flex className="cb-overflow-x-auto">
-            <Table striped className="cb-text-light cb-custom-event-table" m={4}>
+            <Table striped c="cbTextLight" className="cb-custom-event-table" m={4}>
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th c="dimmed" fw={300} p={4} pl={24}>
@@ -143,6 +142,12 @@ function FinishedLeaderboard({ leaderboard }: FinishedLeaderboardProps) {
                         currentUserClanId as number | undefined,
                       )}
                       fw={700}
+                      style={{
+                        backgroundColor:
+                          !item?.place || item?.place > 3
+                            ? 'var(--mantine-color-cbPanel-6)'
+                            : undefined,
+                      }}
                     >
                       <Table.Td
                         {...tableDataCellProps}

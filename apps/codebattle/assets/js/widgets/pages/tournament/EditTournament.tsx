@@ -236,7 +236,8 @@ function EditTournament({
   if (loading) {
     return (
       <Paper
-        className="cb-bg-panel cb-text cb-rounded"
+        bg="cbPanel"
+        c="cbText"
         shadow="sm"
         py="lg"
         px={{ base: 'md', md: 'lg' }}
@@ -255,7 +256,8 @@ function EditTournament({
   if (!tournament) {
     return (
       <Paper
-        className="cb-bg-panel cb-text cb-rounded"
+        bg="cbPanel"
+        c="cbText"
         shadow="sm"
         py="lg"
         px={{ base: 'md', md: 'lg' }}
@@ -300,7 +302,8 @@ function EditTournament({
 
   return (
     <Paper
-      className="cb-bg-panel cb-text cb-rounded"
+      bg="cbPanel"
+      c="cbText"
       shadow="sm"
       py="lg"
       px={{ base: 'md', md: 'lg' }}

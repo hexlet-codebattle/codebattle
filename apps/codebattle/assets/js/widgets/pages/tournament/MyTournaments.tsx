@@ -158,7 +158,7 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
     <Flex direction="column" h="100%">
       <Box ref={tableRef} className="mvh-100 cb-overflow-y-scroll" style={{ overflowX: 'auto' }}>
         <Table striped m={0}>
-          <Table.Thead className="cb-text" style={{ position: 'sticky', top: 0 }}>
+          <Table.Thead c="cbText" style={{ position: 'sticky', top: 0 }}>
             <Table.Tr>
               <Table.Th p="md">{i18next.t('Name')}</Table.Th>
               <Table.Th p="md">{i18next.t('Type')}</Table.Th>
@@ -168,26 +168,31 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
               <Table.Th p="md">{i18next.t('Actions')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody className="cb-text">
+          <Table.Tbody c="cbText">
             {tournaments.map((tournament) => (
               <Table.Tr key={tournament.id}>
-                <Table.Td p="md" className="cb-border-color" style={{ verticalAlign: 'middle' }}>
+                <Table.Td p="md" style={{ verticalAlign: 'middle' }}>
                   {tournament.name}
                 </Table.Td>
                 <Table.Td
                   p="md"
-                  className="cb-border-color"
+
                   style={{ verticalAlign: 'middle', wordBreak: 'break-word' }}
                 >
                   {tournament.type}
                 </Table.Td>
                 <Table.Td
                   p="md"
-                  className="cb-border-color"
+
                   style={{ verticalAlign: 'middle' }}
                   aria-label={`Level: ${tournament.level}`}
                 >
-                  <Box className="bg-gray cb-rounded" p={4} display="inline-block">
+                  <Box
+                    className="bg-gray"
+                    p={4}
+                    display="inline-block"
+                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  >
                     <Image
                       alt={tournament.level}
                       src={`/assets/images/levels/${tournament.level}.svg`}
@@ -198,14 +203,14 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
                 </Table.Td>
                 <Table.Td
                   p="md"
-                  className="cb-border-color"
+
                   style={{ verticalAlign: 'middle', wordBreak: 'break-word' }}
                 >
                   {tournament.state}
                 </Table.Td>
                 <Table.Td
                   p="md"
-                  className="cb-border-color"
+
                   style={{
                     verticalAlign: 'middle',
                     whiteSpace: 'nowrap',
@@ -216,7 +221,7 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
                 </Table.Td>
                 <Table.Td
                   p="md"
-                  className="cb-border-color"
+
                   style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
                 >
                   <Button

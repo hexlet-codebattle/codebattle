@@ -24,11 +24,11 @@ const TournamentDescriptionModal = NiceModal.create(
 
     return (
       <Modal centered show={modal.visible} onHide={modal.hide}>
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>{i18next.t('Tournament description')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>{description}</Modal.Body>
-        <Modal.Footer className="cb-border-color">
+        <Modal.Footer>
           <Flex justify="flex-end" w="100%">
             <Button
               onClick={modal.hide}

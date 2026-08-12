@@ -24,6 +24,7 @@ import TournamentUserPanel from './TournamentUserPanel';
 import Top200RedirectButton from './Top200RedirectButton';
 
 const searchLabelStyle: React.CSSProperties = {
+  color: 'var(--mantine-color-cbTextLight-6)',
   whiteSpace: 'nowrap',
   marginBottom: 0,
   marginRight: '0.5rem',
@@ -39,6 +40,8 @@ const searchInputStyle: React.CSSProperties = {
 };
 
 const fuzzyBadgeStyle: React.CSSProperties = {
+  color: 'var(--mantine-color-cbTextLight-6)',
+  backgroundColor: 'var(--mantine-color-cbPanel-6)',
   display: 'inline-block',
   padding: '0.25em 0.4em',
   fontSize: '0.75em',
@@ -312,7 +315,6 @@ function PlayersMatchesPanel({
       />
       {showHideResultsNotice && (
         <div
-          className="cb-border-color"
           style={{
             display: 'flex',
             textAlign: 'center',
@@ -330,7 +332,6 @@ function PlayersMatchesPanel({
         align={{ md: 'center' }}
         justify="space-between"
         gap={8}
-        className="cb-border-color"
         style={{
           borderTop: '1px solid #4c4c5a',
           paddingTop: '0.5rem',
@@ -338,7 +339,8 @@ function PlayersMatchesPanel({
         }}
       >
         <Flex align="center" gap={8} w="100%">
-          <label htmlFor="players-search" className="cb-text-light" style={searchLabelStyle}>
+          <label htmlFor="players-search" style={searchLabelStyle}>
+            <span style={{ color: 'var(--mantine-color-cbTextLight-6)' }} />
             {i18n.t('Fuzzy search')}
           </label>
           <input
@@ -348,12 +350,10 @@ function PlayersMatchesPanel({
             value={searchTerm}
             placeholder={i18n.t('Type a player name')}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className="cb-bg-highlight-panel cb-border-color"
+
             style={searchInputStyle}
           />
-          <span className="cb-text-light cb-bg-panel" style={fuzzyBadgeStyle}>
-            {i18n.t('Matches letters in order')}
-          </span>
+          <span style={fuzzyBadgeStyle}>{i18n.t('Matches letters in order')}</span>
         </Flex>
       </Flex>
       {roundsLimit < 2 ? (

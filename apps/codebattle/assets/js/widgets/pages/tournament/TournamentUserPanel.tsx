@@ -149,7 +149,10 @@ function TournamentUserPanel({
         </div>
         <Flex ml="xs">
           <ActionIcon variant="transparent" onClick={handleOpenMatches}>
-            <FontAwesomeIcon className="cb-text" icon={open ? 'chevron-up' : 'chevron-down'} />
+            <FontAwesomeIcon
+              color="var(--mantine-color-cbText-6)"
+              icon={open ? 'chevron-up' : 'chevron-down'}
+            />
           </ActionIcon>
         </Flex>
       </Flex>

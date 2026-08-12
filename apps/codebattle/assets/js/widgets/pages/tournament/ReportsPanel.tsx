@@ -109,10 +109,10 @@ function ReportsPanel() {
     <Box my="xs" style={{ display: 'flex' }}>
       <Table
         striped
-        className="cb-custom-event-table cb-rounded"
+        className="cb-custom-event-table"
         style={{ border: '1px solid var(--mantine-color-default-border)' }}
       >
-        <Table.Thead className="cb-text">
+        <Table.Thead c="cbText">
           <Table.Tr>
             <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
               {i18next.t('Offender')}

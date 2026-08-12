@@ -80,10 +80,10 @@ function StartRoundConfirmationModal({
 
   return (
     <Modal show={!!modalShowing} onHide={onClose}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="cb-border-color">
+      <Modal.Body>
         <Stack align="center" justify="space-between">
           <Title order={4} mb="lg">
             {text}
@@ -108,7 +108,7 @@ function StartRoundConfirmationModal({
           </Stack>
         </Stack>
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
+      <Modal.Footer>
         <Flex justify="space-between" w="100%">
           <Button onClick={onClose} color="cbSecondary" radius="md" className={cancelBtnClassName}>
             {i18n.t('Cancel')}

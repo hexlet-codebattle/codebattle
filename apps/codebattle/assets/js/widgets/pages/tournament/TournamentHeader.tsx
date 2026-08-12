@@ -272,7 +272,7 @@ function TournamentHeader({
     <>
       {showHeaderPane && (
         <Box
-          className="cb-bg-panel cb-rounded"
+          bg="cbPanel"
           style={{
             boxShadow: 'var(--mantine-shadow-sm)',
             padding: '1rem',
@@ -356,7 +356,7 @@ function TournamentHeader({
       )}
       {showAdminPanel && (
         <Box
-          className="cb-bg-panel cb-rounded"
+          bg="cbPanel"
           style={{
             boxShadow: 'var(--mantine-shadow-sm)',
             padding: '1rem',
@@ -414,11 +414,7 @@ function TournamentHeader({
               >
                 <Flex align="center">
                   <Box title={i18next.t('Access token')} mr="xs">
-                    <Text
-                      component="span"
-                      p="xs"
-                      className="cb-bg-highlight-panel cb-text cb-rounded"
-                    >
+                    <Text component="span" p="xs" bg="cbHighlight">
                       <FontAwesomeIcon icon="key" />
                     </Text>
                   </Box>
@@ -443,9 +439,7 @@ function TournamentHeader({
                 mt="xs"
                 px="md"
                 py="xs"
-                className={cn(
-                  hasCustomEventStyle ? 'cb-bg-highlight-panel cb-border-color cb-text' : '',
-                )}
+                bg={hasCustomEventStyle ? 'cbHighlight' : undefined}
                 style={{
                   borderRadius: '0.375rem',
                   fontSize: '0.875rem',

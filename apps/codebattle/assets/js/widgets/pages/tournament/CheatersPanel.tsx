@@ -75,8 +75,8 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
 
   return (
     <Box my="xs" style={{ display: 'flex', flexDirection: 'column' }}>
-      <Card withBorder radius="md" p={0} className="cb-bg-panel">
-        <Card.Section withBorder p="md" className="cb-bg-panel">
+      <Card withBorder radius="md" p={0} bg="cbPanel">
+        <Card.Section withBorder p="md" bg="cbPanel">
           <Flex justify="space-between" align="center">
             <Text fw={700}>{i18next.t('Cheaters')}</Text>
             <Text size="xs" c="dimmed">
@@ -90,14 +90,14 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
               {i18next.t('No cheaters marked yet')}
             </Text>
           ) : (
-            <Table striped className="cb-text-light cb-custom-event-table">
+            <Table striped c="cbTextLight" className="cb-custom-event-table">
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th className="cb-text-light">{i18next.t('Player')}</Table.Th>
-                  <Table.Th className="cb-text-light">{i18next.t('Clan')}</Table.Th>
-                  <Table.Th className="cb-text-light">{i18next.t('Games')}</Table.Th>
-                  <Table.Th className="cb-text-light">{i18next.t('Reports')}</Table.Th>
-                  <Table.Th className="cb-text-light">{i18next.t('Actions')}</Table.Th>
+                  <Table.Th c="cbTextLight">{i18next.t('Player')}</Table.Th>
+                  <Table.Th c="cbTextLight">{i18next.t('Clan')}</Table.Th>
+                  <Table.Th c="cbTextLight">{i18next.t('Games')}</Table.Th>
+                  <Table.Th c="cbTextLight">{i18next.t('Reports')}</Table.Th>
+                  <Table.Th c="cbTextLight">{i18next.t('Actions')}</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -108,18 +108,18 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
                   return (
                     <React.Fragment key={`cheater-${player.id}`}>
                       <Table.Tr>
-                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
+                        <Table.Td c="cbTextLight" style={{ verticalAlign: 'middle' }}>
                           <UserInfo user={player} banned hideOnlineIndicator hideLink />
                         </Table.Td>
-                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
+                        <Table.Td c="cbTextLight" style={{ verticalAlign: 'middle' }}>
                           {(player.clan as string) || '-'}
                         </Table.Td>
-                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
+                        <Table.Td c="cbTextLight" style={{ verticalAlign: 'middle' }}>
                           {(player.matchesIds as unknown[])?.length ??
                             (player.matches_ids as unknown[])?.length ??
                             0}
                         </Table.Td>
-                        <Table.Td className="cb-text-light" style={{ verticalAlign: 'middle' }}>
+                        <Table.Td c="cbTextLight" style={{ verticalAlign: 'middle' }}>
                           {playerReports.length === 0 ? (
                             <Text component="span" c="dimmed">
                               {i18next.t('No reports yet')}
@@ -164,7 +164,7 @@ function CheatersPanel({ canModerate = false }: CheatersPanelProps) {
                                     align="center"
                                     wrap="wrap"
                                     py="xs"
-                                    className="cb-text-light"
+                                    c="cbTextLight"
                                   >
                                     <Box mr="md">
                                       <UserInfo user={reporter} hideOnlineIndicator hideLink />

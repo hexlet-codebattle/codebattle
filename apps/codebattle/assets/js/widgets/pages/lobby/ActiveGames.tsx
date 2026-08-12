@@ -71,7 +71,10 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
 
   return (
     <>
-      <Box display={{ base: 'none', md: 'block' }} className="cb-rounded">
+      <Box
+        display={{ base: 'none', md: 'block' }}
+        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+      >
         <Table
           striped
           mb={0}
@@ -96,12 +99,20 @@ function ActiveGames({ games, currentUserId, isGuest, isOnline }: ActiveGamesPro
                 isActiveGame(game) && (
                   <Table.Tr key={game.id} className="game-item">
                     <Table.Td className="cb-level-badge">
-                      <Box className="bg-gray cb-rounded" p="md">
+                      <Box
+                        className="bg-gray"
+                        p="md"
+                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                      >
                         <GameLevelBadge level={game.level} />
                       </Box>
                     </Table.Td>
                     <Table.Td ta="center">
-                      <Box className="bg-gray cb-rounded" p="md">
+                      <Box
+                        className="bg-gray"
+                        p="md"
+                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                      >
                         <GameStateBadge state={game.state} />
                       </Box>
                     </Table.Td>

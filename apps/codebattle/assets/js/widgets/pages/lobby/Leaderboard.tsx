@@ -45,10 +45,11 @@ function Leaderboard() {
     <Table
       striped
       m={0}
-      className="cb-bg-panel cb-border-color"
+
       style={{
         borderRadius: 'var(--mantine-radius-md)',
         boxShadow: 'var(--mantine-shadow-sm)',
+        backgroundColor: 'var(--mantine-color-cbPanel-6)',
       }}
     >
       <Table.Thead>

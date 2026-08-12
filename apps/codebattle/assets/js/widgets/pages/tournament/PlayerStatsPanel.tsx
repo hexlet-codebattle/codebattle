@@ -52,7 +52,7 @@ function PlayerStatsPanel({
 
   return (
     <Box
-      className="cb-rounded cb-bg-panel"
+      bg="cbPanel"
       style={{
         display: 'flex',
         flexDirection: 'column',

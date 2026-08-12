@@ -19,7 +19,7 @@ function ExternalPlatformErrorPanel({ requestInviteUpdates }: ExternalPlatformEr
           }}
           px={{ md: 'lg' }}
         >
-          <Paper className="cb-bg-panel" shadow="sm" radius="md" p="xl" bg="transparent">
+          <Paper shadow="sm" radius="md" p="xl" bg="transparent">
             <Text ta="center" c="red" mb="md">
               {i18n.t(
                 'Could not retrieve your external platform credentials. Please contact support.',

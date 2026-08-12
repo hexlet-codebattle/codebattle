@@ -174,8 +174,12 @@ function LobbyChat({
       <Flex
         direction={{ base: 'column', lg: 'row' }}
         mt="sm"
-        className="cb-bg-panel cb-rounded cb-lobby-chat-card"
-        style={{ boxShadow: 'var(--mantine-shadow-sm)' }}
+        className="cb-lobby-chat-card"
+        bg="cbPanel"
+        style={{
+          boxShadow: 'var(--mantine-shadow-sm)',
+          borderRadius: 'var(--mantine-radius-md)',
+        }}
       >
         <Flex
           direction="column"
@@ -211,7 +215,7 @@ function LobbyChat({
             borderTopRightRadius: 'var(--mantine-radius-md)',
             borderBottomRightRadius: 'var(--mantine-radius-md)',
           }}
-          className="cb-players-container cb-border-color cb-lobby-chat-sidebar"
+          className="cb-players-container cb-lobby-chat-sidebar"
         >
           <Flex direction="column" h="100%">
             <Flex justify="space-between">

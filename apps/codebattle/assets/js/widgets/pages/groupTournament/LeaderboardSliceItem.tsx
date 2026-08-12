@@ -19,11 +19,12 @@ const LeaderboardSliceItem = ({
   currentUserId,
 }: LeaderboardSliceItemProps) => (
   <Box
-    className="cb-bg-panel cb-rounded"
+    bg="cbPanel"
     p="sm"
     style={{
       minWidth: '20rem',
       flex: '1 1 22rem',
+      borderRadius: 'var(--mantine-radius-md)',
       ...(hasCurrentUser ? { border: '1px solid #ffc107' } : {}),
     }}
   >
@@ -46,7 +47,7 @@ const LeaderboardSliceItem = ({
         {i18n.t('%{count} players', { count: players.length })}
       </Text>
     </Flex>
-    <Table verticalSpacing="xs" className="cb-text-light" mb={0}>
+    <Table verticalSpacing="xs" c="cbTextLight" mb={0}>
       <Table.Thead>
         <Table.Tr>
           <Table.Th p="xs" fw={300}>

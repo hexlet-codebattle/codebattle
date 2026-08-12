@@ -574,13 +574,7 @@ function Tournament() {
                   showAdminPane
                 />
               )}
-              <Paper
-                className="cb-bg-panel cb-rounded"
-                h="100%"
-                shadow="sm"
-                p="md"
-                style={{ overflow: 'auto' }}
-              >
+              <Paper bg="cbPanel" h="100%" shadow="sm" p="md" style={{ overflow: 'auto' }}>
                 <InfoPanel
                   tournament={tournament}
                   playersCount={tournament.playersCount}

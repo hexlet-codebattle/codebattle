@@ -154,7 +154,7 @@ function MatchConfirmationModal({
 
   return (
     <Modal contentClassName="cb-match-confirmation-modal" show={modalShowing} onHide={handleCancel}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -173,7 +173,7 @@ function MatchConfirmationModal({
           />
         )}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
+      <Modal.Footer>
         <Flex justify="space-between" w="100%">
           <Button
             onClick={handleCancel}

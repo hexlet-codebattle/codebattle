@@ -43,7 +43,7 @@ function Top200RedirectButton({
         borderTop: '1px solid var(--mantine-color-default-border)',
       }}
     >
-      <Text fw={700} className="cb-text-light">
+      <Text fw={700} c="cbTextLight">
         {i18next.t('The tournament continues for top 8 players.')}
       </Text>
       <Button component="a" color="yellow" size="xs" radius="md" href={playersRedirectUrl}>

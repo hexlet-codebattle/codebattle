@@ -8,7 +8,7 @@ interface AdminExternalSetupPanelProps {
 
 function AdminExternalSetupPanel({ externalSetup }: AdminExternalSetupPanelProps) {
   return (
-    <Box className="cb-rounded" p="md" w="100%">
+    <Box p="md" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
       <Text size="sm" mt="xs">
         <Box mb="xs">
           <strong>Repo:</strong> {externalSetup.repoState}

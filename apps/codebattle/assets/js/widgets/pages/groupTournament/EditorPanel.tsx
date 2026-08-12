@@ -173,7 +173,7 @@ function EditorPanel({
             align="center"
             px="md"
             py="sm"
-            className="cb-bg-highlight-panel"
+            bg="cbHighlight"
             style={panelBorder}
           >
             <Group gap="xs" align="center" c="white">
@@ -196,7 +196,7 @@ function EditorPanel({
             <Box
               px="md"
               py="sm"
-              className="cb-bg-highlight-panel"
+              bg="cbHighlight"
               style={{
                 borderTop: '1px solid var(--mantine-color-default-border)',
               }}

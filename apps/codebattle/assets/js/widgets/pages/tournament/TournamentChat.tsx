@@ -37,11 +37,13 @@ function TournamentChat() {
 
   return (
     <Box
-      className="cb-tournament-chat cb-bg-panel cb-rounded pos-relative"
+      className="cb-tournament-chat pos-relative"
       style={{
         display: 'flex',
         flexDirection: 'column',
         margin: '0.5rem 0',
+        backgroundColor: 'var(--mantine-color-cbPanel-6)',
+        borderRadius: 'var(--mantine-radius-md)',
         boxShadow: 'var(--mantine-shadow-sm)',
       }}
     >

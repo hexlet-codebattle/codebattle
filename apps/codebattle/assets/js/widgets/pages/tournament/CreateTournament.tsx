@@ -163,7 +163,7 @@ function CreateTournament({
   }, []);
 
   return (
-    <Paper className="cb-bg-panel cb-text cb-rounded" shadow="sm" p={{ base: 'md', md: 'lg' }}>
+    <Paper bg="cbPanel" c="cbText" shadow="sm" p={{ base: 'md', md: 'lg' }}>
       <Flex
         direction={{ base: 'column', sm: 'row' }}
         justify="space-between"

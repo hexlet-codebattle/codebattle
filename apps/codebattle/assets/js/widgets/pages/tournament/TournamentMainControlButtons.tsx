@@ -115,10 +115,10 @@ function TournamentMainControlButtons({
   return (
     <>
       <Modal show={restartConfirmationModalShowing} onHide={closeRestartConfirmationModal}>
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Reset tournament progress')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-border-color">
+        <Modal.Body>
           <Stack>
             <Text fw={700} size="lg">
               {i18n.t('Are you sure you want to reset this tournament?')}
@@ -130,7 +130,7 @@ function TournamentMainControlButtons({
             </Text>
           </Stack>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
+        <Modal.Footer>
           <Flex justify="space-between" w="100%">
             <Button
               onClick={closeRestartConfirmationModal}
@@ -153,10 +153,10 @@ function TournamentMainControlButtons({
         </Modal.Footer>
       </Modal>
       <Modal show={retryConfirmationModalShowing} onHide={closeRetryConfirmationModal}>
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Retry tournament')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-border-color">
+        <Modal.Body>
           <Stack>
             <Text fw={700} size="lg">
               {i18n.t('Are you sure you want to retry this tournament?')}
@@ -168,7 +168,7 @@ function TournamentMainControlButtons({
             </Text>
           </Stack>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
+        <Modal.Footer>
           <Flex justify="space-between" w="100%">
             <Button
               onClick={closeRetryConfirmationModal}
@@ -190,10 +190,10 @@ function TournamentMainControlButtons({
         </Modal.Footer>
       </Modal>
       <Modal show={finishConfirmationModalShowing} onHide={closeFinishConfirmationModal}>
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Finish tournament')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-border-color">
+        <Modal.Body>
           <Stack>
             <Text fw={700} size="lg">
               {i18n.t('Are you sure you want to finish this tournament?')}
@@ -203,7 +203,7 @@ function TournamentMainControlButtons({
             </Text>
           </Stack>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
+        <Modal.Footer>
           <Flex justify="space-between" w="100%">
             <Button
               onClick={closeFinishConfirmationModal}

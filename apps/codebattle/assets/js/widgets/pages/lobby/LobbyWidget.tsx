@@ -174,7 +174,7 @@ function LobbyWidget() {
   return (
     <div>
       <Modal show={showCreateGameModal} onHide={handleCloseCreateGameModal}>
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Create a game')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -186,7 +186,7 @@ function LobbyWidget() {
         onHide={handleCloseJoinGameModal}
         dialogClassName="cb-join-game-modal"
       >
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Join a game')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>

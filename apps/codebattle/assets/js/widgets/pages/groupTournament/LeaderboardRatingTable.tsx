@@ -17,7 +17,7 @@ const LeaderboardRatingTable = ({
   currentUserId,
 }: LeaderboardRatingTableProps) => (
   <Flex className="cb-overflow-x-auto">
-    <Table className="cb-text-light cb-custom-event-table" striped verticalSpacing="xs" m="xs">
+    <Table c="cbTextLight" className="cb-custom-event-table" striped verticalSpacing="xs" m="xs">
       <Table.Thead>
         <Table.Tr>
           <Table.Th {...tdCellProps} scope="col" fw={300}>

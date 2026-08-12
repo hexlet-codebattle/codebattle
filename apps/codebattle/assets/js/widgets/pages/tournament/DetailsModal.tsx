@@ -54,7 +54,10 @@ function DetailSection({ title, items }: DetailSectionProps) {
   }
 
   return (
-    <Box className="cb-bg-highlight-panel cb-rounded" style={{ padding: '1rem', height: '100%' }}>
+    <Box
+      bg="cbHighlight"
+      style={{ padding: '1rem', height: '100%', borderRadius: 'var(--mantine-radius-md)' }}
+    >
       <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
         {title}
       </Text>
@@ -86,9 +89,11 @@ function RawJsonSection({ tournament }: RawJsonSectionProps) {
 
   return (
     <pre
-      className="cb-bg-highlight-panel cb-rounded cb-text"
       style={{
         maxHeight: 400,
+        backgroundColor: 'var(--mantine-color-cbHighlight-6)',
+        borderRadius: 'var(--mantine-radius-md)',
+        color: 'var(--mantine-color-cbText-6)',
         overflow: 'auto',
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-word',
@@ -251,14 +256,18 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
 
   return (
     <Modal show={modalShowing} onHide={handleCancel}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>{i18n.t('Tournament details')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {tournament.description ? (
           <Box
-            className="cb-bg-highlight-panel cb-rounded"
-            style={{ padding: '1rem', marginBottom: '1rem' }}
+            style={{
+              padding: '1rem',
+              marginBottom: '1rem',
+              backgroundColor: 'var(--mantine-color-cbHighlight-6)',
+              borderRadius: 'var(--mantine-radius-md)',
+            }}
           >
             <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
               {i18n.t('Description')}
@@ -275,7 +284,7 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
         </Grid>
         {showRawJson && <RawJsonSection tournament={tournament} />}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
+      <Modal.Footer>
         <Group justify="space-between" w="100%">
           <Button variant="outline" color="cbSecondary" radius="md" onClick={toggleJsonView}>
             {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}

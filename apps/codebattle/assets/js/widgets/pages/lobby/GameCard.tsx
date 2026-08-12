@@ -128,23 +128,19 @@ function GameCard({
   return (
     <Flex
       key={`card-${game.id}`}
-      className="game-item cb-bg-panel cb-border-color cb-rounded"
+      className="game-item"
       direction="column"
       p="sm"
       mx="sm"
+      bg="cbPanel"
       style={{
         boxShadow: 'var(--mantine-shadow-sm)',
         border: '1px solid var(--mantine-color-default-border)',
+        borderRadius: 'var(--mantine-radius-md)',
       }}
     >
       <Flex mb="sm" h="100%">
-        <Flex
-          direction="column"
-          justify="space-around"
-          className="bg-gray cb-rounded"
-          mr="sm"
-          p="sm"
-        >
+        <Flex direction="column" justify="space-around" className="bg-gray" mr="sm" p="sm">
           <Box mb="sm">
             <GameLevelBadge level={game.level} />
           </Box>

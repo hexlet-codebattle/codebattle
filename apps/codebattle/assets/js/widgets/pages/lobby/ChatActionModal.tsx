@@ -78,7 +78,7 @@ function ChatActionModal({
 
   return (
     <Modal show={modalShowing.opened} onHide={handleCloseModal}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ overflow: 'auto' }}>
