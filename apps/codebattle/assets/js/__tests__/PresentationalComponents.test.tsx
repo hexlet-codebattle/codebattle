@@ -67,7 +67,7 @@ describe('presentational components', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading...');
     expect(screen.getByText('Preparing your arena')).toBeInTheDocument();
-    expect(container.querySelectorAll('.cb-text-skeleton')).toHaveLength(18);
+    expect(container.querySelectorAll('.mantine-Skeleton-root')).toHaveLength(18);
   });
 
   test('renders the timer duration', () => {

@@ -42,7 +42,10 @@ function TaskLanguagesSelection({
           {displayLanguage.toUpperCase()}
         </Button>
       </Menu.Target>
-      <Menu.Dropdown id="tasklang-dropdown-menu" className="cb-blur">
+      <Menu.Dropdown
+        id="tasklang-dropdown-menu"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(16px)' }}
+      >
         {avaibleLanguages.map(renderLanguage)}
       </Menu.Dropdown>
     </Menu>

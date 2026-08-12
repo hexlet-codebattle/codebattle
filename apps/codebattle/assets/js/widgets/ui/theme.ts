@@ -106,12 +106,51 @@ const cbTextLight: MantineColorsTuple = [
   '#a3a3a3',
 ];
 
+// Gold accent (`$gold` #c9a56c — seasons/hall-of-fame headings, `.text-gold`,
+// and the outline-gold buttons).
+const gold: MantineColorsTuple = [
+  '#fbf6ec',
+  '#f5ead2',
+  '#ecd3a2',
+  '#e4ba6e',
+  '#dda441',
+  '#d9962a',
+  '#c9a56c',
+  '#b98438',
+  '#a5712e',
+  '#8f5c25',
+];
+
+// Danger text (`$cb-text-danger` #f04c5c — negative stats/ranks).
+const cbDanger: MantineColorsTuple = [
+  '#fef0f1',
+  '#fbdadd',
+  '#f5b3ba',
+  '#ee8994',
+  '#e96672',
+  '#e64e5c',
+  '#f04c5c',
+  '#d13b4b',
+  '#b52e3e',
+  '#97202e',
+];
+
 // Spacing scale mirrors Bootstrap 4 spacers (0.25 / 0.5 / 1 / 1.5 / 3 rem) so
 // converting `mb-2 p-3 …` to Mantine style props (`mb="sm" p="md"`) keeps the
 // same visual rhythm during the incremental migration.
 export const theme = createTheme({
   primaryColor: 'brand',
-  colors: { brand, cbSecondary, cbSuccess, cbPanel, cbHighlight, cbText, cbTextLight },
+  colors: {
+    brand,
+    cbSecondary,
+    cbSuccess,
+    cbPanel,
+    cbHighlight,
+    cbText,
+    cbTextLight,
+    gold,
+    cbDanger,
+  },
   fontFamily: 'Montserrat, sans-serif',
   fontFamilyMonospace: "'Source Code Pro', monospace",
   defaultRadius: 'sm',

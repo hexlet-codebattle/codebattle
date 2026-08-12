@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Flex, VisuallyHidden } from '@mantine/core';
+import { Box, Flex, Skeleton, VisuallyHidden } from '@mantine/core';
 
 import i18n from '../../../i18n';
 
@@ -47,25 +47,13 @@ function LobbyLoading() {
               direction="column"
               p="md"
             >
-              <Box component="span" className="cb-text-skeleton" w="50%" mx="auto" mb="lg" />
-              <Box component="span" className="cb-text-skeleton" w="100%" mb="sm" />
-              <Box component="span" className="cb-text-skeleton" w="75%" mx="auto" mb="lg" />
+              <Skeleton h="1.2rem" w="50%" mx="auto" mb="lg" />
+              <Skeleton h="1.2rem" w="100%" mb="sm" />
+              <Skeleton h="1.2rem" w="75%" mx="auto" mb="lg" />
               <Flex direction={{ base: 'column', md: 'row' }} mt="auto">
-                <Box
-                  component="span"
-                  className="cb-text-skeleton"
-                  flex={1}
-                  mx={{ md: 'sm' }}
-                  mb={{ base: 'sm', md: 0 }}
-                />
-                <Box
-                  component="span"
-                  className="cb-text-skeleton"
-                  flex={1}
-                  mx={{ md: 'sm' }}
-                  mb={{ base: 'sm', md: 0 }}
-                />
-                <Box component="span" className="cb-text-skeleton" flex={1} mx={{ md: 'sm' }} />
+                <Skeleton h="1.2rem" flex={1} mx={{ md: 'sm' }} mb={{ base: 'sm', md: 0 }} />
+                <Skeleton h="1.2rem" flex={1} mx={{ md: 'sm' }} mb={{ base: 'sm', md: 0 }} />
+                <Skeleton h="1.2rem" flex={1} mx={{ md: 'sm' }} />
               </Flex>
             </Flex>
           </Box>
@@ -83,12 +71,12 @@ function LobbyLoading() {
               align="center"
               p="md"
             >
-              <Box component="span" className="cb-text-skeleton cb-lobby-loading-avatar" mb="md" />
-              <Box component="span" className="cb-text-skeleton" w="50%" mb="md" />
+              <Skeleton circle w={72} h={72} mb="md" />
+              <Skeleton h="1.2rem" w="50%" mb="md" />
               <Flex bg="cbHighlight" w="100%" p="md">
-                <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
-                <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
-                <Box component="span" className="cb-text-skeleton" flex={1} mx="xs" />
+                <Skeleton h="1.2rem" flex={1} mx="xs" />
+                <Skeleton h="1.2rem" flex={1} mx="xs" />
+                <Skeleton h="1.2rem" flex={1} mx="xs" />
               </Flex>
             </Flex>
           </Box>
@@ -101,10 +89,10 @@ function LobbyLoading() {
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
               p="md"
             >
-              <Box component="span" className="cb-text-skeleton" display="block" w="25%" mb="lg" />
-              <Box component="span" className="cb-text-skeleton" display="block" w="100%" mb="md" />
-              <Box component="span" className="cb-text-skeleton" display="block" w="75%" mb="md" />
-              <Box component="span" className="cb-text-skeleton" display="block" w="50%" />
+              <Skeleton h="1.2rem" display="block" w="25%" mb="lg" />
+              <Skeleton h="1.2rem" display="block" w="100%" mb="md" />
+              <Skeleton h="1.2rem" display="block" w="75%" mb="md" />
+              <Skeleton h="1.2rem" display="block" w="50%" />
             </Box>
           </Box>
           <Box
@@ -119,9 +107,9 @@ function LobbyLoading() {
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
               p="md"
             >
-              <Box component="span" className="cb-text-skeleton" display="block" w="50%" mb="lg" />
-              <Box component="span" className="cb-text-skeleton" display="block" w="100%" mb="md" />
-              <Box component="span" className="cb-text-skeleton" display="block" w="75%" />
+              <Skeleton display="block" w="50%" mb="lg" />
+              <Skeleton h="1.2rem" display="block" w="100%" mb="md" />
+              <Skeleton h="1.2rem" display="block" w="75%" />
             </Box>
           </Box>
         </Flex>

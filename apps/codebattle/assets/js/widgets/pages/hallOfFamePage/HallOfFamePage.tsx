@@ -167,7 +167,7 @@ function ChampionsPodium({ top3 }: ChampionsPodiumProps) {
 
   return (
     <Box mb="xl">
-      <Title order={2} className="text-gold" mb="lg" ta="center">
+      <Title order={2} c="gold" mb="lg" ta="center">
         {i18n.t('Top 3')}
       </Title>
       <Flex wrap="wrap" align="flex-end" justify="center">
@@ -208,16 +208,10 @@ function PreviousSeasonWinners({ previousSeasonsWinners }: PreviousSeasonWinners
   return (
     <Box mt="xl">
       <Flex justify="space-between" align="center" mb="lg">
-        <Title order={2} className="text-gold">
+        <Title order={2} c="gold">
           {i18n.t('Previous Seasons Champions')}
         </Title>
-        <Button
-          component="a"
-          href="/seasons"
-          variant="outline"
-          size="compact-sm"
-          className="btn-outline-gold"
-        >
+        <Button component="a" href="/seasons" variant="outline" size="compact-sm" color="gold">
           {i18n.t('View All Seasons')}
         </Button>
       </Flex>
@@ -242,7 +236,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }: PreviousSeasonWinners
                 href={`/seasons/${season.id}`}
                 variant="outline"
                 size="compact-sm"
-                className="btn-outline-gold"
+                color="gold"
               >
                 {i18n.t('Full Results')}
               </Button>
@@ -361,7 +355,7 @@ function HallOfFamePage({
   return (
     <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
       <Box w="100%" maw={1140} mx="auto" px="md">
-        <Title order={1} className="text-gold" ta="center" mb="xl" fw={700}>
+        <Title order={1} c="gold" ta="center" mb="xl" fw={700}>
           {i18n.t('Hall of Fame')}
         </Title>
 
@@ -371,7 +365,7 @@ function HallOfFamePage({
               <Box px="md" py="md">
                 <Flex justify="space-between" align="center">
                   <Box>
-                    <Title order={5} className="text-gold" mb="sm">
+                    <Title order={5} c="gold" mb="sm">
                       {currentSeason.name} {currentSeason.year}
                     </Title>
                     <Flex wrap="wrap" gap="md">
@@ -383,12 +377,7 @@ function HallOfFamePage({
                       </Text>
                     </Flex>
                   </Box>
-                  <Button
-                    component={Link}
-                    href="/seasons"
-                    variant="outline"
-                    className="btn-outline-gold"
-                  >
+                  <Button component={Link} href="/seasons" variant="outline" color="gold">
                     {i18n.t('View All Seasons')}
                   </Button>
                 </Flex>
@@ -406,7 +395,7 @@ function HallOfFamePage({
                   py="md"
                   style={{ borderBottom: '1px solid #6c757d' }}
                 >
-                  <Title order={2} className="text-gold">
+                  <Title order={2} c="gold">
                     {i18n.t('Current Season Leaderboard')}
                   </Title>
                   <Badge color="gray">

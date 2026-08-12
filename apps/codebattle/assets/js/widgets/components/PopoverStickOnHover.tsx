@@ -35,8 +35,12 @@ function PopoverStickOnHover({
       <HoverCard.Target>{children}</HoverCard.Target>
       <HoverCard.Dropdown
         id={id}
-        className="cb-blur"
-        style={{ color: 'var(--mantine-color-cbText-6)', borderRadius: 'var(--mantine-radius-md)' }}
+        style={{
+          color: 'var(--mantine-color-cbText-6)',
+          borderRadius: 'var(--mantine-radius-md)',
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(16px)',
+        }}
         p={0}
       >
         {component}

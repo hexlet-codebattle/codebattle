@@ -175,8 +175,12 @@ function GameActionButtons({
         </Menu.Target>
 
         <Menu.Dropdown
-          className="cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-blur"
-          style={{ height: 'auto' }}
+          className="cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat"
+          style={{
+            height: 'auto',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(16px)',
+          }}
         >
           <ResetButtonDropDownItem onSelect={handleReset} status={resetBtnStatus} />
           {showGiveUpBtn && (

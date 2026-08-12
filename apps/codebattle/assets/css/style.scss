@@ -2466,14 +2466,6 @@ a.cb-text-light:hover {
   color: white;
 }
 
-.cb-text-success {
-  color: $cb-success;
-}
-
-.cb-text-danger {
-  color: #f04c5c;
-}
-
 .cb-bg-secondary {
   background-color: $cb-secondary;
 }
@@ -4346,20 +4338,6 @@ a.cb-text-light:hover {
     width: 28px;
     min-width: 28px;
     height: 28px;
-  }
-}
-
-.cb-blur {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(16px);
-}
-
-.arrow::after,
-.bs-popover-bottom .arrow::after {
-  border-bottom-color: rgba(0, 0, 0);
-
-  .cb-blur & {
-    border-bottom-color: rgba(0, 0, 0, 0.3);
   }
 }
 

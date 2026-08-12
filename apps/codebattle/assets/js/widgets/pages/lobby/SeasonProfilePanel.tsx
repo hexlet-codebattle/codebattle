@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Anchor, Box, Button, Flex, Text, Title } from '@mantine/core';
-import cn from 'classnames';
+import { Anchor, Box, Button, Flex, Skeleton, Text, Title } from '@mantine/core';
 import { getPageProp } from '@/inertia/pageProps';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -68,9 +67,7 @@ function OpponentInfo({ id }: OpponentInfoProps) {
               hideRank
             />
           ) : (
-            <span className="cb-text-skeleton" style={{ display: 'block', width: '100%' }}>
-              &nbsp;
-            </span>
+            <Skeleton h="1.2rem" display="block" w="100%" />
           )}
         </Box>
       </Flex>
@@ -83,16 +80,18 @@ function OpponentInfo({ id }: OpponentInfoProps) {
         className="cb-nearby-metric"
       >
         <Anchor href="/hall_of_fame" className="stat-item" py={4} w="100%">
-          <Text
-            component="span"
-            className={cn('stat-value cb-text-danger', {
-              'cb-text-skeleton': !user,
-            })}
-            display="block"
-            style={!user ? { width: '25%', marginInline: 'auto' } : undefined}
-          >
-            #{user ? user.rank : ''}
-          </Text>
+          {user ? (
+            <Text
+              component="span"
+              className="stat-value"
+              display="block"
+              style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+            >
+              #{user.rank}
+            </Text>
+          ) : (
+            <Skeleton h="1.2rem" display="block" w="25%" mx="auto" />
+          )}
           <Text component="span" className="stat-label" tt="uppercase">
             {i18n.t('Place')}
           </Text>
@@ -107,16 +106,18 @@ function OpponentInfo({ id }: OpponentInfoProps) {
         className="cb-nearby-metric"
       >
         <Box className="stat-item" py={4} w="100%">
-          <Text
-            component="span"
-            className={cn('stat-value cb-text-danger', {
-              'cb-text-skeleton': !user,
-            })}
-            display="block"
-            style={!user ? { width: '25%', marginInline: 'auto' } : undefined}
-          >
-            {user ? user.points : ''}
-          </Text>
+          {user ? (
+            <Text
+              component="span"
+              className="stat-value"
+              display="block"
+              style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+            >
+              {user.points}
+            </Text>
+          ) : (
+            <Skeleton h="1.2rem" display="block" w="25%" mx="auto" />
+          )}
           <Text component="span" className="stat-label" tt="uppercase">
             {i18n.t('Points')}
           </Text>
@@ -376,7 +377,12 @@ function SeasonProfilePanel({
 
           <Flex py="sm" px="xs" bg="cbHighlight" className="cb-season-stats">
             <Box className="stat-item" py={4} w="100%">
-              <Text component="span" className="stat-value cb-text-danger" display="block">
+              <Text
+                component="span"
+                className="stat-value"
+                display="block"
+                style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+              >
                 {user.rating}
               </Text>
               <Text component="span" className="stat-label" tt="uppercase">
@@ -384,21 +390,29 @@ function SeasonProfilePanel({
               </Text>
             </Box>
             <Anchor href="/hall_of_fame" className="stat-item" py={4} w="100%">
-              <Text
-                component="span"
-                className={cn('stat-value cb-text-success', {
-                  'cb-text-skeleton': !user.points,
-                })}
-                display="block"
-              >
-                {user.points ? `#${user.rank}` : '#0'}
-              </Text>
+              {user.points ? (
+                <Text
+                  component="span"
+                  className="stat-value"
+                  display="block"
+                  style={{ color: 'var(--mantine-color-cbSuccess-6)' }}
+                >
+                  #{user.rank}
+                </Text>
+              ) : (
+                <Skeleton h="1.2rem" display="block" w="25%" mx="auto" />
+              )}
               <Text component="span" className="stat-label" tt="uppercase">
                 {i18n.t('Place')}
               </Text>
             </Anchor>
             <Box className="stat-item" py={4} w="100%">
-              <Text component="span" className="stat-value cb-text-danger" display="block">
+              <Text
+                component="span"
+                className="stat-value"
+                display="block"
+                style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+              >
                 {user.points || 0}
               </Text>
               <Text component="span" className="stat-label" tt="uppercase">

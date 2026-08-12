@@ -130,7 +130,7 @@ function ChampionsPodium({ top3 }: ChampionsPodiumProps) {
 
   return (
     <Box mb="xl">
-      <Title order={2} className="text-gold" mb="lg" ta="center">
+      <Title order={2} c="gold" mb="lg" ta="center">
         {i18n.t('Champions')}
       </Title>
       <Flex wrap="wrap" align="flex-end" justify="center">
@@ -234,7 +234,7 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
         >
           <Box>
             <Flex align="center" mb="sm">
-              <Title order={1} className="text-gold" mr="sm" fw={700}>
+              <Title order={1} c="gold" mr="sm" fw={700}>
                 {season.name} {season.year}
               </Title>
               <Badge color={statusBadgeColor}>{statusBadgeText}</Badge>
@@ -247,21 +247,10 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
             </Flex>
           </Box>
           <Flex mt={{ base: 'md', md: 0 }}>
-            <Button
-              component={Link}
-              href="/seasons"
-              variant="outline"
-              mr="sm"
-              className="btn-outline-gold"
-            >
+            <Button component={Link} href="/seasons" variant="outline" mr="sm" color="gold">
               {i18n.t('All Seasons')}
             </Button>
-            <Button
-              component="a"
-              href="/hall_of_fame"
-              variant="outline"
-              className="btn-outline-gold"
-            >
+            <Button component="a" href="/hall_of_fame" variant="outline" color="gold">
               {i18n.t('Hall of Fame')}
             </Button>
           </Flex>
@@ -279,7 +268,7 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
             py="md"
             style={{ borderBottom: '1px solid #6c757d' }}
           >
-            <Title order={2} className="text-gold">
+            <Title order={2} c="gold">
               {i18n.t('Full Leaderboard')}
             </Title>
             <Badge color="gray">{i18n.t('%{count} players', { count: results.length })}</Badge>

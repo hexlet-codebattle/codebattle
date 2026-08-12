@@ -163,7 +163,7 @@ function SeasonCard({ season }: SeasonCardProps) {
             <Text tt="uppercase" size="xs" c="dimmed" className="cb-seasons-card-kicker">
               {i18n.t('Season')}
             </Text>
-            <Text component="h3" className="text-gold cb-seasons-card-title" mb="sm" fw={500}>
+            <Text component="h3" c="gold" className="cb-seasons-card-title" mb="sm" fw={500}>
               {season.name} {season.year}
             </Text>
             <Text c="dimmed" className="cb-seasons-card-dates">
@@ -176,7 +176,8 @@ function SeasonCard({ season }: SeasonCardProps) {
             variant="outline"
             size="compact-sm"
             mt={{ base: 'md', sm: 0 }}
-            className="btn-outline-gold cb-seasons-action"
+            className="cb-seasons-action"
+            color="gold"
           >
             {i18n.t('View Results')}
           </Button>
@@ -211,7 +212,7 @@ function SeasonsPage({ seasons }: SeasonsPageProps) {
               <Text tt="uppercase" size="xs" c="dimmed" className="cb-seasons-eyebrow">
                 {i18n.t('Competition archive')}
               </Text>
-              <Text component="h1" className="text-gold cb-seasons-title" mb="sm" fw={700}>
+              <Text component="h1" c="gold" className="cb-seasons-title" mb="sm" fw={700}>
                 {i18n.t('Seasons')}
               </Text>
               <Text c="dimmed" className="cb-seasons-subtitle">
@@ -223,7 +224,8 @@ function SeasonsPage({ seasons }: SeasonsPageProps) {
                 component={Link}
                 href="/hall_of_fame"
                 variant="outline"
-                className="btn-outline-gold cb-seasons-hero-action"
+                className="cb-seasons-hero-action"
+                color="gold"
               >
                 {i18n.t('Hall of Fame')}
               </Button>
