@@ -401,7 +401,7 @@ function UserSettings() {
   );
 
   return (
-    <Box className="cb-settings-page cb-text" py="lg" px={{ base: 'md', md: 'lg' }}>
+    <Box className="cb-settings-page" c="cbText" py="lg" px={{ base: 'md', md: 'lg' }}>
       <Notification notification={notification} onClose={setNotification} />
       <header className="cb-settings-page-header">
         <h2>{i18n.t('Settings')}</h2>

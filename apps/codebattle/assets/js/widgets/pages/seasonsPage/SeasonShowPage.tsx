@@ -184,9 +184,14 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
 
   if (!season) {
     return (
-      <Box className="cb-bg-panel cb-text" mih="100vh" py="xl">
+      <Box
+      c="cbText"
+      mih="100vh"
+      py="xl"
+      style={{ background: "var(--cb-bg-panel-background)" }}
+    >
         <Box w="100%" maw={1140} mx="auto" px="md">
-          <Paper radius="md" shadow="sm" className="cb-bg-panel cb-rounded">
+          <Paper radius="md" shadow="sm" bg="cbPanel">
             <Box ta="center" py="xl">
               <Text c="dimmed">{i18n.t('Season not found')}</Text>
             </Box>
@@ -223,7 +228,12 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
   }[seasonStatus];
 
   return (
-    <Box className="cb-bg-panel cb-text" mih="100vh" py="xl">
+    <Box
+      c="cbText"
+      mih="100vh"
+      py="xl"
+      style={{ background: "var(--cb-bg-panel-background)" }}
+    >
       <Box w="100%" maw={1140} mx="auto" px="md">
         {/* Header */}
         <Flex
@@ -271,7 +281,7 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
         <ChampionsPodium top3={top3} />
 
         {/* Full Leaderboard */}
-        <Paper radius="md" shadow="sm" className="cb-bg-panel cb-rounded">
+        <Paper radius="md" shadow="sm" bg="cbPanel">
           <Flex
             justify="space-between"
             align="center"

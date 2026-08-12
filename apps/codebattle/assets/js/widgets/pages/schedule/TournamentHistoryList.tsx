@@ -56,7 +56,7 @@ const formatDuration = (t: HistoryTournament): string | null => {
 function TournamentHistoryList({ tournaments, loading }: TournamentHistoryListProps) {
   if (loading) {
     return (
-      <Flex justify="center" align="center" py="xl" className="cb-text">
+      <Flex justify="center" align="center" py="xl" c="cbText">
         <Loader />
         <Text ml="md">{i18n.t('Loading...')}</Text>
       </Flex>
@@ -65,7 +65,7 @@ function TournamentHistoryList({ tournaments, loading }: TournamentHistoryListPr
 
   if (tournaments.length === 0) {
     return (
-      <Flex justify="center" align="center" py="xl" className="cb-text">
+      <Flex justify="center" align="center" py="xl" c="cbText">
         {i18n.t('No finished tournaments yet')}
       </Flex>
     );

@@ -12,7 +12,7 @@ interface TournamentsScheduleProps {
 
 export default function TournamentsSchedule({ page_title }: TournamentsScheduleProps) {
   return (
-    <Box className="cb-text" maw={{ base: '100%', lg: 960 }} mx="auto" style={{ padding: '15px' }}>
+    <Box c="cbText" maw={{ base: "100%", lg: 960 }} mx="auto" style={{ padding: "15px" }}>
       <Head title={page_title} />
       <TournamentsSchedulePage />
     </Box>

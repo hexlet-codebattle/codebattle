@@ -223,7 +223,7 @@ interface ConnectionModalProps {
 function ConnectionModal({ connection, onHide }: ConnectionModalProps) {
   return (
     <Modal show={!!connection} onHide={onHide}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>Connection details</Modal.Title>
       </Modal.Header>
       <Modal.Body>

@@ -224,7 +224,7 @@ function LanguageSelect({ lang, view, currentView, items, onSelect }: LanguageSe
             {capitalize(selectedName)}
           </Button>
         </Menu.Target>
-        <Menu.Dropdown className="cb-bg-highlight-panel">
+        <Menu.Dropdown bg="cbHighlight">
           {items.map(([slug, languageName]) => (
             <Menu.Item
               key={slug}
@@ -274,7 +274,7 @@ function LocaleSelect({ onSelect }: { onSelect: (locale: string) => void }) {
           {currentLocaleLabel}
         </Button>
       </Menu.Target>
-      <Menu.Dropdown className="cb-bg-highlight-panel">
+      <Menu.Dropdown bg="cbHighlight">
         {locales.map(([value, label]) => (
           <Menu.Item
             key={value}

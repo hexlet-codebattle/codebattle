@@ -6,7 +6,7 @@ import { Lobby } from '../../widgets/App';
 
 export default function LobbyPage() {
   return (
-    <Box className="cb-text" maw={{ base: '100%', lg: 960 }} mx="auto" style={{ padding: '15px' }}>
+    <Box c="cbText" maw={{ base: "100%", lg: 960 }} mx="auto" style={{ padding: "15px" }}>
       <Lobby />
     </Box>
   );

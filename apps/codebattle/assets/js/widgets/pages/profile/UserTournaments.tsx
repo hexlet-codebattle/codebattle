@@ -207,7 +207,7 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
             th: { whiteSpace: 'nowrap' },
           }}
         >
-          <Table.Thead className="cb-text">
+          <Table.Thead c="cbText">
             <Table.Tr>
               <Table.Th>{i18n.t('Grade')}</Table.Th>
               <Table.Th>{i18n.t('Place')}</Table.Th>
@@ -220,7 +220,7 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
               <Table.Th>{i18n.t('Date')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody className="cb-text">
+          <Table.Tbody c="cbText">
             {tournaments.map((item) => (
               <Table.Tr
                 key={item.tournamentId}
@@ -237,8 +237,9 @@ function UserTournaments({ isActive = false }: UserTournamentsProps) {
               >
                 <Table.Td>
                   <span
-                    className="cb-rounded"
+                    
                     style={{
+                      borderRadius: 'var(--mantine-radius-md)',
                       padding: '0.25rem 0.5rem',
                       backgroundColor:
                         (item.tournamentGrade && gradeColors[item.tournamentGrade]) || '#8a919c',

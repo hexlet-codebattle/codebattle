@@ -228,7 +228,6 @@ function PreviousSeasonWinners({ previousSeasonsWinners }: PreviousSeasonWinners
           radius="md"
           shadow="lg"
           mb="md"
-          className="cb-bg-panel cb-rounded"
           style={{
             background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
           }}
@@ -360,7 +359,12 @@ function HallOfFamePage({
   const top3 = currentSeasonResults.slice(0, 3);
 
   return (
-    <Box className="cb-bg-panel cb-text" mih="100vh" py="xl">
+    <Box
+      c="cbText"
+      mih="100vh"
+      py="xl"
+      style={{ background: "var(--cb-bg-panel-background)" }}
+    >
       <Box w="100%" maw={1140} mx="auto" px="md">
         <Title order={1} className="text-gold" ta="center" mb="xl" fw={700}>
           {i18n.t('Hall of Fame')}
@@ -368,7 +372,7 @@ function HallOfFamePage({
 
         {currentSeason && (
           <>
-            <Paper radius="md" shadow="sm" mb="md" className="cb-bg-panel cb-rounded">
+            <Paper radius="md" shadow="sm" mb="md" bg="cbPanel">
               <Box px="md" py="md">
                 <Flex justify="space-between" align="center">
                   <Box>
@@ -399,7 +403,7 @@ function HallOfFamePage({
             <ChampionsPodium top3={top3} />
 
             {currentSeasonResults.length > 0 && (
-              <Paper radius="md" shadow="sm" className="cb-bg-panel cb-rounded">
+              <Paper radius="md" shadow="sm" bg="cbPanel">
                 <Flex
                   justify="space-between"
                   align="center"

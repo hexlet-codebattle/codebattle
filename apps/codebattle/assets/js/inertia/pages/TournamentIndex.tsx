@@ -23,7 +23,7 @@ export default function TournamentIndex({
 }: TournamentIndexProps) {
   return (
     <Box
-      className="cb-text"
+      c="cbText"
       maw={{ base: '100%', xl: 1140 }}
       mx="auto"
       style={{ padding: '15px', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}

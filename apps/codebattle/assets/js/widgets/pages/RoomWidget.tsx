@@ -101,10 +101,10 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }: RoomW
                 )}
                 {mute && (
                   <div
-                    className="cb-rounded"
                     style={{
                       padding: '0.5rem',
                       backgroundColor: '#212529',
+                      borderRadius: 'var(--mantine-radius-md)',
                     }}
                   >
                     <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />

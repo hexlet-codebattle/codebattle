@@ -151,7 +151,7 @@ function UserProfile() {
   const hasChartsData = gamesCount > 0 || tournamentWinsCount > 0;
 
   return (
-    <Grid className="cb-bg-panel cb-rounded" py="lg">
+    <Grid py="lg" style={{ backgroundColor: "var(--mantine-color-cbPanel-6)", borderRadius: "var(--mantine-radius-md)" }}>
       <Grid.Col span={{ base: 12, md: 3 }} my="lg">
         <Box ta="center" pl={{ base: 0, md: 'sm' }}>
           <Box mb={{ base: 'sm', sm: 'lg' }}>
@@ -166,7 +166,7 @@ function UserProfile() {
             <h1 className="cb-heading" style={{ wordBreak: 'break-word', fontWeight: 700 }}>
               {user.name}
             </h1>
-            <hr className="cb-border-color" />
+            <hr style={{ borderColor: "var(--mantine-color-default-border)" }} />
             <h3 className="cb-heading">
               <span>{i18n.t('Lang')}:</span>
               <LanguageIcon
@@ -174,7 +174,7 @@ function UserProfile() {
                 style={{ marginLeft: '0.5rem', width: '30px', height: '30px' }}
               />
             </h3>
-            <hr className="cb-border-color" />
+            <hr style={{ borderColor: "var(--mantine-color-default-border)" }} />
             <Box ta="center">
               <Text mb="xs" size="sm" tt="uppercase" c="dimmed">
                 {i18n.t('Clan')}
@@ -203,7 +203,7 @@ function UserProfile() {
                 </Text>
               )}
             </Box>
-            <hr className="cb-border-color" />
+            <hr style={{ borderColor: "var(--mantine-color-default-border)" }} />
             <Text mb="sm" size="sm" ff="monospace" c="dimmed">
               {i18n.t('joined at %{date}', { date: userInsertedAt })}
             </Text>
@@ -242,10 +242,11 @@ function UserProfile() {
                   {seasonResults.map((result) => (
                     <Box
                       key={result.seasonId}
-                      className="cb-rounded"
+                      
                       mb="sm"
                       p="sm"
                       style={{
+                        borderRadius: 'var(--mantine-radius-md)',
                         backgroundColor: getSeasonPlaceColor(result.place),
                         border: '1px solid rgba(47, 52, 64, 0.25)',
                       }}
@@ -342,7 +343,7 @@ function UserProfile() {
                           <Anchor
                             key={rival.id}
                             href={`/users/${rival.id}`}
-                            className="cb-rounded"
+                            
                             display="block"
                             td="none"
                             m="xs"
@@ -350,6 +351,7 @@ function UserProfile() {
                             py="sm"
                             fw={700}
                             style={{
+                        borderRadius: 'var(--mantine-radius-md)',
                               backgroundColor: '#c2c9d6',
                               border: '1px solid #a4aab3',
                               color: '#2f3440',
@@ -386,12 +388,13 @@ function UserProfile() {
                         {languageEntries.map(([lang, count]) => (
                           <Box
                             key={lang}
-                            className="cb-rounded"
+                            
                             m="xs"
                             px="md"
                             py="sm"
                             fw={700}
                             style={{
+                        borderRadius: 'var(--mantine-radius-md)',
                               backgroundColor: '#c2c9d6',
                               border: '1px solid #a4aab3',
                               color: '#2f3440',

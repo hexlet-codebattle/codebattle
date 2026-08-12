@@ -197,7 +197,7 @@ function Body({ children }: { children: ReactNode }) {
 function Footer({ children }: { children: ReactNode }) {
   return (
     <Box
-      className="cb-bg-highlight-panel"
+      bg="cbHighlight"
       py="sm"
       px="md"
       ta="center"
@@ -268,7 +268,7 @@ function SocialLinks({ isSignUp }: SocialLinksProps) {
 
 function SignInInvitation() {
   return (
-    <Text size="sm" className="cb-text">
+    <Text size="sm" c="cbText">
       {i18n.t('If you have an account')}
       <Anchor href={getLinkWithNext('/session/new')} c="white" ml="md">
         {i18n.t('Sign In')}
@@ -279,7 +279,7 @@ function SignInInvitation() {
 
 function SignUpInvitation() {
   return (
-    <Text size="sm" className="cb-text">
+    <Text size="sm" c="cbText">
       {i18n.t('Have not an account?')}
       <Anchor href={getLinkWithNext('/users/new')} ml="md">
         {i18n.t('Sign Up')}

@@ -279,10 +279,14 @@ function TournamentSchedule() {
       direction="column"
       h="100%"
       w="100%"
-      className="cb-bg-panel cb-rounded cb-overflow-y-scroll"
+      className="cb-overflow-y-scroll"
       p={{ base: 'xs', md: 'md', lg: 'md' }}
       pos="relative"
-      style={{ maxHeight: '90vh' }}
+      style={{
+        maxHeight: '90vh',
+        backgroundColor: 'var(--mantine-color-cbPanel-6)',
+        borderRadius: 'var(--mantine-radius-md)',
+      }}
     >
       <ScheduleLegend
         context={context}

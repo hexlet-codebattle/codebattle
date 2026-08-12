@@ -53,7 +53,7 @@ export const EventModal = NiceModal.create(
 
     return (
       <Modal size="lg" show={modal.visible} onHide={modal.hide}>
-        <Modal.Header className="cb-border-color" closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>
             <Stack gap={0}>
               {event.resourse.grade !== grades.open && (
@@ -100,7 +100,7 @@ export const EventModal = NiceModal.create(
             />
           </Flex>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
+        <Modal.Footer>
           {event.resourse.id && (
             <Button
               component="a"

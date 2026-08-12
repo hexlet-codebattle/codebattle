@@ -16,7 +16,7 @@ interface HeadToHeadProps {
 export default function HeadToHead({ page_title, head_to_head }: HeadToHeadProps) {
   return (
     <Box
-      className="cb-text"
+      c="cbText"
       maw={1140}
       mx="auto"
       style={{

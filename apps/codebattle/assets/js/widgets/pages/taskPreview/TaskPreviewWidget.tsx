@@ -225,8 +225,8 @@ interface StatCardProps {
 
 function StatCard({ label, value }: StatCardProps) {
   return (
-    <Stack align="center" gap={4} p="md" className="cb-bg-highlight-panel cb-rounded" flex={1}>
-      <Text size="xs" tt="uppercase" className="cb-text" style={{ letterSpacing: 1 }}>
+    <Stack align="center" gap={4} p="md" bg="cbHighlight" flex={1} style={{ borderRadius: 'var(--mantine-radius-md)' }}>
+      <Text size="xs" tt="uppercase" c="cbText" style={{ letterSpacing: 1 }}>
         {label}
       </Text>
       <Text fw={700} c="white" fz="lg">
@@ -243,7 +243,7 @@ interface PercentileBarProps {
 function PercentileBar({ percentiles }: PercentileBarProps) {
   if (!percentiles || percentiles.count === 0) {
     return (
-      <Text fs="italic" className="cb-text" py="xs">
+      <Text fs="italic" c="cbText" py="xs">
         {i18n.t('No solve time data yet')}
       </Text>
     );
@@ -267,11 +267,11 @@ function PercentileBar({ percentiles }: PercentileBarProps) {
         const pct = Math.min((val / maxVal) * 100, 100);
         return (
           <Flex key={key} align="center" mb="xs">
-            <Text size="xs" className="cb-text" style={{ width: 110, flexShrink: 0 }}>
+            <Text size="xs" c="cbText" style={{ width: 110, flexShrink: 0 }}>
               {label}
             </Text>
             <Box
-              className="cb-bg-highlight-panel"
+              bg="cbHighlight"
               style={{
                 flexGrow: 1,
                 height: 24,
@@ -317,9 +317,12 @@ function SignatureDisplay({ inputSignature, outputSignature }: SignatureDisplayP
 
   return (
     <Box
-      className="cb-bg-highlight-panel cb-rounded"
+      bg="cbHighlight"
       p="md"
-      style={{ fontFamily: 'var(--mantine-font-family-monospace)' }}
+      style={{
+        fontFamily: 'var(--mantine-font-family-monospace)',
+        borderRadius: 'var(--mantine-radius-md)',
+      }}
     >
       <Text size="xs" component="span" c="cyan">
         function
@@ -332,7 +335,7 @@ function SignatureDisplay({ inputSignature, outputSignature }: SignatureDisplayP
             <Text size="xs" component="span" c="white">
               {sig.argumentName}
             </Text>
-            <Text size="xs" component="span" className="cb-text">
+            <Text size="xs" component="span" c="cbText">
               :{' '}
             </Text>
             <Text size="xs" component="span" c="yellow">
@@ -360,13 +363,13 @@ function ExamplesTable({ examples }: ExamplesTableProps) {
       <Table withRowBorders>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th className="cb-text" px="md" py="xs">
+            <Table.Th c="cbText" px="md" py="xs">
               #
             </Table.Th>
-            <Table.Th className="cb-text" px="md" py="xs">
+            <Table.Th c="cbText" px="md" py="xs">
               {i18n.t('Arguments')}
             </Table.Th>
-            <Table.Th className="cb-text" px="md" py="xs">
+            <Table.Th c="cbText" px="md" py="xs">
               {i18n.t('Expected')}
             </Table.Th>
           </Table.Tr>
@@ -375,7 +378,7 @@ function ExamplesTable({ examples }: ExamplesTableProps) {
           {examples.map((ex, i) => (
             <Table.Tr key={i}>
               <Table.Td
-                className="cb-text"
+                c="cbText"
                 px="md"
                 py="xs"
                 style={{ fontFamily: 'var(--mantine-font-family-monospace)' }}
@@ -408,7 +411,7 @@ function Leaderboard({ entries }: LeaderboardProps) {
   if (!entries || entries.length === 0) return null;
 
   return (
-    <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+    <Paper withBorder radius="md" mb="md" bg="cbPanel">
       <Box p="md">
         <Title order={5} c="white" mb="md">
           {i18n.t('Fastest Solutions')}
@@ -417,19 +420,19 @@ function Leaderboard({ entries }: LeaderboardProps) {
           <Table withRowBorders>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th className="cb-text" px="xs" py="xs">
+                <Table.Th c="cbText" px="xs" py="xs">
                   #
                 </Table.Th>
-                <Table.Th className="cb-text" px="xs" py="xs">
+                <Table.Th c="cbText" px="xs" py="xs">
                   {i18n.t('Player')}
                 </Table.Th>
-                <Table.Th className="cb-text" px="xs" py="xs">
+                <Table.Th c="cbText" px="xs" py="xs">
                   {i18n.t('Time')}
                 </Table.Th>
-                <Table.Th className="cb-text" px="xs" py="xs">
+                <Table.Th c="cbText" px="xs" py="xs">
                   {i18n.t('Lang')}
                 </Table.Th>
-                <Table.Th className="cb-text" px="xs" py="xs">
+                <Table.Th c="cbText" px="xs" py="xs">
                   {i18n.t('Game')}
                 </Table.Th>
               </Table.Tr>
@@ -437,21 +440,21 @@ function Leaderboard({ entries }: LeaderboardProps) {
             <Table.Tbody>
               {entries.map((entry, i) => (
                 <Table.Tr key={entry.gameId}>
-                  <Table.Td className="cb-text" px="xs" py="xs">
+                  <Table.Td c="cbText" px="xs" py="xs">
                     {i + 1}
                   </Table.Td>
                   <Table.Td px="xs" py="xs">
                     <Text component="a" href={`/users/${entry.userId}`} c="white" td="none">
                       {entry.userName}
                     </Text>
-                    <Text component="small" ml={4} className="cb-text">
+                    <Text component="small" ml={4} c="cbText">
                       ({entry.rating})
                     </Text>
                   </Table.Td>
                   <Table.Td c="white" fw={700} px="xs" py="xs">
                     {formatDuration(entry.durationSec)}
                   </Table.Td>
-                  <Table.Td className="cb-text" px="xs" py="xs">
+                  <Table.Td c="cbText" px="xs" py="xs">
                     {entry.lang}
                   </Table.Td>
                   <Table.Td px="xs" py="xs">
@@ -488,7 +491,7 @@ function MetaRow({ label, children }: MetaRowProps) {
       py="xs"
       style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
     >
-      <Text component="dt" className="cb-text" fw={400} size="xs">
+      <Text component="dt" c="cbText" fw={400} size="xs">
         {label}
       </Text>
       <Text component="dd" c="white" size="xs">
@@ -507,7 +510,7 @@ function AssertsSection({ asserts }: AssertsSectionProps) {
   const displayAsserts = expanded ? asserts : asserts.slice(0, 3);
 
   return (
-    <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+    <Paper withBorder radius="md" mb="md" bg="cbPanel">
       <Box p="md">
         <Flex justify="space-between" align="center" mb="md">
           <Title order={5} c="white">
@@ -614,7 +617,7 @@ function TaskPreviewWidget({
 
   if (!task) {
     return (
-      <Flex justify="center" align="center" className="cb-text" style={{ minHeight: '50vh' }}>
+      <Flex justify="center" align="center" c="cbText" style={{ minHeight: '50vh' }}>
         {i18n.t('Task not found')}
       </Flex>
     );
@@ -623,10 +626,10 @@ function TaskPreviewWidget({
   const stateInfo = stateLabels[task.state] || stateLabels.blank;
 
   return (
-    <Box className="cb-bg-panel cb-text" mih="100vh">
+    <Box bg="cbPanel" c="cbText" mih="100vh">
       {/* Header */}
       <Box
-        className="cb-bg-highlight-panel"
+        bg="cbHighlight"
         py="lg"
         style={{
           borderBottom: '1px solid var(--mantine-color-default-border)',
@@ -637,10 +640,10 @@ function TaskPreviewWidget({
             <Text component="a" href="/tasks" c="cyan" size="xs">
               {i18n.t('Tasks')}
             </Text>
-            <Text size="xs" mx="xs" className="cb-text">
+            <Text size="xs" mx="xs" c="cbText">
               /
             </Text>
-            <Text size="xs" className="cb-text">
+            <Text size="xs" c="cbText">
               {task.name}
             </Text>
             {isSaving && (
@@ -697,7 +700,7 @@ function TaskPreviewWidget({
           {/* Main content */}
           <Grid.Col span={{ base: 12, lg: 8 }}>
             {/* Description */}
-            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+            <Paper withBorder radius="md" mb="md" bg="cbPanel">
               <Box p="md">
                 <Flex justify="space-between" align="center" mb="md">
                   <Title order={5} c="white">
@@ -783,7 +786,7 @@ function TaskPreviewWidget({
             </Paper>
 
             {/* Signature */}
-            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+            <Paper withBorder radius="md" mb="md" bg="cbPanel">
               <Box p="md">
                 <Title order={5} c="white" mb="md">
                   {i18n.t('Function Signature')}
@@ -797,7 +800,7 @@ function TaskPreviewWidget({
 
             {/* Examples */}
             {task.assertsExamples && task.assertsExamples.length > 0 && (
-              <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+              <Paper withBorder radius="md" mb="md" bg="cbPanel">
                 <Box p="md">
                   <Title order={5} c="white" mb="md">
                     {i18n.t('Examples')}
@@ -812,7 +815,7 @@ function TaskPreviewWidget({
 
             {/* Stats */}
             {taskStats && (
-              <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+              <Paper withBorder radius="md" mb="md" bg="cbPanel">
                 <Box p="md">
                   <Title order={5} c="white" mb="md">
                     {i18n.t('Statistics')}
@@ -823,7 +826,7 @@ function TaskPreviewWidget({
                   </Flex>
 
                   <Text
-                    className="cb-text"
+                    c="cbText"
                     size="xs"
                     tt="uppercase"
                     mt="md"
@@ -844,7 +847,7 @@ function TaskPreviewWidget({
           {/* Sidebar */}
           <Grid.Col span={{ base: 12, lg: 4 }}>
             {/* Play button */}
-            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+            <Paper withBorder radius="md" mb="md" bg="cbPanel">
               <Box p="md">
                 <Button
                   fullWidth
@@ -865,7 +868,7 @@ function TaskPreviewWidget({
                   )}
                 </Button>
                 {task.state !== 'active' && (
-                  <Text size="xs" ta="center" mt="xs" className="cb-text">
+                  <Text size="xs" ta="center" mt="xs" c="cbText">
                     {i18n.t('Task must be active to play')}
                   </Text>
                 )}
@@ -873,7 +876,7 @@ function TaskPreviewWidget({
             </Paper>
 
             {/* Editable Details */}
-            <Paper withBorder radius="md" mb="md" className="cb-bg-panel">
+            <Paper withBorder radius="md" mb="md" bg="cbPanel">
               <Box p="md">
                 <Title order={5} c="white" mb="md">
                   {i18n.t('Details')}
@@ -958,7 +961,7 @@ function TaskPreviewWidget({
                     <Text
                       component="label"
                       htmlFor="task-preview-tags-input"
-                      className="cb-text"
+                      c="cbText"
                       size="xs"
                       mb={4}
                     >

@@ -155,7 +155,7 @@ function SeasonCard({ season }: SeasonCardProps) {
       radius="md"
       shadow="sm"
       h="100%"
-      className="cb-bg-panel cb-rounded cb-seasons-card"
+      bg="cbPanel" className="cb-seasons-card"
     >
       <Flex direction="column" h="100%" p={{ base: 'md', lg: 'lg' }}>
         <Flex
@@ -198,7 +198,12 @@ function SeasonCard({ season }: SeasonCardProps) {
 
 function SeasonsPage({ seasons }: SeasonsPageProps) {
   return (
-    <Box className="cb-bg-panel cb-text" mih="100vh" py="xl">
+    <Box
+      c="cbText"
+      mih="100vh"
+      py="xl"
+      style={{ background: "var(--cb-bg-panel-background)" }}
+    >
       <Box w="100%" maw={1140} mx="auto" px="md">
         <Paper
           radius="md"
@@ -206,7 +211,7 @@ function SeasonsPage({ seasons }: SeasonsPageProps) {
           px={{ base: 'md', lg: 'lg' }}
           py="lg"
           mb="md"
-          className="cb-rounded cb-seasons-hero"
+          className="cb-seasons-hero"
         >
           <Flex
             direction={{ base: 'column', md: 'row' }}
@@ -238,7 +243,7 @@ function SeasonsPage({ seasons }: SeasonsPageProps) {
         </Paper>
 
         {seasons.length === 0 ? (
-          <Paper radius="md" shadow="sm" className="cb-bg-panel cb-rounded cb-seasons-empty">
+          <Paper radius="md" shadow="sm" bg="cbPanel" className="cb-seasons-empty">
             <Box ta="center" py="xl">
               <Text c="dimmed">{i18n.t('No seasons found')}</Text>
             </Box>

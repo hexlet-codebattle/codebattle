@@ -6,7 +6,7 @@ import { TournamentPage } from '../../widgets/App';
 
 export default function TournamentRoom() {
   return (
-    <Box className="cb-text" w="100%">
+    <Box c="cbText" w="100%">
       <TournamentPage />
     </Box>
   );
