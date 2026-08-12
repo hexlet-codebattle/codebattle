@@ -1085,9 +1085,24 @@ still use them; Phase 3 deletes them).
   `StartRoundConfirmationModal`, `AdminWidget`, `GameActionButtons`,
   `EventStageConfirmationModal`, `MatchConfirmationModal`) dropped the redundant
   prop. This is the design leftover from the 2026-08-12 leftover-slice note.
-- Kept on purpose: `bg-gray`/`btn-hover`/`btn-outline-gold`/`text-gold`/`cb-blur`
-  (custom, not in the "real homes" list), `ChatContextMenu`'s react-contexify
-  classes (lib boundary), and `cb-text-skeleton`/`cb-text-danger`/`cb-text-success`.
+- Kept on purpose: `bg-gray`/`btn-hover` (custom, not in the "real homes" list
+  — `bg-gray` also still on `task/index.html.heex`, `btn-hover` needs the
+  `.game-item:hover` ancestor selector), `ChatContextMenu`'s react-contexify
+  classes (lib boundary).
+- **Last-design-classes slice (2026-08-12):** the remaining React-only classes
+  are ported and their SCSS deleted (zero consumers in both React and heex):
+  `text-gold` → `c="gold"` (new `gold` tuple #c9a56c),
+  `btn-outline-gold` → `<Button variant="outline" color="gold">`,
+  `cb-text-danger` → `style={{ color: 'var(--mantine-color-cbDanger-6)' }}`
+  (new `cbDanger` tuple #f04c5c),
+  `cb-text-success` → `var(--mantine-color-cbSuccess-6)` (existing `cbSuccess`
+  tuple = `$cb-success`),
+  `cb-text-skeleton` → Mantine `<Skeleton>` (LobbyLoading + SeasonProfilePanel
+  load states; test updated to count `.mantine-Skeleton-root`),
+  `cb-blur` → inline `rgba(0, 0, 0, 0.3)` + `backdropFilter: blur(16px)` on the
+  three dropdowns. Dead rules removed from `skeleton.scss`/`style.scss`/
+  `custom.scss` (`skeleton-loading`, `lobby-skeleton-shimmer`, the popover
+  arrow blur nesting, etc.).
 - **Page sweep done (2026-08-12, follow-up slices):** all remaining page-level
   usages of the shared design classes are ported — `game/`+`gameMl/` slice, an
   "remaining page groups" slice (`inertia/pages/*`, `admin`, `seasonsPage`,
@@ -1101,7 +1116,7 @@ still use them; Phase 3 deletes them).
   `cb-rounded-left`/`cb-rounded-top` → the two corner radius styles;
   Table rows with the conditional `'cb-bg-panel'` cn() class now get a
   conditional inline `backgroundColor` (FinishedLeaderboard/PlayersRankingPanel/
-  TournamentClanTable row background unchanged). Only `cb-text-skeleton`,
+  TournamentClanTable row background unchanged). Only `bg-gray`/`btn-hover`,
   the react-contexify `Menu` in `ChatContextMenu`, comments, and the
   `--cb-bg-panel-background` var references remain matching the sweep regex.
 - ⚠️ QA: `--cb-bg-panel-background` gradient vs flat `bg="cbPanel"` on the
