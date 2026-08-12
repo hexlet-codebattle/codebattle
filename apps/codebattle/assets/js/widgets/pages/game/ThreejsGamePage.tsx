@@ -1945,16 +1945,23 @@ function ThreejsGamePage({
                 size="compact-sm"
                 color="yellow"
                 variant={editMode ? 'filled' : 'outline'}
+                radius="md"
                 onClick={() => setEditMode((v) => !v)}
               >
                 {editMode ? i18next.t('Done') : i18next.t('Edit Layout')}
               </Button>
               {editMode && (
-                <Button size="compact-sm" color="red" variant="outline" onClick={resetPreset}>
+                <Button
+                  size="compact-sm"
+                  color="red"
+                  variant="outline"
+                  radius="md"
+                  onClick={resetPreset}
+                >
                   {i18next.t('Reset')}
                 </Button>
               )}
-              <Button size="compact-sm" variant="default" onClick={toggleFullscreen}>
+              <Button size="compact-sm" variant="default" radius="md" onClick={toggleFullscreen}>
                 {i18next.t('Fullscreen')}
               </Button>
             </Group>

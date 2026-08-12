@@ -160,6 +160,7 @@ function TaskAssignment({
                   type="button"
                   size="sm"
                   variant="light"
+                  radius="md"
                   onClick={handleTaskSizeDecrease}
                   style={{
                     borderTopRightRadius: 0,
@@ -172,6 +173,7 @@ function TaskAssignment({
                   type="button"
                   size="sm"
                   variant="light"
+                  radius="md"
                   mr="sm"
                   onClick={handleTaskSizeIncrease}
                   style={{

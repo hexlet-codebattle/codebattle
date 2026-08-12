@@ -22,7 +22,13 @@ function GoToNextGame({ currentUserId, tournamentsInfo: { playerGames } }: GoToN
   return (
     <>
       {nextGame && (
-        <Button component="a" href={`/games/${nextGame.gameId}`} color="cbSuccess" fullWidth>
+        <Button
+          component="a"
+          href={`/games/${nextGame.gameId}`}
+          color="cbSuccess"
+          fullWidth
+          radius="md"
+        >
           Go to next game
         </Button>
       )}

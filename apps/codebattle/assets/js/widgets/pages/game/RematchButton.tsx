@@ -39,7 +39,7 @@ const RematchButton = ({
   disabled,
 }: RematchButtonProps) => {
   const renderBtnAfterReject = () => (
-    <Button color="red" fullWidth disabled={disabled}>
+    <Button color="red" fullWidth disabled={disabled} radius="md">
       {i18n.t('Rejected Offer')}
     </Button>
   );
@@ -47,7 +47,7 @@ const RematchButton = ({
   const renderBtnAfterSendOffer = () => {
     const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
     return (
-      <Button color={isOpponentInGame ? 'cbSecondary' : 'yellow'} fullWidth disabled>
+      <Button color={isOpponentInGame ? 'cbSecondary' : 'yellow'} fullWidth disabled radius="md">
         {i18n.t(text)}
       </Button>
     );
@@ -62,6 +62,7 @@ const RematchButton = ({
         <Button
           variant="outline"
           color="cbSecondary"
+          radius="md"
           onClick={sendAcceptToRematch}
           title={i18n.t('Accept')}
           aria-label={i18n.t('Accept')}
@@ -71,6 +72,7 @@ const RematchButton = ({
         <Button
           variant="outline"
           color="cbSecondary"
+          radius="md"
           onClick={sendRejectToRematch}
           title={i18n.t('Decline')}
           aria-label={i18n.t('Decline')}
