@@ -16,7 +16,8 @@ import mapValues from 'lodash/mapValues';
 import omitBy from 'lodash/omitBy';
 import uniqBy from 'lodash/uniqBy';
 import { useDispatch, useSelector } from 'react-redux';
-import Select, { createFilter } from 'react-select';
+
+import CbSelect from '../../components/CbSelect';
 
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
@@ -143,82 +144,20 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
   };
 
   return (
-    <Select<Task>
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      styles={{
-        menu: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-        }),
-        container: (base: any) => ({
-          ...base,
-          width: '100%',
-          backgroundColor: '#1c1c24',
-          color: 'white',
-          borderColor: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            borderColor: '#e04d5b',
-          },
-        }),
-        indicatorSeparator: (base: any) => ({
-          ...base,
-          backgroundColor: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            backgroundColor: '#e04d5b',
-          },
-        }),
-        dropdownIndicator: (base: any) => ({
-          ...base,
-          color: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            color: '#e04d5b',
-          },
-        }),
-        control: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-          borderColor: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            borderColor: '#e04d5b',
-          },
-        }),
-        singleValue: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-        }),
-        option: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            color: '#eaffff',
-            backgroundColor: '#2a2a35',
-          },
-        }),
-      }}
-      /* eslint-enable @typescript-eslint/no-explicit-any */
+    <CbSelect<Task>
       value={value}
       onChange={(task) => onChange(task as Task)}
       options={options}
-      getOptionLabel={(task) => task.name ?? ''}
-      formatOptionLabel={renderOptionLabel}
+      getOptionLabel={renderOptionLabel}
       getOptionValue={(task) => String(task.id)}
-      filterOption={createFilter({
-        stringify: (option) =>
-          [option.data.name, getLocalizedDescription(option.data)].filter(Boolean).join(' '),
-      })}
+      getOptionSearchText={(task) =>
+        [task.name, getLocalizedDescription(task)].filter(Boolean).join(' ')
+      }
+      classNames={{
+        target: 'cb-select-danger-input',
+        dropdown: 'cb-select-danger-dropdown',
+        option: 'cb-select-danger-option',
+      }}
     />
   );
 }

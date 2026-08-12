@@ -11,6 +11,7 @@ export const MantineTestProvider = ({ children }: { children: React.ReactNode })
     theme={theme}
     cssVariablesResolver={cssVariablesResolver}
     forceColorScheme="dark"
+    env="test"
   >
     {children}
   </MantineProvider>

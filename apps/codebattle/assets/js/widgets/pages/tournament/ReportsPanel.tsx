@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Anchor, Box, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
-import Select from 'react-select';
 
-import { customStyle } from '@/components/LanguagePickerView';
+import CbSelect from '@/components/CbSelect';
 import UserInfo from '@/components/UserInfo';
 import { sendNewReportState } from '@/middlewares/TournamentAdmin';
 import {
@@ -152,18 +151,17 @@ function ReportsPanel() {
                     <UserInfo user={reporter} hideOnlineIndicator hideLink />
                   </Table.Td>
                   <Table.Td style={tableDataCellStyle}>
-                    <Select<ReportStateOption>
-                      styles={
-                        customStyle as unknown as React.ComponentProps<
-                          typeof Select<ReportStateOption>
-                        >['styles']
-                      }
+                    <CbSelect<ReportStateOption>
                       value={{
                         label: getStateText(item.state),
                         value: item.state,
                       }}
                       onChange={changeReportState(item.id)}
                       options={reportStatusOptions}
+                      getOptionValue={(option) => option.value}
+                      getOptionLabel={(option) => option.label}
+                      searchable={false}
+                      w={210}
                     />
                   </Table.Td>
                   <Table.Td style={tableDataCellStyle}>

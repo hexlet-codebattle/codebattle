@@ -5,9 +5,9 @@ import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import qs from 'qs';
 import { useDispatch, useSelector } from 'react-redux';
-import AsyncSelect from 'react-select/async';
 
 import i18n from '../../../i18n';
+import CbSelect from '../../components/CbSelect';
 import UserLabel from '../../components/UserLabel';
 import levelRatio from '../../config/levelRatio';
 import * as invitesMiddleware from '../../middlewares/Invite';
@@ -34,64 +34,6 @@ const defaultGameOptions = {
 };
 const unchosenTask: ChosenTask = { id: null };
 
-// react-select style callbacks receive its internal base style object and
-// state; the lib's exported types are heavy generics, so we keep these `any`.
-/* eslint-disable @typescript-eslint/no-explicit-any */
-const opponentSelectStyles = {
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: '#1c1c24',
-  }),
-  container: (base: any) => ({
-    ...base,
-    width: '100%',
-    backgroundColor: '#1c1c24',
-    color: 'white',
-  }),
-  indicatorSeparator: (base: any) => ({
-    ...base,
-    backgroundColor: '#dc3545',
-  }),
-  dropdownIndicator: (base: any) => ({
-    ...base,
-    color: '#dc3545',
-    ':hover': {
-      ...base[':hover'],
-      color: '#e04d5b',
-    },
-  }),
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: '#1c1c24',
-    borderColor: state.isFocused ? '#e04d5b' : '#dc3545',
-    boxShadow: 'none',
-    ':hover': {
-      ...base[':hover'],
-      borderColor: '#e04d5b',
-      cursor: 'pointer',
-    },
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: 'white',
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: 'white',
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isFocused ? '#2a2a35' : '#1c1c24',
-    color: 'white',
-    ':hover': {
-      ...base[':hover'],
-      cursor: 'pointer',
-      backgroundColor: '#2a2a35',
-    },
-  }),
-};
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
 interface Opponent {
   id: number;
   name: string;
@@ -107,15 +49,12 @@ interface ChosenTask {
   [key: string]: unknown;
 }
 
-interface OpponentOption {
-  label: React.ReactNode;
-  value: Opponent;
-}
-
 interface OpponentSelectProps {
   setOpponent: (opponent: Opponent) => void;
   opponent?: Opponent | null;
 }
+
+const renderUserLabel = (user: Opponent) => <UserLabel user={user} />;
 
 const OpponentSelect = memo(({ setOpponent, opponent }: OpponentSelectProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -123,92 +62,79 @@ const OpponentSelect = memo(({ setOpponent, opponent }: OpponentSelectProps) => 
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
 
   const loadOptions = useCallback(
-    (inputValue: string, callback: (options: OpponentOption[]) => void) => {
-      const queryParamsString = qs.stringify({
-        q: {
-          name_ilike: inputValue,
-        },
-      });
-
-      fetch(`/api/v1/users?${queryParamsString}`)
-        .then(async (response) => {
-          if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
-          }
-
-          return response.json();
-        })
-        .then((data) => {
-          const { users: apiUsers } = camelizeKeys(data) as {
-            users: Opponent[];
-          };
-          const presence = presenceList as Array<{
-            id: number | string;
-            user: Opponent;
-          }>;
-          const filteredApiUsers = apiUsers.filter(({ id }) => id !== currentUserId);
-          const onlineUsersFromPresence = presence
-            .map((p) => p.user)
-            .filter((user) => user.id !== currentUserId);
-          const combinedUsersMap = new Map<number, Opponent>();
-
-          filteredApiUsers.forEach((user) => {
-            const isOnline = presence.some((p) => String(p.id) === String(user.id));
-            combinedUsersMap.set(user.id, { ...user, online: isOnline });
-          });
-
-          onlineUsersFromPresence.forEach((onlineUser) => {
-            if (!combinedUsersMap.has(onlineUser.id)) {
-              combinedUsersMap.set(onlineUser.id, {
-                ...onlineUser,
-                online: true,
-              });
-            }
-          });
-
-          const combinedUsers = Array.from(combinedUsersMap.values());
-
-          const sortedUsers = combinedUsers.sort((a, b) => {
-            const aOnline = a.online;
-            const bOnline = b.online;
-            if (aOnline === bOnline) {
-              return 0;
-            }
-            return aOnline ? -1 : 1;
-          });
-
-          const options = sortedUsers.map((user) => ({
-            label: <UserLabel user={user} />,
-            value: user,
-          }));
-
-          callback(options);
-        })
-        .catch((error) => {
-          dispatch(actions.setError(error));
+    async (inputValue: string): Promise<Opponent[]> => {
+      try {
+        const queryParamsString = qs.stringify({
+          q: {
+            name_ilike: inputValue,
+          },
         });
+
+        const response = await fetch(`/api/v1/users?${queryParamsString}`);
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        const { users: apiUsers } = camelizeKeys(data) as {
+          users: Opponent[];
+        };
+        const presence = presenceList as Array<{
+          id: number | string;
+          user: Opponent;
+        }>;
+        const filteredApiUsers = apiUsers.filter(({ id }) => id !== currentUserId);
+        const onlineUsersFromPresence = presence
+          .map((p) => p.user)
+          .filter((user) => user.id !== currentUserId);
+        const combinedUsersMap = new Map<number, Opponent>();
+
+        filteredApiUsers.forEach((user) => {
+          const isOnline = presence.some((p) => String(p.id) === String(user.id));
+          combinedUsersMap.set(user.id, { ...user, online: isOnline });
+        });
+
+        onlineUsersFromPresence.forEach((onlineUser) => {
+          if (!combinedUsersMap.has(onlineUser.id)) {
+            combinedUsersMap.set(onlineUser.id, {
+              ...onlineUser,
+              online: true,
+            });
+          }
+        });
+
+        const combinedUsers = Array.from(combinedUsersMap.values());
+
+        return combinedUsers.sort((a, b) => {
+          const aOnline = a.online;
+          const bOnline = b.online;
+          if (aOnline === bOnline) {
+            return 0;
+          }
+          return aOnline ? -1 : 1;
+        });
+      } catch (error) {
+        dispatch(actions.setError(error));
+        return [];
+      }
     },
     [currentUserId, dispatch, presenceList],
   );
 
   return (
-    <AsyncSelect<OpponentOption>
-      styles={opponentSelectStyles}
-      value={
-        opponent
-          ? {
-              label: <UserLabel user={opponent} />,
-              value: opponent,
-            }
-          : null
-      }
-      defaultOptions
-      onChange={(option) => {
-        if (option) {
-          setOpponent(option.value);
-        }
-      }}
+    <CbSelect<Opponent>
+      value={opponent ?? null}
+      onChange={(user) => user && setOpponent(user)}
       loadOptions={loadOptions}
+      defaultOptions
+      getOptionLabel={renderUserLabel}
+      getOptionValue={(user) => String(user.id)}
+      classNames={{
+        target: 'cb-select-danger-input',
+        dropdown: 'cb-select-danger-dropdown',
+        option: 'cb-select-danger-option',
+      }}
     />
   );
 });

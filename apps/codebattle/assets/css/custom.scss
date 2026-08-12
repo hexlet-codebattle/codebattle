@@ -1311,3 +1311,31 @@
   background-color: rgba(255, 255, 255, 0.12) !important;
   color: #fff !important;
 }
+
+// CbSelect (Mantine Combobox) — red-accented variant used by the create-game
+// dialog (TaskChoice task select + OpponentSelect). Port of the old
+// react-select inline styles: dark control/menu, red border, lighten-on-hover.
+.cb-select-danger-input {
+  background-color: #1c1c24;
+  border-color: #dc3545;
+  color: white;
+
+  &:hover {
+    border-color: #e04d5b;
+  }
+}
+
+.cb-select-danger-dropdown {
+  background-color: #1c1c24;
+}
+
+.cb-select-danger-option {
+  background-color: #1c1c24;
+  color: white;
+
+  &:hover,
+  &[data-combobox-selected] {
+    background-color: #2a2a35;
+    color: #eaffff;
+  }
+}
