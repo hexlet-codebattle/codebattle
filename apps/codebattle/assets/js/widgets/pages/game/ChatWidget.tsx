@@ -73,7 +73,12 @@ function ChatWidget() {
       inputRef={inputRef as React.RefObject<HTMLInputElement>}
       request={menuRequest}
     >
-      <Flex className="cb-game-chat-layout cb-bg-panel cb-rounded" h="100%">
+      <Flex
+        className="cb-game-chat-layout"
+        bg="cbPanel"
+        h="100%"
+        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+      >
         <Flex
           direction="column"
           flex={1}
@@ -81,7 +86,8 @@ function ChatWidget() {
           h="100%"
           mah="100%"
           p={0}
-          className="cb-game-chat-container cb-messages-container cb-text"
+          className="cb-game-chat-container cb-messages-container"
+          c="cbText"
           style={{ borderRadius: 'inherit 0 0 inherit' }}
         >
           <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
@@ -114,7 +120,7 @@ function ChatWidget() {
         <Box
           flex="0 1 auto"
           p={0}
-          className="cb-border-color cb-game-control-container"
+          className="cb-game-control-container"
           style={{
             borderLeft: '1px solid var(--mantine-color-default-border)',
           }}

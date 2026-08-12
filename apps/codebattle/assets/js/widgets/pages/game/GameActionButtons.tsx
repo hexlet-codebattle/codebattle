@@ -145,7 +145,12 @@ function GameActionButtons({
 
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide}>
-      <Modal.Body className="cb-bg-panel" style={{ textAlign: 'center' }}>
+      <Modal.Body
+        style={{
+          textAlign: 'center',
+          backgroundColor: 'var(--mantine-color-cbPanel-6)',
+        }}
+      >
         {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>
       <Modal.Footer style={{ justifyContent: 'center', borderTop: 0 }}>

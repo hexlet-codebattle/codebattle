@@ -120,7 +120,7 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
       <Group
         justify="space-between"
         align="center"
-        className="cb-bg-highlight-panel"
+        bg="cbHighlight"
         py="sm"
         px="md"
         style={{
@@ -132,7 +132,7 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
             <Avatar src={player.avatarUrl} alt={player.name} size={28} radius="50%" />
           ) : null}
           <Box>
-            <Title order={6} className="cb-text" mb={0}>
+            <Title order={6} c="cbText" mb={0}>
               {player?.name || `User #${player?.id}`}
               {player?.isBot ? (
                 <Badge color="gray" ml="xs">
@@ -412,7 +412,7 @@ function GameMlPage() {
 
   return (
     <Box
-      className="cb-text"
+      c="cbText"
       w="100%"
       px="md"
       py="sm"

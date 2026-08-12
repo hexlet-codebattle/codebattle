@@ -16,7 +16,7 @@ const buttonStyle = {
   background: '#dc3545',
 } as const;
 
-const sliderBarClassnames = 'cb-slider-bar cb-rounded';
+const sliderBarClassnames = 'cb-slider-bar';
 
 interface MainEvent {
   recordId: number;
@@ -60,6 +60,7 @@ function SliderBar({ value, className }: SliderBarProps) {
       className={className}
       style={{
         width: `${value * 100}%`,
+        borderRadius: 'var(--mantine-radius-md)',
       }}
     />
   );
@@ -89,6 +90,7 @@ function SliderAction({ value, className, event, setGameState, startTime }: Slid
             position: 'absolute',
             left: `${value * 100}%`,
             background: '#ffc107',
+            borderRadius: 'var(--mantine-radius-md)',
           }}
         />
       </Tooltip>
@@ -123,8 +125,13 @@ function CodebattleSliderBar({
   return (
     <>
       <div
-        className="cb-slider-timeline cb-rounded cb-bg-panel"
-        style={{ position: 'absolute', width: '100%' }}
+        className="cb-slider-timeline"
+        style={{
+          position: 'absolute',
+          width: '100%',
+          backgroundColor: 'var(--mantine-color-cbPanel-6)',
+          borderRadius: 'var(--mantine-radius-md)',
+        }}
       >
         <SliderBar
           className={cn(sliderBarClassnames, {
@@ -140,7 +147,7 @@ function CodebattleSliderBar({
       {mainEvents.map((event) => (
         <SliderAction
           value={event.recordId / recordsCount}
-          className="cb-slider-action cb-rounded"
+          className="cb-slider-action"
           key={event.recordId}
           event={event}
           setGameState={setGameState}

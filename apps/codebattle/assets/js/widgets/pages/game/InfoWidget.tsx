@@ -94,8 +94,12 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
         <Flex
           direction="column"
           h="100%"
-          className="cb-bg-panel cb-text cb-rounded"
-          style={{ boxShadow: 'var(--mantine-shadow-sm)' }}
+          bg="cbPanel"
+          c="cbText"
+          style={{
+            boxShadow: 'var(--mantine-shadow-sm)',
+            borderRadius: 'var(--mantine-radius-md)',
+          }}
         >
           <Flex
             align="stretch"
@@ -145,7 +149,7 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
             </Box>
           </Flex>
 
-          <Box flex={1} style={{ overflowY: 'auto' }} className="cb-bg-panel cb-text">
+          <Box flex={1} bg="cbPanel" c="cbText" style={{ overflowY: 'auto' }}>
             {activeTab === 'task' && (
               <Box id="task" role="tabpanel" aria-labelledby="task-tab" h="100%">
                 <CssBattleInfoPanel />

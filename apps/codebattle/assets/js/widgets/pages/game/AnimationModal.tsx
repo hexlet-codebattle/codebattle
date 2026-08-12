@@ -63,14 +63,17 @@ const AnimationModal = NiceModal.create(() => {
 
   return (
     <Modal show={modal.visible} onHide={modal.hide}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Flex justify="center">
           <img
-            className="cb-rounded"
-            style={{ maxWidth: '400px', width: '100%' }}
+            style={{
+              maxWidth: '400px',
+              width: '100%',
+              borderRadius: 'var(--mantine-radius-md)',
+            }}
             src={gifs[result]}
             alt={i18n.t('animation')}
           />
@@ -83,7 +86,7 @@ const AnimationModal = NiceModal.create(() => {
           </Flex>
         )}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
+      <Modal.Footer >
         {/* {tournamentId && ( */}
         {/*   <a */}
         {/*     href={`/tournaments/${tournamentId}`} */}

@@ -71,8 +71,12 @@ function TournamentRankingTable() {
       flex="1 1 0"
       pos="relative"
       py="sm"
-      className="cb-rounded-left cb-game-chat-container cb-messages-container"
-      style={{ minHeight: 0 }}
+      className="cb-game-chat-container cb-messages-container"
+      style={{
+        minHeight: 0,
+        borderTopLeftRadius: 'var(--mantine-radius-md)',
+        borderBottomLeftRadius: 'var(--mantine-radius-md)',
+      }}
     >
       <Group
         justify="space-between"
@@ -88,7 +92,8 @@ function TournamentRankingTable() {
       <Table.ScrollContainer minWidth={200}>
         <Table
           striped
-          className="cb-custom-event-table cb-game-ranking-table cb-text"
+          className="cb-custom-event-table cb-game-ranking-table"
+          c="cbText"
           m="xs"
           styles={{
             td: {
@@ -109,7 +114,7 @@ function TournamentRankingTable() {
             <col style={{ width: '28%' }} />
             <col style={{ width: '16%' }} />
           </colgroup>
-          <Table.Thead className="cb-text">
+          <Table.Thead c="cbText">
             <Table.Tr>
               <Table.Th>{i18next.t('Place')}</Table.Th>
               <Table.Th>{i18next.t('Player')}</Table.Th>
@@ -194,7 +199,7 @@ function TournamentRankingTable() {
           gameStatus.state !== GameStateCodes.playing &&
           Number.isInteger(currentRoundTimeoutSeconds) &&
           breakState === 'off' && (
-            <Text fw={700} mr="md" className="cb-text">
+            <Text fw={700} mr="md" c="cbText">
               {i18next.t('Round ends in ')}
               <TournamentRemainingTimer
                 key={lastRoundStartedAt}
@@ -209,7 +214,7 @@ function TournamentRankingTable() {
           !isTournamentFinished &&
           !isLastRound &&
           (lastRoundEndedAt && Number.isInteger(breakDurationSeconds) ? (
-            <Text fw={700} mr="md" className="cb-text">
+            <Text fw={700} mr="md" c="cbText">
               {i18next.t('Next round will start in ')}
               <TournamentRemainingTimer
                 key={lastRoundEndedAt}
@@ -218,7 +223,7 @@ function TournamentRankingTable() {
               />
             </Text>
           ) : (
-            <Text fw={700} mr="md" className="cb-text">
+            <Text fw={700} mr="md" c="cbText">
               {i18next.t('Next round will start soon')}
             </Text>
           ))}
@@ -226,7 +231,7 @@ function TournamentRankingTable() {
 
       <Group justify="space-around" align="center" mt="xs">
         {totalRounds > 0 && (
-          <Text fw={700} className="cb-text">
+          <Text fw={700} c="cbText">
             {i18next.t('Round')}
             {': '}
             {currentRoundPosition + 1}/{totalRounds}

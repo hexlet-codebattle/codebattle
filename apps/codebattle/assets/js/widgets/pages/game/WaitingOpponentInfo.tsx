@@ -14,10 +14,14 @@ function WaitingOpponentInfo({ gameUrl }: WaitingOpponentInfoProps) {
     <Box py="md">
       <Box w={{ base: '100%', lg: '83.3333%', xl: '66.6667%' }} mx="auto" px={0}>
         <Box
-          className="cb-bg-panel cb-text cb-rounded"
+          bg="cbPanel"
+          c="cbText"
           p={{ base: 'xl', lg: 'xl' }}
           ta="center"
-          style={{ boxShadow: 'var(--mantine-shadow-sm)' }}
+          style={{
+            boxShadow: 'var(--mantine-shadow-sm)',
+            borderRadius: 'var(--mantine-radius-md)',
+          }}
         >
           <Title order={2} fw={400} c="white" mb="sm">
             {i18n.t('Waiting for an opponent')}
@@ -28,7 +32,8 @@ function WaitingOpponentInfo({ gameUrl }: WaitingOpponentInfoProps) {
           <Flex justify="center">
             <Flex align="stretch" style={{ width: 'auto', maxWidth: '100%' }}>
               <Box
-                className="cb-bg-panel cb-text cb-border-color"
+                bg="cbPanel"
+                c="cbText"
                 id="gameUrl"
                 px="sm"
                 py="xs"

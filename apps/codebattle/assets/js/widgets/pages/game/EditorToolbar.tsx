@@ -79,7 +79,7 @@ function EditorToolbar({
     <>
       <Box
         ref={toolbarRef as Ref<HTMLDivElement>}
-        className="cb-bg-panel cb-toolbar cb-border-color"
+        bg="cbPanel"
         style={{
           borderTopLeftRadius: 'var(--mantine-radius-sm)',
           borderTopRightRadius: 'var(--mantine-radius-sm)',

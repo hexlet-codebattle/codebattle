@@ -27,7 +27,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
 
   return (
     <Modal centered show={modal.visible} onHide={modal.hide}>
-      <Modal.Header className="cb-border-color" closeButton>
+      <Modal.Header closeButton>
         <Modal.Title>{i18n.t('Task Description')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -41,7 +41,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
           />
         </Card>
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
+      <Modal.Footer >
         <Button
           onClick={modal.hide}
           color="cbSecondary"

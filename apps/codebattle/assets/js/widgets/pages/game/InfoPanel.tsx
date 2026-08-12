@@ -35,12 +35,13 @@ function InfoPanel({
     <>
       <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
         <Box
-          className="cb-bg-panel cb-rounded"
+          bg="cbPanel"
           h="100%"
           style={{
             display: 'flex',
             flexDirection: 'column',
             boxShadow: 'var(--mantine-shadow-sm)',
+            borderRadius: 'var(--mantine-radius-md)',
           }}
         >
           <Tabs
@@ -50,7 +51,6 @@ function InfoPanel({
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
             <Tabs.List
-              className="cb-border-color"
               style={{
                 textTransform: 'uppercase',
                 fontWeight: 700,

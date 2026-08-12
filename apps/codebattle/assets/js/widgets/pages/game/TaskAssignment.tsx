@@ -47,7 +47,7 @@ const renderTaskLink = (task: GameTask) => {
   const link = `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags?.[0]}/${task.name}.toml`;
 
   return (
-    <Text component="a" href={link} className="cb-text" display="inline-block">
+    <Text component="a" href={link} c="cbText" display="inline-block">
       <FontAwesomeIcon icon="github" style={{ marginRight: 'var(--mantine-spacing-xs)' }} />
       link
     </Text>

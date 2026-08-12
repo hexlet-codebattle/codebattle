@@ -7,13 +7,20 @@ import TournamentRankingTable from './TournamentRankingTable';
 
 function TournamentCurrentPlayerRankingPanel() {
   return (
-    <Paper h="100%" shadow="sm" radius="md" c="white" className="cb-bg-panel cb-rounded">
+    <Paper
+      h="100%"
+      shadow="sm"
+      radius="md"
+      c="white"
+      bg="cbPanel"
+      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+    >
       <Flex wrap={{ base: 'wrap', sm: 'nowrap' }} h="100%">
         <TournamentRankingTable />
         <Box
           flex="0 1 auto"
           p={0}
-          className="cb-border-color cb-game-control-container"
+          className="cb-game-control-container"
           style={{
             borderLeft: '1px solid var(--mantine-color-default-border)',
             borderTopRightRadius: '0.5rem',
