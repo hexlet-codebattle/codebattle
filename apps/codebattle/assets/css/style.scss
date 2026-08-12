@@ -1324,6 +1324,20 @@ a {
   font-size: 27px;
 }
 
+// Self-sufficient ports of the Bootstrap `.h1` (stat numbers) / `.lead`
+// (stat captions) typography the profile page used to carry — the media-query
+// shrinks below depend on these bases, which inlining would have beaten.
+.cb-stats-number {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.cb-stats-caption {
+  font-size: 20px;
+  font-weight: 300;
+}
+
 .cb-profile-avatar {
   width: min(100%, 180px);
 }
@@ -1718,7 +1732,8 @@ main > #app {
     font-size: 22px;
   }
 
-  .lead {
+  .lead,
+  .cb-stats-caption {
     font-size: 14px;
   }
 }
@@ -1749,7 +1764,8 @@ main > #app {
     font-size: 30px;
   }
 
-  .lead {
+  .lead,
+  .cb-stats-caption {
     font-size: 16px;
   }
 

@@ -303,19 +303,19 @@ function UserProfile() {
                     <Title order={1} className="cb-stats-number">
                       {user.rating}
                     </Title>
-                    <p className="lead">{i18n.t('(Elo Rating)')}</p>
+                    <p className="cb-stats-caption">{i18n.t('(Elo Rating)')}</p>
                   </Grid.Col>
                   {!user.isBot && (
                     <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
                       <Title order={1} className="cb-stats-number">{`#${user.rank}`}</Title>
-                      <p className="lead">{i18n.t('Place')}</p>
+                      <p className="cb-stats-caption">{i18n.t('Place')}</p>
                     </Grid.Col>
                   )}
                   <Grid.Col span={{ base: 'auto', md: 3 }} ta="center">
                     <Title order={1} className="cb-stats-number">
                       {user.points || 0}
                     </Title>
-                    <p className="lead">{i18n.t('Points')}</p>
+                    <p className="cb-stats-caption">{i18n.t('Points')}</p>
                   </Grid.Col>
                 </Grid>
                 {hasChartsData && (

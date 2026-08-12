@@ -203,7 +203,7 @@ function TaskRankingAdvancedPanel({
                             user={{ id: item.userId, name: item.userName }}
                             hideOnlineIndicator
                             hideLink
-                            linkClassName="text-secondary"
+                            color="#6c757d"
                           />
                         </Box>
                       </Table.Td>

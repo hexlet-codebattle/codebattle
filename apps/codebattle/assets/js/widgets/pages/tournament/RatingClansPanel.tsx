@@ -134,7 +134,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }: RatingClansPan
                             user={{ id: user.userId, name: user.userName }}
                             hideOnlineIndicator
                             hideLink
-                            linkClassName="text-secondary"
+                            color="#6c757d"
                             className={undefined}
                             displayName={undefined}
                             lang={undefined}

@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done — **verified 2026-08-11**: no `react-bootstrap` import anywhere in source (single hit is a comment in `PopoverStickOnHover.tsx`), no dep in `apps/codebattle/package.json`, `@mantine/core`/`@mantine/hooks` at `^9.5.1`. `bootstrap@4.6.2` correctly retained (heex, Phase 3) |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; remaining: `SoundToggle` (really Phase 3), and the documented passthrough/typography/design leftovers |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; the react-select swap, the `RoomWidget` grid slice, and the passthrough/typography leftovers are done (2026-08-12); remaining: `SoundToggle` (really Phase 3), the intentional `TaskAssignment` h1–h5 task-zoom classes, and the kept `cb-*`/custom design classes |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -258,7 +258,10 @@ props** (used by ~12 page callers that still pass Bootstrap color classes like
 cleaned when the pages convert. Only the components' own internal utility
 classes were swapped to Mantine (`Group`/`Stack`/`Text`/`ActionIcon` + style
 props). Design classes `cb-user-online`, `cb-user-dark-offline`, `cb-text`,
-`cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept.
+`cb-rounded`, `x-username-truncated`, `cb-opacity-50` are kept. The last two
+Bootstrap passthroughs (`linkClassName="text-secondary"` in
+`TaskRankingAdvancedPanel` + `RatingClansPanel`) were replaced with the
+`color="#6c757d"` prop (exact BS secondary) in the 2026-08-12 leftover slice.
 
 **Remaining leaves: 1** (audited 2026-08-07 with a whole-word Bootstrap-token
 grep over `widgets/components/**/*.tsx`, filtering out kept `cb-*` design
@@ -390,14 +393,17 @@ commits (leaves, then container).
   bottom radius). Pills/links → `<Anchor>`/`<Box>` + style props; `hr` colored
   dividers keep `cb-border-color`. `UserProfile.test` now wraps in
   `MantineTestProvider` (the container gained Mantine components — gotcha #1).
-- **Intentional Bootstrap leftovers (kept):** the typography-size classes `.h1`
-  (stat numbers, github icon) and `.lead` (stat captions) are **coupled to
-  responsive `cb-*` overrides** — base size comes from `.h1`/`.lead`, then
-  `.cb-stats-number` / `.lead` shrink them inside `@media` queries. Inlining the
-  base size would beat the media-query override (inline wins), breaking the
-  responsive shrink, and these aren't in the Phase-2 DoD grep. Also kept the
-  `fab fa-github` icon-font span. Port these to CSS (self-sufficient
-  `.cb-stats-number`) in a later pass if the size classes must go.
+- **Typography (ported 2026-08-12):** the Bootstrap `.h1` (stat numbers) /
+  `.lead` (stat captions) classes are **gone** — ported to self-sufficient CSS:
+  base rules `.cb-stats-number { font-size: 40px; font-weight: 500; line-height:
+  1.2 }` and `.cb-stats-caption { font-size: 20px; font-weight: 300 }` (exact
+  Bootstrap values) added next to `.cb-heading` in `style.scss`, and the
+  `@media (max-width: $lg)` / `(max-width: $sm)` shrink rules now target
+  `.cb-stats-caption` alongside `.lead` (the heex templates still use `.lead`).
+  `UserProfile`'s three caption `<p className="lead">` → `<p
+  className="cb-stats-caption">`; the stat numbers keep `Title order={1}
+  className="cb-stats-number"` (Mantine Title sizes the h1, `cb-stats-number`
+  carries the responsive shrinks).
 
 ⚠️ QA (profile): the **tab bar restyle** is the big one — Mantine `<Tabs>` uses an
 underline indicator vs the old bordered `nav-tabs`; confirm the tabs still read as
@@ -1022,6 +1028,23 @@ Done (2026-08-12): **react-select lib swap** + **the `RoomWidget` grid slice**
   `bg-winner` gold flash (now only on the inner card div, no longer bleeding
   into the column padding), and the `SideInfoPanel` single-view (CSS-battle /
   editor view) columns.
+
+Done (2026-08-12, leftover slice): **`User*` passthroughs + profile typography
+port** — the last React-side Bootstrap-class leftovers with a decision.
+
+- The two remaining `linkClassName="text-secondary"` passthroughs into `UserInfo`
+  (`TaskRankingAdvancedPanel`, `RatingClansPanel`) → the `color="#6c757d"` prop
+  (exact BS secondary; `hideLink` + no-`hovered` call sites, so `hovered→blue`
+  never triggers). No callers pass Bootstrap classes to the `User*` cluster
+  anymore.
+- Profile page typography: the documented `.h1`/`.lead` coupling is resolved in
+  CSS — `.cb-stats-number` gains a self-sufficient base (40px/500/1.2) so the
+  stat `Title` no longer depends on Bootstrap `.h1`, and the captions use a new
+  `.cb-stats-caption` (20px/300) instead of `.lead` (the heex templates keep
+  `.lead`, so its media-query shrinks now target both selectors).
+- Verified: whole-repo Bootstrap-token grep over `assets/js` returns only `cb-*`
+  design classes, custom classes (`btn-hover`, `btn-outline-gold`), comments,
+  and the documented `TaskAssignment` h1–h5 task-zoom classes.
 
 ### Conversion vocabulary
 
