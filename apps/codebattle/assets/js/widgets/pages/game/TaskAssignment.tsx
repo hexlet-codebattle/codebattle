@@ -27,17 +27,21 @@ export interface GameTask {
   [key: string]: unknown;
 }
 
-// Bootstrap h1–h5 size helpers used for task-description font-zoom feature.
-// Kept as Bootstrap classes rather than inlined so that future CSS overrides
-// (e.g. responsive cb-* shrinks) continue to work without specificity fights.
-const TASK_SIZE_CLASS: Record<number, string> = {
-  1: 'h5',
-  2: 'h4',
-  3: 'h3',
-  4: 'h2',
+const TASK_SIZE_FONT_SIZE: Record<number, string> = {
+  1: '1.25rem',
+  2: '1.5rem',
+  3: '1.75rem',
+  4: '2rem',
 };
-const getTaskSizeClass = (taskSize: number) =>
-  taskSize >= 5 ? 'h1' : (TASK_SIZE_CLASS[taskSize] ?? '');
+const getTaskSizeStyle = (taskSize: number): React.CSSProperties => {
+  const fontSize = taskSize >= 5 ? '2.5rem' : (TASK_SIZE_FONT_SIZE[taskSize] ?? '');
+
+  if (!fontSize) {
+    return {};
+  }
+
+  return { fontSize, fontWeight: 500, lineHeight: 1.2, marginBottom: '0.5rem' };
+};
 
 const renderTaskLink = (task: GameTask) => {
   const link = `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags?.[0]}/${task.name}.toml`;
@@ -94,14 +98,11 @@ function TaskAssignment({
     return null;
   }
 
-  // Bootstrap heading-size classes (h1–h5) kept intentionally for the
-  // task-zoom feature — inlining font-size would break responsive cb-* overrides.
-  const taskSizeClass = getTaskSizeClass(taskSize);
-  const cardClassNames = ['cb-card', taskSizeClass].filter(Boolean).join(' ');
+  const cardStyle = getTaskSizeStyle(taskSize);
 
   if (hideContent) {
     return (
-      <Box className={cardClassNames}>
+      <Box className="cb-card" style={cardStyle}>
         <Flex justify="center" align="center" h="100%">
           <span>{i18n.t('Only for Premium subscribers')}</span>
         </Flex>
@@ -110,7 +111,7 @@ function TaskAssignment({
   }
 
   return (
-    <Box className={cardClassNames}>
+    <Box className="cb-card" style={cardStyle}>
       <Box px="md" py="md" h="100%" data-guide-id={!fullSize ? 'Task' : undefined}>
         <Flex align="flex-start" direction={{ base: 'column', sm: 'row' }} justify="space-between">
           <Group component="h6" align="center" gap="xs" mb={0} mt={0}>

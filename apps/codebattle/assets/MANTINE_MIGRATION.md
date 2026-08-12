@@ -24,7 +24,7 @@ components converted — see the progress log under Phase 2); Phase 3 is
 |------|------|--------|
 | 0 | Infra: Mantine deps, PostCSS, CSS-layer coexistence, theme, `MantineProvider` on all roots | ✅ done |
 | 1 | Replace `react-bootstrap` **components** with Mantine; remove `react-bootstrap` dep | ✅ done — **verified 2026-08-11**: no `react-bootstrap` import anywhere in source (single hit is a comment in `PopoverStickOnHover.tsx`), no dep in `apps/codebattle/package.json`, `@mantine/core`/`@mantine/hooks` at `^9.5.1`. `bootstrap@4.6.2` correctly retained (heex, Phase 3) |
-| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; the react-select swap, the `RoomWidget` grid slice, and the passthrough/typography leftovers are done (2026-08-12); remaining: `SoundToggle` (really Phase 3), the intentional `TaskAssignment` h1–h5 task-zoom classes, and the kept `cb-*`/custom design classes |
+| 2 | Convert Bootstrap **utility classes** in the ~244 React files to idiomatic Mantine | 🔄 in progress — shared leaf components done; pages: `settings`, `profile`, `lobby` (React markup), `registration`, `game`, `tournament`, `tournamentPlayer`, `groupTournament`, `gameMl`, `admin`, `event`, `schedule`, `seasonsPage`, `hallOfFamePage`, `headToHeadPage`, `taskPreview` done — **all React pages converted**; the react-select swap, the `RoomWidget` grid slice, the passthrough/typography leftovers, and the `TaskAssignment` task-zoom port are done (2026-08-12); remaining: `SoundToggle` (really Phase 3) and the kept `cb-*`/custom design classes |
 | 3 | Migrate `.heex` templates; fully remove Bootstrap CSS + `bootstrap` dep | ⬜ planned (out of current scope) |
 
 ## Coexistence model (how Bootstrap + Mantine live together)
@@ -648,7 +648,9 @@ below. Cluster log:
   — `CopyButton` is **shared with the still-Bootstrap `TournamentHeader`**, so its
   swap belongs to the tournament slice. Its sibling Cancel button did convert.
 - `TaskAssignment`'s `h1`–`h5` task-zoom classes (same responsive-coupling
-  rationale as the profile page) and the `fas`/`fab` icon-font spans.
+  rationale as the profile page) — **resolved 2026-08-12**: verified no app-side
+  responsive overrides existed and ported to an inline `fontSize` map
+  (2.5/2/1.75/1.5/1.25rem + weight 500, line-height 1.2, margin-bottom .5rem).
 
 ⚠️ QA (game): the **replayer control bar** and split-pane sizing (highest risk —
 live game UI); the three rewritten tab bars (`GameWidget` right side, `InfoPanel`,
@@ -1045,6 +1047,20 @@ port** — the last React-side Bootstrap-class leftovers with a decision.
 - Verified: whole-repo Bootstrap-token grep over `assets/js` returns only `cb-*`
   design classes, custom classes (`btn-hover`, `btn-outline-gold`), comments,
   and the documented `TaskAssignment` h1–h5 task-zoom classes.
+
+Done (2026-08-12, audit slice): **`TaskAssignment` h1–h5 task-zoom port** — the
+last real Bootstrap-class usage in React markup.
+
+- The "responsive-coupling" rationale for keeping the classes was stale (that
+  applied to the profile page's `.cb-stats-number`/`.lead`, which have app-side
+  media shrinks; verified no app CSS targets `.h1`–`.h5`). Ported to an inline
+  `fontSize` map (Bootstrap 4.6 headings: 2.5/2/1.75/1.5/1.25rem for h1–h5) plus
+  weight 500, line-height 1.2, margin-bottom .5rem on the card `Box`. No test
+  coupling (no `TaskAssignment` test exists; `TournamentPlayer` only passes
+  `taskSize` state).
+- Remaining after this: `SoundToggle` (really Phase 3 — heex dropdown coupling)
+  and the kept `cb-*`/custom design classes (`btn-yellow`, `btn-outline-gold`,
+  `btn-hover`, `text-gold`, `bg-gray`, `.cb-card` etc.).
 
 ### Conversion vocabulary
 
