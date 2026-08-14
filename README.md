@@ -132,10 +132,6 @@ Then log out and log back in for the changes to take effect, or run:
 newgrp docker
 ```
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=hexlet-codebattle/codebattle&type=Date)](https://star-history.com/#hexlet-codebattle/codebattle&Date)
-
 ---
 
 [![Hexlet Ltd. logo](https://raw.githubusercontent.com/Hexlet/assets/master/images/hexlet_logo128.png)](https://hexlet.io?utm_source=github&utm_medium=link&utm_campaign=codebattle)
