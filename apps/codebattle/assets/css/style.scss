@@ -225,7 +225,7 @@ input[type='range'].cb-range {
   --cb-range-track-bg: linear-gradient(
     90deg,
     #ff6a3d 0%,
-    $orange 50%,
+    #{$orange} 50%,
     #d63a3a 100%
   );
   --cb-range-track-rest: linear-gradient(
@@ -347,7 +347,7 @@ input[type='range'].cb-range {
 }
 
 [data-player-type] {
-  --flag-color: $cb-bg-panel;
+  --flag-color: #{$cb-bg-panel};
   background: linear-gradient(to top, var(--flag-color), $cb-bg-panel 15%);
 }
 
