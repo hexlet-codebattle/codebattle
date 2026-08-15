@@ -665,9 +665,7 @@
 }
 
 .btn:hover {
-  @if $link-hover-decoration == underline {
-    text-decoration: none;
-  }
+  text-decoration: none;
 }
 
 [data-reveal] {

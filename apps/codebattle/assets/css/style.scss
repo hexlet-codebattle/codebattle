@@ -46,7 +46,11 @@ $cb-bg-highlight-panel: #1c1c24;
 /* $cb-bg-highlight-panel: #1f1313;*/
 /* $cb-bg-highlight-panel: #13181f;*/
 
+$primary: #007bff;
 $secondary: #477591;
+$success: #28a745;
+$danger: #dc3545;
+$warning: #ffc107;
 $link-color: white;
 $error: #dc3545;
 $bg-orange: rgba(238, 55, 55);
@@ -504,7 +508,12 @@ input[type='range'].cb-range {
 .btn-outline-orange {
   border-color: $orange;
   color: $orange;
-  @include button-outline-variant($orange);
+
+  &:hover {
+    color: var(--white);
+    background-color: $orange;
+    border-color: $orange;
+  }
 }
 
 .btn-check:hover {
@@ -1410,7 +1419,7 @@ a {
 }
 
 .x-intent-background {
-  background-color: rgba($black, 0.25);
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 .x-opacity-0 {
@@ -1442,15 +1451,15 @@ a {
 }
 
 .x-bg-gray {
-  background-color: $gray-300 !important;
+  background-color: #dee2e6 !important;
 }
 
 .x-rounded-bottom-right {
-  border-bottom-right-radius: $border-radius !important;
+  border-bottom-right-radius: 0.25rem !important;
 }
 
 .x-rounded-bottom-left {
-  border-bottom-left-radius: $border-radius !important;
+  border-bottom-left-radius: 0.25rem !important;
 }
 
 .x-username-truncated {
@@ -1805,7 +1814,12 @@ main > #app {
 .tag-btn-outline-orange {
   border-color: $orange;
   color: $orange;
-  @include button-outline-variant($orange);
+
+  &:hover {
+    color: var(--white);
+    background-color: $orange;
+    border-color: $orange;
+  }
 }
 
 .cb-game-chat-container {
