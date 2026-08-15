@@ -29,8 +29,8 @@ end
 
 tab_class = fn active ->
   if active,
-    do: "btn btn-sm btn-light text-dark font-weight-bold mr-2 mb-2",
-    else: "btn btn-sm btn-outline-light mr-2 mb-2"
+    do: "cb-btn cb-btn-sm cb-btn-light cb-text-dark cb-fw-bold cb-mr-2 cb-mb-2",
+    else: "cb-btn cb-btn-sm cb-btn-outline-light cb-mr-2 cb-mb-2"
 end
 
 slices_for_round = fn round_number ->
@@ -69,31 +69,31 @@ end %>
 <head>
   <meta http-equiv="refresh" content="5" />
 </head>
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="text-white mb-0">Leaderboard — {@group_tournament.name}</h1>
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+  <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+    <h1 class="cb-text-white cb-mb-0">Leaderboard — {@group_tournament.name}</h1>
     <div>
       {link("Back",
         to: Routes.admin_group_tournament_path(@conn, :show, @group_tournament),
-        class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+        class: "cb-btn cb-btn-outline-secondary cb-rounded"
       )}
     </div>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3 text-white d-flex flex-wrap align-items-center">
-    <div class="mr-4"><strong>State:</strong> {@group_tournament.state}</div>
-    <div class="mr-4">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-3 cb-text-white cb-d-flex cb-flex-wrap cb-align-center">
+    <div class="cb-mr-4"><strong>State:</strong> {@group_tournament.state}</div>
+    <div class="cb-mr-4">
       <strong>Round:</strong> {@group_tournament.current_round_position}/{rounds_count}
     </div>
-    <div class="mr-4"><strong>Players:</strong> {@group_tournament.players_count}</div>
-    <div class="mr-4">
+    <div class="cb-mr-4"><strong>Players:</strong> {@group_tournament.players_count}</div>
+    <div class="cb-mr-4">
       <strong>Visible to players:</strong> {inspect(@group_tournament.show_leaderboard)}
     </div>
-    <div class="ml-auto text-muted small">auto-refresh every 5s</div>
+    <div class="cb-ml-auto cb-text-muted cb-small">auto-refresh every 5s</div>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-    <div class="d-flex flex-wrap">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-3">
+    <div class="cb-d-flex cb-flex-wrap">
       {link("Rating", to: view_path.(:rating), class: tab_class.(@view == :rating))}
       <%= for r <- rounds do %>
         {link(round_label.(r),
@@ -106,39 +106,39 @@ end %>
 
   <%= cond do %>
     <% Enum.empty?(@leaderboard) -> %>
-      <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 text-center text-muted">
+      <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-text-center cb-text-muted">
         No leaderboard data yet.
       </div>
     <% @view == :rating -> %>
-      <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3">
-        <div class="table-responsive">
-          <table class="table table-sm cb-text-light">
+      <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3">
+        <div class="cb-table-responsive">
+          <table class="cb-table cb-table-sm cb-text-light">
             <thead>
               <tr>
-                <th class="border-0 font-weight-light">#</th>
-                <th class="border-0 font-weight-light">Player</th>
-                <th class="border-0 font-weight-light">Clan</th>
-                <th class="border-0 font-weight-light text-center">Slice</th>
+                <th class="cb-border-0 cb-fw-light">#</th>
+                <th class="cb-border-0 cb-fw-light">Player</th>
+                <th class="cb-border-0 cb-fw-light">Clan</th>
+                <th class="cb-border-0 cb-fw-light cb-text-center">Slice</th>
                 <%= for r <- rounds do %>
-                  <th class="border-0 font-weight-light text-center">{round_label.(r)}</th>
+                  <th class="cb-border-0 cb-fw-light cb-text-center">{round_label.(r)}</th>
                 <% end %>
-                <th class="border-0 font-weight-light text-center">Total</th>
+                <th class="cb-border-0 cb-fw-light cb-text-center">Total</th>
               </tr>
             </thead>
             <tbody>
               <%= for {entry, index} <- Enum.with_index(@leaderboard, 1) do %>
-                <tr class={"font-weight-bold #{place_class.(index)}"}>
-                  <td class="align-middle">{index}</td>
-                  <td class="align-middle text-white">
+                <tr class={"cb-fw-bold #{place_class.(index)}"}>
+                  <td class="cb-align-middle">{index}</td>
+                  <td class="cb-align-middle cb-text-white">
                     <span title={entry[:name] || "##{entry[:user_id]}"}>
                       {entry[:name] || "##{entry[:user_id]}"}
                     </span>
                     <%= if entry[:state] == "left" do %>
-                      <span class="badge badge-secondary ml-2">Left</span>
+                      <span class="cb-badge cb-badge-secondary cb-ml-2">Left</span>
                     <% end %>
                   </td>
-                  <td class="align-middle text-white">{entry[:clan] || "—"}</td>
-                  <td class="align-middle text-center text-white">
+                  <td class="cb-align-middle cb-text-white">{entry[:clan] || "—"}</td>
+                  <td class="cb-align-middle cb-text-center cb-text-white">
                     <%= if is_integer(entry[:slice_index]) do %>
                       {entry[:slice_index] + 1}
                     <% else %>
@@ -147,18 +147,18 @@ end %>
                   </td>
                   <%= for r <- rounds do %>
                     <% cell = cell_for.(entry, r) %>
-                    <td class="align-middle text-center text-white">
+                    <td class="cb-align-middle cb-text-center cb-text-white">
                       <%= if cell do %>
-                        <span class="font-weight-bold">{cell[:score] || 0}</span>
+                        <span class="cb-fw-bold">{cell[:score] || 0}</span>
                         <%= if is_integer(cell[:place]) do %>
-                          <span class="small ml-1">(#{cell[:place]})</span>
+                          <span class="cb-small cb-ml-1">(#{cell[:place]})</span>
                         <% end %>
                       <% else %>
-                        <span class="text-muted">—</span>
+                        <span class="cb-text-muted">—</span>
                       <% end %>
                     </td>
                   <% end %>
-                  <td class="align-middle text-center text-white font-weight-bold">
+                  <td class="cb-align-middle cb-text-center cb-text-white cb-fw-bold">
                     {entry[:total_score] || 0}
                   </td>
                 </tr>
@@ -171,36 +171,38 @@ end %>
       <% {:round, round_number} = @view %>
       <% slices = slices_for_round.(round_number) %>
       <%= if slices == [] do %>
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 text-center text-muted">
+        <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-text-center cb-text-muted">
           No data yet for {round_label.(round_number)}.
         </div>
       <% else %>
-        <div class="d-flex flex-wrap" style="gap: 1rem;">
+        <div class="cb-d-flex cb-flex-wrap" style="gap: 1rem;">
           <%= for {slice_index, players} <- slices do %>
             <div
-              class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2"
+              class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2"
               style="min-width: 22rem; flex: 1 1 22rem;"
             >
-              <div class="d-flex justify-content-between border-bottom cb-border-color pb-1 mb-2 px-2 text-white">
-                <span class="font-weight-bold">Group {slice_index + 1}</span>
-                <span class="text-muted small">{length(players)} players</span>
+              <div class="cb-d-flex cb-justify-between cb-border-bottom cb-border-color cb-pb-1 cb-mb-2 cb-px-2 cb-text-white">
+                <span class="cb-fw-bold">Group {slice_index + 1}</span>
+                <span class="cb-text-muted cb-small">{length(players)} players</span>
               </div>
-              <table class="table table-sm cb-text-light mb-0">
+              <table class="cb-table cb-table-sm cb-text-light cb-mb-0">
                 <thead>
                   <tr>
-                    <th class="border-0 font-weight-light p-1">#</th>
-                    <th class="border-0 font-weight-light p-1">Player</th>
-                    <th class="border-0 font-weight-light p-1">Clan</th>
-                    <th class="border-0 font-weight-light p-1 text-right">Score</th>
+                    <th class="cb-border-0 cb-fw-light cb-p-1">#</th>
+                    <th class="cb-border-0 cb-fw-light cb-p-1">Player</th>
+                    <th class="cb-border-0 cb-fw-light cb-p-1">Clan</th>
+                    <th class="cb-border-0 cb-fw-light cb-p-1 cb-text-right">Score</th>
                   </tr>
                 </thead>
                 <tbody>
                   <%= for {p, idx} <- Enum.with_index(players, 1) do %>
-                    <tr class={"font-weight-bold #{place_class.(p.place || 0)}"}>
-                      <td class="p-1 align-middle text-white">{p.place || idx}</td>
-                      <td class="p-1 align-middle text-white" title={p.name}>{p.name}</td>
-                      <td class="p-1 align-middle text-white">{p.clan || "—"}</td>
-                      <td class="p-1 align-middle text-right text-white font-weight-bold">
+                    <tr class={"cb-fw-bold #{place_class.(p.place || 0)}"}>
+                      <td class="cb-p-1 cb-align-middle cb-text-white">{p.place || idx}</td>
+                      <td class="cb-p-1 cb-align-middle cb-text-white" title={p.name}>
+                        {p.name}
+                      </td>
+                      <td class="cb-p-1 cb-align-middle cb-text-white">{p.clan || "—"}</td>
+                      <td class="cb-p-1 cb-align-middle cb-text-right cb-text-white cb-fw-bold">
                         {p.score}
                       </td>
                     </tr>

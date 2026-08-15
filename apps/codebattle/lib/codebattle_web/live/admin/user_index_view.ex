@@ -120,31 +120,31 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <h1 class="text-white">User Management</h1>
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <h1 class="cb-text-white">User Management</h1>
 
-      <div class="d-flex align-items-center mb-3">
+      <div class="cb-d-flex cb-align-center cb-mb-3">
         <form
           id="user-search-form"
           phx-submit="search"
           phx-change="search"
-          class="d-flex align-items-center"
+          class="cb-d-flex cb-align-center"
         >
           <input
-            class="form-control cb-bg-panel cb-border-color text-white cb-rounded"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded"
             type="text"
             name="query"
             value={@query}
             phx-debounce="300"
             placeholder="Search by name"
           />
-          <button class="btn btn-secondary cb-btn-secondary cb-rounded ml-2" type="submit">
+          <button class="cb-btn cb-btn-secondary cb-rounded cb-ml-2" type="submit">
             Search
           </button>
         </form>
-        <form id="subscription-type-filter-form" phx-change="filter_subscription_type" class="ml-2">
+        <form id="subscription-type-filter-form" phx-change="filter_subscription_type" class="cb-ml-2">
           <select
-            class="custom-select cb-bg-panel cb-border-color text-white cb-rounded"
+            class="cb-custom-select cb-bg-panel cb-border-color cb-text-white cb-rounded"
             name="subscription_type"
             value={@subscription_type}
           >
@@ -155,26 +155,26 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
           </select>
         </form>
         <button
-          class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded ml-2"
+          class="cb-btn cb-btn-sm cb-btn-secondary cb-rounded cb-ml-2"
           phx-click="search_without_auth"
         >
           Show without auth
         </button>
       </div>
 
-      <div class="table-responsive">
-        <table class="table table-sm">
+      <div class="cb-table-responsive">
+        <table class="cb-table cb-table-sm">
           <thead class="cb-text">
             <tr>
-              <th class="cb-border-color border-bottom">Num</th>
-              <th class="cb-border-color border-bottom">Id</th>
-              <th class="cb-border-color border-bottom">Name</th>
-              <th class="cb-border-color border-bottom">Clan</th>
-              <th class="cb-border-color border-bottom">Change Clan</th>
-              <th class="cb-border-color border-bottom">Auth Link</th>
-              <th class="cb-border-color border-bottom">Joined</th>
-              <th class="cb-border-color border-bottom">Auth Reset</th>
-              <th class="cb-border-color border-bottom">Subscription</th>
+              <th class="cb-border-color cb-border-bottom">Num</th>
+              <th class="cb-border-color cb-border-bottom">Id</th>
+              <th class="cb-border-color cb-border-bottom">Name</th>
+              <th class="cb-border-color cb-border-bottom">Clan</th>
+              <th class="cb-border-color cb-border-bottom">Change Clan</th>
+              <th class="cb-border-color cb-border-bottom">Auth Link</th>
+              <th class="cb-border-color cb-border-bottom">Joined</th>
+              <th class="cb-border-color cb-border-bottom">Auth Reset</th>
+              <th class="cb-border-color cb-border-bottom">Subscription</th>
             </tr>
           </thead>
           <tbody>
@@ -182,13 +182,13 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
               <tr>
                 <% auth_token = normalize_auth_token(user.auth_token) %>
                 <% auth_link = build_auth_link(auth_token) %>
-                <td class="align-middle text-white cb-border-color">{index}</td>
-                <td class="align-middle text-white cb-border-color">{user.id}</td>
-                <td class="align-middle text-white cb-border-color">
+                <td class="cb-align-middle cb-text-white cb-border-color">{index}</td>
+                <td class="cb-align-middle cb-text-white cb-border-color">{user.id}</td>
+                <td class="cb-align-middle cb-text-white cb-border-color">
                   <form
                     id={"user-name-#{user.id}"}
                     phx-submit="update_name"
-                    class="d-flex align-items-center gap-2 m-0"
+                    class="cb-d-flex cb-align-center gap-2 cb-m-0"
                   >
                     <input type="hidden" name="user[user_id]" value={user.id} />
                     <input
@@ -198,46 +198,46 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
                       minlength="2"
                       maxlength="39"
                       required
-                      class="form-control form-control-sm cb-bg-panel cb-border-color text-white cb-rounded"
+                      class="cb-form-control cb-form-control-sm cb-bg-panel cb-border-color cb-text-white cb-rounded"
                       style="min-width: 140px;"
                     />
-                    <button type="submit" class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded">
+                    <button type="submit" class="cb-btn cb-btn-sm cb-btn-secondary cb-rounded">
                       Save
                     </button>
                     <a
                       href={Routes.admin_user_show_view_path(@socket, :show, user.id)}
-                      class="text-primary text-nowrap"
+                      class="cb-text-primary cb-text-nowrap"
                     >
                       Profile
                     </a>
                   </form>
                 </td>
-                <td class="align-middle text-white cb-border-color">
+                <td class="cb-align-middle cb-text-white cb-border-color">
                   {user.clan && String.slice(user.clan, 0, 20)}
                 </td>
-                <td class="align-middle text-white cb-border-color">
+                <td class="cb-align-middle cb-text-white cb-border-color">
                   <.form
                     :let={f}
                     id={"user-clan-#{user.id}"}
                     for={Ecto.Changeset.change(user)}
                     phx-change="update_clan"
                     phx-submit="update"
-                    class="m-0"
+                    class="cb-m-0"
                   >
                     {hidden_input(f, :user_id, value: user.id)}
                     {select(f, :clan_id, clan_options(@clans),
-                      class: "custom-select cb-bg-panel cb-border-color text-white cb-rounded"
+                      class: "cb-custom-select cb-bg-panel cb-border-color cb-text-white cb-rounded"
                     )}
                   </.form>
                 </td>
-                <td class="align-middle text-white cb-border-color">
+                <td class="cb-align-middle cb-text-white cb-border-color">
                   <%= if auth_link do %>
-                    <span class="text-white mr-2">
+                    <span class="cb-text-white cb-mr-2">
                       {short_auth_link_label(auth_link, auth_token)}
                     </span>
                     <button
                       type="button"
-                      class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                      class="cb-btn cb-btn-sm cb-btn-secondary cb-rounded"
                       title="Copy auth link"
                       onclick="navigator.clipboard.writeText(this.dataset.link)"
                       data-link={auth_link}
@@ -248,28 +248,28 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
                     <span class="cb-text">no link</span>
                   <% end %>
                 </td>
-                <td class="align-middle text-white cb-border-color">{user.inserted_at}</td>
-                <td class="align-middle text-white cb-border-color">
+                <td class="cb-align-middle cb-text-white cb-border-color">{user.inserted_at}</td>
+                <td class="cb-align-middle cb-text-white cb-border-color">
                   <button
-                    class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                    class="cb-btn cb-btn-sm cb-btn-secondary cb-rounded"
                     phx-click="reset_token"
                     phx-value-id={user.id}
                   >
                     Reset Auth
                   </button>
                 </td>
-                <td class="align-middle text-white cb-border-color">
+                <td class="cb-align-middle cb-text-white cb-border-color">
                   <.form
                     :let={f}
                     id={"user-#{user.id}"}
                     for={Ecto.Changeset.change(user)}
                     phx-change="update_subscription_type"
                     phx-submit="update"
-                    class="m-0"
+                    class="cb-m-0"
                   >
                     {hidden_input(f, :user_id, value: user.id)}
                     {select(f, :subscription_type, subscription_type_options(),
-                      class: "custom-select cb-bg-panel cb-border-color text-white cb-rounded"
+                      class: "cb-custom-select cb-bg-panel cb-border-color cb-text-white cb-rounded"
                     )}
                   </.form>
                 </td>

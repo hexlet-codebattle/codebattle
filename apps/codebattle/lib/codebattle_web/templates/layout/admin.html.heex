@@ -133,15 +133,15 @@
   </head>
   <body class="cb-bg-dark">
     <div id="inertia-shared-props" data-props={inertia_shared_props_json(@conn)} hidden></div>
-    <div class="container-fluid">
+    <div class="cb-container-fluid">
       <div class="admin-shell">
-        <aside id="admin-sidebar" class="admin-sidebar px-0">
-          <div class="cb-bg-panel cb-border-color border-right p-3 admin-sidebar-panel">
-            <div class="admin-sidebar-header mb-3">
-              <h4 class="text-white admin-sidebar-title">Admin</h4>
+        <aside id="admin-sidebar" class="admin-sidebar cb-px-0">
+          <div class="cb-bg-panel cb-border-color cb-border-right cb-p-3 admin-sidebar-panel">
+            <div class="admin-sidebar-header cb-mb-3">
+              <h4 class="cb-text-white admin-sidebar-title">Admin</h4>
               <button
                 id="admin-sidebar-toggle"
-                class="btn btn-secondary cb-btn-secondary cb-rounded btn-sm admin-sidebar-toggle"
+                class="cb-btn cb-btn-secondary cb-rounded cb-btn-sm admin-sidebar-toggle"
                 type="button"
                 aria-label="Toggle admin sidebar"
                 aria-expanded="true"
@@ -152,10 +152,10 @@
             <% admin_user =
               assigns[:current_user] ||
                 (assigns[:socket] && assigns[:socket].assigns[:current_user]) %>
-            <nav class="d-flex flex-column">
+            <nav class="cb-d-flex cb-flex-column">
               <a
                 href="/admin/"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Dashboard"
               >
                 <span class="admin-nav-short">DB</span>
@@ -163,7 +163,7 @@
               </a>
               <a
                 href="/admin/users"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Users"
               >
                 <span class="admin-nav-short">US</span>
@@ -171,7 +171,7 @@
               </a>
               <a
                 href="/admin/clans"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Clans"
               >
                 <span class="admin-nav-short">CL</span>
@@ -179,7 +179,7 @@
               </a>
               <a
                 href="/admin/invites"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Invites"
               >
                 <span class="admin-nav-short">IN</span>
@@ -187,7 +187,7 @@
               </a>
               <a
                 href="/admin/events"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Events"
               >
                 <span class="admin-nav-short">EV</span>
@@ -195,7 +195,7 @@
               </a>
               <a
                 href="/admin/seasons"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Seasons"
               >
                 <span class="admin-nav-short">SE</span>
@@ -203,7 +203,7 @@
               </a>
               <a
                 href="/admin/group_tasks"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Group Tasks"
               >
                 <span class="admin-nav-short">GT</span>
@@ -211,7 +211,7 @@
               </a>
               <a
                 href="/admin/group_tournaments"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Group Tournaments"
               >
                 <span class="admin-nav-short">GTR</span>
@@ -219,7 +219,7 @@
               </a>
               <a
                 href="/admin/tournaments"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Tournaments"
               >
                 <span class="admin-nav-short">TR</span>
@@ -227,7 +227,7 @@
               </a>
               <a
                 href="/admin/feedback"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Feedback"
               >
                 <span class="admin-nav-short">FB</span>
@@ -235,7 +235,7 @@
               </a>
               <a
                 href="/admin/games"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Online Games"
               >
                 <span class="admin-nav-short">OG</span>
@@ -243,7 +243,7 @@
               </a>
               <a
                 href="/admin/code-checks"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Code Checks Live"
               >
                 <span class="admin-nav-short">CC</span>
@@ -251,7 +251,7 @@
               </a>
               <a
                 href="/admin/code-checks?tab=failures"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Code Check Run Failures"
               >
                 <span class="admin-nav-short">CF</span>
@@ -259,7 +259,7 @@
               </a>
               <a
                 href="/feature-flags"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Feature Flags"
               >
                 <span class="admin-nav-short">FF</span>
@@ -267,7 +267,7 @@
               </a>
               <a
                 href="/admin/oban"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="Oban"
               >
                 <span class="admin-nav-short">OB</span>
@@ -275,7 +275,7 @@
               </a>
               <a
                 href="/admin/dashboard"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                class="cb-btn cb-btn-secondary cb-rounded cb-mb-2 cb-text-left admin-nav-link"
                 title="LiveDashboard"
               >
                 <span class="admin-nav-short">LD</span>
@@ -283,14 +283,14 @@
               </a>
             </nav>
             <%= if admin_user do %>
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 mt-auto admin-user-card">
-                <div class="text-white text-truncate">{admin_user.name}</div>
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-mt-auto admin-user-card">
+                <div class="cb-text-white cb-text-truncate">{admin_user.name}</div>
                 <div class="cb-text">ID: {admin_user.id}</div>
               </div>
             <% end %>
           </div>
         </aside>
-        <main class="admin-main py-3">
+        <main class="admin-main cb-py-3">
           {@inner_content}
         </main>
       </div>

@@ -111,83 +111,83 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-white">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-4">
+        <h1 class="cb-text-white">
           <i class="bi bi-calendar-range"></i> Season Details
         </h1>
         <a
           href={Routes.admin_season_index_view_path(@socket, :index)}
-          class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+          class="cb-btn cb-btn-outline-secondary cb-rounded"
         >
           <i class="bi bi-arrow-left"></i> Back to List
         </a>
       </div>
 
-      <div class="card cb-card shadow-sm mb-4 border cb-border-color">
-        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
-          <div class="d-flex justify-content-between align-items-center">
+      <div class="cb-card cb-shadow-sm cb-mb-4 cb-border cb-border-color">
+        <div class="cb-card-header cb-bg-highlight-panel cb-border-color cb-text-white">
+          <div class="cb-d-flex cb-justify-between cb-align-center">
             <span><i class="bi bi-info-circle"></i> Season Information</span>
             <a
               href={Routes.admin_season_edit_view_path(@socket, :edit, @season.id)}
-              class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
             >
               <i class="bi bi-pencil"></i> Edit
             </a>
           </div>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
+        <div class="cb-card-body">
+          <div class="cb-row">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">ID</label>
-              <div class="fw-bold text-white">{@season.id}</div>
+              <div class="fw-bold cb-text-white">{@season.id}</div>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">Name</label>
-              <div class="fw-bold text-white">{@season.name}</div>
+              <div class="fw-bold cb-text-white">{@season.name}</div>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">Year</label>
-              <div class="fw-bold text-white">{@season.year}</div>
+              <div class="fw-bold cb-text-white">{@season.year}</div>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">Duration</label>
-              <div class="fw-bold text-white">
+              <div class="fw-bold cb-text-white">
                 {Date.diff(@season.ends_at, @season.starts_at)} days
               </div>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">Start Date</label>
-              <div class="fw-bold text-white">
+              <div class="fw-bold cb-text-white">
                 {Calendar.strftime(@season.starts_at, "%B %d, %Y")}
               </div>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">End Date</label>
-              <div class="fw-bold text-white">
+              <div class="fw-bold cb-text-white">
                 {Calendar.strftime(@season.ends_at, "%B %d, %Y")}
               </div>
             </div>
 
-            <div class="col-12 mb-3">
+            <div class="cb-col-12 cb-mb-3">
               <label class="form-label cb-text">Status</label>
               <div>
                 <%= cond do %>
                   <% Date.compare(@season.starts_at, Date.utc_today()) == :gt -> %>
-                    <span class="badge bg-info">
+                    <span class="cb-badge cb-bg-info">
                       <i class="bi bi-clock"></i> Upcoming
                     </span>
                   <% Date.compare(@season.ends_at, Date.utc_today()) == :lt -> %>
-                    <span class="badge bg-secondary">
+                    <span class="cb-badge cb-bg-secondary">
                       <i class="bi bi-check-circle"></i> Completed
                     </span>
                   <% true -> %>
-                    <span class="badge bg-success">
+                    <span class="cb-badge cb-bg-success">
                       <i class="bi bi-play-circle"></i> Active
                     </span>
                 <% end %>
@@ -197,23 +197,23 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
         </div>
       </div>
 
-      <div class="card cb-card shadow-sm mb-4 border cb-border-color">
-        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
+      <div class="cb-card cb-shadow-sm cb-mb-4 cb-border cb-border-color">
+        <div class="cb-card-header cb-bg-highlight-panel cb-border-color cb-text-white">
           <i class="bi bi-trophy"></i> Tournament Management
         </div>
-        <div class="card-body">
-          <div class="mb-3">
+        <div class="cb-card-body">
+          <div class="cb-mb-3">
             <label class="form-label cb-text">Tournament Count</label>
-            <div class="fw-bold fs-4 text-white">{@tournament_count} tournaments</div>
+            <div class="fw-bold fs-4 cb-text-white">{@tournament_count} tournaments</div>
           </div>
 
-          <p class="cb-text mb-3">
+          <p class="cb-text cb-mb-3">
             Generate all tournaments for this season based on the tournament schedule, or clean up existing tournaments.
           </p>
 
-          <div class="d-flex gap-2">
+          <div class="cb-d-flex gap-2">
             <button
-              class="btn btn-secondary cb-btn-secondary cb-rounded"
+              class="cb-btn cb-btn-secondary cb-rounded"
               phx-click="create_tournaments"
               data-confirm="This will create all tournaments for this season. Continue?"
             >
@@ -221,7 +221,7 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
             </button>
 
             <button
-              class="btn btn-warning"
+              class="cb-btn cb-btn-warning"
               phx-click="drop_tournaments"
               data-confirm="This will delete ALL tournaments within this season's date range. Are you sure?"
               disabled={@tournament_count == 0}
@@ -230,7 +230,7 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
             </button>
           </div>
 
-          <div class="mt-3">
+          <div class="cb-mt-3">
             <small class="cb-text">
               <i class="bi bi-info-circle"></i>
               Expected tournament types: Grand Slam (1), Masters (2), Elite (~3), Pro (~6), Challenger (daily), Rookie (every 3 hours)
@@ -239,16 +239,16 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
         </div>
       </div>
 
-      <div class="card cb-card shadow-sm border-danger">
-        <div class="card-header cb-bg-highlight-panel text-white border-danger">
+      <div class="cb-card cb-shadow-sm cb-border-danger">
+        <div class="cb-card-header cb-bg-highlight-panel cb-text-white cb-border-danger">
           <i class="bi bi-exclamation-triangle"></i> Danger Zone
         </div>
-        <div class="card-body">
-          <p class="cb-text mb-3">
+        <div class="cb-card-body">
+          <p class="cb-text cb-mb-3">
             Once you delete a season, there is no going back. Please be certain.
           </p>
           <button
-            class="btn btn-danger"
+            class="cb-btn cb-btn-danger"
             phx-click="delete"
             data-confirm="Are you sure you want to delete this season? This action cannot be undone."
           >

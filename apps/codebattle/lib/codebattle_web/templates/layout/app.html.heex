@@ -74,7 +74,7 @@
     <!--End Google Tag Manager-->
   </head>
 
-  <body class="bg-dark position-relative h-100">
+  <body class="cb-bg-dark cb-position-relative cb-h-100">
     <div id="inertia-shared-props" data-props={inertia_shared_props_json(@conn)} hidden></div>
     <!--Google Tag Manager (noscript)-->
     <%= if FunWithFlags.enabled?(:use_external_js) do %>
@@ -88,15 +88,15 @@
       </noscript>
     <% end %>
 
-    <div class="d-flex cb-bg-dark  flex-column min-vh-100">
+    <div class="cb-d-flex cb-bg-dark cb-flex-column cb-min-vh-100">
       <%= unless FunWithFlags.enabled?(:hide_header) do %>
         <div>
-          <div class="container-lg">
-            <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
-              <a class="navbar-brand d-flex align-items-end" href="/">
+          <div class="cb-container-lg">
+            <nav class="cb-navbar cb-navbar-dark cb-navbar-expand-sm cb-justify-between cb-px-0 main-nav">
+              <a class="cb-navbar-brand cb-d-flex cb-align-end" href="/">
                 <%= if Application.get_env(:codebattle, :logo_title_position) == "left" do %>
-                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray mr-1 pb-1">
-                    <span class="font-weight-bold">
+                  <div class="cb-d-none cb-d-sm-none cb-d-md-flex cb-d-lg-flex cb-flex-column text-gray cb-mr-1 cb-pb-1">
+                    <span class="cb-fw-bold">
                       {Application.get_env(:codebattle, :logo_title)}
                     </span>
                     <span class="header-txt">
@@ -107,28 +107,28 @@
                 <%= if collab_logo(@current_user) do %>
                   <img
                     alt="collab icon"
-                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    class="cb-my-auto cb-mx-2 cb-pl-2 cb-pl-md-0 cb-pl-lg-0"
                     style="height:40px"
                     src={collab_logo(@current_user)}
                   />
                 <% else %>
                   <img
                     alt="Logo"
-                    class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
+                    class="cb-my-auto cb-pt-1 cb-pl-2 cb-pl-md-0 cb-pl-lg-0"
                     src={static_asset("images/logo.svg")}
                   />
                 <% end %>
                 <%= if collab_logo_minor(@current_user) do %>
                   <img
                     alt="collab icon"
-                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    class="cb-my-auto cb-mx-2 cb-pl-2 cb-pl-md-0 cb-pl-lg-0"
                     style="height:40px"
                     src={collab_logo_minor(@current_user)}
                   />
                 <% end %>
                 <%= if Application.get_env(:codebattle, :logo_title_position) != "left" do %>
-                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb-1">
-                    <span class="font-weight-bold e-title">
+                  <div class="cb-d-none cb-d-sm-none cb-d-md-flex cb-d-lg-flex cb-flex-column text-gray cb-ml-1 cb-pb-1">
+                    <span class="cb-fw-bold e-title">
                       {Application.get_env(:codebattle, :logo_title)}
                     </span>
                     <span class="header-txt">
@@ -142,47 +142,47 @@
                   aria-controls="navbarResponsive"
                   aria-expanded="false"
                   aria-label="Toggle navigation"
-                  class="navbar-toggler position-relative"
+                  class="cb-navbar-toggler cb-position-relative"
                   data-target="#navbarResponsive"
                   data-toggle="collapse"
                   type="button"
                 >
-                  <span class="navbar-toggler-icon"></span>
+                  <span class="cb-navbar-toggler-icon"></span>
                   <span id="invites-counter-id"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                  <ul class="navbar-nav ml-auto align-items-sm-center">
+                <div class="cb-collapse cb-navbar-collapse" id="navbarResponsive">
+                  <ul class="cb-navbar-nav cb-ml-auto cb-align-sm-center">
                     <%= if FunWithFlags.enabled?(:hide_invites) do %>
-                      <li id="invites-root" class="d-none"></li>
+                      <li id="invites-root" class="cb-d-none"></li>
                     <% else %>
-                      <li class="nav-item d-flex justify-content-center mb-2 mb-sm-0">
+                      <li class="cb-nav-item cb-d-flex cb-justify-center cb-mb-2 cb-mb-sm-0">
                         <a
                           href="https://github.com/hexlet-codebattle/codebattle"
                           target="_blank"
-                          class="btn d-flex align-items-center mx-auto mx-sm-0 mr-sm-3 px-2 px-sm-3 py-1 py-sm-2 rounded-pill"
+                          class="cb-btn cb-d-flex cb-align-center cb-mx-auto cb-mx-sm-0 cb-mr-sm-3 cb-px-2 cb-px-sm-3 cb-py-1 cb-py-sm-2 cb-rounded-pill"
                           title="Star us on GitHub"
                         >
-                          <span class="fab fa-github mr-1 mr-sm-2 text-white"></span>
-                          <span class="text-white font-weight-bold d-none d-sm-inline">
+                          <span class="fab fa-github cb-mr-1 cb-mr-sm-2 cb-text-white"></span>
+                          <span class="cb-text-white cb-fw-bold cb-d-none cb-d-sm-inline">
                             {gettext("Star us")}
                           </span>
-                          <.github_stars_badge class="ml-1 ml-sm-2" />
+                          <.github_stars_badge class="cb-ml-1 cb-ml-sm-2" />
                         </a>
                       </li>
-                      <li class="nav-item d-flex justify-content-center mb-2 mb-sm-0">
+                      <li class="cb-nav-item cb-d-flex cb-justify-center cb-mb-2 cb-mb-sm-0">
                         <span
                           id="online-root"
-                          class="d-flex align-items-center text-muted mx-auto mx-sm-0 mr-sm-3"
+                          class="cb-d-flex cb-align-center cb-text-muted cb-mx-auto cb-mx-sm-0 cb-mr-sm-3"
                         >
                           0 Online
                         </span>
                       </li>
                       <li
-                        class="nav-item d-flex justify-content-center mb-2 mb-sm-0"
+                        class="cb-nav-item cb-d-flex cb-justify-center cb-mb-2 cb-mb-sm-0"
                         id="invites-root"
                       >
-                        <div class="btn mx-auto mx-sm-2">
+                        <div class="cb-btn cb-mx-auto cb-mx-sm-2">
                           <img
                             alt="invites"
                             src={static_asset("images/fight.svg")}
@@ -191,18 +191,18 @@
                         </div>
                       </li>
                     <% end %>
-                    <li class="nav-item dropdown">
+                    <li class="cb-nav-item cb-dropdown">
                       <a
                         aria-expanded="false"
                         aria-haspopup="true"
                         data-toggle="dropdown"
-                        class="nav-link noborder d-flex justify-content-center align-items-center px-0"
+                        class="cb-nav-link noborder cb-d-flex cb-justify-center cb-align-center cb-px-0"
                         href={Routes.user_path(@conn, :show, @current_user.id)}
                       >
-                        <div class="d-flex flex-column justify-content-center text-nowrap mr-2">
+                        <div class="cb-d-flex cb-flex-column cb-justify-center cb-text-nowrap cb-mr-2">
                           <h5
                             id="navbar-current-user-name"
-                            class="text-white text-right mb-0 text-break"
+                            class="cb-text-white cb-text-right cb-mb-0 cb-text-break"
                           >
                             {@current_user.name}
                           </h5>
@@ -210,99 +210,99 @@
 
                         <img
                           alt="avatar"
-                          class="attachment ml-1"
+                          class="attachment cb-ml-1"
                           src={avatar_url(@current_user)}
                           style="width:46px; height:46px"
                         />
                       </a>
                       <div
-                        class="dropdown-menu dropdown-menu-right cb-bg-highlight-panel cb-rounded"
+                        class="cb-dropdown-menu cb-dropdown-menu-right cb-bg-highlight-panel cb-rounded"
                         style="z-index:1030"
                       >
                         <%= if FunWithFlags.enabled?(:hide_user_dropdown) do %>
                           <div></div>
                         <% else %>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href={Routes.user_path(@conn, :show, @current_user.id)}
                           >
-                            <span class="fas fa-user mr-2"></span>
+                            <span class="fas fa-user cb-mr-2"></span>
                             {gettext("My Profile")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href={Routes.user_setting_path(@conn, :edit)}
                           >
-                            <span class="fas fa-cog mr-2"></span>
+                            <span class="fas fa-cog cb-mr-2"></span>
                             {gettext("Settings")}
                           </a>
                           <div id="sound-toggle-root"></div>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href={hall_of_fame_path(@conn, :index)}
                           >
-                            <span class="fas fa-medal mr-2"></span>
+                            <span class="fas fa-medal cb-mr-2"></span>
                             {gettext("Hall of Fame")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href={Routes.tournaments_schedule_path(@conn, :index)}
                           >
-                            <span class="fas fa-trophy mr-2"></span>
+                            <span class="fas fa-trophy cb-mr-2"></span>
                             {gettext("Tournaments")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href={task_path(@conn, :index)}
                           >
-                            <span class="fas fa-tasks mr-2"></span>
+                            <span class="fas fa-tasks cb-mr-2"></span>
                             {gettext("Tasks")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href={clan_path(@conn, :index)}
                           >
-                            <span class="fas fa-users mr-2"></span>
+                            <span class="fas fa-users cb-mr-2"></span>
                             {gettext("Clans")}
                           </a>
-                          <div class="dropdown-divider cb-border-color"></div>
+                          <div class="cb-dropdown-divider cb-border-color"></div>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href="https://github.com/hexlet-codebattle/codebattle"
                             target="_blank"
                           >
-                            <span class="fab fa-github mr-2"></span>
+                            <span class="fab fa-github cb-mr-2"></span>
                             {gettext("SourceCode")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href="https://hexlet.io"
                             target="_blank"
                           >
-                            <span class="fa fa-university mr-2"></span>
+                            <span class="fa fa-university cb-mr-2"></span>
                             {gettext("Hexlet")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href="https://discord.gg/dTpFXrYU3v"
                             target="_blank"
                           >
-                            <span class="fab fa-discord mr-2"></span>
+                            <span class="fab fa-discord cb-mr-2"></span>
                             {gettext("Join Discord")}
                           </a>
                           <a
-                            class="dropdown-item cb-dropdown-item text-white"
+                            class="cb-dropdown-item cb-text-white"
                             href="https://t.me/hexletcommunity/5"
                             target="_blank"
                           >
-                            <span class="fab fa-telegram mr-2"></span>
+                            <span class="fab fa-telegram cb-mr-2"></span>
                             {gettext("Tg#codebattle")}
                           </a>
-                          <div class="dropdown-divider cb-border-color"></div>
+                          <div class="cb-dropdown-divider cb-border-color"></div>
                         <% end %>
 
-                        <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item cb-dropdown-item text-white" do %>
-                          <span class="fas fa-sign-out-alt mr-2"></span>
+                        <%= link to: session_path(@conn, :delete), method: "delete", class: "cb-dropdown-item cb-text-white" do %>
+                          <span class="fas fa-sign-out-alt cb-mr-2"></span>
                           {gettext("Sign Out")}
                         <% end %>
                       </div>
@@ -310,35 +310,35 @@
                   </ul>
                 </div>
               <% else %>
-                <ul class="navbar-nav">
-                  <li class="nav-item mx-1">
+                <ul class="cb-navbar-nav">
+                  <li class="cb-nav-item cb-mx-1">
                     <a
-                      class="mr-2"
+                      class="cb-mr-2"
                       href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
                     >
-                      <button class="btn btn-outline-success rounded-lg">
+                      <button class="cb-btn cb-btn-outline-success cb-rounded-lg">
                         {gettext("Sign in")}
                       </button>
                     </a>
                     <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-                      <button class="btn btn-outline-success rounded-lg">
+                      <button class="cb-btn cb-btn-outline-success cb-rounded-lg">
                         {gettext("Sign up")}
                       </button>
                     </a>
                   </li>
                   <%= if Application.get_env(:codebattle, :dev_sign_in) do %>
-                    <li class="nav-item mx-1">
+                    <li class="cb-nav-item cb-mx-1">
                       {button("Dev",
                         to: "/auth/dev_login?locale=en&subscription_type=free",
-                        class: "btn btn-outline-danger rounded-lg"
+                        class: "cb-btn cb-btn-outline-danger cb-rounded-lg"
                       )}
                       {button("Premium",
                         to: "/auth/dev_login?locale=en&subscription_type=premium",
-                        class: "btn btn-outline-danger rounded-lg"
+                        class: "cb-btn cb-btn-outline-danger cb-rounded-lg"
                       )}
                       {button("Admin",
                         to: "/auth/dev_login?locale=en&subscription_type=admin",
-                        class: "btn btn-outline-danger rounded-lg"
+                        class: "cb-btn cb-btn-outline-danger cb-rounded-lg"
                       )}
                     </li>
                   <% end %>
@@ -350,17 +350,17 @@
       <% end %>
 
       <%= if @flash != %{} do %>
-        <div class="bg-dark py-2">
-          <div class="container-lg">
+        <div class="cb-bg-dark cb-py-2">
+          <div class="cb-container-lg">
             <%= for {type, message} <- @flash || [] do %>
               <div
-                class={"alert alert-#{type} alert-dismissible fade show mb-2 rounded shadow-sm alert-dark-theme"}
+                class={"cb-alert cb-alert-#{type} cb-alert-dismissible cb-fade cb-show cb-mb-2 cb-rounded-sm cb-shadow-sm alert-dark-theme"}
                 role="alert"
               >
                 {message}
                 <button
                   type="button"
-                  class="close text-white"
+                  class="cb-close cb-text-white"
                   data-dismiss="alert"
                   aria-label="Close"
                 >
@@ -372,16 +372,16 @@
         </div>
       <% end %>
       <%= if @ticker_text do %>
-        <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
+        <div class="cb-d-flex cb-ticker-line-wrap cb-p-2 cb-vw-100">
           <span class="cb-ticker-line cb-ticker-line-head">{@ticker_text}</span>
           <span class="cb-ticker-line cb-ticker-line-tail">{@ticker_text}</span>
         </div>
       <% end %>
       <%= unless @current_user.is_guest do %>
-        <div id="main-channel-root" class="d-none"></div>
+        <div id="main-channel-root" class="cb-d-none"></div>
       <% end %>
-      <div class="content bg-light"></div>
-      <main class="d-lg-flex">
+      <div class="content cb-bg-light"></div>
+      <main class="cb-d-lg-flex">
         <%= if assigns[:show_lobby_loading_shell] do %>
           <div class="cb-lobby-loading-frame">
             {@inner_content}
@@ -393,30 +393,30 @@
       </main>
       <footer>
         <%= unless FunWithFlags.enabled?(:hide_footer) do %>
-          <div class="footer-container container-lg">
+          <div class="footer-container cb-container-lg">
             <div>
-              <p class="text-nowrap text-white mb-0 mr-4">
+              <p class="cb-text-nowrap cb-text-white cb-mb-0 cb-mr-4">
                 ©
-                <a class="text-white" href="https://hexlet.io/">
+                <a class="cb-text-white" href="https://hexlet.io/">
                   Hexlet ltd
                 </a>
                 , 2026
               </p>
             </div>
-            <div class="d-none d-lg-flex d-md-flex flex-column align-items-center">
-              <p class="m-0">
+            <div class="cb-d-none cb-d-lg-flex cb-d-md-flex cb-flex-column cb-align-center">
+              <p class="cb-m-0">
                 {link("Current version: #{app_short_version()}",
                   to: github_commit_link(),
-                  class: "btn-link p-0 text-white"
+                  class: "cb-btn-link cb-p-0 cb-text-white"
                 )}
               </p>
-              <p class="text-white m-0">
+              <p class="cb-text-white cb-m-0">
                 <span>deployedAt UTC:&nbsp;{deployed_at()}</span>
               </p>
               <%= if FunWithFlags.enabled?(:use_external_js) do %>
                 <a href="https://hits.seeyoufarm.com">
                   <img
-                    class="mb-1"
+                    class="cb-mb-1"
                     src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhexlet-codebattle%2Fcodebattle&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
                   />
                 </a>

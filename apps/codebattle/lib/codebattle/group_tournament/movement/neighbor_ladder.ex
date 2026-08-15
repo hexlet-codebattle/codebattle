@@ -35,7 +35,8 @@ defmodule Codebattle.GroupTournament.Movement.NeighborLadder do
   defp compute_destination(slice_index, 1, _slice_size, _slice_count), do: slice_index - 1
 
   defp compute_destination(slice_index, place, slice_size, slice_count)
-       when place == slice_size and slice_index == slice_count - 1, do: slice_index
+       when place == slice_size and slice_index == slice_count - 1,
+       do: slice_index
 
   defp compute_destination(slice_index, place, slice_size, slice_count) when place == slice_size do
     min(slice_index + 1, slice_count - 1)

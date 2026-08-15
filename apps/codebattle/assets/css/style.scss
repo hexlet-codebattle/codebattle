@@ -86,15 +86,15 @@ $cb-rookie-bg: $iron;
   --cb-grade-rookie: #{$cb-rookie-bg};
 }
 
-@import 'bootstrap/scss/bootstrap';
-// Mantine core styles are wrapped in `@layer mantine`. Unlayered Bootstrap above
-// always wins on conflicts, so existing Bootstrap-styled UI is unaffected while
-// Mantine components still get their own styling.
+// Mantine core styles are wrapped in `@layer mantine`. Unlayered custom styles
+// above always win on conflicts, so existing custom-styled UI is unaffected
+// while Mantine components still get their own styling.
 @import '@mantine/core/styles.layer.css';
 @import 'nprogress/nprogress.css';
 @import 'gamePreview';
 @import 'skeleton';
 @import 'custom';
+@import 'heex-utilities';
 @import 'react-contexify/dist/ReactContexify.css';
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -359,7 +359,7 @@ input[type='range'].cb-range {
   --flag-color: var(--danger);
 }
 
-.alert {
+.cb-alert {
   border-radius: unset;
 }
 
@@ -367,7 +367,7 @@ input[type='range'].cb-range {
   border: none;
   backdrop-filter: blur(10px);
 
-  &.alert-info {
+  &.cb-alert-info {
     background: linear-gradient(
       135deg,
       rgba(25, 135, 84, 0.9),
@@ -377,7 +377,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #198754;
   }
 
-  &.alert-success {
+  &.cb-alert-success {
     background: linear-gradient(
       135deg,
       rgba(25, 135, 84, 0.9),
@@ -387,7 +387,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #198754;
   }
 
-  &.alert-danger {
+  &.cb-alert-danger {
     background: linear-gradient(
       135deg,
       rgba(220, 53, 69, 0.9),
@@ -397,7 +397,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #dc3545;
   }
 
-  &.alert-warning {
+  &.cb-alert-warning {
     background: linear-gradient(
       135deg,
       rgba(255, 193, 7, 0.9),
@@ -407,7 +407,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #ffc107;
   }
 
-  .close {
+  .cb-close {
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
     opacity: 0.8;
 
@@ -1686,7 +1686,7 @@ main > #app {
     padding-right: clamp(0.25rem, 1vw, 0.5rem);
   }
 
-  .main-nav .btn {
+  .main-nav .cb-btn {
     padding: clamp(0.2rem, 0.5vw, 0.5rem) clamp(0.4rem, 1vw, 0.75rem);
     font-size: clamp(0.75rem, 1vw, 0.875rem);
   }
@@ -1732,7 +1732,7 @@ main > #app {
     font-size: 22px;
   }
 
-  .lead,
+  .cb-lead,
   .cb-stats-caption {
     font-size: 14px;
   }
@@ -1764,7 +1764,7 @@ main > #app {
     font-size: 30px;
   }
 
-  .lead,
+  .cb-lead,
   .cb-stats-caption {
     font-size: 16px;
   }
@@ -2000,7 +2000,6 @@ $cb-bronze-bottom: #4a3223;
   }
 }
 
-.dropdown-menu,
 .cb-dropdown-menu {
   & .cb-dropdown-item {
     color: white !important;

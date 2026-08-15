@@ -1,6 +1,6 @@
 @use 'variables' as *;
 @import 'fonts';
-@import 'bootstrap/scss/bootstrap';
+@import 'heex-utilities';
 
 .landing {
   --bg: #0b0f1a;

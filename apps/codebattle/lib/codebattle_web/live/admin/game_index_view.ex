@@ -20,47 +20,47 @@ defmodule CodebattleWeb.Live.Admin.Game.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="text-white mb-0">Online Games</h1>
-        <button class="btn btn-secondary cb-btn-secondary cb-rounded" phx-click="reload">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center">
+        <h1 class="cb-text-white cb-mb-0">Online Games</h1>
+        <button class="cb-btn cb-btn-secondary cb-rounded" phx-click="reload">
           Reload
         </button>
       </div>
 
-      <p class="cb-text mt-2 mb-0">Active games now: {length(@games)}</p>
+      <p class="cb-text cb-mt-2 cb-mb-0">Active games now: {length(@games)}</p>
 
       <%= if @games == [] do %>
-        <p class="text-white mt-3 mb-0">No active games.</p>
+        <p class="cb-text-white cb-mt-3 cb-mb-0">No active games.</p>
       <% else %>
-        <div class="table-responsive mt-4">
-          <table class="table table-sm">
+        <div class="cb-table-responsive cb-mt-4">
+          <table class="cb-table cb-table-sm">
             <thead class="cb-text">
               <tr>
-                <th class="cb-border-color border-bottom">id</th>
-                <th class="cb-border-color border-bottom">state</th>
-                <th class="cb-border-color border-bottom">mode</th>
-                <th class="cb-border-color border-bottom">level</th>
-                <th class="cb-border-color border-bottom">players</th>
-                <th class="cb-border-color border-bottom">started_at</th>
-                <th class="cb-border-color border-bottom">link</th>
+                <th class="cb-border-color cb-border-bottom">id</th>
+                <th class="cb-border-color cb-border-bottom">state</th>
+                <th class="cb-border-color cb-border-bottom">mode</th>
+                <th class="cb-border-color cb-border-bottom">level</th>
+                <th class="cb-border-color cb-border-bottom">players</th>
+                <th class="cb-border-color cb-border-bottom">started_at</th>
+                <th class="cb-border-color cb-border-bottom">link</th>
               </tr>
             </thead>
             <tbody>
               <%= for game <- @games do %>
                 <tr>
-                  <td class="align-middle text-white cb-border-color">{game.id}</td>
-                  <td class="align-middle text-white cb-border-color">{game.state}</td>
-                  <td class="align-middle text-white cb-border-color">{game.mode}</td>
-                  <td class="align-middle text-white cb-border-color">{game.level}</td>
-                  <td class="align-middle text-white cb-border-color">
+                  <td class="cb-align-middle cb-text-white cb-border-color">{game.id}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">{game.state}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">{game.mode}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">{game.level}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">
                     {players_text(game.players)}
                   </td>
-                  <td class="align-middle text-white cb-border-color">
+                  <td class="cb-align-middle cb-text-white cb-border-color">
                     {format_datetime(game.starts_at)}
                   </td>
-                  <td class="align-middle text-white cb-border-color">
-                    <a href={Routes.game_path(@socket, :show, game.id)} class="text-primary">
+                  <td class="cb-align-middle cb-text-white cb-border-color">
+                    <a href={Routes.game_path(@socket, :show, game.id)} class="cb-text-primary">
                       Open game
                     </a>
                   </td>

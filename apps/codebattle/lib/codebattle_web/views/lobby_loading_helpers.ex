@@ -8,11 +8,11 @@ defmodule CodebattleWeb.LobbyLoadingHelpers do
     ~H"""
     <div
       id="lobby-loading-shell"
-      class="container-lg cb-text cb-lobby-loading"
+      class="cb-container-lg cb-text cb-lobby-loading"
       role="status"
       aria-live="polite"
     >
-      <span class="sr-only">{gettext("Loading...")}</span>
+      <span class="cb-sr-only">{gettext("Loading...")}</span>
       <div aria-hidden="true">
         <div class="cb-lobby-loading-hero">
           <div class="cb-lobby-loading-emblem">
@@ -30,45 +30,45 @@ defmodule CodebattleWeb.LobbyLoadingHelpers do
             </div>
           </div>
         </div>
-        <div class="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2">
-          <div class="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
-            <div class="cb-bg-panel cb-rounded d-flex flex-column p-3 cb-lobby-loading-main">
-              <span class="cb-text-skeleton w-50 mx-auto mb-4"></span>
-              <span class="cb-text-skeleton w-100 mb-2"></span>
-              <span class="cb-text-skeleton w-75 mx-auto mb-4"></span>
-              <div class="d-flex flex-column flex-md-row mt-auto">
-                <span class="cb-text-skeleton flex-fill mx-md-2 mb-2 mb-md-0"></span>
-                <span class="cb-text-skeleton flex-fill mx-md-2 mb-2 mb-md-0"></span>
-                <span class="cb-text-skeleton flex-fill mx-md-2"></span>
+        <div class="cb-d-flex cb-flex-column-reverse flex-lg-row cb-my-0 cb-my-lg-2">
+          <div class="cb-col-12 cb-col-lg-8 cb-p-0 cb-pr-lg-2 cb-my-2 cb-my-lg-0">
+            <div class="cb-bg-panel cb-rounded cb-d-flex cb-flex-column cb-p-3 cb-lobby-loading-main">
+              <span class="cb-text-skeleton cb-w-50 cb-mx-auto cb-mb-4"></span>
+              <span class="cb-text-skeleton cb-w-100 cb-mb-2"></span>
+              <span class="cb-text-skeleton cb-w-75 cb-mx-auto cb-mb-4"></span>
+              <div class="cb-d-flex cb-flex-column flex-md-row cb-mt-auto">
+                <span class="cb-text-skeleton cb-flex-fill cb-mx-md-2 cb-mb-2 cb-mb-md-0"></span>
+                <span class="cb-text-skeleton cb-flex-fill cb-mx-md-2 cb-mb-2 cb-mb-md-0"></span>
+                <span class="cb-text-skeleton cb-flex-fill cb-mx-md-2"></span>
               </div>
             </div>
           </div>
-          <div class="col-12 col-lg-4 p-0 pl-lg-2 my-2 my-lg-0">
-            <div class="cb-bg-panel cb-rounded d-flex flex-column align-items-center p-3 cb-lobby-loading-profile">
-              <span class="cb-text-skeleton cb-lobby-loading-avatar mb-3"></span>
-              <span class="cb-text-skeleton w-50 mb-3"></span>
-              <div class="d-flex w-100 cb-bg-highlight-panel p-3">
-                <span class="cb-text-skeleton flex-fill mx-1"></span>
-                <span class="cb-text-skeleton flex-fill mx-1"></span>
-                <span class="cb-text-skeleton flex-fill mx-1"></span>
+          <div class="cb-col-12 cb-col-lg-4 cb-p-0 cb-pl-lg-2 cb-my-2 cb-my-lg-0">
+            <div class="cb-bg-panel cb-rounded cb-d-flex cb-flex-column cb-align-center cb-p-3 cb-lobby-loading-profile">
+              <span class="cb-text-skeleton cb-lobby-loading-avatar cb-mb-3"></span>
+              <span class="cb-text-skeleton cb-w-50 cb-mb-3"></span>
+              <div class="cb-d-flex cb-w-100 cb-bg-highlight-panel cb-p-3">
+                <span class="cb-text-skeleton cb-flex-fill cb-mx-1"></span>
+                <span class="cb-text-skeleton cb-flex-fill cb-mx-1"></span>
+                <span class="cb-text-skeleton cb-flex-fill cb-mx-1"></span>
               </div>
             </div>
           </div>
         </div>
-        <div class="d-flex flex-column flex-lg-row p-0">
-          <div class="col-12 col-lg-8 p-0 pr-lg-2">
-            <div class="cb-bg-panel cb-rounded p-3 cb-lobby-loading-secondary">
-              <span class="cb-text-skeleton w-25 d-block mb-4"></span>
-              <span class="cb-text-skeleton w-100 d-block mb-3"></span>
-              <span class="cb-text-skeleton w-75 d-block mb-3"></span>
-              <span class="cb-text-skeleton w-50 d-block"></span>
+        <div class="cb-d-flex cb-flex-column flex-lg-row cb-p-0">
+          <div class="cb-col-12 cb-col-lg-8 cb-p-0 cb-pr-lg-2">
+            <div class="cb-bg-panel cb-rounded cb-p-3 cb-lobby-loading-secondary">
+              <span class="cb-text-skeleton cb-w-25 cb-d-block cb-mb-4"></span>
+              <span class="cb-text-skeleton cb-w-100 cb-d-block cb-mb-3"></span>
+              <span class="cb-text-skeleton cb-w-75 cb-d-block cb-mb-3"></span>
+              <span class="cb-text-skeleton cb-w-50 cb-d-block"></span>
             </div>
           </div>
-          <div class="col-12 col-lg-4 p-0 pl-lg-2 mt-2 mt-lg-0">
-            <div class="cb-bg-panel cb-rounded p-3 cb-lobby-loading-secondary">
-              <span class="cb-text-skeleton w-50 d-block mb-4"></span>
-              <span class="cb-text-skeleton w-100 d-block mb-3"></span>
-              <span class="cb-text-skeleton w-75 d-block"></span>
+          <div class="cb-col-12 cb-col-lg-4 cb-p-0 cb-pl-lg-2 cb-mt-2 cb-mt-lg-0">
+            <div class="cb-bg-panel cb-rounded cb-p-3 cb-lobby-loading-secondary">
+              <span class="cb-text-skeleton cb-w-50 cb-d-block cb-mb-4"></span>
+              <span class="cb-text-skeleton cb-w-100 cb-d-block cb-mb-3"></span>
+              <span class="cb-text-skeleton cb-w-75 cb-d-block"></span>
             </div>
           </div>
         </div>

@@ -1,84 +1,84 @@
-<%= form_for(@changeset, @action, [class: "col-8 offset-2"], fn f -> %>
-  <div class="form-group">
+<%= form_for(@changeset, @action, [class: "cb-col-8 cb-offset-2"], fn f -> %>
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Slug</span>
-      <span class="ml-3 cb-text">Slug for an Event should be unique</span>
+      <span class="cb-text-white">Slug</span>
+      <span class="cb-ml-3 cb-text">Slug for an Event should be unique</span>
     </div>
     {text_input(f, :slug,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       maxlength: "57",
       required: false
     )}
     {error_tag(f, :slug)}
   </div>
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Title</span>
+      <span class="cb-text-white">Title</span>
     </div>
     {text_input(f, :title,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       maxlength: "157",
       required: false
     )}
     {error_tag(f, :title)}
   </div>
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Description</span>
+      <span class="cb-text-white">Description</span>
     </div>
     {textarea(f, :description,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :description)}
   </div>
-  <div class="form-group">
-    {label(f, :type, class: "text-white")}
+  <div class="cb-form-group">
+    {label(f, :type, class: "cb-text-white")}
     {select(f, :type, Codebattle.Event.types(),
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :type)}
   </div>
-  <div class="d-flex flex-column justify-content-between w-auto">
-    <label class="text-white">Starts at ({@user.timezone})</label>
+  <div class="cb-d-flex cb-flex-column cb-justify-between cb-w-auto">
+    <label class="cb-text-white">Starts at ({@user.timezone})</label>
     {datetime_local_input(f, :starts_at,
-      class: "form-control cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-bg-panel cb-border-color cb-text-white",
       required: true,
       value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user.timezone), 5, :minute)
     )}
     {error_tag(f, :starts_at)}
   </div>
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Ticker Text</span>
+      <span class="cb-text-white">Ticker Text</span>
     </div>
     {text_input(f, :ticker_text,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :ticker_text)}
   </div>
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Personal Tournament ID</span>
+      <span class="cb-text-white">Personal Tournament ID</span>
     </div>
     {number_input(f, :personal_tournament_id,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :personal_tournament_id)}
   </div>
 
-  <div class="mb-4">
-    <h4 class="text-white">Event Stages</h4>
-    <div class="form-group">
+  <div class="cb-mb-4">
+    <h4 class="cb-text-white">Event Stages</h4>
+    <div class="cb-form-group">
       <div>
-        <span class="text-white">Stages (JSON format)</span>
+        <span class="cb-text-white">Stages (JSON format)</span>
       </div>
       {textarea(f, :stages_json,
-        class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+        class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
         value: Jason.encode!(@changeset.data.stages || [], pretty: true),
         rows: 15
       )}
       {error_tag(f, :stages_json)}
-      <div class="alert alert-info alert-dark-theme mt-2">
+      <div class="cb-alert cb-alert-info alert-dark-theme cb-mt-2">
         <p>Edit stages in JSON format. Each stage should include:</p>
         <ul>
           <li><code>slug</code>: Unique identifier for the stage</li>
@@ -105,11 +105,11 @@
     </div>
   </div>
 
-  <div class="d-flex">
+  <div class="cb-d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",
-      class: "btn btn-success text-white mb-2 cb-rounded"
+      class: "cb-btn cb-btn-success cb-text-white cb-mb-2 cb-rounded"
     )}
-    {link("Back", to: "/admin/events", class: "btn btn-link cb-text ml-auto")}
+    {link("Back", to: "/admin/events", class: "cb-btn cb-btn-link cb-text cb-ml-auto")}
   </div>
 <% end) %>

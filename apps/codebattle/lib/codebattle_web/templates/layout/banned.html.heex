@@ -43,19 +43,19 @@
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
   </head>
   <body>
-    <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
-      <div class="p-4">
+    <div class="cb-container cb-d-flex cb-flex-column cb-align-center cb-justify-center cb-vh-100">
+      <div class="cb-p-4">
         <% header =
           Codebattle.Customization.get("banned_header") ||
             "<center><h1>You are banned from the site.</h1></center>" %>
-        <div class="mb-3">
+        <div class="cb-mb-3">
           {raw(header)}
         </div>
 
         <% body =
           Codebattle.Customization.get("banned_body") ||
             "Please contact the administrator for more information." %>
-        <div class="mb-3">
+        <div class="cb-mb-3">
           {raw(body)}
         </div>
       </div>
