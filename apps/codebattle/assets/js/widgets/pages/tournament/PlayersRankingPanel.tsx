@@ -1,5 +1,16 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Flex,
+  Pagination,
+  Paper,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +22,7 @@ import { type AppDispatch } from '@/slices';
 import LanguageIcon from '../../components/LanguageIcon';
 import { requestNearestRankingPage, requestRankingPage } from '../../middlewares/Tournament';
 import { kickTournamentPlayer } from '../../middlewares/TournamentAdmin';
+import { rankingCellClassName, rankingCellStyle } from '../../ui/table';
 
 interface RankingItem {
   id: number;
@@ -32,21 +44,20 @@ interface Ranking {
 
 const getCustomEventTrClassName = (item: RankingItem, selectedId: number | null) =>
   cn(
-    'font-weight-bold cb-custom-event-tr-border',
+    'cb-custom-event-tr-border',
     {
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
       'cb-bronze-place-bg': item?.place === 3,
-      'cb-bg-panel': !item?.place || item?.place > 3,
     },
     {
       'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
     },
   );
 
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-);
+const tableDataCellClassName = rankingCellClassName;
+
+const tableDataCellStyle = rankingCellStyle;
 
 interface PlayersRankingPanelProps {
   canModerate?: boolean;
@@ -89,24 +100,6 @@ function PlayersRankingPanel({
     () => Math.max(1, Math.ceil(effectiveTotalEntries / effectivePageSize)),
     [effectivePageSize, effectiveTotalEntries],
   );
-  const canGoPrev = effectivePageNumber > 1;
-  const canGoNext = effectivePageNumber < totalPages;
-  const maxPageButtons = 7;
-  const pageButtons = useMemo(() => {
-    if (totalPages <= maxPageButtons) {
-      return Array.from({ length: totalPages }, (_, index) => index + 1);
-    }
-
-    const halfWindow = Math.floor(maxPageButtons / 2);
-    let start = Math.max(1, effectivePageNumber - halfWindow);
-    const end = Math.min(totalPages, start + maxPageButtons - 1);
-
-    if (end - start + 1 < maxPageButtons) {
-      start = Math.max(1, end - maxPageButtons + 1);
-    }
-
-    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-  }, [effectivePageNumber, totalPages]);
 
   useEffect(() => {
     if (!isServerPaged && effectivePageNumber > totalPages) {
@@ -170,63 +163,95 @@ function PlayersRankingPanel({
   };
 
   return (
-    <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
-      <div className="my-2">
+    <Paper bg="cbPanel" shadow="sm" p="md" style={{ overflow: 'auto' }}>
+      <Box my="xs">
         {playersCount === 0 ? (
-          <p className="text-nowrap text-muted">{i18next.t('No players yet')}.</p>
+          <Text c="dimmed">{i18next.t('No players yet')}.</Text>
         ) : (
-          <div
-            className={cn(
-              'd-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left',
-            )}
+          <Flex
+            direction="column"
+            flex={1}
+            pos="relative"
+            py="xs"
+            style={{
+              borderTopLeftRadius: '0.5rem',
+              borderBottomLeftRadius: '0.5rem',
+              maxHeight: '100%',
+            }}
           >
-            <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
-              <span className="font-weight-bold">{i18next.t('Ranking')}</span>
-              <span className="text-muted small">
+            <Flex
+              justify="space-between"
+              pb="xs"
+              px="md"
+              style={{
+                borderBottom: '1px solid var(--mantine-color-default-border)',
+              }}
+            >
+              <Text fw={700}>{i18next.t('Ranking')}</Text>
+              <Text size="xs" c="dimmed">
                 {i18next.t('Page')} {effectivePageNumber} {i18next.t('of')} {totalPages}
-              </span>
-            </div>
-            <div className="d-flex cb-overflow-x-auto">
-              <table className="table cb-text-light table-striped cb-custom-event-table m-1">
-                <colgroup>
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: canModerate ? '36%' : '40%' }} />
-                  <col style={{ width: canModerate ? '26%' : '30%' }} />
-                  <col style={{ width: canModerate ? '14%' : '18%' }} />
-                  <col style={{ width: canModerate ? '12%' : '0%' }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Player')}</th>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
-                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
-                    <th
-                      className="p-1 pl-4 font-weight-light border-0"
+              </Text>
+            </Flex>
+            <Flex className="cb-overflow-x-auto">
+              <Table c="cbTextLight" className="cb-custom-event-table" striped>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                      {i18next.t('Place')}
+                    </Table.Th>
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                      {i18next.t('Player')}
+                    </Table.Th>
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                      {i18next.t('Clan')}
+                    </Table.Th>
+                    <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                      {i18next.t('Score')}
+                    </Table.Th>
+                    <Table.Th
+                      c="dimmed"
+                      fw="normal"
+                      p="xs"
+                      pl={24}
                       aria-label={i18next.t('Actions')}
                     />
-                  </tr>
-                </thead>
-                <tbody>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {pagedRankingItems.map((item) => (
                     <React.Fragment key={item.id}>
-                      <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                      <tr
+                      <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+                      <Table.Tr
                         className={getCustomEventTrClassName(
                           item,
                           currentUserClanId as number | null,
                         )}
+                        style={{
+                          fontWeight: 700,
+                          backgroundColor:
+                            !item?.place || item?.place > 3
+                              ? 'var(--mantine-color-cbPanel-6)'
+                              : undefined,
+                        }}
                       >
-                        <td
+                        <Table.Td
                           style={{
+                            ...tableDataCellStyle,
                             borderTopLeftRadius: '0.5rem',
                             borderBottomLeftRadius: '0.5rem',
+                            width: '12%',
                           }}
                           className={tableDataCellClassName}
                         >
                           {item.place}
-                        </td>
-                        <td className={tableDataCellClassName}>
+                        </Table.Td>
+                        <Table.Td
+                          className={tableDataCellClassName}
+                          style={{
+                            ...tableDataCellStyle,
+                            width: canModerate ? '36%' : '40%',
+                          }}
+                        >
                           <div
                             title={item?.name}
                             className="cb-custom-event-name"
@@ -237,14 +262,20 @@ function PlayersRankingPanel({
                               maxWidth: '20ch',
                             }}
                           >
-                            {item?.lang && <LanguageIcon className="mr-1" lang={item.lang} />}
+                            {item?.lang && <LanguageIcon lang={item.lang} />}
                             <a href={`/users/${item.id}`}>
                               {(item?.name ?? '').slice(0, 10) +
                                 ((item?.name?.length ?? 0) > 10 ? '..' : '')}
                             </a>
                           </div>
-                        </td>
-                        <td className={tableDataCellClassName}>
+                        </Table.Td>
+                        <Table.Td
+                          className={tableDataCellClassName}
+                          style={{
+                            ...tableDataCellStyle,
+                            width: canModerate ? '26%' : '30%',
+                          }}
+                        >
                           <div
                             title={item?.clan}
                             className="cb-custom-event-name"
@@ -265,99 +296,64 @@ function PlayersRankingPanel({
                               ((item?.clan?.length ?? 0) > 10 ? '...' : '')
                             )}
                           </div>
-                        </td>
-                        <td className={tableDataCellClassName}>{item.score}</td>
-                        <td
+                        </Table.Td>
+                        <Table.Td
+                          className={tableDataCellClassName}
                           style={{
+                            ...tableDataCellStyle,
+                            width: canModerate ? '14%' : '18%',
+                          }}
+                        >
+                          {item.score}
+                        </Table.Td>
+                        <Table.Td
+                          style={{
+                            ...tableDataCellStyle,
                             borderTopRightRadius: '0.5rem',
                             borderBottomRightRadius: '0.5rem',
+                            width: canModerate ? '12%' : '0%',
                           }}
                           className={tableDataCellClassName}
                           aria-label={canModerate ? i18next.t('Actions') : i18next.t('Row spacer')}
                         >
                           {canModerate && (
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-danger py-0 px-2"
+                            <Button
+                              size="compact-xs"
+                              variant="outline"
+                              color="red"
                               title={i18next.t('Kick player')}
                               aria-label={i18next.t('Kick player')}
                               onClick={() => handleKickPlayer(item)}
                             >
                               ×
-                            </button>
+                            </Button>
                           )}
-                        </td>
-                      </tr>
+                        </Table.Td>
+                      </Table.Tr>
                     </React.Fragment>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                </Table.Tbody>
+              </Table>
+            </Flex>
+          </Flex>
         )}
-      </div>
-      <div className="d-flex align-items-center flex-wrap justify-content-start">
-        <h6 className="mb-2 mr-5 text-nowrap">
+      </Box>
+      <Flex align="center" wrap="wrap" justify="flex-start">
+        <Title order={6} mb="xs" mr="xl">
           {`${i18next.t('Total players')}: ${playersCount}`}
-        </h6>
+        </Title>
         {playersCount > 0 && (
-          <div className="d-flex align-items-center mb-2 cb-ranking-pagination">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoPrev}
-              onClick={() => handlePageChange(1)}
-              aria-label={i18next.t('First page')}
-            >
-              «
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoPrev}
-              onClick={() => handlePageChange(effectivePageNumber - 1)}
-              aria-label={i18next.t('Previous page')}
-            >
-              ‹
-            </button>
-            <div className="d-flex align-items-center">
-              {pageButtons.map((page) => (
-                <button
-                  type="button"
-                  key={`ranking-page-${page}`}
-                  className={cn('btn btn-sm cb-ranking-page-btn', {
-                    'btn-secondary': page === effectivePageNumber,
-                    'btn-outline-secondary': page !== effectivePageNumber,
-                  })}
-                  onClick={() => handlePageChange(page)}
-                  disabled={page === effectivePageNumber}
-                >
-                  {page}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoNext}
-              onClick={() => handlePageChange(effectivePageNumber + 1)}
-              aria-label={i18next.t('Next page')}
-            >
-              ›
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary cb-ranking-page-btn"
-              disabled={!canGoNext}
-              onClick={() => handlePageChange(totalPages)}
-              aria-label={i18next.t('Last page')}
-            >
-              »
-            </button>
-          </div>
+          <Flex align="center" mb="xs">
+            <Pagination
+              value={effectivePageNumber}
+              total={totalPages}
+              onChange={handlePageChange}
+              withEdges
+            />
+          </Flex>
         )}
-      </div>
-    </div>
+      </Flex>
+    </Paper>
   );
 }
 

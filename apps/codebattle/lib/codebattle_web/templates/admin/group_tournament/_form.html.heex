@@ -1,103 +1,103 @@
-<%= form_for(@changeset, @action, [class: "col-8 offset-2"], fn f -> %>
-  <div class="form-group">
-    <div><span class="text-white">Name</span></div>
+<%= form_for(@changeset, @action, [class: "cb-col-8 cb-offset-2"], fn f -> %>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Name</span></div>
     {text_input(f, :name,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       maxlength: "255",
       required: true
     )}
     {error_tag(f, :name)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Slug</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Slug</span></div>
     {text_input(f, :slug,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       maxlength: "255",
       required: true
     )}
     {error_tag(f, :slug)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Description</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Description</span></div>
     {textarea(f, :description,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       rows: 6,
       required: true
     )}
     {error_tag(f, :description)}
   </div>
 
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">
+      <span class="cb-text-white">
         Task Description (optional — shown as a separate tab next to Description)
       </span>
     </div>
     {textarea(f, :task_description,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       rows: 10
     )}
     {error_tag(f, :task_description)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Group Task</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Group Task</span></div>
     {select(f, :group_task_id, Enum.map(@group_tasks, &{&1.slug, &1.id}),
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       required: true,
       prompt: "Select group task"
     )}
     {error_tag(f, :group_task_id)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Starts At (UTC)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Starts At (UTC)</span></div>
     {datetime_local_input(f, :starts_at,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       required: true
     )}
     {error_tag(f, :starts_at)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Rounds Count</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Rounds Count</span></div>
     {number_input(f, :rounds_count,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1",
       required: true
     )}
     {error_tag(f, :rounds_count)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Round Timeout (sec)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Round Timeout (sec)</span></div>
     {number_input(f, :round_timeout_seconds,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1",
       required: true
     )}
     {error_tag(f, :round_timeout_seconds)}
   </div>
 
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">
+      <span class="cb-text-white">
         Seed Round Timeout (sec) — optional. Used only when has_seed_round is on
         and round 1 is the seed round; leave blank to reuse the round timeout above.
       </span>
     </div>
     {number_input(f, :seed_round_timeout_seconds,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1"
     )}
     {error_tag(f, :seed_round_timeout_seconds)}
   </div>
 
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">
+      <span class="cb-text-white">
         Local Folder (optional) — folder name under the player's Downloads
         directory. When set, the "Add Solution +" button opens that folder in
         VS Code (<code>vscode://file/…/Downloads/&lt;folder&gt;</code>) instead of
@@ -105,287 +105,287 @@
       </span>
     </div>
     {text_input(f, :local_folder,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       maxlength: "255"
     )}
     {error_tag(f, :local_folder)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Max Score</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Max Score</span></div>
     {number_input(f, :max_score,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1"
     )}
     {error_tag(f, :max_score)}
   </div>
 
-  <h4 class="text-white mt-4 mb-3">Format</h4>
+  <h4 class="cb-text-white cb-mt-4 cb-mb-3">Format</h4>
 
-  <div class="form-group">
-    <div><span class="text-white">Type</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Type</span></div>
     {select(f, :type, Enum.map(Codebattle.GroupTournament.types(), &{&1, &1}),
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :type)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Slice Size (players per slice group)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Slice Size (players per slice group)</span></div>
     {number_input(f, :slice_size,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1"
     )}
     {error_tag(f, :slice_size)}
   </div>
 
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">
+      <span class="cb-text-white">
         Slice Count (leave blank to derive from players / slice size)
       </span>
     </div>
     {number_input(f, :slice_count,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1"
     )}
     {error_tag(f, :slice_count)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Slice Strategy</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Slice Strategy</span></div>
     {select(
       f,
       :slice_strategy,
       Enum.map(Codebattle.GroupTournament.slice_strategies(), &{&1, &1}),
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :slice_strategy)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Scoring Strategy</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Scoring Strategy</span></div>
     {select(
       f,
       :scoring_strategy,
       Enum.map(Codebattle.GroupTournament.scoring_strategies(), &{&1, &1}),
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :scoring_strategy)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Movement Strategy</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Movement Strategy</span></div>
     {select(
       f,
       :movement_strategy,
       Enum.map(Codebattle.GroupTournament.movement_strategies(), &{&1, &1}),
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :movement_strategy)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Place Weight</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Place Weight</span></div>
     {number_input(f, :place_weight,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "1"
     )}
     {error_tag(f, :place_weight)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Break Between Rounds (sec)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Break Between Rounds (sec)</span></div>
     {number_input(f, :break_duration_seconds,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       min: "0"
     )}
     {error_tag(f, :break_duration_seconds)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :include_bots, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :include_bots)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :include_bots, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :include_bots)}>
       Include Bots
     </label>
     {error_tag(f, :include_bots)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :has_seed_round, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :has_seed_round)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :has_seed_round, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :has_seed_round)}>
       Has Seed Round (ranked only — round 1 is a solo-vs-bots seeding pass that
       computes <code>seed_score</code> and slots players into initial slices)
     </label>
     {error_tag(f, :has_seed_round)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :show_leaderboard, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :show_leaderboard)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :show_leaderboard, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :show_leaderboard)}>
       Show Leaderboard to Players (admins always see it; toggle off to reduce
       bandwidth pressure during large-room events)
     </label>
     {error_tag(f, :show_leaderboard)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :is_infinite, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :is_infinite)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :is_infinite, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :is_infinite)}>
       Infinite (hides the round timer and disables auto-advance — the creator
       ends each round manually; <code>round_timeout_seconds</code> is not required)
     </label>
     {error_tag(f, :is_infinite)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :visible_to_users, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :visible_to_users)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :visible_to_users, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :visible_to_users)}>
       Visible to Players (uncheck to make the tournament admin-only — invited
       players will get a 404 until you flip this back on)
     </label>
     {error_tag(f, :visible_to_users)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :run_on_external_platform, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :run_on_external_platform)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :run_on_external_platform, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :run_on_external_platform)}>
       Run on External Platform
     </label>
     {error_tag(f, :run_on_external_platform)}
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Template Repo ID</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Template Repo ID</span></div>
     {text_input(f, :template_id,
-      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      class: "cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white",
       maxlength: "255"
     )}
     {error_tag(f, :template_id)}
   </div>
 
-  <div class="form-group form-check mb-4">
-    {checkbox(f, :require_invitation, class: "form-check-input")}
-    <label class="form-check-label text-white" for={input_id(f, :require_invitation)}>
+  <div class="cb-form-group cb-form-check cb-mb-4">
+    {checkbox(f, :require_invitation, class: "cb-form-check-input")}
+    <label class="cb-form-check-label cb-text-white" for={input_id(f, :require_invitation)}>
       Require Invitation (gate start on external platform invite acceptance)
     </label>
     {error_tag(f, :require_invitation)}
   </div>
 
-  <h4 class="text-white mt-4 mb-3">Invitation Panel</h4>
-  <p class="text-muted small mb-3">
+  <h4 class="cb-text-white cb-mt-4 cb-mb-3">Invitation Panel</h4>
+  <p class="cb-text-muted cb-small cb-mb-3">
     Strings shown on the pre-tournament invitation page. Leave blank to use defaults.
   </p>
 
   <% meta = f.data.meta || %{} %>
 
-  <div class="form-group">
-    <div><span class="text-white">Task info label (left card)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Task info label (left card)</span></div>
     <input
       type="text"
       name="group_tournament[meta][task_info_label]"
       value={meta["task_info_label"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Task info icon URL (left card)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Task info icon URL (left card)</span></div>
     <input
       type="text"
       name="group_tournament[meta][task_info_icon_url]"
       value={meta["task_info_icon_url"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="2048"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Task duration label (right card)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Task duration label (right card)</span></div>
     <input
       type="text"
       name="group_tournament[meta][task_duration_label]"
       value={meta["task_duration_label"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Task duration icon URL (right card)</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Task duration icon URL (right card)</span></div>
     <input
       type="text"
       name="group_tournament[meta][task_duration_icon_url]"
       value={meta["task_duration_icon_url"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="2048"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Steps title</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Steps title</span></div>
     <input
       type="text"
       name="group_tournament[meta][steps_title]"
       value={meta["steps_title"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Step 1 label</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Step 1 label</span></div>
     <input
       type="text"
       name="group_tournament[meta][step1_label]"
       value={meta["step1_label"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Step 1 button label</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Step 1 button label</span></div>
     <input
       type="text"
       name="group_tournament[meta][step1_button_label]"
       value={meta["step1_button_label"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Step 2 label</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Step 2 label</span></div>
     <input
       type="text"
       name="group_tournament[meta][step2_label]"
       value={meta["step2_label"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="form-group">
-    <div><span class="text-white">Step 2 button label</span></div>
+  <div class="cb-form-group">
+    <div><span class="cb-text-white">Step 2 button label</span></div>
     <input
       type="text"
       name="group_tournament[meta][step2_button_label]"
       value={meta["step2_button_label"] || ""}
-      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      class="cb-form-control cb-form-control-lg cb-bg-panel cb-border-color cb-text-white"
       maxlength="255"
     />
   </div>
 
-  <div class="d-flex">
+  <div class="cb-d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",
-      class: "btn btn-success text-white mb-2 cb-rounded"
+      class: "cb-btn cb-btn-success cb-text-white cb-mb-2 cb-rounded"
     )}
     {link("Back",
       to: Routes.admin_group_tournament_path(@conn, :index),
-      class: "btn btn-link cb-text ml-auto"
+      class: "cb-btn cb-btn-link cb-text cb-ml-auto"
     )}
   </div>
 <% end) %>

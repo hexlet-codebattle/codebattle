@@ -17,9 +17,15 @@ vi.mock('../widgets/middlewares/Users', () => ({
 
 import { SeasonNearbyUsers } from '../widgets/pages/lobby/SeasonProfilePanel';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 describe('SeasonNearbyUsers', () => {
   test('aborts the pending request with its AbortController when unmounted', () => {
-    const { unmount } = render(<SeasonNearbyUsers user={{ id: 1, points: 10 }} nearbyUsers={[]} />);
+    const { unmount } = render(
+      <MantineTestProvider>
+        <SeasonNearbyUsers user={{ id: 1, points: 10 }} nearbyUsers={[]} />
+      </MantineTestProvider>,
+    );
     const controller = loadNearbyUsers.mock.calls[0][0] as AbortController;
 
     expect(controller.signal.aborted).toBe(false);

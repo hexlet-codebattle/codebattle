@@ -2,6 +2,7 @@ import React from 'react';
 
 import { faCircle, faRobot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Group, Text } from '@mantine/core';
 import cn from 'classnames';
 
 import LanguageIcon from './LanguageIcon';
@@ -16,7 +17,9 @@ export interface UserNameUser {
 
 export interface UserNameProps {
   className?: string;
+  color?: string;
   displayName?: string;
+  fontWeight?: number;
   hideLink?: boolean;
   hideOnlineIndicator?: boolean;
   hovered?: boolean;
@@ -30,6 +33,8 @@ export interface UserNameProps {
 function UserName({
   className = '',
   linkClassName = '',
+  color,
+  fontWeight,
   user,
   lang = user.lang,
   truncate = false,
@@ -39,40 +44,54 @@ function UserName({
   hideLink = false,
   displayName,
 }: UserNameProps) {
-  const commonClassName = 'd-flex align-items-center';
-  const onlineIndicatorClassName = cn('mr-1', {
+  const onlineIndicatorClassName = cn({
     'cb-user-online': isOnline,
     'cb-user-dark-offline': !isOnline,
   });
-  const userClassName = cn('text-truncate', {
-    'x-username-truncated': truncate,
-  });
-  const userNameClassName = cn(linkClassName, {
-    'text-primary': hovered,
-  });
-  const botImgClassName = cn('mr-1 cb-text', {});
 
   const shownName = displayName || user.name;
 
+  const nameContent = (
+    <Text
+      component="span"
+      className={linkClassName}
+      c={hovered ? 'blue' : (color ?? undefined)}
+      fw={fontWeight}
+    >
+      {shownName}
+    </Text>
+  );
+
   return (
-    <div className={cn(commonClassName, className)}>
+    <Group gap="xs" wrap="nowrap" className={className}>
       {!hideOnlineIndicator && !user.isBot && (
         <FontAwesomeIcon icon={faCircle} className={onlineIndicatorClassName} />
       )}
-      {!user.isBot && <LanguageIcon className="mr-1" lang={lang} />}
+      {!user.isBot && <LanguageIcon lang={lang} />}
       {user.isBot && (
-        <FontAwesomeIcon className={botImgClassName} icon={faRobot} transform="up-1" />
+        <FontAwesomeIcon icon={faRobot} transform="up-1" color="var(--mantine-color-cbText-6)" />
       )}
       {hideLink ? (
-        <span className={userClassName} title={shownName}>
-          <span className={userNameClassName}>{shownName}</span>
-        </span>
+        <Text
+          component="span"
+          truncate
+          title={shownName}
+          className={cn({ 'x-username-truncated': truncate })}
+        >
+          {nameContent}
+        </Text>
       ) : (
-        <a href={`/users/${user.id}`} className={userClassName} title={shownName}>
-          <span className={userNameClassName}>{shownName}</span>
-        </a>
+        <Text
+          component="a"
+          href={`/users/${user.id}`}
+          truncate
+          title={shownName}
+          className={cn({ 'x-username-truncated': truncate })}
+        >
+          {nameContent}
+        </Text>
       )}
-    </div>
+    </Group>
   );
 }
 

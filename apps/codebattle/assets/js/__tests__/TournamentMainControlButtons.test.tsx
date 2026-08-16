@@ -6,6 +6,8 @@ import { Provider } from 'react-redux';
 
 import TournamentMainControlButtons from '../widgets/pages/tournament/TournamentMainControlButtons';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',
 }));
@@ -45,9 +47,11 @@ function renderComponent(props = {}) {
   };
 
   return render(
-    <Provider store={store}>
-      <TournamentMainControlButtons {...defaultProps} {...props} />
-    </Provider>,
+    <MantineTestProvider>
+      <Provider store={store}>
+        <TournamentMainControlButtons {...defaultProps} {...props} />
+      </Provider>
+    </MantineTestProvider>,
   );
 }
 

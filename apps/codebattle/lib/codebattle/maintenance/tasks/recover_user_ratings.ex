@@ -62,7 +62,9 @@ defmodule Codebattle.Maintenance.Tasks.RecoverUserRatings do
 
     with %{baseline_rating: baseline_rating, history_from_drop: history_from_drop} = drop <-
            find_suspicious_drop(history, threshold) do
-      total_rating_diff = Enum.sum_by(history_from_drop, & &1.rating_diff)
+      total_rating_diff =
+        Enum.reduce(history_from_drop, 0, fn item, acc -> acc + item.rating_diff end)
+
       recovered_rating = baseline_rating + total_rating_diff
 
       if recovered_rating != current_rating do

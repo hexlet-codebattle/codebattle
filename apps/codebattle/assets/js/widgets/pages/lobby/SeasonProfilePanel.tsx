@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import cn from 'classnames';
+import { Anchor, Box, Button, Flex, Skeleton, Text, Title } from '@mantine/core';
 import { getPageProp } from '@/inertia/pageProps';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -54,52 +54,76 @@ function OpponentInfo({ id }: OpponentInfoProps) {
   const user = useSelector(userByIdSelector(id as number)) as SeasonUser | undefined;
 
   return (
-    <div className="d-flex align-items-center py-2 px-2 my-1 mx-1 stat-line cb-nearby-row">
-      <div
-        className="d-flex align-items-center flex-grow-1 pr-2 cb-nearby-user"
-        style={{ minWidth: 0 }}
-      >
+    <Flex align="center" py="sm" px="sm" my="xs" mx="xs" className="stat-line cb-nearby-row">
+      <Flex align="center" pr="sm" className="cb-nearby-user" style={{ minWidth: 0, flexGrow: 1 }}>
         <UserLogo user={user} size="25px" />
-        <div className="ml-2 cb-nearby-user-name">
+        <Box ml="sm" className="cb-nearby-user-name">
           {user ? (
             <UserInfo
               user={user as unknown as UserNameUser}
-              className="text-white text-truncate"
-              linkClassName="text-white"
+              color="#ffffff"
               truncate
               hideOnlineIndicator
               hideRank
             />
           ) : (
-            <span className="cb-text-skeleton w-100 d-block">&nbsp;</span>
+            <Skeleton h="1.2rem" display="block" w="100%" />
           )}
-        </div>
-      </div>
-      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
-        <a href="/hall_of_fame" className="stat-item py-1 w-100">
-          <span
-            className={cn('stat-value d-block cb-text-danger', {
-              'd-inline cb-text-skeleton w-25 mx-auto': !user,
-            })}
-          >
-            #{user ? user.rank : ''}
-          </span>
-          <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
-        </a>
-      </div>
-      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
-        <div className="stat-item py-1 w-100">
-          <span
-            className={cn('stat-value d-block cb-text-danger', {
-              'd-inline cb-text-skeleton w-25 mx-auto': !user,
-            })}
-          >
-            {user ? user.points : ''}
-          </span>
-          <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Flex>
+      <Flex
+        direction="column"
+        ta="center"
+        py="xs"
+        px="xs"
+        style={{ flexShrink: 0 }}
+        className="cb-nearby-metric"
+      >
+        <Anchor href="/hall_of_fame" className="stat-item" py={4} w="100%">
+          {user ? (
+            <Text
+              component="span"
+              className="stat-value"
+              display="block"
+              style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+            >
+              #{user.rank}
+            </Text>
+          ) : (
+            <Skeleton h="1.2rem" display="block" w="25%" mx="auto" />
+          )}
+          <Text component="span" className="stat-label" tt="uppercase">
+            {i18n.t('Place')}
+          </Text>
+        </Anchor>
+      </Flex>
+      <Flex
+        direction="column"
+        ta="center"
+        py="xs"
+        px="xs"
+        style={{ flexShrink: 0 }}
+        className="cb-nearby-metric"
+      >
+        <Box className="stat-item" py={4} w="100%">
+          {user ? (
+            <Text
+              component="span"
+              className="stat-value"
+              display="block"
+              style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+            >
+              {user.points}
+            </Text>
+          ) : (
+            <Skeleton h="1.2rem" display="block" w="25%" mx="auto" />
+          )}
+          <Text component="span" className="stat-label" tt="uppercase">
+            {i18n.t('Points')}
+          </Text>
+        </Box>
+      </Flex>
+    </Flex>
   );
 }
 
@@ -142,14 +166,27 @@ export function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps)
   }
 
   return (
-    <div className="cb-bg-panel cb-rounded mt-2 cb-nearby-card">
-      <div className="d-flex flex-column">
-        <div className="cb-bg-highlight-panel text-center cb-rounded-top px-2">
-          <span className="text-white text-uppercase py-2 d-block">
+    <Box
+      mt="sm"
+      className="cb-nearby-card"
+      bg="cbPanel"
+      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+    >
+      <Flex direction="column">
+        <Box
+          ta="center"
+          px="sm"
+          bg="cbHighlight"
+          style={{
+            borderTopLeftRadius: 'var(--mantine-radius-md)',
+            borderTopRightRadius: 'var(--mantine-radius-md)',
+          }}
+        >
+          <Text component="span" c="white" tt="uppercase" py="sm" display="block">
             {i18n.t('Closest Opponents')}
-          </span>
-        </div>
-        <div className="px-1 pb-1">
+          </Text>
+        </Box>
+        <Box px="xs" pb="xs">
           {loading ? (
             <>
               <OpponentInfo />
@@ -158,9 +195,9 @@ export function SeasonNearbyUsers({ user, nearbyUsers }: SeasonNearbyUsersProps)
           ) : (
             nearbyUsers.map((id) => <OpponentInfo key={id} id={id} />)
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Flex>
+    </Box>
   );
 }
 
@@ -175,9 +212,8 @@ function UserLogo({ user, size = '70px' }: UserLogoProps) {
 
   return (
     <img
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, borderRadius: '50%' }}
       alt={i18n.t('Avatar Logo')}
-      className="rounded-circle"
       src={avatarUrl}
     />
   );
@@ -201,20 +237,38 @@ function SeasonProfilePanel({
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <div className="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2 cb-season-layout">
-      <div className="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
-        <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center cb-season-main-card">
+    <Flex
+      direction={{ base: 'column-reverse', lg: 'row' }}
+      my={{ base: 0, lg: 'sm' }}
+      className="cb-season-layout"
+    >
+      <Box
+        w={{ base: '100%', lg: '66.6667%' }}
+        p={0}
+        pr={{ base: 0, lg: 'sm' }}
+        my={{ base: 'sm', lg: 0 }}
+      >
+        <Flex
+          direction="column"
+          p="md"
+          h="100%"
+          w="100%"
+          ta="center"
+          className="cb-season-main-card"
+          bg="cbPanel"
+          style={{ borderRadius: 'var(--mantine-radius-md)' }}
+        >
           <CodebattleLeagueDescription />
           {seasonTournaments?.length || liveTournaments?.length ? (
             <div>
               {liveTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center align-items-center pt-2 cb-season-section-title">
-                    <span className="text-white text-uppercase h4">
+                  <Flex justify="center" align="center" pt="sm" className="cb-season-section-title">
+                    <Title order={4} c="white" tt="uppercase">
                       {i18n.t('Live Tournaments')}
-                    </span>
-                  </div>
-                  <div className="d-flex flex-wrap cb-tournament-grid">
+                    </Title>
+                  </Flex>
+                  <Flex wrap="wrap" className="cb-tournament-grid">
                     {liveTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
@@ -222,17 +276,17 @@ function SeasonProfilePanel({
                         tournament={tournament}
                       />
                     ))}
-                  </div>
+                  </Flex>
                 </>
               )}
               {seasonTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center pt-2 cb-season-section-title">
-                    <span className="text-white text-uppercase h4">
+                  <Flex justify="center" pt="sm" className="cb-season-section-title">
+                    <Title order={4} c="white" tt="uppercase">
                       {i18n.t('Upcoming Tournaments')}
-                    </span>
-                  </div>
-                  <div className="d-flex flex-wrap cb-tournament-grid">
+                    </Title>
+                  </Flex>
+                  <Flex wrap="wrap" className="cb-tournament-grid">
                     {seasonTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
@@ -240,90 +294,155 @@ function SeasonProfilePanel({
                         tournament={tournament}
                       />
                     ))}
-                  </div>
+                  </Flex>
                 </>
               )}
             </div>
           ) : (
-            <div className="pt-2 mt-2">{i18n.t('Competition not started yet')}</div>
+            <Box pt="sm" mt="sm">
+              {i18n.t('Competition not started yet')}
+            </Box>
           )}
-          <div className="d-flex flex-column flex-lg-row w-100 pt-2 mt-2 cb-season-actions">
-            <a
+          <Flex
+            direction={{ base: 'column', lg: 'row' }}
+            w="100%"
+            pt="sm"
+            mt="sm"
+            className="cb-season-actions"
+          >
+            <Button
+              component="a"
               href="/schedule#contest"
-              type="button"
-              className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+              color="cbSecondary"
+              fullWidth
+              mx={{ base: 0, md: 'sm' }}
+              style={{ whiteSpace: 'nowrap' }}
             >
               {i18n.t('Contests History')}
-            </a>
-            <a
+            </Button>
+            <Button
+              component="a"
               href="/schedule#my"
-              type="button"
-              className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+              color="cbSecondary"
+              fullWidth
+              mx={{ base: 0, md: 'sm' }}
+              style={{ whiteSpace: 'nowrap' }}
             >
               {i18n.t('My Tournaments')}
-            </a>
-            <a
+            </Button>
+            <Button
+              component="a"
               href="/tournaments"
-              type="button"
-              className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+              color="cbSecondary"
+              fullWidth
+              mx={{ base: 0, md: 'sm' }}
+              style={{ whiteSpace: 'nowrap' }}
             >
               {i18n.t('Create a Tournament')}
-            </a>
-          </div>
-        </div>
-      </div>
-      <div className="col-12 col-lg-4 p-0 pl-lg-2 d-flex flex-column my-2 my-lg-0">
-        <div className="cb-bg-panel cb-rounded cb-season-profile-card">
-          <div className="text-center py-2">
+            </Button>
+          </Flex>
+        </Flex>
+      </Box>
+      <Flex
+        direction="column"
+        w={{ base: '100%', lg: '33.3333%' }}
+        p={0}
+        pl={{ base: 0, lg: 'sm' }}
+        my={{ base: 'sm', lg: 0 }}
+      >
+        <Box
+          className="cb-season-profile-card"
+          bg="cbPanel"
+          style={{ borderRadius: 'var(--mantine-radius-md)' }}
+        >
+          <Box ta="center" py="sm">
             <UserLogo user={user} />
-            <span className="clan-tag mt-2">{user.name}</span>
-            <span className="h1 clan-title m-0 text-white text-uppercase">
+            <Text component="span" mt="sm" className="clan-tag">
+              {user.name}
+            </Text>
+            <Title order={1} c="white" tt="uppercase" className="clan-title">
               {i18n.t('Clan')}
               {': '}
               {user.clanId ? (
                 user.clan
               ) : (
-                <a href="/settings" className="text-lowercase text-primary">
-                  <small>{i18n.t('add clan')}</small>
-                </a>
+                <Anchor href="/settings" tt="lowercase">
+                  <Text component="span" size="xs">
+                    {i18n.t('add clan')}
+                  </Text>
+                </Anchor>
               )}
-            </span>
-          </div>
+            </Title>
+          </Box>
 
-          <div className="cb-bg-highlight-panel d-flex py-2 px-1 cb-season-stats">
-            <div className="stat-item py-1 w-100">
-              <span className="stat-value d-block cb-text-danger">{user.rating}</span>
-              <span className="stat-label text-uppercase">{i18n.t('(Elo Rating)')}</span>
-            </div>
-            <a href="/hall_of_fame" className="stat-item py-1 w-100">
+          <Flex py="sm" px="xs" bg="cbHighlight" className="cb-season-stats">
+            <Box className="stat-item" py={4} w="100%">
+              <Text
+                component="span"
+                className="stat-value"
+                display="block"
+                style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+              >
+                {user.rating}
+              </Text>
+              <Text component="span" className="stat-label" tt="uppercase">
+                {i18n.t('(Elo Rating)')}
+              </Text>
+            </Box>
+            <Anchor href="/hall_of_fame" className="stat-item" py={4} w="100%">
               {user.points ? (
-                <span className="stat-value d-block cb-text-success">#{user.rank}</span>
+                <Text
+                  component="span"
+                  className="stat-value"
+                  display="block"
+                  style={{ color: 'var(--mantine-color-cbSuccess-6)' }}
+                >
+                  #{user.rank}
+                </Text>
               ) : (
-                <span className="stat-value d-block cb-text-danger">#0</span>
+                <Skeleton h="1.2rem" display="block" w="25%" mx="auto" />
               )}
-              <span className="stat-label text-uppercase">{i18n.t('Place')}</span>
-            </a>
-            <div className="stat-item py-1 w-100">
-              <span className="stat-value d-block cb-text-danger">{user.points || 0}</span>
-              <span className="stat-label text-uppercase">{i18n.t('Points')}</span>
-            </div>
-          </div>
+              <Text component="span" className="stat-label" tt="uppercase">
+                {i18n.t('Place')}
+              </Text>
+            </Anchor>
+            <Box className="stat-item" py={4} w="100%">
+              <Text
+                component="span"
+                className="stat-value"
+                display="block"
+                style={{ color: 'var(--mantine-color-cbDanger-6)' }}
+              >
+                {user.points || 0}
+              </Text>
+              <Text component="span" className="stat-label" tt="uppercase">
+                {i18n.t('Points')}
+              </Text>
+            </Box>
+          </Flex>
 
           {contestDatesText && (
-            <div className="d-flex justify-content-center cb-font-size-small px-3 py-2 text-white">
-              <span className="d-block">{contestDatesText}</span>
-            </div>
+            <Flex justify="center" px="md" py="sm" c="white" className="cb-font-size-small">
+              <Text component="span" display="block">
+                {contestDatesText}
+              </Text>
+            </Flex>
           )}
-        </div>
+        </Box>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
-        <div className="text-center mt-2 cb-hof-link">
-          <a href="/hall_of_fame" className="text-uppercase stat-label cb-rounded">
+        <Box ta="center" mt="sm" className="cb-hof-link">
+          <Anchor
+            href="/hall_of_fame"
+            tt="uppercase"
+            className="stat-label"
+            style={{ borderRadius: 'var(--mantine-radius-md)' }}
+          >
             {i18n.t('View Hall of Fame')}
-          </a>
-        </div>
+          </Anchor>
+        </Box>
         {controls}
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 }
 

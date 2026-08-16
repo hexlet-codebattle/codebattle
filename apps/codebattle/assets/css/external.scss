@@ -29,9 +29,9 @@ $gray-dark: #3e3e3e;
 $orange: #ff9500;
 $dark-red: #b00020;
 
-/* Bootstrap override must come *after* variables*/
+/* Custom styles must come *after* variables*/
 
-@import 'bootstrap/scss/bootstrap';
+@import 'heex-utilities';
 
 /* --------------------------------------------------*/
 /* CUSTOM STYLES*/
@@ -681,6 +681,12 @@ $dark-red: #b00020;
   font-size: 18px;
   color: white;
   padding-right: 25px;
+}
+
+.cb-ticker-line-head,
+.cb-ticker-line-tail {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .cb-bg-panel {

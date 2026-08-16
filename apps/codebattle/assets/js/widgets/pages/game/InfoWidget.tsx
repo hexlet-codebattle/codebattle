@@ -1,5 +1,6 @@
-import React, { useContext, memo } from 'react';
+import React, { useContext, memo, useState } from 'react';
 
+import { Box, Flex, Tabs } from '@mantine/core';
 import i18next from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -85,75 +86,97 @@ interface CssBattleInfoWidgetProps {
 
 function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
   const idOutput = 'css-battle-output';
+  const [activeTab, setActiveTab] = useState<string | null>('task');
 
   return (
     <>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
-        <div className="d-flex shadow-sm cb-bg-panel cb-text cb-rounded flex-column h-100">
-          <nav>
-            <div
-              className="nav nav-tabs text-uppercase font-weight-bold text-center"
-              id="nav-tab"
-              role="tablist"
-            >
-              <a
-                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
-                id="task-tab"
-                data-toggle="tab"
-                href="#task"
-                role="tab"
-                aria-controls="task"
-                aria-selected="true"
-              >
-                {i18next.t('Task')}
-              </a>
-              <a
-                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
-                id={`${idOutput}-tab`}
-                data-toggle="tab"
-                href={`#${idOutput}`}
-                role="tab"
-                aria-controls={`${idOutput}`}
-                aria-selected="false"
-              >
-                {i18next.t('Output')}
-              </a>
-              <div className="rounded-0 text-center border-left col-6 px-1 py-2">
-                <TimerContainer />
-              </div>
-            </div>
-          </nav>
-          <div
-            className="tab-content flex-grow-1 cb-bg-panel cb-text rounded-bottom overflow-auto "
-            id="nav-tabContent"
+      <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
+        <Flex
+          direction="column"
+          h="100%"
+          bg="cbPanel"
+          c="cbText"
+          style={{
+            boxShadow: 'var(--mantine-shadow-sm)',
+            borderRadius: 'var(--mantine-radius-md)',
+          }}
+        >
+          <Flex
+            align="stretch"
+            style={{
+              borderBottom: '1px solid var(--mantine-color-default-border)',
+            }}
           >
-            <div
-              className="tab-pane fade show active h-100"
-              id="task"
-              role="tabpanel"
-              aria-labelledby="task-tab"
+            <Tabs
+              value={activeTab}
+              onChange={setActiveTab}
+              variant="default"
+              style={{ flex: '0 0 50%' }}
             >
-              <CssBattleInfoPanel />
-            </div>
-            <div
-              className="tab-pane h-100 user-select-none"
-              id={idOutput}
-              role="tabpanel"
-              aria-labelledby={`${idOutput}-tab`}
+              <Tabs.List id="nav-tab" tt="uppercase" fw={700} ta="center">
+                <Tabs.Tab
+                  value="task"
+                  id="task-tab"
+                  aria-controls="task"
+                  style={{ borderRadius: 0 }}
+                  px="xs"
+                  py="sm"
+                >
+                  {i18next.t('Task')}
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value={idOutput}
+                  id={`${idOutput}-tab`}
+                  aria-controls={idOutput}
+                  style={{ borderRadius: 0 }}
+                  px="xs"
+                  py="sm"
+                >
+                  {i18next.t('Output')}
+                </Tabs.Tab>
+              </Tabs.List>
+            </Tabs>
+            <Box
+              flex="0 0 50%"
+              ta="center"
+              px="xs"
+              py="sm"
+              style={{
+                borderLeft: '1px solid var(--mantine-color-default-border)',
+              }}
             >
-              {/* {canShowOutputPanel && ( */}
-              {/*   <> */}
-              {/*     <OutputTab sideOutput={outputData} side="left" /> */}
-              {/*     <Output sideOutput={outputData} /> */}
-              {/*   </> */}
-              {/* )} */}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
+              <TimerContainer />
+            </Box>
+          </Flex>
+
+          <Box flex={1} bg="cbPanel" c="cbText" style={{ overflowY: 'auto' }}>
+            {activeTab === 'task' && (
+              <Box id="task" role="tabpanel" aria-labelledby="task-tab" h="100%">
+                <CssBattleInfoPanel />
+              </Box>
+            )}
+            {activeTab === idOutput && (
+              <Box
+                id={idOutput}
+                role="tabpanel"
+                aria-labelledby={`${idOutput}-tab`}
+                h="100%"
+                style={{ userSelect: 'none' }}
+              >
+                {/* {canShowOutputPanel && ( */}
+                {/*   <> */}
+                {/*     <OutputTab sideOutput={outputData} side="left" /> */}
+                {/*     <Output sideOutput={outputData} /> */}
+                {/*   </> */}
+                {/* )} */}
+              </Box>
+            )}
+          </Box>
+        </Flex>
+      </Box>
+      <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0} mih={300} h={{ base: 'auto', xs: 300 }}>
         <ChatWidget />
-      </div>
+      </Box>
     </>
   );
 }

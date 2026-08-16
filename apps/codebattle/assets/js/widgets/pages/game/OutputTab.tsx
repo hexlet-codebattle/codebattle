@@ -1,12 +1,19 @@
 import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Badge, Text } from '@mantine/core';
 
 import i18n from '../../../i18n';
 import color from '../../config/statusColor';
 
 import { type OutputData } from './Output';
+
+const STATUS_BADGE_COLORS: Record<string, string> = {
+  success: 'green',
+  danger: 'red',
+  info: 'blue',
+  secondary: 'gray',
+};
 
 const getMessage = (status?: string) => {
   switch (status) {
@@ -44,27 +51,39 @@ function OutputTab({ sideOutput, large = false }: OutputTabProps) {
   );
 
   if (large) {
-    const panelClassName = cn({
-      'text-danger': status === 'error',
-      'text-primary': status === 'failure',
-      'text-success': status === 'ok',
-    });
+    const textColor =
+      status === 'error'
+        ? 'red'
+        : status === 'failure'
+          ? 'blue'
+          : status === 'ok'
+            ? 'green'
+            : undefined;
 
     return status === 'ok' ? (
-      <FontAwesomeIcon className="h2 text-warning" icon="trophy" />
+      <FontAwesomeIcon
+        icon="trophy"
+        style={{ fontSize: '1.5rem', color: 'var(--mantine-color-yellow-4)' }}
+      />
     ) : (
-      <div title={i18n.t('Asserts status')} className={panelClassName}>
+      <Text title={i18n.t('Asserts status')} c={textColor} component="div">
         <h2>{status === 'error' ? 'Error' : `${percent}%`}</h2>
-      </div>
+      </Text>
     );
   }
+
+  const badgeColor = STATUS_BADGE_COLORS[statusColor] ?? 'gray';
 
   return (
     <>
       {isShowMessage && (
-        <span className="font-weight-bold text-white small mr-3">{assertsStatusMessage}</span>
+        <Text span fw={700} c="white" size="sm" mr="md">
+          {assertsStatusMessage}
+        </Text>
       )}
-      <span className={`p-2 text-white bg-${statusColor}`}>{message}</span>
+      <Badge color={badgeColor} radius={0} py="xs" px="sm" size="lg">
+        {message}
+      </Badge>
     </>
   );
 }

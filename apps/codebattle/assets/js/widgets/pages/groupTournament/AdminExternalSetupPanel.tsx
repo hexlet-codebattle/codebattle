@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Box, Text } from '@mantine/core';
 import { type ExternalSetup } from './types';
 
 interface AdminExternalSetupPanelProps {
@@ -8,21 +8,21 @@ interface AdminExternalSetupPanelProps {
 
 function AdminExternalSetupPanel({ externalSetup }: AdminExternalSetupPanelProps) {
   return (
-    <div className="cb-rounded p-3 w-100">
-      <div className="small mt-2">
-        <div className="mb-1">
+    <Box p="md" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
+      <Text size="sm" mt="xs">
+        <Box mb="xs">
           <strong>Repo:</strong> {externalSetup.repoState}
-        </div>
-        <div className="mb-1">
+        </Box>
+        <Box mb="xs">
           <strong>Role:</strong> {externalSetup.roleState}
-        </div>
-        <div className="mb-1">
+        </Box>
+        <Box mb="xs">
           <strong>Secret:</strong> {externalSetup.secretState}
-        </div>
-        <div className="mb-1">
+        </Box>
+        <Box mb="xs">
           <strong>Repo slug:</strong> {externalSetup.repoSlug || 'n/a'}
-        </div>
-        <div className="mb-1">
+        </Box>
+        <Box mb="xs">
           <strong>Repo URL:</strong>{' '}
           {externalSetup.repoUrl ? (
             <a href={externalSetup.repoUrl} target="_blank" rel="noreferrer">
@@ -31,14 +31,14 @@ function AdminExternalSetupPanel({ externalSetup }: AdminExternalSetupPanelProps
           ) : (
             'n/a'
           )}
-        </div>
+        </Box>
         {externalSetup.lastError && Object.keys(externalSetup.lastError).length > 0 && (
-          <pre className="mt-2 mb-0 text-danger" style={{ whiteSpace: 'pre-wrap' }}>
+          <Text component="pre" mt="xs" mb={0} c="#dc3545" style={{ whiteSpace: 'pre-wrap' }}>
             {JSON.stringify(externalSetup.lastError, null, 2)}
-          </pre>
+          </Text>
         )}
-      </div>
-    </div>
+      </Text>
+    </Box>
   );
 }
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
 
+import { Text } from '@mantine/core';
+
 import dayjs from '../../i18n/dayjs';
 
 interface TournamentTimerProps {
@@ -36,12 +38,12 @@ function TournamentTimer({ date = new Date(), label, children }: TournamentTimer
   }
 
   return (
-    <span className="d-inline-flex">
+    <Text component="span" display="inline-flex">
       {label}{' '}
-      <span className="text-monospace text-warning ml-2">
+      <Text component="span" ff="monospace" c="yellow" ml="sm">
         {dayjs.duration(duration).format('HH:mm:ss')}
-      </span>
-    </span>
+      </Text>
+    </Text>
   );
 }
 

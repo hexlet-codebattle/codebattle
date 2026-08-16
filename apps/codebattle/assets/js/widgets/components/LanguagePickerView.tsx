@@ -2,10 +2,12 @@ import React, { useMemo, type ReactNode } from 'react';
 
 import capitalize from 'lodash/capitalize';
 import { useSelector } from 'react-redux';
-import Select, { type StylesConfig } from 'react-select';
+
+import { Box, Button, Flex, Text } from '@mantine/core';
 
 import * as selectors from '../selectors';
 
+import CbSelect from './CbSelect';
 import LanguageIcon from './LanguageIcon';
 
 interface Language {
@@ -20,75 +22,25 @@ export interface LangOption {
   slug: string;
 }
 
-export const customStyle: StylesConfig<LangOption, false> = {
-  control: (provided) => ({
-    ...provided,
-    color: 'white',
-    height: '33px',
-    minHeight: '31px',
-    minWidth: '210px',
-    borderRadius: '0.3rem',
-    backgroundColor: '#2a2a35',
-    borderColor: '#3a3f50',
-
-    ':hover': {
-      borderColor: '#4c4c5a',
-    },
-  }),
-  singleValue: (provider) => ({
-    ...provider,
-    color: 'white',
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    height: '29px',
-  }),
-  clearIndicator: (provided) => ({
-    ...provided,
-    padding: '5px',
-  }),
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: 'white',
-    padding: '5px',
-  }),
-  input: (provided) => ({
-    ...provided,
-    color: 'white',
-    height: '21px',
-  }),
-  menu: (provided) => ({
-    ...provided,
-    color: 'white',
-    backgroundColor: 'rgba(0, 0, 0, .3)',
-    backdropFilter: 'blur(16px)',
-  }),
-  option: (provided) => ({
-    ...provided,
-    color: 'white',
-    backgroundColor: 'transparent',
-
-    ':hover': {
-      backgroundColor: '#3a3f50',
-    },
-    ':focus': {
-      backgroundColor: '#3a3f50',
-    },
-    ':active': {
-      backgroundColor: '#3a3f50',
-    },
-  }),
-};
-
 function LangTitle({ slug, name, version }: Language) {
   return (
-    <div translate="no" className="d-inline-flex align-items-center text-nowrap">
-      <LanguageIcon lang={slug} className="ml-1" />
-      <span className="text-white mx-1">{capitalize(name)}</span>
-      <span className="text-white">{version}</span>
-    </div>
+    <Flex
+      translate="no"
+      display="inline-flex"
+      align="center"
+      style={{ whiteSpace: 'nowrap' }}
+      gap="xs"
+    >
+      <Box ml="xs">
+        <LanguageIcon lang={slug} />
+      </Box>
+      <Text c="white">{capitalize(name)}</Text>
+      <Text c="white">{version}</Text>
+    </Flex>
   );
 }
+
+const renderLangTitle = (lang: Language) => <LangTitle {...lang} />;
 
 interface LanguagePickerViewProps {
   changeLang: (option: LangOption | null) => void;
@@ -113,35 +65,25 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }: Languag
     () => langs.filter((lang) => lang.slug !== currentLangSlug),
     [langs, currentLangSlug],
   );
-  const options = useMemo(
-    () =>
-      otherLangs.map((lang) => ({
-        label: <LangTitle {...lang} />,
-        value: lang.name,
-        slug: lang.slug,
-      })),
-    [otherLangs],
-  );
-  const defaultLang = useMemo(
-    () => ({ label: <LangTitle {...currentLang} />, slug: currentLang.slug }),
-    [currentLang],
-  );
 
-  if (isDisabled || options.length < 2) {
+  if (isDisabled || otherLangs.length < 2) {
     return (
-      <button className="btn btn-sm p-2" type="button" disabled>
+      <Button size="sm" p="sm" disabled variant="default">
         <LangTitle {...currentLang} />
-      </button>
+      </Button>
     );
   }
 
   return (
-    <Select
-      styles={customStyle}
-      className="guide-LanguagePicker"
-      defaultValue={defaultLang}
-      onChange={changeLang}
-      options={options}
+    <CbSelect<Language>
+      value={currentLang}
+      onChange={(lang) => lang && changeLang({ slug: lang.slug, label: renderLangTitle(lang) })}
+      options={otherLangs}
+      getOptionValue={(lang) => lang.slug}
+      getOptionLabel={renderLangTitle}
+      searchable={false}
+      w={210}
+      classNames={{ target: 'guide-LanguagePicker' }}
     />
   );
 }

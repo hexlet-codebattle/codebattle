@@ -3,6 +3,8 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import shuffle from 'lodash/shuffle';
 
+import { Box, Button, Flex, NativeSelect, NumberInput, Text } from '@mantine/core';
+
 import i18n from '../../../i18n';
 import MatchStates from '../../config/matchStates';
 import { createCustomRound } from '../../middlewares/TournamentAdmin';
@@ -123,180 +125,214 @@ function TournamentGameCreatePanel({
   }, [players, selectedPlayer]);
 
   return (
-    <div className="d-flex justify-content-between w-100 flex-row border cb-rounded cb-border-color p-3 mb-2">
+    <Flex
+      justify="space-between"
+      w="100%"
+      p="md"
+      mb="xs"
+      style={{ border: '1px solid #4c4c5a', borderRadius: 'var(--mantine-radius-md)' }}
+    >
       {!selectedPlayer && (
         <>
-          <img
+          <Box
+            component="img"
             alt={i18n.t('Waiting opponent avatar')}
             src={tournamentEmptyPlayerUrl}
-            className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray cb-rounded p-3"
+            display={{ base: 'none', md: 'block' }}
+            className="cb-tournament-profile-avatar bg-gray"
+            style={{ padding: '1rem', borderRadius: 'var(--mantine-radius-md)' }}
           />
-          <div className="d-flex justify-content-between align-items-center flex-column">
-            <select
-              className="form-control custom-select cb-rounded m-1"
-              onChange={(e) => setSelectedPlayer(players[Number(e.target.value)])}
-            >
-              <option disabled selected value="">
-                {i18n.t('Choose player')}
-              </option>
-              {Object.values(players)
-                .filter((player) => !player.isBot)
-                .map((player) => (
-                  <option key={player.id} value={player.id}>
-                    {player.name}
-                  </option>
-                ))}
-            </select>
-          </div>
+          <Flex justify="space-between" align="center" direction="column">
+            <NativeSelect
+              data={[
+                { value: '', label: i18n.t('Choose player'), disabled: true },
+                ...Object.values(players)
+                  .filter((player) => !player.isBot)
+                  .map((player) => ({
+                    value: String(player.id),
+                    label: player.name,
+                  })),
+              ]}
+              defaultValue=""
+              onChange={(e) => setSelectedPlayer(players[Number(e.currentTarget.value)])}
+              m="xs"
+            />
+          </Flex>
         </>
       )}
       {selectedPlayer && !selectedTaskLevel && (
         <>
-          <div className="d-flex flex-column align-items-baseline flex-nowrap">
-            <span className="h5">
+          <Flex direction="column" align="baseline" wrap="nowrap">
+            <Text fw={500}>
               {i18n.t('Choose task level for')}{' '}
-              <span className="text-nowrap">{selectedPlayer.name}</span>
+              <Text span style={{ whiteSpace: 'nowrap' }}>
+                {selectedPlayer.name}
+              </Text>
               {opponentPlayer?.name && (
                 <>
-                  <span className="mx-2">vs</span>
-                  <span className="text-nowrap">{opponentPlayer.name}</span>
+                  <Text span mx="sm">
+                    vs
+                  </Text>
+                  <Text span style={{ whiteSpace: 'nowrap' }}>
+                    {opponentPlayer.name}
+                  </Text>
                 </>
               )}
               :
-            </span>
-            <div className="d-flex justify-content-begin flex-column flex-sm-row w-auto w-sm-50 button-group">
-              <button
-                type="button"
-                className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
+            </Text>
+            <Flex gap={4} wrap="wrap">
+              <Button
+                size="compact-sm"
+                color="cbSecondary"
+                radius="md"
                 onClick={() => setSelectedTaskLevel('elementary')}
                 disabled={availableTasks.elementary.length < 1}
               >
                 {i18n.t('Elementary')}{' '}
-                <span className="text-nowrap">
+                <Text span style={{ whiteSpace: 'nowrap' }}>
                   {i18n.t('(%{count} available)', {
                     count: availableTasks.elementary.length,
                   })}
-                </span>
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
+                </Text>
+              </Button>
+              <Button
+                size="compact-sm"
+                color="cbSecondary"
+                radius="md"
                 onClick={() => setSelectedTaskLevel('easy')}
                 disabled={availableTasks.easy.length < 1}
               >
                 {i18n.t('Easy')} {availableTasks.easy.length}
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-warning py-1 m-1 cb-rounded"
+              </Button>
+              <Button
+                size="compact-sm"
+                color="yellow"
+                radius="md"
                 onClick={() => setSelectedTaskLevel('medium')}
                 disabled={availableTasks.medium.length < 1}
               >
                 {i18n.t('Medium')} {availableTasks.medium.length}
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-danger py-1 m-1 cb-rounded"
+              </Button>
+              <Button
+                size="compact-sm"
+                color="red"
+                radius="md"
                 onClick={() => setSelectedTaskLevel('hard')}
                 disabled={availableTasks.hard.length < 1}
               >
                 {i18n.t('Hard')} {availableTasks.hard.length}
-              </button>
-            </div>
-          </div>
+              </Button>
+            </Flex>
+          </Flex>
           <div>
-            <button className="btn btn-sm" type="button" onClick={clearSelectedPlayer} disabled>
+            <Button
+              variant="subtle"
+              size="compact-sm"
+              color="gray"
+              onClick={clearSelectedPlayer}
+              disabled
+            >
               <FontAwesomeIcon icon="times" />
-            </button>
+            </Button>
           </div>
         </>
       )}
       {selectedPlayer && selectedTaskLevel && (
         <>
-          <div className="d-flex w-100">
-            <div className="d-flex flex-column align-items-center pr-1">
-              <img
+          <Flex w="100%">
+            <Flex direction="column" align="center" pr="xs">
+              <Box
+                component="img"
                 alt={`${selectedPlayer.name} avatar`}
                 src={selectedPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(selectedPlayer)}
-                className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar cb-rounded p-2"
+                display={{ base: 'none', md: 'block' }}
+                className="cb-tournament-profile-avatar"
+                style={{ padding: '0.5rem', borderRadius: 'var(--mantine-radius-md)' }}
               />
               {opponentPlayer && (
                 <>
                   vs
-                  <img
+                  <Box
+                    component="img"
                     alt={`${opponentPlayer.name} avatar`}
                     src={
                       opponentPlayer.avatarUrl ||
                       getCustomEventPlayerDefaultImgUrl(opponentPlayer) ||
                       tournamentEmptyPlayerUrl
                     }
-                    className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
+                    display={{ base: 'none', md: 'block' }}
+                    className="cb-tournament-profile-avatar"
+                    style={{ padding: '0.5rem', borderRadius: 'var(--mantine-radius-md)' }}
                   />
                 </>
               )}
-            </div>
-            <div className="d-flex flex-column justify-content-center">
-              <span className="h6 p-1 text-nowrap">
+            </Flex>
+            <Flex direction="column" justify="center">
+              <Text p={4} style={{ whiteSpace: 'nowrap' }}>
                 {i18n.t('Player: %{name}', { name: selectedPlayer.name })}
-              </span>
+              </Text>
               {opponentPlayer?.name && (
-                <span className="h6 p-1 text-nowrap">
+                <Text p={4} style={{ whiteSpace: 'nowrap' }}>
                   {i18n.t('Opponent: %{name}', { name: opponentPlayer.name })}
-                </span>
+                </Text>
               )}
-              <div className="d-flex align-items-baseline px-1">
-                <span className="h6 text-nowrap">
+              <Flex align="baseline" px="xs">
+                <Text style={{ whiteSpace: 'nowrap' }}>
                   {i18n.t('Level: %{level} (%{count} available)', {
                     level: i18n.t(selectedTaskLevel),
                     count: availableTasks[selectedTaskLevel].length,
                   })}
-                </span>
-                <button type="button" className="btn btn-sm" onClick={clearSelectedTaskLevel}>
+                </Text>
+                <Button
+                  variant="subtle"
+                  size="compact-sm"
+                  color="gray"
+                  onClick={clearSelectedTaskLevel}
+                >
                   <FontAwesomeIcon icon="pen" />
-                </button>
-              </div>
-              <div className="d-flex align-items-baseline px-1">
-                <input
+                </Button>
+              </Flex>
+              <Flex align="baseline" px="xs">
+                <NumberInput
                   id="round-seconds"
                   name="round-seconds"
                   aria-label={i18n.t('Round timeout seconds')}
-                  type="number"
-                  min="180"
-                  max="7200"
-                  step="60"
+                  min={180}
+                  max={7200}
+                  step={60}
                   placeholder={
                     defaultMatchTimeoutSeconds === undefined
                       ? undefined
                       : String(defaultMatchTimeoutSeconds)
                   }
                   value={selectedTimeoutSeconds ?? ''}
-                  onChange={(event) => {
-                    const newTimeout = Number(event.target.value);
+                  onChange={(value) => {
+                    const newTimeout = Number(value);
 
                     if (newTimeout >= 180 && newTimeout <= 7200) {
-                      setSelectedTimeoutSeconds(Number(event.target.value));
+                      setSelectedTimeoutSeconds(newTimeout);
                     } else if (newTimeout <= 180) {
                       setSelectedTimeoutSeconds(180);
                     } else if (newTimeout >= 7200) {
                       setSelectedTimeoutSeconds(7200);
                     }
                   }}
-                  className="my-1 mr-1"
+                  pr="xs"
                 />
-                <label htmlFor="round-seconds">{i18n.t('Match seconds')}</label>
-              </div>
+                <Text component="label" htmlFor="round-seconds" ml="xs">
+                  {i18n.t('Match seconds')}
+                </Text>
+              </Flex>
               {activeMatch ? (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary rounded-lg p-1 px-2"
-                  disabled
-                >
+                <Button size="compact-sm" color="cbSecondary" radius="md" disabled>
                   {i18n.t('Round already started')}
-                </button>
+                </Button>
               ) : (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-secondary rounded-lg p-1"
+                <Button
+                  size="compact-sm"
+                  color="cbSecondary"
+                  radius="md"
+                  leftSection={<FontAwesomeIcon icon="play" />}
                   onClick={() => {
                     createCustomRound({
                       task_id: shuffle(availableTasks[selectedTaskLevel])[0]?.id,
@@ -305,20 +341,25 @@ function TournamentGameCreatePanel({
                   }}
                   disabled={availableTasks[selectedTaskLevel].length < 1}
                 >
-                  <FontAwesomeIcon className="mr-2" icon="play" />
                   {i18n.t('Start round')}
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
+            </Flex>
+          </Flex>
           <div>
-            <button className="btn btn-sm" type="button" onClick={clearSelectedPlayer} disabled>
+            <Button
+              variant="subtle"
+              size="compact-sm"
+              color="gray"
+              onClick={clearSelectedPlayer}
+              disabled
+            >
               <FontAwesomeIcon icon="times" />
-            </button>
+            </Button>
           </div>
         </>
       )}
-    </div>
+    </Flex>
   );
 }
 

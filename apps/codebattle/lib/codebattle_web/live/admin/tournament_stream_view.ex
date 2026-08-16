@@ -327,27 +327,27 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       )
 
     ~H"""
-    <div class="container-fluid px-0">
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4 mb-3">
-        <div class="d-flex align-items-center justify-content-between flex-wrap">
+    <div class="cb-container-fluid cb-px-0">
+      <div class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-4 cb-mb-3">
+        <div class="cb-d-flex cb-align-center cb-justify-between cb-flex-wrap">
           <div>
-            <h2 class="text-white mb-1">Stream Admin · {@tournament.name}</h2>
+            <h2 class="cb-text-white cb-mb-1">Stream Admin · {@tournament.name}</h2>
             <small class="cb-text">
               Playing: {@playing_count} · Active game: {if @active_game_id,
                 do: "##{@active_game_id}",
                 else: "—"}
             </small>
           </div>
-          <div class="d-flex" style="gap:8px">
+          <div class="cb-d-flex" style="gap:8px">
             <a
-              class="btn btn-sm btn-outline-primary cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-outline-primary cb-rounded"
               href={"/tournaments/#{@tournament.id}/stream?fullscreen=true"}
               target="_blank"
             >
               Open full stream
             </a>
             <a
-              class="btn btn-sm btn-outline-info cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-outline-info cb-rounded"
               href={"/admin/tournaments/#{@tournament.id}/stream/state"}
               target="_blank"
             >
@@ -355,7 +355,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             </a>
             <button
               type="button"
-              class="btn btn-sm btn-outline-danger cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded"
               phx-click="clear_active"
               disabled={is_nil(@active_game_id)}
             >
@@ -365,14 +365,14 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         </div>
       </div>
 
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3 mb-3">
+      <div class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-3 cb-mb-3">
         <form
           phx-submit="save_autoselect_delay"
-          class="d-flex align-items-end flex-wrap"
+          class="cb-d-flex cb-align-end cb-flex-wrap"
           style="gap:12px"
         >
           <div>
-            <label class="cb-text small mb-1 d-block">Auto-select next game delay (sec)</label>
+            <label class="cb-text cb-small cb-mb-1 cb-d-block">Auto-select next game delay (sec)</label>
             <input
               type="number"
               step="0.5"
@@ -380,11 +380,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
               max="120"
               name="autoselect_delay_sec"
               value={@autoselect_delay_sec}
-              class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+              class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-text-white cb-border-color"
               style="max-width:160px"
             />
           </div>
-          <button type="submit" class="btn btn-sm btn-primary cb-rounded">Save</button>
+          <button type="submit" class="cb-btn cb-btn-sm cb-btn-primary cb-rounded">Save</button>
           <small class="cb-text" style="max-width:560px">
             When a pair finishes and their next (rematch) game starts, the stream auto-switches to it
             after this delay. 0 = instant.
@@ -393,27 +393,27 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
       </div>
 
       <%= if @simulator_enabled do %>
-        <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3 mb-3">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h4 class="text-white mb-0">Simulator</h4>
+        <div class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-3 cb-mb-3">
+          <div class="cb-d-flex cb-align-center cb-justify-between cb-mb-3">
+            <h4 class="cb-text-white cb-mb-0">Simulator</h4>
             <div>
               <span
-                class="badge cb-rounded"
+                class="cb-badge cb-rounded"
                 style={"background:" <> sim_status_color(@simulator.status) <> ";color:#0b1220;font-weight:700"}
               >
                 {@simulator.status}
               </span>
-              <span class="cb-text ml-2" style="font-size:12px">
+              <span class="cb-text cb-ml-2" style="font-size:12px">
                 scheduled: {@simulator.scheduled_count}
               </span>
             </div>
           </div>
 
-          <div class="d-flex flex-wrap mb-3" style="gap:8px">
+          <div class="cb-d-flex cb-flex-wrap cb-mb-3" style="gap:8px">
             <button
               type="button"
               phx-click="sim_start"
-              class="btn btn-sm btn-success cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-success cb-rounded"
               disabled={@simulator.status == :running}
             >
               ▶ Start
@@ -421,7 +421,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             <button
               type="button"
               phx-click="sim_retry"
-              class="btn btn-sm btn-outline-warning cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded"
               data-confirm="Reset matches and re-run from round 0?"
             >
               ⟳ Retry
@@ -429,7 +429,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
             <button
               type="button"
               phx-click="sim_stop"
-              class="btn btn-sm btn-outline-danger cb-rounded"
+              class="cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded"
               data-confirm="Stop the simulator and finish the tournament? Final results will be calculated. Use Retry instead if you want to re-run with the same players."
             >
               ⏹ Stop
@@ -437,9 +437,9 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
           </div>
 
           <form phx-change="sim_settings" phx-submit="sim_settings">
-            <div class="row">
-              <div class="col-sm-4 mb-2">
-                <label class="cb-text small mb-1">Avg solve time (sec)</label>
+            <div class="cb-row">
+              <div class="cb-col-sm-4 cb-mb-2">
+                <label class="cb-text cb-small cb-mb-1">Avg solve time (sec)</label>
                 <input
                   type="number"
                   step="0.5"
@@ -447,11 +447,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                   max="600"
                   name="avg_seconds"
                   value={@simulator.settings.avg_seconds}
-                  class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+                  class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-text-white cb-border-color"
                 />
               </div>
-              <div class="col-sm-4 mb-2">
-                <label class="cb-text small mb-1">Jitter (% of avg)</label>
+              <div class="cb-col-sm-4 cb-mb-2">
+                <label class="cb-text cb-small cb-mb-1">Jitter (% of avg)</label>
                 <input
                   type="number"
                   step="5"
@@ -459,11 +459,11 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                   max="100"
                   name="jitter_pct"
                   value={@simulator.settings.jitter_pct}
-                  class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+                  class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-text-white cb-border-color"
                 />
               </div>
-              <div class="col-sm-4 mb-2">
-                <label class="cb-text small mb-1">Top-rated win probability</label>
+              <div class="cb-col-sm-4 cb-mb-2">
+                <label class="cb-text cb-small cb-mb-1">Top-rated win probability</label>
                 <input
                   type="number"
                   step="0.05"
@@ -471,7 +471,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                   max="1"
                   name="win_skew"
                   value={@simulator.settings.win_skew}
-                  class="form-control form-control-sm cb-bg-highlight-panel text-white cb-border-color"
+                  class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-text-white cb-border-color"
                 />
               </div>
             </div>
@@ -483,23 +483,23 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         </div>
       <% end %>
 
-      <details class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-2 mb-3">
-        <summary class="text-white" style="cursor:pointer;font-size:14px;font-weight:600">
+      <details class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-2 cb-mb-3">
+        <summary class="cb-text-white" style="cursor:pointer;font-size:14px;font-weight:600">
           OBS / stream URLs
-          <span class="cb-text ml-1" style="font-size:12px;font-weight:400">({length(@widgets)})</span>
+          <span class="cb-text cb-ml-1" style="font-size:12px;font-weight:400">({length(@widgets)})</span>
         </summary>
-        <ul class="list-group mt-2">
+        <ul class="cb-list-group cb-mt-2">
           <%= for widget <- @widgets do %>
             <% url = widget_url(@tournament.id, widget) %>
-            <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color py-1">
-              <div class="text-truncate mr-2" style="min-width:0">
-                <strong class="text-white mr-2" style="font-size:13px">{widget.label}</strong>
+            <li class="cb-list-group-item cb-d-flex cb-justify-between cb-align-center cb-bg-highlight-panel cb-border-color cb-py-1">
+              <div class="cb-text-truncate cb-mr-2" style="min-width:0">
+                <strong class="cb-text-white cb-mr-2" style="font-size:13px">{widget.label}</strong>
                 <code class="cb-text" style="font-size:11px">{url}</code>
               </div>
               <a
                 href={url}
                 target="_blank"
-                class="btn btn-sm btn-outline-primary cb-rounded ml-2 py-0"
+                class="cb-btn cb-btn-sm cb-btn-outline-primary cb-rounded cb-ml-2 cb-py-0"
               >
                 Open
               </a>
@@ -508,26 +508,26 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         </ul>
       </details>
 
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-3">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-3">
+        <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
           <div>
-            <h4 class="text-white mb-0">Matches</h4>
+            <h4 class="cb-text-white cb-mb-0">Matches</h4>
             <%= if @filter == "current" do %>
               <small class="cb-text">
                 {round_name(@tournament)}
                 <%= if status = round_status(@tournament, @round_timeout_seconds, @now) do %>
-                  · <span class="text-white">{status}</span>
+                  · <span class="cb-text-white">{status}</span>
                 <% end %>
               </small>
             <% end %>
           </div>
-          <div class="d-flex align-items-center" style="gap:8px">
-            <div class="btn-group btn-group-sm" role="group">
+          <div class="cb-d-flex cb-align-center" style="gap:8px">
+            <div class="cb-btn-group btn-group-sm" role="group">
               <button
                 type="button"
                 phx-click="set_filter"
                 phx-value-filter="current"
-                class={"btn cb-rounded " <> if @filter == "current", do: "btn-primary", else: "btn-outline-primary"}
+                class={"cb-btn cb-rounded " <> if @filter == "current", do: "cb-btn-primary", else: "cb-btn-outline-primary"}
               >
                 Current round
               </button>
@@ -535,7 +535,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                 type="button"
                 phx-click="set_filter"
                 phx-value-filter="playing"
-                class={"btn cb-rounded " <> if @filter == "playing", do: "btn-primary", else: "btn-outline-primary"}
+                class={"cb-btn cb-rounded " <> if @filter == "playing", do: "cb-btn-primary", else: "cb-btn-outline-primary"}
               >
                 Playing
               </button>
@@ -543,7 +543,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                 type="button"
                 phx-click="set_filter"
                 phx-value-filter="history"
-                class={"btn cb-rounded " <> if @filter == "history", do: "btn-primary", else: "btn-outline-primary"}
+                class={"cb-btn cb-rounded " <> if @filter == "history", do: "cb-btn-primary", else: "cb-btn-outline-primary"}
               >
                 History
               </button>
@@ -553,19 +553,19 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
         </div>
 
         <%= if @players_with_games == [] do %>
-          <div class="text-center cb-text py-4">No players to show.</div>
+          <div class="cb-text-center cb-text cb-py-4">No players to show.</div>
         <% else %>
-          <ul class="list-group">
+          <ul class="cb-list-group">
             <%= for {{player, games}, idx} <- Enum.with_index(@players_with_games, 1) do %>
-              <li class="list-group-item d-flex justify-content-between align-items-center cb-bg-highlight-panel cb-border-color">
-                <div class="d-flex align-items-center" style="gap:10px;min-width:0">
+              <li class="cb-list-group-item cb-d-flex cb-justify-between cb-align-center cb-bg-highlight-panel cb-border-color">
+                <div class="cb-d-flex cb-align-center" style="gap:10px;min-width:0">
                   <span class="cb-text" style="font-size:12px;width:24px;text-align:right">{idx}.</span>
-                  <strong class="text-white text-truncate">{player_label(player)}</strong>
-                  <span class="badge cb-rounded" style="background:#1e293b;color:#fff">
+                  <strong class="cb-text-white cb-text-truncate">{player_label(player)}</strong>
+                  <span class="cb-badge cb-rounded" style="background:#1e293b;color:#fff">
                     {player.score || 0}
                   </span>
                 </div>
-                <div class="d-flex flex-wrap justify-content-end" style="gap:6px">
+                <div class="cb-d-flex cb-flex-wrap cb-justify-end" style="gap:6px">
                   <%= for g <- games do %>
                     <% is_active = g.game_id == @active_game_id %>
                     <button
@@ -573,7 +573,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
                       phx-click="set_active"
                       phx-value-game_id={g.game_id}
                       title={"round #{g.round} · #{g.state}"}
-                      class={"btn btn-sm cb-rounded " <> if is_active, do: "btn-success", else: "btn-outline-success"}
+                      class={"cb-btn cb-btn-sm cb-rounded " <> if is_active, do: "cb-btn-success", else: "cb-btn-outline-success"}
                     >
                       {if is_active, do: "✓ ", else: ""}#{g.game_id}
                     </button>

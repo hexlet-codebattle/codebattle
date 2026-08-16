@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
+import { Text } from '@mantine/core';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
-
-import type { OverlayProps } from 'react-bootstrap/Overlay';
 
 import type { AppDispatch } from '@/slices/store';
 
@@ -12,7 +11,7 @@ import Placements from '../config/placements';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
-import PopoverStickOnHover from './PopoverStickOnHover';
+import PopoverStickOnHover, { type Placement } from './PopoverStickOnHover';
 import UserName, { type UserNameUser } from './UserName';
 import UserStats from './UserStats';
 
@@ -90,46 +89,58 @@ function UserPopoverContent({ user }: UserPopoverContentProps) {
 }
 
 interface UserInfoProps {
-  className?: string;
-  linkClassName?: string;
-  user: UserNameUser;
   banned?: boolean;
-  lang?: string;
-  hovered?: boolean;
-  hideLink?: boolean;
+  className?: string;
+  color?: string;
+  displayName?: string;
+  fontWeight?: number;
   hideInfo?: boolean;
-  truncate?: boolean;
+  hideLink?: boolean;
   hideOnlineIndicator?: boolean;
   hideRank?: boolean;
-  displayName?: string;
+  hovered?: boolean;
+  lang?: string;
+  linkClassName?: string;
   loading?: boolean;
-  placement?: OverlayProps['placement'];
+  placement?: Placement;
+  truncate?: boolean;
+  user: UserNameUser;
 }
 
 function UserInfo({
-  className,
-  linkClassName: linkClassNameProp,
-  user,
   banned = false,
-  lang,
-  hovered = false,
-  hideLink = false,
-  hideInfo = false,
-  truncate = false,
-  hideOnlineIndicator = false,
+  className,
+  color: colorProp,
   displayName,
+  fontWeight,
+  hideInfo = false,
+  hideLink = false,
+  hideOnlineIndicator = false,
+  hovered = false,
+  lang,
+  linkClassName: linkClassNameProp,
   loading = false,
-  placement = Placements.bottomStart as OverlayProps['placement'],
+  placement = Placements.bottomStart as Placement,
+  truncate = false,
+  user,
 }: UserInfoProps) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const content = useMemo(() => (user.isBot ? 'bot' : <UserPopoverContent user={user} />), [user]);
 
   if (!user?.id) {
-    return <span className="text-white">John Doe</span>;
+    return (
+      <Text component="span" c="white">
+        John Doe
+      </Text>
+    );
   }
 
   if (user?.id === 0) {
-    return <span className="text-white">{user.name}</span>;
+    return (
+      <Text component="span" c="white">
+        {user.name}
+      </Text>
+    );
   }
 
   const isOnline = (presenceList as Array<{ id?: string | number }>).some(
@@ -137,20 +148,17 @@ function UserInfo({
   );
   const userClassName = cn(className, {
     'cb-opacity-50': loading,
-    'text-danger': banned,
   });
-  const linkClassName = linkClassNameProp
-    ? cn(linkClassNameProp, { 'text-danger': banned })
-    : cn(className, {
-        'text-white': !banned,
-        'text-danger': banned,
-      });
+  const linkClassName = linkClassNameProp ? linkClassNameProp : cn(className);
+  const nameColor = banned ? '#dc3545' : (colorProp ?? '#ffffff');
 
   if (hideInfo) {
     return (
       <UserName
         className={userClassName}
         linkClassName={linkClassName}
+        color={nameColor}
+        fontWeight={fontWeight}
         hovered={hovered}
         user={user}
         lang={lang}

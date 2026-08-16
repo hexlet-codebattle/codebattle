@@ -2,9 +2,10 @@ import React, { memo, useState, useCallback, useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip } from 'chart.js';
-import cn from 'classnames';
 import { Bar } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
+
+import { Box, Flex, Switch, Table, Text } from '@mantine/core';
 
 import { type AppDispatch } from '@/slices';
 
@@ -53,13 +54,6 @@ const options: any = {
     },
   },
 };
-
-const getCustomEventTrClassName = () =>
-  cn('cb-text-light font-weight-bold cb-custom-event-tr cb-bg-panel');
-
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0 cb-text',
-);
 
 interface TaskRankingAdvancedPanelProps {
   taskId: number;
@@ -134,62 +128,72 @@ function TaskRankingAdvancedPanel({
   };
 
   return (
-    <div className="d-flex flex-column h-100 cb-task-advanced-panel">
-      <div className="p-2">
-        <div className="cb-task-advanced-card cb-task-advanced-chart">
-          <div className="cb-task-advanced-card-title">{i18next.t('Duration distribution')}</div>
+    <Flex direction="column" h="100%" className="cb-task-advanced-panel">
+      <Box p="xs">
+        <Box className="cb-task-advanced-card cb-task-advanced-chart">
+          <Text className="cb-task-advanced-card-title">{i18next.t('Duration distribution')}</Text>
           <Bar options={options} data={taskChartData} />
-        </div>
-      </div>
-      <div className="p-2 flex-grow-1">
-        <div className="cb-task-advanced-card cb-overflow-x-auto cb-overflow-y-auto">
-          <div className="d-flex align-items-center justify-content-between mb-2">
-            <div className="cb-task-advanced-card-title">
+        </Box>
+      </Box>
+      <Box p="xs" flex={1}>
+        <Box className="cb-task-advanced-card cb-overflow-x-auto cb-overflow-y-auto">
+          <Flex align="center" justify="space-between" mb="xs">
+            <Text className="cb-task-advanced-card-title">
               {i18next.t('Top users by task')}
               {task?.name ? `, ${task.name}` : ''}
-            </div>
-            <div className="custom-control custom-switch">
-              <input
-                id="task-params-view"
-                aria-label={i18next.t('Show task description')}
-                type="checkbox"
-                className="custom-control-input"
-                checked={mode}
-                onChange={handleChangeMode}
-              />
-              <label className="custom-control-label" htmlFor="task-params-view">
-                {i18next.t('Show task description')}
-              </label>
-            </div>
-          </div>
+            </Text>
+            <Switch
+              id="task-params-view"
+              aria-label={i18next.t('Show task description')}
+              label={i18next.t('Show task description')}
+              checked={mode}
+              onChange={handleChangeMode}
+            />
+          </Flex>
           {mode ? (
             <div className="cb-overflow-y-auto">
               <TaskDescriptionMarkdown description={task.descriptionEn ?? ''} />
               <TaskDescriptionMarkdown description={task.descriptionRu ?? ''} />
             </div>
           ) : (
-            <table className="table cb-custom-event-table cb-task-advanced-table">
-              <thead className="text-muted">
-                <tr>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Player')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">
+            <Table className="cb-custom-event-table cb-task-advanced-table">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
+                    {i18next.t('Player')}
+                  </Table.Th>
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
+                    {i18next.t('Clan')}
+                  </Table.Th>
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
+                    {i18next.t('Score')}
+                  </Table.Th>
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
                     {i18next.t('Duration (sec)')}
-                  </th>
-                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Link')}</th>
-                </tr>
-              </thead>
-              <tbody>
+                  </Table.Th>
+                  <Table.Th c="dimmed" fw={300} p={4} pl={24}>
+                    {i18next.t('Link')}
+                  </Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {users.map((item) => (
                   <React.Fragment key={`${PanelModeCodes.topUserByTasksMode}-user-${item.userId}`}>
-                    <tr className={getCustomEventTrClassName()}>
-                      <td className={tableDataCellClassName}>
+                    <Table.Tr fw={700}>
+                      <Table.Td
+                        className="cb-custom-event-td"
+                        c="cbText"
+                        p={4}
+                        pl={24}
+                        style={{ whiteSpace: 'nowrap', position: 'relative' }}
+                      >
                         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-                        <div
+                        <Box
                           role="button"
                           tabIndex={0}
-                          className="cb-custom-event-name mr-1 text-secondary"
+                          className="cb-custom-event-name"
+                          mr="xs"
+                          c="dimmed"
                           style={{ maxWidth: 220 }}
                           onClick={handleUserSelectClick}
                           onKeyPress={handleUserSelectClick}
@@ -200,35 +204,67 @@ function TaskRankingAdvancedPanel({
                             user={{ id: item.userId, name: item.userName }}
                             hideOnlineIndicator
                             hideLink
-                            linkClassName="text-secondary"
+                            color="#6c757d"
                           />
-                        </div>
-                      </td>
-                      <td title={item.clanLongName} className={tableDataCellClassName}>
-                        <div className="cb-custom-event-name mr-1" style={{ maxWidth: 220 }}>
+                        </Box>
+                      </Table.Td>
+                      <Table.Td
+                        title={item.clanLongName}
+                        className="cb-custom-event-td"
+                        c="cbText"
+                        p={4}
+                        pl={24}
+                        style={{ whiteSpace: 'nowrap', position: 'relative' }}
+                      >
+                        <Box className="cb-custom-event-name" mr="xs" style={{ maxWidth: 220 }}>
                           {item.clanName}
-                        </div>
-                      </td>
-                      <td width="100" className={tableDataCellClassName}>
+                        </Box>
+                      </Table.Td>
+                      <Table.Td
+                        w={100}
+                        className="cb-custom-event-td"
+                        c="cbText"
+                        p={4}
+                        pl={24}
+                        style={{ whiteSpace: 'nowrap', position: 'relative' }}
+                      >
                         {item.score}
-                      </td>
-                      <td width="100" className={tableDataCellClassName}>
+                      </Table.Td>
+                      <Table.Td
+                        w={100}
+                        className="cb-custom-event-td"
+                        c="cbText"
+                        p={4}
+                        pl={24}
+                        style={{ whiteSpace: 'nowrap', position: 'relative' }}
+                      >
                         {item.durationSec}
-                      </td>
-                      <td className={tableDataCellClassName}>
-                        <a className="cb-task-advanced-link" href={`/games/${item.gameId}`}>
-                          <FontAwesomeIcon icon="link" className="mr-1" />
-                        </a>
-                      </td>
-                    </tr>
+                      </Table.Td>
+                      <Table.Td
+                        className="cb-custom-event-td"
+                        c="cbText"
+                        p={4}
+                        pl={24}
+                        style={{ whiteSpace: 'nowrap', position: 'relative' }}
+                      >
+                        <Text
+                          component="a"
+                          className="cb-task-advanced-link"
+                          href={`/games/${item.gameId}`}
+                          mr="xs"
+                        >
+                          <FontAwesomeIcon icon="link" />
+                        </Text>
+                      </Table.Td>
+                    </Table.Tr>
                   </React.Fragment>
                 ))}
-              </tbody>
-            </table>
+              </Table.Tbody>
+            </Table>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Flex>
   );
 }
 

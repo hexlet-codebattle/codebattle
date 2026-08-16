@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { Flex, Group, UnstyledButton } from '@mantine/core';
+
 import dayjs from '../../i18n/dayjs';
 import { localizeTournamentName } from '../utils/localizeTournamentName';
 
@@ -11,12 +13,19 @@ interface ScheduleEvent {
 
 interface ScheduleNavigationTabProps {
   className?: string;
+  style?: React.CSSProperties;
   events: ScheduleEvent[];
   event?: ScheduleEvent;
   setEvent: (event?: ScheduleEvent) => void;
 }
 
-function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleNavigationTabProps) {
+function ScheduleNavigationTab({
+  className,
+  style,
+  events,
+  event,
+  setEvent,
+}: ScheduleNavigationTabProps) {
   const [prev, setPrevEvent] = useState<ScheduleEvent | undefined>();
   const [next, setNextEvent] = useState<ScheduleEvent | undefined>();
 
@@ -53,35 +62,27 @@ function ScheduleNavigationTab({ className, events, event, setEvent }: ScheduleN
   };
 
   return (
-    <div className={className}>
-      <div className="d-flex">
+    <div className={className} style={style}>
+      <Flex>
         {prev && (
-          <div
-            role="button"
-            onClick={onClickPrev}
-            onKeyPress={() => {}}
-            className="btn-link"
-            tabIndex={0}
-          >
-            <span className="pr-2">{'<<'}</span>
-            {getEventTitle(prev)}
-          </div>
+          <UnstyledButton c="white" onClick={onClickPrev}>
+            <Group gap="sm" wrap="nowrap">
+              <span>{'<<'}</span>
+              <span>{getEventTitle(prev)}</span>
+            </Group>
+          </UnstyledButton>
         )}
-      </div>
-      <div className="d-flex">
+      </Flex>
+      <Flex>
         {next && (
-          <div
-            role="button"
-            onClick={onClickNext}
-            onKeyPress={() => {}}
-            className="btn-link"
-            tabIndex={0}
-          >
-            {getEventTitle(next)}
-            <span className="pl-2">{'>>'}</span>
-          </div>
+          <UnstyledButton c="white" onClick={onClickNext}>
+            <Group gap="sm" wrap="nowrap">
+              <span>{getEventTitle(next)}</span>
+              <span>{'>>'}</span>
+            </Group>
+          </UnstyledButton>
         )}
-      </div>
+      </Flex>
     </div>
   );
 }

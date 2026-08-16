@@ -165,7 +165,19 @@ export function TournamentThreejsStreamPage() {
 export function TournamentStreamAdminPage() {
   return (
     <Provider store={store}>
-      <Suspense fallback={<div className="text-center py-5">Loading...</div>}>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              textAlign: 'center',
+              paddingTop: '3rem',
+              paddingBottom: '3rem',
+            }}
+          >
+            Loading...
+          </div>
+        }
+      >
         <TournamentStreamAdmin />
       </Suspense>
     </Provider>

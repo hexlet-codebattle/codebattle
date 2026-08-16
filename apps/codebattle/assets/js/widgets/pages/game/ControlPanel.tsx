@@ -13,6 +13,7 @@ import {
   Plus,
   Settings,
 } from 'react-feather';
+import { Text } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
@@ -68,7 +69,9 @@ function ControlPanel({
   const [settingsView, setSettingsView] = useState<SettingsView>('main');
 
   const { speedMode } = roomMachineState.context;
-  const isPaused = !roomMachineState.matches({ replayer: replayerMachineStates.playing });
+  const isPaused = !roomMachineState.matches({
+    replayer: replayerMachineStates.playing,
+  });
   const speedValue = Math.min(4, Math.max(0.5, Number.parseFloat(speedMode) || 1));
 
   useEffect(() => {
@@ -86,7 +89,9 @@ function ControlPanel({
       case roomMachineState.matches({ replayer: replayerMachineStates.paused }):
         onPlayClick();
         break;
-      case roomMachineState.matches({ replayer: replayerMachineStates.playing }):
+      case roomMachineState.matches({
+        replayer: replayerMachineStates.playing,
+      }):
         onPauseClick();
         break;
       default:
@@ -293,14 +298,16 @@ function ControlPanel({
         <div className="cb-replayer-controls__timeline">
           {children}
           {totalDuration !== null && totalDuration !== undefined && (
-            <span
-              className="cb-replayer-controls__time text-monospace"
+            <Text
+              component="span"
+              ff="monospace"
+              className="cb-replayer-controls__time"
               aria-label={i18n.t('Playback time')}
             >
               {formatDuration(currentTime)}
               <span aria-hidden="true"> / </span>
               {formatDuration(totalDuration)}
-            </span>
+            </Text>
           )}
         </div>
 

@@ -16,6 +16,8 @@ import task, { config as taskConfig } from '../widgets/machines/task';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('pixelmatch', () => ({ default: () => {} }));
 
 vi.mock('monaco-editor', () => ({
@@ -231,7 +233,7 @@ editor.initial = 'idle';
 
 const setup = (jsx: ReactElement) => ({
   user: userEvent.setup(),
-  ...render(jsx),
+  ...render(<MantineTestProvider>{jsx}</MantineTestProvider>),
 });
 
 test('rendering preview game component', async () => {

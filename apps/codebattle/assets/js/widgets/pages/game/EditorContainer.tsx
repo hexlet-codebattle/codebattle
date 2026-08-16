@@ -4,6 +4,7 @@ import { useActorRef } from '@xstate/react';
 import cn from 'classnames';
 import i18next from 'i18next';
 import noop from 'lodash/noop';
+import { Alert } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getPageProp } from '@/inertia/pageProps';
@@ -95,7 +96,6 @@ interface EditorContainerProps {
   type?: string;
   orientation?: string;
   cardClassName?: string;
-  editorContainerClassName?: string;
   theme?: string;
   editorState?: EditorState | null;
   editorHeight?: unknown;
@@ -109,7 +109,6 @@ function EditorContainer({
   type,
   orientation,
   cardClassName,
-  editorContainerClassName,
   theme,
   editorState,
   editorHeight,
@@ -371,10 +370,10 @@ function EditorContainer({
     loading: isPreview || editorCurrent.value === 'loading',
   };
 
+  const isChecking = editorCurrent.matches('checking');
   const isWon = player?.result === 'won';
 
-  const pannelBackground = cn(editorContainerClassName, {
-    'bg-warning': editorCurrent.matches('checking'),
+  const pannelBackground = cn({
     'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
   });
 
@@ -383,25 +382,24 @@ function EditorContainer({
   };
 
   return (
-    <div data-editor-state={editorCurrent.value} className={pannelBackground}>
+    <div
+      data-editor-state={editorCurrent.value}
+      className={pannelBackground}
+      style={isChecking ? { backgroundColor: 'var(--mantine-color-yellow-4)' } : undefined}
+    >
       <div
         // className={`${editorParams.theme === editorThemes.dark ? 'bg-dark ' : 'bg-white '}${cardClassName}`}
         className={cardClassName}
         style={orientation === 'side' ? gameRoomEditorStylesVersion2 : gameRoomEditorStyles}
         data-guide-id={orientation === 'left' ? 'LeftEditor' : ''}
       >
-        <EditorToolbar
-          {...toolbarParams}
-          toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
-          editorSettingClassNames="btn-group align-items-center m-1"
-          userInfoClassNames="btn-group align-items-center justify-content-end m-1"
-        />
+        <EditorToolbar {...toolbarParams} />
         {showBannedMessage && (
-          <div className="alert alert-warning mx-2 mb-2" role="alert">
+          <Alert color="yellow" mx="sm" mb="sm" role="alert">
             {i18next.t(
               'Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.',
             )}
-          </div>
+          </Alert>
         )}
         {children({
           ...editorParams,

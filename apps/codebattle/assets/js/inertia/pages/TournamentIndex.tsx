@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Head } from '@inertiajs/react';
 
+import { Box } from '@mantine/core';
+
 import { TournamentIndexPage } from '../../widgets/App';
 
 type TournamentIndexPageProps = React.ComponentProps<typeof TournamentIndexPage>;
@@ -20,13 +22,18 @@ export default function TournamentIndex({
   user_timezone,
 }: TournamentIndexProps) {
   return (
-    <div className="container-xl cb-text py-4">
+    <Box
+      c="cbText"
+      maw={{ base: '100%', xl: 1140 }}
+      mx="auto"
+      style={{ padding: '15px', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}
+    >
       <Head title={page_title} />
       <TournamentIndexPage
         lastTournament={last_tournament}
         taskPackNames={task_pack_names}
         userTimezone={user_timezone}
       />
-    </div>
+    </Box>
   );
 }

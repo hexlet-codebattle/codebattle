@@ -1,20 +1,20 @@
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-  <h1 class="text-center text-white">Group Tournaments</h1>
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+  <h1 class="cb-text-center cb-text-white">Group Tournaments</h1>
   {link("Create new group tournament",
     to: Routes.admin_group_tournament_path(@conn, :new),
-    class: "btn btn-success text-white mt-2 cb-rounded"
+    class: "cb-btn cb-btn-success cb-text-white cb-mt-2 cb-rounded"
   )}
-  <div class="table-responsive mt-4">
-    <table class="table table-sm">
+  <div class="cb-table-responsive cb-mt-4">
+    <table class="cb-table cb-table-sm">
       <thead class="cb-text">
         <tr>
-          <th class="cb-border-color border-bottom">id</th>
-          <th class="cb-border-color border-bottom">name</th>
-          <th class="cb-border-color border-bottom">slug</th>
-          <th class="cb-border-color border-bottom">group_task</th>
-          <th class="cb-border-color border-bottom">state</th>
-          <th class="cb-border-color border-bottom">players</th>
-          <th class="cb-border-color border-bottom">
+          <th class="cb-border-color cb-border-bottom">id</th>
+          <th class="cb-border-color cb-border-bottom">name</th>
+          <th class="cb-border-color cb-border-bottom">slug</th>
+          <th class="cb-border-color cb-border-bottom">group_task</th>
+          <th class="cb-border-color cb-border-bottom">state</th>
+          <th class="cb-border-color cb-border-bottom">players</th>
+          <th class="cb-border-color cb-border-bottom">
             <a
               href={
                 Routes.admin_group_tournament_path(@conn, :index,
@@ -22,12 +22,12 @@
                   sort_dir: sort_link_dir(@sort_by, @sort_dir, :starts_at)
                 )
               }
-              class="text-decoration-none cb-text"
+              class="cb-text-decoration-none cb-text"
             >
               starts_at{sort_arrow(@sort_by, @sort_dir, :starts_at)}
             </a>
           </th>
-          <th class="cb-border-color border-bottom">
+          <th class="cb-border-color cb-border-bottom">
             <a
               href={
                 Routes.admin_group_tournament_path(@conn, :index,
@@ -35,7 +35,7 @@
                   sort_dir: sort_link_dir(@sort_by, @sort_dir, :finished_at)
                 )
               }
-              class="text-decoration-none cb-text"
+              class="cb-text-decoration-none cb-text"
             >
               finished_at{sort_arrow(@sort_by, @sort_dir, :finished_at)}
             </a>
@@ -45,44 +45,45 @@
       <tbody>
         <%= for group_tournament <- @group_tournaments do %>
           <tr>
-            <td class="align-middle text-white cb-border-color">{group_tournament.id}</td>
-            <td class="align-middle text-white cb-border-color">{group_tournament.name}</td>
-            <td class="align-middle text-white cb-border-color">{group_tournament.slug}</td>
-            <td class="align-middle text-white cb-border-color">
+            <td class="cb-align-middle cb-text-white cb-border-color">{group_tournament.id}</td>
+            <td class="cb-align-middle cb-text-white cb-border-color">{group_tournament.name}</td>
+            <td class="cb-align-middle cb-text-white cb-border-color">{group_tournament.slug}</td>
+            <td class="cb-align-middle cb-text-white cb-border-color">
               {group_tournament.group_task && group_tournament.group_task.slug}
             </td>
-            <td class="align-middle text-white cb-border-color">{group_tournament.state}</td>
-            <td class="align-middle text-white cb-border-color">
+            <td class="cb-align-middle cb-text-white cb-border-color">
+              {group_tournament.state}
+            </td>
+            <td class="cb-align-middle cb-text-white cb-border-color">
               {group_tournament.players_count}
             </td>
-            <td class="align-middle text-white cb-border-color">
+            <td class="cb-align-middle cb-text-white cb-border-color">
               {format_datetime(group_tournament.starts_at)}
             </td>
-            <td class="align-middle text-white cb-border-color">
+            <td class="cb-align-middle cb-text-white cb-border-color">
               {format_datetime(group_tournament.finished_at)}
             </td>
-            <td class="align-middle text-nowrap cb-border-color">
-              <div class="d-flex">
+            <td class="cb-align-middle cb-text-nowrap cb-border-color">
+              <div class="cb-d-flex">
                 {link("Show",
                   to: Routes.admin_group_tournament_path(@conn, :show, group_tournament),
-                  class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                  class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                 )}
                 {link("Edit",
                   to: Routes.admin_group_tournament_path(@conn, :edit, group_tournament),
-                  class:
-                    "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                  class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
                 )}
                 {link("Start",
                   to: Routes.admin_group_tournament_path(@conn, :start, group_tournament),
                   method: :post,
                   data: [confirm: "Start this group tournament now?"],
-                  class: "btn btn-sm btn-success text-white cb-rounded ml-2"
+                  class: "cb-btn cb-btn-sm cb-btn-success cb-text-white cb-rounded cb-ml-2"
                 )}
                 {link("Delete",
                   to: Routes.admin_group_tournament_path(@conn, :delete, group_tournament),
                   method: :delete,
                   data: [confirm: "Are you sure you want to delete this group tournament?"],
-                  class: "btn btn-sm btn-outline-danger cb-rounded ml-2"
+                  class: "cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded cb-ml-2"
                 )}
               </div>
             </td>

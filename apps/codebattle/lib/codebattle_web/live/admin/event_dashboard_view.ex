@@ -385,77 +385,80 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-start mb-3">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-start cb-mb-3">
         <div>
-          <h1 class="text-white mb-1">
+          <h1 class="cb-text-white cb-mb-1">
             <i class="bi bi-bar-chart"></i> Event Dashboard: {@event.title}
           </h1>
-          <div class="cb-text small">
-            slug: <code class="text-info">{@event.slug}</code>
-            · id: <code class="text-info">{@event.id}</code>
+          <div class="cb-text cb-small">
+            slug: <code class="cb-text-info">{@event.slug}</code>
+            · id: <code class="cb-text-info">{@event.id}</code>
             · starts_at: {format_dt(@event.starts_at)}
           </div>
         </div>
-        <a href={"/admin/events/#{@event.id}"} class="btn btn-sm btn-outline-light cb-rounded">
+        <a
+          href={"/admin/events/#{@event.id}"}
+          class="cb-btn cb-btn-sm cb-btn-outline-light cb-rounded"
+        >
           ← Back to event
         </a>
       </div>
 
-      <div class="row g-3 mb-4">
-        <div class="col-md-3 col-6">
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-            <div class="cb-text small text-uppercase">Live tournaments</div>
-            <div class="text-white display-6">{@summary.live_tournaments}</div>
-            <div class="cb-text small">state = active</div>
+      <div class="cb-row g-3 cb-mb-4">
+        <div class="cb-col-md-3 cb-col-6">
+          <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+            <div class="cb-text cb-small cb-text-uppercase">Live tournaments</div>
+            <div class="cb-text-white display-6">{@summary.live_tournaments}</div>
+            <div class="cb-text cb-small">state = active</div>
           </div>
         </div>
-        <div class="col-md-3 col-6">
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-            <div class="cb-text small text-uppercase">Active group tournaments</div>
-            <div class="text-white display-6">{@summary.active_group_tournaments}</div>
-            <div class="cb-text small">state = active</div>
+        <div class="cb-col-md-3 cb-col-6">
+          <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+            <div class="cb-text cb-small cb-text-uppercase">Active group tournaments</div>
+            <div class="cb-text-white display-6">{@summary.active_group_tournaments}</div>
+            <div class="cb-text cb-small">state = active</div>
           </div>
         </div>
-        <div class="col-md-3 col-6">
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-            <div class="cb-text small text-uppercase">Finished tournaments</div>
-            <div class="text-white display-6">{@summary.finished_tournaments}</div>
-            <div class="cb-text small">all time</div>
+        <div class="cb-col-md-3 cb-col-6">
+          <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+            <div class="cb-text cb-small cb-text-uppercase">Finished tournaments</div>
+            <div class="cb-text-white display-6">{@summary.finished_tournaments}</div>
+            <div class="cb-text cb-small">all time</div>
           </div>
         </div>
-        <div class="col-md-3 col-6">
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-            <div class="cb-text small text-uppercase">Finished group tournaments</div>
-            <div class="text-white display-6">{@summary.finished_group_tournaments}</div>
-            <div class="cb-text small">all time</div>
+        <div class="cb-col-md-3 cb-col-6">
+          <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+            <div class="cb-text cb-small cb-text-uppercase">Finished group tournaments</div>
+            <div class="cb-text-white display-6">{@summary.finished_group_tournaments}</div>
+            <div class="cb-text cb-small">all time</div>
           </div>
         </div>
       </div>
 
       <%= if @slug_summary != [] do %>
-        <div class="row g-3 mb-4">
+        <div class="cb-row g-3 cb-mb-4">
           <%= for slug <- @slug_summary do %>
-            <div class="col-md-4">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="cb-col-md-4">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-2">
                   <div>
-                    <code class="text-info">{slug.slug}</code>
+                    <code class="cb-text-info">{slug.slug}</code>
                     <%= if slug.name do %>
-                      <span class="cb-text small ms-1">({slug.name})</span>
+                      <span class="cb-text cb-small ms-1">({slug.name})</span>
                     <% end %>
                   </div>
                   <%= if slug.status do %>
-                    <span class="badge bg-secondary">{slug.status}</span>
+                    <span class="cb-badge cb-bg-secondary">{slug.status}</span>
                   <% end %>
                 </div>
-                <div class="text-white display-6">{slug.user_count}</div>
-                <div class="cb-text small mb-2">users with this stage</div>
-                <div class="small">
+                <div class="cb-text-white display-6">{slug.user_count}</div>
+                <div class="cb-text cb-small cb-mb-2">users with this stage</div>
+                <div class="cb-small">
                   <%= if slug.tournament_id do %>
                     <div>
                       <span class="cb-text">tournament:</span>
-                      <a href={"/tournaments/#{slug.tournament_id}"} class="text-info">
+                      <a href={"/tournaments/#{slug.tournament_id}"} class="cb-text-info">
                         #{slug.tournament_id}
                       </a>
                     </div>
@@ -465,7 +468,7 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                       <span class="cb-text">group_tournament:</span>
                       <a
                         href={"/admin/group_tournaments/#{slug.group_tournament_id}"}
-                        class="text-info"
+                        class="cb-text-info"
                       >
                         #{slug.group_tournament_id}
                       </a>
@@ -478,13 +481,13 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
         </div>
       <% end %>
 
-      <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-4">
-        <div class="d-flex flex-wrap align-items-center gap-3">
-          <div class="d-flex gap-1 align-items-center">
-            <span class="cb-text small">Range:</span>
+      <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-4">
+        <div class="cb-d-flex cb-flex-wrap cb-align-center gap-3">
+          <div class="cb-d-flex gap-1 cb-align-center">
+            <span class="cb-text cb-small">Range:</span>
             <%= for {preset, _seconds} <- @presets do %>
               <button
-                class={"btn btn-sm cb-rounded #{if @preset == preset, do: "btn-light", else: "btn-outline-light"}"}
+                class={"cb-btn cb-btn-sm cb-rounded #{if @preset == preset, do: "cb-btn-light", else: "cb-btn-outline-light"}"}
                 phx-click="preset"
                 phx-value-preset={preset}
               >
@@ -493,13 +496,13 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
             <% end %>
           </div>
 
-          <form phx-submit="custom_range" class="d-flex align-items-center gap-2 ms-auto">
-            <span class="cb-text small">Custom:</span>
+          <form phx-submit="custom_range" class="cb-d-flex cb-align-center gap-2 ms-auto">
+            <span class="cb-text cb-small">Custom:</span>
             <input
               type="datetime-local"
               name="from"
               value={@custom_from_input}
-              class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
+              class="cb-form-control cb-form-control-sm cb-bg-panel cb-border-color cb-text-white"
               style="width: 200px;"
             />
             <span class="cb-text">→</span>
@@ -507,50 +510,50 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
               type="datetime-local"
               name="to"
               value={@custom_to_input}
-              class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
+              class="cb-form-control cb-form-control-sm cb-bg-panel cb-border-color cb-text-white"
               style="width: 200px;"
             />
             <button
               type="submit"
-              class={"btn btn-sm cb-rounded #{if @preset == "custom", do: "btn-light", else: "btn-outline-light"}"}
+              class={"cb-btn cb-btn-sm cb-rounded #{if @preset == "custom", do: "cb-btn-light", else: "cb-btn-outline-light"}"}
             >
               Apply
             </button>
           </form>
 
-          <button class="btn btn-sm btn-outline-info cb-rounded" phx-click="reload">
+          <button class="cb-btn cb-btn-sm cb-btn-outline-info cb-rounded" phx-click="reload">
             <i class="bi bi-arrow-clockwise"></i> Reload
           </button>
         </div>
-        <div class="cb-text small mt-2">
+        <div class="cb-text cb-small cb-mt-2">
           Showing: {format_dt(@from)} → {format_dt(@to)} ({format_duration(
             DateTime.diff(@to, @from, :second)
           )})
         </div>
       </div>
 
-      <h2 class="text-white h4 mt-4 mb-3">
+      <h2 class="cb-text-white h4 cb-mt-4 cb-mb-3">
         <i class="bi bi-collection"></i> Event Stages
       </h2>
       <%= if @stages_stats == [] do %>
         <p class="cb-text">No user_event_stages activity in range.</p>
       <% else %>
-        <div class="row g-3 mb-4">
+        <div class="cb-row g-3 cb-mb-4">
           <%= for stat <- @stages_stats do %>
-            <div class="col-md-6 col-xl-4">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h3 class="h5 text-white mb-0">
-                    <code class="text-info">{stat.slug}</code>
+            <div class="cb-col-md-6 cb-col-xl-4">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-2">
+                  <h3 class="h5 cb-text-white cb-mb-0">
+                    <code class="cb-text-info">{stat.slug}</code>
                   </h3>
-                  <span class="badge bg-secondary">{int(stat.total)} total</span>
+                  <span class="cb-badge cb-bg-secondary">{int(stat.total)} total</span>
                 </div>
                 <% stage = event_stage_for_slug(@event, stat.slug) %>
                 <%= if stage do %>
-                  <div class="cb-text small mb-2">
+                  <div class="cb-text cb-small cb-mb-2">
                     <%= if stage.tournament_id do %>
                       tournament:
-                      <a href={"/tournaments/#{stage.tournament_id}"} class="text-info">
+                      <a href={"/tournaments/#{stage.tournament_id}"} class="cb-text-info">
                         #{stage.tournament_id}
                       </a>
                     <% end %>
@@ -558,54 +561,54 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                       · group_tournament:
                       <a
                         href={"/admin/group_tournaments/#{stage.group_tournament_id}"}
-                        class="text-info"
+                        class="cb-text-info"
                       >
                         #{stage.group_tournament_id}
                       </a>
                     <% end %>
                   </div>
                 <% end %>
-                <table class="table table-sm table-dark mb-0 small">
+                <table class="cb-table cb-table-sm cb-table-dark cb-mb-0 cb-small">
                   <tbody>
                     <tr>
                       <td class="cb-text">completed</td>
-                      <td class="text-white text-end">{int(stat.completed)}</td>
+                      <td class="cb-text-white text-end">{int(stat.completed)}</td>
                       <td class="cb-text">passed</td>
-                      <td class="text-white text-end">{int(stat.passed)}</td>
+                      <td class="cb-text-white text-end">{int(stat.passed)}</td>
                     </tr>
                     <tr>
                       <td class="cb-text">started</td>
-                      <td class="text-white text-end">{int(stat.started)}</td>
+                      <td class="cb-text-white text-end">{int(stat.started)}</td>
                       <td class="cb-text">failed</td>
-                      <td class="text-white text-end">{int(stat.failed)}</td>
+                      <td class="cb-text-white text-end">{int(stat.failed)}</td>
                     </tr>
                     <tr>
                       <td class="cb-text">tour. finished</td>
-                      <td class="text-white text-end">{int(stat.tournament_finished)}</td>
+                      <td class="cb-text-white text-end">{int(stat.tournament_finished)}</td>
                       <td class="cb-text">gt. finished</td>
-                      <td class="text-white text-end">{int(stat.group_tournament_finished)}</td>
+                      <td class="cb-text-white text-end">{int(stat.group_tournament_finished)}</td>
                     </tr>
                     <tr>
                       <td class="cb-text">avg score</td>
-                      <td class="text-white text-end">{avg_int(stat.avg_score)}</td>
+                      <td class="cb-text-white text-end">{avg_int(stat.avg_score)}</td>
                       <td class="cb-text">avg gt score</td>
-                      <td class="text-white text-end">{avg_int(stat.avg_gt_score)}</td>
+                      <td class="cb-text-white text-end">{avg_int(stat.avg_gt_score)}</td>
                     </tr>
                     <tr>
                       <td class="cb-text">avg time</td>
-                      <td class="text-white text-end">
+                      <td class="cb-text-white text-end">
                         {format_duration(stat.avg_time && Decimal.to_float(stat.avg_time))}
                       </td>
                       <td class="cb-text">avg gt time</td>
-                      <td class="text-white text-end">
+                      <td class="cb-text-white text-end">
                         {format_duration(stat.avg_gt_time && Decimal.to_float(stat.avg_gt_time))}
                       </td>
                     </tr>
                     <tr>
                       <td class="cb-text">avg wins</td>
-                      <td class="text-white text-end">{avg_int(stat.avg_wins)}</td>
+                      <td class="cb-text-white text-end">{avg_int(stat.avg_wins)}</td>
                       <td class="cb-text">avg games</td>
-                      <td class="text-white text-end">{avg_int(stat.avg_games)}</td>
+                      <td class="cb-text-white text-end">{avg_int(stat.avg_games)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -615,10 +618,10 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
         </div>
       <% end %>
 
-      <h2 class="text-white h4 mt-4 mb-3">
+      <h2 class="cb-text-white h4 cb-mt-4 cb-mb-3">
         <i class="bi bi-trophy"></i>
         Tournaments
-        <span class="badge bg-secondary ms-2">
+        <span class="cb-badge cb-bg-secondary ms-2">
           {length(Enum.uniq_by(@tournament_rows, & &1.tournament_id))} tournaments · {length(
             @tournament_rows
           )} rows
@@ -627,10 +630,10 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
       <%= if @tournament_rows == [] do %>
         <p class="cb-text">No user_event_stages with tournament_id in range.</p>
       <% else %>
-        <div class="table-responsive">
-          <table class="table table-sm table-dark table-bordered align-middle">
+        <div class="cb-table-responsive">
+          <table class="cb-table cb-table-sm cb-table-dark cb-table-bordered cb-align-middle">
             <thead>
-              <tr class="cb-text small" style="cursor: pointer; user-select: none;">
+              <tr class="cb-text cb-small" style="cursor: pointer; user-select: none;">
                 <th
                   phx-click="sort_table"
                   phx-value-table="tournaments"
@@ -708,33 +711,33 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
               <%= for row <- apply_sort(@tournament_rows, @sort_tournaments) do %>
                 <tr>
                   <td>
-                    <a href={"/tournaments/#{row.tournament_id}"} class="text-info">
+                    <a href={"/tournaments/#{row.tournament_id}"} class="cb-text-info">
                       #{row.tournament_id}
                     </a>
                   </td>
                   <td>
-                    <a href={"/admin/users/#{row.user_id}"} class="text-info">
+                    <a href={"/admin/users/#{row.user_id}"} class="cb-text-info">
                       {display_user(@user_names, row.user_id)}
                     </a>
                   </td>
-                  <td class="text-white small"><code class="text-info">{row.slug}</code></td>
-                  <td class="text-white small">{row.status}</td>
-                  <td class="text-white text-end">{int(row.wins_count)}</td>
-                  <td class="text-white text-end">{int(row.games_count)}</td>
-                  <td class="text-white text-end">{int(row.score)}</td>
-                  <td class="text-white text-end small">
+                  <td class="cb-text-white cb-small"><code class="cb-text-info">{row.slug}</code></td>
+                  <td class="cb-text-white cb-small">{row.status}</td>
+                  <td class="cb-text-white text-end">{int(row.wins_count)}</td>
+                  <td class="cb-text-white text-end">{int(row.games_count)}</td>
+                  <td class="cb-text-white text-end">{int(row.score)}</td>
+                  <td class="cb-text-white text-end cb-small">
                     {format_duration(int(row.time_spent_in_seconds))}
                   </td>
-                  <td class="text-white text-end small">{row.place_in_total_rank || "–"}</td>
-                  <td class="text-white small">
+                  <td class="cb-text-white text-end cb-small">{row.place_in_total_rank || "–"}</td>
+                  <td class="cb-text-white cb-small">
                     <%= if row.tournament_finished do %>
-                      <span class="badge bg-success">yes</span>
+                      <span class="cb-badge cb-bg-success">yes</span>
                     <% else %>
-                      <span class="badge bg-secondary">no</span>
+                      <span class="cb-badge cb-bg-secondary">no</span>
                     <% end %>
                   </td>
-                  <td class="text-white small">{format_dt(row.started_at)}</td>
-                  <td class="text-white small">{format_dt(row.finished_at)}</td>
+                  <td class="cb-text-white cb-small">{format_dt(row.started_at)}</td>
+                  <td class="cb-text-white cb-small">{format_dt(row.finished_at)}</td>
                 </tr>
               <% end %>
             </tbody>
@@ -742,10 +745,10 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
         </div>
       <% end %>
 
-      <h2 class="text-white h4 mt-4 mb-3">
+      <h2 class="cb-text-white h4 cb-mt-4 cb-mb-3">
         <i class="bi bi-people"></i>
         Group Tournaments
-        <span class="badge bg-secondary ms-2">
+        <span class="cb-badge cb-bg-secondary ms-2">
           {length(Enum.uniq_by(@group_tournament_rows, & &1.group_tournament_id))} group tournaments · {length(
             @group_tournament_rows
           )} rows
@@ -754,10 +757,10 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
       <%= if @group_tournament_rows == [] do %>
         <p class="cb-text">No user_event_stages with group_tournament_id in range.</p>
       <% else %>
-        <div class="table-responsive">
-          <table class="table table-sm table-dark table-bordered align-middle">
+        <div class="cb-table-responsive">
+          <table class="cb-table cb-table-sm cb-table-dark cb-table-bordered cb-align-middle">
             <thead>
-              <tr class="cb-text small" style="cursor: pointer; user-select: none;">
+              <tr class="cb-text cb-small" style="cursor: pointer; user-select: none;">
                 <th
                   phx-click="sort_table"
                   phx-value-table="group_tournaments"
@@ -840,33 +843,33 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                   <td>
                     <a
                       href={"/admin/group_tournaments/#{row.group_tournament_id}"}
-                      class="text-info"
+                      class="cb-text-info"
                     >
                       #{row.group_tournament_id}
                     </a>
                   </td>
                   <td>
-                    <a href={"/admin/users/#{row.user_id}"} class="text-info">
+                    <a href={"/admin/users/#{row.user_id}"} class="cb-text-info">
                       {display_user(@user_names, row.user_id)}
                     </a>
                   </td>
-                  <td class="text-white small"><code class="text-info">{row.slug}</code></td>
-                  <td class="text-white small">{row.status}</td>
-                  <td class="text-white text-end">{int(row.group_tournament_score)}</td>
-                  <td class="text-white text-end">{int(row.group_tournament_total_score)}</td>
-                  <td class="text-white text-end small">
+                  <td class="cb-text-white cb-small"><code class="cb-text-info">{row.slug}</code></td>
+                  <td class="cb-text-white cb-small">{row.status}</td>
+                  <td class="cb-text-white text-end">{int(row.group_tournament_score)}</td>
+                  <td class="cb-text-white text-end">{int(row.group_tournament_total_score)}</td>
+                  <td class="cb-text-white text-end cb-small">
                     {format_duration(int(row.group_tournament_time_spent_in_seconds))}
                   </td>
-                  <td class="text-white text-end small">{row.place_in_total_rank || "–"}</td>
-                  <td class="text-white small">
+                  <td class="cb-text-white text-end cb-small">{row.place_in_total_rank || "–"}</td>
+                  <td class="cb-text-white cb-small">
                     <%= if row.group_tournament_finished do %>
-                      <span class="badge bg-success">yes</span>
+                      <span class="cb-badge cb-bg-success">yes</span>
                     <% else %>
-                      <span class="badge bg-secondary">no</span>
+                      <span class="cb-badge cb-bg-secondary">no</span>
                     <% end %>
                   </td>
-                  <td class="text-white small">{format_dt(row.started_at)}</td>
-                  <td class="text-white small">{format_dt(row.finished_at)}</td>
+                  <td class="cb-text-white cb-small">{format_dt(row.started_at)}</td>
+                  <td class="cb-text-white cb-small">{format_dt(row.finished_at)}</td>
                 </tr>
               <% end %>
             </tbody>
@@ -874,17 +877,17 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
         </div>
       <% end %>
 
-      <h2 class="text-white h4 mt-4 mb-3">
+      <h2 class="cb-text-white h4 cb-mt-4 cb-mb-3">
         <i class="bi bi-person-lines-fill"></i>
-        Users <span class="badge bg-secondary ms-2">{length(@users_rows)}</span>
+        Users <span class="cb-badge cb-bg-secondary ms-2">{length(@users_rows)}</span>
       </h2>
       <%= if @users_rows == [] do %>
         <p class="cb-text">No user activity in range.</p>
       <% else %>
-        <div class="table-responsive">
-          <table class="table table-sm table-dark table-bordered align-middle">
+        <div class="cb-table-responsive">
+          <table class="cb-table cb-table-sm cb-table-dark cb-table-bordered cb-align-middle">
             <thead>
-              <tr class="cb-text small" style="cursor: pointer; user-select: none;">
+              <tr class="cb-text cb-small" style="cursor: pointer; user-select: none;">
                 <th phx-click="sort_table" phx-value-table="users" phx-value-column="user_id">
                   User{sort_indicator(@sort_users, :user_id)}
                 </th>
@@ -953,24 +956,24 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
               <%= for row <- apply_sort(@users_rows, @sort_users) do %>
                 <tr>
                   <td>
-                    <a href={"/admin/users/#{row.user_id}"} class="text-info">
+                    <a href={"/admin/users/#{row.user_id}"} class="cb-text-info">
                       {display_user(@user_names, row.user_id)}
                     </a>
                   </td>
-                  <td class="text-white small">{row.status}</td>
-                  <td class="text-white small">
-                    <code class="text-info">{row.current_stage_slug || "–"}</code>
+                  <td class="cb-text-white cb-small">{row.status}</td>
+                  <td class="cb-text-white cb-small">
+                    <code class="cb-text-info">{row.current_stage_slug || "–"}</code>
                   </td>
-                  <td class="text-white text-end">{int(row.tournaments_completed)}</td>
-                  <td class="text-white text-end">{int(row.group_tournaments_completed)}</td>
-                  <td class="text-white text-end">{int(row.total_score)}</td>
-                  <td class="text-white text-end">{int(row.total_gt_score)}</td>
-                  <td class="text-white text-end small">
+                  <td class="cb-text-white text-end">{int(row.tournaments_completed)}</td>
+                  <td class="cb-text-white text-end">{int(row.group_tournaments_completed)}</td>
+                  <td class="cb-text-white text-end">{int(row.total_score)}</td>
+                  <td class="cb-text-white text-end">{int(row.total_gt_score)}</td>
+                  <td class="cb-text-white text-end cb-small">
                     {int(row.total_wins)} / {int(row.total_games)}
                   </td>
-                  <td class="text-white small">{format_duration(int(row.total_time))}</td>
-                  <td class="text-white small">{format_dt(row.started_at)}</td>
-                  <td class="text-white small">{format_dt(row.finished_at)}</td>
+                  <td class="cb-text-white cb-small">{format_duration(int(row.total_time))}</td>
+                  <td class="cb-text-white cb-small">{format_dt(row.started_at)}</td>
+                  <td class="cb-text-white cb-small">{format_dt(row.finished_at)}</td>
                 </tr>
               <% end %>
             </tbody>

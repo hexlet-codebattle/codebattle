@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useContext, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { ActionIcon, Badge, Box, Collapse, Flex, Text } from '@mantine/core';
 import i18next from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -47,28 +47,20 @@ function TournamentUserPanel({
 
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
-  const searchBadge = cn('badge mr-2', {
-    'badge-primary': !hasCustomEventStyles,
-    'cb-custom-event-badge-primary': hasCustomEventStyles,
-  });
-  const playerBadge = cn('badge text-white mr-2', {
-    'badge-success': !hasCustomEventStyles,
-    'cb-custom-event-badge-success': hasCustomEventStyles,
-  });
-  const panelClassName = cn(
-    'd-flex flex-column border cb-border-color shadow-sm rounded-lg mb-2 overflow-auto',
-    hasCustomEventStyles
-      ? {
-          'cb-custom-event-border-success': userId === currentUserId,
-          'cb-custom-event-border-info': userId === searchedUserId,
-        }
-      : {
-          'border-success': userId === currentUserId,
-          'border-primary': userId === searchedUserId,
-        },
-  );
+  const searchBadgeClass = hasCustomEventStyles ? 'cb-custom-event-badge-primary' : undefined;
+  const playerBadgeClass = hasCustomEventStyles ? 'cb-custom-event-badge-success' : undefined;
 
-  const titleClassName = cn('d-flex align-items-center justify-content-start px-2 py-1');
+  const panelBorderColor = (() => {
+    if (userId === currentUserId) {
+      return hasCustomEventStyles ? '#2a7053' : '#28a745';
+    }
+
+    if (userId === searchedUserId) {
+      return hasCustomEventStyles ? '#34b4fe' : '#007bff';
+    }
+
+    return undefined;
+  })();
 
   const handleOpenMatches = useCallback(
     (event: React.MouseEvent) => {
@@ -89,48 +81,86 @@ function TournamentUserPanel({
   }, [open, dispatch, userId]);
 
   return (
-    <div className={panelClassName}>
-      <div
-        className={titleClassName}
+    <Box
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        border: '1px solid var(--mantine-color-default-border)',
+        borderColor: panelBorderColor,
+        boxShadow: 'var(--mantine-shadow-sm)',
+        borderRadius: '0.3rem',
+        marginBottom: '0.5rem',
+      }}
+    >
+      <Flex
+        align="center"
+        justify="flex-start"
+        px="xs"
+        py={4}
         onClick={handleOpenMatches}
         aria-hidden
         aria-expanded={open}
         aria-controls={`collapse-matches-${userId}`}
+        style={{ cursor: 'pointer' }}
       >
-        <div className="cb-user-panel-head flex-grow-1 min-w-0">
+        <div className="cb-user-panel-head" style={{ flexGrow: 1, minWidth: 0 }}>
           {place != null && place > 0 && (
             <span className="cb-user-panel-place" title={i18next.t('Place')}>
               {`#${place}`}
             </span>
           )}
-          <span className="cb-user-panel-name text-nowrap" title={name}>
+          <Text
+            component="span"
+            className="cb-user-panel-name"
+            style={{ whiteSpace: 'nowrap' }}
+            title={name}
+          >
             {searchedUserId === userId && (
-              <span className={searchBadge}>{i18next.t('Search')}</span>
+              <Badge color="blue" className={searchBadgeClass} mr="xs">
+                {i18next.t('Search')}
+              </Badge>
             )}
-            {currentUserId === userId && <span className={playerBadge}>{i18next.t('you')}</span>}
-            <LanguageIcon className="mr-1" lang={lang} />
+            {currentUserId === userId && (
+              <Badge color="green" className={playerBadgeClass} mr="xs">
+                {i18next.t('you')}
+              </Badge>
+            )}
+            <Box component="span" mr={4}>
+              <LanguageIcon lang={lang} />
+            </Box>
             {name}
-            {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
-          </span>
-          <span className="cb-user-panel-stat text-nowrap">
+            {isBanned && (
+              <FontAwesomeIcon
+                icon="ban"
+                style={{ marginLeft: 8, color: 'var(--mantine-color-red-6)' }}
+              />
+            )}
+          </Text>
+          <Text component="span" className="cb-user-panel-stat" style={{ whiteSpace: 'nowrap' }}>
             {i18next.t('Score')}
             {': '}
             <strong className="cb-user-panel-stat-value">{score ?? 0}</strong>
-          </span>
-          <span className="cb-user-panel-stat text-nowrap">
+          </Text>
+          <Text component="span" className="cb-user-panel-stat" style={{ whiteSpace: 'nowrap' }}>
             {i18next.t('Wins')}
             {': '}
             <strong className="cb-user-panel-stat-value">{winsCount ?? 0}</strong>
-          </span>
+          </Text>
         </div>
-        <div className="d-flex ml-1">
-          <button type="button" className="btn" onClick={handleOpenMatches}>
-            <FontAwesomeIcon className="cb-text" icon={open ? 'chevron-up' : 'chevron-down'} />
-          </button>
-        </div>
-      </div>
-      {open && (
-        <div id={`collapse-matches-${userId}`} className="border-top cb-border-color">
+        <Flex ml="xs">
+          <ActionIcon variant="transparent" onClick={handleOpenMatches}>
+            <FontAwesomeIcon
+              color="var(--mantine-color-cbText-6)"
+              icon={open ? 'chevron-up' : 'chevron-down'}
+            />
+          </ActionIcon>
+        </Flex>
+      </Flex>
+      <Collapse expanded={open}>
+        <Box
+          id={`collapse-matches-${userId}`}
+          style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+        >
           <UsersMatchList
             currentUserId={currentUserId}
             playerId={userId}
@@ -141,11 +171,14 @@ function TournamentUserPanel({
             showScore
             // `isBanned`/`canBan` are ignored by UsersMatchList but passed for parity with the
             // original JS; spread to bypass JSX excess-property checks without changing runtime.
-            {...({ isBanned, canBan: canModerate && userId !== currentUserId } as object)}
+            {...({
+              isBanned,
+              canBan: canModerate && userId !== currentUserId,
+            } as object)}
           />
-        </div>
-      )}
-    </div>
+        </Box>
+      </Collapse>
+    </Box>
   );
 }
 

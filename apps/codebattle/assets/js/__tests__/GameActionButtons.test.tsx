@@ -8,6 +8,7 @@ import GameStateCodes from '../widgets/config/gameStateCodes';
 import machines from '../widgets/machines';
 import ReplayerControlButton from '../widgets/pages/game/ReplayerControlButton';
 import SignUpButton from '../widgets/pages/game/SignUpButton';
+import { MantineTestProvider } from './helpers/mantine';
 
 const { dispatchMock } = vi.hoisted(() => ({
   dispatchMock: vi.fn((action) => {
@@ -39,7 +40,11 @@ describe('game action buttons', () => {
   });
 
   test('guest sign-up links to the registration page', () => {
-    render(<SignUpButton />);
+    render(
+      <MantineTestProvider>
+        <SignUpButton />
+      </MantineTestProvider>,
+    );
 
     expect(screen.getByRole('link', { name: 'Sign up' })).toHaveAttribute('href', '/users/new');
   });
@@ -56,9 +61,11 @@ describe('game action buttons', () => {
     });
 
     render(
-      <RoomContext.Provider value={{ mainService, taskService: mainService }}>
-        <ReplayerControlButton />
-      </RoomContext.Provider>,
+      <MantineTestProvider>
+        <RoomContext.Provider value={{ mainService, taskService: mainService }}>
+          <ReplayerControlButton />
+        </RoomContext.Provider>
+      </MantineTestProvider>,
     );
 
     await user.click(screen.getByRole('button', { name: 'Open Record Player' }));

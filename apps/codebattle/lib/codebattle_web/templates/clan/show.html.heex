@@ -1,8 +1,8 @@
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
-  <h1 class="text-center text-white">Clan</h1>
-  <div class="mt-4">
-    <div class="row mb-3 text-white">
-      <div class="col-md-6">
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mb-3">
+  <h1 class="cb-text-center cb-text-white">Clan</h1>
+  <div class="cb-mt-4">
+    <div class="cb-row cb-mb-3 cb-text-white">
+      <div class="cb-col-md-6">
         <h4>Clan Details</h4>
         <p><strong>Name:</strong> <span class="cb-text">{@clan.name}</span></p>
         <%= if @clan.long_name && @clan.long_name != "" do %>
@@ -13,7 +13,7 @@
           <span class="cb-text">{NaiveDateTime.to_date(@clan.inserted_at)}</span>
         </p>
       </div>
-      <div class="col-md-6">
+      <div class="cb-col-md-6">
         <h4>Creator</h4>
         <p>
           <strong>Name:</strong>
@@ -22,20 +22,20 @@
       </div>
     </div>
 
-    <h4 class="mt-4 text-white">Clan Members</h4>
-    <div class="table-responsive">
-      <table class="table table-sm">
+    <h4 class="cb-mt-4 cb-text-white">Clan Members</h4>
+    <div class="cb-table-responsive">
+      <table class="cb-table cb-table-sm">
         <thead class="cb-text">
           <tr>
-            <th class="cb-border-color border-bottom-0">Name</th>
-            <th class="cb-border-color border-bottom-0">Joined Date</th>
+            <th class="cb-border-color cb-border-bottom-0">Name</th>
+            <th class="cb-border-color cb-border-bottom-0">Joined Date</th>
           </tr>
         </thead>
         <tbody>
           <%= for user <- Enum.sort_by(@clan.users, & &1.id) do %>
             <tr>
-              <td class="align-middle cb-border-color text-white">{user.name}</td>
-              <td class="align-middle cb-border-color text-white">
+              <td class="cb-align-middle cb-border-color cb-text-white">{user.name}</td>
+              <td class="cb-align-middle cb-border-color cb-text-white">
                 {NaiveDateTime.to_date(user.inserted_at)}
               </td>
             </tr>

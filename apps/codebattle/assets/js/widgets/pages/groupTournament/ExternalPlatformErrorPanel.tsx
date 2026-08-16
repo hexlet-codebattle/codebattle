@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Button, Flex, Paper, Text } from '@mantine/core';
 
 import i18n from '../../../i18n';
 
@@ -8,28 +9,37 @@ interface ExternalPlatformErrorPanelProps {
 
 function ExternalPlatformErrorPanel({ requestInviteUpdates }: ExternalPlatformErrorPanelProps) {
   return (
-    <div className="container-fluid h-100">
-      <div className="row justify-content-center h-100">
-        <div className="col-lg-5 col-md-6 col-sm-8 px-md-4 align-content-center">
-          <div className="cb-bg-panel shadow-sm cb-rounded p-5">
-            <div className="text-center text-danger mb-3">
+    <Box w="100%" h="100%">
+      <Flex justify="center" align="center" h="100%" w="100%">
+        <Box
+          w={{
+            sm: '66.6667%',
+            md: '50%',
+            lg: '41.6667%',
+          }}
+          px={{ md: 'lg' }}
+        >
+          <Paper shadow="sm" radius="md" p="xl" bg="transparent">
+            <Text ta="center" c="red" mb="md">
               {i18n.t(
                 'Could not retrieve your external platform credentials. Please contact support.',
               )}
-            </div>
-            <div className="d-flex justify-content-center">
-              <button
+            </Text>
+            <Flex justify="center">
+              <Button
                 type="button"
-                className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                variant="outline"
+                color="cbSecondary"
+                radius="md"
                 onClick={requestInviteUpdates}
               >
                 {i18n.t('Retry')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Button>
+            </Flex>
+          </Paper>
+        </Box>
+      </Flex>
+    </Box>
   );
 }
 

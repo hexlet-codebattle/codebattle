@@ -1,6 +1,7 @@
 import React, { memo, useRef, useEffect } from 'react';
 
 import MonacoEditor from '@monaco-editor/react';
+import { Box } from '@mantine/core';
 import { initVimMode } from 'monaco-vim';
 
 import '../initEditor';
@@ -92,8 +93,9 @@ function Editor(props: EditorProps) {
       />
 
       {/* This is for displaying normal/insert mode status in Vim */}
-      <div
-        className="bg-dark text-white"
+      <Box
+        bg="dark.4"
+        c="white"
         ref={vimStatusRef}
         style={{
           padding: '4px 8px',

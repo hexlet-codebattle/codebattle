@@ -74,7 +74,15 @@ function ClansChartPanel({ type, state }: ClansChartPanelProps) {
   return (
     <div
       ref={chartRef}
-      className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto"
+      className="cb-overflow-x-auto cb-overflow-y-auto"
+      style={{
+        marginTop: '0.5rem',
+        marginBottom: '0.5rem',
+        paddingLeft: '0.25rem',
+        paddingRight: '0.25rem',
+        borderRadius: '0.3rem',
+        position: 'relative',
+      }}
     >
       <Bubble data={config.data} options={config.options} />
     </div>

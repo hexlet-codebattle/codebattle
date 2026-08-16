@@ -1,5 +1,7 @@
 import React, { type Ref } from 'react';
 
+import { Box, Flex, Group } from '@mantine/core';
+
 import i18n from '../../../i18n';
 import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../../components/UserInfo';
@@ -24,14 +26,10 @@ interface ModeButtonsProps {
 
 function ModeButtons({ player }: ModeButtonsProps) {
   return (
-    <div
-      className="btn-group align-items-center mr-auto"
-      role="group"
-      aria-label={i18n.t('Editor mode')}
-    >
+    <Group align="center" mr="auto" role="group" aria-label={i18n.t('Editor mode')}>
       <VimModeButton playerId={player.id} />
       {/* <DarkModeButton playerId={player.id} /> */}
-    </div>
+    </Group>
   );
 }
 
@@ -52,9 +50,6 @@ interface EditorToolbarProps {
   editorState?: string;
   tournamentId?: number;
   editor: EditorToolbarEditor;
-  toolbarClassNames?: string;
-  editorSettingClassNames?: string;
-  userInfoClassNames?: string;
   langPickerStatus?: string;
   actionBtnsProps?: React.ComponentProps<typeof GameActionButtons>;
   showControlBtns?: boolean;
@@ -73,9 +68,6 @@ function EditorToolbar({
   editorState,
   tournamentId,
   editor,
-  toolbarClassNames,
-  editorSettingClassNames,
-  userInfoClassNames,
   langPickerStatus,
   actionBtnsProps,
   showControlBtns,
@@ -85,31 +77,31 @@ function EditorToolbar({
 }: EditorToolbarProps) {
   return (
     <>
-      <div
-        ref={toolbarRef}
-        className="cb-bg-panel cb-toolbar cb-border-color rounded-top"
+      <Box
+        ref={toolbarRef as Ref<HTMLDivElement>}
+        bg="cbPanel"
+        style={{
+          borderTopLeftRadius: 'var(--mantine-radius-sm)',
+          borderTopRightRadius: 'var(--mantine-radius-sm)',
+        }}
         data-player-type={type}
       >
-        <div className={toolbarClassNames} role="toolbar">
-          <div className="d-flex justify-content-between">
-            <div
-              className={editorSettingClassNames}
-              role="group"
-              aria-label={i18n.t('Editor settings')}
-            >
+        <Group justify="space-between" align="center" m="xs" role="toolbar" wrap="wrap">
+          <Flex justify="space-between" wrap="nowrap">
+            <Group align="center" m="xs" role="group" aria-label={i18n.t('Editor settings')}>
               <LanguagePicker editor={editor} status={langPickerStatus} />
-            </div>
+            </Group>
             {showControlBtns && !isHistory && <ModeButtons player={player} />}
-          </div>
+          </Flex>
 
-          <div className="d-flex justify-content-between">
+          <Flex justify="space-between" wrap="nowrap">
             {showControlBtns && !isHistory && editorState !== 'banned' && (
               <GameActionButtons
                 {...(actionBtnsProps as React.ComponentProps<typeof GameActionButtons>)}
               />
             )}
             {!showControlBtns && !hideToolbarControls && (
-              <div className="py-2" role="group" aria-label={i18n.t('Report actions')}>
+              <Group py="sm" role="group" aria-label={i18n.t('Report actions')}>
                 <GameReportButton userId={player.id} gameId={gameId as number} />
                 {isAdmin && (
                   <>
@@ -121,9 +113,15 @@ function EditorToolbar({
                     <CopyEditorButton editor={editor as { text: string }} />
                   </>
                 )}
-              </div>
+              </Group>
             )}
-            <div className={userInfoClassNames} role="group" aria-label={i18n.t('User info')}>
+            <Group
+              align="center"
+              justify="flex-end"
+              m="xs"
+              role="group"
+              aria-label={i18n.t('User info')}
+            >
               <UserInfo
                 {...({ mode: 'dark' } as Partial<React.ComponentProps<typeof UserInfo>>)}
                 user={player}
@@ -132,10 +130,10 @@ function EditorToolbar({
                 }
               />
               {mode === GameRoomModes.standard && <UserHeadToHead userId={player.id} />}
-            </div>
-          </div>
-        </div>
-      </div>
+            </Group>
+          </Flex>
+        </Group>
+      </Box>
       <EditorResultIcon>
         <GameResultIcon userId={editor.userId as number} />
       </EditorResultIcon>

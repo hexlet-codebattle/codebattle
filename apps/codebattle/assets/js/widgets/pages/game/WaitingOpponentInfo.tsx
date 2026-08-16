@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Box, Button, Flex, Text, Title } from '@mantine/core';
 import i18n from 'i18next';
 
 import CopyButton from '../../components/CopyButton';
@@ -10,39 +11,63 @@ interface WaitingOpponentInfoProps {
 
 function WaitingOpponentInfo({ gameUrl }: WaitingOpponentInfoProps) {
   return (
-    <div className="container py-3">
-      <div className="col-xl-8 col-lg-10 col-12 mx-auto px-0">
-        <div className="cb-bg-panel cb-text cb-rounded shadow-sm p-4 p-lg-5 text-center">
-          <h2 className="h2 font-weight-normal text-white">{i18n.t('Waiting for an opponent')}</h2>
-          <p className="lead mb-4 text-white-50">
+    <Box py="md">
+      <Box w={{ base: '100%', lg: '83.3333%', xl: '66.6667%' }} mx="auto" px={0}>
+        <Box
+          bg="cbPanel"
+          c="cbText"
+          p={{ base: 'xl', lg: 'xl' }}
+          ta="center"
+          style={{
+            boxShadow: 'var(--mantine-shadow-sm)',
+            borderRadius: 'var(--mantine-radius-md)',
+          }}
+        >
+          <Title order={2} fw={400} c="white" mb="sm">
+            {i18n.t('Waiting for an opponent')}
+          </Title>
+          <Text size="lg" mb="xl" c="white" style={{ opacity: 0.5 }}>
             {i18n.t('Please wait for someone to join or send an invite using the link below')}
-          </p>
-          <div className="d-flex justify-content-center">
-            <div className="input-group mb-0" style={{ width: 'auto', maxWidth: '100%' }}>
-              <div className="input-group-prepend">
-                <span
-                  className="input-group-text cb-bg-panel cb-text cb-border-color text-break text-left"
-                  id="gameUrl"
-                  style={{ maxWidth: '100%' }}
-                >
-                  {gameUrl}
-                </span>
-              </div>
-              <CopyButton className="btn btn-secondary cb-btn-secondary" value={gameUrl} />
-              <button
-                type="button"
-                className="btn btn-danger rounded-right"
+          </Text>
+          <Flex justify="center">
+            <Flex align="stretch" style={{ width: 'auto', maxWidth: '100%' }}>
+              <Box
+                bg="cbPanel"
+                c="cbText"
+                id="gameUrl"
+                px="sm"
+                py="xs"
+                style={{
+                  maxWidth: '100%',
+                  wordBreak: 'break-all',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: '1px solid var(--mantine-color-default-border)',
+                  borderRight: 0,
+                  borderRadius: 'var(--mantine-radius-sm) 0 0 var(--mantine-radius-sm)',
+                }}
+              >
+                {gameUrl}
+              </Box>
+              <CopyButton value={gameUrl} style={{ borderRadius: 0 }} />
+              <Button
+                color="red"
+                radius={0}
+                style={{
+                  borderRadius: '0 var(--mantine-radius-sm) var(--mantine-radius-sm) 0',
+                }}
                 data-method="delete"
                 data-csrf={window.csrf_token}
                 data-to={gameUrl}
               >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                {i18n.t('Cancel')}
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

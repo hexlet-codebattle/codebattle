@@ -1,5 +1,7 @@
 import React, { memo, useState, useCallback } from 'react';
 
+import { Box, Table, Text } from '@mantine/core';
+
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
@@ -13,7 +15,7 @@ import TournamentContextMenu, { useTournamentContextMenu } from './TournamentCon
 import useTournamentPanel from './useTournamentPanel';
 
 const getCustomEventTrClassName = (type: string, muted: boolean) =>
-  cn('cb-text-light font-weight-bold cb-custom-event-tr', {
+  cn('cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
     'cb-custom-event-bg-muted-success': type === 'clan' && muted,
     'cb-custom-event-bg-purple cursor-pointer': type === 'user' && !muted,
@@ -21,7 +23,7 @@ const getCustomEventTrClassName = (type: string, muted: boolean) =>
   });
 
 const tableDataCellClassName = (hideSeparator?: boolean) =>
-  cn('p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0', {
+  cn('cb-custom-event-td', {
     'hide-separator': hideSeparator,
   });
 
@@ -61,51 +63,65 @@ function RatingClansPanel({ type, state, handleUserSelectClick }: RatingClansPan
 
   return (
     <TournamentContextMenu menuId={menuId} request={menuRequest}>
-      <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
-        <table className="table table-striped cb-custom-event-table">
-          <thead className="text-muted">
-            <tr>
-              <th className="p-1 pl-4 font-weight-light border-0">{}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Wins count')}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">
+      <Box
+        my={{ base: 8, lg: 0 }}
+        mb={8}
+        px={4}
+        className="cb-overflow-x-auto cb-overflow-y-auto"
+        style={{ borderRadius: '0.5rem', position: 'relative' }}
+      >
+        <Table striped className="cb-custom-event-table">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th c="dimmed" fw="normal" p="xs" pl={24} />
+              <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                {i18next.t('Clan')}
+              </Table.Th>
+              <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                {i18next.t('Score')}
+              </Table.Th>
+              <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                {i18next.t('Wins count')}
+              </Table.Th>
+              <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
                 {i18next.t('Total time for solving task')}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {items?.map((users, index) => (
               <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
-                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                <tr className={getCustomEventTrClassName('clan', index > 3)}>
-                  <td className={tableDataCellClassName(true)}>{users[0].clanRank}</td>
-                  <td title={users[0].clanLongName} className={tableDataCellClassName()}>
-                    <div className="cb-custom-event-name mr-1">{users[0].clanName}</div>
-                  </td>
-                  <td className={tableDataCellClassName()}>
+                <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+                <Table.Tr className={getCustomEventTrClassName('clan', index > 3)}>
+                  <Table.Td className={tableDataCellClassName(true)}>{users[0].clanRank}</Table.Td>
+                  <Table.Td title={users[0].clanLongName} className={tableDataCellClassName()}>
+                    <div className="cb-custom-event-name">{users[0].clanName}</div>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName()}>
                     {users.reduce((acc, user) => acc + user.totalScore, 0) || 0}
-                  </td>
-                  <td className={tableDataCellClassName()}>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName()}>
                     {users.reduce((acc, user) => acc + user.winsCount, 0) || 0}
-                  </td>
-                  <td className={tableDataCellClassName()}>
+                  </Table.Td>
+                  <Table.Td className={tableDataCellClassName()}>
                     {users.reduce((acc, user) => acc + user.totalDurationSec, 0) || 0}
-                  </td>
-                </tr>
+                  </Table.Td>
+                </Table.Tr>
                 {users.map((user) => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
-                    <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                    <tr className={getCustomEventTrClassName('user', index > 3)}>
-                      <td
+                    <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true">
+                      <Table.Td />
+                    </Table.Tr>
+                    <Table.Tr className={getCustomEventTrClassName('user', index > 3)}>
+                      <Table.Td
                         className={tableDataCellClassName(true)}
                         aria-label={i18next.t('User row')}
                       />
-                      <td className={tableDataCellClassName()}>
+                      <Table.Td className={tableDataCellClassName()}>
                         <div
                           role="button"
                           tabIndex={0}
-                          className="cb-custom-event-name cursor-pointer mr-1 text-secondary"
+                          className="cb-custom-event-name cursor-pointer"
                           // onContextMenu={displayMenu}
                           onClick={handleUserSelectClick}
                           onKeyPress={handleUserSelectClick}
@@ -118,24 +134,30 @@ function RatingClansPanel({ type, state, handleUserSelectClick }: RatingClansPan
                             user={{ id: user.userId, name: user.userName }}
                             hideOnlineIndicator
                             hideLink
-                            linkClassName="text-secondary"
+                            color="#6c757d"
                             className={undefined}
                             displayName={undefined}
                             lang={undefined}
                           />
                         </div>
-                      </td>
-                      <td className={tableDataCellClassName()}>{user.totalScore || 0}</td>
-                      <td className={tableDataCellClassName()}>{user.winsCount || 0}</td>
-                      <td className={tableDataCellClassName()}>{user.totalDurationSec || 0}</td>
-                    </tr>
+                      </Table.Td>
+                      <Table.Td className={tableDataCellClassName()}>
+                        {user.totalScore || 0}
+                      </Table.Td>
+                      <Table.Td className={tableDataCellClassName()}>
+                        {user.winsCount || 0}
+                      </Table.Td>
+                      <Table.Td className={tableDataCellClassName()}>
+                        {user.totalDurationSec || 0}
+                      </Table.Td>
+                    </Table.Tr>
                   </React.Fragment>
                 ))}
               </React.Fragment>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </Table.Tbody>
+        </Table>
+      </Box>
     </TournamentContextMenu>
   );
 }

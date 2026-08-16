@@ -9,12 +9,10 @@ import React, {
 
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Box, Flex, UnstyledButton } from '@mantine/core';
 import noop from 'lodash/noop';
 
 const delta = 10;
-const commonClassName = 'position-relative overflow-auto';
-const commonControllsClassName = 'position-absolute h-100 z-3';
 
 interface HorizontalScrollControlsProps {
   children: ReactNode[];
@@ -83,36 +81,41 @@ function HorizontalScrollControls({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const leftControlClassName = cn(commonControllsClassName, 'cb-left-scroll-control pr-2 start-0', {
-    'd-block': showLeftControl,
-    'd-none': !showLeftControl,
-  });
-
-  const rightControlClassName = cn(
-    commonControllsClassName,
-    'cb-right-scroll-control pl-2 top-0 end-0',
-    {
-      'd-block': showRightControl,
-      'd-none': !showRightControl,
-    },
-  );
-
   return (
-    <div className={cn(commonClassName, className)}>
-      <div ref={leftButtonRef} className={leftControlClassName}>
-        <button type="button" className="btn border-0 p-2 h-100" onClick={handleScrollItemsLeft}>
+    <Box pos="relative" className={className} style={{ overflow: 'auto' }}>
+      <Box
+        ref={leftButtonRef}
+        pos="absolute"
+        h="100%"
+        left={0}
+        pr="sm"
+        display={showLeftControl ? 'block' : 'none'}
+        className="cb-left-scroll-control"
+        style={{ zIndex: 3 }}
+      >
+        <UnstyledButton p="sm" h="100%" onClick={handleScrollItemsLeft}>
           <FontAwesomeIcon icon={faChevronLeft} />
-        </button>
-      </div>
-      <div ref={scrolledListRef} onScroll={handleScroll} className="d-flex pb-2 overflow-auto">
+        </UnstyledButton>
+      </Box>
+      <Flex ref={scrolledListRef} onScroll={handleScroll} pb="sm" style={{ overflow: 'auto' }}>
         {children}
-      </div>
-      <div ref={rightButtonRef} className={rightControlClassName}>
-        <button type="button" className="btn border-0 p-2 h-100" onClick={handleScrollItemsRight}>
+      </Flex>
+      <Box
+        ref={rightButtonRef}
+        pos="absolute"
+        h="100%"
+        top={0}
+        right={0}
+        pl="sm"
+        display={showRightControl ? 'block' : 'none'}
+        className="cb-right-scroll-control"
+        style={{ zIndex: 3 }}
+      >
+        <UnstyledButton p="sm" h="100%" onClick={handleScrollItemsRight}>
           <FontAwesomeIcon icon={faChevronRight} />
-        </button>
-      </div>
-    </div>
+        </UnstyledButton>
+      </Box>
+    </Box>
   );
 }
 

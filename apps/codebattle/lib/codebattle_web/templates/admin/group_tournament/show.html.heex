@@ -1,17 +1,17 @@
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-  <h1 class="text-center text-white">
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+  <h1 class="cb-text-center cb-text-white">
     <span>{@group_tournament.name}</span>
   </h1>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
-    <div class="row">
-      <div class="col-md-6">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4 cb-text-white">
+    <div class="cb-row">
+      <div class="cb-col-md-6">
         <p><strong>ID:</strong> {@group_tournament.id}</p>
         <p><strong>Name:</strong> {@group_tournament.name}</p>
         <p><strong>Slug:</strong> {@group_tournament.slug}</p>
         <p><strong>State:</strong> {@group_tournament.state}</p>
       </div>
-      <div class="col-md-6">
+      <div class="cb-col-md-6">
         <p>
           <strong>Group Task:</strong> {@group_tournament.group_task &&
             @group_tournament.group_task.slug}
@@ -41,14 +41,14 @@
         </p>
       </div>
     </div>
-    <div class="mt-3 d-flex justify-content-between align-items-start flex-wrap">
-      <div class="mb-2">
+    <div class="cb-mt-3 cb-d-flex cb-justify-between cb-align-start cb-flex-wrap">
+      <div class="cb-mb-2">
         <%= if @group_tournament.state == "waiting_participants" do %>
           {link("Start Tournament",
             to: Routes.admin_group_tournament_path(@conn, :start, @group_tournament),
             method: :post,
             data: [confirm: "Start this group tournament now?"],
-            class: "btn btn-success text-white cb-rounded"
+            class: "cb-btn cb-btn-success cb-text-white cb-rounded"
           )}
           {link("Start 5-min Timer",
             to: Routes.admin_group_tournament_path(@conn, :start_timer, @group_tournament),
@@ -57,7 +57,7 @@
               confirm:
                 "Show a 5-minute countdown to all participants and auto-start the tournament when it elapses?"
             ],
-            class: "btn btn-outline-warning cb-rounded ml-2"
+            class: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2"
           )}
           {link("Smooth Start (60s)",
             to: Routes.admin_group_tournament_path(@conn, :smooth_start, @group_tournament),
@@ -66,7 +66,7 @@
               confirm:
                 "Start the tournament now but spread the status_updated push to players evenly over 60 seconds?"
             ],
-            class: "btn btn-outline-info cb-rounded ml-2"
+            class: "cb-btn cb-btn-outline-info cb-rounded cb-ml-2"
           )}
         <% end %>
         <%= if @group_tournament.state == "active" do %>
@@ -74,7 +74,7 @@
             to: Routes.admin_group_tournament_path(@conn, :finish, @group_tournament),
             method: :post,
             data: [confirm: "Finish this group tournament now?"],
-            class: "btn btn-success text-white cb-rounded"
+            class: "cb-btn cb-btn-success cb-text-white cb-rounded"
           )}
           {link("Force Finish Break",
             to: Routes.admin_group_tournament_path(@conn, :force_finish_break, @group_tournament),
@@ -82,20 +82,20 @@
             data: [
               confirm: "End the current break and start the next round now with the same slices?"
             ],
-            class: "btn btn-outline-warning cb-rounded ml-2"
+            class: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2"
           )}
         <% end %>
         {link("Cancel",
           to: Routes.admin_group_tournament_path(@conn, :cancel, @group_tournament),
           method: :post,
           data: [confirm: "Cancel this group tournament?"],
-          class: "btn btn-outline-danger cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-danger cb-rounded cb-ml-2"
         )}
         {link("Restart",
           to: Routes.admin_group_tournament_path(@conn, :reset, @group_tournament),
           method: :post,
           data: [confirm: "Reset players, runs, and solutions for this group tournament?"],
-          class: "btn btn-outline-warning cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2"
         )}
         {link("Retry",
           to: Routes.admin_group_tournament_path(@conn, :retry, @group_tournament),
@@ -104,22 +104,22 @@
             confirm:
               "Keep all players, clear their scores/runs/solutions, and move tournament back to waiting participants?"
           ],
-          class: "btn btn-outline-info cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-info cb-rounded cb-ml-2"
         )}
       </div>
 
-      <div class="mb-2">
+      <div class="cb-mb-2">
         {link("Open Group Tournament",
           to: Routes.group_tournament_path(@conn, :show, @group_tournament),
           target: "_blank",
           rel: "noopener noreferrer",
-          class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+          class: "cb-btn cb-btn-outline-secondary cb-rounded"
         )}
         {link("Run Checker",
           to: Routes.admin_group_tournament_path(@conn, :check, @group_tournament),
           method: :post,
           data: [confirm: "Run checker for the tournament players now?"],
-          class: "btn btn-outline-success cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-success cb-rounded cb-ml-2"
         )}
         {link("Run All Slices",
           to: Routes.admin_group_tournament_path(@conn, :run_all_slices, @group_tournament),
@@ -128,7 +128,7 @@
             confirm:
               "Run every slice synchronously now? This calls the runner for each slice and may take a while."
           ],
-          class: "btn btn-outline-warning cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2"
         )}
         {link("Run Top 8",
           to: Routes.admin_group_tournament_path(@conn, :run_top8, @group_tournament),
@@ -137,15 +137,15 @@
             confirm:
               "Run a top-8 slice now? Picks the best solution per player (highest score, earliest submission as tiebreak), takes the top 8, and runs them together as one slice."
           ],
-          class: "btn btn-outline-warning cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2"
         )}
         {link("Solution Tester",
           to: Routes.admin_group_tournament_path(@conn, :solution_tester, @group_tournament),
-          class: "btn btn-outline-info cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-info cb-rounded cb-ml-2"
         )}
         {link("Leaderboard",
           to: Routes.admin_group_tournament_path(@conn, :leaderboard, @group_tournament),
-          class: "btn btn-outline-info cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-info cb-rounded cb-ml-2"
         )}
         {link(
           if(@group_tournament.show_leaderboard,
@@ -163,8 +163,8 @@
           ],
           class:
             if(@group_tournament.show_leaderboard,
-              do: "btn btn-outline-warning cb-rounded ml-2",
-              else: "btn btn-outline-success cb-rounded ml-2"
+              do: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2",
+              else: "cb-btn cb-btn-outline-success cb-rounded cb-ml-2"
             )
         )}
         {link(
@@ -184,8 +184,8 @@
           ],
           class:
             if(@group_tournament.visible_to_users,
-              do: "btn btn-outline-warning cb-rounded ml-2",
-              else: "btn btn-outline-success cb-rounded ml-2"
+              do: "cb-btn cb-btn-outline-warning cb-rounded cb-ml-2",
+              else: "cb-btn cb-btn-outline-success cb-rounded cb-ml-2"
             )
         )}
         {link("Gather Players Here",
@@ -195,19 +195,19 @@
             confirm:
               "Force-redirect every non-admin user connected to the main channel to this tournament right now?"
           ],
-          class: "btn btn-outline-danger cb-rounded ml-2"
+          class: "cb-btn cb-btn-outline-danger cb-rounded cb-ml-2"
         )}
       </div>
     </div>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <h3 class="text-white">Generate Token</h3>
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <h3 class="cb-text-white">Generate Token</h3>
     <%= form_for(@token_changeset, Routes.admin_group_tournament_path(@conn, :create_token, @group_tournament), [as: :group_tournament_token], fn f -> %>
-      <div class="form-group">
-        <span class="text-white">User ID</span>
+      <div class="cb-form-group">
+        <span class="cb-text-white">User ID</span>
         {number_input(f, :user_id,
-          class: "form-control cb-bg-panel cb-border-color text-white mt-2",
+          class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2",
           min: "1",
           required: true
         )}
@@ -215,37 +215,37 @@
       </div>
       {submit("Generate / Rotate Token",
         phx_disable_with: "Saving...",
-        class: "btn btn-success text-white cb-rounded"
+        class: "cb-btn cb-btn-success cb-text-white cb-rounded"
       )}
     <% end) %>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <h3 class="text-white">Add User to Tournament</h3>
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <h3 class="cb-text-white">Add User to Tournament</h3>
     <form
       action={Routes.admin_group_tournament_path(@conn, :add_user, @group_tournament)}
       method="post"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <div class="form-group">
-        <span class="text-white">User ID</span>
+      <div class="cb-form-group">
+        <span class="cb-text-white">User ID</span>
         <input
           type="number"
           name="add_user[user_id]"
-          class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           min="1"
           required
         />
       </div>
-      <button type="submit" class="btn btn-success text-white cb-rounded">
+      <button type="submit" class="cb-btn cb-btn-success cb-text-white cb-rounded">
         Add User
       </button>
     </form>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <h3 class="text-white">Bulk Add Users</h3>
-    <p class="cb-text small mb-3">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <h3 class="cb-text-white">Bulk Add Users</h3>
+    <p class="cb-text cb-small cb-mb-3">
       Paste user IDs (comma, space, or newline separated). For each existing user, the same
       add-user flow runs as the single "Add User" form above: the user is linked to the
       tournament and a player record is created/updated with <code>lang: "js"</code>
@@ -256,19 +256,19 @@
       method="post"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <div class="form-group mb-3">
-        <label class="text-white">User IDs</label>
+      <div class="cb-form-group cb-mb-3">
+        <label class="cb-text-white">User IDs</label>
         <textarea
           name="bulk_add_users[user_ids]"
           rows="5"
-          class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           placeholder="e.g. 101, 102, 103"
           required
         ></textarea>
       </div>
       <button
         type="submit"
-        class="btn btn-success text-white cb-rounded"
+        class="cb-btn cb-btn-success cb-text-white cb-rounded"
         data-confirm="Add all these users to the tournament?"
       >
         Bulk Add Users
@@ -276,9 +276,9 @@
     </form>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <h3 class="text-white mb-3">Bulk External Operations</h3>
-    <p class="cb-text small mb-4">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <h3 class="cb-text-white cb-mb-3">Bulk External Operations</h3>
+    <p class="cb-text cb-small cb-mb-4">
       All operations are dispatched through Oban with per-user retries
       (<code>max_attempts: 5</code>). Each job is independent — a failure for one user does
       not block the rest, and successes are not re-run. Jobs are scheduled in batches of
@@ -286,9 +286,9 @@
       (default 50, max 100) to stay under the external service's 100 RPS rate limit.
     </p>
 
-    <div class="mb-4">
-      <h4 class="text-white">Setup (repo + dev role + secret)</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Setup (repo + dev role + secret)</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Paste user IDs (comma, space, or newline separated). For each user an
         <code>ExternalSetupWorker</code>
         job is enqueued that idempotently creates the repo from the tournament template,
@@ -302,31 +302,31 @@
         method="post"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-3">
-          <label class="text-white">User IDs</label>
+        <div class="cb-form-group cb-mb-3">
+          <label class="cb-text-white">User IDs</label>
           <textarea
             name="bulk_setup[user_ids]"
             rows="5"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
             placeholder="e.g. 101, 102, 103"
             required
           ></textarea>
         </div>
-        <div class="form-group mb-3" style="max-width: 240px;">
-          <label class="text-white">Rate (jobs per second)</label>
+        <div class="cb-form-group cb-mb-3" style="max-width: 240px;">
+          <label class="cb-text-white">Rate (jobs per second)</label>
           <input
             type="number"
             name="bulk_setup[batch_size]"
             value="50"
             min="1"
             max="100"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           />
           <small class="cb-text">External service is rate-limited to 100 RPS.</small>
         </div>
         <button
           type="submit"
-          class="btn btn-success text-white cb-rounded"
+          class="cb-btn cb-btn-success cb-text-white cb-rounded"
           data-confirm="Enqueue bulk external setup jobs for these users?"
         >
           Enqueue Bulk Setup
@@ -336,9 +336,9 @@
 
     <hr class="cb-border-color" />
 
-    <div class="mb-4">
-      <h4 class="text-white">Hide Repos</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Hide Repos</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueues <code>RepoHideWorker</code>
         jobs that batch all tournament repos into configurable chunks per <code>/repos/hide</code>
         call. One job per chunk, scheduled 1 second apart, retried by Oban on failure.
@@ -346,14 +346,14 @@
       <form
         action={Routes.admin_group_tournament_path(@conn, :hide_repos, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Batch size</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Batch size</label>
           <select
             name="bulk_repo[batch_size]"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           >
             <option value="1">1 repo per call</option>
             <option value="10">10 repos per call</option>
@@ -363,7 +363,7 @@
         </div>
         <button
           type="submit"
-          class="btn btn-outline-warning cb-rounded"
+          class="cb-btn cb-btn-outline-warning cb-rounded"
           data-confirm="Enqueue hide-repo jobs for every tournament repo?"
         >
           Enqueue Hide Repos
@@ -371,9 +371,9 @@
       </form>
     </div>
 
-    <div class="mb-4">
-      <h4 class="text-white">Unveil Repos</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Unveil Repos</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueues <code>RepoUnveilWorker</code>
         jobs that batch all hidden tournament repos into configurable chunks per
         <code>/repos/unveil</code>
@@ -382,14 +382,14 @@
       <form
         action={Routes.admin_group_tournament_path(@conn, :unveil_repos, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Batch size</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Batch size</label>
           <select
             name="bulk_repo[batch_size]"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           >
             <option value="1">1 repo per call</option>
             <option value="10">10 repos per call</option>
@@ -399,7 +399,7 @@
         </div>
         <button
           type="submit"
-          class="btn btn-outline-success cb-rounded"
+          class="cb-btn cb-btn-outline-success cb-rounded"
           data-confirm="Enqueue unveil-repo jobs for every hidden tournament repo?"
         >
           Enqueue Unveil Repos
@@ -407,9 +407,9 @@
       </form>
     </div>
 
-    <div class="mb-4">
-      <h4 class="text-white">Occupy Seats</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Occupy Seats</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueue one <code>SeatOccupyWorker</code>
         per tournament user. Each job calls <code>/code-assist-workplaces/occupy-bulk</code>
         for that user. Skips users whose <code>workplace_state</code>
@@ -418,23 +418,23 @@
       <form
         action={Routes.admin_group_tournament_path(@conn, :occupy_seats, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Rate (jobs/sec, max 100)</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
             name="bulk_repo[batch_size]"
             value="50"
             min="1"
             max="100"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           />
         </div>
         <button
           type="submit"
-          class="btn btn-outline-success cb-rounded"
+          class="cb-btn cb-btn-outline-success cb-rounded"
           data-confirm="Enqueue occupy-seat jobs for every tournament user?"
         >
           Enqueue Occupy Seats
@@ -442,9 +442,9 @@
       </form>
     </div>
 
-    <div class="mb-4">
-      <h4 class="text-white">Release Seats</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Release Seats</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueue one <code>SeatReleaseWorker</code>
         per tournament user. Releases the code-assist seat — skips users whose
         <code>release_state</code>
@@ -453,23 +453,23 @@
       <form
         action={Routes.admin_group_tournament_path(@conn, :release_seats, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Rate (jobs/sec, max 100)</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
             name="bulk_repo[batch_size]"
             value="50"
             min="1"
             max="100"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           />
         </div>
         <button
           type="submit"
-          class="btn btn-outline-warning cb-rounded"
+          class="cb-btn cb-btn-outline-warning cb-rounded"
           data-confirm="Enqueue release-seat jobs for every tournament user?"
         >
           Enqueue Release Seats
@@ -477,9 +477,9 @@
       </form>
     </div>
 
-    <div class="mb-4">
-      <h4 class="text-white">Remove Dev Roles</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Remove Dev Roles</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueue one <code>DevRoleRemoveWorker</code>
         per tournament user. Removes the developer role on each user's repo. Skips users
         whose <code>dev_role_removal_state</code>
@@ -488,23 +488,23 @@
       <form
         action={Routes.admin_group_tournament_path(@conn, :remove_dev_roles, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Rate (jobs/sec, max 100)</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
             name="bulk_repo[batch_size]"
             value="50"
             min="1"
             max="100"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           />
         </div>
         <button
           type="submit"
-          class="btn btn-outline-warning cb-rounded"
+          class="cb-btn cb-btn-outline-warning cb-rounded"
           data-confirm="Enqueue remove-dev-role jobs for every tournament user?"
         >
           Enqueue Remove Dev Roles
@@ -512,9 +512,9 @@
       </form>
     </div>
 
-    <div class="mb-4">
-      <h4 class="text-white">Add Viewer Roles</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-4">
+      <h4 class="cb-text-white">Add Viewer Roles</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueue one <code>ViewerRoleAddWorker</code>
         per tournament user. Grants the viewer role on each user's repo. Skips users whose
         <code>viewer_role_state</code>
@@ -523,23 +523,23 @@
       <form
         action={Routes.admin_group_tournament_path(@conn, :add_viewer_roles, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Rate (jobs/sec, max 100)</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
             name="bulk_repo[batch_size]"
             value="50"
             min="1"
             max="100"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           />
         </div>
         <button
           type="submit"
-          class="btn btn-outline-success cb-rounded"
+          class="cb-btn cb-btn-outline-success cb-rounded"
           data-confirm="Enqueue add-viewer-role jobs for every tournament user?"
         >
           Enqueue Add Viewer Roles
@@ -547,34 +547,34 @@
       </form>
     </div>
 
-    <div class="mb-2">
-      <h4 class="text-white">Delete Repos</h4>
-      <p class="cb-text small mb-3">
+    <div class="cb-mb-2">
+      <h4 class="cb-text-white">Delete Repos</h4>
+      <p class="cb-text cb-small cb-mb-3">
         Enqueue one <code>RepoDeleteWorker</code>
-        per tournament user. <strong class="text-danger">Destructive</strong>
+        per tournament user. <strong class="cb-text-danger">Destructive</strong>
         — each job calls <code>DELETE /repos/{"{org}/{repo}"}</code>
         with <code>silent=true</code>.
       </p>
       <form
         action={Routes.admin_group_tournament_path(@conn, :delete_repos, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
+        class="cb-d-flex cb-align-end cb-flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Rate (jobs/sec, max 100)</label>
+        <div class="cb-form-group cb-mb-0 cb-mr-3" style="max-width: 240px;">
+          <label class="cb-text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
             name="bulk_repo[batch_size]"
             value="50"
             min="1"
             max="100"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-mt-2"
           />
         </div>
         <button
           type="submit"
-          class="btn btn-outline-danger cb-rounded"
+          class="cb-btn cb-btn-outline-danger cb-rounded"
           data-confirm="Permanently enqueue DELETE-repo jobs for every tournament user? This cannot be undone."
         >
           Enqueue Delete Repos
@@ -583,20 +583,20 @@
     </div>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">Tournament Users</h3>
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+      <h3 class="cb-text-white cb-mb-0">Tournament Users</h3>
       <span class="cb-text">{length(@tournament_users)} users with access</span>
     </div>
-    <div class="table-responsive">
-      <table class="table table-sm">
+    <div class="cb-table-responsive">
+      <table class="cb-table cb-table-sm">
         <thead class="cb-text">
           <tr>
-            <th class="cb-border-color border-bottom">user_id</th>
-            <th class="cb-border-color border-bottom">user</th>
-            <th class="cb-border-color border-bottom">state</th>
-            <th class="cb-border-color border-bottom">token</th>
-            <th class="cb-border-color border-bottom">added_at</th>
+            <th class="cb-border-color cb-border-bottom">user_id</th>
+            <th class="cb-border-color cb-border-bottom">user</th>
+            <th class="cb-border-color cb-border-bottom">state</th>
+            <th class="cb-border-color cb-border-bottom">token</th>
+            <th class="cb-border-color cb-border-bottom">added_at</th>
           </tr>
         </thead>
         <tbody>
@@ -605,13 +605,13 @@
               <td class="cb-border-color">
                 {link(record.user_id,
                   to: "/admin/users/#{record.user_id}",
-                  class: "text-white"
+                  class: "cb-text-white"
                 )}
               </td>
-              <td class="text-white cb-border-color">{record.user && record.user.name}</td>
-              <td class="text-white cb-border-color">{record.state}</td>
-              <td class="text-white cb-border-color"><code>{record.token}</code></td>
-              <td class="text-white cb-border-color">{format_datetime(record.inserted_at)}</td>
+              <td class="cb-text-white cb-border-color">{record.user && record.user.name}</td>
+              <td class="cb-text-white cb-border-color">{record.state}</td>
+              <td class="cb-text-white cb-border-color"><code>{record.token}</code></td>
+              <td class="cb-text-white cb-border-color">{format_datetime(record.inserted_at)}</td>
             </tr>
           <% end %>
         </tbody>
@@ -619,9 +619,9 @@
     </div>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+      <h3 class="cb-text-white cb-mb-0">
         Players
         <%= if not is_nil(@slice_filter) do %>
           <small class="cb-text">— filtered to {slice_label(@slice_filter)}</small>
@@ -633,16 +633,16 @@
         <% end %>
       </span>
     </div>
-    <div class="table-responsive">
-      <table class="table table-sm">
+    <div class="cb-table-responsive">
+      <table class="cb-table cb-table-sm">
         <thead class="cb-text">
           <tr>
-            <th class="cb-border-color border-bottom">user_id</th>
-            <th class="cb-border-color border-bottom">user</th>
-            <th class="cb-border-color border-bottom">slice</th>
-            <th class="cb-border-color border-bottom">lang</th>
-            <th class="cb-border-color border-bottom">state</th>
-            <th class="cb-border-color border-bottom">last_setup_at</th>
+            <th class="cb-border-color cb-border-bottom">user_id</th>
+            <th class="cb-border-color cb-border-bottom">user</th>
+            <th class="cb-border-color cb-border-bottom">slice</th>
+            <th class="cb-border-color cb-border-bottom">lang</th>
+            <th class="cb-border-color cb-border-bottom">state</th>
+            <th class="cb-border-color cb-border-bottom">last_setup_at</th>
           </tr>
         </thead>
         <tbody>
@@ -651,72 +651,74 @@
               <td class="cb-border-color">
                 {link(player.user_id,
                   to: "/admin/users/#{player.user_id}",
-                  class: "text-white"
+                  class: "cb-text-white"
                 )}
               </td>
-              <td class="text-white cb-border-color">{player.user && player.user.name}</td>
-              <td class="text-white cb-border-color">
+              <td class="cb-text-white cb-border-color">{player.user && player.user.name}</td>
+              <td class="cb-text-white cb-border-color">
                 {if is_nil(player.slice_index), do: "-", else: player.slice_index}
               </td>
-              <td class="text-white cb-border-color">{player.lang}</td>
-              <td class="text-white cb-border-color">{player.state}</td>
-              <td class="text-white cb-border-color">{format_datetime(player.last_setup_at)}</td>
+              <td class="cb-text-white cb-border-color">{player.lang}</td>
+              <td class="cb-text-white cb-border-color">{player.state}</td>
+              <td class="cb-text-white cb-border-color">
+                {format_datetime(player.last_setup_at)}
+              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
     <%= if @players_pages > 1 do %>
-      <div class="d-flex align-items-center mt-2 cb-text">
+      <div class="cb-d-flex cb-align-center cb-mt-2 cb-text">
         <%= if @players_page > 1 do %>
           {link("« prev",
             to: show_path(@conn, @group_tournament, %{players_page: @players_page - 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-mr-2"
           )}
         <% end %>
-        <span class="mx-2">page {@players_page} of {@players_pages}</span>
+        <span class="cb-mx-2">page {@players_page} of {@players_pages}</span>
         <%= if @players_page < @players_pages do %>
           {link("next »",
             to: show_path(@conn, @group_tournament, %{players_page: @players_page + 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
           )}
         <% end %>
       </div>
     <% end %>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
       <div>
-        <h3 class="text-white mb-0">Slice Runs</h3>
+        <h3 class="cb-text-white cb-mb-0">Slice Runs</h3>
         <small class="cb-text">scored runs — one per slice on each timer tick</small>
       </div>
       <span class="cb-text">
         {@slice_runs_total} total — page {@slice_runs_page} of {@slice_runs_pages}
       </span>
     </div>
-    <div class="table-responsive">
-      <table class="table table-sm">
+    <div class="cb-table-responsive">
+      <table class="cb-table cb-table-sm">
         <thead class="cb-text">
           <tr>
-            <th class="cb-border-color border-bottom">inserted_at</th>
-            <th class="cb-border-color border-bottom">slice</th>
-            <th class="cb-border-color border-bottom">status</th>
-            <th class="cb-border-color border-bottom">player_ids</th>
-            <th class="cb-border-color border-bottom">downloads</th>
+            <th class="cb-border-color cb-border-bottom">inserted_at</th>
+            <th class="cb-border-color cb-border-bottom">slice</th>
+            <th class="cb-border-color cb-border-bottom">status</th>
+            <th class="cb-border-color cb-border-bottom">player_ids</th>
+            <th class="cb-border-color cb-border-bottom">downloads</th>
           </tr>
         </thead>
         <tbody>
           <%= for run <- @slice_runs do %>
             <tr>
-              <td class="text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
-              <td class="text-white cb-border-color">{run.slice_index}</td>
-              <td class="text-white cb-border-color">{run.status}</td>
-              <td class="text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
-              <td class="text-nowrap cb-border-color">
+              <td class="cb-text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
+              <td class="cb-text-white cb-border-color">{run.slice_index}</td>
+              <td class="cb-text-white cb-border-color">{run.status}</td>
+              <td class="cb-text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
+              <td class="cb-text-nowrap cb-border-color">
                 <%= cond do %>
                   <% run.status == "error" -> %>
-                    <span class="text-danger">{extract_run_error(run.result)}</span>
+                    <span class="cb-text-danger">{extract_run_error(run.result)}</span>
                   <% run.status == "pending" -> %>
                     <span class="cb-text">nil</span>
                   <% true -> %>
@@ -731,8 +733,7 @@
                         ),
                       target: "_blank",
                       rel: "noopener noreferrer",
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                      class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                     )}
                     {link("History JSON",
                       to:
@@ -743,8 +744,7 @@
                           run.id,
                           "history"
                         ),
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                      class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
                     )}
                     {link("Summary JSON",
                       to:
@@ -755,8 +755,7 @@
                           run.id,
                           "summary"
                         ),
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                      class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
                     )}
                 <% end %>
               </td>
@@ -766,56 +765,56 @@
       </table>
     </div>
     <%= if @slice_runs_pages > 1 do %>
-      <div class="d-flex align-items-center mt-2 cb-text">
+      <div class="cb-d-flex cb-align-center cb-mt-2 cb-text">
         <%= if @slice_runs_page > 1 do %>
           {link("« prev",
             to: show_path(@conn, @group_tournament, %{slice_runs_page: @slice_runs_page - 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-mr-2"
           )}
         <% end %>
-        <span class="mx-2">page {@slice_runs_page} of {@slice_runs_pages}</span>
+        <span class="cb-mx-2">page {@slice_runs_page} of {@slice_runs_pages}</span>
         <%= if @slice_runs_page < @slice_runs_pages do %>
           {link("next »",
             to: show_path(@conn, @group_tournament, %{slice_runs_page: @slice_runs_page + 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
           )}
         <% end %>
       </div>
     <% end %>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
       <div>
-        <h3 class="text-white mb-0">Latest Runs</h3>
+        <h3 class="cb-text-white cb-mb-0">Latest Runs</h3>
         <small class="cb-text">per-submission preview runs — single user, not scored</small>
       </div>
       <span class="cb-text">
         {@runs_total} total — page {@runs_page} of {@runs_pages}
       </span>
     </div>
-    <div class="table-responsive">
-      <table class="table table-sm">
+    <div class="cb-table-responsive">
+      <table class="cb-table cb-table-sm">
         <thead class="cb-text">
           <tr>
-            <th class="cb-border-color border-bottom">inserted_at</th>
-            <th class="cb-border-color border-bottom">status</th>
-            <th class="cb-border-color border-bottom">score</th>
-            <th class="cb-border-color border-bottom">player_ids</th>
-            <th class="cb-border-color border-bottom">downloads</th>
+            <th class="cb-border-color cb-border-bottom">inserted_at</th>
+            <th class="cb-border-color cb-border-bottom">status</th>
+            <th class="cb-border-color cb-border-bottom">score</th>
+            <th class="cb-border-color cb-border-bottom">player_ids</th>
+            <th class="cb-border-color cb-border-bottom">downloads</th>
           </tr>
         </thead>
         <tbody>
           <%= for run <- @runs do %>
             <tr>
-              <td class="text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
-              <td class="text-white cb-border-color">{run.status}</td>
-              <td class="text-white cb-border-color">{run.score}</td>
-              <td class="text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
-              <td class="text-nowrap cb-border-color">
+              <td class="cb-text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
+              <td class="cb-text-white cb-border-color">{run.status}</td>
+              <td class="cb-text-white cb-border-color">{run.score}</td>
+              <td class="cb-text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
+              <td class="cb-text-nowrap cb-border-color">
                 <%= cond do %>
                   <% run.status == "error" -> %>
-                    <span class="text-danger">{extract_run_error(run.result)}</span>
+                    <span class="cb-text-danger">{extract_run_error(run.result)}</span>
                   <% run.status == "pending" -> %>
                     <span class="cb-text">nil</span>
                   <% true -> %>
@@ -830,8 +829,7 @@
                         ),
                       target: "_blank",
                       rel: "noopener noreferrer",
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                      class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                     )}
                     {link("History JSON",
                       to:
@@ -842,8 +840,7 @@
                           run.id,
                           "history"
                         ),
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                      class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
                     )}
                     {link("Summary JSON",
                       to:
@@ -854,8 +851,7 @@
                           run.id,
                           "summary"
                         ),
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                      class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
                     )}
                 <% end %>
               </td>
@@ -865,60 +861,62 @@
       </table>
     </div>
     <%= if @runs_pages > 1 do %>
-      <div class="d-flex align-items-center mt-2 cb-text">
+      <div class="cb-d-flex cb-align-center cb-mt-2 cb-text">
         <%= if @runs_page > 1 do %>
           {link("« prev",
             to: show_path(@conn, @group_tournament, %{runs_page: @runs_page - 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-mr-2"
           )}
         <% end %>
-        <span class="mx-2">page {@runs_page} of {@runs_pages}</span>
+        <span class="cb-mx-2">page {@runs_page} of {@runs_pages}</span>
         <%= if @runs_page < @runs_pages do %>
           {link("next »",
             to: show_path(@conn, @group_tournament, %{runs_page: @runs_page + 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
           )}
         <% end %>
       </div>
     <% end %>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">Latest Solutions</h3>
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+    <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+      <h3 class="cb-text-white cb-mb-0">Latest Solutions</h3>
       <span class="cb-text">
         {@solutions_total} total — page {@solutions_page} of {@solutions_pages}
       </span>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-sm">
+    <div class="cb-table-responsive">
+      <table class="cb-table cb-table-sm">
         <thead class="cb-text">
           <tr>
-            <th class="cb-border-color border-bottom">inserted_at</th>
-            <th class="cb-border-color border-bottom">user_id</th>
-            <th class="cb-border-color border-bottom">user</th>
-            <th class="cb-border-color border-bottom">lang</th>
-            <th class="cb-border-color border-bottom">solution</th>
-            <th class="cb-border-color border-bottom"></th>
+            <th class="cb-border-color cb-border-bottom">inserted_at</th>
+            <th class="cb-border-color cb-border-bottom">user_id</th>
+            <th class="cb-border-color cb-border-bottom">user</th>
+            <th class="cb-border-color cb-border-bottom">lang</th>
+            <th class="cb-border-color cb-border-bottom">solution</th>
+            <th class="cb-border-color cb-border-bottom"></th>
           </tr>
         </thead>
         <tbody>
           <%= for solution <- @solutions do %>
             <tr>
-              <td class="text-white cb-border-color">{format_datetime(solution.inserted_at)}</td>
+              <td class="cb-text-white cb-border-color">
+                {format_datetime(solution.inserted_at)}
+              </td>
               <td class="cb-border-color">
                 {link(solution.user_id,
                   to: "/admin/users/#{solution.user_id}",
-                  class: "text-white"
+                  class: "cb-text-white"
                 )}
               </td>
-              <td class="text-white cb-border-color">{solution.user && solution.user.name}</td>
-              <td class="text-white cb-border-color">{solution.lang}</td>
-              <td class="text-white cb-border-color">
-                <pre class="mb-0 text-white"><code>{solution.solution}</code></pre>
+              <td class="cb-text-white cb-border-color">{solution.user && solution.user.name}</td>
+              <td class="cb-text-white cb-border-color">{solution.lang}</td>
+              <td class="cb-text-white cb-border-color">
+                <pre class="cb-mb-0 cb-text-white"><code>{solution.solution}</code></pre>
               </td>
-              <td class="text-nowrap cb-border-color">
+              <td class="cb-text-nowrap cb-border-color">
                 {link("Edit",
                   to:
                     Routes.edit_group_task_solution_path(
@@ -927,7 +925,7 @@
                       @group_tournament.group_task,
                       solution.id
                     ),
-                  class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                  class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                 )}
                 {link("Delete",
                   to:
@@ -939,7 +937,7 @@
                     ),
                   method: :delete,
                   data: [confirm: "Are you sure you want to delete this solution?"],
-                  class: "btn btn-sm btn-outline-danger cb-rounded ml-2"
+                  class: "cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded cb-ml-2"
                 )}
               </td>
             </tr>
@@ -948,32 +946,32 @@
       </table>
     </div>
     <%= if @solutions_pages > 1 do %>
-      <div class="d-flex align-items-center mt-2 cb-text">
+      <div class="cb-d-flex cb-align-center cb-mt-2 cb-text">
         <%= if @solutions_page > 1 do %>
           {link("« prev",
             to: show_path(@conn, @group_tournament, %{solutions_page: @solutions_page - 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-mr-2"
           )}
         <% end %>
-        <span class="mx-2">page {@solutions_page} of {@solutions_pages}</span>
+        <span class="cb-mx-2">page {@solutions_page} of {@solutions_pages}</span>
         <%= if @solutions_page < @solutions_pages do %>
           {link("next »",
             to: show_path(@conn, @group_tournament, %{solutions_page: @solutions_page + 1}),
-            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+            class: "cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-ml-2"
           )}
         <% end %>
       </div>
     <% end %>
   </div>
 
-  <div class="d-flex mt-4">
+  <div class="cb-d-flex cb-mt-4">
     {link("Edit",
       to: Routes.admin_group_tournament_path(@conn, :edit, @group_tournament),
-      class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+      class: "cb-btn cb-btn-outline-secondary cb-rounded"
     )}
     {link("Back",
       to: Routes.admin_group_tournament_path(@conn, :index),
-      class: "btn btn-link cb-text ml-auto"
+      class: "cb-btn cb-btn-link cb-text cb-ml-auto"
     )}
   </div>
 </div>

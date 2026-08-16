@@ -1,20 +1,40 @@
 import React, { memo } from 'react';
 
+import { Box, Flex, Paper } from '@mantine/core';
+
 import Notifications from './Notifications';
 import TournamentRankingTable from './TournamentRankingTable';
 
 function TournamentCurrentPlayerRankingPanel() {
   return (
-    <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-bg-panel text-white cb-rounded">
-      <TournamentRankingTable />
-      <div className="flex-shrink-1 p-0 border-left rounded-right cb-border-color cb-game-control-container">
-        <div className="d-flex flex-column justify-content-start overflow-auto h-100">
-          <div className="px-3 py-3 w-100 d-flex flex-column">
-            <Notifications />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Paper
+      h="100%"
+      shadow="sm"
+      radius="md"
+      c="white"
+      bg="cbPanel"
+      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+    >
+      <Flex wrap={{ base: 'wrap', sm: 'nowrap' }} h="100%">
+        <TournamentRankingTable />
+        <Box
+          flex="0 1 auto"
+          p={0}
+          className="cb-game-control-container"
+          style={{
+            borderLeft: '1px solid var(--mantine-color-default-border)',
+            borderTopRightRadius: '0.5rem',
+            borderBottomRightRadius: '0.5rem',
+          }}
+        >
+          <Flex direction="column" justify="flex-start" style={{ overflow: 'auto' }} h="100%">
+            <Box px="md" py="md" w="100%">
+              <Notifications />
+            </Box>
+          </Flex>
+        </Box>
+      </Flex>
+    </Paper>
   );
 }
 

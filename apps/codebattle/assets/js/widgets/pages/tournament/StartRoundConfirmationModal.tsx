@@ -1,9 +1,8 @@
 import React, { useCallback, useRef, memo, useContext } from 'react';
 
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button, Flex, Stack, Text, Title } from '@mantine/core';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
 import i18n from '../../../i18n';
@@ -55,14 +54,8 @@ function StartRoundConfirmationModal({
 
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-  const cancelBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  const confirmBtnClassName = cn('btn text-white cb-rounded', {
-    'btn-success cb-btn-success': !hasCustomEventStyle,
-    'cb-custom-event-btn-success': hasCustomEventStyle,
-  });
+  const cancelBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
+  const confirmBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-success' : undefined;
 
   const handleConfirmation = useCallback(() => {
     switch (modalShowing) {
@@ -86,48 +79,52 @@ function StartRoundConfirmationModal({
   const text = getModalText(modalShowing);
 
   return (
-    <Modal show={!!modalShowing} onHide={onClose} contentClassName="cb-bg-panel cb-text">
-      <Modal.Header className="cb-border-color" closeButton>
+    <Modal show={!!modalShowing} onHide={onClose}>
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="cb-border-color">
-        <div className="d-flex flex-column justify-content-between align-items-center">
-          <h4 className="mb-4">{text}</h4>
-          <div className="d-flex flex-column justify-content-center">
-            <div className="d-flex justify-content-center">
-              <span title={i18n.t('Round timeout seconds')} className="mr-2">
+      <Modal.Body>
+        <Stack align="center" justify="space-between">
+          <Title order={4} mb="lg">
+            {text}
+          </Title>
+          <Stack align="center" justify="center">
+            <Flex justify="center">
+              <Text title={i18n.t('Round timeout seconds')} mr="xs">
                 {i18n.t('Seconds:')} {matchTimeoutSeconds}
                 {', '}
-              </span>
+              </Text>
               {taskProvider === 'task_pack' && (
-                <span title={i18n.t('Round task pack id')}>
+                <Text title={i18n.t('Round task pack id')}>
                   {i18n.t('Task pack name:')} {taskPackName}
-                </span>
+                </Text>
               )}
               {taskProvider === 'level' && (
-                <span title={i18n.t('Round task level')}>
+                <Text title={i18n.t('Round task level')}>
                   {i18n.t('Task level:')} {level ? i18n.t(level) : level}
-                </span>
+                </Text>
               )}
-            </div>
-          </div>
-        </div>
+            </Flex>
+          </Stack>
+        </Stack>
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
-        <div className="d-flex justify-content-between w-100">
-          <Button onClick={onClose} className={cancelBtnClassName}>
+      <Modal.Footer>
+        <Flex justify="space-between" w="100%">
+          <Button onClick={onClose} color="cbSecondary" radius="md" className={cancelBtnClassName}>
             {i18n.t('Cancel')}
           </Button>
-          <div className="d-flex">
+          <Flex>
             <Button
               ref={confirmBtnRef}
               onClick={handleConfirmation}
+              color="cbSuccess"
+              radius="md"
               className={confirmBtnClassName}
             >
               {i18n.t('Confirm')}
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </Modal.Footer>
     </Modal>
   );

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 
+import { Text } from '@mantine/core';
 import moment from 'moment';
 
 interface MessageTimestampProps {
@@ -8,7 +9,9 @@ interface MessageTimestampProps {
 
 function MessageTimestamp({ time }: MessageTimestampProps) {
   return (
-    <span className="text-muted">{moment.utc(moment.unix(time)).local().format('hh:mm A')}</span>
+    <Text component="span" c="dimmed">
+      {moment.utc(moment.unix(time)).local().format('hh:mm A')}
+    </Text>
   );
 }
 

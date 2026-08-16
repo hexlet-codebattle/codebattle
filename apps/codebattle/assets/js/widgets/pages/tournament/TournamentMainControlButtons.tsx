@@ -1,11 +1,11 @@
 import React, { memo, useCallback, useContext, useRef, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, Flex, Grid, Stack, Text } from '@mantine/core';
 import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
 import { useDispatch } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { type AppDispatch } from '@/slices';
 
@@ -104,265 +104,305 @@ function TournamentMainControlButtons({
     closeFinishConfirmationModal();
   }, [closeFinishConfirmationModal]);
 
-  const cancelBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  const confirmBtnClassName = cn('btn text-white cb-rounded', {
-    'btn-danger': !hasCustomEventStyle,
-    'cb-custom-event-btn-danger': hasCustomEventStyle,
-  });
-  const actionBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  const flowBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2 text-white', {
-    'btn-success cb-btn-success': !hasCustomEventStyle,
-    'cb-custom-event-btn-success': hasCustomEventStyle,
-  });
-  const subtleBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2', {
-    'btn-outline-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-secondary': hasCustomEventStyle,
-  });
-  const destructiveBtnClassName = cn('btn btn-sm text-nowrap cb-rounded mr-2 mb-2 text-white', {
-    'btn-danger': !hasCustomEventStyle,
-    'cb-custom-event-btn-danger': hasCustomEventStyle,
-  });
-  const settingsColClassName = cn('px-2 mb-3 mb-xl-0', {
-    'col-12': streamMode,
-    'col-12 col-xl-6': !streamMode,
-  });
+  const cancelBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
+  const confirmBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-danger' : undefined;
+
+  const customActionBtnClass = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
+  const customFlowBtnClass = hasCustomEventStyle ? 'cb-custom-event-btn-success' : undefined;
+  const customSubtleBtnClass = hasCustomEventStyle ? 'cb-custom-event-btn-secondary' : undefined;
+  const customDestructiveBtnClass = hasCustomEventStyle ? 'cb-custom-event-btn-danger' : undefined;
 
   return (
     <>
-      <Modal
-        show={restartConfirmationModalShowing}
-        onHide={closeRestartConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
-      >
-        <Modal.Header className="cb-border-color" closeButton>
+      <Modal show={restartConfirmationModalShowing} onHide={closeRestartConfirmationModal}>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Reset tournament progress')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-border-color">
-          <div className="d-flex flex-column">
-            <h4 className="mb-3">{i18n.t('Are you sure you want to reset this tournament?')}</h4>
-            <p className="mb-0 text-muted">
+        <Modal.Body>
+          <Stack>
+            <Text fw={700} size="lg">
+              {i18n.t('Are you sure you want to reset this tournament?')}
+            </Text>
+            <Text c="dimmed">
               {i18n.t(
                 'This action is destructive. All tournament progress, matches, and results will be lost.',
               )}
-            </p>
-          </div>
+            </Text>
+          </Stack>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
-          <div className="d-flex justify-content-between w-100">
-            <Button onClick={closeRestartConfirmationModal} className={cancelBtnClassName}>
+        <Modal.Footer>
+          <Flex justify="space-between" w="100%">
+            <Button
+              onClick={closeRestartConfirmationModal}
+              color="cbSecondary"
+              radius="md"
+              className={cancelBtnClassName}
+            >
               {i18n.t('Cancel')}
             </Button>
             <Button
               ref={confirmBtnRef}
               onClick={confirmRestartTournament}
+              color="red"
+              radius="md"
               className={confirmBtnClassName}
             >
               {i18n.t('Reset tournament')}
             </Button>
-          </div>
+          </Flex>
         </Modal.Footer>
       </Modal>
-      <Modal
-        show={retryConfirmationModalShowing}
-        onHide={closeRetryConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
-      >
-        <Modal.Header className="cb-border-color" closeButton>
+      <Modal show={retryConfirmationModalShowing} onHide={closeRetryConfirmationModal}>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Retry tournament')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-border-color">
-          <div className="d-flex flex-column">
-            <h4 className="mb-3">{i18n.t('Are you sure you want to retry this tournament?')}</h4>
-            <p className="mb-0 text-muted">
+        <Modal.Body>
+          <Stack>
+            <Text fw={700} size="lg">
+              {i18n.t('Are you sure you want to retry this tournament?')}
+            </Text>
+            <Text c="dimmed">
               {i18n.t(
                 'This will clear tournament games and results, then restore the current player roster.',
               )}
-            </p>
-          </div>
+            </Text>
+          </Stack>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
-          <div className="d-flex justify-content-between w-100">
-            <Button onClick={closeRetryConfirmationModal} className={cancelBtnClassName}>
+        <Modal.Footer>
+          <Flex justify="space-between" w="100%">
+            <Button
+              onClick={closeRetryConfirmationModal}
+              color="cbSecondary"
+              radius="md"
+              className={cancelBtnClassName}
+            >
               {i18n.t('Cancel')}
             </Button>
-            <Button onClick={confirmRetryTournament} className={confirmBtnClassName}>
+            <Button
+              onClick={confirmRetryTournament}
+              color="red"
+              radius="md"
+              className={confirmBtnClassName}
+            >
               {i18n.t('Retry tournament')}
             </Button>
-          </div>
+          </Flex>
         </Modal.Footer>
       </Modal>
-      <Modal
-        show={finishConfirmationModalShowing}
-        onHide={closeFinishConfirmationModal}
-        contentClassName="cb-bg-panel cb-text"
-      >
-        <Modal.Header className="cb-border-color" closeButton>
+      <Modal show={finishConfirmationModalShowing} onHide={closeFinishConfirmationModal}>
+        <Modal.Header closeButton>
           <Modal.Title>{i18n.t('Finish tournament')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-border-color">
-          <div className="d-flex flex-column">
-            <h4 className="mb-3">{i18n.t('Are you sure you want to finish this tournament?')}</h4>
-            <p className="mb-0 text-muted">
+        <Modal.Body>
+          <Stack>
+            <Text fw={700} size="lg">
+              {i18n.t('Are you sure you want to finish this tournament?')}
+            </Text>
+            <Text c="dimmed">
               {i18n.t('This will end the tournament and finalize all results.')}
-            </p>
-          </div>
+            </Text>
+          </Stack>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
-          <div className="d-flex justify-content-between w-100">
-            <Button onClick={closeFinishConfirmationModal} className={cancelBtnClassName}>
+        <Modal.Footer>
+          <Flex justify="space-between" w="100%">
+            <Button
+              onClick={closeFinishConfirmationModal}
+              color="cbSecondary"
+              radius="md"
+              className={cancelBtnClassName}
+            >
               {i18n.t('Cancel')}
             </Button>
-            <Button onClick={confirmFinishTournament} className={confirmBtnClassName}>
+            <Button
+              onClick={confirmFinishTournament}
+              color="red"
+              radius="md"
+              className={confirmBtnClassName}
+            >
               {i18n.t('Finish tournament')}
             </Button>
-          </div>
+          </Flex>
         </Modal.Footer>
       </Modal>
-      <div className="d-flex flex-column w-100">
-        <div className="row mx-n2">
+      <Flex direction="column" w="100%">
+        <Grid gap="md">
           {!streamMode && (
-            <div className="col-12 col-xl-6 px-2 mb-3 mb-xl-0">
-              <div className="small text-uppercase text-muted font-weight-bold mb-2">
+            <Grid.Col span={{ base: 12, xl: 6 }}>
+              <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
                 {i18n.t('Tournament flow')}
-              </div>
-              <div className="d-flex flex-wrap align-items-center">
+              </Text>
+              <Flex wrap="wrap" align="center" gap="xs">
                 {canStartRound ? (
-                  <button
-                    type="button"
-                    className={flowBtnClassName}
+                  <Button
+                    color="cbSuccess"
+                    size="xs"
+                    radius="md"
+                    className={customFlowBtnClass}
                     onClick={handleStartRoundTournament}
                     disabled={!canStartRound || disabled}
+                    leftSection={<FontAwesomeIcon icon="arrow-right" />}
                   >
-                    <FontAwesomeIcon className="mr-2" icon="arrow-right" />
                     {i18n.t('Start Round')}
-                  </button>
+                  </Button>
                 ) : null}
                 {canFinishRound ? (
-                  <button
-                    type="button"
-                    className={flowBtnClassName}
+                  <Button
+                    color="cbSuccess"
+                    size="xs"
+                    radius="md"
+                    className={customFlowBtnClass}
                     onClick={handleFinishRoundTournament}
                     disabled={!canFinishRound || disabled}
+                    leftSection={<FontAwesomeIcon icon="flag-checkered" />}
                   >
-                    <FontAwesomeIcon className="mr-2" icon="flag-checkered" />
                     {i18n.t('Finish Round')}
-                  </button>
+                  </Button>
                 ) : null}
                 {canFinishTournament ? (
-                  <button
-                    type="button"
-                    className={actionBtnClassName}
+                  <Button
+                    color="cbSecondary"
+                    size="xs"
+                    radius="md"
+                    className={customActionBtnClass}
                     onClick={openFinishConfirmationModal}
                     disabled={disabled}
+                    leftSection={<FontAwesomeIcon icon="stop" />}
                   >
-                    <FontAwesomeIcon className="mr-2" icon="stop" />
                     {i18n.t('Finish Tournament')}
-                  </button>
+                  </Button>
                 ) : null}
                 {canRestart ? (
-                  <button
-                    type="button"
-                    className={actionBtnClassName}
+                  <Button
+                    color="cbSecondary"
+                    size="xs"
+                    radius="md"
+                    className={customActionBtnClass}
                     onClick={openRestartConfirmationModal}
                     disabled={!canRestart || disabled}
+                    leftSection={<FontAwesomeIcon icon="sync" />}
                   >
-                    <FontAwesomeIcon className="mr-2" icon="sync" />
                     {i18n.t('Restart')}
-                  </button>
+                  </Button>
                 ) : (
-                  <button
-                    type="button"
-                    className={flowBtnClassName}
+                  <Button
+                    color="cbSuccess"
+                    size="xs"
+                    radius="md"
+                    className={customFlowBtnClass}
                     onClick={handleStartTournament}
                     disabled={!canStart || disabled}
+                    leftSection={<FontAwesomeIcon icon="play" />}
                   >
-                    <FontAwesomeIcon className="mr-2" icon="play" />
                     {i18n.t('Start')}
-                  </button>
+                  </Button>
                 )}
-                <button
-                  type="button"
-                  className={actionBtnClassName}
+                <Button
+                  color="cbSecondary"
+                  size="xs"
+                  radius="md"
+                  className={customActionBtnClass}
                   onClick={openRetryConfirmationModal}
                   disabled={disabled}
+                  leftSection={<FontAwesomeIcon icon="redo" />}
                 >
-                  <FontAwesomeIcon className="mr-2" icon="redo" />
                   {i18n.t('Retry')}
-                </button>
-                <button
-                  type="button"
-                  className={actionBtnClassName}
+                </Button>
+                <Button
+                  color="cbSecondary"
+                  size="xs"
+                  radius="md"
+                  className={customActionBtnClass}
                   onClick={handleShowResults}
                   disabled={disabled || !hideResults}
+                  leftSection={<FontAwesomeIcon icon="eye" />}
                 >
-                  <FontAwesomeIcon className="mr-2" icon="eye" />
                   {i18n.t('Show Results')}
-                </button>
-                <button
-                  type="button"
-                  className={destructiveBtnClassName}
+                </Button>
+                <Button
+                  color="red"
+                  size="xs"
+                  radius="md"
+                  className={customDestructiveBtnClass}
                   onClick={handleCancelTournament}
                   disabled={disabled}
+                  leftSection={<FontAwesomeIcon icon="trash" />}
                 >
-                  <FontAwesomeIcon className="mr-2" icon="trash" />
                   {i18n.t('Cancel')}
-                </button>
-              </div>
-            </div>
+                </Button>
+              </Flex>
+            </Grid.Col>
           )}
 
-          <div className={settingsColClassName}>
-            <div className="small text-uppercase text-muted font-weight-bold mb-2">
+          <Grid.Col span={{ base: 12, xl: streamMode ? 12 : 6 }}>
+            <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
               {i18n.t('Settings')}
-            </div>
-            <div className="d-flex flex-wrap align-items-center">
-              <a href={`/tournaments/${tournamentId}/edit`} className={subtleBtnClassName}>
-                <FontAwesomeIcon className="mr-2" icon="edit" />
+            </Text>
+            <Flex wrap="wrap" align="center" gap="xs">
+              <Button
+                component="a"
+                href={`/tournaments/${tournamentId}/edit`}
+                variant="outline"
+                color="cbSecondary"
+                size="xs"
+                radius="md"
+                className={customSubtleBtnClass}
+                leftSection={<FontAwesomeIcon icon="edit" />}
+              >
                 {i18n.t('Edit')}
-              </a>
-              <button type="button" className={subtleBtnClassName} onClick={handleOpenDetails}>
-                <FontAwesomeIcon className="mr-2" icon="cog" />
+              </Button>
+              <Button
+                variant="outline"
+                color="cbSecondary"
+                size="xs"
+                radius="md"
+                className={customSubtleBtnClass}
+                onClick={handleOpenDetails}
+                leftSection={<FontAwesomeIcon icon="cog" />}
+              >
                 {i18n.t('Tournament details')}
-              </button>
-              <button
-                type="button"
-                className={subtleBtnClassName}
+              </Button>
+              <Button
+                variant="outline"
+                color="cbSecondary"
+                size="xs"
+                radius="md"
+                className={customSubtleBtnClass}
                 onClick={toggleStreamMode}
                 disabled={disabled}
+                leftSection={<FontAwesomeIcon icon="video" />}
               >
-                <FontAwesomeIcon className="mr-2" icon="video" />
                 {i18n.t('Toggle stream mode')}
-              </button>
-              <button
-                type="button"
-                className={subtleBtnClassName}
+              </Button>
+              <Button
+                variant="outline"
+                color="cbSecondary"
+                size="xs"
+                radius="md"
+                className={customSubtleBtnClass}
                 onClick={toggleShowBots}
                 disabled={disabled || !canToggleShowBots}
+                leftSection={<FontAwesomeIcon icon="robot" />}
               >
-                <FontAwesomeIcon className="mr-2" icon="robot" />
                 {i18n.t(showBots ? 'Hide bots' : 'Show bots')}
-              </button>
+              </Button>
               {accessType === 'token' && (
-                <button
-                  type="button"
-                  className={subtleBtnClassName}
+                <Button
+                  variant="outline"
+                  color="cbSecondary"
+                  size="xs"
+                  radius="md"
+                  className={customSubtleBtnClass}
                   onClick={handleOpenUpTournament}
                   disabled={disabled}
+                  leftSection={<FontAwesomeIcon icon="unlock" />}
                 >
-                  <FontAwesomeIcon className="mr-2" icon="unlock" />
                   {i18n.t('Open up')}
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </Flex>
+          </Grid.Col>
+        </Grid>
+      </Flex>
     </>
   );
 }

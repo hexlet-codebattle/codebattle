@@ -2,7 +2,22 @@ import { currentUserIsAdminSelector, lobbyDataSelector } from '@/selectors';
 import React, { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import {
+  Box,
+  Button,
+  Flex,
+  NativeSelect,
+  Paper,
+  Text,
+  TextInput,
+  Textarea,
+  Title,
+  UnstyledButton,
+} from '@mantine/core';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import Modal from '@/components/CbModal';
 import { type AppDispatch } from '@/slices';
 
 import { broadcastRedirect, fetchTournamentPlayerIds } from '../../middlewares/Main';
@@ -138,21 +153,16 @@ interface UserCardProps {
 }
 
 function UserCard({ connection, onSelect }: UserCardProps) {
-  const handleSelect = () => onSelect(connection);
-
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      style={userCardStyle}
-      onClick={handleSelect}
-      onKeyPress={handleSelect}
-    >
-      <i className="fas fa-user text-muted" style={{ fontSize: '11px' }} />
-      <span className="text-truncate" style={{ fontWeight: 600 }}>
+    <UnstyledButton style={userCardStyle} onClick={() => onSelect(connection)}>
+      <FontAwesomeIcon
+        icon="user"
+        style={{ fontSize: '11px', color: 'var(--mantine-color-dimmed)' }}
+      />
+      <Text truncate fw={600}>
         {connection.name}
-      </span>
-    </div>
+      </Text>
+    </UnstyledButton>
   );
 }
 
@@ -165,20 +175,20 @@ function PageSection({ group, onSelect }: PageSectionProps) {
   const color = labelColor(group.label);
 
   return (
-    <div className="mb-4">
-      <div className="d-flex align-items-center mb-2" style={{ gap: '8px' }}>
+    <Box mb="lg">
+      <Flex align="center" gap="xs" mb="xs">
         <span style={dotStyle(color)} />
-        <span style={{ fontWeight: 700 }}>{group.label}</span>
-        <span className="text-muted" style={{ fontSize: '12px' }}>
+        <Text fw={700}>{group.label}</Text>
+        <Text c="dimmed" size="xs">
           {group.users} · {group.connections.length}
-        </span>
-      </div>
-      <div className="d-flex flex-wrap" style={{ gap: '8px' }}>
+        </Text>
+      </Flex>
+      <Flex wrap="wrap" gap="xs">
         {group.connections.map((connection) => (
           <UserCard key={connection.key} connection={connection} onSelect={onSelect} />
         ))}
-      </div>
-    </div>
+      </Flex>
+    </Box>
   );
 }
 
@@ -189,14 +199,19 @@ interface ConnectionRowProps {
 
 function ConnectionRow({ label, value }: ConnectionRowProps) {
   return (
-    <div className="d-flex" style={{ gap: '12px', padding: '4px 0' }}>
-      <span className="text-muted" style={{ minWidth: '110px', flexShrink: 0 }}>
+    <Flex gap="md" py={4}>
+      <Text c="dimmed" style={{ minWidth: '110px', flexShrink: 0 }}>
         {label}
-      </span>
-      <span className="text-break" style={{ fontFamily: 'monospace' }}>
+      </Text>
+      <Text
+        style={{
+          wordBreak: 'break-word',
+          fontFamily: 'var(--mantine-font-family-monospace)',
+        }}
+      >
         {value ?? '—'}
-      </span>
-    </div>
+      </Text>
+    </Flex>
   );
 }
 
@@ -207,8 +222,8 @@ interface ConnectionModalProps {
 
 function ConnectionModal({ connection, onHide }: ConnectionModalProps) {
   return (
-    <Modal contentClassName="cb-bg-panel cb-text" show={!!connection} onHide={onHide}>
-      <Modal.Header className="cb-border-color" closeButton>
+    <Modal show={!!connection} onHide={onHide}>
+      <Modal.Header closeButton>
         <Modal.Title>Connection details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -321,90 +336,74 @@ function RedirectPanel({ allUserIds }: RedirectPanelProps) {
   };
 
   return (
-    <div
-      className="mb-4 p-3"
+    <Paper
+      p="md"
+      mb="lg"
       style={{
         borderRadius: '8px',
         border: '1px solid rgba(255, 255, 255, 0.08)',
         backgroundColor: 'rgba(255, 255, 255, 0.04)',
       }}
     >
-      <div className="mb-2" style={{ fontWeight: 700 }}>
+      <Text fw={700} mb="xs">
         Redirect users
-      </div>
+      </Text>
 
-      <form
-        className="d-flex flex-wrap align-items-center mb-2"
-        style={{ gap: '8px' }}
-        onSubmit={handleFetch}
-      >
-        <input
-          className="form-control"
+      <Flex wrap="wrap" align="center" gap="xs" mb="xs" component="form" onSubmit={handleFetch}>
+        <TextInput
           style={{ maxWidth: '200px' }}
           type="text"
           placeholder="Tournament ID"
           value={tournamentId}
           onChange={(event) => setTournamentId(event.target.value)}
         />
-        <button className="btn btn-secondary" type="submit" disabled={!tournamentId.trim()}>
+        <Button color="cbSecondary" type="submit" disabled={!tournamentId.trim()}>
           Fetch player IDs
-        </button>
-        <button
-          className="btn btn-secondary"
+        </Button>
+        <Button
+          color="cbSecondary"
           type="button"
           disabled={allUserIds.length === 0}
           onClick={handleSelectAll}
         >
           All ({allUserIds.length})
-        </button>
-      </form>
+        </Button>
+      </Flex>
 
-      <textarea
-        className="form-control mb-2"
+      <Textarea
+        mb="xs"
         rows={2}
         placeholder="User IDs (comma or space separated)"
         value={userIdsRaw}
         onChange={(event) => setUserIdsRaw(event.target.value)}
       />
 
-      <form
-        className="d-flex flex-wrap align-items-center"
-        style={{ gap: '8px' }}
-        onSubmit={handleSubmit}
-      >
-        <select
-          className="form-control"
+      <Flex wrap="wrap" align="center" gap="xs" component="form" onSubmit={handleSubmit}>
+        <NativeSelect
           style={{ maxWidth: '220px' }}
+          data={REDIRECT_ROUTES.map((item) => ({
+            label: item.label,
+            value: item.value,
+          }))}
           value={route}
-          onChange={(event) => setRoute(event.target.value)}
-        >
-          {REDIRECT_ROUTES.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-        <input
-          className="form-control"
+          onChange={(event) => setRoute(event.currentTarget.value)}
+        />
+        <TextInput
           style={{ maxWidth: '160px' }}
           type="text"
           placeholder={selectedRoute.placeholder}
           value={id}
           onChange={(event) => setId(event.target.value)}
         />
-        <button
-          className="btn btn-primary"
-          type="submit"
-          disabled={!id.trim() || userIds.length === 0}
-        >
+        <Button type="submit" disabled={!id.trim() || userIds.length === 0}>
           Redirect {userIds.length} users
-        </button>
-        {status === 'fetched' && <span className="text-success">Fetched</span>}
-        {status === 'fetch-error' && <span className="text-danger">Tournament not found</span>}
-        {status === 'sent' && <span className="text-success">Sent</span>}
-        {status === 'error' && <span className="text-danger">Failed</span>}
-      </form>
-    </div>
+        </Button>
+        {status === 'fetched' && <Text c="green">Fetched</Text>}
+        {status === 'fetch-error' && <Text c="red">Tournament not found</Text>}
+        {status === 'sent' && <Text c="green">Sent</Text>}
+        {status === 'error' && <Text c="red">Failed</Text>}
+      </Flex>
+    </Paper>
   );
 }
 
@@ -436,7 +435,11 @@ function AdminWidget() {
       (entry.userPresence || []).forEach((meta, index) => {
         const label = getPageLabel(meta.path);
         const phxRef = meta.phxRef || meta.phx_ref;
-        const group = map.get(label) || { label, userIds: new Set(), connections: [] };
+        const group = map.get(label) || {
+          label,
+          userIds: new Set(),
+          connections: [],
+        };
 
         group.userIds.add(entry.id);
         group.connections.push({
@@ -464,21 +467,25 @@ function AdminWidget() {
   }, [presenceList]);
 
   if (!isAdmin) {
-    return <div className="p-3">You must be an admin to view this page.</div>;
+    return <Box p="md">You must be an admin to view this page.</Box>;
   }
 
   return (
     <>
       <MainChannelContainer />
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <h2 className="m-0">Live connections</h2>
-        <div className="text-muted">
+      <Flex justify="space-between" align="center" mb="md">
+        <Title order={2} m={0}>
+          Live connections
+        </Title>
+        <Text c="dimmed">
           {presenceList.length} users · {totalConnections} connections
-        </div>
-      </div>
+        </Text>
+      </Flex>
       <RedirectPanel allUserIds={allUserIds} />
       {groups.length === 0 ? (
-        <div className="text-center text-muted py-5">No active connections</div>
+        <Text ta="center" c="dimmed" py="xl">
+          No active connections
+        </Text>
       ) : (
         groups.map((group) => (
           <PageSection key={group.label} group={group} onSelect={setSelected} />

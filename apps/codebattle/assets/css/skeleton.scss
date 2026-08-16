@@ -1,26 +1,3 @@
-@use 'sass:color';
-
-$item-bg: #15202b;
-
-.cb-text-skeleton {
-  animation: skeleton-loading 1s linear infinite alternate;
-
-  height: 1.2rem;
-  border-radius: 0.25rem;
-  background-color: color.adjust($item-bg, $lightness: 7%);
-}
-
-@keyframes skeleton-loading {
-  0% {
-    opacity: 0.2;
-  }
-
-  80%,
-  100% {
-    opacity: 1;
-  }
-}
-
 .cb-lobby-loading {
   position: relative;
   width: 100%;
@@ -49,32 +26,6 @@ $item-bg: #15202b;
 
   .cb-lobby-loading-secondary {
     min-height: 14rem;
-  }
-
-  .cb-lobby-loading-avatar {
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: 50%;
-  }
-
-  .cb-text-skeleton {
-    animation: none;
-    overflow: hidden;
-    background: rgba(115, 204, 254, 0.07);
-
-    &::after {
-      position: absolute;
-      inset: 0;
-      transform: translateX(-100%);
-      animation: lobby-skeleton-shimmer 1.8s ease-in-out infinite;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(115, 204, 254, 0.13),
-        transparent
-      );
-      content: '';
-    }
   }
 }
 
@@ -211,12 +162,6 @@ $item-bg: #15202b;
   display: none;
 }
 
-@keyframes lobby-skeleton-shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
 @keyframes lobby-progress {
   0% {
     transform: translateX(-110%);
@@ -255,8 +200,6 @@ $item-bg: #15202b;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cb-text-skeleton,
-  .cb-text-skeleton::after,
   .cb-lobby-loading-status-dot,
   .cb-lobby-loading-progress span {
     animation: none;

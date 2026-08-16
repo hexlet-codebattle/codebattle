@@ -1,12 +1,12 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import { camelizeKeys } from 'humps';
+import { Box, Flex, Grid, Text, Title } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
 import LanguageIcon from '../../components/LanguageIcon';
-import PopoverStickOnHover from '../../components/PopoverStickOnHover';
-import type { OverlayProps } from 'react-bootstrap/Overlay';
+import PopoverStickOnHover, { type Placement } from '../../components/PopoverStickOnHover';
 import Placements from '../../config/placements';
 import { actions } from '../../slices';
 import { type AppDispatch } from '../../slices';
@@ -29,8 +29,6 @@ export interface HeadToHeadPageProps {
     winner_id?: number | null;
   } | null;
 }
-
-type Placement = OverlayProps['placement'];
 
 const colors = {
   gold: '#e0bf7a',
@@ -114,10 +112,9 @@ interface HeadToHeadUserLinkProps {
   user: H2HPlayer;
   // Values come from the untyped `Placements` config (plain strings).
   placement: string;
-  className?: string;
 }
 
-function HeadToHeadUserLink({ user, placement, className = '' }: HeadToHeadUserLinkProps) {
+function HeadToHeadUserLink({ user, placement }: HeadToHeadUserLinkProps) {
   const content = useMemo(() => <HeadToHeadUserPopover user={user} />, [user]);
 
   return (
@@ -126,13 +123,9 @@ function HeadToHeadUserLink({ user, placement, className = '' }: HeadToHeadUserL
       placement={placement as Placement}
       component={content}
     >
-      <a
-        href={`/users/${user.id}`}
-        className={className}
-        style={{ color: '#ffffff', textDecoration: 'none' }}
-      >
+      <Text component="a" href={`/users/${user.id}`} c="white" td="none">
         {user.name}
-      </a>
+      </Text>
     </PopoverStickOnHover>
   );
 }
@@ -261,55 +254,74 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
   }
 
   return (
-    <div
-      className="cb-rounded h-100"
+    <Box
+      h="100%"
       style={{
+        borderRadius: 'var(--mantine-radius-md)',
         background: `linear-gradient(145deg, ${colors.panelAlt} 0%, ${colors.ink} 100%)`,
         border: `1px solid ${accent}`,
         boxShadow: `0 16px 40px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04)`,
       }}
     >
-      <div className="p-4 h-100 d-flex flex-column">
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <span
-            className="text-uppercase small font-weight-bold"
+      <Flex direction="column" p="lg" h="100%">
+        <Flex align="center" justify="space-between" mb="md">
+          <Text
+            tt="uppercase"
+            size="xs"
+            fw={700}
             style={{ color: accent, letterSpacing: '0.12em' }}
           >
             {winnerId === player.id ? i18n.t('Leading') : i18n.t('Contender')}
-          </span>
-          <span
-            className="px-2 py-1 cb-rounded small font-weight-bold"
+          </Text>
+          <Text
+            size="xs"
+            fw={700}
+            px="xs"
+            py={4}
+
             style={{
+              borderRadius: 'var(--mantine-radius-md)',
               border: `1px solid ${accent}`,
               color: accent,
               backgroundColor: 'rgba(255, 255, 255, 0.02)',
             }}
           >
             {i18n.t('%{count} wins', { count: player.wins })}
-          </span>
-        </div>
-        <div className="d-flex align-items-center">
-          <div
-            className="mr-4 d-flex align-items-center justify-content-center cb-rounded flex-shrink-0"
+          </Text>
+        </Flex>
+        <Flex align="center">
+          <Flex
+            align="center"
+            justify="center"
+
+            mr="lg"
             style={{
+              borderRadius: 'var(--mantine-radius-md)',
               width: '92px',
               height: '92px',
+              flexShrink: 0,
               background:
                 'linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015))',
               border: `1px solid rgba(255, 255, 255, 0.06)`,
               boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.04)',
             }}
           >
-            <img
+            <Box
+              component="img"
               src={avatarUrl}
               alt={player.name}
-              className="cb-rounded"
-              style={{ width: '72px', height: '72px', objectFit: 'cover' }}
+
+              style={{
+                borderRadius: 'var(--mantine-radius-md)',
+                width: '72px',
+                height: '72px',
+                objectFit: 'cover',
+              }}
             />
-          </div>
-          <div className="min-w-0 flex-grow-1">
-            <div
-              className="mb-3"
+          </Flex>
+          <Box flex={1} style={{ minWidth: 0 }}>
+            <Box
+              mb="md"
               style={{
                 fontSize: '2rem',
                 lineHeight: 1.1,
@@ -319,14 +331,18 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
             >
               <HeadToHeadUserLink
                 user={player}
-                className="d-inline-block"
                 placement={index === 0 ? Placements.bottomStart : Placements.bottomEnd}
               />
-            </div>
-            <div className="d-flex flex-wrap align-items-center text-muted">
-              <span
-                className="d-inline-flex align-items-center justify-content-center mr-3 mb-2 cb-rounded"
+            </Box>
+            <Flex wrap="wrap" align="center" c="dimmed">
+              <Flex
+                align="center"
+                justify="center"
+
+                mr="md"
+                mb="xs"
                 style={{
+                  borderRadius: 'var(--mantine-radius-md)',
                   width: '34px',
                   height: '34px',
                   color: colors.silver,
@@ -335,12 +351,17 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
                 }}
               >
                 <LanguageIcon lang={player.lang} color={colors.silver} />
-              </span>
+              </Flex>
               {metaItems.map((item) => (
-                <span
+                <Text
                   key={`${player.id}-${item}`}
-                  className="mr-2 mb-2 px-3 py-2 cb-rounded"
+                  mr="xs"
+                  mb="xs"
+                  px="md"
+                  py="xs"
+
                   style={{
+                    borderRadius: 'var(--mantine-radius-md)',
                     color: colors.platinum,
                     backgroundColor: 'rgba(164, 170, 179, 0.08)',
                     border: '1px solid rgba(164, 170, 179, 0.12)',
@@ -348,13 +369,13 @@ function PlayerCard({ player, winnerId, index }: PlayerCardProps) {
                   }}
                 >
                   {item}
-                </span>
+                </Text>
               ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Flex>
+          </Box>
+        </Flex>
+      </Flex>
+    </Box>
   );
 }
 
@@ -370,106 +391,127 @@ function MatchRow({ game, players }: MatchRowProps) {
   const gameStateTone = getGameStateTone(game.state);
   const firstResultStyle: React.CSSProperties = {
     background: firstResultTone.background,
+    borderRadius: 'var(--mantine-radius-md)',
     color: firstResultTone.color,
     border: `1px solid ${firstResultTone.borderColor}`,
   };
   const secondResultStyle: React.CSSProperties = {
     background: secondResultTone.background,
+    borderRadius: 'var(--mantine-radius-md)',
     color: secondResultTone.color,
     border: `1px solid ${secondResultTone.borderColor}`,
   };
 
   return (
-    <div
-      className="cb-rounded p-3 p-lg-4 mb-3"
+    <Box
+      p={{ base: 'md', lg: 'lg' }}
+      mb="md"
       style={{
+        borderRadius: 'var(--mantine-radius-md)',
         background: `linear-gradient(140deg, ${colors.panel} 0%, ${colors.ink} 100%)`,
         border: `1px solid ${colors.line}`,
         boxShadow: '0 14px 30px rgba(0, 0, 0, 0.18)',
       }}
     >
-      <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3">
-        <div className="mb-2 mb-lg-0">
-          <div
-            className="small text-uppercase font-weight-bold"
+      <Flex
+        direction={{ base: 'column', lg: 'row' }}
+        justify="space-between"
+        align={{ lg: 'center' }}
+        mb="md"
+      >
+        <Box mb={{ base: 'xs', lg: 0 }}>
+          <Text
+            tt="uppercase"
+            size="xs"
+            fw={700}
             style={{ color: colors.steel, letterSpacing: '0.12em' }}
           >
             {i18n.t('Game')} #{game.id}
-          </div>
-          <div className="h5 mb-0 text-white">
+          </Text>
+          <Text component="h5" c="white">
             {game.mode} • {game.level} • {game.task_type}
-          </div>
-        </div>
-        <div className="d-flex flex-column align-items-lg-end">
-          <div className="text-muted small mb-2 mb-lg-1">{formatDate(game.inserted_at)}</div>
-          <a
+          </Text>
+        </Box>
+        <Flex direction="column" align={{ lg: 'flex-end' }}>
+          <Text size="xs" c="dimmed" mb={{ base: 'xs', lg: 4 }}>
+            {formatDate(game.inserted_at)}
+          </Text>
+          <Text
+            component="a"
             href={`/games/${game.id}`}
-            className="small text-uppercase font-weight-bold text-decoration-none"
+            tt="uppercase"
+            size="xs"
+            fw={700}
+            td="none"
             style={{ color: colors.gold, letterSpacing: '0.12em' }}
           >
             {i18n.t('Open game')}
-          </a>
-        </div>
-      </div>
+          </Text>
+        </Flex>
+      </Flex>
 
-      <div className="row">
-        <div className="col-12 col-lg-5 mb-3 mb-lg-0 d-flex align-items-center">
-          <HeadToHeadUserLink
-            user={firstPlayer}
-            className="d-inline-block"
-            placement={Placements.bottomStart}
-          />
-          <div
-            className="ml-3 px-3 py-2 cb-rounded d-inline-flex align-items-center"
-            style={firstResultStyle}
-          >
-            {firstResultTone.label}
-          </div>
-        </div>
+      <Grid gap={0}>
+        <Grid.Col span={{ base: 12, lg: 5 }} mb={{ base: 'md', lg: 0 }}>
+          <Flex align="center" h="100%">
+            <HeadToHeadUserLink user={firstPlayer} placement={Placements.bottomStart} />
+            <Text ml="md" px="md" py="xs" style={firstResultStyle}>
+              {firstResultTone.label}
+            </Text>
+          </Flex>
+        </Grid.Col>
 
-        <div className="col-12 col-lg-2 d-flex align-items-center justify-content-lg-center mb-3 mb-lg-0">
-          <div
-            className="px-3 py-2 cb-rounded text-uppercase small font-weight-bold"
-            style={{
-              ...gameStateTone,
-              letterSpacing: '0.08em',
-            }}
-          >
-            {formatGameState(game.state)}
-          </div>
-        </div>
+        <Grid.Col span={{ base: 12, lg: 2 }} mb={{ base: 'md', lg: 0 }}>
+          <Flex align="center" justify={{ lg: 'center' }} h="100%">
+            <Text
+              tt="uppercase"
+              size="xs"
+              fw={700}
+              px="md"
+              py="xs"
 
-        <div className="col-12 col-lg-5 d-flex align-items-center justify-content-lg-end">
-          <HeadToHeadUserLink
-            user={secondPlayer}
-            className="d-inline-block"
-            placement={Placements.bottomEnd}
-          />
-          <div
-            className="ml-3 px-3 py-2 cb-rounded d-inline-flex align-items-center"
-            style={secondResultStyle}
-          >
-            {secondResultTone.label}
-          </div>
-        </div>
-      </div>
+              style={{
+                borderRadius: 'var(--mantine-radius-md)',
+                ...gameStateTone,
+                letterSpacing: '0.08em',
+              }}
+            >
+              {formatGameState(game.state)}
+            </Text>
+          </Flex>
+        </Grid.Col>
 
-      <div
-        className="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3"
-        style={{ borderTop: `1px solid ${colors.line}` }}
+        <Grid.Col span={{ base: 12, lg: 5 }}>
+          <Flex align="center" justify={{ lg: 'flex-end' }} h="100%">
+            <HeadToHeadUserLink user={secondPlayer} placement={Placements.bottomEnd} />
+            <Text ml="md" px="md" py="xs" style={secondResultStyle}>
+              {secondResultTone.label}
+            </Text>
+          </Flex>
+        </Grid.Col>
+      </Grid>
+
+      <Flex
+        wrap="wrap"
+        justify="space-between"
+        align="center"
+        mt="md"
+        pt="md"
+        style={{
+          borderTop: `1px solid ${colors.line}`,
+        }}
       >
-        <span className="small" style={{ color: colors.platinum }}>
+        <Text size="xs" style={{ color: colors.platinum }}>
           {i18n.t('Duration: %{duration}', {
             duration: formatDuration(game.duration_sec || game.timeout_seconds),
           })}
-        </span>
-        <span className="small" style={{ color: colors.iron }}>
+        </Text>
+        <Text size="xs" style={{ color: colors.iron }}>
           {game.finishes_at
             ? i18n.t('Finished %{date}', { date: formatDate(game.finishes_at) })
             : i18n.t('Still in progress')}
-        </span>
-      </div>
-    </div>
+        </Text>
+      </Flex>
+    </Box>
   );
 }
 
@@ -481,21 +523,22 @@ interface SummaryStatProps {
 
 function SummaryStat({ label, value, tone }: SummaryStatProps) {
   return (
-    <div
-      className="cb-rounded p-3 h-100"
+    <Box
+      p="md"
+      h="100%"
       style={{
+        borderRadius: 'var(--mantine-radius-md)',
         background: `linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01))`,
         border: `1px solid ${tone}`,
       }}
     >
-      <div
-        className="small text-uppercase font-weight-bold"
-        style={{ color: tone, letterSpacing: '0.1em' }}
-      >
+      <Text tt="uppercase" size="xs" fw={700} style={{ color: tone, letterSpacing: '0.1em' }}>
         {label}
-      </div>
-      <div className="display-4 font-weight-bold text-white mb-0">{value}</div>
-    </div>
+      </Text>
+      <Text fz={{ base: 40, md: 56 }} lh={1.2} fw={700} c="white">
+        {value}
+      </Text>
+    </Box>
   );
 }
 
@@ -508,94 +551,101 @@ function HeadToHeadPage({ headToHead }: HeadToHeadPageProps) {
   const games: H2HGame[] = headToHead.games || [];
 
   return (
-    <div
-      className="cb-bg-panel cb-text min-vh-100 py-5"
+    <Box
+      c="cbText"
+      mih="100vh"
+      py="xl"
       style={{
         background:
           'radial-gradient(circle at top, rgba(224, 191, 122, 0.08), transparent 30%), linear-gradient(180deg, #0b0e13 0%, #121720 40%, #0d1118 100%)',
       }}
     >
-      <div className="container">
-        <div
-          className="cb-rounded p-4 p-lg-5 mb-4"
+      <Box w="100%" maw={1140} mx="auto" px="md">
+        <Box
+          p={{ base: 'lg', lg: 'xl' }}
+          mb="md"
           style={{
+            borderRadius: 'var(--mantine-radius-md)',
             background: `linear-gradient(135deg, ${colors.ink} 0%, ${colors.panel} 55%, ${colors.panelAlt} 100%)`,
             border: `1px solid ${colors.line}`,
             boxShadow: '0 24px 60px rgba(0, 0, 0, 0.28)',
           }}
         >
-          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end mb-4">
-            <div className="mb-3 mb-lg-0">
-              <div
-                className="small text-uppercase font-weight-bold mb-2"
-                style={{ color: colors.gold, letterSpacing: '0.18em' }}
-              >
-                {i18n.t('H2H Arena')}
-              </div>
-              <h1 className="mb-2" style={{ color: '#fff' }}>
-                {players.map((player) => player.name).join(' vs ')}
-              </h1>
-              <div style={{ color: colors.platinum }}>
-                {i18n.t(
-                  'Direct duel history with profile links, live status, and every shared game.',
-                )}
-              </div>
-            </div>
-          </div>
+          <Box mb="lg">
+            <Text
+              tt="uppercase"
+              size="xs"
+              fw={700}
+              mb="xs"
+              style={{ color: colors.gold, letterSpacing: '0.18em' }}
+            >
+              {i18n.t('H2H Arena')}
+            </Text>
+            <Title order={1} mb="sm" c="white">
+              {players.map((player) => player.name).join(' vs ')}
+            </Title>
+            <Text style={{ color: colors.platinum }}>
+              {i18n.t(
+                'Direct duel history with profile links, live status, and every shared game.',
+              )}
+            </Text>
+          </Box>
 
-          <div className="row mb-4">
-            <div className="col-12 col-md-4 mb-3">
+          <Grid gap={30} mb="lg">
+            <Grid.Col span={{ base: 12, md: 4 }} mb="md">
               <SummaryStat
                 label={i18n.t('Total games')}
                 value={headToHead.total_games}
                 tone={colors.gold}
               />
-            </div>
-            <div className="col-12 col-md-4 mb-3">
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 4 }} mb="md">
               <SummaryStat
                 label={i18n.t('Completed')}
                 value={headToHead.completed_games}
                 tone={colors.silver}
               />
-            </div>
-            <div className="col-12 col-md-4 mb-3">
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 4 }} mb="md">
               <SummaryStat label={i18n.t('Draws')} value={headToHead.draws} tone={colors.bronze} />
-            </div>
-          </div>
+            </Grid.Col>
+          </Grid>
 
-          <div className="row">
+          <Grid gap={30}>
             {players.map((player, index) => (
-              <div key={player.id} className="col-12 col-lg-6 mb-3">
+              <Grid.Col key={player.id} span={{ base: 12, lg: 6 }} mb="md">
                 <PlayerCard player={player} winnerId={headToHead.winner_id ?? null} index={index} />
-              </div>
+              </Grid.Col>
             ))}
-          </div>
-        </div>
+          </Grid>
+        </Box>
 
-        <div className="mb-3 d-flex justify-content-between align-items-center">
-          <h2 className="mb-0" style={{ color: colors.silver }}>
+        <Flex justify="space-between" align="center" mb="md">
+          <Title order={2} style={{ color: colors.silver }}>
             {i18n.t('All games')}
-          </h2>
-          <div className="small" style={{ color: colors.steel }}>
+          </Title>
+          <Text size="xs" style={{ color: colors.steel }}>
             {i18n.t('%{count} records', { count: games.length })}
-          </div>
-        </div>
+          </Text>
+        </Flex>
 
         {games.length === 0 ? (
-          <div
-            className="cb-rounded p-4 text-center"
+          <Box
+            p="lg"
+            ta="center"
             style={{
+              borderRadius: 'var(--mantine-radius-md)',
               background: `linear-gradient(145deg, ${colors.panel} 0%, ${colors.ink} 100%)`,
               border: `1px solid ${colors.line}`,
             }}
           >
             {i18n.t('No games found for this pair.')}
-          </div>
+          </Box>
         ) : (
           games.map((game) => <MatchRow key={game.id} game={game} players={players} />)
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

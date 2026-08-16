@@ -1,6 +1,6 @@
 import React, { useState, useContext, memo, useMemo, type ReactNode } from 'react';
 
-import cn from 'classnames';
+import { Box, Flex, Tabs } from '@mantine/core';
 import i18next from 'i18next';
 import isEqual from 'lodash/isEqual';
 import { useSelector } from 'react-redux';
@@ -25,7 +25,17 @@ interface EditorWrapperProps {
 
 function EditorWrapper({ children, id, className }: EditorWrapperProps) {
   return (
-    <div id={id} translate="no" className={className}>
+    <div
+      id={id}
+      translate="no"
+      className={className}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        position: 'relative',
+      }}
+    >
       {children}
     </div>
   );
@@ -41,55 +51,30 @@ function RightSide({ output, children }: RightSideProps) {
   const isShowOutput = output && output.status;
   const content =
     showTab === 'editor' ? (
-      <EditorWrapper
-        id="editor"
-        className="d-flex flex-column flex-grow-1 position-relative cb-editor-height"
-      >
+      <EditorWrapper id="editor" className="cb-editor-height">
         {children}
       </EditorWrapper>
     ) : (
-      <div className="d-flex flex-column flex-grow-1 overflow-auto" style={{ maxHeight: '375px' }}>
-        <div className="h-auto user-select-none">
+      <Flex direction="column" flex={1} style={{ overflowY: 'auto', maxHeight: '375px' }}>
+        <Box h="auto" style={{ userSelect: 'none' }}>
           {isShowOutput && <Output sideOutput={output} />}
-        </div>
-      </div>
+        </Box>
+      </Flex>
     );
 
   return (
     <>
       {content}
-      <nav>
-        <div
-          className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold"
-          id="nav-tab"
-          role="tablist"
-        >
-          <a
-            className={cn('nav-item nav-link flex-grow-1 rounded-0 px-2 px-sm-5', {
-              active: showTab === 'editor',
-            })}
-            href="#Editor"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowTab('editor');
-            }}
-          >
+      <Tabs value={showTab} onChange={(value) => setShowTab(value ?? 'editor')} variant="default">
+        <Tabs.List className="bg-gray" id="nav-tab" grow tt="uppercase" fw={700} ta="center">
+          <Tabs.Tab value="editor" px={{ base: 'xs', sm: 'xl' }} style={{ borderRadius: 0 }}>
             {i18next.t('Editor')}
-          </a>
-          <a
-            className={cn('nav-item nav-link flex-grow-1 rounded-0 p-2 block', {
-              active: showTab === 'output',
-            })}
-            href="#Output"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowTab('output');
-            }}
-          >
+          </Tabs.Tab>
+          <Tabs.Tab value="output" p="xs" style={{ borderRadius: 0 }}>
             {isShowOutput && <OutputTab sideOutput={output} side="right" />}
-          </a>
-        </div>
-      </nav>
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
     </>
   );
 }
@@ -128,59 +113,58 @@ function GameWidget({ viewMode, editorMachine }: GameWidgetProps) {
     <>
       {viewMode === BattleRoomViewModes.duel && (
         <>
-          <EditorContainer
-            orientation="left"
-            cardClassName="card cb-card h-100 shadow-sm position-relative border-0"
-            editorContainerClassName="col-12 col-lg-6 p-1"
-            editorMachine={editorMachine}
-            {...editors[0]}
-          >
-            {(params) => (
-              <EditorWrapper
-                id="main-editor"
-                className="d-flex flex-column flex-grow-1 position-relative cb-editor-height"
-              >
-                <ExtendedEditor {...params} />
-              </EditorWrapper>
-            )}
-          </EditorContainer>
-          <EditorContainer
-            orientation="right"
-            cardClassName="card cb-card h-100 shadow-sm position-relative border-0"
-            editorContainerClassName="col-12 col-lg-6 p-1"
-            editorMachine={editorMachine}
-            {...editors[1]}
-          >
-            {(params) => (
-              <RightSide output={editors[1].output}>
-                <ExtendedEditor {...params} />
-              </RightSide>
-            )}
-          </EditorContainer>
+          <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0}>
+            <EditorContainer
+              orientation="left"
+              cardClassName="cb-card"
+              editorMachine={editorMachine}
+              {...editors[0]}
+            >
+              {(params) => (
+                <EditorWrapper id="main-editor" className="cb-editor-height">
+                  <ExtendedEditor {...params} />
+                </EditorWrapper>
+              )}
+            </EditorContainer>
+          </Box>
+          <Box w={{ base: '100%', lg: '50%' }} p="xs" miw={0}>
+            <EditorContainer
+              orientation="right"
+              cardClassName="cb-card"
+              editorMachine={editorMachine}
+              {...editors[1]}
+            >
+              {(params) => (
+                <RightSide output={editors[1].output}>
+                  <ExtendedEditor {...params} />
+                </RightSide>
+              )}
+            </EditorContainer>
+          </Box>
         </>
       )}
       {viewMode === BattleRoomViewModes.single && (
-        <div
-          className="d-flex flex-column col-12 col-xl-8 col-lg-6 px-1"
+        <Flex
+          direction="column"
+          w={{ base: '100%', lg: '50%', xl: '66.6667%' }}
+          px="xs"
           style={{ height: 'calc(100vh - 92px)' }}
         >
-          <EditorContainer
-            orientation="side"
-            cardClassName="card cb-card h-100 shadow-sm position-relative"
-            editorContainerClassName="col-12 p-1"
-            editorMachine={editorMachine}
-            {...editors[0]}
-          >
-            {(params) => (
-              <EditorWrapper
-                id="main-editor"
-                className="d-flex flex-column flex-grow-1 position-relative"
-              >
-                <ExtendedEditor {...params} />
-              </EditorWrapper>
-            )}
-          </EditorContainer>
-        </div>
+          <Box w="100%" p="xs" miw={0}>
+            <EditorContainer
+              orientation="side"
+              cardClassName="cb-card"
+              editorMachine={editorMachine}
+              {...editors[0]}
+            >
+              {(params) => (
+                <EditorWrapper id="main-editor">
+                  <ExtendedEditor {...params} />
+                </EditorWrapper>
+              )}
+            </EditorContainer>
+          </Box>
+        </Flex>
       )}
     </>
   );

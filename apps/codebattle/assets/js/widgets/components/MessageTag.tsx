@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Text } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import messageTypes from '../config/messageTypes';
@@ -14,7 +15,11 @@ function MessageTag({ messageType = messageTypes.general }: MessageTagProps) {
   const activeRoom = useSelector(activeRoomSelector);
 
   if (isGeneralRoom(activeRoom) && isPrivateMessage(messageType)) {
-    return <span className="font-weight-bold mr-1 cb-private-text">{`[${messageType}]`}</span>;
+    return (
+      <Text component="span" fw={700} mr="xs" className="cb-private-text">
+        {`[${messageType}]`}
+      </Text>
+    );
   }
 
   return null;

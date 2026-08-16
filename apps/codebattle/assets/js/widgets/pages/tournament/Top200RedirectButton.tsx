@@ -1,14 +1,9 @@
 import React, { memo } from 'react';
 
-import cn from 'classnames';
+import { Button, Flex, Text } from '@mantine/core';
 import i18next from 'i18next';
 
 import TournamentTypes from '../../config/tournamentTypes';
-
-const redirectNoticeClassName = cn(
-  'd-flex flex-column flex-md-row align-items-md-center justify-content-between',
-  'border-top border-bottom-0 cb-border-color py-2 gap-2',
-);
 
 interface Top200RedirectButtonProps {
   currentRoundPosition: number;
@@ -38,14 +33,23 @@ function Top200RedirectButton({
   }
 
   return (
-    <div className={redirectNoticeClassName}>
-      <span className="font-weight-bold cb-text-light">
+    <Flex
+      direction={{ base: 'column', md: 'row' }}
+      align={{ base: 'stretch', md: 'center' }}
+      justify="space-between"
+      py="xs"
+      gap="xs"
+      style={{
+        borderTop: '1px solid var(--mantine-color-default-border)',
+      }}
+    >
+      <Text fw={700} c="cbTextLight">
         {i18next.t('The tournament continues for top 8 players.')}
-      </span>
-      <a className="btn btn-sm btn-warning text-nowrap" href={playersRedirectUrl}>
+      </Text>
+      <Button component="a" color="yellow" size="xs" radius="md" href={playersRedirectUrl}>
         {i18next.t('Continue')}
-      </a>
-    </div>
+      </Button>
+    </Flex>
   );
 }
 

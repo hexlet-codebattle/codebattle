@@ -1,5 +1,6 @@
 import React, { useContext, useCallback } from 'react';
 
+import { Button } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
@@ -41,40 +42,43 @@ function ReplayerControlButton() {
     }
     case roomMachineState.matches({ replayer: replayerMachineStates.empty }): {
       return (
-        <button
-          type="button"
+        <Button
+          color="cbSecondary"
+          radius="md"
+          fullWidth
           onClick={loadReplayer}
-          className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
           aria-label={i18n.t('Open Record Player')}
           disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
-        </button>
+        </Button>
       );
     }
     case roomMachineState.matches({ replayer: replayerMachineStates.off }): {
       return (
-        <button
-          type="button"
+        <Button
+          color="cbSecondary"
+          radius="md"
+          fullWidth
           onClick={openLoadedReplayer}
-          className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
           aria-label={i18n.t('Open Record Player')}
           disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
-        </button>
+        </Button>
       );
     }
     case roomMachineState.matches({ replayer: replayerMachineStates.on }): {
       return (
-        <button
-          type="button"
+        <Button
+          color="cbSecondary"
+          radius="md"
+          fullWidth
           onClick={closeReplayer}
-          className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
           aria-label={i18n.t('Close Record Player')}
         >
           {i18n.t('Return to game')}
-        </button>
+        </Button>
       );
     }
     default: {

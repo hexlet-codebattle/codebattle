@@ -120,17 +120,17 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-4">
         <div>
-          <h1 class="mb-1 text-white">Clan Management</h1>
-          <p class="cb-text mb-0">Create, edit, delete, and search clans.</p>
+          <h1 class="cb-mb-1 cb-text-white">Clan Management</h1>
+          <p class="cb-text cb-mb-0">Create, edit, delete, and search clans.</p>
         </div>
 
         <button
           :if={is_nil(@form_mode)}
           type="button"
-          class="btn btn-secondary cb-btn-secondary cb-rounded"
+          class="cb-btn cb-btn-secondary cb-rounded"
           phx-click="new"
         >
           <i class="bi bi-plus-circle"></i> New Clan
@@ -138,58 +138,58 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
       </div>
 
       <%= if @form_mode do %>
-        <div class="card cb-card shadow-sm mb-4 border cb-border-color">
-          <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="cb-card cb-shadow-sm cb-mb-4 cb-border cb-border-color">
+          <div class="cb-card-header cb-bg-highlight-panel cb-border-color cb-text-white">
+            <div class="cb-d-flex cb-justify-between cb-align-center">
               <span>{form_title(@form_mode)}</span>
               <button
                 type="button"
-                class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                 phx-click="cancel"
               >
                 <i class="bi bi-x"></i> Cancel
               </button>
             </div>
           </div>
-          <div class="card-body">
+          <div class="cb-card-body">
             <.form
               :let={f}
               id="clan-form"
               for={@changeset}
               phx-change="validate"
               phx-submit="save"
-              class="row g-3"
+              class="cb-row g-3"
             >
-              <div class="col-md-4">
+              <div class="cb-col-md-4">
                 {label(f, :name, class: "form-label")}
                 {text_input(f, :name,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded",
                   placeholder: "Short clan name"
                 )}
                 {error_tag(f, :name)}
               </div>
 
-              <div class="col-md-5">
+              <div class="cb-col-md-5">
                 {label(f, :long_name, class: "form-label")}
                 {text_input(f, :long_name,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded",
                   placeholder: "Full clan name"
                 )}
                 {error_tag(f, :long_name)}
               </div>
 
-              <div class="col-md-3">
+              <div class="cb-col-md-3">
                 {label(f, :creator_id, class: "form-label")}
                 {number_input(f, :creator_id,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded",
                   placeholder: "Creator user ID"
                 )}
                 {error_tag(f, :creator_id)}
               </div>
 
-              <div class="col-12">
+              <div class="cb-col-12">
                 {submit(submit_label(@form_mode),
-                  class: "btn btn-secondary cb-btn-secondary cb-rounded",
+                  class: "cb-btn cb-btn-secondary cb-rounded",
                   phx_disable_with: "Saving..."
                 )}
               </div>
@@ -198,33 +198,33 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
         </div>
       <% end %>
 
-      <div class="d-flex align-items-center mb-3">
+      <div class="cb-d-flex cb-align-center cb-mb-3">
         <form
           id="clan-search-form"
           phx-submit="search"
           phx-change="search"
-          class="d-flex align-items-center"
+          class="cb-d-flex cb-align-center"
         >
           <input
-            class="form-control cb-bg-panel cb-border-color text-white cb-rounded"
+            class="cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded"
             type="text"
             name="query"
             value={@query}
             phx-debounce="300"
             placeholder="Search by name or long name"
           />
-          <button class="btn btn-secondary cb-btn-secondary cb-rounded ml-2" type="submit">
+          <button class="cb-btn cb-btn-secondary cb-rounded cb-ml-2" type="submit">
             Search
           </button>
         </form>
       </div>
 
-      <div class="table-responsive">
-        <table class="table table-sm mb-0">
+      <div class="cb-table-responsive">
+        <table class="cb-table cb-table-sm cb-mb-0">
           <%= if @clans == [] do %>
             <tbody>
               <tr>
-                <td colspan="7" class="cb-border-color text-center cb-text py-4">
+                <td colspan="7" class="cb-border-color cb-text-center cb-text cb-py-4">
                   No clans found.
                 </td>
               </tr>
@@ -232,39 +232,43 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
           <% else %>
             <thead class="cb-text">
               <tr>
-                <th class="cb-border-color border-bottom">ID</th>
-                <th class="cb-border-color border-bottom">Name</th>
-                <th class="cb-border-color border-bottom">Long Name</th>
-                <th class="cb-border-color border-bottom">Creator</th>
-                <th class="cb-border-color border-bottom">Users</th>
-                <th class="cb-border-color border-bottom">Inserted</th>
-                <th class="cb-border-color border-bottom"></th>
+                <th class="cb-border-color cb-border-bottom">ID</th>
+                <th class="cb-border-color cb-border-bottom">Name</th>
+                <th class="cb-border-color cb-border-bottom">Long Name</th>
+                <th class="cb-border-color cb-border-bottom">Creator</th>
+                <th class="cb-border-color cb-border-bottom">Users</th>
+                <th class="cb-border-color cb-border-bottom">Inserted</th>
+                <th class="cb-border-color cb-border-bottom"></th>
               </tr>
             </thead>
             <tbody>
               <%= for clan <- @clans do %>
                 <tr>
-                  <td class="align-middle text-white cb-border-color">{clan.id}</td>
-                  <td class="align-middle text-white cb-border-color">
+                  <td class="cb-align-middle cb-text-white cb-border-color">{clan.id}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">
                     <strong>{clan.name}</strong>
                   </td>
-                  <td class="align-middle text-white cb-border-color">{clan.long_name || "–"}</td>
-                  <td class="align-middle text-white cb-border-color">
+                  <td class="cb-align-middle cb-text-white cb-border-color">
+                    {clan.long_name || "–"}
+                  </td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">
                     {creator_name(clan)}
                   </td>
-                  <td class="align-middle text-white cb-border-color">{length(clan.users || [])}</td>
-                  <td class="align-middle text-white cb-border-color">{clan.inserted_at}</td>
-                  <td class="align-middle cb-border-color text-end">
-                    <div class="btn-group btn-group-sm">
+                  <td class="cb-align-middle cb-text-white cb-border-color">
+                    {length(clan.users || [])}
+                  </td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">{clan.inserted_at}</td>
+                  <td class="cb-align-middle cb-border-color text-end">
+                    <div class="cb-btn-group btn-group-sm">
                       <a
                         href={Routes.clan_path(@socket, :show, clan.id)}
-                        class="btn btn-outline-secondary cb-btn-outline-secondary"
+                        class="cb-btn cb-btn-outline-secondary cb-btn-outline-secondary"
                       >
                         Show
                       </a>
                       <button
                         type="button"
-                        class="btn btn-outline-secondary cb-btn-outline-secondary"
+                        class="cb-btn cb-btn-outline-secondary cb-btn-outline-secondary"
                         phx-click="edit"
                         phx-value-id={clan.id}
                       >
@@ -272,7 +276,7 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-outline-danger"
+                        class="cb-btn cb-btn-outline-danger"
                         phx-click="delete"
                         phx-value-id={clan.id}
                         data-confirm="Delete this clan?"

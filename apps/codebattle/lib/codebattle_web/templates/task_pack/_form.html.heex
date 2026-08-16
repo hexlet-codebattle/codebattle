@@ -1,49 +1,51 @@
-<%= form_for(@changeset, @action, [class: "col-8 offset-2"], fn f -> %>
-  <div class="form-group">
+<%= form_for(@changeset, @action, [class: "cb-col-8 cb-offset-2"], fn f -> %>
+  <div class="cb-form-group">
     {render_base_errors(@changeset.errors[:base])}
   </div>
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Name</span>
-      <span class="ml-3 text-muted">Name for task pack, should be unique</span>
+      <span class="cb-text-white">Name</span>
+      <span class="cb-ml-3 cb-text-muted">Name for task pack, should be unique</span>
     </div>
     {text_input(f, :name,
-      class: "form-control form-control-lg custom-control cb-bg-panel cb-border-color text-white",
+      class:
+        "cb-form-control cb-form-control-lg cb-custom-control cb-bg-panel cb-border-color cb-text-white",
       maxlength: "37",
       required: false
     )}
     {error_tag(f, :name)}
   </div>
-  <div class="form-group">
-    {label(f, :visibility, class: "text-white")}
+  <div class="cb-form-group">
+    {label(f, :visibility, class: "cb-text-white")}
     {select(f, :visibility, Codebattle.TaskPack.visibility_types(),
       class:
-        "form-select form-select-lg custom-select cb-dark-select cb-bg-panel cb-border-color text-white"
+        "cb-form-select cb-form-select-lg cb-custom-select cb-dark-select cb-bg-panel cb-border-color cb-text-white"
     )}
     {error_tag(f, :visibility)}
   </div>
-  <div class="form-group">
+  <div class="cb-form-group">
     <div>
-      <span class="text-white">Task_ids</span>
+      <span class="cb-text-white">Task_ids</span>
     </div>
     <div>
-      <span class="text-muted">Example: 1,37,42</span>
+      <span class="cb-text-muted">Example: 1,37,42</span>
     </div>
     {text_input(f, :task_ids,
       value: render_task_ids(f.data),
-      class: "form-control form-control-lg custom-control cb-bg-panel cb-border-color text-white",
+      class:
+        "cb-form-control cb-form-control-lg cb-custom-control cb-bg-panel cb-border-color cb-text-white",
       required: true
     )}
     {error_tag(f, :task_ids)}
   </div>
-  <div class="d-flex">
+  <div class="cb-d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",
-      class: "btn btn-success cb-btn-success mb-2 cb-rounded"
+      class: "cb-btn cb-btn-success cb-mb-2 cb-rounded"
     )}
     {link("Back",
       to: Routes.task_pack_path(@conn, :index),
-      class: "btn btn-link text-white ml-auto"
+      class: "cb-btn cb-btn-link cb-text-white cb-ml-auto"
     )}
   </div>
 <% end) %>

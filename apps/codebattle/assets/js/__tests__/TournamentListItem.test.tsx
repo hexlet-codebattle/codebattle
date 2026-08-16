@@ -6,6 +6,8 @@ import i18n from '../i18n';
 import dayjs from '../i18n/dayjs';
 import TournamentListItem from '../widgets/pages/lobby/TournamentListItem';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('@/inertia/pageProps', () => ({
   getPageProp: (key: string, fallback?: unknown) => (key === 'locale' ? 'en' : fallback),
 }));
@@ -30,7 +32,11 @@ const baseTournament = {
 };
 
 test('does not render invalid date for finished tournament without last round end date', () => {
-  render(<TournamentListItem tournament={baseTournament} />);
+  render(
+    <MantineTestProvider>
+      <TournamentListItem tournament={baseTournament} />
+    </MantineTestProvider>,
+  );
 
   expect(screen.queryByText('Invalid Date')).not.toBeInTheDocument();
   expect(screen.getByText('Rookie')).toBeInTheDocument();
@@ -43,19 +49,25 @@ test('localizes the tournament date, action, and countdown label', async () => {
   await i18n.changeLanguage('ru');
   dayjs.locale('ru');
 
-  const { rerender } = render(<TournamentListItem tournament={baseTournament} />);
+  const { rerender } = render(
+    <MantineTestProvider>
+      <TournamentListItem tournament={baseTournament} />
+    </MantineTestProvider>,
+  );
 
   expect(screen.getByRole('link', { name: 'Открыть' })).toBeInTheDocument();
   expect(screen.getAllByText(/июл/).length).toBeGreaterThan(0);
 
   rerender(
-    <TournamentListItem
-      tournament={{
-        ...baseTournament,
-        state: 'upcoming',
-        startsAt: '2026-08-01T12:00:00Z',
-      }}
-    />,
+    <MantineTestProvider>
+      <TournamentListItem
+        tournament={{
+          ...baseTournament,
+          state: 'upcoming',
+          startsAt: '2026-08-01T12:00:00Z',
+        }}
+      />
+    </MantineTestProvider>,
   );
 
   expect(screen.getByText(/начнётся через/)).toBeInTheDocument();

@@ -1,6 +1,7 @@
 import React, { memo, useContext, useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Box, Button, Flex, Image, Text, Title } from '@mantine/core';
 import cn from 'classnames';
 import { useDispatch } from 'react-redux';
 
@@ -47,7 +48,11 @@ function StageStatus({ playerId, matchList, matchState }: StageStatusProps) {
   ];
 
   if (matchState === MatchStateCodes.playing) {
-    return <span className="text-primary">{i18next.t('Active match')}</span>;
+    return (
+      <Text component="span" c="blue">
+        {i18next.t('Active match')}
+      </Text>
+    );
   }
 
   if (
@@ -56,7 +61,11 @@ function StageStatus({ playerId, matchList, matchState }: StageStatusProps) {
     player.avgTests === opponent.avgTests &&
     player.avgDuration === opponent.avgDuration
   ) {
-    return <span className="text-secondary">{i18next.t('Draw')}</span>;
+    return (
+      <Text component="span" c="dimmed">
+        {i18next.t('Draw')}
+      </Text>
+    );
   }
 
   if (
@@ -70,10 +79,18 @@ function StageStatus({ playerId, matchList, matchState }: StageStatusProps) {
       player.avgTests === opponent.avgTests &&
       player.avgDuration > opponent.avgDuration)
   ) {
-    return <span className="text-success">{i18next.t('You win')}</span>;
+    return (
+      <Text component="span" c="green">
+        {i18next.t('You win')}
+      </Text>
+    );
   }
 
-  return <span className="text-danger">{i18next.t('You lose')}</span>;
+  return (
+    <Text component="span" c="red">
+      {i18next.t('You lose')}
+    </Text>
+  );
 }
 
 interface StageCardProps {
@@ -102,19 +119,8 @@ function StageCard({
 
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-  const cardInfoClassName = cn(
-    'd-flex flex-column justify-content-center pl-0 pl-md-3 pl-lg-3 pl-xl-3',
-    'align-items-center align-items-md-baseline align-items-lg-baseline align-items-xl-baseline',
-  );
-
-  const bunnedBtnClassName = cn('btn rounded-lg m-1 px-4 disabled', {
-    'btn-danger': !hasCustomEventStyle,
-    'cb-custom-event-btn-danger': hasCustomEventStyle,
-  });
-  const openBtnClassName = cn('btn rounded-lg m-1 px-4', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
-    'cb-custom-event-btn-primary': hasCustomEventStyle,
-  });
+  const bunnedBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-danger' : undefined;
+  const openBtnClassName = hasCustomEventStyle ? 'cb-custom-event-btn-primary' : undefined;
 
   useEffect(() => {
     if (!opponent && opponentId) {
@@ -124,64 +130,103 @@ function StageCard({
   }, []);
 
   return (
-    <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row p-2 w-100">
+    <Flex direction={{ base: 'column', md: 'row' }} p="xs" w="100%">
       {opponent ? (
         <>
-          <img
+          <Box hiddenFrom="md" style={{ display: 'none' }} />
+          <Image
             alt={`${opponent.name} avatar`}
             src={
               opponent.avatarUrl ||
               getCustomEventPlayerDefaultImgUrl(opponent) ||
               tournamentEmptyPlayerUrl
             }
-            className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
+            className="cb-tournament-profile-avatar"
+            radius="md"
+            visibleFrom="md"
+            style={{ alignSelf: 'center', padding: '0.5rem' }}
           />
-          <div className={cardInfoClassName}>
-            <h6 className="cb-custom-event-name p-1" style={{ maxWidth: 300 }}>
+          <Flex
+            direction="column"
+            justify="center"
+            align={{ base: 'center', md: 'flex-start' }}
+            pl={{ base: 0, md: 'md' }}
+          >
+            <Title
+              order={6}
+              className="cb-custom-event-name"
+              style={{ maxWidth: 300, padding: '0.25rem' }}
+            >
               {`${i18next.t('Opponent')}: ${opponent.name}`}
-            </h6>
+            </Title>
             {opponent.clanId && (
-              <h6 className="cb-custom-event-name p-1" style={{ maxWidth: 250 }}>
+              <Title
+                order={6}
+                className="cb-custom-event-name"
+                style={{ maxWidth: 250, padding: '0.25rem' }}
+              >
                 {`${i18next.t('Opponent clan')}: ${opponent.clan}`}
-              </h6>
+              </Title>
             )}
-            <h6 className="p-1">
+            <Title order={6} p={4}>
               {`${i18next.t('Status')}: `}
               <StageStatus playerId={playerId} matchList={matchList} matchState={lastMatchState} />
-            </h6>
-            <div className="d-flex">
+            </Title>
+            <Flex>
               {isBanned ? (
-                <a href="_blank" className={bunnedBtnClassName}>
-                  <FontAwesomeIcon className="mr-2" icon="ban" />
+                <Button
+                  component="a"
+                  href="_blank"
+                  color="red"
+                  radius="md"
+                  m={4}
+                  px="lg"
+                  disabled
+                  className={bunnedBtnClassName}
+                  leftSection={<FontAwesomeIcon icon="ban" />}
+                >
                   {i18next.t('You banned')}
-                </a>
+                </Button>
               ) : (
-                <a href={`/games/${lastGameId}`} className={openBtnClassName}>
-                  <FontAwesomeIcon className="mr-2" icon="eye" />
+                <Button
+                  component="a"
+                  href={`/games/${lastGameId}`}
+                  color="cbSecondary"
+                  radius="md"
+                  m={4}
+                  px="lg"
+                  className={openBtnClassName}
+                  leftSection={<FontAwesomeIcon icon="eye" />}
+                >
                   {i18next.t('Open match')}
-                </a>
+                </Button>
               )}
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         </>
       ) : (
         <>
-          <img
+          <Image
             alt={i18next.t('Waiting opponent avatar')}
             src={tournamentEmptyPlayerUrl}
-            className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray rounded p-3"
+            className="cb-tournament-profile-avatar bg-gray"
+            radius="md"
+            visibleFrom="md"
+            style={{ alignSelf: 'center', padding: '1rem' }}
           />
-          <div className="d-flex flex-column justify-content-center pl-0 pl-md-3 pl-lg-3 pl-xl-3">
-            <h6 className="p-1">{`${i18next.t('Opponent')}: ?`}</h6>
-            <h6 className="p-1">
+          <Flex direction="column" justify="center" pl={{ base: 0, md: 'md' }}>
+            <Title order={6} p={4}>{`${i18next.t('Opponent')}: ?`}</Title>
+            <Title order={6} p={4}>
               {`${i18next.t('Status')}: `}
               <span className="cb-tournament-status">{i18next.t('Waiting')}</span>
-            </h6>
-            <h6 className="p-1 text-muted">{i18next.t('Wait round starts')}</h6>
-          </div>
+            </Title>
+            <Title order={6} p={4} c="dimmed">
+              {i18next.t('Wait round starts')}
+            </Title>
+          </Flex>
         </>
       )}
-    </div>
+    </Flex>
   );
 }
 

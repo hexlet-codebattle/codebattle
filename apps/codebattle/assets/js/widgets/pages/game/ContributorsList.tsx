@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import { Flex, Group, Stack, Text } from '@mantine/core';
 import uniqBy from 'lodash/uniqBy';
 import { useDispatch } from 'react-redux';
 
@@ -19,13 +20,20 @@ interface GithubCommit {
 }
 
 const renderContributorsList = (contributors: Contributor[] | null) => (
-  <ul className="d-flex flex-row align-items-begin list-unstyled mb-2">
+  <Group
+    gap="sm"
+    align="flex-start"
+    wrap="nowrap"
+    mb="sm"
+    style={{ listStyle: 'none', padding: 0, margin: 0 }}
+    component="ul"
+  >
     {contributors
       ? contributors.map(({ avatarLink, link }) => (
           <li key={avatarLink}>
             <a href={link}>
               <img
-                className="img-fluid mr-3 cb-rounded"
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 width="40"
                 height="40"
                 src={avatarLink}
@@ -35,7 +43,7 @@ const renderContributorsList = (contributors: Contributor[] | null) => (
           </li>
         ))
       : null}
-  </ul>
+  </Group>
 );
 
 interface ContributorsListProps {
@@ -84,10 +92,10 @@ function ContributorsList({ task: { name, tags, level } }: ContributorsListProps
   }
 
   return (
-    <div className="d-flex flex-column mb-1 align-self-end">
-      <h6 className="card-text">{i18n.t('This users have contributed to this task:')}</h6>
+    <Stack mb="xs" align="flex-end" gap={0}>
+      <Text size="sm">{i18n.t('This users have contributed to this task:')}</Text>
       {renderContributorsList(contributors)}
-    </div>
+    </Stack>
   );
 }
 

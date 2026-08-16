@@ -1,6 +1,5 @@
 import React, { useContext, memo, useState } from 'react';
 
-import cn from 'classnames';
 import i18next from 'i18next';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -89,18 +88,21 @@ function GameOverTimer({ timeoutSeconds, time, durationSec }: GameOverTimerProps
   const [hours, minutes, seconds] = remaining.split(':').map(Number);
   const remainingSeconds = hours * 3600 + minutes * 60 + seconds;
   const progress = timeoutSeconds ? 100 - Math.ceil((remainingSeconds / timeoutSeconds) * 100) : 0;
-  const progressBgColor = cn('cb-timer-progress', {
-    'bg-secondary': remainingSeconds > 45,
-    'bg-warning': remainingSeconds <= 45 && remainingSeconds >= 15,
-    'bg-danger': remainingSeconds < 15,
-  });
+  const progressBgStyle = {
+    background:
+      remainingSeconds > 45
+        ? '#6c757d'
+        : remainingSeconds <= 45 && remainingSeconds >= 15
+          ? '#ffc107'
+          : '#dc3545',
+  };
 
   return (
     <>
-      <span className="text-monospace">
+      <span style={{ fontFamily: 'monospace' }}>
         {i18next.t('game_over')}:{remaining}
       </span>
-      <div className={progressBgColor} style={{ width: `${progress}%` }} />
+      <div className="cb-timer-progress" style={{ width: `${progress}%`, ...progressBgStyle }} />
     </>
   );
 }
@@ -133,7 +135,9 @@ function TimerContainer() {
       return i18next.t('History');
     }
 
-    return <span className="text-monospace">{`${i18next.t('Duration')}: ${duration}`}</span>;
+    return (
+      <span style={{ fontFamily: 'monospace' }}>{`${i18next.t('Duration')}: ${duration}`}</span>
+    );
   }
 
   if (isGameStored) {

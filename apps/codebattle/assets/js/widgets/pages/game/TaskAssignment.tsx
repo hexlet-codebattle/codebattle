@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Box, Button, Flex, Group, Text } from '@mantine/core';
 import isEmpty from 'lodash/isEmpty';
 
 import i18n from '../../../i18n';
@@ -27,14 +27,30 @@ export interface GameTask {
   [key: string]: unknown;
 }
 
+const TASK_SIZE_FONT_SIZE: Record<number, string> = {
+  1: '1.25rem',
+  2: '1.5rem',
+  3: '1.75rem',
+  4: '2rem',
+};
+const getTaskSizeStyle = (taskSize: number): React.CSSProperties => {
+  const fontSize = taskSize >= 5 ? '2.5rem' : (TASK_SIZE_FONT_SIZE[taskSize] ?? '');
+
+  if (!fontSize) {
+    return {};
+  }
+
+  return { fontSize, fontWeight: 500, lineHeight: 1.2, marginBottom: '0.5rem' };
+};
+
 const renderTaskLink = (task: GameTask) => {
   const link = `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags?.[0]}/${task.name}.toml`;
 
   return (
-    <a href={link} className="cb-text d-inline-block">
-      <span className="fab fa-github mr-1" />
+    <Text component="a" href={link} c="cbText" display="inline-block">
+      <FontAwesomeIcon icon="github" style={{ marginRight: 'var(--mantine-spacing-xs)' }} />
       link
-    </a>
+    </Text>
   );
 };
 
@@ -82,35 +98,32 @@ function TaskAssignment({
     return null;
   }
 
-  const cardClassName = cn({
-    'card cb-card border-0': !fullSize,
-    h5: taskSize === 1,
-    h4: taskSize === 2,
-    h3: taskSize === 3,
-    h2: taskSize === 4,
-    h1: taskSize > 4,
-  });
+  const cardStyle = getTaskSizeStyle(taskSize);
 
   if (hideContent) {
     return (
-      <div className={cardClassName}>
-        <div className="d-flex justify-content-center align-items-center h-100">
+      <Box className="cb-card" style={cardStyle}>
+        <Flex justify="center" align="center" h="100%">
           <span>{i18n.t('Only for Premium subscribers')}</span>
-        </div>
-      </div>
+        </Flex>
+      </Box>
     );
   }
 
   return (
-    <div className={cardClassName}>
-      <div className="px-3 py-3 h-100" data-guide-id={!fullSize ? 'Task' : undefined}>
-        <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text d-flex align-items-center">
+    <Box className="cb-card" style={cardStyle}>
+      <Box px="md" py="md" h="100%" data-guide-id={!fullSize ? 'Task' : undefined}>
+        <Flex align="flex-start" direction={{ base: 'column', sm: 'row' }} justify="space-between">
+          <Group component="h6" align="center" gap="xs" mb={0} mt={0}>
             <GameLevelBadge level={task.level} />
-            <span className="ml-2">{i18n.t('Task: ')}</span>
-            <span className="ml-2 text-muted">{task.name}</span>
-          </h6>
-          <div className="d-flex align-items-center">
+            <Text span ml="sm">
+              {i18n.t('Task: ')}
+            </Text>
+            <Text span ml="sm" c="dimmed">
+              {task.name}
+            </Text>
+          </Group>
+          <Group align="center">
             <TaskLanguagesSelection
               handleSetLanguage={handleSetLanguage}
               avaibleLanguages={avaibleLanguages}
@@ -118,59 +131,87 @@ function TaskAssignment({
             />
 
             {!fullSize && (
-              <button
+              <Button
                 type="button"
-                className="btn btn-outline-secondary cb-btn-outline-secondary text-nowrap btn-sm cb-rounded ml-2"
+                variant="outline"
+                color="cbSecondary"
+                size="sm"
+                radius="md"
+                ml="sm"
+                style={{ whiteSpace: 'nowrap' }}
                 onClick={handleOpenFullSizeTaskDescription}
               >
-                <FontAwesomeIcon className="mr-2" icon="expand" />
+                <FontAwesomeIcon
+                  icon="expand"
+                  style={{ marginRight: 'var(--mantine-spacing-sm)' }}
+                />
                 {i18n.t('Expand')}
-              </button>
+              </Button>
             )}
             {changeTaskDescriptionSizes && !hidingControls && (
-              <div
-                className="btn-group align-items-center ml-2 mr-auto"
+              <Group
+                align="center"
+                ml="sm"
+                mr="auto"
                 role="group"
                 aria-label={i18n.t('Editor size controls')}
               >
-                <button
+                <Button
                   type="button"
-                  className="btn btn-sm btn-light rounded-left"
+                  size="sm"
+                  variant="light"
+                  radius="md"
                   onClick={handleTaskSizeDecrease}
+                  style={{
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  }}
                 >
                   -
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
-                  className="btn btn-sm mr-2 btn-light border-left rounded-right"
+                  size="sm"
+                  variant="light"
+                  radius="md"
+                  mr="sm"
                   onClick={handleTaskSizeIncrease}
+                  style={{
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    borderLeft: '1px solid var(--mantine-color-default-border)',
+                  }}
                 >
                   +
-                </button>
-              </div>
+                </Button>
+              </Group>
             )}
-          </div>
-        </div>
-        <div className="d-flex align-items-stretch flex-column user-select-none">
-          <div className="card-text mb-0 h-100 overflow-auto user-select-none">
+          </Group>
+        </Flex>
+        <Flex direction="column" style={{ userSelect: 'none' }}>
+          <Box mb={0} h="100%" style={{ overflow: 'auto', userSelect: 'none' }}>
             <TaskDescriptionMarkdown description={description} />
-          </div>
-        </div>
+          </Box>
+        </Flex>
         {task.origin === 'github' && !hideContribution && (
           <>
             <ContributorsList task={task} />
-            <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
-              <h6 className="card-text small font-italic">
-                <span className="mr-2">
+            <Flex
+              align="flex-end"
+              direction={{ base: 'column', sm: 'row' }}
+              justify="space-between"
+            >
+              <Text component="h6" size="sm" fs="italic">
+                <Text span mr="sm">
                   {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
-                </span>
+                </Text>
                 {renderTaskLink(task)}
-              </h6>
-            </div>
+              </Text>
+            </Flex>
           </>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

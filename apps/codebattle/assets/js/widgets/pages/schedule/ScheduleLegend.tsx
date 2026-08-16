@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Flex, Stack } from '@mantine/core';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
@@ -49,7 +50,7 @@ function ScheduleLegend({ onChangeContext, loading, context }: ScheduleLegendPro
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <div className="d-flex flex-column align-items-center gap-3 p-1 pb-4">
+    <Stack align="center" gap="md" p="xs" pb="lg">
       <div className="cb-schedule-tabs" role="tablist">
         {tabs
           .filter((tab) => !tab.adminOnly || isAdmin)
@@ -59,7 +60,9 @@ function ScheduleLegend({ onChangeContext, loading, context }: ScheduleLegendPro
               type="button"
               role="tab"
               aria-selected={context === tab.context}
-              className={cn('cb-schedule-tab', { active: context === tab.context })}
+              className={cn('cb-schedule-tab', {
+                active: context === tab.context,
+              })}
               data-context={tab.context}
               onClick={onChangeContext}
               disabled={loading}
@@ -68,18 +71,18 @@ function ScheduleLegend({ onChangeContext, loading, context }: ScheduleLegendPro
             </button>
           ))}
       </div>
-      <div className="cb-schedule-grade-legend d-flex flex-wrap justify-content-center">
+      <Flex wrap="wrap" justify="center" className="cb-schedule-grade-legend">
         {gradeLegend.map(({ grade, label }) => (
-          <span key={grade} className="cb-schedule-grade-item d-inline-flex align-items-center">
+          <Flex key={grade} component="span" align="center" className="cb-schedule-grade-item">
             <span
               className="cb-schedule-grade-dot"
               style={{ backgroundColor: `var(--cb-grade-${grade})` }}
             />
             {i18n.t(label)}
-          </span>
+          </Flex>
         ))}
-      </div>
-    </div>
+      </Flex>
+    </Stack>
   );
 }
 

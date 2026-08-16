@@ -115,7 +115,13 @@ const lobby = createSlice({
     },
     updateCheckResult: (
       state,
-      { payload }: PayloadAction<{ gameId: number; userId: number; checkResult: unknown }>,
+      {
+        payload,
+      }: PayloadAction<{
+        gameId: number;
+        userId: number;
+        checkResult: unknown;
+      }>,
     ) => {
       state.activeGames = state.activeGames.map((game) => {
         if (game.id === payload.gameId) {

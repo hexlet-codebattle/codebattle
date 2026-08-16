@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Head } from '@inertiajs/react';
 
+import { Box } from '@mantine/core';
+
 import { SeasonShowPage } from '../../widgets/App';
 
 type SeasonShowProps = React.ComponentProps<typeof SeasonShowPage> & {
@@ -10,9 +12,19 @@ type SeasonShowProps = React.ComponentProps<typeof SeasonShowPage> & {
 
 export default function SeasonShow({ page_title, ...props }: SeasonShowProps) {
   return (
-    <div className="container bg-dark shadow-sm py-4">
+    <Box
+      maw={1140}
+      mx="auto"
+      style={{
+        padding: '15px',
+        paddingTop: '1.5rem',
+        paddingBottom: '1.5rem',
+        backgroundColor: '#343a40',
+        boxShadow: 'var(--mantine-shadow-sm)',
+      }}
+    >
       <Head title={page_title} />
       <SeasonShowPage {...props} />
-    </div>
+    </Box>
   );
 }

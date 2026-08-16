@@ -117,13 +117,13 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
     |> Map.new()
   end
 
-  defp invite_state_badge("pending"), do: "badge bg-secondary"
-  defp invite_state_badge("creating"), do: "badge bg-info text-dark"
-  defp invite_state_badge("invited"), do: "badge bg-primary"
-  defp invite_state_badge("accepted"), do: "badge bg-success"
-  defp invite_state_badge("failed"), do: "badge bg-danger"
-  defp invite_state_badge("expired"), do: "badge bg-warning text-dark"
-  defp invite_state_badge(_), do: "badge bg-secondary"
+  defp invite_state_badge("pending"), do: "cb-badge cb-bg-secondary"
+  defp invite_state_badge("creating"), do: "cb-badge cb-bg-info cb-text-dark"
+  defp invite_state_badge("invited"), do: "cb-badge cb-bg-primary"
+  defp invite_state_badge("accepted"), do: "cb-badge cb-bg-success"
+  defp invite_state_badge("failed"), do: "cb-badge cb-bg-danger"
+  defp invite_state_badge("expired"), do: "cb-badge cb-bg-warning cb-text-dark"
+  defp invite_state_badge(_), do: "cb-badge cb-bg-secondary"
 
   defp format_dt(nil), do: "–"
 
@@ -150,32 +150,33 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="text-white mb-0">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+        <h1 class="cb-text-white cb-mb-0">
           <i class="bi bi-envelope"></i>
-          External Platform Invites <span class="badge bg-secondary ms-2">{length(@invites)}</span>
+          External Platform Invites
+          <span class="cb-badge cb-bg-secondary ms-2">{length(@invites)}</span>
         </h1>
-        <div class="d-flex gap-2">
+        <div class="cb-d-flex gap-2">
           <button
-            class="btn btn-warning cb-rounded"
+            class="cb-btn cb-btn-warning cb-rounded"
             phx-click="poll_all_non_terminal"
             data-confirm={"Enqueue advancer for #{non_terminal_total(@counts)} non-terminal invite(s)?"}
           >
             <i class="bi bi-arrow-clockwise"></i>
             Poll All Non-Terminal ({non_terminal_total(@counts)})
           </button>
-          <button class="btn btn-secondary cb-btn-secondary cb-rounded" phx-click="reload">
+          <button class="cb-btn cb-btn-secondary cb-rounded" phx-click="reload">
             Reload
           </button>
         </div>
       </div>
 
-      <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
-        <div class="d-flex gap-1 align-items-center">
-          <span class="cb-text small">Filter:</span>
+      <div class="cb-d-flex cb-flex-wrap gap-3 cb-align-center cb-mb-3">
+        <div class="cb-d-flex gap-1 cb-align-center">
+          <span class="cb-text cb-small">Filter:</span>
           <button
-            class={"btn btn-sm cb-rounded #{if is_nil(@state_filter), do: "btn-light", else: "btn-outline-light"}"}
+            class={"cb-btn cb-btn-sm cb-rounded #{if is_nil(@state_filter), do: "cb-btn-light", else: "cb-btn-outline-light"}"}
             phx-click="filter"
             phx-value-state=""
           >
@@ -183,7 +184,7 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
           </button>
           <%= for state <- valid_states() do %>
             <button
-              class={"btn btn-sm cb-rounded #{if @state_filter == state, do: "btn-light", else: "btn-outline-light"}"}
+              class={"cb-btn cb-btn-sm cb-rounded #{if @state_filter == state, do: "cb-btn-light", else: "cb-btn-outline-light"}"}
               phx-click="filter"
               phx-value-state={state}
             >
@@ -192,24 +193,24 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
           <% end %>
         </div>
 
-        <div class="d-flex gap-1 align-items-center ms-auto">
-          <span class="cb-text small">Sort:</span>
+        <div class="cb-d-flex gap-1 cb-align-center ms-auto">
+          <span class="cb-text cb-small">Sort:</span>
           <button
-            class={"btn btn-sm cb-rounded #{if @sort_by == "updated_at", do: "btn-light", else: "btn-outline-light"}"}
+            class={"cb-btn cb-btn-sm cb-rounded #{if @sort_by == "updated_at", do: "cb-btn-light", else: "cb-btn-outline-light"}"}
             phx-click="sort"
             phx-value-by="updated_at"
           >
             updated_at
           </button>
           <button
-            class={"btn btn-sm cb-rounded #{if @sort_by == "state", do: "btn-light", else: "btn-outline-light"}"}
+            class={"cb-btn cb-btn-sm cb-rounded #{if @sort_by == "state", do: "cb-btn-light", else: "cb-btn-outline-light"}"}
             phx-click="sort"
             phx-value-by="state"
           >
             state
           </button>
           <button
-            class={"btn btn-sm cb-rounded #{if @sort_by == "user_id", do: "btn-light", else: "btn-outline-light"}"}
+            class={"cb-btn cb-btn-sm cb-rounded #{if @sort_by == "user_id", do: "cb-btn-light", else: "cb-btn-outline-light"}"}
             phx-click="sort"
             phx-value-by="user_id"
           >
@@ -219,12 +220,12 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
       </div>
 
       <%= if @invites == [] do %>
-        <p class="text-white mb-0">No invites.</p>
+        <p class="cb-text-white cb-mb-0">No invites.</p>
       <% else %>
-        <div class="table-responsive">
-          <table class="table table-sm table-dark table-bordered align-middle">
+        <div class="cb-table-responsive">
+          <table class="cb-table cb-table-sm cb-table-dark cb-table-bordered cb-align-middle">
             <thead>
-              <tr class="cb-text small">
+              <tr class="cb-text cb-small">
                 <th>ID</th>
                 <th>User</th>
                 <th>Tournament</th>
@@ -239,17 +240,17 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
             <tbody>
               <%= for invite <- @invites do %>
                 <tr>
-                  <td class="text-white">{invite.id}</td>
-                  <td class="text-white">
-                    <a href={"/admin/users/#{invite.user_id}"} class="text-info">
+                  <td class="cb-text-white">{invite.id}</td>
+                  <td class="cb-text-white">
+                    <a href={"/admin/users/#{invite.user_id}"} class="cb-text-info">
                       #{invite.user_id} {user_display(invite.user)}
                     </a>
                   </td>
-                  <td class="text-white">
+                  <td class="cb-text-white">
                     <%= if invite.group_tournament do %>
                       <a
                         href={"/admin/group_tournaments/#{invite.group_tournament_id}"}
-                        class="text-info"
+                        class="cb-text-info"
                       >
                         {invite.group_tournament.name}
                       </a>
@@ -260,16 +261,16 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
                   <td>
                     <span class={invite_state_badge(invite.state)}>{invite.state}</span>
                   </td>
-                  <td class="text-white small text-break" style="max-width: 180px;">
+                  <td class="cb-text-white cb-small cb-text-break" style="max-width: 180px;">
                     {invite.operation_id || "–"}
                   </td>
-                  <td class="small" style="max-width: 240px;">
+                  <td class="cb-small" style="max-width: 240px;">
                     <%= if invite.invite_link do %>
                       <a
                         href={invite.invite_link}
                         target="_blank"
                         rel="noopener"
-                        class="text-info text-break"
+                        class="cb-text-info cb-text-break"
                       >
                         {invite.invite_link}
                       </a>
@@ -277,15 +278,15 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
                       <span class="cb-text">–</span>
                     <% end %>
                   </td>
-                  <td class="text-white small">{format_dt(invite.updated_at)}</td>
-                  <td class="text-danger small text-break" style="max-width: 280px;">
+                  <td class="cb-text-white cb-small">{format_dt(invite.updated_at)}</td>
+                  <td class="cb-text-danger cb-small cb-text-break" style="max-width: 280px;">
                     {error_summary(invite) || ""}
                   </td>
-                  <td class="text-nowrap">
+                  <td class="cb-text-nowrap">
                     <%= if invite.state == "failed" do %>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-warning cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded"
                         phx-click="retry_invite"
                         phx-value-id={invite.id}
                         data-confirm="Retry this invite?"

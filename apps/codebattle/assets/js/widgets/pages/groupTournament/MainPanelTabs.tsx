@@ -1,7 +1,8 @@
 import React from 'react';
+import { Badge, Flex } from '@mantine/core';
 import i18n from '../../../i18n';
-import { tabBtnClass, tabBtnStyle } from '../../utils/groupTournament';
 import { type ExternalSetup } from './types';
+import TabButton from './TabButton';
 
 interface MainPanelTabsProps {
   activeTab: string;
@@ -22,7 +23,7 @@ const MainPanelTabs = ({
   isAdmin,
   externalSetup,
 }: MainPanelTabsProps) => (
-  <div className="d-flex align-items-center flex-wrap mr-3">
+  <Flex align="center" wrap="wrap" mr="md">
     {(
       [
         'description',
@@ -34,21 +35,13 @@ const MainPanelTabs = ({
     )
       .filter((tab): tab is string => Boolean(tab))
       .map((tab) => (
-        <button
-          key={tab}
-          type="button"
-          className={tabBtnClass(activeTab === tab)}
-          style={tabBtnStyle(activeTab === tab)}
-          onClick={() => setActiveTab(tab)}
-        >
+        <TabButton key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab)}>
           {tab === 'settings' ? (
             <>
               {i18n.t('External Setup')}
-              <span
-                className={`badge ml-2 ${externalSetup?.state === 'ready' ? 'badge-success' : 'badge-warning'}`}
-              >
+              <Badge ml="sm" color={externalSetup?.state === 'ready' ? 'green' : 'yellow'}>
                 {externalSetup?.state}
-              </span>
+              </Badge>
             </>
           ) : (
             i18n.t(
@@ -62,9 +55,9 @@ const MainPanelTabs = ({
               )[tab],
             )
           )}
-        </button>
+        </TabButton>
       ))}
-  </div>
+  </Flex>
 );
 
 export default MainPanelTabs;

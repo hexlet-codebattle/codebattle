@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 
 import LanguagePickerView from '../widgets/components/LanguagePickerView';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('../widgets/components/LanguageIcon', () => ({ default: () => null }));
 
 const langs = [
@@ -18,9 +20,11 @@ function renderPicker(currentLangSlug: string) {
   });
 
   return render(
-    <Provider store={store}>
-      <LanguagePickerView changeLang={vi.fn()} currentLangSlug={currentLangSlug} isDisabled />
-    </Provider>,
+    <MantineTestProvider>
+      <Provider store={store}>
+        <LanguagePickerView changeLang={vi.fn()} currentLangSlug={currentLangSlug} isDisabled />
+      </Provider>
+    </MantineTestProvider>,
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import { Card } from '@mantine/core';
 import CalendarHeatmap, { type ReactCalendarHeatmapValue } from 'react-calendar-heatmap';
 import { useDispatch } from 'react-redux';
 
@@ -35,26 +36,24 @@ const GamesHeatmap: GamesHeatmapComponent = () => {
     return <Loading />;
   }
   return (
-    <div className="card rounded">
-      <div className="card-body py-0 my-0">
-        <CalendarHeatmap
-          showWeekdayLabels
-          values={activities}
-          classForValue={(value) => {
-            if (!value) {
-              return 'color-empty';
-            }
-            return GamesHeatmap.colorScale(value.count ?? 0);
-          }}
-          titleForValue={(value) => {
-            if (!value) {
-              return 'No games';
-            }
-            return `${value.count} games on ${value.date}`;
-          }}
-        />
-      </div>
-    </div>
+    <Card withBorder radius="sm" px="lg" py={0}>
+      <CalendarHeatmap
+        showWeekdayLabels
+        values={activities}
+        classForValue={(value) => {
+          if (!value) {
+            return 'color-empty';
+          }
+          return GamesHeatmap.colorScale(value.count ?? 0);
+        }}
+        titleForValue={(value) => {
+          if (!value) {
+            return 'No games';
+          }
+          return `${value.count} games on ${value.date}`;
+        }}
+      />
+    </Card>
   );
 };
 

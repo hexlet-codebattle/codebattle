@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { Box, Button, Flex, Image, Table, Text } from '@mantine/core';
 import { camelizeKeys } from 'humps';
 import i18next from 'i18next';
 import unionBy from 'lodash/unionBy';
@@ -140,74 +141,130 @@ function MyTournaments({ isActive = false, userTimezone = 'UTC' }: MyTournaments
 
     if (status === 'error') {
       return (
-        <div className="py-5 text-center text-muted">{i18next.t('Failed to load tournaments')}</div>
+        <Text py="xl" ta="center" c="dimmed">
+          {i18next.t('Failed to load tournaments')}
+        </Text>
       );
     }
 
     return (
-      <div className="py-5 text-center text-muted">
+      <Text py="xl" ta="center" c="dimmed">
         {i18next.t("You haven't created any tournaments yet")}
-      </div>
+      </Text>
     );
   }
 
   return (
-    <div className="h-100 d-flex flex-column">
-      <div ref={tableRef} className="table-responsive mvh-100 cb-overflow-y-scroll">
-        <table className="table table-striped mb-0">
-          <thead className="cb-text sticky-top">
-            <tr>
-              <th className="p-3 border-0">{i18next.t('Name')}</th>
-              <th className="p-3 border-0">{i18next.t('Type')}</th>
-              <th className="p-3 border-0">{i18next.t('Level')}</th>
-              <th className="p-3 border-0">{i18next.t('State')}</th>
-              <th className="p-3 border-0">{i18next.t('Starts at')}</th>
-              <th className="p-3 border-0">{i18next.t('Actions')}</th>
-            </tr>
-          </thead>
-          <tbody className="cb-text">
+    <Flex direction="column" h="100%">
+      <Box ref={tableRef} className="mvh-100 cb-overflow-y-scroll" style={{ overflowX: 'auto' }}>
+        <Table striped m={0}>
+          <Table.Thead c="cbText" style={{ position: 'sticky', top: 0 }}>
+            <Table.Tr>
+              <Table.Th p="md">{i18next.t('Name')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Type')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Level')}</Table.Th>
+              <Table.Th p="md">{i18next.t('State')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Starts at')}</Table.Th>
+              <Table.Th p="md">{i18next.t('Actions')}</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody c="cbText">
             {tournaments.map((tournament) => (
-              <tr key={tournament.id}>
-                <td className="p-3 align-middle cb-border-color">{tournament.name}</td>
-                <td className="p-3 align-middle text-break cb-border-color">{tournament.type}</td>
-                <td
-                  className="p-3 align-middle cb-border-color"
+              <Table.Tr key={tournament.id}>
+                <Table.Td p="md" style={{ verticalAlign: 'middle' }}>
+                  {tournament.name}
+                </Table.Td>
+                <Table.Td
+                  p="md"
+
+                  style={{ verticalAlign: 'middle', wordBreak: 'break-word' }}
+                >
+                  {tournament.type}
+                </Table.Td>
+                <Table.Td
+                  p="md"
+
+                  style={{ verticalAlign: 'middle' }}
                   aria-label={`Level: ${tournament.level}`}
                 >
-                  <div className="bg-gray p-1 d-inline-block cb-rounded">
-                    <img
+                  <Box
+                    className="bg-gray"
+                    p={4}
+                    display="inline-block"
+                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  >
+                    <Image
                       alt={tournament.level}
                       src={`/assets/images/levels/${tournament.level}.svg`}
+                      w="auto"
+                      h="auto"
                     />
-                  </div>
-                </td>
-                <td className="p-3 align-middle text-break cb-border-color">{tournament.state}</td>
-                <td className="p-3 align-middle text-break text-nowrap cb-border-color">
+                  </Box>
+                </Table.Td>
+                <Table.Td
+                  p="md"
+
+                  style={{ verticalAlign: 'middle', wordBreak: 'break-word' }}
+                >
+                  {tournament.state}
+                </Table.Td>
+                <Table.Td
+                  p="md"
+
+                  style={{
+                    verticalAlign: 'middle',
+                    whiteSpace: 'nowrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
                   {formatStartsAt(tournament.startsAt, userTimezone)}
-                </td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">
-                  <a
+                </Table.Td>
+                <Table.Td
+                  p="md"
+
+                  style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
+                >
+                  <Button
+                    component="a"
                     href={`/tournaments/${tournament.id}`}
-                    className="btn btn-sm btn-success cb-btn-success cb-rounded me-2"
+                    color="cbSuccess"
+                    size="xs"
+                    radius="md"
+                    mr="xs"
                   >
                     {i18next.t('Show')}
-                  </a>
-                  <a
+                  </Button>
+                  <Button
+                    component="a"
                     href={`/tournaments/${tournament.id}/edit`}
-                    className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                    variant="outline"
+                    color="cbSecondary"
+                    size="xs"
+                    radius="md"
                   >
                     {i18next.t('Edit')}
-                  </a>
-                </td>
-              </tr>
+                  </Button>
+                </Table.Td>
+              </Table.Tr>
             ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-auto border-top cb-border-color py-2 px-3 font-weight-bold text-muted rounded-bottom">
-        {i18next.t('Total tournaments: %{count}', { count: pageInfo.totalEntries })}
-      </div>
-    </div>
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Box
+        mt="auto"
+        py="xs"
+        px="md"
+        fw={700}
+        c="dimmed"
+        style={{
+          borderTop: '1px solid var(--mantine-color-default-border)',
+        }}
+      >
+        {i18next.t('Total tournaments: %{count}', {
+          count: pageInfo.totalEntries,
+        })}
+      </Box>
+    </Flex>
   );
 }
 

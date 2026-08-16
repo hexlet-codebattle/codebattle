@@ -24,51 +24,51 @@ defmodule CodebattleWeb.Live.Admin.Feedback.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="text-white">Feedback</h1>
-        <button class="btn btn-secondary cb-btn-secondary cb-rounded" phx-click="reload">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center">
+        <h1 class="cb-text-white">Feedback</h1>
+        <button class="cb-btn cb-btn-secondary cb-rounded" phx-click="reload">
           Reload
         </button>
       </div>
 
       <%= if @feedback == [] do %>
-        <p class="text-white mt-3 mb-0">No feedback yet.</p>
+        <p class="cb-text-white cb-mt-3 cb-mb-0">No feedback yet.</p>
       <% else %>
-        <div class="table-responsive mt-4">
-          <table class="table table-sm">
+        <div class="cb-table-responsive cb-mt-4">
+          <table class="cb-table cb-table-sm">
             <thead class="cb-text">
               <tr>
-                <th class="cb-border-color border-bottom">id</th>
-                <th class="cb-border-color border-bottom">type</th>
-                <th class="cb-border-color border-bottom">author</th>
-                <th class="cb-border-color border-bottom">url</th>
-                <th class="cb-border-color border-bottom">created_at</th>
+                <th class="cb-border-color cb-border-bottom">id</th>
+                <th class="cb-border-color cb-border-bottom">type</th>
+                <th class="cb-border-color cb-border-bottom">author</th>
+                <th class="cb-border-color cb-border-bottom">url</th>
+                <th class="cb-border-color cb-border-bottom">created_at</th>
               </tr>
             </thead>
             <tbody>
               <%= for item <- @feedback do %>
                 <tr>
-                  <td class="align-middle text-white cb-border-color">{item.id}</td>
-                  <td class="align-middle text-white cb-border-color">{item.status}</td>
-                  <td class="align-middle text-white cb-border-color">{item.author_name}</td>
-                  <td class="align-middle text-white cb-border-color">
+                  <td class="cb-align-middle cb-text-white cb-border-color">{item.id}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">{item.status}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">{item.author_name}</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color">
                     <a
                       href={item.title_link}
-                      class="text-primary"
+                      class="cb-text-primary"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {item.title_link}
                     </a>
                   </td>
-                  <td class="align-middle text-white cb-border-color">
+                  <td class="cb-align-middle cb-text-white cb-border-color">
                     {format_inserted_at(item.inserted_at)}
                   </td>
                 </tr>
                 <tr>
-                  <td class="align-middle text-white cb-border-color font-weight-bold">message</td>
-                  <td class="align-middle text-white cb-border-color text-break" colspan="4">
+                  <td class="cb-align-middle cb-text-white cb-border-color cb-fw-bold">message</td>
+                  <td class="cb-align-middle cb-text-white cb-border-color cb-text-break" colspan="4">
                     {item.text}
                   </td>
                 </tr>

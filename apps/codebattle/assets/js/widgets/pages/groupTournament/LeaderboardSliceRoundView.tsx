@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Button, Flex, Text } from '@mantine/core';
 import i18n from '../../../i18n';
 import { LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT } from '../../config/groupTournament';
 import LeaderboardSliceItem from './LeaderboardSliceItem';
@@ -64,7 +65,11 @@ function LeaderboardSliceRoundView({
   }, [leaderboard, roundNumber, currentUserId]);
 
   if (slices.length === 0) {
-    return <div className="text-muted p-3">{i18n.t('No round data yet')}</div>;
+    return (
+      <Text c="dimmed" p="md">
+        {i18n.t('No round data yet')}
+      </Text>
+    );
   }
 
   const overLimit = slices.length > LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT;
@@ -74,25 +79,26 @@ function LeaderboardSliceRoundView({
   return (
     <>
       {overLimit && (
-        <div className="mb-2 d-flex align-items-center">
-          <span className="text-muted small mr-2">
+        <Flex align="center" mb="sm">
+          <Text c="dimmed" size="sm" mr="sm">
             {showAll
               ? i18n.t('%{count} slices', { count: slices.length })
               : i18n.t('%{visible} / %{total} slices', {
                   visible: visibleSlices.length,
                   total: slices.length,
                 })}
-          </span>
-          <button
+          </Text>
+          <Button
             type="button"
-            className="btn btn-sm btn-outline-light"
+            size="compact-sm"
+            variant="default"
             onClick={() => setShowAll((v) => !v)}
           >
             {showAll ? i18n.t('Show less') : i18n.t('Show all')}
-          </button>
-        </div>
+          </Button>
+        </Flex>
       )}
-      <div className="d-flex flex-wrap" style={{ gap: '1rem' }}>
+      <Flex wrap="wrap" gap="md">
         {visibleSlices.map(({ sliceIndex, players, hasCurrentUser }) => (
           <LeaderboardSliceItem
             key={sliceIndex}
@@ -102,7 +108,7 @@ function LeaderboardSliceRoundView({
             currentUserId={currentUserId}
           />
         ))}
-      </div>
+      </Flex>
     </>
   );
 }

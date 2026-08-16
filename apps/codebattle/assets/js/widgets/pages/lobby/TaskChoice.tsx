@@ -1,5 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 
+import { Box, Flex, Title } from '@mantine/core';
+
 import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -14,7 +16,8 @@ import mapValues from 'lodash/mapValues';
 import omitBy from 'lodash/omitBy';
 import uniqBy from 'lodash/uniqBy';
 import { useDispatch, useSelector } from 'react-redux';
-import Select, { createFilter } from 'react-select';
+
+import CbSelect from '../../components/CbSelect';
 
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
@@ -114,10 +117,9 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
     const title = description || task.name;
 
     return (
-      <div className="d-flex align-items-center">
+      <Flex align="center">
         {task.creatorId === currentUserId ? (
           <img
-            className="img-fluid"
             style={{ maxHeight: '24px', width: '16px' }}
             src={avatarUrl}
             alt={i18n.t('User avatar')}
@@ -126,90 +128,36 @@ function TaskSelect({ value, onChange, options }: TaskSelectProps) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <FontAwesomeIcon icon={origin.icon as any} transform={origin.transform} />
         )}
-        <span className="text-truncate ml-1" lang={i18n.language}>
+        <span
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            marginLeft: 4,
+          }}
+          lang={i18n.language}
+        >
           {title}
         </span>
-      </div>
+      </Flex>
     );
   };
 
   return (
-    <Select<Task>
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      styles={{
-        menu: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-        }),
-        container: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-          borderColor: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            borderColor: '#e04d5b',
-          },
-        }),
-        indicatorSeparator: (base: any) => ({
-          ...base,
-          backgroundColor: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            backgroundColor: '#e04d5b',
-          },
-        }),
-        dropdownIndicator: (base: any) => ({
-          ...base,
-          color: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            color: '#e04d5b',
-          },
-        }),
-        control: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-          borderColor: '#dc3545',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            borderColor: '#e04d5b',
-          },
-        }),
-        singleValue: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-        }),
-        option: (base: any) => ({
-          ...base,
-          backgroundColor: '#1c1c24',
-          color: 'white',
-          ':hover': {
-            ...base[':hover'],
-            cursor: 'pointer',
-            color: '#eaffff',
-            backgroundColor: '#2a2a35',
-          },
-        }),
-      }}
-      /* eslint-enable @typescript-eslint/no-explicit-any */
-      className="w-100"
+    <CbSelect<Task>
       value={value}
       onChange={(task) => onChange(task as Task)}
       options={options}
-      getOptionLabel={(task) => task.name ?? ''}
-      formatOptionLabel={renderOptionLabel}
+      getOptionLabel={renderOptionLabel}
       getOptionValue={(task) => String(task.id)}
-      filterOption={createFilter({
-        stringify: (option) =>
-          [option.data.name, getLocalizedDescription(option.data)].filter(Boolean).join(' '),
-      })}
+      getOptionSearchText={(task) =>
+        [task.name, getLocalizedDescription(task)].filter(Boolean).join(' ')
+      }
+      classNames={{
+        target: 'cb-select-danger-input',
+        dropdown: 'cb-select-danger-dropdown',
+        option: 'cb-select-danger-option',
+      }}
     />
   );
 }
@@ -224,8 +172,8 @@ interface TagButtonGroupProps {
 function TagButtonGroup({ tags, value, onChange, disabled }: TagButtonGroupProps) {
   const getTagClassName = (tag: string) => {
     const isTagMarked = value.includes(tag);
-    return cn('btn btn-sm mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
-      'bg-orange text-white': isTagMarked,
+    return cn({
+      'bg-orange': isTagMarked,
       'tag-btn-outline-orange': !isTagMarked,
     });
   };
@@ -236,19 +184,28 @@ function TagButtonGroup({ tags, value, onChange, disabled }: TagButtonGroupProps
   };
 
   return (
-    <div className="d-flex flex-wrap border border-danger pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
-      {tags.map((tag) => (
-        <button
-          key={tag}
-          type="button"
-          className={getTagClassName(tag)}
-          onClick={() => toggleTagButton(tag)}
-          disabled={disabled}
-        >
-          {tag}
-        </button>
-      ))}
-    </div>
+    <Flex wrap="wrap" gap={8} p={8} style={{ border: '1px solid #dc3545', borderRadius: '0.5rem' }}>
+      {tags.map((tag) => {
+        const isTagMarked = value.includes(tag);
+
+        return (
+          <button
+            key={tag}
+            type="button"
+            className={getTagClassName(tag)}
+            style={{
+              borderRadius: '0.5rem',
+              whiteSpace: 'nowrap',
+              color: isTagMarked ? '#fff' : undefined,
+            }}
+            onClick={() => toggleTagButton(tag)}
+            disabled={disabled}
+          >
+            {tag}
+          </button>
+        );
+      })}
+    </Flex>
   );
 }
 
@@ -294,7 +251,10 @@ const TaskChoice = memo(
     const isTaskChosen = chosenTask.id !== null;
     const isShowAllTasks = isEmpty(chosenTags) || isEqual(chosenTags, taskTags);
 
-    const tasksByLevel: GroupedTasksByLevel = get(groupedTasks, level, { all: [], tags: [] });
+    const tasksByLevel: GroupedTasksByLevel = get(groupedTasks, level, {
+      all: [],
+      tags: [],
+    });
     const filteredTasks = isShowAllTasks
       ? tasksByLevel.all
       : uniqBy(
@@ -304,25 +264,31 @@ const TaskChoice = memo(
     const randomTaskName = i18n.t('random task (%{total} available)', {
       total: filteredTasks.length,
     });
-    const randomTask: Task = { id: null, name: randomTaskName, origin: 'random' };
+    const randomTask: Task = {
+      id: null,
+      name: randomTaskName,
+      origin: 'random',
+    };
     const taskSelectValue = isTaskChosen ? chosenTask : randomTask;
     const taskOptions = [randomTask].concat(filteredTasks);
     const tagGroupValue = isTaskChosen ? (chosenTask.tags ?? []) : chosenTags;
 
     return (
       <>
-        <div className="px-sm-3 px-md-5 mt-3">
+        <Box px={{ base: 0, sm: 16, md: 48 }} mt="md">
           <TaskSelect value={taskSelectValue} onChange={setChosenTask} options={taskOptions} />
-        </div>
-        <h6 className="mt-3">{i18n.t('Tags')}</h6>
-        <div className="px-sm-3 px-md-5 mt-3">
+        </Box>
+        <Title order={6} mt="md">
+          {i18n.t('Tags')}
+        </Title>
+        <Box px={{ base: 0, sm: 16, md: 48 }} mt="md">
           <TagButtonGroup
             tags={tasksByLevel.tags}
             value={tagGroupValue}
             onChange={setChosenTags}
             disabled={isTaskChosen}
           />
-        </div>
+        </Box>
       </>
     );
   },

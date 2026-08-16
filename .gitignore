@@ -65,3 +65,4 @@ priv/plts/*.plt.hash
 *.pnpm-store
 
 .customization/
+{{pkgetc}}/

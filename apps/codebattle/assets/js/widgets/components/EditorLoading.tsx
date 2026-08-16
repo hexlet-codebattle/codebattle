@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import cn from 'classnames';
+import { Flex } from '@mantine/core';
 
 import Loading from './Loading';
 
@@ -9,18 +9,18 @@ interface EditorLoadingProps {
 }
 
 function EditorLoading({ loading }: EditorLoadingProps) {
-  const loadingClassName = cn(
-    'position-absolute align-items-center justify-content-center w-100 h-100',
-    {
-      'd-flex cb-loading-background': loading,
-      'd-none': !loading,
-    },
-  );
-
   return (
-    <div className={loadingClassName}>
+    <Flex
+      pos="absolute"
+      w="100%"
+      h="100%"
+      align="center"
+      justify="center"
+      display={loading ? 'flex' : 'none'}
+      className={loading ? 'cb-loading-background' : undefined}
+    >
       <Loading />
-    </div>
+    </Flex>
   );
 }
 

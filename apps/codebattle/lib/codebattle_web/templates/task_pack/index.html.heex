@@ -1,47 +1,47 @@
-<div class="container-xl cb-bg-panel shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center text-white">{gettext("Task Packs")}</h1>
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded-sm cb-py-4 cb-mb-3">
+  <h1 class="cb-text-center cb-text-white">{gettext("Task Packs")}</h1>
   {link(gettext("Create new task pack"),
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :new),
-    class: "btn btn-success cb-btn-success mt-2 cb-rounded"
+    class: "cb-btn cb-btn-success cb-mt-2 cb-rounded"
   )}
   {link(gettext("Tasks"),
     to: CodebattleWeb.Router.Helpers.task_path(@conn, :index),
-    class: "btn btn-secondary cb-btn-secondary mt-2 ml-2 cb-rounded"
+    class: "cb-btn cb-btn-secondary cb-mt-2 cb-ml-2 cb-rounded"
   )}
-  <div class="table-responsive mt-4">
-    <table class="table table-sm">
+  <div class="cb-table-responsive cb-mt-4">
+    <table class="cb-table cb-table-sm">
       <thead class="cb-text">
         <tr>
-          <th class="cb-border-color border-bottom-0">name</th>
-          <th class="cb-border-color border-bottom-0">state</th>
-          <th class="cb-border-color border-bottom-0">visibility</th>
-          <th class="cb-border-color border-bottom-0">task_ids</th>
-          <th class="cb-border-color border-bottom-0">actions</th>
+          <th class="cb-border-color cb-border-bottom-0">name</th>
+          <th class="cb-border-color cb-border-bottom-0">state</th>
+          <th class="cb-border-color cb-border-bottom-0">visibility</th>
+          <th class="cb-border-color cb-border-bottom-0">task_ids</th>
+          <th class="cb-border-color cb-border-bottom-0">actions</th>
         </tr>
       </thead>
       <tbody>
         <%= for task_pack <- @task_packs do %>
           <tr>
-            <td class="align-middle text text-white cb-border-color">{task_pack.name}</td>
-            <td class="align-middle text text-white cb-border-color">{task_pack.state}</td>
-            <td class="align-middle text text-white cb-border-color">
+            <td class="cb-align-middle text cb-text-white cb-border-color">{task_pack.name}</td>
+            <td class="cb-align-middle text cb-text-white cb-border-color">{task_pack.state}</td>
+            <td class="cb-align-middle text cb-text-white cb-border-color">
               {task_pack.visibility}
             </td>
-            <td class="align-middle text text-white cb-border-color">
+            <td class="cb-align-middle text cb-text-white cb-border-color">
               {render_task_ids(task_pack)}
             </td>
-            <td class="align-middle text-nowrap text-white cb-border-color">
-              <div class="d-flex">
+            <td class="cb-align-middle cb-text-nowrap cb-text-white cb-border-color">
+              <div class="cb-d-flex">
                 <%= if !Codebattle.User.admin?(@current_user) do %>
                   {link(gettext("Show"),
                     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
-                    class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                    class: "cb-btn cb-btn-sm cb-btn-secondary cb-rounded"
                   )}
                 <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
                   {link(gettext("Show"),
                     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
-                    class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                    class: "cb-btn cb-btn-sm cb-btn-secondary cb-rounded"
                   )}
                   {button("Activate",
                     to:
@@ -51,7 +51,7 @@
                         task_pack.id
                       ),
                     method: "patch",
-                    class: "btn btn-sm btn-success cb-btn-success cb-rounded"
+                    class: "cb-btn cb-btn-sm cb-btn-success cb-rounded"
                   )}
                   {button("Disable",
                     to:
@@ -61,7 +61,7 @@
                         task_pack.id
                       ),
                     method: "patch",
-                    class: "btn btn-sm btn-danger cb-rounded"
+                    class: "cb-btn cb-btn-sm cb-btn-danger cb-rounded"
                   )}
                 <% end %>
               </div>

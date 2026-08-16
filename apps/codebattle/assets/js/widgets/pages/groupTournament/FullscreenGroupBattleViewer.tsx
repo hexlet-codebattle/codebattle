@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Button, Flex, Text } from '@mantine/core';
 import i18n from '../../../i18n';
 import RunIframe from './RunIframe';
 import { type Run } from './types';
@@ -19,8 +20,9 @@ function FullscreenGroupBattleViewer({
   }
 
   return (
-    <div
-      className="position-fixed d-flex flex-column"
+    <Flex
+      pos="fixed"
+      direction="column"
       style={{
         inset: 0,
         zIndex: 2000,
@@ -28,20 +30,21 @@ function FullscreenGroupBattleViewer({
         padding: '16px',
       }}
     >
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="text-white">
+      <Flex justify="space-between" align="center" mb="md">
+        <Text c="white">
           {i18n.t('Run Viewer Fullscreen')}
           {selectedRun ? ` • Run #${selectedRun.id}` : ''}
-        </div>
-        <button
+        </Text>
+        <Button
           type="button"
-          className="btn btn-outline-light cb-rounded"
+          variant="default"
+          radius="md"
           onClick={() => setViewerFullscreen && setViewerFullscreen(false)}
         >
           {i18n.t('Close Fullscreen')}
-        </button>
-      </div>
-      <div className="flex-grow-1">
+        </Button>
+      </Flex>
+      <Box style={{ flexGrow: 1 }}>
         <RunIframe
           title={`run-viewer-fullscreen-${selectedRun.id}`}
           srcDoc={selectedRun.result.viewerHtml}
@@ -54,8 +57,8 @@ function FullscreenGroupBattleViewer({
             borderRadius: '8px',
           }}
         />
-      </div>
-    </div>
+      </Box>
+    </Flex>
   );
 }
 

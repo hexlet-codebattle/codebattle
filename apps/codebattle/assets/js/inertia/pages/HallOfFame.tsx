@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Head } from '@inertiajs/react';
 
+import { Box } from '@mantine/core';
+
 import { HallOfFamePage } from '../../widgets/App';
 
 type HallOfFamePageProps = React.ComponentProps<typeof HallOfFamePage>;
@@ -20,13 +22,23 @@ export default function HallOfFame({
   previous_seasons_winners,
 }: HallOfFameProps) {
   return (
-    <div className="container bg-dark shadow-sm py-4">
+    <Box
+      maw={1140}
+      mx="auto"
+      style={{
+        padding: '15px',
+        paddingTop: '1.5rem',
+        paddingBottom: '1.5rem',
+        backgroundColor: '#343a40',
+        boxShadow: 'var(--mantine-shadow-sm)',
+      }}
+    >
       <Head title={page_title} />
       <HallOfFamePage
         currentSeason={current_season}
         currentSeasonResults={current_season_results}
         previousSeasonsWinners={previous_seasons_winners}
       />
-    </div>
+    </Box>
   );
 }

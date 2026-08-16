@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
-import cn from 'classnames';
 import upperCase from 'lodash/upperCase';
 import { useSelector } from 'react-redux';
+
+import { Box, Button, Flex, Grid, Text, Title } from '@mantine/core';
 
 import NextStageGroupTournamentModal from '@/pages/game/NextStageGroupTournamentModal';
 
@@ -61,105 +62,129 @@ function ParticipantDashboard() {
 
   if (!participantData || !event) {
     return (
-      <div className="container-fluid">
-        <div className="row mb-4">
-          <div className="col-12">
-            <h1 className="text-white text-capitalize cb-custom-event-title">
-              {upperCase(i18n.t('Participant Dashboard'))}
-            </h1>
-            <div className="text-white">{i18n.t('Loading participant data...')}</div>
-          </div>
-        </div>
-      </div>
+      <Box w="100%" px="md">
+        <Box mb="lg">
+          <Title order={1} className="cb-custom-event-title" c="white" tt="capitalize">
+            {upperCase(i18n.t('Participant Dashboard'))}
+          </Title>
+          <Text c="white">{i18n.t('Loading participant data...')}</Text>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="container-fluid position-relative overflow-hidden">
+    <Box w="100%" px="md" pos="relative" style={{ overflow: 'hidden' }}>
       <div className="cup cup-aside" />
-      <div className="cb-custom-event-content d-flex flex-column mx-auto w-100">
-        <div className="row my-5">
-          <div className="col-12 col-lg-9 col-md-8 col-sm-12">
-            <h1 className="text-white cb-custom-event-title">
+      <Flex direction="column" className="cb-custom-event-content" mx="auto" w="100%">
+        <Grid my="xl">
+          <Grid.Col span={{ base: 12, sm: 12, md: 8, lg: 9 }}>
+            <Title order={1} c="white" className="cb-custom-event-title">
               {upperCase(i18n.t('Participant Dashboard'))}
-            </h1>
-          </div>
-          <div className="col-12 col-lg-3 col-md-4 col-sm-12">
-            <div className="user-info d-flex flex-column align-items-center w-100">
-              <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
+            </Title>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 12, md: 4, lg: 3 }}>
+            <Flex direction="column" align="center" w="100%" className="user-info">
+              <Flex
+                justify="space-between"
+                c="white"
+                className="cb-custom-event-profile"
+                my="xs"
+                mx="xs"
+                w="100%"
+              >
                 {i18n.t('Clan')}
-                <span title={user.clan} className="cb-custom-event-profile-data ms-2">
+                <Box className="cb-custom-event-profile-data" ml="xs" title={user.clan}>
                   {user.clan}
-                </span>
-              </div>
-              <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
+                </Box>
+              </Flex>
+              <Flex
+                justify="space-between"
+                c="white"
+                className="cb-custom-event-profile"
+                my="xs"
+                mx="xs"
+                w="100%"
+              >
                 {i18n.t('Category')}
-                <span className="cb-custom-event-profile-data ms-2">{user.category}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+                <Box className="cb-custom-event-profile-data" ml="xs">
+                  {user.category}
+                </Box>
+              </Flex>
+            </Flex>
+          </Grid.Col>
+        </Grid>
 
-        <div className="row my-3">
-          <div className="col-12 cb-custom-event-stage-header cb-custom-event-stage-section d-none d-xl-block">
-            <div className="cb-custom-event-stage-grid cb-custom-event-stage-grid-header text-white w-100 py-3">
-              <div />
-              <div />
-              <div className="d-flex justify-content-center align-items-center">
+        <Grid my="md">
+          <Grid.Col
+            span={12}
+            className="cb-custom-event-stage-header cb-custom-event-stage-section"
+            display={{ base: 'none', xl: 'block' }}
+          >
+            <Box
+              className="cb-custom-event-stage-grid cb-custom-event-stage-grid-header"
+              c="white"
+              w="100%"
+              py="sm"
+            >
+              <Box />
+              <Box />
+              <Flex justify="center" align="center">
                 {i18n.t('Place in total')}
-              </div>
-              <div className="d-flex justify-content-center align-items-center">
+              </Flex>
+              <Flex justify="center" align="center">
                 {i18n.t('Place in category')}
-              </div>
-              <div className="d-flex justify-content-center align-items-center">
+              </Flex>
+              <Flex justify="center" align="center">
                 {i18n.t('Score/Total')}
-              </div>
-              <div className="d-flex justify-content-center align-items-center">
+              </Flex>
+              <Flex justify="center" align="center">
                 {i18n.t('Time spent')}
-              </div>
-            </div>
-          </div>
+              </Flex>
+            </Box>
+          </Grid.Col>
           {participantData.stages.map((stage) => (
-            <div key={stage.slug} className="col-12 cb-custom-event-stage-section">
-              <div className="text-white">
-                <div className="cb-custom-event-stage-grid py-3">
-                  <div className="d-flex">
-                    <div className="cb-custom-event-stage-name">
-                      <div>{stage.name}</div>
-                      {stage.dates && <div>{stage.dates}</div>}
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-center cb-custom-event-stage-action">
+            <Grid.Col key={stage.slug} span={12} className="cb-custom-event-stage-section">
+              <Box c="white">
+                <Box className="cb-custom-event-stage-grid" py="sm">
+                  <Flex>
+                    <Box className="cb-custom-event-stage-name">
+                      <Box>{stage.name}</Box>
+                      {stage.dates && <Box>{stage.dates}</Box>}
+                    </Box>
+                  </Flex>
+                  <Flex justify="center" className="cb-custom-event-stage-action">
                     {stage.isStageAvailableForUser && stage.type === 'tournament' && (
                       <div className="action-button">
                         {stage.userStatus === 'completed' ? (
-                          <button
-                            type="button"
-                            className="btn btn-secondary rounded-pill px-4 disabled"
-                            disabled
-                          >
+                          <Button color="cbSecondary" radius="xl" px="lg" disabled>
                             {i18n.t(stage.actionButtonText)}
-                          </button>
+                          </Button>
                         ) : stage.groupTournamentId ? (
-                          <a
-                            type="button"
-                            className="btn btn-success rounded-pill px-4"
+                          <Button
+                            component="a"
+                            radius="xl"
+                            px="lg"
+                            color="cbSuccess"
                             href={`/group_tournaments/${stage.groupTournamentId}`}
                           >
                             {i18n.t(stage.actionButtonText)}
-                          </a>
+                          </Button>
                         ) : stage.userStatus === 'started' && stage.tournamentId ? (
-                          <a
-                            type="button"
-                            className="btn btn-success rounded-pill px-4"
+                          <Button
+                            component="a"
+                            radius="xl"
+                            px="lg"
+                            color="cbSuccess"
                             href={`/tournaments/${stage.tournamentId}?auto_join=1`}
                           >
                             {i18n.t(stage.actionButtonText)}
-                          </a>
+                          </Button>
                         ) : (
-                          <button
-                            type="button"
-                            className="btn btn-warning rounded-pill px-4"
+                          <Button
+                            color="yellow"
+                            radius="xl"
+                            px="lg"
                             onClick={() => {
                               NiceModal.show(ModalCodes.eventStageModal, {
                                 url: `/e/${event.slug}/stage?stage_slug=${stage.slug}`,
@@ -170,61 +195,61 @@ function ParticipantDashboard() {
                             }}
                           >
                             {i18n.t(stage.actionButtonText)}
-                          </button>
+                          </Button>
                         )}
                       </div>
                     )}
                     {stage.isStageAvailableForUser &&
                       stage.type === 'entrance' &&
                       stage.isUserPassedStage && (
-                        <div className="d-flex align-items-center justify-content-center">
+                        <Flex align="center" justify="center">
                           <PassedIcon />
-                          <span className="px-1">{i18n.t('Passed')}</span>
-                        </div>
+                          <Box px="xs">{i18n.t('Passed')}</Box>
+                        </Flex>
                       )}
                     {stage.isStageAvailableForUser &&
                       stage.type === 'entrance' &&
                       !stage.isUserPassedStage && (
-                        <div className="d-flex align-items-center justify-content-center">
+                        <Flex align="center" justify="center">
                           <NotPassedIcon />
-                          <span className="px-1">{i18n.t('Not passed')}</span>
-                        </div>
+                          <Box px="xs">{i18n.t('Not passed')}</Box>
+                        </Flex>
                       )}
-                  </div>
+                  </Flex>
                   {stage.type === 'tournament' && (
                     <>
-                      <div
-                        className={cn(
-                          'd-flex d-sm-flex cb-custom-event-stage-cell',
-                          'justify-content-center align-items-center text-center',
-                        )}
+                      <Flex
+                        justify="center"
+                        align="center"
+                        ta="center"
+                        className="cb-custom-event-stage-cell"
                       >
-                        <div className="d-block d-xl-none me-2 font-weight-bold">
+                        <Box display={{ base: 'block', xl: 'none' }} mr="xs" fw={700}>
                           {i18n.t('Place in total')}:
-                        </div>
+                        </Box>
                         {stage.placeInTotalRank}
-                      </div>
-                      <div
-                        className={cn(
-                          'd-flex d-sm-flex cb-custom-event-stage-cell',
-                          'justify-content-center align-items-center text-center',
-                        )}
+                      </Flex>
+                      <Flex
+                        justify="center"
+                        align="center"
+                        ta="center"
+                        className="cb-custom-event-stage-cell"
                       >
-                        <div className="d-block d-xl-none me-2 font-weight-bold">
+                        <Box display={{ base: 'block', xl: 'none' }} mr="xs" fw={700}>
                           {i18n.t('Place in category')}:
-                        </div>
+                        </Box>
                         {stage.placeInCategoryRank}
-                      </div>
-                      <div
-                        className={cn(
-                          'd-flex d-sm-flex cb-custom-event-stage-cell',
-                          'justify-content-center align-items-center text-center',
-                        )}
+                      </Flex>
+                      <Flex
+                        justify="center"
+                        align="center"
+                        ta="center"
+                        className="cb-custom-event-stage-cell"
                       >
-                        <div className="d-block d-xl-none me-2 font-weight-bold">
+                        <Box display={{ base: 'block', xl: 'none' }} mr="xs" fw={700}>
                           {i18n.t('Score/Total')}:
-                        </div>
-                        <div className="d-flex flex-column align-items-center">
+                        </Box>
+                        <Flex direction="column" align="center">
                           <span>
                             {stage.winsCount}/{stage.gamesCount}
                           </span>
@@ -232,31 +257,31 @@ function ParticipantDashboard() {
                             {stage.aiScore}
                             {stage.maxScore != null ? `/${stage.maxScore}` : ''}
                           </span>
-                        </div>
-                      </div>
-                      <div
-                        className={cn(
-                          'd-flex d-sm-flex cb-custom-event-stage-cell',
-                          'justify-content-center align-items-center text-center',
-                        )}
+                        </Flex>
+                      </Flex>
+                      <Flex
+                        justify="center"
+                        align="center"
+                        ta="center"
+                        className="cb-custom-event-stage-cell"
                       >
-                        <div className="d-block d-xl-none me-2 font-weight-bold">
+                        <Box display={{ base: 'block', xl: 'none' }} mr="xs" fw={700}>
                           {i18n.t('Time spent')}:
-                        </div>
-                        <div className="d-flex flex-column align-items-center">
+                        </Box>
+                        <Flex direction="column" align="center">
                           <span>{stage.tournamentTimeSpent}</span>
                           <span>{stage.groupTournamentTimeSpent}</span>
-                        </div>
-                      </div>
+                        </Flex>
+                      </Flex>
                     </>
                   )}
-                </div>
-              </div>
-            </div>
+                </Box>
+              </Box>
+            </Grid.Col>
           ))}
-        </div>
-      </div>
-    </div>
+        </Grid>
+      </Flex>
+    </Box>
   );
 }
 
