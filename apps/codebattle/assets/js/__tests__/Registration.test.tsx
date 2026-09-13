@@ -13,6 +13,39 @@ window.history.pushState({}, '', '/users/new');
 const { invalidData: fixtureInvalidData, validData } = getTestData('signUpData.json');
 const invalidData = fixtureInvalidData as Array<[string, string, string, string]>;
 const { data, route, headers } = validData;
+const cyrillicPasswordError = 'Password must not contain Cyrillic characters';
+const cyrillicPasswords: Array<[string, string]> = [
+  ['confirmed mixed-script password', 'as1234567ыы'],
+  ['uppercase Cyrillic at the beginning', 'Ыas1234567'],
+  ['uppercase Cyrillic in the middle', 'as123Ы4567'],
+  ['uppercase Cyrillic at the end', 'as1234567Ы'],
+  ['yo at the beginning', 'ёas1234567'],
+  ['yo in the middle', 'as123ё4567'],
+  ['yo at the end', 'as1234567ё'],
+  ['YO at the beginning', 'Ёas1234567'],
+  ['YO in the middle', 'as123Ё4567'],
+  ['YO at the end', 'as1234567Ё'],
+  ['Ukrainian ghe with upturn at the beginning', 'ґas1234567'],
+  ['Ukrainian ghe with upturn in the middle', 'as123ґ4567'],
+  ['Ukrainian ghe with upturn at the end', 'as1234567ґ'],
+];
+
+const fillSignUpForm = async (
+  getByLabelText: (label: string) => HTMLElement,
+  overrides: Partial<typeof data> = {},
+) => {
+  const values = {
+    ...data,
+    ...overrides,
+    passwordConfirmation:
+      overrides.passwordConfirmation ?? overrides.password ?? data.passwordConfirmation,
+  };
+
+  await userEvent.type(getByLabelText('name'), values.name);
+  await userEvent.type(getByLabelText('email'), values.email);
+  await userEvent.type(getByLabelText('password'), values.password);
+  await userEvent.type(getByLabelText('passwordConfirmation'), values.passwordConfirmation);
+};
 
 vi.mock('@/inertia/pageProps', () => {
   const pageProps = { local: 'en', current_user: { sound_settings: {} } };
@@ -92,6 +125,41 @@ describe('sign up', () => {
     await user.click(submitButton);
 
     expect(await findByText(validationMessage)).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test('rejects a Cyrillic password without Latin letters using the letter rule', async () => {
+    const { getByLabelText, findByText, queryByText, user } = setup(<Registration />);
+
+    await fillSignUpForm(getByLabelText, { password: '12345678ы' });
+    await user.click(getByLabelText('Submit form'));
+
+    expect(await findByText('Should contain at least one letter')).toBeInTheDocument();
+    expect(queryByText(cyrillicPasswordError)).not.toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test.each(cyrillicPasswords)(
+    'rejects %s with a Cyrillic-specific error',
+    async (_name, password) => {
+      const { getByLabelText, findByText, user } = setup(<Registration />);
+
+      await fillSignUpForm(getByLabelText, { password });
+      await user.click(getByLabelText('Submit form'));
+
+      expect(await findByText(cyrillicPasswordError)).toBeInTheDocument();
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test('rejects mismatched password confirmation', async () => {
+    const { getByLabelText, findByText, user } = setup(<Registration />);
+
+    await fillSignUpForm(getByLabelText, { passwordConfirmation: 'differentpassword1' });
+    await user.click(getByLabelText('Submit form'));
+
+    expect(await findByText('Passwords must match')).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   test('successful sign up', async () => {
@@ -103,15 +171,73 @@ describe('sign up', () => {
     });
     fetchMock.mockImplementation(signUpSpy);
 
-    await userEvent.type(getByLabelText('name'), data.name);
-    await userEvent.type(getByLabelText('email'), data.email);
-    await userEvent.type(getByLabelText('password'), data.password);
-    await userEvent.type(getByLabelText('passwordConfirmation'), data.passwordConfirmation);
+    await fillSignUpForm(getByLabelText);
 
     const submitButton = getByLabelText('Submit form');
     await user.click(submitButton);
 
     await waitFor(() => {
+      expect(signUpSpy).toHaveBeenCalledWith(route, {
+        method: 'POST',
+        headers: headers.headers,
+        body: JSON.stringify(data),
+      });
+    });
+  });
+
+  test('accepts punctuation and non-Cyrillic Unicode in the password', async () => {
+    const { getByLabelText, user } = setup(<Registration />);
+    const password = 'testpassword1!α';
+    const signUpSpy = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+    fetchMock.mockImplementation(signUpSpy);
+
+    await fillSignUpForm(getByLabelText, { password });
+    await user.click(getByLabelText('Submit form'));
+
+    await waitFor(() => {
+      expect(signUpSpy).toHaveBeenCalledTimes(1);
+      expect(signUpSpy).toHaveBeenCalledWith(route, {
+        method: 'POST',
+        headers: headers.headers,
+        body: JSON.stringify({
+          ...data,
+          password,
+          passwordConfirmation: password,
+        }),
+      });
+    });
+  });
+
+  test('clears the Cyrillic password error after correction and submits unchanged values', async () => {
+    const { getByLabelText, findByText, queryByText, user } = setup(<Registration />);
+    const signUpSpy = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+    fetchMock.mockImplementation(signUpSpy);
+
+    await fillSignUpForm(getByLabelText, { password: 'as1234567ыы' });
+    await user.click(getByLabelText('Submit form'));
+
+    expect(await findByText(cyrillicPasswordError)).toBeInTheDocument();
+    expect(signUpSpy).not.toHaveBeenCalled();
+
+    await user.clear(getByLabelText('password'));
+    await userEvent.type(getByLabelText('password'), data.password);
+    await user.clear(getByLabelText('passwordConfirmation'));
+    await userEvent.type(getByLabelText('passwordConfirmation'), data.passwordConfirmation);
+
+    await waitFor(() => {
+      expect(queryByText(cyrillicPasswordError)).not.toBeInTheDocument();
+    });
+
+    await user.click(getByLabelText('Submit form'));
+
+    await waitFor(() => {
+      expect(signUpSpy).toHaveBeenCalledTimes(1);
       expect(signUpSpy).toHaveBeenCalledWith(route, {
         method: 'POST',
         headers: headers.headers,

@@ -71,6 +71,9 @@ const schemas = {
       .max(128, 'Should be at most 128 characters')
       .matches(/[a-zA-Z]/, 'Should contain at least one letter')
       .matches(/[0-9]/, 'Should contain at least one number')
+      .test('no-cyrillic', 'Password must not contain Cyrillic characters', (value) =>
+        value ? !/\p{Script=Cyrillic}/u.test(value) : true,
+      )
       .required('Password required'),
     passwordConfirmation: Yup.string()
       .required('Confirmation required')
