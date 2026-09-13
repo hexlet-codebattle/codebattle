@@ -1,0 +1,13 @@
+{
+  "name": "Codebattle",
+  "dockerComposeFile": "../compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "codebattle",
+  "// updateRemoteUserUID": "Must stay false: bin/dev always runs as the image uid 1000, and the _build/deps/node_modules/plts volumes are owned by it. Letting the editor remap the user to the host uid makes those volumes unwritable from the editor container.",
+  "updateRemoteUserUID": false,
+  "overrideCommand": false,
+  "shutdownAction": "stopCompose",
+  "initializeCommand": "sh -c '[ -x .devcontainer/preflight ] || exit 0; exec .devcontainer/preflight'",
+  "postStartCommand": "sh -c 'test -f /workspace/mix.exs || { echo \"/workspace is not the codebattle repository root: this container was started with a Compose project directory other than the repository root, so the source bind mount resolved to the wrong host directory.\" >&2; exit 1; }'"
+}

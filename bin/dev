@@ -1,0 +1,71 @@
+#!/usr/bin/env sh
+
+set -eu
+
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+
+if [ "${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then
+  cd "$repo_dir"
+  exec "$@"
+fi
+
+compose() {
+  docker compose \
+    --project-name codebattle-devcontainer \
+    --project-directory "$repo_dir" \
+    --file "$repo_dir/compose.yml" \
+    "$@"
+}
+
+app_running() {
+  [ -n "$(compose ps --quiet --status running app 2>/dev/null)" ]
+}
+
+if app_running; then
+  app_was_running=1
+else
+  app_was_running=0
+  "$repo_dir/.devcontainer/preflight"
+fi
+
+# An editor's devcontainer support and bin/dev both drive the same Compose
+# project, so `up` regularly recreates the container. Docker occasionally still
+# holds the published ports of the container it just removed; one retry after
+# dropping the stale container clears that.
+if ! compose up --detach app; then
+  echo "bin/dev: 'docker compose up' failed, retrying once without the stale container..." >&2
+  compose rm --stop --force app >/dev/null 2>&1 || true
+  sleep 2
+  compose up --detach app
+fi
+
+# Compose resolves the `.:/workspace` bind mount against its project directory.
+# A devcontainer tool that picks .devcontainer/ instead of the repository root
+# mounts the wrong tree, which is otherwise only visible as missing source files.
+if [ "$app_was_running" -eq 0 ] && ! compose exec --no-TTY app test -f /workspace/mix.exs; then
+  cat >&2 <<'EOF'
+bin/dev: /workspace in the dev container is not the repository root.
+
+The container was started with a Compose project directory other than the
+repository root, so `.:/workspace` resolved to the wrong host directory. Reset
+it with:
+
+  make dev-down && make dev-up
+
+EOF
+  exit 1
+fi
+
+if [ -t 0 ]; then
+  exec docker compose \
+    --project-name codebattle-devcontainer \
+    --project-directory "$repo_dir" \
+    --file "$repo_dir/compose.yml" \
+    exec app "$@"
+else
+  exec docker compose \
+    --project-name codebattle-devcontainer \
+    --project-directory "$repo_dir" \
+    --file "$repo_dir/compose.yml" \
+    exec --no-TTY app "$@"
+fi

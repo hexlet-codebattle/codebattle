@@ -5,6 +5,9 @@ import path from "path";
 import fs from "fs";
 import gettextParser from "gettext-parser";
 
+// The dev container publishes this port on the host; keep both in sync.
+const vitePort = Number(process.env.CODEBATTLE_VITE_PORT) || 8080;
+
 // --- tiny .po loader so your i18next-po-loader use keeps working
 function poLoader() {
   return {
@@ -265,11 +268,11 @@ export default defineConfig(({ command, mode }) => ({
   // Dev server
   server: {
     host: "0.0.0.0",
-    port: 8080,
+    port: vitePort,
     strictPort: true,
     cors: true,
     // HMR must be enabled so the browser receives the "full-reload" message
-    hmr: { host: "localhost", protocol: "ws", port: 8080 },
+    hmr: { host: "localhost", protocol: "ws", port: vitePort },
     // If developing inside Docker and file changes aren't detected, uncomment:
     // watch: { usePolling: true, interval: 100 },
   },

@@ -1,0 +1,86 @@
+#!/usr/bin/env sh
+
+# Host-side preflight for the Codebattle dev container.
+#
+# Runs before `docker compose up` (from bin/dev, and as the devcontainer
+# `initializeCommand`). Publishing a busy host port makes `compose up` fail
+# with an opaque "address already in use" and leaves the dev container dead,
+# so report the conflict here with the process that causes it.
+
+set -eu
+
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+project_name=codebattle-devcontainer
+
+# Mirrors `make setup-env`, so "Reopen in Container" works without it.
+if [ ! -f "$repo_dir/.env" ] && [ -f "$repo_dir/.env.example" ]; then
+  cp "$repo_dir/.env.example" "$repo_dir/.env"
+fi
+
+# Host environment wins, then .env, then the compose.yml default.
+read_setting() {
+  name=$1
+  default=$2
+  value=$(printenv "$name" 2>/dev/null || true)
+
+  if [ -z "$value" ] && [ -f "$repo_dir/.env" ]; then
+    value=$(sed -n "s/^[[:space:]]*${name}=//p" "$repo_dir/.env" | tail -n 1 | tr -d "\"' \r")
+  fi
+
+  [ -n "$value" ] || value=$default
+  printf '%s\n' "$value"
+}
+
+app_running() {
+  docker ps --quiet \
+    --filter "label=com.docker.compose.project=${project_name}" \
+    --filter "label=com.docker.compose.service=app" \
+    --filter "status=running" 2>/dev/null |
+    grep -q .
+}
+
+report_conflict() {
+  label=$1
+  port=$2
+  variable=$3
+
+  cat >&2 <<EOF
+
+The dev container publishes ${label} on 127.0.0.1:${port}, but that port is
+already taken on the host:
+
+$(lsof -nP -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | sed 's/^/  /')
+
+Stop that process, or pick another port in .env:
+
+  ${variable}=$((port + 10))
+
+EOF
+}
+
+# The published ports are already ours; compose up will be a no-op or a
+# recreate, and neither needs a preflight.
+if app_running; then
+  exit 0
+fi
+
+# Without lsof there is no portable way to name the offending process; let
+# compose report the raw error instead of blocking startup.
+command -v lsof >/dev/null 2>&1 || exit 0
+
+status=0
+
+phoenix_port=$(read_setting CODEBATTLE_PORT 4000)
+vite_port=$(read_setting CODEBATTLE_VITE_PORT 8080)
+
+if lsof -nP -iTCP:"$phoenix_port" -sTCP:LISTEN >/dev/null 2>&1; then
+  report_conflict Phoenix "$phoenix_port" CODEBATTLE_PORT
+  status=1
+fi
+
+if lsof -nP -iTCP:"$vite_port" -sTCP:LISTEN >/dev/null 2>&1; then
+  report_conflict Vite "$vite_port" CODEBATTLE_VITE_PORT
+  status=1
+fi
+
+exit "$status"

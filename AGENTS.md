@@ -20,7 +20,36 @@ Helper modules live alongside their domains:
 - Operational utilities: `apps/codebattle/lib/codebattle/utils/` (populate tasks/users/clans, release helpers).
 
 ## Build, Test, and Development Commands
-Use the Makefile targets for common workflows:
+**Run every repository command through the dev container.** The host has no
+usable environment for this project, even where a matching toolchain is
+installed: `_build`, `deps`, `node_modules`, and `priv/plts` are Docker volumes
+rather than host directories, and PostgreSQL is reachable only as `db:5432`
+inside the Compose network — it is deliberately not published to the host. A
+host-side `mix test` or `pnpm` run therefore compiles into a different tree and
+cannot reach the database.
+
+- Prefer an existing `make` target (listed below).
+- Otherwise use `make dev-exec CMD='...'` or `./bin/dev <command>`; both route
+  through `docker compose exec` into the container.
+- Never invoke `mix`, `iex`, `pnpm`, `node`, or `go` from a host shell, and do
+  not drive `docker compose` by hand — use the `dev-*` targets so the Compose
+  project name and project directory stay consistent.
+- The targets work unchanged from a host terminal or from a terminal inside the
+  container: `bin/dev` detects `CODEBATTLE_DEVCONTAINER=1` and execs directly
+  instead of re-entering.
+
+Host-only exceptions — these drive the host container engine and refuse to run
+inside the dev container:
+- Container lifecycle: `make dev-build`, `dev-rebuild`, `dev-stop`, `dev-down`,
+  `dev-logs`, `clean`.
+- Image build and publish: `make build-local`, `build-codebattle`, `build-arm`,
+  `build-runner`, `push-codebattle`, `push-runner`, `push-codeabttle-arm`, and
+  the runner image Makefiles under `apps/runner/images/`. These orchestrate
+  other containers; treat them as privileged and run them only on trusted code.
+- Ops tooling: `make terraform-vars-generate`, `ansible-edit-secrets`,
+  `ansible-vault-edit-production`.
+
+Common targets:
 - `make format` / `make lint`: format or check Elixir formatting.
 - `make credo`: run Credo static analysis.
 - `make lint-js`: OXC (`oxlint`) for frontend assets.
@@ -28,10 +57,9 @@ Use the Makefile targets for common workflows:
 - `make test`: ExUnit + coveralls JSON.
 - `make test-code-checkers`: image executor tests with `CODEBATTLE_EXECUTOR=local`.
 
-For frontend-only tasks in `apps/codebattle/`:
-- `pnpm run dev`: Vite dev server.
-- `pnpm run build`: production build.
-- `pnpm run test`: Jest tests.
+For frontend-only tasks, use `make test-fe`, `make check-js`, or
+`make dev-exec CMD='pnpm --dir apps/codebattle <command>'` so pnpm remains in
+the development container.
 
 ## Coding Style & Naming Conventions
 - Elixir formatting is enforced via `mix format` (see `.formatter.exs`).
@@ -43,7 +71,7 @@ For frontend-only tasks in `apps/codebattle/`:
 - Use `make test` as the canonical final repository test command; do not substitute a direct `mix test` run.
 - Run `mix credo --strict` and `mix dialyzer` as part of the final repository verification.
 - ExUnit tests live in `apps/*/test/`; coverage uses ExCoveralls with a 60% threshold.
-- Frontend tests use Jest in `apps/codebattle/`.
+- Frontend tests use Vitest in `apps/codebattle/`.
 - Name tests after the module/component under test (e.g., `user_stats_test.exs`, `UserStats.test.jsx`).
 
 ## Commit & Pull Request Guidelines

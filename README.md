@@ -16,19 +16,27 @@ This project exists thanks to all the people who contribute. [Contribute guideli
 
 - Mac / Linux
 - Docker
+- Optional: an editor that supports the [Dev Container specification](https://containers.dev/)
 
 ### Install
 
 ```bash
-$ git clone git@github.com:hexlet-codebattle/codebattle.git
-$ cd codebattle
-$ make setup
+git clone git@github.com:hexlet-codebattle/codebattle.git
+cd codebattle
+make setup
 ```
+
+`make setup` builds the pinned development image, installs Elixir and frontend
+dependencies inside it, starts PostgreSQL, and prepares the database. Host
+installations of Elixir, Erlang, Node.js, pnpm, and Go are not used.
+
+To work from an editor, open the repository and choose **Reopen in Container**.
+The same Make commands work in a host terminal and in the container terminal.
 
 ### Start Server
 
 ```bash
-$ make compose
+make server
 ```
 
 - Open <http://localhost:4000>
@@ -36,36 +44,48 @@ $ make compose
 ### Run Tests
 
 ```bash
-$ make compose-test
+make test
+make test-fe
 ```
 
 ### Lint
 
 ```bash
-$ make compose-lint
+make lint
+make credo
+make check-js
 
 # To run specific
-$ make compose-mix-format
-$ make compose-mix-credo
-$ make compose-lint-js-fix
+make format
+make lint-js-fix
 ```
 
 ### Useful
 
 ```bash
-$ mix upload_langs
+make console
+make dev-shell
+make dev-exec CMD='mix upload_langs'
 
-$ mix images.push # all
-$ mix images.push elixir
-
-$ mix images.build # all
-$ mix images.build elixir
-
-$ mix images.pull # all
-$ mix images.pull elixir
-
-#If you use images in dev env, run commands in make compose-bash
+make db-migrate
+make dev-rebuild
+make dev-down
+make clean # Removes the development containers and their persistent volumes
 ```
+
+All application commands run in the non-root development container. The source
+tree is the only host directory mounted into it; dependency caches and database
+data use Docker-managed volumes. Host Docker/Podman sockets and host credential
+directories are intentionally not mounted.
+
+The repository is writable inside the container, so keep only disposable
+development credentials in `.env`. Never put production or personal cloud
+credentials in the workspace. The host `.env` is masked in the container and
+only the variables explicitly allowlisted in `compose.yml` are passed through.
+
+Runner image build and publish targets still execute through the host container
+engine because they orchestrate other containers. Treat those targets as
+privileged operations and use them only with trusted code.
 
 ### Profile js bundle
 
@@ -75,6 +95,25 @@ $ mix images.pull elixir
 
 
 ### Troubleshooting
+
+#### Port already in use
+
+The dev container publishes Phoenix on `127.0.0.1:4000` and Vite on
+`127.0.0.1:8080`. If another project holds one of them, `docker compose up`
+fails with `failed to bind host port ... address already in use` and the
+container never starts.
+
+`bin/dev` and the devcontainer `initializeCommand` run `.devcontainer/preflight`
+first, which names the offending process. Either stop it, or move the dev
+container to free ports in `.env`:
+
+```
+CODEBATTLE_PORT=4010
+CODEBATTLE_VITE_PORT=8090
+```
+
+Both variables are read by Compose and by `vite.config.js`, so the container
+and the dev server stay in sync.
 
 #### macOS
 

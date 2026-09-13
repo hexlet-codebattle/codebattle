@@ -1,45 +1,74 @@
-FROM elixir:1.19-otp-28-alpine
+# syntax=docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
 
-# Install Elixir tooling
-RUN mix local.hex --force \
-  && mix local.rebar --force \
-  && mix archive.install hex phx_new --force
+# Keep these versions aligned with mise.toml. Digests make rebuilding the
+# development toolchain an explicit, reviewable operation.
+FROM node:24.11.0-alpine@sha256:f36fed0b2129a8492535e2853c64fbdbd2d29dc1219ee3217023ca48aebd3787 AS node
+FROM golang:1.26.1-alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039 AS go
+FROM elixir:1.20.2-otp-29-alpine@sha256:c68e45a3840f5cec60b9485cf3af8e82d3d749793a2eb4b442628e6ba9711b6f
 
-# Install system dependencies + Node.js + npm + podman
+ARG USERNAME=codebattle
+ARG USER_UID=1000
+ARG USER_GID=1000
+
 RUN apk add --no-cache \
-  inotify-tools \
-  curl \
-  vim \
-  chromium \
-  postgresql-client \
-  build-base \
-  git \
-  nodejs \
-  npm \
-  podman
+      bash \
+      build-base \
+      ca-certificates \
+      chromium \
+      curl \
+      git \
+      inotify-tools \
+      libstdc++ \
+      make \
+      postgresql-client \
+      shadow \
+      vim \
+  && addgroup --gid "${USER_GID}" "${USERNAME}" \
+  && adduser \
+      --disabled-password \
+      --gecos "" \
+      --home "/home/${USERNAME}" \
+      --ingroup "${USERNAME}" \
+      --shell /bin/bash \
+      --uid "${USER_UID}" \
+      "${USERNAME}" \
+  && mkdir -p \
+      /workspace/_build \
+      /workspace/deps \
+      /workspace/priv/plts \
+      /workspace/apps/codebattle/node_modules \
+      "/home/${USERNAME}/.cache" \
+      "/home/${USERNAME}/.local/share/pnpm" \
+  && chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}" /workspace
 
-# Install pnpm globally
-RUN npm install --global pnpm
+# Copy pinned language runtimes from official images instead of installing
+# floating Alpine/npm packages.
+COPY --from=node /usr/local/ /usr/local/
+COPY --from=go /usr/local/go/ /usr/local/go/
 
-# Base workdir
-WORKDIR /app
+RUN ln -s /usr/local/go/bin/go /usr/local/bin/go \
+  && ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt
 
-ARG GIT_HASH
-ENV APP_VERSION="$GIT_HASH" \
-    NODE_OPTIONS="--max-old-space-size=4096" \
-    PNPM_SKIP_BUILD_SCRIPT_CHECK=1
+ENV APP_VERSION=dev \
+    COREPACK_DEFAULT_TO_LATEST=0 \
+    COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+    COREPACK_HOME=/opt/corepack \
+    LANG=C.UTF-8 \
+    MIX_HOME=/home/codebattle/.mix \
+    HEX_HOME=/home/codebattle/.hex \
+    NODE_OPTIONS=--max-old-space-size=4096 \
+    PATH=/usr/local/go/bin:/home/codebattle/.mix/escripts:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Copy repo
-COPY . .
+# Match the package manager declared in apps/codebattle/package.json.
+RUN mkdir -p "${COREPACK_HOME}" \
+  && corepack enable pnpm \
+  && corepack prepare pnpm@11.18.0 --activate \
+  && chmod -R a+rX "${COREPACK_HOME}"
 
-# Go to Codebattle app where package.json is
-WORKDIR /app/apps/codebattle
+USER ${USERNAME}
 
-# Install JS dependencies for Codebattle
-RUN pnpm install --force && pnpm add regenerator-runtime
+RUN mix local.hex 2.5.1 --force && mix local.rebar --force
 
-# Build Codebattle assets (change to your real script if needed)
-RUN pnpm run build
+WORKDIR /workspace
 
-# Return to umbrella root for further Elixir steps (mix deps.get, etc., if you add them later)
-WORKDIR /app
+CMD ["sleep", "infinity"]

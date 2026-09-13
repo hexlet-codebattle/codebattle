@@ -1,143 +1,147 @@
 BUILDX_OUTPUT ?= --load
+DEV := ./bin/dev
+DEV_COMPOSE := docker compose --project-name codebattle-devcontainer --project-directory . --file compose.yml
 
-compose:
-	docker compose up app
+.PHONY: dev-up dev-build dev-rebuild dev-stop dev-down dev-logs dev-shell dev-exec
 
-compose-d:
-	docker compose up -d app
+dev-up:
+	$(DEV) true
 
-compose-build:
-	docker compose build --build-arg GIT_HASH=$(shell git rev-parse HEAD) app
+dev-build:
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
+		echo "Already inside the dev container; no image build is needed."; \
+	else \
+		$(DEV_COMPOSE) build --pull app; \
+	fi
 
-compose-down:
-	docker compose down -v || true
+dev-rebuild: dev-build
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" != "1" ]; then \
+		$(DEV_COMPOSE) up --detach --force-recreate app; \
+	fi
 
-compose-test-code-checkers:
-	docker compose run --rm --name codebattle_app app mix test image_executor
+dev-stop:
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
+		echo "Run 'make dev-stop' from the host."; \
+	else \
+		$(DEV_COMPOSE) stop; \
+	fi
 
-compose-test-fe:
-	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm test'
+dev-down:
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
+		echo "Run 'make dev-down' from the host."; \
+	else \
+		$(DEV_COMPOSE) down --remove-orphans; \
+	fi
 
-compose-test:
-	docker compose run --rm --name codebattle_app app mix test --exclude image_executor
+dev-logs:
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
+		echo "Run 'make dev-logs' from the host."; \
+	else \
+		$(DEV_COMPOSE) logs --follow --tail=100; \
+	fi
 
-compose-kill:
-	docker compose kill
+dev-shell:
+	$(DEV) bash
 
-compose-bash:
-	docker compose run app bash
+dev-exec:
+	@test -n "$(CMD)" || (echo "Usage: make dev-exec CMD='mix help'" && exit 2)
+	$(DEV) sh -c '$(CMD)'
 
-compose-install-mix:
-	docker compose run --rm --name codebattle_app app mix deps.get
+setup-env:
+	@test -f .env || cp .env.example .env
 
-compose-install-pnpm:
-	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm install && pnpm run build:mem'
+setup: setup-env
+	$(MAKE) dev-build
+	$(MAKE) install
+	$(MAKE) db-setup
 
-compose-install: compose-install-mix compose-install-pnpm
+install: install-mix install-pnpm
 
-compose-setup: compose-down compose-build compose-install compose-db-setup
+install-mix:
+	$(DEV) mix deps.get --check-locked
 
-compose-db-setup:
-	docker compose run --rm --name codebattle_app app mix ecto.setup
-
-compose-db-migrate:
-	docker compose run --rm --name codebattle_app app mix ecto.migrate
-
-compose-lint: compose-mix-format compose-mix-credo compose-lint-js-fix
-
-compose-mix-format:
-	docker compose run --rm --name codebattle_app app mix format
-
-compose-mix-credo:
-	docker compose run app mix credo
-
-compose-lint-js-fix:
-	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm run lint --fix'
-
-compose-console:
-	docker compose run --rm --name codebattle_app app iex -S mix
-
-compose-restart:
-	docker compose restart
-
-compose-stop:
-	docker compose stop
-
-compose-logs:
-	docker compose logs -f --tail=100
-
-compose-compile:
-	docker compose  run --rm --name codebattle_app app mix compile
-
-compose-build-images:
-	docker compose run --rm --name codebattle_app app mix images.build ${lang}
-
-compose-pull-images:
-	docker compose run --rm --name codebattle_app app mix images.pull ${lang}
-
-compose-push-images:
-	docker compose run --rm --name codebattle_app app mix images.push ${lang}
-
-pg:
-	docker compose up -d db-local
-
-clean:
-	rm -rf _build
-	rm -rf deps
-	rm -rf .elixir_ls
-	rm -rf priv/static
-	rm -rf node_modules
-
-format:
-	mix format
-
-lint:
-	mix format --check-formatted
-
-credo:
-	mix credo
-
-db-recreate:
-	mix cmd --app codebattle mix ecto.reset
-
-outdated:
-	mix hex.outdated
-
-lint-js:
-	cd apps/codebattle && pnpm run lint
-
-lint-js-fix:
-	cd apps/codebattle && pnpm run lint-fix
-
-mdl:
-	mix dialyzer
-
-start:
-	bin/codebattle eval "Codebattle.Utils.Release.migrate"
-	bin/codebattle start
-
-runner-start:
-	bin/runner start
+install-pnpm:
+	$(DEV) pnpm --dir apps/codebattle install --frozen-lockfile
+	$(DEV) pnpm --dir apps/codebattle run build:mem
 
 server:
-	iex -S mix phx.server
+	$(DEV) iex -S mix phx.server
 
 console:
-	iex -S mix
+	$(DEV) iex -S mix
+
+compile:
+	$(DEV) mix compile
+
+test:
+	$(DEV) mix coveralls.json --exclude image_executor --max-failures 1
+
+test-fe:
+	$(DEV) pnpm --dir apps/codebattle test
+
+test-code-checkers:
+	$(DEV) env CODEBATTLE_EXECUTOR=local mix test apps/codebattle/test/images --max-failures 10
+
+format:
+	$(DEV) mix format
+
+lint:
+	$(DEV) mix format --check-formatted
+
+credo:
+	$(DEV) mix credo --strict
+
+lint-js:
+	$(DEV) pnpm --dir apps/codebattle run lint
+
+lint-js-fix:
+	$(DEV) pnpm --dir apps/codebattle run lint-fix
+
+check-js:
+	$(DEV) pnpm --dir apps/codebattle run check
+
+dialyzer:
+	$(DEV) mix dialyzer
+
+mdl: dialyzer
+
+db-setup:
+	$(DEV) mix ecto.setup
+
+db-migrate:
+	$(DEV) mix ecto.migrate
+
+db-recreate:
+	$(DEV) mix cmd --app codebattle mix ecto.reset
+
+outdated:
+	$(DEV) mix hex.outdated
+
+release:
+	$(DEV) env MIX_ENV=prod mix release
+
+start:
+	$(DEV) bin/codebattle eval "Codebattle.Utils.Release.migrate"
+	$(DEV) bin/codebattle start
+
+runner-start:
+	$(DEV) bin/runner start
+
+clean:
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
+		echo "Run 'make clean' from the host so Docker volumes can be removed."; \
+		exit 2; \
+	fi
+	$(DEV_COMPOSE) down --volumes --remove-orphans
+	rm -rf _build deps .elixir_ls priv/static node_modules apps/codebattle/node_modules
 
 ARS_ARGS ?=
-ARS_GOCACHE ?= $(CURDIR)/tmp/ars-go-build
-ARS_GOPATH ?= $(CURDIR)/tmp/ars-go
-ARS_BIN ?= $(CURDIR)/tmp/ars
+ARS_GOCACHE ?= /workspace/tmp/ars-go-build
+ARS_GOPATH ?= /workspace/tmp/ars-go
+ARS_BIN ?= /workspace/tmp/ars
 
 ars:
-	@command -v go >/dev/null 2>&1 || { \
-		echo "go is required for ars. Install it first, for example:"; \
-		echo "  mise use -g go@1.26.1"; \
-		exit 127; \
-	}
-	@mkdir -p $(ARS_GOCACHE) $(ARS_GOPATH)
-	cd tools/ars && GOCACHE=$(ARS_GOCACHE) GOPATH=$(ARS_GOPATH) go build -o $(ARS_BIN) ./cmd/ars && exec $(ARS_BIN) $(ARS_ARGS)
+	$(DEV) sh -c 'mkdir -p $(ARS_GOCACHE) $(ARS_GOPATH) && cd tools/ars && GOCACHE=$(ARS_GOCACHE) GOPATH=$(ARS_GOPATH) go build -o $(ARS_BIN) ./cmd/ars && exec $(ARS_BIN) $(ARS_ARGS)'
 
 ars-200:
 	$(MAKE) ars ARS_ARGS="-server http://localhost:4000 -auth-key x-key \
@@ -158,51 +162,24 @@ ars-200:
 		-timeout-mode per_round_with_rematch"
 
 DIMA_ARGS ?=
-DIMA_GOCACHE ?= $(CURDIR)/tmp/dima-go-build
-DIMA_GOPATH ?= $(CURDIR)/tmp/dima-go
-DIMA_BIN ?= $(CURDIR)/tmp/dima
+DIMA_GOCACHE ?= /workspace/tmp/dima-go-build
+DIMA_GOPATH ?= /workspace/tmp/dima-go
+DIMA_BIN ?= /workspace/tmp/dima
 
 dima:
-	@command -v go >/dev/null 2>&1 || { \
-		echo "go is required for dima. Install it first, for example:"; \
-		echo "  mise use -g go@1.26.1"; \
-		exit 127; \
-	}
-	@mkdir -p $(DIMA_GOCACHE) $(DIMA_GOPATH)
-	cd tools/dima && GOCACHE=$(DIMA_GOCACHE) GOPATH=$(DIMA_GOPATH) go build -o $(DIMA_BIN) ./cmd/dima
+	$(DEV) sh -c 'mkdir -p $(DIMA_GOCACHE) $(DIMA_GOPATH) && cd tools/dima && GOCACHE=$(DIMA_GOCACHE) GOPATH=$(DIMA_GOPATH) go build -o $(DIMA_BIN) ./cmd/dima'
 
 huyach: dima
-	exec $(DIMA_BIN) $(DIMA_ARGS)
-
-test:
-	mix coveralls.json --exclude image_executor --max-failures 1
-
-dialyzer:
-	mix dialyzer
-
-test-code-checkers: export CODEBATTLE_EXECUTOR = local
-test-code-checkers:
-	mix test apps/codebattle/test/images --max-failures 10
+	$(DEV) $(DIMA_BIN) $(DIMA_ARGS)
 
 terraform-vars-generate:
 	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
-
-setup: setup-env compose-setup
-
-setup-env:
-	docker run --rm -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/development.yml -i ansible/development -vv
-
-setup-env-local:
-	ansible-playbook ansible/development.yml -i ansible/development -vv
 
 ansible-edit-secrets:
 	ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
 
 ansible-vault-edit-production:
 	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
-
-release:
-	mix release
 
 build-local:
 	DOCKER_BUILDKIT=1 docker build --target assets-image \

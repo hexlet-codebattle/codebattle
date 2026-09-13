@@ -28,24 +28,23 @@ See `AGENTS.md` for detailed module organization and core domain contexts.
 
 ### Development
 ```bash
-make compose                    # Start app + db via Docker Compose
-make server                     # Local: iex -S mix phx.server
-make console                    # Local: iex -S mix
-cd apps/codebattle && pnpm run dev  # Vite dev server with HMR (port 8080)
+make server                     # Start/enter the dev container and run Phoenix + Vite
+make console                    # IEx in the dev container
+make dev-shell                  # Shell in the dev container
+make dev-exec CMD='mix help'    # Run an arbitrary command in the dev container
 ```
 
 ### Testing
 ```bash
 make test                       # ExUnit + coverage (excludes image_executor)
+make test-fe                    # Vitest frontend tests
 make test-code-checkers         # Image executor tests (CODEBATTLE_EXECUTOR=local)
-make compose-test               # Tests in Docker
-cd apps/codebattle && pnpm test # Jest frontend tests
 
 # Single Elixir test file:
-mix test apps/codebattle/test/codebattle/game/context_test.exs
+make dev-exec CMD='mix test apps/codebattle/test/codebattle/game/context_test.exs'
 
 # Single frontend test:
-cd apps/codebattle && pnpm test UserStats.test.jsx
+make dev-exec CMD='pnpm --dir apps/codebattle test UserStats.test.jsx'
 ```
 
 ### Linting & Formatting
@@ -60,11 +59,15 @@ make lint-js-fix                # Auto-fix JS lint issues
 
 ### Setup
 ```bash
-make setup                      # Full first-time setup (Docker)
-make setup-env-local            # Local setup without Docker (requires mise)
-make compose-db-setup           # Create + migrate database
-make compose-db-migrate         # Apply pending migrations
+make setup                      # Full first-time dev-container setup
+make dev-rebuild                # Rebuild after a toolchain/container change
+make db-setup                   # Create, migrate, and seed database
+make db-migrate                 # Apply pending migrations
 ```
+
+The Make targets run through `bin/dev`. From the host it starts and enters the
+Compose-backed dev container; from inside that container it executes directly.
+Do not mount host Docker sockets or credential directories into the app service.
 
 ## Code Style
 

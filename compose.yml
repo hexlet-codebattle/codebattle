@@ -1,48 +1,76 @@
+name: codebattle-devcontainer
+
 services:
   app:
     build:
       context: .
       dockerfile: Containerfile.dev
-    working_dir: /app
-    tty: true # allocates a pseudo-TTY for interactive IEx
-    stdin_open: true # keeps STDIN open even if not attached
-    mem_limit: 4g
-    env_file: .env
-    command: mix phx.server
+    command: sleep infinity
+    init: true
+    working_dir: /workspace
+    user: codebattle
     environment:
-      - NODE_OPTIONS=--max-old-space-size=4096
-      - "USER=${USER}"
+      CODEBATTLE_API_AUTH_KEY: ${CODEBATTLE_API_AUTH_KEY:-x-key}
+      CODEBATTLE_DB_HOSTNAME: db
+      CODEBATTLE_DB_NAME: ${CODEBATTLE_DB_NAME:-codebattle_dev}
+      CODEBATTLE_DB_PASSWORD: ${CODEBATTLE_DB_PASSWORD:-postgres}
+      CODEBATTLE_DB_PORT: ${CODEBATTLE_DB_PORT:-5432}
+      CODEBATTLE_DB_USERNAME: ${CODEBATTLE_DB_USERNAME:-postgres}
+      CODEBATTLE_DEVCONTAINER: "1"
+      CODEBATTLE_LIVE_VIEW_SALT: ${CODEBATTLE_LIVE_VIEW_SALT:-dev-only-salt}
+      CODEBATTLE_PORT: ${CODEBATTLE_PORT:-4000}
+      CODEBATTLE_RUNNER_PORT: ${CODEBATTLE_RUNNER_PORT:-4001}
+      CODEBATTLE_SECRET_KEY_BASE: ${CODEBATTLE_SECRET_KEY_BASE:-dev-only-secret-key-base-dev-only-secret-key-base-dev-only-secret-key-base}
+      CODEBATTLE_VITE_PORT: ${CODEBATTLE_VITE_PORT:-8080}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-ASFD}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-ASFD}
+      FIREBASE_API_KEY: ${FIREBASE_API_KEY:-0}
+      FIREBASE_SENDER_ID: ${FIREBASE_SENDER_ID:-1}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-ASFD}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-ASFD}
+      NODE_OPTIONS: --max-old-space-size=4096
     ports:
-      - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
-      - "8080:8080"
+      - "127.0.0.1:${CODEBATTLE_PORT:-4000}:${CODEBATTLE_PORT:-4000}"
+      - "127.0.0.1:${CODEBATTLE_VITE_PORT:-8080}:${CODEBATTLE_VITE_PORT:-8080}"
     volumes:
-      - ".:/app:z"
-      - "~/.bash_history:/root/.bash_history:z"
-      - ".bashrc:/root/.bashrc:z"
-      - "/var/tmp:/var/tmp:z"
-      - "/tmp:/tmp:z"
+      - .:/workspace
+      - ./.devcontainer/empty.env:/workspace/.env:ro
+      - build:/workspace/_build
+      - deps:/workspace/deps
+      - node_modules:/workspace/apps/codebattle/node_modules
+      - plts:/workspace/priv/plts
+      - pnpm_store:/home/codebattle/.local/share/pnpm
+    tmpfs:
+      - /tmp
+      - /var/tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
-    image: postgres:18-alpine
+    image: postgres:18-alpine@sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2
     environment:
-      POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
-      POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
+      POSTGRES_DB: ${CODEBATTLE_DB_NAME:-codebattle_dev}
+      POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD:-postgres}
+      POSTGRES_USER: ${CODEBATTLE_DB_USERNAME:-postgres}
     volumes:
-      - pg_data18:/var/lib/postgresql/data
-
-  # same db but forwards port to host
-  db-local:
-    image: postgres:18-alpine
-    ports:
-      - "5432:${CODEBATTLE_DB_PORT}"
-    environment:
-      POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
-      POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
-    command: postgres -c 'max_connections=1000'
-    volumes:
-      - pg_data18:/var/lib/postgresql/data
+      - pg_data18:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
+  build:
+  deps:
+  node_modules:
   pg_data18:
+  plts:
+  pnpm_store:
