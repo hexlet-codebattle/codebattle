@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 
+import { Box, Text } from '@mantine/core';
 import { camelizeKeys } from 'humps';
 import uniqueId from 'lodash/uniqueId';
 
@@ -54,9 +55,9 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert text-white mb-0 pb-0">
+        <Box c="white" mb={0} pb={0}>
           <pre>{assert.output}</pre>
-        </div>
+        </Box>
       </AccordeonBox.SubMenu>
       <AccordeonBox.SubMenu
         statusColor={statusColor}
@@ -66,9 +67,9 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert text-white mb-0 pb-0">
+        <Box c="white" mb={0} pb={0}>
           <pre>{assert.output}</pre>
-        </div>
+        </Box>
       </AccordeonBox.SubMenu>
       <AccordeonBox.SubMenu
         statusColor={statusColor}
@@ -78,9 +79,9 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert text-white mb-0 pb-0">
+        <Box c="white" mb={0} pb={0}>
           <pre>{assert.output}</pre>
-        </div>
+        </Box>
       </AccordeonBox.SubMenu>
       <AccordeonBox.SubMenu
         statusColor={statusColor}
@@ -90,9 +91,9 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert text-white mb-0 pb-0">
+        <Box c="white" mb={0} pb={0}>
           <pre>{assert.output}</pre>
-        </div>
+        </Box>
       </AccordeonBox.SubMenu>
       <AccordeonBox.SubMenu
         statusColor={statusColor}
@@ -102,9 +103,9 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert text-white mb-0 pb-0">
+        <Box c="white" mb={0} pb={0}>
           <pre>{assert.output}</pre>
-        </div>
+        </Box>
       </AccordeonBox.SubMenu>
     </>
   ),
@@ -133,16 +134,18 @@ function Output({ fontSize, sideOutput, hideContent }: OutputProps) {
 
   if (['client_timeout', 'service_timeout'].includes(status ?? '')) {
     return (
-      <div className="alert text-white pb-2">
+      <Box c="white" pb="sm">
         <pre>
-          <span className="font-weight-bold d-block">{i18next.t('Output:')}</span>
+          <Text span display="block" fw={700}>
+            {i18next.t('Output:')}
+          </Text>
           <div>{i18next.t('We could not verify your solution')}</div>
           <div>{i18next.t('Please try to fix your code and submit it again')}</div>
           <div>
             {i18next.t('Note that your code may contain an infinite loop or complex calculations')}
           </div>
         </pre>
-      </div>
+      </Box>
     );
   }
 
@@ -166,9 +169,9 @@ function Output({ fontSize, sideOutput, hideContent }: OutputProps) {
             hasOutput={assert.output}
             uniqIndex={uniqIndex}
           >
-            <div className="alert text-white mb-0 pb-0">
+            <Box c="white" mb={0} pb={0}>
               <pre>{assert.output}</pre>
-            </div>
+            </Box>
           </AccordeonBox.SubMenu>
         ))
       )}

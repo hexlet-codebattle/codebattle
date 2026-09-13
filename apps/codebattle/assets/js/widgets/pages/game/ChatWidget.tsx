@@ -4,7 +4,7 @@ import React, {
   useRef,
 } from 'react';
 
-import cn from 'classnames';
+import { Box, Flex } from '@mantine/core';
 // import filter from 'lodash/filter';
 // import uniqBy from 'lodash/uniqBy';
 import { useSelector } from 'react-redux';
@@ -73,12 +73,22 @@ function ChatWidget() {
       inputRef={inputRef as React.RefObject<HTMLInputElement>}
       request={menuRequest}
     >
-      <div className="d-flex cb-game-chat-layout cb-bg-panel shadow-sm h-100 cb-rounded">
-        <div
-          className={cn(
-            'd-flex flex-column flex-grow-1 position-relative p-0 h-100 mh-100 rounded-left',
-            'cb-game-chat-container cb-messages-container cb-text',
-          )}
+      <Flex
+        className="cb-game-chat-layout"
+        bg="cbPanel"
+        h="100%"
+        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+      >
+        <Flex
+          direction="column"
+          flex={1}
+          pos="relative"
+          h="100%"
+          mah="100%"
+          p={0}
+          className="cb-game-chat-container cb-messages-container"
+          c="cbText"
+          style={{ borderRadius: 'inherit 0 0 inherit' }}
         >
           <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
           {openedReplayer ? (
@@ -106,12 +116,19 @@ function ChatWidget() {
               disabled={disabledChatInput}
             />
           )}
-        </div>
-        <div className="flex-shrink-1 p-0 border-left cb-border-color rounded-right cb-game-control-container">
-          <div className="d-flex flex-column justify-content-start overflow-auto h-100">
-            <div className="px-3 py-3 w-100 d-flex flex-column">
+        </Flex>
+        <Box
+          flex="0 1 auto"
+          p={0}
+          className="cb-game-control-container"
+          style={{
+            borderLeft: '1px solid var(--mantine-color-default-border)',
+          }}
+        >
+          <Flex direction="column" justify="flex-start" style={{ overflowY: 'auto' }} h="100%">
+            <Flex direction="column" px="md" py="md" w="100%">
               <Notifications />
-            </div>
+            </Flex>
             {/* {showChatParticipants && ( */}
             {/*   <div className="px-3 py-3 w-100 border-top"> */}
             {/*     <p className="mb-1 text-nowrap"> */}
@@ -120,9 +137,9 @@ function ChatWidget() {
             {/*     {listOfUsers.map(user => <ChatUserInfo key={user.id} user={user} displayMenu={displayMenu} className="my-1" />)} */}
             {/*   </div> */}
             {/* )} */}
-          </div>
-        </div>
-      </div>
+          </Flex>
+        </Box>
+      </Flex>
     </ChatContextMenu>
   );
 }

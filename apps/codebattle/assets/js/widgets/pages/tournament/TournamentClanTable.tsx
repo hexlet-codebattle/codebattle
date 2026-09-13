@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 
+import { Box, Table, Text } from '@mantine/core';
+
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
@@ -17,21 +19,18 @@ interface ClanRankingItem {
 
 const getCustomEventTrClassName = (item: ClanRankingItem, selectedId: unknown) =>
   cn(
-    'font-weight-bold cb-custom-event-tr',
+    'cb-custom-event-tr',
     {
-      'text-dark cb-gold-place-bg': item?.place === 1,
-      'text-dark cb-silver-place-bg': item?.place === 2,
-      'text-dark cb-bronze-place-bg': item?.place === 3,
-      'cb-bg-panel': !item?.place || item.place > 3,
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
     },
     {
       'cb-custom-event-tr-brown-border': item.id === selectedId,
     },
   );
 
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-);
+const tableDataCellClassName = cn('cb-custom-event-td');
 
 function TournamentClanTable() {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
@@ -48,56 +47,89 @@ function TournamentClanTable() {
   }
 
   return (
-    <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto">
-      <table className="table table-striped cb-custom-event-table">
-        <thead className="text-muted">
-          <tr>
+    <Box
+      my={{ base: 8, lg: 0 }}
+      mb={8}
+      px={4}
+      className="cb-overflow-x-auto"
+      style={{ borderRadius: '0.5rem', position: 'relative' }}
+    >
+      <Table striped className="cb-custom-event-table">
+        <Table.Thead>
+          <Table.Tr>
             {rankingType !== 'byClan' && (
-              <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('User')}</th>
+              <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+                {i18next.t('User')}
+              </Table.Th>
             )}
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items?.map((item) => (
-            <React.Fragment key={item.id}>
-              <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-              <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
-                {rankingType !== 'byClan' && (
-                  <>
-                    <td width="120" className={tableDataCellClassName}>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Clan')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Score')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Place')}
+            </Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {items?.map((item) => {
+            const isPlaceRow = !!item?.place && item.place <= 3;
+
+            return (
+              <React.Fragment key={item.id}>
+                <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+                <Table.Tr
+                  className={getCustomEventTrClassName(item, currentUserClanId)}
+                  style={
+                    isPlaceRow
+                      ? {
+                          fontWeight: 700,
+                          color: 'var(--mantine-color-dark-8)',
+                        }
+                      : {
+                          backgroundColor:
+                            !item?.place || item.place > 3
+                              ? 'var(--mantine-color-cbPanel-6)'
+                              : undefined,
+                        }
+                  }
+                >
+                  {rankingType !== 'byClan' && (
+                    <>
+                      <Table.Td width={120} className={tableDataCellClassName}>
+                        <div className="cb-custom-event-name" style={{ maxWidth: 120 }}>
+                          {item.name}
+                        </div>
+                      </Table.Td>
+                      <Table.Td title={item.clan} className={tableDataCellClassName}>
+                        <div className="cb-custom-event-name" style={{ maxWidth: 120 }}>
+                          {item.clan}
+                        </div>
+                      </Table.Td>
+                    </>
+                  )}
+                  {rankingType === 'byClan' && (
+                    <Table.Td title={clans[item.id]?.longName} className={tableDataCellClassName}>
                       <div className="cb-custom-event-name" style={{ maxWidth: 120 }}>
-                        {item.name}
+                        {clans[item.id]?.name}
                       </div>
-                    </td>
-                    <td title={item.clan} className={tableDataCellClassName}>
-                      <div className="cb-custom-event-name mr-1" style={{ maxWidth: 120 }}>
-                        {item.clan}
-                      </div>
-                    </td>
-                  </>
-                )}
-                {rankingType === 'byClan' && (
-                  <td title={clans[item.id]?.longName} className={tableDataCellClassName}>
-                    <div className="cb-custom-event-name mr-1" style={{ maxWidth: 120 }}>
-                      {clans[item.id]?.name}
-                    </div>
-                  </td>
-                )}
-                <td width="120" className={tableDataCellClassName}>
-                  {item.score}
-                </td>
-                <td width="122" className={tableDataCellClassName}>
-                  {item.place}
-                </td>
-              </tr>
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                    </Table.Td>
+                  )}
+                  <Table.Td width={120} className={tableDataCellClassName}>
+                    {item.score}
+                  </Table.Td>
+                  <Table.Td width={122} className={tableDataCellClassName}>
+                    {item.place}
+                  </Table.Td>
+                </Table.Tr>
+              </React.Fragment>
+            );
+          })}
+        </Table.Tbody>
+      </Table>
+    </Box>
   );
 }
 

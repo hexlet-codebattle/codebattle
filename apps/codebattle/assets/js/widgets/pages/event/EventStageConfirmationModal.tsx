@@ -2,7 +2,9 @@ import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
-import Modal from '@/components/BootstrapModal';
+import { Button, Text } from '@mantine/core';
+
+import Modal from '@/components/CbModal';
 
 import ModalCodes from '../../config/modalCodes';
 
@@ -18,23 +20,23 @@ const EventStageConfirmationModal = NiceModal.create<EventStageConfirmationModal
     const modal = useModal(ModalCodes.eventStageModal);
 
     return (
-      <Modal contentClassName="cb-bg-panel cb-text" show={modal.visible} onHide={modal.hide}>
+      <Modal show={modal.visible} onHide={modal.hide}>
         <Modal.Header closeButton>
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="text-white">{bodyText}</div>
+          <Text c="white">{bodyText}</Text>
         </Modal.Body>
         <Modal.Footer>
-          <button
+          <Button
             type="button"
-            className="btn btn-warning"
+            color="yellow"
             data-method="post"
             data-csrf={window.csrf_token}
             data-to={url}
           >
             {buttonText}
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
     );

@@ -581,22 +581,22 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
   defp lang_checked?(selected_langs, lang), do: lang in selected_langs
 
   defp interval_button_class(interval_key, active_interval) do
-    base = "btn btn-sm cb-rounded mr-2 mb-2"
+    base = "cb-btn cb-btn-sm cb-rounded cb-mr-2 cb-mb-2"
 
     if interval_key == active_interval do
-      "#{base} btn-secondary"
+      "#{base} cb-btn-secondary"
     else
-      "#{base} btn-secondary cb-btn-secondary"
+      "#{base} cb-btn-secondary"
     end
   end
 
   defp window_button_class(window_key, active_window) do
-    base = "btn btn-sm cb-rounded mr-2 mb-2"
+    base = "cb-btn cb-btn-sm cb-rounded cb-mr-2 cb-mb-2"
 
     if window_key == active_window do
-      "#{base} btn-secondary"
+      "#{base} cb-btn-secondary"
     else
-      "#{base} btn-secondary cb-btn-secondary"
+      "#{base} cb-btn-secondary"
     end
   end
 
@@ -604,12 +604,12 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
   defp active_tab?(tab, tab_key), do: tab == tab_key
 
   defp tab_button_class(tab_key, active_tab) do
-    base = "btn btn-sm cb-rounded mr-2 mb-2"
+    base = "cb-btn cb-btn-sm cb-rounded cb-mr-2 cb-mb-2"
 
     if tab_key == active_tab do
-      "#{base} btn-secondary"
+      "#{base} cb-btn-secondary"
     else
-      "#{base} btn-secondary cb-btn-secondary"
+      "#{base} cb-btn-secondary"
     end
   end
 
@@ -624,14 +624,14 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-fluid px-0">
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div class="cb-container-fluid cb-px-0">
+      <div class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-4">
+        <div class="cb-d-flex cb-flex-wrap cb-justify-between cb-align-center cb-mb-3">
           <div>
-            <h1 class="text-white mb-1">{@tabs[@tab]}</h1>
+            <h1 class="cb-text-white cb-mb-1">{@tabs[@tab]}</h1>
           </div>
-          <div class="d-flex flex-wrap align-items-center justify-content-end">
-            <span class="cb-text mr-2 mb-2">Tab:</span>
+          <div class="cb-d-flex cb-flex-wrap cb-align-center cb-justify-end">
+            <span class="cb-text cb-mr-2 cb-mb-2">Tab:</span>
             <%= for tab_key <- @tab_order do %>
               <button
                 type="button"
@@ -642,7 +642,7 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
                 {@tabs[tab_key]}
               </button>
             <% end %>
-            <span class="cb-text mr-2 mb-2">Window:</span>
+            <span class="cb-text cb-mr-2 cb-mb-2">Window:</span>
             <%= for window_key <- @window_order do %>
               <button
                 type="button"
@@ -653,7 +653,7 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
                 {window_button_label(window_key)}
               </button>
             <% end %>
-            <span class="cb-text ml-2 mr-2 mb-2">Refresh:</span>
+            <span class="cb-text cb-ml-2 cb-mr-2 cb-mb-2">Refresh:</span>
             <%= for interval_key <- @refresh_order do %>
               <button
                 type="button"
@@ -668,82 +668,100 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
         </div>
 
         <%= if active_tab?(@tab, "live") do %>
-          <div class="row">
-            <div class="col-12 col-sm-6 col-xl-2 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 h-100">
-                <div class="cb-text text-uppercase">Checks</div>
-                <div class="text-white" style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;">
+          <div class="cb-row">
+            <div class="cb-col-12 cb-col-sm-6 cb-col-xl-2 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
+                <div class="cb-text cb-text-uppercase">Checks</div>
+                <div
+                  class="cb-text-white"
+                  style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;"
+                >
                   {@stats.totals.checks_count}
                 </div>
               </div>
             </div>
-            <div class="col-12 col-sm-6 col-xl-2 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 h-100">
-                <div class="cb-text text-uppercase">Success</div>
-                <div class="text-white" style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;">
+            <div class="cb-col-12 cb-col-sm-6 cb-col-xl-2 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
+                <div class="cb-text cb-text-uppercase">Success</div>
+                <div
+                  class="cb-text-white"
+                  style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;"
+                >
                   {@stats.totals.success_count}
                 </div>
               </div>
             </div>
-            <div class="col-12 col-sm-6 col-xl-2 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 h-100">
-                <div class="cb-text text-uppercase">Failure</div>
-                <div class="text-white" style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;">
+            <div class="cb-col-12 cb-col-sm-6 cb-col-xl-2 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
+                <div class="cb-text cb-text-uppercase">Failure</div>
+                <div
+                  class="cb-text-white"
+                  style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;"
+                >
                   {@stats.totals.failure_count}
                 </div>
               </div>
             </div>
-            <div class="col-12 col-sm-6 col-xl-2 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 h-100">
-                <div class="cb-text text-uppercase">Timeout</div>
-                <div class="text-white" style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;">
+            <div class="cb-col-12 cb-col-sm-6 cb-col-xl-2 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
+                <div class="cb-text cb-text-uppercase">Timeout</div>
+                <div
+                  class="cb-text-white"
+                  style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;"
+                >
                   {@stats.totals.timeout_count}
                 </div>
               </div>
             </div>
-            <div class="col-12 col-sm-6 col-xl-2 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 h-100">
-                <div class="cb-text text-uppercase">Runs / Minute</div>
-                <div class="text-white" style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;">
+            <div class="cb-col-12 cb-col-sm-6 cb-col-xl-2 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
+                <div class="cb-text cb-text-uppercase">Runs / Minute</div>
+                <div
+                  class="cb-text-white"
+                  style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;"
+                >
                   {format_number(
                     @stats.totals.checks_count / max(div(@windows[@window].seconds, 60), 1)
                   )}
                 </div>
               </div>
             </div>
-            <div class="col-12 col-sm-6 col-xl-2 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 h-100">
-                <div class="cb-text text-uppercase">Avg Duration</div>
-                <div class="text-white" style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;">
+            <div class="cb-col-12 cb-col-sm-6 cb-col-xl-2 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
+                <div class="cb-text cb-text-uppercase">Avg Duration</div>
+                <div
+                  class="cb-text-white"
+                  style="font-size: 1.5rem; font-weight: 700; line-height: 1.1;"
+                >
                   {format_number(@stats.totals.avg_duration_ms)}
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-12 col-xl-4 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h3 class="text-white mb-0">Languages</h3>
+          <div class="cb-row">
+            <div class="cb-col-12 cb-col-xl-4 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-2">
+                  <h3 class="cb-text-white cb-mb-0">Languages</h3>
                   <button
                     type="button"
                     phx-click="reset_langs"
-                    class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                    class="cb-btn cb-btn-sm cb-btn-secondary cb-rounded"
                   >
                     Top 3
                   </button>
                 </div>
-                <div class="table-responsive">
-                  <table class="table table-sm mb-0">
+                <div class="cb-table-responsive">
+                  <table class="cb-table cb-table-sm cb-mb-0">
                     <thead>
                       <tr>
                         <th class="cb-text">Use</th>
                         <th class="cb-text">Lang</th>
-                        <th class="cb-text text-right">Checks</th>
-                        <th class="cb-text text-right">Success</th>
-                        <th class="cb-text text-right">Failure</th>
-                        <th class="cb-text text-right">Timeout</th>
+                        <th class="cb-text cb-text-right">Checks</th>
+                        <th class="cb-text cb-text-right">Success</th>
+                        <th class="cb-text cb-text-right">Failure</th>
+                        <th class="cb-text cb-text-right">Timeout</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -757,11 +775,11 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
                               phx-value-lang={row.lang}
                             />
                           </td>
-                          <td class="text-white">{row.lang}</td>
-                          <td class="text-white text-right">{row.checks_count}</td>
-                          <td class="text-white text-right">{row.success_count}</td>
-                          <td class="text-white text-right">{row.failure_count}</td>
-                          <td class="text-white text-right">{row.timeout_count}</td>
+                          <td class="cb-text-white">{row.lang}</td>
+                          <td class="cb-text-white cb-text-right">{row.checks_count}</td>
+                          <td class="cb-text-white cb-text-right">{row.success_count}</td>
+                          <td class="cb-text-white cb-text-right">{row.failure_count}</td>
+                          <td class="cb-text-white cb-text-right">{row.timeout_count}</td>
                         </tr>
                       <% end %>
                       <%= if Enum.empty?(@stats.lang_rows) do %>
@@ -775,9 +793,9 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
               </div>
             </div>
 
-            <div class="col-12 col-xl-8 mb-3">
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-                <p class="cb-text mb-2">Aggregated timeline for selected languages.</p>
+            <div class="cb-col-12 cb-col-xl-8 cb-mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                <p class="cb-text cb-mb-2">Aggregated timeline for selected languages.</p>
                 <% dims = @stats.main_chart.dims %>
                 <svg
                   viewBox={"0 0 #{dims.width} #{dims.height}"}
@@ -859,23 +877,23 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
             </div>
           </div>
 
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-            <h3 class="text-white mb-3">Per-language Timeline (real duration)</h3>
-            <div class="row">
+          <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-3">
+            <h3 class="cb-text-white cb-mb-3">Per-language Timeline (real duration)</h3>
+            <div class="cb-row">
               <%= for lang_chart <- @stats.lang_charts do %>
-                <div class="col-12 col-xl-4 mb-3">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-2 h-100">
+                <div class="cb-col-12 cb-col-xl-4 cb-mb-3">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2 cb-h-100">
                     <div
-                      class="cb-text mb-2 text-truncate"
+                      class="cb-text cb-mb-2 cb-text-truncate"
                       style="font-size: 0.9rem; line-height: 1.35;"
                     >
-                      <span class="text-white" style="font-size: 1.05rem; font-weight: 700;">
+                      <span class="cb-text-white" style="font-size: 1.05rem; font-weight: 700;">
                         {lang_chart.lang}
                       </span>
-                      <span class="ml-2">{lang_chart.total_checks} checks</span>
-                      <span class="ml-2 text-white">p95:</span> {lang_chart.percentiles.p95}
-                      <span class="ml-2 text-white">p75:</span> {lang_chart.percentiles.p75}
-                      <span class="ml-2 text-white">p50:</span> {lang_chart.percentiles.p50}
+                      <span class="cb-ml-2">{lang_chart.total_checks} checks</span>
+                      <span class="cb-ml-2 cb-text-white">p95:</span> {lang_chart.percentiles.p95}
+                      <span class="cb-ml-2 cb-text-white">p75:</span> {lang_chart.percentiles.p75}
+                      <span class="cb-ml-2 cb-text-white">p50:</span> {lang_chart.percentiles.p50}
                     </div>
                     <% dims = lang_chart.chart.dims %>
                     <svg
@@ -947,18 +965,18 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
                 </div>
               <% end %>
               <%= if Enum.empty?(@stats.lang_charts) do %>
-                <div class="col-12 cb-text">No language charts for selected filters.</div>
+                <div class="cb-col-12 cb-text">No language charts for selected filters.</div>
               <% end %>
             </div>
           </div>
         <% else %>
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-            <h3 class="text-white mb-2">Code Check Run Failures</h3>
-            <p class="cb-text mb-3">
+          <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-3">
+            <h3 class="cb-text-white cb-mb-2">Code Check Run Failures</h3>
+            <p class="cb-text cb-mb-3">
               Real failed runs and timeouts with captured error description. Last 100 records in selected window.
             </p>
-            <div class="table-responsive">
-              <table class="table table-sm mb-0">
+            <div class="cb-table-responsive">
+              <table class="cb-table cb-table-sm cb-mb-0">
                 <thead>
                   <tr>
                     <th class="cb-text">Started At</th>
@@ -973,13 +991,13 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
                 <tbody>
                   <%= for run <- @failure_runs do %>
                     <tr>
-                      <td class="text-white text-nowrap">{format_datetime(run.started_at)}</td>
-                      <td class="text-white text-nowrap">{run.lang}</td>
-                      <td class="text-white text-nowrap">{run.result}</td>
-                      <td class="text-white text-nowrap">{run.game_id || "-"}</td>
-                      <td class="text-white text-nowrap">{run.user_id || "-"}</td>
-                      <td class="text-white text-nowrap">{run.duration_ms}</td>
-                      <td class="text-white" style="white-space: pre-wrap; min-width: 26rem;">
+                      <td class="cb-text-white cb-text-nowrap">{format_datetime(run.started_at)}</td>
+                      <td class="cb-text-white cb-text-nowrap">{run.lang}</td>
+                      <td class="cb-text-white cb-text-nowrap">{run.result}</td>
+                      <td class="cb-text-white cb-text-nowrap">{run.game_id || "-"}</td>
+                      <td class="cb-text-white cb-text-nowrap">{run.user_id || "-"}</td>
+                      <td class="cb-text-white cb-text-nowrap">{run.duration_ms}</td>
+                      <td class="cb-text-white" style="white-space: pre-wrap; min-width: 26rem;">
                         {run.error_description}
                       </td>
                     </tr>

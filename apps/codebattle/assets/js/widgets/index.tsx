@@ -23,45 +23,41 @@ import {
   UserPage,
   AdminPage,
 } from './App';
+import { withMantine } from './ui/withMantine';
 
 const Heatmap = React.lazy(() => import('./pages/profile/Heatmap'));
 
-export const renderEventPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<EventPage />);
+const renderRoot = (domElement: HTMLElement, node: React.ReactNode) =>
+  createRoot(domElement).render(withMantine(node));
+
+export const renderEventPage = (domElement: HTMLElement) => renderRoot(domElement, <EventPage />);
 export const renderGroupTournamentPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<GroupTournamentPage />);
-export const renderGameWidget = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<Game />);
+  renderRoot(domElement, <GroupTournamentPage />);
+export const renderGameWidget = (domElement: HTMLElement) => renderRoot(domElement, <Game />);
 export const renderGameThreejsPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<GameThreejsPage />);
-export const renderGameMlPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<GameMlPage />);
-export const renderHeatmapWidget = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<Heatmap />);
-export const renderInvitesWidget = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<Invites />);
+  renderRoot(domElement, <GameThreejsPage />);
+export const renderGameMlPage = (domElement: HTMLElement) => renderRoot(domElement, <GameMlPage />);
+export const renderHeatmapWidget = (domElement: HTMLElement) => renderRoot(domElement, <Heatmap />);
+export const renderInvitesWidget = (domElement: HTMLElement) => renderRoot(domElement, <Invites />);
 export const renderMainChannelWidget = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<MainChannel />);
-export const renderLobby = (domElement: HTMLElement) => createRoot(domElement).render(<Lobby />);
-export const renderOnlineWidget = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<Online />);
+  renderRoot(domElement, <MainChannel />);
+export const renderLobby = (domElement: HTMLElement) => renderRoot(domElement, <Lobby />);
+export const renderOnlineWidget = (domElement: HTMLElement) => renderRoot(domElement, <Online />);
 export const renderRegistrationPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<RegistrationPage />);
+  renderRoot(domElement, <RegistrationPage />);
 export const renderSettingPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<SettingsPage />);
+  renderRoot(domElement, <SettingsPage />);
 export const renderSoundToggle = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<SoundToggleMenu />);
+  renderRoot(domElement, <SoundToggleMenu />);
 export const renderTournamentThreejsStreamPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentThreejsStreamPage />);
+  renderRoot(domElement, <TournamentThreejsStreamPage />);
 export const renderTournamentStreamAdminPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentStreamAdminPage />);
+  renderRoot(domElement, <TournamentStreamAdminPage />);
 export const renderTournamentAdminPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentAdminPage />);
+  renderRoot(domElement, <TournamentAdminPage />);
 export const renderTournamentPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentPage />);
+  renderRoot(domElement, <TournamentPage />);
 export const renderTournamentPlayerPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<TournamentPlayerPage />);
-export const renderUserPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<UserPage />);
-export const renderAdminPage = (domElement: HTMLElement) =>
-  createRoot(domElement).render(<AdminPage />);
+  renderRoot(domElement, <TournamentPlayerPage />);
+export const renderUserPage = (domElement: HTMLElement) => renderRoot(domElement, <UserPage />);
+export const renderAdminPage = (domElement: HTMLElement) => renderRoot(domElement, <AdminPage />);

@@ -1,8 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
+
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Flex,
+  Grid,
+  Input,
+  NativeSelect,
+  NumberInput,
+  Text,
+  TextInput,
+  Textarea,
+} from '@mantine/core';
 
 import { currentUserIsAdminSelector } from '@/selectors';
 
@@ -116,11 +130,6 @@ const TIMEOUT_DESCRIPTIONS: Record<string, string> = {
     'One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires.',
 };
 
-const INPUT_CLASS =
-  'form-control form-control-sm cb-bg-panel cb-border-color text-white cb-rounded';
-const SELECT_CLASS =
-  'form-select form-select-sm custom-select cb-bg-panel cb-border-color text-white cb-rounded';
-
 interface TournamentFormValues {
   type: string;
   name: string;
@@ -145,7 +154,9 @@ interface TournamentFormValues {
   meta_json: string;
 }
 
-type TournamentFormErrors = Partial<Record<string, string | string[]>> & { base?: string };
+type TournamentFormErrors = Partial<Record<string, string | string[]>> & {
+  base?: string;
+};
 
 interface TournamentFormProps {
   initialValues?: Partial<TournamentFormValues>;
@@ -167,9 +178,15 @@ function FieldHelp({ text }: { text?: string }) {
   }
 
   return (
-    <small className="d-block mt-1 text-muted" style={{ fontSize: '0.75rem', lineHeight: 1.35 }}>
+    <Text
+      component="small"
+      display="block"
+      mt="xs"
+      c="dimmed"
+      style={{ fontSize: '0.75rem', lineHeight: 1.35 }}
+    >
       {text}
-    </small>
+    </Text>
   );
 }
 
@@ -183,26 +200,32 @@ function FieldLabel({
   children: React.ReactNode;
 }) {
   return (
-    <label
-      htmlFor={htmlFor}
-      className={cn('form-label small fw-semibold mb-1', active ? 'text-white' : 'text-muted')}
-    >
+    <Input.Label htmlFor={htmlFor} fw={600} mb={4} size="xs" c={active ? undefined : 'dimmed'}>
       {children}
-    </label>
+    </Input.Label>
   );
 }
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mb-4">
-      <h6
-        className="text-uppercase fw-bold text-muted mb-3 pb-2 border-bottom cb-border-color"
-        style={{ fontSize: '0.78rem', letterSpacing: '0.04em' }}
+    <Box component="section" mb="lg">
+      <Text
+        component="h6"
+        tt="uppercase"
+        fw={700}
+        c="dimmed"
+        mb="sm"
+        pb="xs"
+        style={{
+          fontSize: '0.78rem',
+          letterSpacing: '0.04em',
+          borderBottom: '1px solid #4c4c5a',
+        }}
       >
         {title}
-      </h6>
+      </Text>
       {children}
-    </section>
+    </Box>
   );
 }
 
@@ -276,6 +299,12 @@ function TournamentForm({
     [],
   );
 
+  const handleNumberChange = useCallback((name: string) => {
+    return (value: number | string) => {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+  }, []);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -310,15 +339,12 @@ function TournamentForm({
     [formData, onSubmit],
   );
 
-  const renderError = (fieldName: string) => {
-    if (errors[fieldName]) {
-      return (
-        <div className="invalid-feedback d-block">
-          {Array.isArray(errors[fieldName]) ? errors[fieldName].join(', ') : errors[fieldName]}
-        </div>
-      );
+  const errorText = (fieldName: string) => {
+    const err = errors[fieldName];
+    if (!err) {
+      return undefined;
     }
-    return null;
+    return Array.isArray(err) ? err.join(', ') : err;
   };
 
   const isLadder = formData.type === 'ladder';
@@ -328,24 +354,23 @@ function TournamentForm({
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <form onSubmit={handleSubmit} className="w-100">
+    <Box component="form" onSubmit={handleSubmit} w="100%">
       {errors.base && (
-        <div className="alert alert-danger mb-4" role="alert">
+        <Alert color="red" mb="lg" role="alert">
           {errors.base}
-        </div>
+        </Alert>
       )}
 
       {/* Basic Information */}
       <FormSection title={i18next.t('Basic Information')}>
-        <div className="row g-3">
-          <div className="col-12 col-md-6">
+        <Grid gap="md">
+          <Grid.Col span={{ base: 12, md: 6 }}>
             <FieldLabel htmlFor="name">{i18next.t('Tournament Name')}</FieldLabel>
-            <input
-              type="text"
+            <TextInput
               id="name"
               name="name"
               aria-label={i18next.t('Tournament Name')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.name })}
+              error={errorText('name')}
               value={formData.name}
               onChange={handleChange}
               maxLength={42}
@@ -354,17 +379,15 @@ function TournamentForm({
             <FieldHelp
               text={i18next.t('Shown to players in the lobby and on the tournament page.')}
             />
-            {renderError('name')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-6">
+          <Grid.Col span={{ base: 12, md: 6 }}>
             <FieldLabel htmlFor="moderator_ids">{i18next.t('Moderator IDs')}</FieldLabel>
-            <input
-              type="text"
+            <TextInput
               id="moderator_ids"
               name="moderator_ids"
               aria-label={i18next.t('Moderator IDs')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.moderator_ids })}
+              error={errorText('moderator_ids')}
               value={formData.moderator_ids}
               onChange={handleChange}
               placeholder="42, 1337"
@@ -374,16 +397,15 @@ function TournamentForm({
                 'Moderators can start and cancel the tournament, kick or ban players, and manage rounds. Enter user IDs separated by commas or spaces. You are always a moderator and do not need to be listed here.',
               )}
             />
-            {renderError('moderator_ids')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12">
+          <Grid.Col span={12}>
             <FieldLabel htmlFor="description">{i18next.t('Description')}</FieldLabel>
-            <textarea
+            <Textarea
               id="description"
               name="description"
               aria-label={i18next.t('Description')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.description })}
+              error={errorText('description')}
               value={formData.description}
               onChange={handleChange}
               rows={6}
@@ -391,24 +413,23 @@ function TournamentForm({
               required
             />
             <FieldHelp text={i18next.t('Markdown is supported. Shown on the tournament page.')} />
-            {renderError('description')}
-          </div>
-        </div>
+          </Grid.Col>
+        </Grid>
       </FormSection>
 
       {/* Schedule & Access */}
       <FormSection title={i18next.t('Schedule & Access')}>
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
+        <Grid gap="md">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="starts_at">
               {i18next.t('Starts at')} ({userTimezone})
             </FieldLabel>
-            <input
+            <TextInput
               type="datetime-local"
               id="starts_at"
               name="starts_at"
               aria-label={i18next.t('Starts at')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.starts_at })}
+              error={errorText('starts_at')}
               value={formData.starts_at}
               onChange={handleChange}
               required
@@ -418,207 +439,178 @@ function TournamentForm({
                 'Approximate start time shown to players. The creator or a moderator starts the tournament manually.',
               )}
             />
-            {renderError('starts_at')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="access_type">{i18next.t('Access Type')}</FieldLabel>
-            <select
+            <NativeSelect
               id="access_type"
               name="access_type"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.access_type })}
+              error={errorText('access_type')}
+              data={ACCESS_TYPES.map((type) => ({
+                value: type.value,
+                label: i18next.t(type.label),
+              }))}
               value={formData.access_type}
               onChange={handleChange}
-            >
-              {ACCESS_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {i18next.t(type.label)}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp text={i18next.t(ACCESS_TYPE_DESCRIPTIONS[formData.access_type])} />
-            {renderError('access_type')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="use_chat">{i18next.t('Options')}</FieldLabel>
-            <div className="form-check mt-1">
-              <input
-                type="checkbox"
-                id="use_chat"
-                name="use_chat"
-                aria-label={i18next.t('Use Chat')}
-                className="form-check-input"
-                checked={formData.use_chat}
-                onChange={handleChange}
-              />
-              <label htmlFor="use_chat" className="form-check-label text-white">
-                {i18next.t('Use Chat')}
-              </label>
-            </div>
+            <Checkbox
+              id="use_chat"
+              name="use_chat"
+              aria-label={i18next.t('Use Chat')}
+              label={i18next.t('Use Chat')}
+              checked={formData.use_chat}
+              onChange={handleChange}
+              mt="xs"
+            />
             <FieldHelp text={i18next.t('Show the in-tournament chat to participants.')} />
-          </div>
-        </div>
+          </Grid.Col>
+        </Grid>
       </FormSection>
 
       {/* Task Configuration */}
       <FormSection title={i18next.t('Task Configuration')}>
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
+        <Grid gap="md">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="task_provider">{i18next.t('Task Provider')}</FieldLabel>
-            <select
+            <NativeSelect
               id="task_provider"
               name="task_provider"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.task_provider })}
+              error={errorText('task_provider')}
+              data={TASK_PROVIDERS.map((provider) => ({
+                value: provider.value,
+                label: i18next.t(provider.label),
+              }))}
               value={formData.task_provider}
               onChange={handleChange}
-            >
-              {TASK_PROVIDERS.map((provider) => (
-                <option key={provider.value} value={provider.value}>
-                  {i18next.t(provider.label)}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp text={i18next.t(TASK_PROVIDER_DESCRIPTIONS[formData.task_provider])} />
-            {renderError('task_provider')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="task_strategy">{i18next.t('Task Strategy')}</FieldLabel>
-            <select
+            <NativeSelect
               id="task_strategy"
               name="task_strategy"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.task_strategy })}
+              error={errorText('task_strategy')}
+              data={TASK_STRATEGIES.map((strategy) => ({
+                value: strategy.value,
+                label: i18next.t(strategy.label),
+              }))}
               value={formData.task_strategy}
               onChange={handleChange}
-            >
-              {TASK_STRATEGIES.map((strategy) => (
-                <option key={strategy.value} value={strategy.value}>
-                  {i18next.t(strategy.label)}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp text={i18next.t(TASK_STRATEGY_DESCRIPTIONS[formData.task_strategy])} />
-            {renderError('task_strategy')}
-          </div>
+          </Grid.Col>
 
           {(formData.task_provider === 'level' || formData.task_provider === 'tags') && (
-            <div className="col-12 col-md-4">
+            <Grid.Col span={{ base: 12, md: 4 }}>
               <FieldLabel htmlFor="level">{i18next.t('Level')}</FieldLabel>
-              <select
+              <NativeSelect
                 id="level"
                 name="level"
-                className={cn(SELECT_CLASS, { 'is-invalid': errors.level })}
+                error={errorText('level')}
+                data={LEVELS.map((level) => ({
+                  value: level.value,
+                  label: i18next.t(level.label),
+                }))}
                 value={formData.level}
                 onChange={handleChange}
-              >
-                {LEVELS.map((level) => (
-                  <option key={level.value} value={level.value}>
-                    {i18next.t(level.label)}
-                  </option>
-                ))}
-              </select>
-              {renderError('level')}
-            </div>
+              />
+            </Grid.Col>
           )}
 
           {formData.task_provider === 'task_pack' && (
-            <div className="col-12 col-md-4">
+            <Grid.Col span={{ base: 12, md: 4 }}>
               <FieldLabel htmlFor="task_pack_name">{i18next.t('Task Pack')}</FieldLabel>
-              <select
+              <NativeSelect
                 id="task_pack_name"
                 name="task_pack_name"
-                className={cn(SELECT_CLASS, { 'is-invalid': errors.task_pack_name })}
+                error={errorText('task_pack_name')}
+                data={[
+                  { value: '', label: i18next.t('Select a task pack') },
+                  ...taskPackNames.map((name) => ({
+                    value: name,
+                    label: name,
+                  })),
+                ]}
                 value={formData.task_pack_name}
                 onChange={handleChange}
-              >
-                <option value="">{i18next.t('Select a task pack')}</option>
-                {taskPackNames.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-              {renderError('task_pack_name')}
-            </div>
+              />
+            </Grid.Col>
           )}
 
           {formData.task_provider === 'tags' && (
-            <div className="col-12 col-md-4">
+            <Grid.Col span={{ base: 12, md: 4 }}>
               <FieldLabel htmlFor="tags">{i18next.t('Tags (comma separated)')}</FieldLabel>
-              <input
-                type="text"
+              <TextInput
                 id="tags"
                 name="tags"
                 aria-label={i18next.t('Tags')}
-                className={cn(INPUT_CLASS, { 'is-invalid': errors.tags })}
+                error={errorText('tags')}
                 value={formData.tags}
                 onChange={handleChange}
                 placeholder="strings,math"
               />
-              {renderError('tags')}
-            </div>
+            </Grid.Col>
           )}
-        </div>
+        </Grid>
       </FormSection>
 
       {/* Tournament Settings */}
       <FormSection title={i18next.t('Tournament Settings')}>
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
+        <Grid gap="md">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="type">{i18next.t('Tournament Type')}</FieldLabel>
-            <select
+            <NativeSelect
               id="type"
               name="type"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.type })}
+              error={errorText('type')}
+              data={TOURNAMENT_TYPES.map((type) => ({
+                value: type.value,
+                label: i18next.t(type.label),
+              }))}
               value={formData.type}
               onChange={handleChange}
-            >
-              {TOURNAMENT_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {i18next.t(type.label)}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp text={i18next.t(TYPE_DESCRIPTIONS[formData.type])} />
-            {renderError('type')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="players_limit">{i18next.t('Players Limit')}</FieldLabel>
-            <select
+            <NativeSelect
               id="players_limit"
               name="players_limit"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.players_limit })}
+              error={errorText('players_limit')}
+              data={PLAYERS_LIMITS.map((limit) => ({
+                value: String(limit),
+                label: String(limit),
+              }))}
               value={formData.players_limit}
               onChange={handleChange}
-            >
-              {PLAYERS_LIMITS.map((limit) => (
-                <option key={limit} value={limit}>
-                  {limit}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp text={i18next.t('Maximum number of players who can join.')} />
-            {renderError('players_limit')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="score_strategy">{i18next.t('Score Strategy')}</FieldLabel>
-            <select
+            <NativeSelect
               id="score_strategy"
               name="score_strategy"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.score_strategy })}
+              error={errorText('score_strategy')}
+              data={SCORE_STRATEGIES.map((strategy) => ({
+                value: strategy.value,
+                label: i18next.t(strategy.label),
+              }))}
               value={formData.score_strategy}
               onChange={handleChange}
               disabled={isLadder}
-            >
-              {SCORE_STRATEGIES.map((strategy) => (
-                <option key={strategy.value} value={strategy.value}>
-                  {i18next.t(strategy.label)}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp
               text={
                 isLadder
@@ -626,24 +618,21 @@ function TournamentForm({
                   : i18next.t(SCORE_STRATEGY_DESCRIPTIONS[formData.score_strategy])
               }
             />
-            {renderError('score_strategy')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="rounds_limit">{i18next.t('Rounds Limit')}</FieldLabel>
-            <select
+            <NativeSelect
               id="rounds_limit"
               name="rounds_limit"
-              className={cn(SELECT_CLASS, { 'is-invalid': errors.rounds_limit })}
+              error={errorText('rounds_limit')}
+              data={Array.from({ length: 42 }, (_, i) => i + 1).map((num) => ({
+                value: String(num),
+                label: String(num),
+              }))}
               value={formData.rounds_limit}
               onChange={handleChange}
-            >
-              {Array.from({ length: 42 }, (_, i) => i + 1).map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp
               text={
                 isLadder
@@ -651,68 +640,61 @@ function TournamentForm({
                   : i18next.t('Number of rounds to play.')
               }
             />
-            {renderError('rounds_limit')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="break_duration_seconds">
               {i18next.t('Break Duration (seconds)')}
             </FieldLabel>
-            <input
-              type="number"
+            <NumberInput
               id="break_duration_seconds"
               name="break_duration_seconds"
               aria-label={i18next.t('Break Duration (seconds)')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.break_duration_seconds })}
+              error={errorText('break_duration_seconds')}
               value={formData.break_duration_seconds}
-              onChange={handleChange}
+              onChange={handleNumberChange('break_duration_seconds')}
               min={0}
               max={100000}
             />
             <FieldHelp text={i18next.t('Pause between rounds, in seconds.')} />
-            {renderError('break_duration_seconds')}
-          </div>
-        </div>
+          </Grid.Col>
+        </Grid>
       </FormSection>
 
       {/* Timeout Configuration */}
       <FormSection title={i18next.t('Timeout Configuration')}>
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
+        <Grid gap="md">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="timeout_mode" active={!isLadder}>
               {i18next.t('Timeout Mode')}
             </FieldLabel>
-            <select
+            <NativeSelect
               id="timeout_mode"
               name="timeout_mode"
-              className={SELECT_CLASS}
+              data={TIMEOUT_MODES.map((mode) => ({
+                value: mode.value,
+                label: i18next.t(mode.label),
+              }))}
               value={formData.timeout_mode}
               onChange={handleChange}
               disabled={isLadder}
-            >
-              {TIMEOUT_MODES.map((mode) => (
-                <option key={mode.value} value={mode.value}>
-                  {i18next.t(mode.label)}
-                </option>
-              ))}
-            </select>
+            />
             <FieldHelp text={i18next.t(TIMEOUT_DESCRIPTIONS[formData.timeout_mode])} />
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="round_timeout_seconds" active={roundTimeoutActive}>
               {isLadder
                 ? i18next.t('Matching interval (sec)')
                 : i18next.t('Round Timeout (seconds)')}
             </FieldLabel>
-            <input
-              type="number"
+            <NumberInput
               id="round_timeout_seconds"
               name="round_timeout_seconds"
               aria-label={i18next.t('Round Timeout (seconds)')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.round_timeout_seconds })}
+              error={errorText('round_timeout_seconds')}
               value={roundTimeoutActive ? (formData.round_timeout_seconds ?? '') : ''}
-              onChange={handleChange}
+              onChange={handleNumberChange('round_timeout_seconds')}
               min={isLadder ? 1 : 10}
               max={10000}
               disabled={!roundTimeoutActive}
@@ -724,74 +706,68 @@ function TournamentForm({
                   : i18next.t('Time limit for each round, in seconds.')
               }
             />
-            {renderError('round_timeout_seconds')}
-          </div>
+          </Grid.Col>
 
-          <div className="col-12 col-md-4">
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <FieldLabel htmlFor="tournament_timeout_seconds" active={tournamentTimeoutActive}>
               {i18next.t('Tournament Timeout (seconds)')}
             </FieldLabel>
-            <input
-              type="number"
+            <NumberInput
               id="tournament_timeout_seconds"
               name="tournament_timeout_seconds"
               aria-label={i18next.t('Tournament Timeout (seconds)')}
-              className={cn(INPUT_CLASS, { 'is-invalid': errors.tournament_timeout_seconds })}
+              error={errorText('tournament_timeout_seconds')}
               value={tournamentTimeoutActive ? (formData.tournament_timeout_seconds ?? '') : ''}
-              onChange={handleChange}
+              onChange={handleNumberChange('tournament_timeout_seconds')}
               min={60}
               max={36000}
               disabled={!tournamentTimeoutActive}
             />
             <FieldHelp text={i18next.t('Total time for the whole tournament, in seconds.')} />
-            {renderError('tournament_timeout_seconds')}
-          </div>
-        </div>
+          </Grid.Col>
+        </Grid>
       </FormSection>
 
       {/* Advanced Settings (admins only) */}
       {isAdmin && (
         <FormSection title={i18next.t('Advanced Settings')}>
-          <div className="row g-3">
-            <div className="col-12">
+          <Grid gap="md">
+            <Grid.Col span={12}>
               <FieldLabel htmlFor="meta_json">{i18next.t('Meta JSON')}</FieldLabel>
-              <textarea
+              <Textarea
                 id="meta_json"
                 name="meta_json"
                 aria-label={i18next.t('Meta JSON')}
-                className={cn(INPUT_CLASS, { 'is-invalid': errors.meta_json })}
+                error={errorText('meta_json')}
                 value={formData.meta_json}
                 onChange={handleChange}
                 rows={3}
               />
               <FieldHelp text={i18next.t('Advanced JSON configuration. Leave as {} if unsure.')} />
-              {renderError('meta_json')}
-            </div>
-          </div>
+            </Grid.Col>
+          </Grid>
         </FormSection>
       )}
 
       {/* Action Buttons */}
-      <div className="d-flex justify-content-between align-items-center mt-4">
+      <Flex justify="space-between" align="center" mt="lg">
         {showCancelButton && (
-          <button
+          <Button
             type="button"
-            className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+            variant="outline"
+            color="cbSecondary"
+            radius="md"
             onClick={onCancel ?? undefined}
             disabled={isSubmitting}
           >
             {i18next.t(cancelButtonText)}
-          </button>
+          </Button>
         )}
-        <button
-          type="submit"
-          className="btn btn-secondary cb-btn-secondary cb-rounded px-4"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" color="cbSecondary" radius="md" px="xl" disabled={isSubmitting}>
           {isSubmitting ? i18next.t('Submitting...') : i18next.t(submitButtonText)}
-        </button>
-      </div>
-    </form>
+        </Button>
+      </Flex>
+    </Box>
   );
 }
 

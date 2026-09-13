@@ -1,4 +1,5 @@
 import React from 'react';
+import { Anchor, Box, Button, Flex, Text, Title } from '@mantine/core';
 
 import i18n from '../../../i18n';
 import { type TournamentMeta, type Invite } from './types';
@@ -28,37 +29,40 @@ function InvitationPanel({ name, meta, repoUrl, invite, onStart }: InvitationPan
   const step2Label = m.step2Label || i18n.t('Once all steps are complete, you can start solving');
   const step2ButtonLabel = m.step2ButtonLabel || i18n.t('Go to task');
 
+  const btnClass = 'btn-yellow';
+
   return (
-    <div className="container-fluid position-relative overflow-hidden min-vh-100">
+    <Box w="100%" pos="relative" style={{ overflow: 'hidden', minHeight: '100vh' }}>
       <div className="cup cup-aside" />
-      <div className="cb-custom-event-content d-flex flex-column mx-auto w-100">
-        <div className="row my-5">
-          <div className="col-12 d-flex justify-content-center">
-            <h1 className="text-white text-center cb-custom-event-title">
+      <Flex direction="column" mx="auto" w="100%" className="cb-custom-event-content">
+        <Flex my="xl" wrap="wrap">
+          <Flex justify="center" w="100%">
+            <Text component="h1" c="white" ta="center" className="cb-custom-event-title">
               {(name || i18n.t('Group Tournament')).toUpperCase()}
-            </h1>
-          </div>
-          <div className="col-12 d-flex justify-content-center mt-3">
-            <p className="text-white text-center mb-0">
+            </Text>
+          </Flex>
+          <Flex justify="center" mt="md" w="100%">
+            <Text c="white" ta="center" mb={0}>
               {i18n.t('Find tournament details at')}{' '}
               {tournamentDetailsUrl ? (
-                <a
-                  className="text-white text-decoration-underline"
+                <Anchor
+                  c="white"
+                  underline="always"
                   href={tournamentDetailsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   {tournamentDetailsLabel}
-                </a>
+                </Anchor>
               ) : (
                 tournamentDetailsLabel
               )}
-            </p>
-          </div>
-        </div>
+            </Text>
+          </Flex>
+        </Flex>
 
-        <div className="row justify-content-center text-center my-4">
-          <div className="col-auto px-4 d-flex flex-column align-items-center">
+        <Flex justify="center" my="lg" ta="center" wrap="wrap">
+          <Flex direction="column" align="center" px="lg">
             {taskInfoIconUrl && (
               <img
                 src={taskInfoIconUrl}
@@ -66,9 +70,11 @@ function InvitationPanel({ name, meta, repoUrl, invite, onStart }: InvitationPan
                 style={{ width: 48, height: 48, objectFit: 'contain' }}
               />
             )}
-            <p className="text-white small mt-2 mb-0">{taskInfoLabel}</p>
-          </div>
-          <div className="col-auto px-4 d-flex flex-column align-items-center">
+            <Text size="sm" c="white" mt="xs" mb={0}>
+              {taskInfoLabel}
+            </Text>
+          </Flex>
+          <Flex direction="column" align="center" px="lg">
             {taskDurationIconUrl && (
               <img
                 src={taskDurationIconUrl}
@@ -76,51 +82,72 @@ function InvitationPanel({ name, meta, repoUrl, invite, onStart }: InvitationPan
                 style={{ width: 48, height: 48, objectFit: 'contain' }}
               />
             )}
-            <p className="text-white small mt-2 mb-0">{taskDurationLabel}</p>
-          </div>
-        </div>
+            <Text size="sm" c="white" mt="xs" mb={0}>
+              {taskDurationLabel}
+            </Text>
+          </Flex>
+        </Flex>
 
-        <div className="row justify-content-center my-3">
-          <div className="col-12 col-lg-9">
-            <h3 className="text-white text-center font-weight-bold mb-4">{stepsTitle}</h3>
+        <Flex justify="center" my="md">
+          <Box w={{ base: '100%', lg: '75%' }}>
+            <Title order={3} c="white" ta="center" fw={700} mb="lg">
+              {stepsTitle}
+            </Title>
 
-            <div className="cb-custom-event-profile d-flex justify-content-between align-items-center my-3">
-              <span className="text-white">{step1Label}</span>
+            <Flex
+              justify="space-between"
+              align="center"
+              my="md"
+              className="cb-custom-event-profile"
+            >
+              <Text c="white">{step1Label}</Text>
               {isAccepted ? (
-                <button type="button" className="btn btn-yellow rounded-pill px-4" disabled>
+                <Button type="button" className={btnClass} radius="xl" px="lg" h="auto" disabled>
                   {i18n.t('Accepted')}
-                </button>
+                </Button>
               ) : invite?.inviteLink ? (
-                <a
+                <Button
+                  component="a"
                   target="_blank"
                   href={invite.inviteLink}
-                  className="btn btn-yellow rounded-pill px-4"
+                  className={btnClass}
+                  radius="xl"
+                  px="lg"
+                  h="auto"
                   rel="noopener noreferrer"
                 >
                   {step1ButtonLabel}
-                </a>
+                </Button>
               ) : (
-                <button type="button" className="btn btn-yellow rounded-pill px-4" disabled>
+                <Button type="button" className={btnClass} radius="xl" px="lg" h="auto" disabled>
                   {step1ButtonLabel}
-                </button>
+                </Button>
               )}
-            </div>
+            </Flex>
 
-            <div className="cb-custom-event-profile d-flex justify-content-between align-items-center my-3">
-              <span className="text-white">{step2Label}</span>
-              <button
+            <Flex
+              justify="space-between"
+              align="center"
+              my="md"
+              className="cb-custom-event-profile"
+            >
+              <Text c="white">{step2Label}</Text>
+              <Button
                 type="button"
-                className="btn btn-yellow rounded-pill px-4"
+                className={btnClass}
+                radius="xl"
+                px="lg"
+                h="auto"
                 onClick={onStart}
                 disabled={!isAccepted}
               >
                 {step2ButtonLabel}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Button>
+            </Flex>
+          </Box>
+        </Flex>
+      </Flex>
+    </Box>
   );
 }
 

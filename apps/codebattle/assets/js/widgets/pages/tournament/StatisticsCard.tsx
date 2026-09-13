@@ -30,7 +30,14 @@ function StatisticsCard({ playerId, matchList = [], compact = false }: Statistic
   const avgResultPercent = finishedMatches.length ? playerStats.avgTests.toFixed(1) : '0.0';
 
   return (
-    <div className={cn('cb-player-stats-bar cb-bg-highlight-panel cb-rounded', compact && 'w-100')}>
+    <div
+      className={cn('cb-player-stats-bar')}
+      style={{
+        backgroundColor: 'var(--mantine-color-cbHighlight-6)',
+        borderRadius: 'var(--mantine-radius-md)',
+        ...(compact ? { width: '100%' } : {}),
+      }}
+    >
       <div className="cb-player-stat cb-player-stat--place">
         <span className="cb-player-stat-label">{i18next.t('Place')}</span>
         <span className="cb-player-stat-value">{player?.place ?? '?'}</span>

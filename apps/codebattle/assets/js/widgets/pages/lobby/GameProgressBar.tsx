@@ -21,7 +21,7 @@ interface GameProgressBarProps {
 }
 
 export const getPregressbarClass = (player: GameProgressPlayer) =>
-  cn('cb-check-result-bar shadow-sm mt-1', player.checkResult.status);
+  cn('cb-check-result-bar', player.checkResult.status);
 
 export const getPregressbarWidth = (player: GameProgressPlayer) =>
   `${
@@ -34,7 +34,10 @@ function GameProgressBar({ player, position }: GameProgressBarProps) {
 
   return (
     <>
-      <div className={getPregressbarClass(player)}>
+      <div
+        className={getPregressbarClass(player)}
+        style={{ boxShadow: 'var(--mantine-shadow-sm)', marginTop: '0.25rem' }}
+      >
         <div
           className="cb-asserts-progress"
           style={{

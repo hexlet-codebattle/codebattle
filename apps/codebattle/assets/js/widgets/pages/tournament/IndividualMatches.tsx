@@ -1,6 +1,8 @@
 import React, { memo, useMemo } from 'react';
 
-import cn from 'classnames';
+import { Box, Button, Flex, Text, Title } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import capitalize from 'lodash/capitalize';
 
 import { type Player } from '@/slices/initial';
@@ -85,30 +87,49 @@ const getTitleByRoundType = (type: string, playersCount: number) => {
   }
 };
 
-const getLinkParams = (match: Match, currentUserId: number): [string, string] => {
+interface LinkParams {
+  text: string;
+  style: React.CSSProperties;
+  className?: string;
+}
+
+const getLinkParams = (match: Match, currentUserId: number): LinkParams => {
   const isWinner = match.winnerId === currentUserId;
   const isParticipant = match.playerIds.includes(currentUserId);
-  const cardClassName = 'p-1 border rounded-lg';
+  const baseStyle: React.CSSProperties = {
+    padding: '0.25rem',
+    border: '1px solid',
+    borderRadius: '0.3rem',
+  };
 
   switch (true) {
     case match.state === 'waiting' && isParticipant:
-      return ['Wait', cn(cardClassName, 'border-warning')];
+      return { text: 'Wait', style: { ...baseStyle, borderColor: '#ffc107' } };
     case match.state === 'playing' && isParticipant:
-      return ['Join', cn(cardClassName, 'border-winner')];
     case isWinner:
-      return ['Show', cn(cardClassName, 'border-winner')];
+      return {
+        text: 'Join',
+        style: { ...baseStyle, border: '2px solid', borderColor: '#c9a56c' },
+      };
     case isParticipant:
-      return ['Show', cn(cardClassName, 'x-bg-gray border-secondary')];
+      return {
+        text: 'Show',
+        style: { ...baseStyle, borderColor: '#6c757d' },
+        className: 'x-bg-gray',
+      };
     default:
-      return ['Show', cn(cardClassName, 'border-gray')];
+      return {
+        text: 'Show',
+        style: { ...baseStyle, border: '2px solid #d9d9d9' },
+      };
   }
 };
 
 const getMatchesByRoundPosition = (matches: MatchesMap, round: number) =>
   Object.values(matches).filter((match) => match.roundPosition === round);
 
-const getResultClass = (match: Match, playerId: number) =>
-  match.winnerId === playerId ? 'fa fa-trophy text-warning' : '';
+const getResultIcon = (match: Match, playerId: number) =>
+  match.winnerId === playerId ? 'trophy' : null;
 
 interface RoundProps {
   matches: MatchesMap;
@@ -133,43 +154,61 @@ function Round({ matches, players, playersCount, type, round, currentUserId }: R
 
   return (
     <div className="round">
-      <div className="h4 text-center">{getTitleByRoundType(type, playersCount)}</div>
+      <Title order={4} ta="center">
+        {getTitleByRoundType(type, playersCount)}
+      </Title>
       <div className="round-inner">
-        {matchesPerRound.map((match) => (
-          <div key={match.gameId} className="match">
-            <div className="match__content">
-              {match ? (
-                <div className={getLinkParams(match, currentUserId)[1]}>
-                  <div className="d-flex justify-content-center align-items-center">
-                    <span>{i18n.t(match.state)}</span>
-                    <div id={String(match.gameId)}>
-                      <a
-                        href={`/games/${match.gameId}`}
-                        className="btn btn-sm btn-success text-white rounded-lg m-1"
-                      >
-                        {getLinkParams(match, currentUserId)[0]}
-                      </a>
-                    </div>
-                  </div>
-                  <div className="d-flex flex-column justify-content-around">
-                    {match.playerIds.map((id) => (
-                      <div
-                        className={`d-flex align-items-center bg-light tournament-bg-${match.state}`}
-                      >
-                        <UserInfo user={players[id]} hideOnlineIndicator />
-                        <span className={getResultClass(match, id)} />
+        {matchesPerRound.map((match) => {
+          const linkParams = getLinkParams(match, currentUserId);
+
+          return (
+            <div key={match.gameId} className="match">
+              <div className="match__content">
+                {match ? (
+                  <div className={linkParams.className} style={linkParams.style}>
+                    <Flex align="center" justify="center">
+                      <Text component="span">{i18n.t(match.state)}</Text>
+                      <div id={String(match.gameId)}>
+                        <Button
+                          size="compact-sm"
+                          radius="md"
+                          m={4}
+                          color="cbSuccess"
+                          component="a"
+                          href={`/games/${match.gameId}`}
+                        >
+                          {linkParams.text}
+                        </Button>
                       </div>
-                    ))}
+                    </Flex>
+                    <Flex direction="column" justify="space-around">
+                      {match.playerIds.map((id) => (
+                        <Flex
+                          key={id}
+                          align="center"
+                          style={{ background: 'var(--color-gray-0)' }}
+                          className={`tournament-bg-${match.state}`}
+                        >
+                          <UserInfo user={players[id]} hideOnlineIndicator />
+                          {getResultIcon(match, id) && (
+                            <FontAwesomeIcon
+                              icon={getResultIcon(match, id) as never}
+                              style={{ color: '#ffc107' }}
+                            />
+                          )}
+                        </Flex>
+                      ))}
+                    </Flex>
                   </div>
-                </div>
-              ) : (
-                <div className="d-flex align-items-center justify-content-center x-bg-gray">
-                  <p>{i18n.t('Waiting')}</p>
-                </div>
-              )}
+                ) : (
+                  <Flex align="center" justify="center" className="x-bg-gray">
+                    <Text>{i18n.t('Waiting')}</Text>
+                  </Flex>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -191,7 +230,7 @@ function IndividualMatches({
   const roundsCount = useMemo(() => getRoundCounts(playersCount), [playersCount]);
 
   return (
-    <div className="overflow-auto mt-2">
+    <Box style={{ overflow: 'auto' }} mt="xs">
       <div className="bracket">
         {roundTypesValues.map((type, index) => (
           <Round
@@ -204,7 +243,7 @@ function IndividualMatches({
           />
         ))}
       </div>
-    </div>
+    </Box>
   );
 }
 

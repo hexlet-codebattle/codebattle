@@ -33,3 +33,31 @@ class MemoryStorage implements Storage {
 const localStorage = new MemoryStorage();
 Object.defineProperty(window, 'localStorage', { configurable: true, value: localStorage });
 Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: localStorage });
+
+// Mantine's MantineProvider reads the color scheme via matchMedia, and its
+// floating components (Popover/Tooltip/HoverCard) use ResizeObserver — neither
+// is implemented by jsdom.
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  configurable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }),
+});
+
+class ResizeObserverMock {
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+}
+
+globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;

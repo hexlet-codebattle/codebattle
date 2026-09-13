@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
+import { Alert, Button, Flex, Grid, Paper, Title } from '@mantine/core';
 import { decamelizeKeys, camelizeKeys } from 'humps';
 import noop from 'lodash/noop';
-import Alert from 'react-bootstrap/Alert';
 
 import i18n from '../../../i18n';
 import Loading from '../../components/Loading';
+import { alertVariantColor, darkThemeAlertStyles } from '../../ui/alert';
 
 import TournamentForm from './TournamentForm';
 import { formatDatetimeLocal, getBrowserTimezone } from './dateTime';
@@ -15,7 +16,9 @@ interface TournamentResult {
   [key: string]: unknown;
 }
 
-type FormErrors = Partial<Record<string, string | string[]>> & { base?: string };
+type FormErrors = Partial<Record<string, string | string[]>> & {
+  base?: string;
+};
 
 interface ResponseErrorData {
   errors?: FormErrors;
@@ -58,8 +61,21 @@ function Notification({ notification, onClose }: NotificationProps) {
     return () => clearTimeout(timerId);
   }, [onClose, message]);
 
+  if (!message) {
+    return null;
+  }
+
   return (
-    <Alert show={!!message} variant={variant} className="alert-dark-theme rounded shadow-sm mb-2">
+    <Alert
+      color={alertVariantColor(variant)}
+      variant="light"
+      styles={darkThemeAlertStyles(variant)}
+      style={{
+        borderRadius: '0.25rem',
+        boxShadow: 'var(--mantine-shadow-sm)',
+        marginBottom: '0.5rem',
+      }}
+    >
       {message}
     </Alert>
   );
@@ -219,33 +235,44 @@ function EditTournament({
 
   if (loading) {
     return (
-      <div
-        className="w-100 mx-auto cb-bg-panel cb-text shadow-sm cb-rounded py-4 px-3 px-md-4 mb-3"
-        style={{ maxWidth: '1400px' }}
+      <Paper
+        bg="cbPanel"
+        c="cbText"
+        shadow="sm"
+        py="lg"
+        px={{ base: 'md', md: 'lg' }}
+        mb="md"
+        maw={1400}
+        w="100%"
+        mx="auto"
       >
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ minHeight: '400px' }}
-        >
+        <Flex justify="center" align="center" style={{ minHeight: '400px' }}>
           <Loading />
-        </div>
-      </div>
+        </Flex>
+      </Paper>
     );
   }
 
   if (!tournament) {
     return (
-      <div
-        className="w-100 mx-auto cb-bg-panel cb-text shadow-sm cb-rounded py-4 px-3 px-md-4 mb-3"
-        style={{ maxWidth: '1400px' }}
+      <Paper
+        bg="cbPanel"
+        c="cbText"
+        shadow="sm"
+        py="lg"
+        px={{ base: 'md', md: 'lg' }}
+        mb="md"
+        maw={1400}
+        w="100%"
+        mx="auto"
       >
-        <div className="alert alert-danger" role="alert">
+        <Alert color="red" role="alert">
           Tournament not found or you don&apos;t have permission to edit it.
-        </div>
-        <a href="/tournaments" className="btn btn-secondary cb-btn-secondary cb-rounded">
+        </Alert>
+        <Button mt="sm" component="a" href="/tournaments" color="cbSecondary" radius="md">
           Back to Tournaments
-        </a>
-      </div>
+        </Button>
+      </Paper>
     );
   }
 
@@ -274,18 +301,29 @@ function EditTournament({
   };
 
   return (
-    <div
-      className="w-100 mx-auto cb-bg-panel cb-text shadow-sm cb-rounded py-4 px-3 px-md-4 mb-3"
-      style={{ maxWidth: '1400px' }}
+    <Paper
+      bg="cbPanel"
+      c="cbText"
+      shadow="sm"
+      py="lg"
+      px={{ base: 'md', md: 'lg' }}
+      mb="md"
+      maw={1400}
+      w="100%"
+      mx="auto"
     >
       <Notification notification={notification} onClose={setNotification} />
-      <h1 className="text-center mb-2">{i18n.t('Edit Tournament')}</h1>
-      <h3 className="text-center mb-4 text-muted">
+      <Title order={1} ta="center" mb="xs">
+        {i18n.t('Edit Tournament')}
+      </Title>
+      <Title order={3} ta="center" mb="md" c="dimmed">
         {tournament.creator &&
-          i18n.t('Creator: %{name}', { name: tournament.creator.name as string })}
-      </h3>
-      <div className="row justify-content-center">
-        <div className="col-12 col-lg-10 col-xl-10">
+          i18n.t('Creator: %{name}', {
+            name: tournament.creator.name as string,
+          })}
+      </Title>
+      <Grid justify="center">
+        <Grid.Col span={{ base: 12, lg: 10, xl: 10 }}>
           <TournamentForm
             initialValues={initialValues}
             onSubmit={handleSubmit}
@@ -301,9 +339,9 @@ function EditTournament({
               window.location.href = `/tournaments/${tournamentId}`;
             }}
           />
-        </div>
-      </div>
-    </div>
+        </Grid.Col>
+      </Grid>
+    </Paper>
   );
 }
 

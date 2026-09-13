@@ -136,7 +136,9 @@ const reduceOriginalRecords = (
   }
 
   if (type === 'update_editor_data' && playbookType === PlaybookStatusCodes.stored) {
-    const { editorText, editorLang: prevEditorLang } = find(players, { id: record.id })!;
+    const { editorText, editorLang: prevEditorLang } = find(players, {
+      id: record.id,
+    })!;
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);
@@ -296,7 +298,11 @@ export const addRecord = ({
 
       const diff = getDiff(prevEditorText, editorText);
 
-      const newPlayers = updatePlayers(players, { id: userId, editorText, editorLang: langSlug });
+      const newPlayers = updatePlayers(players, {
+        id: userId,
+        editorText,
+        editorLang: langSlug,
+      });
       const data = {
         type,
         userId,
@@ -398,7 +404,9 @@ export const reduceRealtimeOriginalRecords = (
   }
 
   if (type === 'update_editor_data' && playbookType === PlaybookStatusCodes.stored) {
-    const { editorText, editorLang: prevEditorLang } = find(players, { id: record.id })!;
+    const { editorText, editorLang: prevEditorLang } = find(players, {
+      id: record.id,
+    })!;
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);

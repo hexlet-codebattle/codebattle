@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 
+import { Flex, Table } from '@mantine/core';
+
 import { type UserNameUser } from '../../components/UserName';
 import UserInfo from '../../components/UserInfo';
 
@@ -19,21 +21,28 @@ interface PlayersProps {
 
 export type { LobbyPlayer };
 
-const Players = memo(({ players, mode }: PlayersProps) => {
+const truncatedCellStyle = {
+  whiteSpace: 'nowrap',
+  verticalAlign: 'middle',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+} as const;
+
+const Players = memo(({ players }: PlayersProps) => {
   if (players.length === 1) {
     return (
-      <td className="p-3 align-middle text-nowrap" colSpan={2}>
-        <div className="d-flex align-items-center">
+      <Table.Td colSpan={2} style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
+        <Flex align="center">
           <UserInfo user={players[0]} lang={players[0].editorLang} hideOnlineIndicator />
-        </div>
-      </td>
+        </Flex>
+      </Table.Td>
     );
   }
 
   return (
     <>
-      <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex flex-column position-relative">
+      <Table.Td className="cb-username-td" style={truncatedCellStyle}>
+        <Flex direction="column" pos="relative">
           <UserInfo
             user={players[0]}
             lang={players[0].editorLang}
@@ -41,10 +50,10 @@ const Players = memo(({ players, mode }: PlayersProps) => {
             loading={players[0].checkResult.status === 'started'}
           />
           <GameProgressBar player={players[0]} position="left" />
-        </div>
-      </td>
-      <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex flex-column position-relative">
+        </Flex>
+      </Table.Td>
+      <Table.Td className="cb-username-td" style={truncatedCellStyle}>
+        <Flex direction="column" pos="relative">
           <UserInfo
             user={players[1]}
             lang={players[1].editorLang}
@@ -52,8 +61,8 @@ const Players = memo(({ players, mode }: PlayersProps) => {
             loading={players[1].checkResult.status === 'started'}
           />
           <GameProgressBar player={players[1]} position="right" />
-        </div>
-      </td>
+        </Flex>
+      </Table.Td>
     </>
   );
 });

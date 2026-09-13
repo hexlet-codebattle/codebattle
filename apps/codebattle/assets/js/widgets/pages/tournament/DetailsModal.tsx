@@ -1,10 +1,9 @@
 import React, { useCallback, useMemo, useState, memo, useContext, type ReactNode } from 'react';
 
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Box, Button, Grid, Group, Stack, Text } from '@mantine/core';
 import moment from 'moment';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import { type TournamentState } from '@/slices/initial';
 
 import i18n from '../../../i18n';
@@ -55,17 +54,26 @@ function DetailSection({ title, items }: DetailSectionProps) {
   }
 
   return (
-    <div className="cb-bg-highlight-panel cb-rounded p-3 h-100">
-      <div className="small text-uppercase text-muted font-weight-bold mb-3">{title}</div>
-      <div className="row mx-n2">
+    <Box
+      bg="cbHighlight"
+      style={{ padding: '1rem', height: '100%', borderRadius: 'var(--mantine-radius-md)' }}
+    >
+      <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
+        {title}
+      </Text>
+      <Grid gap="xs">
         {items.map(({ label, value }) => (
-          <div key={label} className="col-12 col-sm-6 px-2 mb-3">
-            <div className="small text-muted mb-1">{label}</div>
-            <div className="font-weight-bold text-break">{value}</div>
-          </div>
+          <Grid.Col span={{ base: 12, sm: 6 }} key={label}>
+            <Text size="xs" c="dimmed" mb={4}>
+              {label}
+            </Text>
+            <Text fw={700} style={{ wordBreak: 'break-word' }}>
+              {value}
+            </Text>
+          </Grid.Col>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
 }
 
@@ -81,8 +89,18 @@ function RawJsonSection({ tournament }: RawJsonSectionProps) {
 
   return (
     <pre
-      className="cb-bg-highlight-panel cb-rounded p-3 mb-0 small cb-text"
-      style={{ maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+      style={{
+        maxHeight: 400,
+        backgroundColor: 'var(--mantine-color-cbHighlight-6)',
+        borderRadius: 'var(--mantine-radius-md)',
+        color: 'var(--mantine-color-cbText-6)',
+        overflow: 'auto',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        padding: '1rem',
+        marginBottom: 0,
+        fontSize: '0.8em',
+      }}
     >
       {json}
     </pre>
@@ -99,10 +117,9 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   const [showRawJson, setShowRawJson] = useState(false);
 
-  const closeBtnClassName = cn('btn rounded-lg', {
-    'btn-secondary': !hasCustomEventStyles,
-    'cb-custome-event-btn-secondary': !hasCustomEventStyles,
-  });
+  const toggleJsonView = useCallback(() => {
+    setShowRawJson((v) => !v);
+  }, [setShowRawJson]);
 
   const detailSections = useMemo(() => {
     const sections = [
@@ -110,10 +127,22 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
         title: i18n.t('Overview'),
         items: [
           { label: i18n.t('Name'), value: formatValue(tournament.name) },
-          { label: i18n.t('State'), value: formatTranslatedValue(tournament.state) },
-          { label: i18n.t('Type'), value: formatTranslatedValue(tournament.type) },
-          { label: i18n.t('Level'), value: formatTranslatedValue(tournament.level) },
-          { label: i18n.t('Access'), value: formatTranslatedValue(tournament.accessType) },
+          {
+            label: i18n.t('State'),
+            value: formatTranslatedValue(tournament.state),
+          },
+          {
+            label: i18n.t('Type'),
+            value: formatTranslatedValue(tournament.type),
+          },
+          {
+            label: i18n.t('Level'),
+            value: formatTranslatedValue(tournament.level),
+          },
+          {
+            label: i18n.t('Access'),
+            value: formatTranslatedValue(tournament.accessType),
+          },
           {
             label: i18n.t('Ranking type'),
             value: formatTranslatedValue(tournament.rankingType),
@@ -123,11 +152,26 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       {
         title: i18n.t('Schedule'),
         items: [
-          { label: i18n.t('Starts at'), value: formatDate(tournament.startsAt) },
-          { label: i18n.t('Created at'), value: formatDate(tournament.insertedAt) },
-          { label: i18n.t('Updated at'), value: formatDate(tournament.updatedAt) },
-          { label: i18n.t('Rounds limit'), value: formatValue(tournament.roundsLimit) },
-          { label: i18n.t('Current round'), value: formatValue(tournament.currentRoundPosition) },
+          {
+            label: i18n.t('Starts at'),
+            value: formatDate(tournament.startsAt),
+          },
+          {
+            label: i18n.t('Created at'),
+            value: formatDate(tournament.insertedAt),
+          },
+          {
+            label: i18n.t('Updated at'),
+            value: formatDate(tournament.updatedAt),
+          },
+          {
+            label: i18n.t('Rounds limit'),
+            value: formatValue(tournament.roundsLimit),
+          },
+          {
+            label: i18n.t('Current round'),
+            value: formatValue(tournament.currentRoundPosition),
+          },
         ],
       },
       {
@@ -158,11 +202,26 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
       {
         title: i18n.t('Participants'),
         items: [
-          { label: i18n.t('Players'), value: formatValue(tournament.playersCount) },
-          { label: i18n.t('Players limit'), value: formatValue(tournament.playersLimit) },
-          { label: i18n.t('Bots visible'), value: formatValue(tournament.showBots) },
-          { label: i18n.t('Chat enabled'), value: formatValue(tournament.useChat) },
-          { label: i18n.t('Clan mode'), value: formatValue(tournament.useClan) },
+          {
+            label: i18n.t('Players'),
+            value: formatValue(tournament.playersCount),
+          },
+          {
+            label: i18n.t('Players limit'),
+            value: formatValue(tournament.playersLimit),
+          },
+          {
+            label: i18n.t('Bots visible'),
+            value: formatValue(tournament.showBots),
+          },
+          {
+            label: i18n.t('Chat enabled'),
+            value: formatValue(tournament.useChat),
+          },
+          {
+            label: i18n.t('Clan mode'),
+            value: formatValue(tournament.useClan),
+          },
           { label: i18n.t('Live'), value: formatValue(tournament.isLive) },
         ],
       },
@@ -173,7 +232,10 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
             label: i18n.t('Task provider'),
             value: formatTranslatedValue(tournament.taskProvider),
           },
-          { label: i18n.t('Task pack'), value: formatValue(tournament.taskPackName) },
+          {
+            label: i18n.t('Task pack'),
+            value: formatValue(tournament.taskPackName),
+          },
           {
             label: i18n.t('Task strategy'),
             value: formatTranslatedValue(tournament.taskStrategy),
@@ -193,40 +255,49 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
   const handleCancel = useCallback(() => setModalShowing(false), [setModalShowing]);
 
   return (
-    <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
-      <Modal.Header className="cb-border-color" closeButton>
+    <Modal show={modalShowing} onHide={handleCancel}>
+      <Modal.Header closeButton>
         <Modal.Title>{i18n.t('Tournament details')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {tournament.description ? (
-          <div className="cb-bg-highlight-panel cb-rounded p-3 mb-3">
-            <div className="small text-uppercase text-muted font-weight-bold mb-2">
+          <Box
+            style={{
+              padding: '1rem',
+              marginBottom: '1rem',
+              backgroundColor: 'var(--mantine-color-cbHighlight-6)',
+              borderRadius: 'var(--mantine-radius-md)',
+            }}
+          >
+            <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">
               {i18n.t('Description')}
-            </div>
-            <div className="mb-0 text-break">{tournament.description as ReactNode}</div>
-          </div>
+            </Text>
+            <Box style={{ wordBreak: 'break-word' }}>{tournament.description as ReactNode}</Box>
+          </Box>
         ) : null}
-        <div className="row mx-n2">
+        <Grid gap="md">
           {detailSections.map(({ title, items }) => (
-            <div key={title} className="col-12 col-lg-6 px-2 mb-3">
+            <Grid.Col span={{ base: 12, lg: 6 }} key={title}>
               <DetailSection title={title} items={items} />
-            </div>
+            </Grid.Col>
           ))}
-        </div>
+        </Grid>
         {showRawJson && <RawJsonSection tournament={tournament} />}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color d-flex justify-content-between">
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          className="rounded-lg"
-          onClick={() => setShowRawJson((v) => !v)}
-        >
-          {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
-        </Button>
-        <Button onClick={handleCancel} className={closeBtnClassName}>
-          {i18n.t('Close')}
-        </Button>
+      <Modal.Footer>
+        <Group justify="space-between" w="100%">
+          <Button variant="outline" color="cbSecondary" radius="md" onClick={toggleJsonView}>
+            {i18n.t(showRawJson ? 'Hide JSON' : 'Raw JSON')}
+          </Button>
+          <Button
+            onClick={handleCancel}
+            color="cbSecondary"
+            radius="md"
+            className={hasCustomEventStyles ? 'cb-custom-event-btn-secondary' : undefined}
+          >
+            {i18n.t('Close')}
+          </Button>
+        </Group>
       </Modal.Footer>
     </Modal>
   );

@@ -1,18 +1,18 @@
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-  <h1 class="text-center text-white">
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+  <h1 class="cb-text-center cb-text-white">
     <span>{@event.title}</span>
   </h1>
 
-  <h3 class="text-center text-white mt-4">Event Details</h3>
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
-    <div class="row">
-      <div class="col-md-6">
+  <h3 class="cb-text-center cb-text-white cb-mt-4">Event Details</h3>
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4 cb-text-white">
+    <div class="cb-row">
+      <div class="cb-col-md-6">
         <p><strong>Slug:</strong> {@event.slug}</p>
         <p><strong>Type:</strong> {@event.type}</p>
         <p><strong>Title:</strong> {@event.title}</p>
         <p><strong>Ticker Text:</strong> {@event.ticker_text}</p>
       </div>
-      <div class="col-md-6">
+      <div class="cb-col-md-6">
         <p><strong>Created By:</strong> {@event.creator_id}</p>
         <p>
           <strong>Starts At:</strong> {@event.starts_at && format_datetime(@event.starts_at)}
@@ -20,63 +20,63 @@
         <p><strong>Personal Tournament ID:</strong> {@event.personal_tournament_id}</p>
       </div>
     </div>
-    <div class="row mt-2">
-      <div class="col-12">
+    <div class="cb-row cb-mt-2">
+      <div class="cb-col-12">
         <p><strong>Description:</strong></p>
-        <div class="p-3 cb-bg-panel cb-border-color border cb-rounded">
+        <div class="cb-p-3 cb-bg-panel cb-border-color cb-border cb-rounded">
           {@event.description}
         </div>
       </div>
     </div>
   </div>
 
-  <h3 class="text-center text-white">Event Stages</h3>
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+  <h3 class="cb-text-center cb-text-white">Event Stages</h3>
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
     <%= if @event.stages && length(@event.stages) > 0 do %>
-      <div class="table-responsive">
-        <table class="table table-sm">
+      <div class="cb-table-responsive">
+        <table class="cb-table cb-table-sm">
           <thead class="cb-text">
             <tr>
-              <th class="cb-border-color border-bottom">Name</th>
-              <th class="cb-border-color border-bottom">Slug</th>
-              <th class="cb-border-color border-bottom">Dates</th>
-              <th class="cb-border-color border-bottom">Status</th>
-              <th class="cb-border-color border-bottom">Type</th>
-              <th class="cb-border-color border-bottom">Playing Type</th>
-              <th class="cb-border-color border-bottom">Button Text</th>
-              <th class="cb-border-color border-bottom">Confirmation Text</th>
-              <th class="cb-border-color border-bottom">Tournament ID</th>
-              <th class="cb-border-color border-bottom">Actions</th>
+              <th class="cb-border-color cb-border-bottom">Name</th>
+              <th class="cb-border-color cb-border-bottom">Slug</th>
+              <th class="cb-border-color cb-border-bottom">Dates</th>
+              <th class="cb-border-color cb-border-bottom">Status</th>
+              <th class="cb-border-color cb-border-bottom">Type</th>
+              <th class="cb-border-color cb-border-bottom">Playing Type</th>
+              <th class="cb-border-color cb-border-bottom">Button Text</th>
+              <th class="cb-border-color cb-border-bottom">Confirmation Text</th>
+              <th class="cb-border-color cb-border-bottom">Tournament ID</th>
+              <th class="cb-border-color cb-border-bottom">Actions</th>
             </tr>
           </thead>
           <tbody>
             <%= for stage <- @event.stages do %>
               <tr>
-                <td class="text-white cb-border-color">{stage.name}</td>
-                <td class="text-white cb-border-color">{stage.slug}</td>
-                <td class="text-white cb-border-color">{stage.dates}</td>
+                <td class="cb-text-white cb-border-color">{stage.name}</td>
+                <td class="cb-text-white cb-border-color">{stage.slug}</td>
+                <td class="cb-text-white cb-border-color">{stage.dates}</td>
                 <td class="cb-border-color">
-                  <span class={"badge #{case stage.status do
-                      :pending -> "bg-warning text-dark"
-                      :active -> "bg-success"
-                      :passed -> "bg-secondary"
-                      _ -> "bg-light text-dark"
+                  <span class={"cb-badge #{case stage.status do
+                      :pending -> "cb-bg-warning cb-text-dark"
+                      :active -> "cb-bg-success"
+                      :passed -> "cb-bg-secondary"
+                      _ -> "cb-bg-light cb-text-dark"
                     end}"}>
                     {stage.status}
                   </span>
                 </td>
                 <td class="cb-border-color">
-                  <span class={"badge #{if stage.type == :tournament, do: "bg-primary", else: "bg-info text-dark"}"}>
+                  <span class={"cb-badge #{if stage.type == :tournament, do: "cb-bg-primary", else: "cb-bg-info cb-text-dark"}"}>
                     {stage.type}
                   </span>
                 </td>
                 <td class="cb-border-color">
-                  <span class={"badge #{if stage.playing_type == :single, do: "bg-dark", else: "bg-secondary"}"}>
+                  <span class={"cb-badge #{if stage.playing_type == :single, do: "cb-bg-dark", else: "cb-bg-secondary"}"}>
                     {stage.playing_type}
                   </span>
                 </td>
-                <td class="text-white cb-border-color">{stage.action_button_text}</td>
-                <td class="text-white cb-border-color">
+                <td class="cb-text-white cb-border-color">{stage.action_button_text}</td>
+                <td class="cb-text-white cb-border-color">
                   <%= if stage.confirmation_text && String.length(stage.confirmation_text) > 200 do %>
                     {String.slice(stage.confirmation_text, 0, 200)}
                     <span class="cb-text">...</span>
@@ -84,9 +84,9 @@
                     {stage.confirmation_text}
                   <% end %>
                 </td>
-                <td class="text-white cb-border-color">{stage.tournament_id}</td>
+                <td class="cb-text-white cb-border-color">{stage.tournament_id}</td>
                 <td class="cb-border-color">
-                  <div class="d-flex flex-column gap-1">
+                  <div class="cb-d-flex cb-flex-column gap-1">
                     {link("Enroll All Users",
                       to:
                         Routes.event_enroll_all_path(@conn, :enroll_all, @event,
@@ -94,7 +94,7 @@
                         ),
                       method: :post,
                       data: [confirm: "Enroll all non-bot users into stage \"#{stage.slug}\"?"],
-                      class: "btn btn-sm btn-warning cb-rounded text-nowrap"
+                      class: "cb-btn cb-btn-sm cb-btn-warning cb-rounded cb-text-nowrap"
                     )}
                     {link("Calculate places",
                       to:
@@ -106,7 +106,7 @@
                         confirm:
                           "Recalculate place_in_total/category for stage \"#{stage.slug}\"?"
                       ],
-                      class: "btn btn-sm btn-info cb-rounded text-nowrap mt-1"
+                      class: "cb-btn cb-btn-sm cb-btn-info cb-rounded cb-text-nowrap cb-mt-1"
                     )}
                   </div>
                 </td>
@@ -116,17 +116,17 @@
         </table>
       </div>
     <% else %>
-      <div class="alert alert-info alert-dark-theme mb-0">
+      <div class="cb-alert cb-alert-info alert-dark-theme cb-mb-0">
         No stages configured for this event yet. Event stages will be automatically configured when needed.
       </div>
     <% end %>
   </div>
 
-  <div class="d-flex mt-4 gap-2">
+  <div class="cb-d-flex cb-mt-4 gap-2">
     {link("Edit",
       to: Routes.event_path(@conn, :edit, @event),
-      class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+      class: "cb-btn cb-btn-outline-secondary cb-rounded"
     )}
-    {link("Back", to: "/admin/events", class: "btn btn-link cb-text ml-auto")}
+    {link("Back", to: "/admin/events", class: "cb-btn cb-btn-link cb-text cb-ml-auto")}
   </div>
 </div>

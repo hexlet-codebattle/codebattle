@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef, memo } from 'react';
 
-import cn from 'classnames';
+import { Flex } from '@mantine/core';
+
 import reverse from 'lodash/reverse';
 import { useDispatch } from 'react-redux';
 
@@ -22,22 +23,36 @@ import TournamentPlayersPagination from './TournamentPlayersPagination';
 import TournamentUserPanel from './TournamentUserPanel';
 import Top200RedirectButton from './Top200RedirectButton';
 
-const filterControlsClassName = cn(
-  'd-flex flex-column flex-md-row align-items-md-center justify-content-between',
-  'border-top border-bottom-0 cb-border-color py-2 gap-2',
-);
+const searchLabelStyle: React.CSSProperties = {
+  color: 'var(--mantine-color-cbTextLight-6)',
+  whiteSpace: 'nowrap',
+  marginBottom: 0,
+  marginRight: '0.5rem',
+  fontWeight: 700,
+  textTransform: 'uppercase',
+  fontSize: '0.875rem',
+};
 
-const searchLabelClassName = cn(
-  'text-nowrap mb-0 mr-2 font-weight-bold text-uppercase small',
-  'cb-text-light',
-);
+const searchInputStyle: React.CSSProperties = {
+  backgroundColor: 'transparent',
+  fontSize: '0.875rem',
+  color: '#ffffff',
+};
 
-const searchInputClassName = cn(
-  'form-control form-control-sm',
-  'cb-bg-highlight-panel cb-border-color text-white',
-);
-
-const fuzzyBadgeClassName = cn('badge cb-text-light ml-2', 'cb-bg-panel');
+const fuzzyBadgeStyle: React.CSSProperties = {
+  color: 'var(--mantine-color-cbTextLight-6)',
+  backgroundColor: 'var(--mantine-color-cbPanel-6)',
+  display: 'inline-block',
+  padding: '0.25em 0.4em',
+  fontSize: '0.75em',
+  fontWeight: 700,
+  lineHeight: 1,
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  verticalAlign: 'baseline',
+  borderRadius: '0.25rem',
+  marginLeft: '0.5rem',
+};
 
 interface MatchesPanelPlayer {
   id: number;
@@ -300,17 +315,32 @@ function PlayersMatchesPanel({
       />
       {showHideResultsNotice && (
         <div
-          className={cn(
-            'flex text-center border-top border-bottom-0 cb-border-color',
-            'text-uppercase font-weight-bold pt-2',
-          )}
+          style={{
+            display: 'flex',
+            textAlign: 'center',
+            borderTop: '1px solid #4c4c5a',
+            textTransform: 'uppercase',
+            fontWeight: 700,
+            paddingTop: '0.5rem',
+          }}
         >
           {i18n.t('Wait revealing results')}
         </div>
       )}
-      <div className={filterControlsClassName}>
-        <div className="d-flex align-items-center gap-2 w-100">
-          <label htmlFor="players-search" className={searchLabelClassName}>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        align={{ md: 'center' }}
+        justify="space-between"
+        gap={8}
+        style={{
+          borderTop: '1px solid #4c4c5a',
+          paddingTop: '0.5rem',
+          paddingBottom: '0.5rem',
+        }}
+      >
+        <Flex align="center" gap={8} w="100%">
+          <label htmlFor="players-search" style={searchLabelStyle}>
+            <span style={{ color: 'var(--mantine-color-cbTextLight-6)' }} />
             {i18n.t('Fuzzy search')}
           </label>
           <input
@@ -320,12 +350,12 @@ function PlayersMatchesPanel({
             value={searchTerm}
             placeholder={i18n.t('Type a player name')}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className={searchInputClassName}
-            style={{ backgroundColor: 'transparent' }}
+
+            style={searchInputStyle}
           />
-          <span className={fuzzyBadgeClassName}>{i18n.t('Matches letters in order')}</span>
-        </div>
-      </div>
+          <span style={fuzzyBadgeStyle}>{i18n.t('Matches letters in order')}</span>
+        </Flex>
+      </Flex>
       {roundsLimit < 2 ? (
         <>
           <SearchedUserPanel

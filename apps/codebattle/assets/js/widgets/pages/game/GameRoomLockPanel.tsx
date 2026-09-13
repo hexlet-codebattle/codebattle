@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 
-import cn from 'classnames';
+import { Button, Flex, Stack, Text, TextInput } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import { type AppDispatch } from '@/slices';
@@ -27,36 +27,37 @@ function GameRoomLockPanel() {
     dispatch(sendPassCode(value, onError));
   }, [inputRef, setError, dispatch]);
 
-  const inputClassName = cn('form-control', {
-    'is-invalid': !!error,
-  });
-
   return (
-    <div className="d-flex flex-column w-50">
-      <span className="text-center h3">{i18n.t('Game is Locked')}</span>
-      <div className="d-flex">
-        <input
+    <Stack w="50%" gap="xs">
+      <Text ta="center" size="xl" fw={700}>
+        {i18n.t('Game is Locked')}
+      </Text>
+      <Flex gap="xs">
+        <TextInput
           ref={inputRef}
           id="game-lock"
           type="text"
           aria-label={i18n.t('Game lock input for pass code')}
           placeholder={i18n.t('Enter pass code')}
-          className={inputClassName}
+          error={!!error}
           onChange={onChangePassCode}
+          flex={1}
         />
-        <button
-          type="button"
-          className="btn btn-sm btn-success cb-btn-success cb-rounded text-white"
-          onClick={onSubmitCode}
-        >
+        <Button color="cbSuccess" radius="md" c="white" onClick={onSubmitCode}>
           {i18n.t('Submit')}
-        </button>
-      </div>
-      <div className="d-flex flex-column flex-sm-row justify-content-between">
-        <span className="text-muted m-1">{i18n.t('Example: 12345678')}</span>
-        {error && <span className="text-danger m-1">{error.message}</span>}
-      </div>
-    </div>
+        </Button>
+      </Flex>
+      <Flex direction={{ base: 'column', sm: 'row' }} justify="space-between">
+        <Text c="dimmed" m="xs">
+          {i18n.t('Example: 12345678')}
+        </Text>
+        {error && (
+          <Text c="red" m="xs">
+            {error.message}
+          </Text>
+        )}
+      </Flex>
+    </Stack>
   );
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Text } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import i18n from '../../i18n';
@@ -12,9 +13,9 @@ function OnlineContainer() {
   if (count === 0) return <></>;
 
   return (
-    <span className="d-flex aling-items-center text-muted mr-2">
+    <Text component="span" c="dimmed" mr="sm">
       {i18n.t('%{count} Online', { count })}
-    </span>
+    </Text>
   );
 }
 

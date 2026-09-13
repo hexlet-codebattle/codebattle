@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
 import copy from 'copy-to-clipboard';
 
 import i18n from '../../../i18n';
@@ -9,7 +10,6 @@ interface CopyEditorButtonProps {
 }
 
 function CopyEditorButton({ editor }: CopyEditorButtonProps) {
-  const className = 'btn btn-sm btn-secondary cb-btn-secondary cb-rounded mx-1';
   const text = i18n.t('Copy');
 
   const handleCopyClick = () => {
@@ -17,9 +17,16 @@ function CopyEditorButton({ editor }: CopyEditorButtonProps) {
   };
 
   return (
-    <button type="button" className={className} onClick={handleCopyClick} title={text}>
+    <Button
+      size="compact-sm"
+      color="cbSecondary"
+      radius="md"
+      mx="xs"
+      title={text}
+      onClick={handleCopyClick}
+    >
       {text}
-    </button>
+    </Button>
   );
 }
 

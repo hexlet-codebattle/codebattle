@@ -1,34 +1,9 @@
 import React from 'react';
+import { Box, Button, Flex, Title } from '@mantine/core';
 import i18n from '../../../i18n';
 import RunItem from './RunItem';
 import { buildVscodeFolderUrl, isOnBreak } from '../../utils/groupTournament';
 import { type Run, type GroupTournament, type LeaderboardEntry } from './types';
-
-const getStubRoundPosition = (groupTournament?: GroupTournament | null) => {
-  const roundPosition = groupTournament?.currentRoundPosition;
-  return roundPosition ?? 2;
-};
-
-// const getExternalUrl = (url) => {
-//   if (!url) {
-//     return null;
-//   }
-
-//   try {
-//     const externalUrl = new URL(`${url.replace(/\/$/, "")}/browse/README.md`);
-
-//     externalUrl.searchParams.set("rev", "main");
-//     externalUrl.searchParams.set(
-//       "chatMessage",
-//       "Это ИИ-ассистент, который поможет тебе решить задачу.",
-//     );
-
-//     return externalUrl.toString();
-//   } catch (error) {
-//     console.error("group_tournament: invalid repo url", url, error);
-//     return null;
-//   }
-// };
 
 interface EvolutionPanelProps {
   items?: Run[];
@@ -64,58 +39,60 @@ function EvolutionPanel({
     !isFinished && !isWaiting && !externalUrl && !vscodeUrl && !!onAddSolution;
   const onBreak = isOnBreak(groupTournament);
 
+  const addSolutionClasses = 'cb-evolution-panel-add-solution btn-yellow';
+
   return (
     <>
-      <div className="cb-evolution-panel-header d-flex align-items-center justify-content-center w-100">
-        <h5 className="mb-0 text-white font-weight-bold">{i18n.t('Execution History')}</h5>
-      </div>
-      <div className="cb-evolution-panel-main mt-3 p-3 w-100">
-        <div className="cb-evolution-panel-inner">
+      <Flex align="center" justify="center" w="100%" className="cb-evolution-panel-header">
+        <Title order={5} c="white" fw={700} mb={0}>
+          {i18n.t('Execution History')}
+        </Title>
+      </Flex>
+      <Box mt="lg" p="md" w="100%" className="cb-evolution-panel-main">
+        <Box className="cb-evolution-panel-inner">
           {externalUrl && (
-            <a
+            <Button
+              component="a"
               href={externalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="d-block text-decoration-none mb-3"
-            >
-              <div className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center">
-                {i18n.t('Add Solution +')}
-              </div>
-            </a>
-          )}
-          {vscodeUrl && (
-            <a href={vscodeUrl} className="d-block text-decoration-none mb-3">
-              <div className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center">
-                {i18n.t('Add Solution +')}
-              </div>
-            </a>
-          )}
-          {canAddSolutionInternal && (
-            <button
-              type="button"
-              onClick={onAddSolution}
-              className="cb-evolution-panel-add-solution btn btn-yellow rounded-pill w-100 text-center mb-3"
+              className={addSolutionClasses}
+              w="100%"
+              h="auto"
+              radius="xl"
+              mb="md"
             >
               {i18n.t('Add Solution +')}
-            </button>
+            </Button>
+          )}
+          {vscodeUrl && (
+            <Button
+              component="a"
+              href={vscodeUrl}
+              className={addSolutionClasses}
+              w="100%"
+              h="auto"
+              radius="xl"
+              mb="md"
+            >
+              {i18n.t('Add Solution +')}
+            </Button>
+          )}
+          {canAddSolutionInternal && (
+            <Button
+              type="button"
+              onClick={onAddSolution}
+              className={addSolutionClasses}
+              w="100%"
+              h="auto"
+              radius="xl"
+              mb="md"
+            >
+              {i18n.t('Add Solution +')}
+            </Button>
           )}
           {items && items.length > 0 && (
-            <div className="mt-2 small d-flex flex-column cb-timeline">
-              {/* {!isFinished && !onBreak && !groupTournament?.isInfinite && (
-                <RunItem
-                  item={{
-                    id: "stub",
-                    kind: groupTournament?.currentRoundPosition > 1 ? "slice" : "seed",
-                    roundPosition: getStubRoundPosition(groupTournament),
-                    isStub: true,
-                  }}
-                  items={items}
-                  runId={runId}
-                  setRunId={setRunId}
-                  leaderboard={leaderboard}
-                  currentUserId={currentUserId}
-                />
-              )}*/}
+            <Box mt="xs" fz="sm" className="cb-timeline">
               {items.map((item) => (
                 <RunItem
                   key={item.id}
@@ -127,10 +104,10 @@ function EvolutionPanel({
                   currentUserId={currentUserId}
                 />
               ))}
-            </div>
+            </Box>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
     </>
   );
 }

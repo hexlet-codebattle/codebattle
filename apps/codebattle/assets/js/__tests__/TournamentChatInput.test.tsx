@@ -6,6 +6,8 @@ import React from 'react';
 import TournamentChatInput from '../widgets/pages/tournament/TournamentChatInput';
 import { addMessage } from '../widgets/middlewares/Chat';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('i18next', () => ({
   default: { init: vi.fn(), t: (key: string) => key },
 }));
@@ -23,7 +25,11 @@ vi.mock('bad-words-next', () => ({
 
 test('TournamentChatInput keeps Send disabled for an empty message', async () => {
   const user = userEvent.setup();
-  render(<TournamentChatInput />);
+  render(
+    <MantineTestProvider>
+      <TournamentChatInput />
+    </MantineTestProvider>,
+  );
 
   const input = screen.getByRole('textbox', { name: 'Chat message' });
   const sendButton = screen.getByRole('button', { name: 'Send' });
@@ -36,7 +42,11 @@ test('TournamentChatInput keeps Send disabled for an empty message', async () =>
 
 test('TournamentChatInput sends a general tournament chat message', async () => {
   const user = userEvent.setup();
-  render(<TournamentChatInput />);
+  render(
+    <MantineTestProvider>
+      <TournamentChatInput />
+    </MantineTestProvider>,
+  );
 
   await user.type(screen.getByRole('textbox', { name: 'Chat message' }), 'Good luck!');
   await user.click(screen.getByRole('button', { name: 'Send' }));

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-dark">
+<html lang="en" class="cb-bg-dark">
   <head>
     <meta charset="utf-8" />
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
@@ -70,15 +70,15 @@
     <% end %>
   </head>
   <body>
-    <div class="d-flex flex-column min-vh-100 cb-bg-dark">
+    <div class="cb-d-flex cb-flex-column cb-min-vh-100 cb-bg-dark">
       <%= if assigns[:show_header] do %>
         <div>
-          <div class="container-lg">
-            <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
-              <a class="navbar-brand d-flex align-items-end" href="/">
+          <div class="cb-container-lg">
+            <nav class="cb-navbar cb-navbar-dark cb-navbar-expand-sm cb-justify-between cb-px-0 main-nav">
+              <a class="cb-navbar-brand cb-d-flex cb-align-end" href="/">
                 <%= if Application.get_env(:codebattle, :logo_title_position) == "left" do %>
-                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray mr-1 pb">
-                    <span class="font-weight-bold e-title">
+                  <div class="cb-d-none cb-d-sm-none cb-d-md-flex cb-d-lg-flex cb-flex-column text-gray cb-mr-1 pb">
+                    <span class="cb-fw-bold e-title">
                       {Application.get_env(:codebattle, :logo_title)}
                     </span>
                     <span class="header-txt">
@@ -89,28 +89,28 @@
                 <%= if collab_logo(@current_user) do %>
                   <img
                     alt="collab icon"
-                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    class="cb-my-auto cb-mx-2 cb-pl-2 cb-pl-md-0 cb-pl-lg-0"
                     style="height:40px"
                     src={collab_logo(@current_user)}
                   />
                 <% else %>
                   <img
                     alt="Logo"
-                    class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
+                    class="cb-my-auto cb-pt-1 cb-pl-2 cb-pl-md-0 cb-pl-lg-0"
                     src={static_asset("images/logo.svg")}
                   />
                 <% end %>
                 <%= if collab_logo_minor(@current_user) do %>
                   <img
                     alt="collab icon"
-                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    class="cb-my-auto cb-mx-2 cb-pl-2 cb-pl-md-0 cb-pl-lg-0"
                     style="height:40px"
                     src={collab_logo_minor(@current_user)}
                   />
                 <% end %>
                 <%= if Application.get_env(:codebattle, :logo_title_position) != "left" do %>
-                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb">
-                    <span class="font-weight-bold">
+                  <div class="cb-d-none cb-d-sm-none cb-d-md-flex cb-d-lg-flex cb-flex-column text-gray cb-ml-1 pb">
+                    <span class="cb-fw-bold">
                       {Application.get_env(:codebattle, :logo_title)}
                     </span>
                     <span class="header-txt">
@@ -124,42 +124,42 @@
                   aria-controls="navbarResponsive"
                   aria-expanded="false"
                   aria-label="Toggle navigation"
-                  class="navbar-toggler position-relative"
+                  class="cb-navbar-toggler cb-position-relative"
                   data-target="#navbarResponsive"
                   data-toggle="collapse"
                   type="button"
                 >
-                  <span class="navbar-toggler-icon"></span>
+                  <span class="cb-navbar-toggler-icon"></span>
                   <span id="invites-counter-id"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                  <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown">
+                <div class="cb-collapse cb-navbar-collapse" id="navbarResponsive">
+                  <ul class="cb-navbar-nav cb-ml-auto">
+                    <li class="cb-nav-item cb-dropdown">
                       <a
                         aria-expanded="false"
                         aria-haspopup="true"
-                        class="nav-link noborder d-flex justify-content-center px-0"
+                        class="cb-nav-link noborder cb-d-flex cb-justify-center cb-px-0"
                         data-toggle="dropdown"
                         href="#"
                       >
-                        <div class="d-flex flex-column justify-content-center mr-2">
-                          <h5 class="text-white text-right mb-0 text-break">
+                        <div class="cb-d-flex cb-flex-column cb-justify-center cb-mr-2">
+                          <h5 class="cb-text-white cb-text-right cb-mb-0 cb-text-break">
                             {@current_user.name}
                           </h5>
                         </div>
 
                         <img
                           alt="avatar"
-                          class="attachment ml-1"
+                          class="attachment cb-ml-1"
                           src={avatar_url(@current_user)}
                           style="width:46px; height:46px"
                         />
                       </a>
-                      <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                      <div class="cb-dropdown-menu cb-dropdown-menu-right" style="z-index:1030">
                         <%= form_for @conn, session_path(@conn, :delete), [as: :session, method: :delete], fn _f -> %>
-                          <button type="submit" class="dropdown-item">
-                            <span class="fas fa-sign-out-alt mr-2"></span>
+                          <button type="submit" class="cb-dropdown-item">
+                            <span class="fas fa-sign-out-alt cb-mr-2"></span>
                             {gettext("Sign Out")}
                           </button>
                         <% end %>
@@ -168,18 +168,18 @@
                   </ul>
                 </div>
               <% else %>
-                <ul class="navbar-nav">
-                  <li class="nav-item mx-1">
+                <ul class="cb-navbar-nav">
+                  <li class="cb-nav-item cb-mx-1">
                     <a
-                      class="mr-2"
+                      class="cb-mr-2"
                       href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
                     >
-                      <button class="btn btn-outline-success rounded-lg">
+                      <button class="cb-btn cb-btn-outline-success cb-rounded-lg">
                         {gettext("Sign in")}
                       </button>
                     </a>
                     <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-                      <button class="btn btn-outline-success rounded-lg">
+                      <button class="cb-btn cb-btn-outline-success cb-rounded-lg">
                         {gettext("Sign up")}
                       </button>
                     </a>

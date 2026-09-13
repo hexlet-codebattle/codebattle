@@ -2,6 +2,20 @@ import React, { useMemo } from 'react';
 
 import { camelizeKeys } from 'humps';
 import {
+  Alert,
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Group,
+  List,
+  Paper,
+  Text,
+  Title,
+} from '@mantine/core';
+import {
   Bar,
   BarChart,
   CartesianGrid,
@@ -18,11 +32,11 @@ import { getPageProp } from '@/inertia/pageProps';
 
 const PLAYER_COLORS = ['#60a5fa', '#f472b6'];
 
-const RISK_BADGE: Record<string, { label: string; className: string }> = {
-  none: { label: 'Looks human', className: 'badge badge-success' },
-  low: { label: 'Low risk', className: 'badge badge-info' },
-  medium: { label: 'Suspicious', className: 'badge badge-warning' },
-  high: { label: 'Likely bot', className: 'badge badge-danger' },
+const RISK_BADGE: Record<string, { label: string; color: string }> = {
+  none: { label: 'Looks human', color: 'green' },
+  low: { label: 'Low risk', color: 'cyan' },
+  medium: { label: 'Suspicious', color: 'yellow' },
+  high: { label: 'Likely bot', color: 'red' },
 };
 
 const formatMs = (ms: number) => {
@@ -41,13 +55,24 @@ interface StatRowProps {
 
 function StatRow({ label, value, hint }: StatRowProps) {
   return (
-    <div className="d-flex justify-content-between py-1 border-bottom border-secondary">
-      <span className="text-muted small">{label}</span>
-      <span className="text-white text-monospace">
+    <Flex
+      justify="space-between"
+      align="center"
+      py="xs"
+      style={{ borderBottom: '1px solid #6c757d' }}
+    >
+      <Text c="dimmed" size="xs">
+        {label}
+      </Text>
+      <Text c="white" ff="var(--mantine-font-family-monospace)" ta="right">
         {value}
-        {hint ? <span className="text-muted small ml-2">{hint}</span> : null}
-      </span>
-    </div>
+        {hint ? (
+          <Text span c="dimmed" size="xs" ml="xs">
+            {hint}
+          </Text>
+        ) : null}
+      </Text>
+    </Flex>
   );
 }
 
@@ -91,49 +116,58 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
   );
 
   return (
-    <div
-      className="card cb-card border cb-border-color rounded shadow-sm mb-3"
-      style={{ borderLeft: `4px solid ${color}` }}
-    >
-      <div className="card-header py-2 d-flex align-items-center justify-content-between">
-        <div className="d-flex align-items-center">
+    <Paper withBorder radius="md" shadow="sm" mb="md" style={{ borderLeft: `4px solid ${color}` }}>
+      <Group
+        justify="space-between"
+        align="center"
+        bg="cbHighlight"
+        py="sm"
+        px="md"
+        style={{
+          borderBottom: '1px solid var(--mantine-color-default-border)',
+        }}
+      >
+        <Group gap="xs" align="center">
           {player?.avatarUrl ? (
-            <img
-              src={player.avatarUrl}
-              alt={player.name}
-              width={28}
-              height={28}
-              className="rounded-circle mr-2"
-            />
+            <Avatar src={player.avatarUrl} alt={player.name} size={28} radius="50%" />
           ) : null}
-          <div>
-            <h6 className="cb-text mb-0">
+          <Box>
+            <Title order={6} c="cbText" mb={0}>
               {player?.name || `User #${player?.id}`}
-              {player?.isBot ? <span className="badge badge-secondary ml-2">bot</span> : null}
-            </h6>
-            <small className="text-muted">
-              id={player?.id} · rating={player?.rating ?? '—'} · lang={player?.lang ?? '—'}
-            </small>
-          </div>
-        </div>
-        <div className="d-flex align-items-center">
-          <span className={`${badge.className} mr-2`}>{badge.label}</span>
-          <span className="text-muted small">score {score}</span>
-        </div>
-      </div>
+              {player?.isBot ? (
+                <Badge color="gray" ml="xs">
+                  bot
+                </Badge>
+              ) : null}
+            </Title>
+            <Text c="dimmed" size="xs">
+              id={player?.id} · rating={player?.rating ?? '—'} · lang=
+              {player?.lang ?? '—'}
+            </Text>
+          </Box>
+        </Group>
+        <Group gap="xs">
+          <Badge color={badge.color}>{badge.label}</Badge>
+          <Text c="dimmed" size="xs">
+            score {score}
+          </Text>
+        </Group>
+      </Group>
 
-      <div className="card-body">
+      <Box p="md">
         {!stats && (
-          <div className="alert alert-warning py-2 mb-3">
+          <Alert color="yellow" py="xs" mb="md">
             <strong>No telemetry batches recorded.</strong> Either the player never typed, or their
             solution was injected via WebSocket without using the editor.
-          </div>
+          </Alert>
         )}
 
         {codeAnalysis && (
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <small className="text-muted">Final solution analysis</small>
+          <Grid mb="md">
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Text c="dimmed" size="xs">
+                Final solution analysis
+              </Text>
               <StatRow
                 label="Total chars / lines"
                 value={`${codeAnalysis.totalChars} / ${codeAnalysis.totalLines}`}
@@ -161,9 +195,11 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                     : null
                 }
               />
-            </div>
-            <div className="col-md-6">
-              <small className="text-muted">Typed vs final</small>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Text c="dimmed" size="xs">
+                Typed vs final
+              </Text>
               <StatRow label="Final solution length" value={formatNumber(finalLength)} />
               <StatRow
                 label="Language template length"
@@ -189,28 +225,33 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                     : null
                 }
               />
-            </div>
-          </div>
+            </Grid.Col>
+          </Grid>
         )}
 
         {signals.length > 0 && (
-          <div className="alert alert-secondary py-2 mb-3">
+          <Alert color="gray" py="xs" mb="md">
             <strong>Signals:</strong>
-            <ul className="mb-0 mt-1 small">
+            <List size="xs" mt="xs" mb={0}>
               {signals.map((s) => (
-                <li key={s}>{s}</li>
+                <List.Item key={s}>{s}</List.Item>
               ))}
-            </ul>
-          </div>
+            </List>
+          </Alert>
         )}
 
         {finalText && (
-          <details className="mb-3">
-            <summary className="text-muted small" style={{ cursor: 'pointer' }}>
-              Show final submitted code ({finalLength} chars, lang={player?.editorLang || '?'})
-            </summary>
-            <pre
-              className="mt-2 p-2 small text-white"
+          <Box component="details" mb="md">
+            <Text component="summary" c="dimmed" size="xs" style={{ cursor: 'pointer' }}>
+              Show final submitted code ({finalLength} chars, lang=
+              {player?.editorLang || '?'})
+            </Text>
+            <Text
+              component="pre"
+              c="white"
+              size="xs"
+              mt="xs"
+              p="xs"
               style={{
                 background: '#0b1220',
                 border: '1px solid #3a3f50',
@@ -221,14 +262,14 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
               }}
             >
               {finalText}
-            </pre>
-          </details>
+            </Text>
+          </Box>
         )}
 
         {stats && (
           <>
-            <div className="row">
-              <div className="col-md-6">
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
                 <StatRow label="Batches" value={formatNumber(stats.batchCount)} />
                 <StatRow
                   label="Total events"
@@ -251,8 +292,8 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                 />
                 <StatRow label="Arrow keys" value={formatNumber(stats.totalArrows)} />
                 <StatRow label="Undo / Redo" value={`${stats.totalUndo} / ${stats.totalRedo}`} />
-              </div>
-              <div className="col-md-6">
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
                 <StatRow label="Session length" value={formatMs(stats.elapsedMs)} />
                 <StatRow label="Avg key delta" value={formatMs(stats.avgKeyDeltaMs)} />
                 <StatRow
@@ -291,19 +332,24 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                   value={`${stats.totalCopyShortcuts || 0} / ${stats.totalCutShortcuts || 0} / ${stats.totalPasteAttempts}`}
                 />
                 <StatRow label="Paste blocked" value={formatNumber(stats.totalPasteBlocked)} />
-              </div>
-            </div>
+              </Grid.Col>
+            </Grid>
 
-            <div className="row mt-4">
-              <div className="col-md-6" style={{ height: 220 }}>
-                <small className="text-muted">Events &amp; net chars per batch</small>
+            <Grid mt="lg">
+              <Grid.Col span={{ base: 12, md: 6 }} h={220}>
+                <Text c="dimmed" size="xs">
+                  Events &amp; net chars per batch
+                </Text>
                 <ResponsiveContainer>
                   <BarChart data={series} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                     <CartesianGrid stroke="#3a3f50" strokeDasharray="3 3" />
                     <XAxis dataKey="startSec" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{ background: '#1f2937', border: '1px solid #3a3f50' }}
+                      contentStyle={{
+                        background: '#1f2937',
+                        border: '1px solid #3a3f50',
+                      }}
                       labelStyle={{ color: '#e5e7eb' }}
                     />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
@@ -311,16 +357,21 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                     <Bar dataKey="chars" fill="#a78bfa" name="net Δ chars" />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-              <div className="col-md-6" style={{ height: 220 }}>
-                <small className="text-muted">Avg key delta (ms) per batch</small>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }} h={220}>
+                <Text c="dimmed" size="xs">
+                  Avg key delta (ms) per batch
+                </Text>
                 <ResponsiveContainer>
                   <LineChart data={series} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                     <CartesianGrid stroke="#3a3f50" strokeDasharray="3 3" />
                     <XAxis dataKey="startSec" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                     <Tooltip
-                      contentStyle={{ background: '#1f2937', border: '1px solid #3a3f50' }}
+                      contentStyle={{
+                        background: '#1f2937',
+                        border: '1px solid #3a3f50',
+                      }}
                       labelStyle={{ color: '#e5e7eb' }}
                     />
                     <Line
@@ -332,12 +383,12 @@ function PlayerCard({ player, batches, color }: PlayerCardProps) {
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </div>
-            </div>
+              </Grid.Col>
+            </Grid>
           </>
         )}
-      </div>
-    </div>
+      </Box>
+    </Paper>
   );
 }
 
@@ -360,30 +411,29 @@ function GameMlPage() {
   }, [batches]);
 
   return (
-    <div
-      className="container-fluid py-3 cb-text"
-      style={{ background: '#0f172a', minHeight: '100vh' }}
-    >
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <h4 className="mb-0">Game #{gameId} — bot/human signal review</h4>
-        <div>
-          <a className="btn btn-sm btn-outline-info mr-2" href={`?refresh=1`}>
+    <Box c="cbText" w="100%" px="md" py="sm" style={{ background: '#0f172a', minHeight: '100vh' }}>
+      <Flex justify="space-between" align="center" mb="md">
+        <Title order={4} mb={0}>
+          Game #{gameId} — bot/human signal review
+        </Title>
+        <Group gap="xs">
+          <Button size="compact-sm" variant="outline" color="cyan" component="a" href="?refresh=1">
             ↻ Re-analyze
-          </a>
-          <a className="btn btn-sm btn-outline-light" href={`/games/${gameId}`}>
+          </Button>
+          <Button size="compact-sm" variant="default" component="a" href={`/games/${gameId}`}>
             ← Back to game
-          </a>
-        </div>
-      </div>
+          </Button>
+        </Group>
+      </Flex>
 
-      <p className="text-muted small">
+      <Text c="dimmed" size="xs">
         Higher risk score / more signals → more bot-like. Always confirm by playing back the editor
         history. Reports are computed once and cached; click <em>Re-analyze</em> to force a fresh
         run.
-      </p>
+      </Text>
 
       {players.length === 0 ? (
-        <div className="alert alert-warning">No players found for this game.</div>
+        <Alert color="yellow">No players found for this game.</Alert>
       ) : (
         players.map((player, idx) => (
           <PlayerCard
@@ -394,7 +444,7 @@ function GameMlPage() {
           />
         ))
       )}
-    </div>
+    </Box>
   );
 }
 

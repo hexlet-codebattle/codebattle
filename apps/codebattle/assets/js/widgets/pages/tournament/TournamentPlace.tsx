@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Box, Text } from '@mantine/core';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
@@ -21,19 +21,24 @@ function TournamentPlace({ place, title = '', withIcon = false }: TournamentPlac
   const prefix = title.length > 0 || withIcon ? ': ' : '';
   const muteResults = canModerate && hideResults;
 
-  const className = cn({ 'p-1 bg-light rounded-lg': muteResults });
-  const iconClassName = 'text-warninG';
-  const textClassName = cn({ 'text-muted': muteResults });
-
   return (
-    <span className={className}>
-      {withIcon && <FontAwesomeIcon className={iconClassName} icon="trophy" />}
-      <span className={textClassName}>
+    <Box
+      component="span"
+      p={muteResults ? 4 : 0}
+      bg={muteResults ? 'gray.1' : undefined}
+      style={{
+        borderRadius: muteResults ? 'var(--mantine-radius-md)' : undefined,
+      }}
+    >
+      {withIcon && (
+        <FontAwesomeIcon icon="trophy" style={{ color: 'var(--mantine-color-yellow-6)' }} />
+      )}
+      <Text component="span" c={muteResults ? 'dimmed' : undefined}>
         {i18next.t(title)}
         {prefix}
         {text}
-      </span>
-    </span>
+      </Text>
+    </Box>
   );
 }
 

@@ -381,7 +381,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp has_platform_credentials?(%{external_platform_id: id, external_platform_login: login})
-       when is_binary(id) and id != "" and is_binary(login) and login != "", do: true
+       when is_binary(id) and id != "" and is_binary(login) and login != "",
+       do: true
 
   defp has_platform_credentials?(_), do: false
 

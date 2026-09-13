@@ -85,7 +85,9 @@ const useCssBattleStats = (
     ],
   });
 
-  const task = useSelector(selectors.gameTaskSelector) as { imgDataUrl?: string };
+  const task = useSelector(selectors.gameTaskSelector) as {
+    imgDataUrl?: string;
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const leftEditor = useSelector((selectors.leftEditorSelector as any)()) as CssBattleEditor;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

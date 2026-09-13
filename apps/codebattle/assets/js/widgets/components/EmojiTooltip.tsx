@@ -69,7 +69,18 @@ export default function EmojiTooltip({ query, handleSelect, hide }: EmojiTooltip
   return (
     <select
       value={activeIndex}
-      className="d-flex position-absolute flex-column border rounded w-50 x-bottom-75 custom-select mb-2"
+      style={{
+        position: 'absolute',
+        bottom: '75%',
+        display: 'flex',
+        flexDirection: 'column',
+        width: '50%',
+        marginBottom: 'var(--mantine-spacing-sm)',
+        border: '1px solid var(--mantine-color-default-border)',
+        borderRadius: 'var(--mantine-radius-sm)',
+        backgroundColor: 'var(--mantine-color-dark-6)',
+        color: 'var(--mantine-color-white)',
+      }}
       onChange={(e) => {
         setActiveIndex(e.target.value as unknown as number);
       }}

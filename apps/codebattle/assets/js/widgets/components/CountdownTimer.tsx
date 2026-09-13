@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-import cn from 'classnames';
 import i18n from 'i18next';
 import moment from 'moment';
 
@@ -25,11 +24,11 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }: CountdownTi
   const seconds = duration / 1000;
   const progress = getProgress(seconds, timeoutSeconds);
 
-  const progressBgColor = cn('cb-timer-progress', {
-    'bg-secondary': colorized && seconds > 45,
-    'bg-warning': colorized && seconds <= 45 && seconds >= 15,
-    'bg-danger': colorized && seconds < 15,
-  });
+  const progressStyle = colorized
+    ? {
+        backgroundColor: seconds > 45 ? '#6c757d' : seconds >= 15 ? '#ffc107' : '#dc3545',
+      }
+    : undefined;
 
   const updateTimer = () => {
     const timeLeft = getDuration(time, timeoutSeconds);
@@ -47,7 +46,7 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }: CountdownTi
 
   return (
     <>
-      <span className="text-monospace">
+      <span style={{ fontFamily: 'monospace' }}>
         {timeoutSeconds && (
           <span>
             {duration <= 0
@@ -58,7 +57,7 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }: CountdownTi
           </span>
         )}
       </span>
-      <div className={progressBgColor} style={{ width: `${progress}%` }} />
+      <div className="cb-timer-progress" style={{ width: `${progress}%`, ...progressStyle }} />
     </>
   );
 }

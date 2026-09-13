@@ -1,11 +1,11 @@
 import React, { memo, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Button, Flex, Text } from '@mantine/core';
 import i18n from 'i18next';
-import Button from 'react-bootstrap/Button';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import Loading from '@/components/Loading';
 import { type RootState } from '@/slices';
 
@@ -23,10 +23,10 @@ function TournamentInfoPanel() {
       return i18n.t('Round is over, wait for the next round');
     case 'rematch':
       return (
-        <div className="d-flex flex-row">
+        <Flex align="center">
           <Loading adaptive />
-          <span className="pl-2">{i18n.t('Loading next game')}</span>
-        </div>
+          <Text ml="sm">{i18n.t('Loading next game')}</Text>
+        </Flex>
       );
     default:
       return <></>;
@@ -62,28 +62,31 @@ const AnimationModal = NiceModal.create(() => {
   const buttonText = result === 'won' ? i18n.t('GG') : i18n.t("I'll be back");
 
   return (
-    <Modal show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
-      <Modal.Header className="cb-border-color" closeButton>
+    <Modal show={modal.visible} onHide={modal.hide}>
+      <Modal.Header closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="d-flex justify-content-center">
+        <Flex justify="center">
           <img
-            className="w-100 cb-rounded"
-            style={{ maxWidth: '400px' }}
+            style={{
+              maxWidth: '400px',
+              width: '100%',
+              borderRadius: 'var(--mantine-radius-md)',
+            }}
             src={gifs[result]}
             alt={i18n.t('animation')}
           />
-        </div>
+        </Flex>
         {Boolean(tournamentId) && (
-          <div className="d-flex text-center text-white justify-content-center">
-            <span className="py-2 h4">
+          <Flex justify="center" py="sm">
+            <Text ta="center" fz="h4">
               <TournamentInfoPanel />
-            </span>
-          </div>
+            </Text>
+          </Flex>
         )}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
+      <Modal.Footer>
         {/* {tournamentId && ( */}
         {/*   <a */}
         {/*     href={`/tournaments/${tournamentId}`} */}
@@ -92,7 +95,7 @@ const AnimationModal = NiceModal.create(() => {
         {/*     Back to tournament */}
         {/*   </a> */}
         {/* )} */}
-        <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
+        <Button onClick={modal.hide} color="cbSecondary" radius="md">
           {buttonText}
         </Button>
       </Modal.Footer>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import cn from 'classnames';
+import { Button } from '@mantine/core';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { reportOnPlayer } from '@/middlewares/Main';
@@ -47,10 +47,7 @@ function GameReportButton({ userId, gameId }: GameReportButtonProps) {
 
   const text = getText(state);
   const disabled = state !== states.idle;
-  const className = cn('btn btn-sm mx-1 cb-rounded', {
-    'btn-danger': state !== states.success,
-    'btn-success': state === states.success,
-  });
+  const isSuccess = state === states.success;
 
   const handleSendReport = () => {
     if (disabled) return;
@@ -64,15 +61,19 @@ function GameReportButton({ userId, gameId }: GameReportButtonProps) {
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      size="compact-sm"
+      mx="xs"
+      radius="md"
       disabled={disabled}
-      className={className}
       onClick={handleSendReport}
       title={i18n.t('Report on player')}
+      style={{
+        backgroundColor: isSuccess ? '#28a745' : '#dc3545',
+      }}
     >
       {text}
-    </button>
+    </Button>
   );
 }
 

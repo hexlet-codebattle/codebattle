@@ -1,6 +1,6 @@
 import React from 'react';
-import cn from 'classnames';
-import { tdClassName } from '../../utils/groupTournament';
+import { Table, Text } from '@mantine/core';
+import { tdCellProps } from '../../utils/groupTournament';
 import { type RoundCell } from './types';
 
 interface LeaderboardRatingRoundCellProps {
@@ -9,7 +9,11 @@ interface LeaderboardRatingRoundCellProps {
 
 const LeaderboardRatingRoundCell = ({ cell }: LeaderboardRatingRoundCellProps) => {
   if (!cell) {
-    return <td className={cn(tdClassName, 'text-center text-muted')}>—</td>;
+    return (
+      <Table.Td {...tdCellProps} ta="center" c="dimmed">
+        —
+      </Table.Td>
+    );
   }
 
   const sliceLabel = Number.isInteger(cell.sliceIndex) ? `S${(cell.sliceIndex as number) + 1}` : '';
@@ -17,10 +21,16 @@ const LeaderboardRatingRoundCell = ({ cell }: LeaderboardRatingRoundCellProps) =
   const meta = [sliceLabel, placeLabel].filter(Boolean).join('·');
 
   return (
-    <td className={cn(tdClassName, 'text-center')} title={meta.replaceAll('·', ' · ')}>
-      <span className="font-weight-bold">{cell.score ?? 0}</span>
-      {meta && <span className="small ml-1">{`(${meta})`}</span>}
-    </td>
+    <Table.Td {...tdCellProps} ta="center" title={meta.replaceAll('·', ' · ')}>
+      <Text span fw={700}>
+        {cell.score ?? 0}
+      </Text>
+      {meta && (
+        <Text span size="sm" ml="xs">
+          {`(${meta})`}
+        </Text>
+      )}
+    </Table.Td>
   );
 };
 

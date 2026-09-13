@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useRef, useEffect } from 'react';
 
+import { Box, Button, Flex, Text, Stack } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
 import i18next from '../../../i18n';
@@ -35,31 +36,42 @@ function TournamentChat() {
   }, [messages]);
 
   return (
-    <div className="cb-tournament-chat my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column shadow-sm">
+    <Box
+      className="cb-tournament-chat pos-relative"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        margin: '0.5rem 0',
+        backgroundColor: 'var(--mantine-color-cbPanel-6)',
+        borderRadius: 'var(--mantine-radius-md)',
+        boxShadow: 'var(--mantine-shadow-sm)',
+      }}
+    >
       <div className="cb-tournament-chat-header">
-        <div className="d-flex flex-column min-w-0">
+        <Flex direction="column" style={{ minWidth: 0 }}>
           <span className="cb-tournament-chat-title">{i18next.t('Tournament chat')}</span>
-          <small className="cb-tournament-chat-subtitle">
+          <Text size="xs" className="cb-tournament-chat-subtitle">
             {i18next.t('Please, be nice in chat')}
-          </small>
-        </div>
+          </Text>
+        </Flex>
         {currentUserIsAdmin && (
-          <button
-            type="button"
-            className="btn btn-sm cb-tournament-chat-clean"
+          <Button
+            size="xs"
+            variant="default"
+            className="cb-tournament-chat-clean"
             onClick={handleCleanBanned}
             disabled={!isOnline}
           >
             {i18next.t('Clean banned')}
-          </button>
+          </Button>
         )}
       </div>
-      <div className="flex-grow-1 overflow-hidden d-flex flex-column">
+      <Flex direction="column" flex={1} style={{ overflow: 'hidden' }}>
         <div
           ref={messagesContainerRef}
-          className="cb-tournament-chat-messages overflow-auto h-100"
+          className="cb-tournament-chat-messages"
           id="new-chat-message"
-          style={{ scrollBehavior: 'smooth' }}
+          style={{ scrollBehavior: 'smooth', overflow: 'auto', height: '100%' }}
         >
           <Messages
             messages={messages as unknown as React.ComponentProps<typeof Messages>['messages']}
@@ -69,11 +81,11 @@ function TournamentChat() {
             canDeleteAny={currentUserCanModerate}
           />
         </div>
-      </div>
+      </Flex>
       <div className="cb-tournament-chat-composer">
         <TournamentChatInput disabled={!isOnline} />
       </div>
-    </div>
+    </Box>
   );
 }
 

@@ -14,30 +14,30 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="d-flex w-100 px-1 bg-white">
-      <table class="table table-striped cb-custom-event-table">
-        <thead class="sticky-top text-muted bg-white">
+    <div class="cb-d-flex cb-w-100 cb-px-1 cb-bg-white">
+      <table class="cb-table cb-table-striped cb-custom-event-table">
+        <thead class="cb-sticky-top cb-text-muted cb-bg-white">
           <tr>
-            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Place")}</th>
-            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Score")}</th>
-            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Clan players count")}</th>
-            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Clan")}</th>
+            <th class="cb-p-1 cb-pl-4 cb-fw-light cb-border-0">{gettext("Place")}</th>
+            <th class="cb-p-1 cb-pl-4 cb-fw-light cb-border-0">{gettext("Score")}</th>
+            <th class="cb-p-1 cb-pl-4 cb-fw-light cb-border-0">{gettext("Clan players count")}</th>
+            <th class="cb-p-1 cb-pl-4 cb-fw-light cb-border-0">{gettext("Clan")}</th>
           </tr>
         </thead>
         <tbody>
           <%= for item <- @leaderboard_list do %>
             <tr class="cb-custom-event-empty-space-tr"></tr>
-            <tr class="text-dark font-weight-bold cb-custom-event-tr bg-light">
-              <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
+            <tr class="cb-text-dark cb-fw-bold cb-custom-event-tr cb-bg-light">
+              <td class="cb-p-1 cb-pl-4 cb-my-2 cb-align-middle cb-text-nowrap cb-position-relative cb-custom-event-td cb-border-0">
                 {item.place}
               </td>
-              <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
+              <td class="cb-p-1 cb-pl-4 cb-my-2 cb-align-middle cb-text-nowrap cb-position-relative cb-custom-event-td cb-border-0">
                 {item.score}
               </td>
-              <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
+              <td class="cb-p-1 cb-pl-4 cb-my-2 cb-align-middle cb-text-nowrap cb-position-relative cb-custom-event-td cb-border-0">
                 {item.players_count}
               </td>
-              <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
+              <td class="cb-p-1 cb-pl-4 cb-my-2 cb-align-middle cb-text-nowrap cb-position-relative cb-custom-event-td cb-border-0">
                 {item.clan_name}
               </td>
             </tr>

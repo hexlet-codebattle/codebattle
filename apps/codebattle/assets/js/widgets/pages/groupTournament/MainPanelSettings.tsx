@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box } from '@mantine/core';
 import AdminExternalSetupPanel from './AdminExternalSetupPanel';
 import { type ExternalSetup } from './types';
 
@@ -7,9 +8,15 @@ interface MainPanelSettingsProps {
 }
 
 const MainPanelSettings = ({ externalSetup }: MainPanelSettingsProps) => (
-  <div className="mt-3 p-3 w-100 overflow-auto cb-group-tournament-leaderboard-container">
+  <Box
+    mt="lg"
+    p="md"
+    w="100%"
+    className="cb-group-tournament-leaderboard-container"
+    style={{ overflow: 'auto' }}
+  >
     <AdminExternalSetupPanel externalSetup={externalSetup} />
-  </div>
+  </Box>
 );
 
 export default MainPanelSettings;

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Box, Flex, Paper } from '@mantine/core';
 import { useActorRef } from '@xstate/react';
-import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { type RootState, type AppDispatch } from '@/slices';
@@ -15,105 +14,16 @@ import CountdownTimer from '../../components/CountdownTimer';
 import EditorUserTypes from '../../config/editorUserTypes';
 import GameStateCodes from '../../config/gameStateCodes';
 import ModalCodes from '../../config/modalCodes';
-// import MatchStatesCodes from '../../config/matchStates';
 import TournamentStates from '../../config/tournament';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useSearchParams from '../../utils/useSearchParams';
-// import useMatchesStatistics from '../../utils/useMatchesStatistics';
-// import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 import { type OutputData } from '../game/Output';
 import TaskAssignment, { type GameTask } from '../game/TaskAssignment';
 import TournamentAwardModal from '../game/TournamentAwardModal';
 
 import SpectatorEditor from './SpectatorEditor';
-
-// const RoundStatus = ({ playerId, matches }) => {
-//   const [
-//     player,
-//     opponent,
-//   ] = useMatchesStatistics(playerId, matches);
-//
-//   const RoundStatistics = () => (
-//     <div className="d-flex text-center align-items-center justify-content-center">
-//       <div className="d-flex flex-column align-items-baseline">
-//         <span className="ml-2 h4">
-//           {'Wins: '}
-//           {player.winMatches.length}
-//         </span>
-//         <span className="ml-2 h4">
-//           {'Score: '}
-//           {Math.ceil(player.score)}
-//         </span>
-//         <span className="ml-2 h4">
-//           {`AVG Tests: ${Math.ceil(player.avgTests)}%`}
-//         </span>
-//         <span className="ml-4 h4">
-//           {'AVG Duration: '}
-//           {Math.ceil(player.avgDuration)}
-//           {' sec'}
-//         </span>
-//       </div>
-//     </div>
-//   );
-//
-//   const RoundResultIcon = () => {
-//     if (
-//       player.winMatches.length === opponent.winMatches.length
-//       && player.score === opponent.score
-//       && player.avgTests === opponent.avgTests
-//       && player.avgDuration === opponent.avgDuration
-//     ) {
-//       return <FontAwesomeIcon className="ml-2 text-primary" icon="handshake" />;
-//     }
-//
-//     if (
-//       player.score > opponent.score
-//       || (player.score === opponent.score
-//         && player.winMatches.length > opponent.winMatches.length)
-//       || (player.winMatches.length === opponent.winMatches.length
-//         && player.score === opponent.score
-//         && player.avgTests > opponent.avgTests)
-//       || (player.winMatches.length === opponent.winMatches.length
-//         && player.score === opponent.score
-//         && player.avgTests === opponent.avgTests
-//         && player.avgDuration > opponent.avgDuration)
-//     ) {
-//       return <FontAwesomeIcon className="ml-2 text-warning" icon="trophy" />;
-//     }
-//
-//     return <FontAwesomeIcon className="ml-2 text-secondary" icon="trophy" />;
-//   };
-//
-//   return (
-//     <div className="d-flex">
-//       <div className="d-flex justify-content-center align-items-center h1">
-//         <RoundResultIcon />
-//       </div>
-//       <RoundStatistics />
-//     </div>
-//   );
-// };
-
-// const getMatchIcon = (playerId, match) => {
-//   if (
-//     match.state === MatchStatesCodes.timeout
-//     || match.state === MatchStatesCodes.canceled
-//   ) {
-//     return <FontAwesomeIcon className="text-dark" icon="stopwatch" />;
-//   }
-//
-//   if (playerId === match.winnerId) {
-//     return <FontAwesomeIcon className="text-warning" icon="trophy" />;
-//   }
-//
-//   if (playerId !== match.winnerId) {
-//     return <FontAwesomeIcon className="text-muted" icon="trophy" />;
-//   }
-//
-//   return <FontAwesomeIcon className="text-danger" icon="times" />;
-// };
 
 const getSpectatorStatus = (state: string, task: unknown, gameId: number | null) => {
   switch (state) {
@@ -146,7 +56,6 @@ interface GamePanelProps {
   handleSetLanguage: (lang: string) => () => void;
   changeTaskDescriptionSizes: (size: number) => void;
   hidingControls: boolean;
-  spectatorGameStatusClassName: string;
   output: unknown;
 }
 
@@ -158,12 +67,11 @@ function GamePanel({
   handleSetLanguage,
   changeTaskDescriptionSizes,
   hidingControls,
-  spectatorGameStatusClassName,
   output,
 }: GamePanelProps) {
   return !spectatorStatus ? (
     <>
-      <div className="card cb-card border-0 shadow-sm">
+      <Paper shadow="sm" radius="md" bg="transparent">
         <TaskAssignment
           task={task as GameTask}
           taskSize={taskSize}
@@ -174,19 +82,19 @@ function GamePanel({
           hidingControls={hidingControls}
           fullSize
         />
-      </div>
-      <div className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto">
-        <div className={spectatorGameStatusClassName}>
+      </Paper>
+      <Paper className="cb-overflow-y-auto" shadow="sm" radius="md" bg="transparent" mt={4}>
+        <Flex justify="space-around" align="center" w="100%" p="sm">
           <OutputTab sideOutput={output as OutputData} large />
-        </div>
-      </div>
+        </Flex>
+      </Paper>
     </>
   ) : (
-    <div className="card cb-card border-0 w-100">
-      <div className="d-flex justify-content-center align-items-center w-100">
+    <Paper radius="md" bg="transparent" w="100%">
+      <Flex justify="center" align="center" w="100%">
         {spectatorStatus}
-      </div>
-    </div>
+      </Flex>
+    </Paper>
   );
 }
 
@@ -216,12 +124,7 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
     [setTaskSize],
   );
 
-  const {
-    startsAt,
-    timeoutSeconds,
-    state: gameState,
-    // solutionStatus,
-  } = useSelector(selectors.gameStatusSelector);
+  const { startsAt, timeoutSeconds, state: gameState } = useSelector(selectors.gameStatusSelector);
 
   const tournament = useSelector(selectors.tournamentSelector);
   const task = useSelector(selectors.gameTaskSelector);
@@ -324,83 +227,14 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
     return () => {};
   }, [gameId, spectatorService, dispatch]);
 
-  const spectatorDisplayClassName = cn('d-flex flex-column vh-100', 'vh-100', {
-    // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
-    // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
-  });
-
-  const spectatorGameStatusClassName = cn(
-    'd-flex justify-content-around align-items-center w-100 p-2',
-    {
-      // 'flex-row-reverse': switchedWidgetsStatus,
-    },
-  );
-
-  // const MatchesPannel = () => {
-  //   const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
-  //   const rounds = reverse(Object.keys(groupedMatches));
-  //
-  //   const lastRound = rounds[0];
-  //
-  //   if (!lastRound || !groupedMatches[lastRound]) {
-  //     return (
-  //       <div className="card cb-card rounded-lg flex justify-content-center align-items-center w-100 h-100">
-  //         No statistics
-  //       </div>
-  //     );
-  //   }
-  //
-  //   return (
-  //     <div className="card border-0 rounded-lg shadow-sm h-100">
-  //       <div className="p-2 d-flex h-100 w-100">
-  //         <div className="d-flex flex-column w-100 overflow-auto">
-  //           <h2 className="mb-4">Round Statistics:</h2>
-  //           <div className="mt-2">
-  //             <RoundStatus
-  //               playerId={playerId}
-  //               matches={groupedMatches[lastRound]}
-  //             />
-  //           </div>
-  //
-  //           <h2 className="mb-4 mt-2 border-top">Matches:</h2>
-  //           <div>
-  //             {groupedMatches[lastRound].map(match => (
-  //               <div
-  //                 className="d-flex text-center align-items-center"
-  //                 key={match.id}
-  //               >
-  //                 <span className="h3">{getMatchIcon(playerId, match)}</span>
-  //                 {match.playerResults[playerId] ? (
-  //                   <div className="d-flex flex-column align-items-baseline">
-  //                     <span className="ml-4 h4">
-  //                       {'Duration: '}
-  //                       {match.playerResults[playerId].durationSec}
-  //                       {' sec'}
-  //                     </span>
-  //                     <span className="ml-2 h4">
-  //                       {'Score: '}
-  //                       {match.playerResults[playerId].score}
-  //                     </span>
-  //                     <span className="ml-2 h4">
-  //                       {`Tests: ${match.playerResults[playerId].resultPercent}%`}
-  //                     </span>
-  //                   </div>
-  //                 ) : (
-  //                   <span className="ml-4 h3">¯\_(ツ)_/¯</span>
-  //                 )}
-  //               </div>
-  //             ))}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // };
+  // Layout note: the row/row-reverse widget swap is commented out upstream
+  // (`switchedWidgetsStatus`), so the panel stacks in a single column.
 
   if (activeEditorMode) {
     return (
       <SpectatorEditor
-        panelClassName="spectator h-100 p-1 overflow-hidden"
+        panelClassName="spectator"
+        style={{ overflow: 'hidden' }}
         switchedWidgetsStatus={switchedWidgetsStatus}
         handleSwitchWidgets={handleSwitchWidgets}
         hidingControls={hidingControls}
@@ -422,9 +256,9 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
   }
 
   return (
-    <div className="container-fluid d-flex flex-column">
-      <div className={spectatorDisplayClassName}>
-        <div className="d-flex flex-column p-1">
+    <Box w="100%" px="md">
+      <Flex direction="column" h="100vh">
+        <Flex direction="column" p="xs">
           <GamePanel
             spectatorStatus={spectatorStatus}
             task={task}
@@ -433,13 +267,11 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
             handleSetLanguage={handleSetLanguage}
             changeTaskDescriptionSizes={changeTaskDescriptionSizes}
             hidingControls={hidingControls}
-            spectatorGameStatusClassName={spectatorGameStatusClassName}
             output={output}
           />
-          {/* <MatchesPannel /> */}
-        </div>
+        </Flex>
         <SpectatorEditor
-          panelClassName="spectator h-100 p-1"
+          panelClassName="spectator"
           switchedWidgetsStatus={switchedWidgetsStatus}
           handleSwitchWidgets={handleSwitchWidgets}
           hidingControls={hidingControls}
@@ -447,8 +279,8 @@ function TournamentPlayer({ spectatorMachine }: TournamentPlayerProps) {
           spectatorService={spectatorService}
           playerId={playerId}
         />
-      </div>
-    </div>
+      </Flex>
+    </Box>
   );
 }
 

@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo, memo, useContext } from 'react';
 
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button, Flex, Progress, Text } from '@mantine/core';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getOpponentId from '@/utils/matches';
 import { makeGameUrl } from '@/utils/urlBuilders';
@@ -150,55 +149,52 @@ function MatchConfirmationModal({
   }, [openMatch]);
 
   const title = i18next.t('Next match will be opened. Show now?');
-  const closeBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
-    'cb-custom-event-btn-info': hasCustomEventStyles,
-  });
-  const openBtnClassName = cn('btn cb-rounded', {
-    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
-    'cb-custom-event-btn-primary': hasCustomEventStyles,
-  });
+  const closeBtnClassName = hasCustomEventStyles ? 'cb-custom-event-btn-info' : undefined;
+  const openBtnClassName = hasCustomEventStyles ? 'cb-custom-event-btn-primary' : undefined;
 
   return (
-    <Modal
-      contentClassName="cb-bg-panel cb-text cb-match-confirmation-modal"
-      show={modalShowing}
-      onHide={handleCancel}
-    >
-      <Modal.Header className="cb-border-color" closeButton>
+    <Modal contentClassName="cb-match-confirmation-modal" show={modalShowing} onHide={handleCancel}>
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {opponentId && (
-          <span className="d-flex justify-content-center text-center mb-2">
-            {i18next.t('Your opponent is waiting: %{name}', { name: players[opponentId]?.name })}
-          </span>
+          <Text ta="center" mb="sm">
+            {i18next.t('Your opponent is waiting: %{name}', {
+              name: players[opponentId]?.name,
+            })}
+          </Text>
         )}
         {remainingTime !== null && (
-          <div className="progress mx-5 cb-match-confirmation-progress">
-            <div
-              aria-label={i18next.t('Countdown before redirect to the next match')}
-              style={{ width: `${timerProgress}%` }}
-              className="progress-bar"
-              role="progressbar"
-              aria-valuenow={timerProgress}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            />
-          </div>
+          <Progress
+            value={timerProgress}
+            mx="xl"
+            aria-label={i18next.t('Countdown before redirect to the next match')}
+          />
         )}
       </Modal.Body>
-      <Modal.Footer className="cb-border-color">
-        <div className="d-flex justify-content-between w-100">
-          <Button onClick={handleCancel} className={closeBtnClassName}>
+      <Modal.Footer>
+        <Flex justify="space-between" w="100%">
+          <Button
+            onClick={handleCancel}
+            color="cbSecondary"
+            radius="md"
+            className={closeBtnClassName}
+          >
             {i18next.t('Cancel')}
           </Button>
-          <div className="d-flex">
-            <Button ref={confirmBtnRef} onClick={handleConfirmation} className={openBtnClassName}>
+          <Flex>
+            <Button
+              ref={confirmBtnRef}
+              onClick={handleConfirmation}
+              color="cbSecondary"
+              radius="md"
+              className={openBtnClassName}
+            >
               {i18next.t('Open')}
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </Modal.Footer>
     </Modal>
   );

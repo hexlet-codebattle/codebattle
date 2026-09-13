@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import data from '@emoji-mart/data';
+import { Button, Flex, Text, TextInput } from '@mantine/core';
 import BadWordsNext from 'bad-words-next';
-import cn from 'classnames';
 import { SearchIndex, init } from 'emoji-mart';
 import i18next from 'i18next';
 import isEmpty from 'lodash/isEmpty';
@@ -73,29 +73,6 @@ export default function ChatInput({
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const badwordsRef = useRef(new BadWordsNext());
   const isTournament = variant === 'tournament';
-
-  const sendBtnClassName = cn(
-    'btn',
-    isTournament
-      ? 'cb-tournament-chat-send'
-      : 'btn-secondary cb-btn-secondary border-gray border-left rounded-right',
-    !isTournament && {
-      'cb-border-color': true,
-    },
-  );
-  const inputClassName = cn('form-control h-auto', {
-    'cb-tournament-chat-input': isTournament,
-    'border-right-0 rounded-left bg-dark cb-border-color text-white': !isTournament,
-    'is-invalid': isMaxLengthExceeded,
-  });
-  const emojiBtnClassName = cn('btn px-2 py-0', {
-    'cb-tournament-chat-emoji': isTournament,
-    'border-left-0 border-right-0 cb-border-color border': !isTournament,
-  });
-  const formClassName = cn('input-group mb-0', {
-    'cb-tournament-chat-form cb-tournament-chat-input-group': isTournament,
-    'border-top cb-border-color p-2': !isTournament,
-  });
 
   useEffect(() => {
     let mounted = true;
@@ -201,22 +178,53 @@ export default function ChatInput({
   }, []);
 
   return (
-    <form className={formClassName} onSubmit={handleSubmit}>
-      <input
-        className={inputClassName}
+    <Flex
+      component="form"
+      onSubmit={handleSubmit}
+      pos="relative"
+      align="stretch"
+      mb={0}
+      p={isTournament ? undefined : 'sm'}
+      className={
+        isTournament ? 'cb-tournament-chat-form cb-tournament-chat-input-group' : undefined
+      }
+      style={
+        isTournament ? undefined : { borderTop: '1px solid var(--mantine-color-default-border)' }
+      }
+    >
+      <TextInput
+        ref={inputRef}
+        flex={1}
         aria-label={i18next.t('Chat message')}
         placeholder={i18next.t('Be nice in chat!')}
         value={text}
         onChange={handleChange}
-        ref={inputRef}
         disabled={disabled}
+        error={isMaxLengthExceeded}
+        classNames={isTournament ? { input: 'cb-tournament-chat-input' } : undefined}
+        styles={
+          isTournament
+            ? undefined
+            : { input: { borderTopRightRadius: 0, borderBottomRightRadius: 0 } }
+        }
       />
       {isMaxLengthExceeded && (
-        <div className="invalid-tooltip">
+        <Text
+          pos="absolute"
+          bottom="100%"
+          left={0}
+          mb={4}
+          px="xs"
+          py={4}
+          fz="xs"
+          c="white"
+          bg="red.7"
+          style={{ borderRadius: 'var(--mantine-radius-sm)', zIndex: 5 }}
+        >
           {i18next.t('Message length cannot exceed %{count} characters.', {
             count: MAX_MESSAGE_LENGTH,
           })}
-        </div>
+        </Text>
       )}
       {isTooltipVisible && (
         <EmojiToolTip
@@ -228,28 +236,31 @@ export default function ChatInput({
       {isPickerVisible && (
         <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} disabled={disabled} />
       )}
-      <div
-        className={cn('input-group-append', {
-          'border-left rounded-right': !isTournament,
-        })}
+      <Button
+        type="button"
+        h="100%"
+        px="xs"
+        radius={0}
+        variant={isTournament ? 'subtle' : 'default'}
+        onClick={togglePickerVisibility}
+        aria-label={i18next.t('Open emoji picker')}
+        className={isTournament ? 'cb-tournament-chat-emoji' : undefined}
       >
-        <button
-          type="button"
-          className={emojiBtnClassName}
-          onClick={togglePickerVisibility}
-          aria-label={i18next.t('Open emoji picker')}
-        >
-          <em-emoji id="grinning" size={20} />
-        </button>
-        <button
-          className={sendBtnClassName}
-          type="button"
-          onClick={handleSubmit}
-          disabled={disabled || isMaxLengthExceeded || isMessageBlank}
-        >
-          {i18next.t('Send')}
-        </button>
-      </div>
-    </form>
+        <em-emoji id="grinning" size={20} />
+      </Button>
+      <Button
+        type="button"
+        h="100%"
+        color="cbSecondary"
+        onClick={handleSubmit}
+        disabled={disabled || isMaxLengthExceeded || isMessageBlank}
+        className={isTournament ? 'cb-tournament-chat-send' : undefined}
+        styles={
+          isTournament ? undefined : { root: { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } }
+        }
+      >
+        {i18next.t('Send')}
+      </Button>
+    </Flex>
   );
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flex } from '@mantine/core';
 import Leaderboard from './Leaderboard';
 import MainPanelTabs from './MainPanelTabs';
 import MainPanelDescription from './MainPanelDescription';
@@ -59,8 +60,13 @@ function MainPanel({
 
   return (
     <>
-      <div
-        className="cb-custom-event-profile d-flex align-items-center justify-content-between flex-wrap w-100 py-1"
+      <Flex
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+        w="100%"
+        py="xs"
+        className="cb-custom-event-profile"
         style={{ minHeight: '64px' }}
       >
         <MainPanelTabs
@@ -78,7 +84,7 @@ function MainPanel({
           hasViewer={hasViewer}
           setViewerFullscreen={setViewerFullscreen}
         />
-      </div>
+      </Flex>
       {activeTab === 'leaderboard' && hasLeaderboard ? (
         <Leaderboard
           leaderboard={leaderboard}

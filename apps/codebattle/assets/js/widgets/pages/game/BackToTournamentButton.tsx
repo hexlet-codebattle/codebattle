@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
@@ -10,9 +11,9 @@ function BackToTournamentButton() {
   const tournamentUrl = `/tournaments/${tournamentId}`;
 
   return (
-    <a className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" href={tournamentUrl}>
+    <Button component="a" href={tournamentUrl} color="cbSecondary" radius="md" fullWidth>
       {i18next.t('Back to tournament')}
-    </a>
+    </Button>
   );
 }
 

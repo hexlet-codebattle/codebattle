@@ -1,23 +1,26 @@
-<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-  <h1 class="text-center text-white mb-4">
+<div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+  <h1 class="cb-text-center cb-text-white cb-mb-4">
     Solution Tester — {@group_tournament.name}
   </h1>
 
-  <div class="mb-3">
+  <div class="cb-mb-3">
     <a
       href={Routes.admin_group_tournament_path(@conn, :show, @group_tournament)}
-      class="btn btn-outline-secondary btn-sm"
+      class="cb-btn cb-btn-outline-secondary cb-btn-sm"
     >
       Back to Tournament
     </a>
   </div>
 
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
-    <div class="row">
-      <div class="col-md-6">
-        <div class="form-group mb-3">
-          <label class="font-weight-bold mb-1">Token</label>
-          <select id="token-select" class="form-control bg-dark text-white border-secondary">
+  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4 cb-text-white">
+    <div class="cb-row">
+      <div class="cb-col-md-6">
+        <div class="cb-form-group cb-mb-3">
+          <label class="cb-fw-bold cb-mb-1">Token</label>
+          <select
+            id="token-select"
+            class="cb-form-control cb-bg-dark cb-text-white cb-border-secondary"
+          >
             <option value="">-- select a token --</option>
             <%= for token <- @tokens do %>
               <option value={token.token}>
@@ -26,35 +29,35 @@
             <% end %>
           </select>
         </div>
-        <div class="form-group mb-3">
-          <label class="font-weight-bold mb-1">Or paste token manually</label>
+        <div class="cb-form-group cb-mb-3">
+          <label class="cb-fw-bold cb-mb-1">Or paste token manually</label>
           <input
             id="token-input"
             type="text"
-            class="form-control bg-dark text-white border-secondary font-monospace"
+            class="cb-form-control cb-bg-dark cb-text-white cb-border-secondary cb-font-monospace"
             placeholder="Bearer token"
           />
         </div>
-        <div class="form-group mb-3">
-          <label class="font-weight-bold mb-1">Language</label>
+        <div class="cb-form-group cb-mb-3">
+          <label class="cb-fw-bold cb-mb-1">Language</label>
           <input
             id="lang-input"
             type="text"
             value="js"
-            class="form-control bg-dark text-white border-secondary font-monospace"
+            class="cb-form-control cb-bg-dark cb-text-white cb-border-secondary cb-font-monospace"
             placeholder="js, python, elixir..."
           />
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="form-group mb-3">
-          <label class="font-weight-bold mb-1">
+      <div class="cb-col-md-6">
+        <div class="cb-form-group cb-mb-3">
+          <label class="cb-fw-bold cb-mb-1">
             Solution (plain text, will be base64-encoded)
           </label>
           <textarea
             id="solution-input"
             rows="12"
-            class="form-control bg-dark text-white border-secondary font-monospace"
+            class="cb-form-control cb-bg-dark cb-text-white cb-border-secondary cb-font-monospace"
             style="font-size: 13px; resize: vertical;"
             placeholder="Paste your solution code here..."
           ></textarea>
@@ -62,15 +65,15 @@
       </div>
     </div>
 
-    <button id="submit-btn" class="btn btn-primary mt-2">
+    <button id="submit-btn" class="cb-btn cb-btn-primary cb-mt-2">
       Submit Solution
     </button>
 
-    <div id="result-panel" class="mt-4" style="display: none;">
+    <div id="result-panel" class="cb-mt-4" style="display: none;">
       <h5>Response</h5>
       <pre
         id="result-output"
-        class="bg-dark text-white p-3 border border-secondary rounded"
+        class="cb-bg-dark cb-text-white cb-p-3 cb-border cb-border-secondary cb-rounded-sm"
         style="white-space: pre-wrap; font-size: 13px;"
       ></pre>
     </div>

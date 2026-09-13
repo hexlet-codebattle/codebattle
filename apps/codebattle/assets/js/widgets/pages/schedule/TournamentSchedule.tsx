@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import NiceModal from '@ebay/nice-modal-react';
+import { Flex } from '@mantine/core';
 import cn from 'classnames';
 import uniqBy from 'lodash/uniqBy';
 import { Calendar as BigCalendar, dayjsLocalizer } from 'react-big-calendar';
@@ -125,7 +126,10 @@ function TournamentSchedule() {
     loading: true,
   });
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [history, setHistory] = useState<{ tournaments: HistoryTournament[]; loading: boolean }>({
+  const [history, setHistory] = useState<{
+    tournaments: HistoryTournament[];
+    loading: boolean;
+  }>({
     tournaments: [],
     loading: false,
   });
@@ -271,9 +275,18 @@ function TournamentSchedule() {
   }, [event, setSelectedEvent]);
 
   return (
-    <div
-      className="d-flex flex-column h-100 w-100 cb-bg-panel cb-rounded p-1 p-md-3 p-lg-3 position-relative cb-overflow-y-scroll"
-      style={{ maxHeight: '90vh' }}
+    <Flex
+      direction="column"
+      h="100%"
+      w="100%"
+      className="cb-overflow-y-scroll"
+      p={{ base: 'xs', md: 'md', lg: 'md' }}
+      pos="relative"
+      style={{
+        maxHeight: '90vh',
+        backgroundColor: 'var(--mantine-color-cbPanel-6)',
+        borderRadius: 'var(--mantine-radius-md)',
+      }}
     >
       <ScheduleLegend
         context={context}
@@ -324,7 +337,7 @@ function TournamentSchedule() {
           }}
         />
       )}
-    </div>
+    </Flex>
   );
 }
 

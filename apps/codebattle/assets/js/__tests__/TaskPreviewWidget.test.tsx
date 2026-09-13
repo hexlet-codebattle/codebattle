@@ -4,20 +4,24 @@ import React from 'react';
 
 import TaskPreviewWidget from '../widgets/pages/taskPreview/TaskPreviewWidget';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 test('shows the task solve time and base static score', () => {
   render(
-    <TaskPreviewWidget
-      task={{
-        id: 1,
-        name: 'score_task',
-        level: 'easy',
-        state: 'active',
-        description_en: 'Solve it.',
-        time_to_solve_sec: 125,
-        base_score: 275,
-      }}
-      taskStats={null}
-    />,
+    <MantineTestProvider>
+      <TaskPreviewWidget
+        task={{
+          id: 1,
+          name: 'score_task',
+          level: 'easy',
+          state: 'active',
+          description_en: 'Solve it.',
+          time_to_solve_sec: 125,
+          base_score: 275,
+        }}
+        taskStats={null}
+      />
+    </MantineTestProvider>,
   );
 
   expect(screen.getByText('Time to solve')).toBeInTheDocument();

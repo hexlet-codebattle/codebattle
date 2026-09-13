@@ -2,11 +2,24 @@ import React, { type ReactNode, useState } from 'react';
 
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import {
+  ActionIcon,
+  Alert,
+  Anchor,
+  Box,
+  Button,
+  Flex,
+  Paper,
+  Stack,
+  Text,
+  TextInput,
+  Title as MantineTitle,
+} from '@mantine/core';
 import { type FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
 
 import i18n from '../../../i18n';
+import { alertVariantColor } from '../../ui/alert';
 import schemas from '../../formik';
 
 // Sub-components are shared across forms with different value shapes, so the
@@ -44,24 +57,19 @@ const postJson = async (url: string, payload: unknown) => {
 const isShowInvalidMessage = (formik: RegistrationFormik, typeValue: string) =>
   formik.submitCount !== 0 && !!formik.errors[typeValue];
 
-const getInputClassName = (isInvalid: boolean) =>
-  cn('form-control custom-control cb-bg-panel cb-border-color text-white', {
-    'is-invalid': isInvalid,
-  });
-
 interface ContainerProps {
   children: ReactNode;
 }
 
 function Container({ children }: ContainerProps) {
   return (
-    <div className="container-fluid">
-      <div className="row justify-content-center">
-        <div className="col-lg-5 col-md-5 col-sm-5 px-md-4">
-          <div className="card cb-card border cb-border-color cb-rounded shadow-sm">{children}</div>
-        </div>
-      </div>
-    </div>
+    <Flex justify="center" px={{ md: 'lg' }}>
+      <Box w={{ base: '100%', sm: '41.6667%' }}>
+        <Paper withBorder radius="md" shadow="sm" bg="transparent" style={{ overflow: 'hidden' }}>
+          {children}
+        </Paper>
+      </Box>
+    </Flex>
   );
 }
 
@@ -70,7 +78,11 @@ interface TitleProps {
 }
 
 function Title({ text }: TitleProps) {
-  return <h3 className="text-center text-white">{i18n.t(text)}</h3>;
+  return (
+    <MantineTitle order={3} ta="center" c="white">
+      {i18n.t(text)}
+    </MantineTitle>
+  );
 }
 
 interface FormProps {
@@ -83,15 +95,18 @@ function Form({ onSubmit, id, children }: FormProps) {
   return (
     <form onSubmit={onSubmit} noValidate>
       {children}
-      <input
+      <Button
         type="submit"
         name="commit"
         id={`${id}-submit`}
-        value={i18n.t('Submit')}
         aria-label={i18n.t('Submit form')}
-        className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-        data-disable-with={i18n.t('Submit')}
-      />
+        color="cbSecondary"
+        radius="md"
+        fullWidth
+        mt="sm"
+      >
+        {i18n.t('Submit')}
+      </Button>
     </form>
   );
 }
@@ -105,20 +120,30 @@ interface InputProps {
 
 function Input({ id, type, title, formik }: InputProps) {
   const isInvalid = isShowInvalidMessage(formik, id);
-  const inputClassName = getInputClassName(isInvalid);
+
+  if (type === 'hidden') {
+    return (
+      <>
+        <input type="hidden" id={id} aria-label={id} {...formik.getFieldProps(id)} />
+        {isInvalid && (
+          <Text c="red" size="sm">
+            {formik.errors[id] as ReactNode}
+          </Text>
+        )}
+      </>
+    );
+  }
 
   return (
-    <div className="form-group">
-      <span className="text-white">{title ? i18n.t(title) : title}</span>
-      <input
-        type={type}
-        id={id}
-        aria-label={id}
-        className={inputClassName}
-        {...formik.getFieldProps(id)}
-      />
-      {isInvalid && <div className="invalid-feedback">{formik.errors[id] as ReactNode}</div>}
-    </div>
+    <TextInput
+      mb="md"
+      type={type}
+      id={id}
+      aria-label={id}
+      label={title ? i18n.t(title) : undefined}
+      error={isInvalid ? (formik.errors[id] as ReactNode) : undefined}
+      {...formik.getFieldProps(id)}
+    />
   );
 }
 
@@ -131,7 +156,6 @@ interface PasswordInputProps {
 function PasswordInput({ id, title, formik }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isInvalid = isShowInvalidMessage(formik, id);
-  const inputClassName = getInputClassName(isInvalid);
   const translatedTitle = i18n.t(title).toLowerCase();
   const visibilityLabel = i18n.t(showPassword ? 'Hide %{field}' : 'Show %{field}', {
     field: translatedTitle,
@@ -142,43 +166,46 @@ function PasswordInput({ id, title, formik }: PasswordInputProps) {
   };
 
   return (
-    <div className="form-group">
-      <span className="text-white">{i18n.t(title)}</span>
-      <div className="position-relative">
-        <input
-          type={showPassword ? 'text' : 'password'}
-          id={id}
-          aria-label={id}
-          className={`${inputClassName} cb-password-input`}
-          {...formik.getFieldProps(id)}
-        />
-        <button
-          type="button"
-          className={cn('btn btn-link position-absolute cb-password-toggle', {
-            'cb-password-toggle-invalid': isInvalid,
-          })}
+    <TextInput
+      mb="md"
+      type={showPassword ? 'text' : 'password'}
+      id={id}
+      aria-label={id}
+      label={i18n.t(title)}
+      error={isInvalid ? (formik.errors[id] as ReactNode) : undefined}
+      rightSection={
+        <ActionIcon
+          variant="transparent"
+          color="gray"
           aria-label={visibilityLabel}
           aria-pressed={showPassword}
           title={visibilityLabel}
           onClick={togglePasswordVisibility}
         >
           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-        </button>
-      </div>
-      {isInvalid && <div className="invalid-feedback">{formik.errors[id] as ReactNode}</div>}
-    </div>
+        </ActionIcon>
+      }
+      {...formik.getFieldProps(id)}
+    />
   );
 }
 
 function Body({ children }: { children: ReactNode }) {
-  return <div className="card-body p-lg-4 p-xl-5">{children}</div>;
+  return <Box p={{ base: 'md', lg: 'lg', xl: 'xl' }}>{children}</Box>;
 }
 
 function Footer({ children }: { children: ReactNode }) {
   return (
-    <div className="card-footer py-2">
-      <div className="text-center">{children}</div>
-    </div>
+    <Box
+      bg="cbHighlight"
+      py="sm"
+      px="md"
+      ta="center"
+      c="white"
+      style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
+    >
+      {children}
+    </Box>
   );
 }
 
@@ -210,50 +237,54 @@ interface SocialLinksProps {
 
 function SocialLinks({ isSignUp }: SocialLinksProps) {
   return (
-    <>
-      <div className="mt-1">
-        <a
-          type="button"
-          aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
-          href={getLinkWithNext('/auth/github')}
-          className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-        >
-          {isSignUp ? i18n.t('Sign up with Github') : i18n.t('Sign in with Github')}
-        </a>
-      </div>
-      <div className="mt-1">
-        <a
-          type="button"
-          aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
-          href={getLinkWithNext('/auth/discord')}
-          className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-        >
-          {isSignUp ? i18n.t('Sign up with Discord') : i18n.t('Sign in with Discord')}
-        </a>
-      </div>
-    </>
+    <Stack gap="xs" mt="xs">
+      <Button
+        component="a"
+        variant="outline"
+        color="cbSecondary"
+        radius="md"
+        fullWidth
+        px="sm"
+        aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
+        href={getLinkWithNext('/auth/github')}
+      >
+        {isSignUp ? i18n.t('Sign up with Github') : i18n.t('Sign in with Github')}
+      </Button>
+      <Button
+        component="a"
+        variant="outline"
+        color="cbSecondary"
+        radius="md"
+        fullWidth
+        px="sm"
+        aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
+        href={getLinkWithNext('/auth/discord')}
+      >
+        {isSignUp ? i18n.t('Sign up with Discord') : i18n.t('Sign in with Discord')}
+      </Button>
+    </Stack>
   );
 }
 
 function SignInInvitation() {
   return (
-    <div className="small">
-      <span className="cb-text">{i18n.t('If you have an account')}</span>
-      <a href={getLinkWithNext('/session/new')} role="button" className="btn-link text-white ml-3">
+    <Text size="sm" c="cbText">
+      {i18n.t('If you have an account')}
+      <Anchor href={getLinkWithNext('/session/new')} c="white" ml="md">
         {i18n.t('Sign In')}
-      </a>
-    </div>
+      </Anchor>
+    </Text>
   );
 }
 
 function SignUpInvitation() {
   return (
-    <div className="small">
-      <span className="cb-text">{i18n.t('Have not an account?')}</span>
-      <a href={getLinkWithNext('/users/new')} role="button" className="btn-link text-primary ml-3">
+    <Text size="sm" c="cbText">
+      {i18n.t('Have not an account?')}
+      <Anchor href={getLinkWithNext('/users/new')} ml="md">
         {i18n.t('Sign Up')}
-      </a>
-    </div>
+      </Anchor>
+    </Text>
   );
 }
 
@@ -299,18 +330,16 @@ function SignIn() {
         <Form onSubmit={formik.handleSubmit} id="login">
           <Title text="Sign In" />
           {searchParams.get('verification') === 'sent' && (
-            <div className="alert alert-info" role="status">
+            <Alert color={alertVariantColor('info')} role="status" mb="md">
               {i18n.t('We sent a verification email. Please confirm your email before signing in.')}
-            </div>
+            </Alert>
           )}
           <Input id="base" type="hidden" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
           <PasswordInput id="password" title="Password" formik={formik} />
-          <div className="text-right my-3">
-            <a className="text-primary" href="/remind_password">
-              {i18n.t('Forgot your password?')}
-            </a>
-          </div>
+          <Box ta="right" my="md">
+            <Anchor href="/remind_password">{i18n.t('Forgot your password?')}</Anchor>
+          </Box>
         </Form>
         <SocialLinks isSignUp={false} />
       </Body>
@@ -406,9 +435,9 @@ function ResetPassword() {
     return (
       <Container>
         <Body>
-          <p className="mb-0 text-white">
+          <Text mb={0} c="white">
             {i18n.t('We have sent you an email with instructions on how to reset your password')}
-          </p>
+          </Text>
         </Body>
       </Container>
     );

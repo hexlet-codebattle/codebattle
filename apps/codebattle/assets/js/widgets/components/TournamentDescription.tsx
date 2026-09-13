@@ -1,6 +1,6 @@
 import React from 'react';
 
-import cn from 'classnames';
+import { Box, Center, Flex, Paper, Stack, Text } from '@mantine/core';
 
 import {
   getGradeLabel,
@@ -12,45 +12,49 @@ import {
 
 import i18n from '../../i18n';
 
-const getGradeDescriptionClassName = (highlight: boolean) =>
-  cn('d-flex flex-column flex-lg-row flex-md-row flex-sm-row justify-content-between', {
-    'text-monospace': highlight,
-  });
-
 interface GradeInfoProps {
   grade: Grade | string;
   selected: Grade | string;
 }
 
 function GradeInfo({ grade, selected }: GradeInfoProps) {
+  const isSelected = grade === selected;
+
   return (
-    <div className={getGradeDescriptionClassName(grade === selected)}>
-      <span className={grade === selected ? 'text-white' : ''}>
+    <Flex
+      direction={{ base: 'column', sm: 'row' }}
+      justify="space-between"
+      ff={isSelected ? 'monospace' : undefined}
+    >
+      <Text component="span" c={isSelected ? 'white' : undefined}>
         {i18n.t(getGradeLabel(grade))}
-        {grade === selected && '(*)'}
-      </span>
-      <span className={cn('pl-3', { 'text-white': grade === selected })}>
+        {isSelected && '(*)'}
+      </Text>
+      <Text component="span" pl="md" c={isSelected ? 'white' : undefined}>
         [{getRankingPoints(grade).join(', ')}]
-      </span>
-    </div>
+      </Text>
+    </Flex>
   );
 }
 
 interface TournamentDescriptionProps {
   className?: string;
+  style?: React.CSSProperties;
   tournament: {
     grade: Grade | string;
     description?: string;
   };
 }
 
-function TournamentDescription({ className, tournament }: TournamentDescriptionProps) {
+function TournamentDescription({ className, style, tournament }: TournamentDescriptionProps) {
   return (
-    <div className={className}>
+    <Box className={className} style={style}>
       {tournament.grade !== grades.open ? (
         <>
-          <span className="text-white">{i18n.t('Tournament Highlights:')}</span>
-          <div className="d-flex flex-column">
+          <Text component="span" c="white">
+            {i18n.t('Tournament Highlights:')}
+          </Text>
+          <Stack gap={0}>
             <span>{i18n.t('Prizes: Codebattle T-shirt merch for a top-tier of League')}</span>
             <span>
               {i18n.t('Challenges: %{count} unique algorithm problems', {
@@ -58,13 +62,15 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
               })}
             </span>
             <span>{i18n.t('Impact: Advancing in the Codebattle programmer rankings')}</span>
-          </div>
-          <div className="d-flex justify-content-center w-100">
-            <div className="card cb-card mt-2">
-              <div className="card-header text-center">
-                {i18n.t('View League Ranking Points System')}
-              </div>
-              <div className="card-body">
+          </Stack>
+          <Center w="100%">
+            <Paper mt="sm" radius="md" withBorder style={{ backgroundColor: 'transparent' }}>
+              <Box bg="cbHighlight" ta="center" p="xs">
+                <Text component="span" c="white" style={{ fontFamily: 'Arial, sans-serif' }}>
+                  {i18n.t('View League Ranking Points System')}
+                </Text>
+              </Box>
+              <Box p="md">
                 {[
                   grades.rookie,
                   grades.challenger,
@@ -75,17 +81,19 @@ function TournamentDescription({ className, tournament }: TournamentDescriptionP
                 ].map((grade) => (
                   <GradeInfo key={grade} grade={grade} selected={tournament.grade} />
                 ))}
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Paper>
+          </Center>
         </>
       ) : (
         <>
-          <span className="text-white">{i18n.t('Tournament Description:')}</span>
+          <Text component="span" c="white">
+            {i18n.t('Tournament Description:')}
+          </Text>
           {tournament.description}
         </>
       )}
-    </div>
+    </Box>
   );
 }
 

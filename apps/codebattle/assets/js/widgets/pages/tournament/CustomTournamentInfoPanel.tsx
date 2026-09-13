@@ -136,7 +136,10 @@ function CustomTournamentInfoPanel({
       });
       setPanelHistory((items) => [...items, panelMode]);
       setSearchedUser(
-        (allPlayers[Number(userId)] as InfoPanelPlayer) || { id: Number(userId), name: userName },
+        (allPlayers[Number(userId)] as InfoPanelPlayer) || {
+          id: Number(userId),
+          name: userName,
+        },
       );
     },
     [panelMode, setPanelMode, setPanelHistory, setSearchedUser, allPlayers],

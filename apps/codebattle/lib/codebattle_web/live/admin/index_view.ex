@@ -506,12 +506,12 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   defp chart_secondary_text_color, do: @iron
 
   defp window_button_class(window_key, active_window) do
-    base = "btn cb-rounded mr-2 mb-2"
+    base = "cb-btn cb-rounded cb-mr-2 cb-mb-2"
 
     if window_key == active_window do
-      "#{base} btn-secondary"
+      "#{base} cb-btn-secondary"
     else
-      "#{base} btn-secondary cb-btn-secondary"
+      "#{base} cb-btn-secondary"
     end
   end
 
@@ -614,45 +614,51 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
     <% registrations_granularity = chart_granularity(@registrations_window) %>
     <% games_granularity = chart_granularity(@games_window) %>
     <% active_users_granularity = chart_granularity(@active_users_window) %>
-    <div class="container-fluid px-0">
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4">
-        <h1 class="text-white mb-1">Codebattle Admin Dashboard</h1>
-        <p class="cb-text mb-4">
+    <div class="cb-container-fluid cb-px-0">
+      <div class="cb-bg-panel cb-rounded cb-border-color cb-border cb-shadow-sm cb-p-4">
+        <h1 class="cb-text-white cb-mb-1">Codebattle Admin Dashboard</h1>
+        <p class="cb-text cb-mb-4">
           Operational overview with real-time platform totals, user growth, and activity trends.
         </p>
 
-        <div class="row">
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Users</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">{@stats.users}</div>
+        <div class="cb-row">
+          <div class="cb-col-12 cb-col-sm-6 cb-col-xl-3 cb-mb-3">
+            <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+              <div class="cb-text cb-text-uppercase">Users</div>
+              <div class="cb-text-white" style="font-size: 2rem; font-weight: 700;">
+                {@stats.users}
+              </div>
             </div>
           </div>
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Tasks</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">{@stats.tasks}</div>
+          <div class="cb-col-12 cb-col-sm-6 cb-col-xl-3 cb-mb-3">
+            <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+              <div class="cb-text cb-text-uppercase">Tasks</div>
+              <div class="cb-text-white" style="font-size: 2rem; font-weight: 700;">
+                {@stats.tasks}
+              </div>
             </div>
           </div>
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Games</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">{@stats.games}</div>
+          <div class="cb-col-12 cb-col-sm-6 cb-col-xl-3 cb-mb-3">
+            <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+              <div class="cb-text cb-text-uppercase">Games</div>
+              <div class="cb-text-white" style="font-size: 2rem; font-weight: 700;">
+                {@stats.games}
+              </div>
             </div>
           </div>
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Tournaments</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">
+          <div class="cb-col-12 cb-col-sm-6 cb-col-xl-3 cb-mb-3">
+            <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+              <div class="cb-text cb-text-uppercase">Tournaments</div>
+              <div class="cb-text-white" style="font-size: 2rem; font-weight: 700;">
                 {@stats.tournaments}
               </div>
             </div>
           </div>
         </div>
 
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-2">
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <h3 class="text-white mb-0">{chart_title(registrations_granularity)}</h3>
+        <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mt-2">
+          <div class="cb-d-flex cb-flex-wrap cb-justify-between cb-align-center cb-mb-3">
+            <h3 class="cb-text-white cb-mb-0">{chart_title(registrations_granularity)}</h3>
             <%= if @registrations_chart.ok? do %>
               <span class="cb-text">
                 {format_chart_datetime(
@@ -741,16 +747,16 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
               <% end %>
             </svg>
 
-            <div class="text-center cb-text mt-1">
+            <div class="cb-text-center cb-text cb-mt-1">
               {peak_label(@registrations_chart.result.granularity)}: {@registrations_chart.result.max_joins}
             </div>
           <% else %>
-            <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
+            <div class="cb-text-center cb-py-5" style={"color: #{chart_secondary_text_color()};"}>
               Chart is loading...
             </div>
           <% end %>
 
-          <div class="d-flex flex-wrap justify-content-center mt-3">
+          <div class="cb-d-flex cb-flex-wrap cb-justify-center cb-mt-3">
             <%= for window_key <- @chart_window_order do %>
               <% window = @chart_windows[window_key] %>
               <button
@@ -767,9 +773,9 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
           </div>
         </div>
 
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-3">
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <h3 class="text-white mb-0">{games_chart_title(games_granularity)}</h3>
+        <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mt-3">
+          <div class="cb-d-flex cb-flex-wrap cb-justify-between cb-align-center cb-mb-3">
+            <h3 class="cb-text-white cb-mb-0">{games_chart_title(games_granularity)}</h3>
             <%= if @games_chart.ok? do %>
               <span class="cb-text">
                 {format_chart_datetime(
@@ -852,16 +858,16 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
               <% end %>
             </svg>
 
-            <div class="text-center cb-text mt-1">
+            <div class="cb-text-center cb-text cb-mt-1">
               {peak_label(@games_chart.result.granularity)}: {@games_chart.result.max_games}
             </div>
           <% else %>
-            <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
+            <div class="cb-text-center cb-py-5" style={"color: #{chart_secondary_text_color()};"}>
               Chart is loading...
             </div>
           <% end %>
 
-          <div class="d-flex flex-wrap justify-content-center mt-3">
+          <div class="cb-d-flex cb-flex-wrap cb-justify-center cb-mt-3">
             <%= for window_key <- @chart_window_order do %>
               <% window = @chart_windows[window_key] %>
               <button
@@ -878,9 +884,11 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
           </div>
         </div>
 
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-3">
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <h3 class="text-white mb-0">{active_users_chart_title(active_users_granularity)}</h3>
+        <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mt-3">
+          <div class="cb-d-flex cb-flex-wrap cb-justify-between cb-align-center cb-mb-3">
+            <h3 class="cb-text-white cb-mb-0">
+              {active_users_chart_title(active_users_granularity)}
+            </h3>
             <%= if @active_users_chart.ok? do %>
               <span class="cb-text">
                 {format_chart_datetime(
@@ -969,16 +977,16 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
               <% end %>
             </svg>
 
-            <div class="text-center cb-text mt-1">
+            <div class="cb-text-center cb-text cb-mt-1">
               {peak_label(@active_users_chart.result.granularity)}: {@active_users_chart.result.max_active_users}
             </div>
           <% else %>
-            <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
+            <div class="cb-text-center cb-py-5" style={"color: #{chart_secondary_text_color()};"}>
               Chart is loading...
             </div>
           <% end %>
 
-          <div class="d-flex flex-wrap justify-content-center mt-3">
+          <div class="cb-d-flex cb-flex-wrap cb-justify-center cb-mt-3">
             <%= for window_key <- @chart_window_order do %>
               <% window = @chart_windows[window_key] %>
               <button

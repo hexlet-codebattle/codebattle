@@ -170,7 +170,10 @@ const groupTournament = createSlice({
       const existingRunIndex = currentRuns.findIndex((item) => item.id === stub.id);
 
       if (existingRunIndex >= 0) {
-        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...stub };
+        currentRuns[existingRunIndex] = {
+          ...currentRuns[existingRunIndex],
+          ...stub,
+        };
       } else {
         currentRuns.unshift({ ...stub, detailsLoaded: false });
       }
@@ -195,7 +198,10 @@ const groupTournament = createSlice({
       const existingRunIndex = currentRuns.findIndex((item) => item.id === nextRun.id);
 
       if (existingRunIndex >= 0) {
-        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...nextRun };
+        currentRuns[existingRunIndex] = {
+          ...currentRuns[existingRunIndex],
+          ...nextRun,
+        };
       } else {
         currentRuns.unshift(nextRun);
       }
@@ -214,7 +220,10 @@ const groupTournament = createSlice({
       const existingRunIndex = currentRuns.findIndex((item) => item.id === runId);
 
       if (existingRunIndex >= 0) {
-        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...fields };
+        currentRuns[existingRunIndex] = {
+          ...currentRuns[existingRunIndex],
+          ...fields,
+        };
         state.data.runs = currentRuns;
       }
     },

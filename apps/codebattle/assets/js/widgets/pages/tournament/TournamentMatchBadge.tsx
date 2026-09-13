@@ -1,6 +1,6 @@
 import React, { memo, useContext, useMemo } from 'react';
 
-import cn from 'classnames';
+import { Badge } from '@mantine/core';
 
 import i18next from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
@@ -42,33 +42,43 @@ function TournamentMatchBadge({
 
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
-  const className = cn(
-    'badge px-2 mr-2',
-    hasCustomEventStyles
-      ? {
-          'cb-custom-event-badge-warning': isWinner && matchState === MatchStatesCodes.gameOver,
-          'cb-custom-event-badge-light':
-            matchState === MatchStatesCodes.pending ||
-            matchState === MatchStatesCodes.timeout ||
-            matchState === MatchStatesCodes.canceled,
-          'cb-custom-event-badge-primary':
-            !currentUserIsPlayer && matchState === MatchStatesCodes.playing,
-          'cb-custom-event-badge-success': matchState === MatchStatesCodes.playing,
-          'cb-custom-event-badge-danger': !isWinner && matchState === MatchStatesCodes.gameOver,
-        }
-      : {
-          'badge-warning': isWinner && matchState === MatchStatesCodes.gameOver,
-          'badge-light':
-            matchState === MatchStatesCodes.pending ||
-            matchState === MatchStatesCodes.timeout ||
-            matchState === MatchStatesCodes.canceled,
-          'badge-primary': !currentUserIsPlayer && matchState === MatchStatesCodes.playing,
-          'badge-success': matchState === MatchStatesCodes.playing,
-          'badge-danger': !isWinner && matchState === MatchStatesCodes.gameOver,
-        },
-  );
+  const customClassName = useMemo(() => {
+    if (!hasCustomEventStyles) return undefined;
+    if (isWinner && matchState === MatchStatesCodes.gameOver)
+      return 'cb-custom-event-badge-warning';
+    if (
+      matchState === MatchStatesCodes.pending ||
+      matchState === MatchStatesCodes.timeout ||
+      matchState === MatchStatesCodes.canceled
+    )
+      return 'cb-custom-event-badge-light';
+    if (!currentUserIsPlayer && matchState === MatchStatesCodes.playing)
+      return 'cb-custom-event-badge-primary';
+    if (matchState === MatchStatesCodes.playing) return 'cb-custom-event-badge-success';
+    if (!isWinner && matchState === MatchStatesCodes.gameOver)
+      return 'cb-custom-event-badge-danger';
+    return undefined;
+  }, [hasCustomEventStyles, isWinner, matchState, currentUserIsPlayer]);
 
-  return <span className={className}>{title}</span>;
+  const badgeColor = useMemo(() => {
+    if (isWinner && matchState === MatchStatesCodes.gameOver) return 'yellow';
+    if (
+      matchState === MatchStatesCodes.pending ||
+      matchState === MatchStatesCodes.timeout ||
+      matchState === MatchStatesCodes.canceled
+    )
+      return 'gray';
+    if (!currentUserIsPlayer && matchState === MatchStatesCodes.playing) return 'blue';
+    if (matchState === MatchStatesCodes.playing) return 'green';
+    if (!isWinner && matchState === MatchStatesCodes.gameOver) return 'red';
+    return 'gray';
+  }, [isWinner, matchState, currentUserIsPlayer]);
+
+  return (
+    <Badge color={badgeColor} className={customClassName} mr="xs">
+      {title}
+    </Badge>
+  );
 }
 
 export default memo(TournamentMatchBadge);

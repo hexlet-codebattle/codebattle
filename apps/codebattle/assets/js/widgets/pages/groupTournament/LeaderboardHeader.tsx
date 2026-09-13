@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flex, Text } from '@mantine/core';
 import i18n from '../../../i18n';
 
 interface LeaderboardHeaderProps {
@@ -7,14 +8,19 @@ interface LeaderboardHeaderProps {
 }
 
 const LeaderboardHeader = ({ currentRoundPosition, roundsCount }: LeaderboardHeaderProps) => (
-  <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
-    <span className="font-weight-bold">{i18n.t('Leaderboard')}</span>
+  <Flex
+    justify="space-between"
+    px="md"
+    pb="sm"
+    style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+  >
+    <Text fw={700}>{i18n.t('Leaderboard')}</Text>
     {Number.isInteger(currentRoundPosition) && Number.isInteger(roundsCount) && (
-      <span className="text-muted small">
+      <Text c="dimmed" size="sm">
         {`${i18n.t('Round')} ${currentRoundPosition}/${roundsCount}`}
-      </span>
+      </Text>
     )}
-  </div>
+  </Flex>
 );
 
 export default LeaderboardHeader;

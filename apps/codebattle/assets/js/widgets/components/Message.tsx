@@ -1,7 +1,7 @@
 import React, { type MouseEvent, type KeyboardEvent } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { ActionIcon, Flex, Group, Stack, Text } from '@mantine/core';
 
 import i18n from '../../i18n';
 import useHover from '../utils/useHover';
@@ -25,20 +25,24 @@ interface MessageHeaderProps {
 }
 
 function MessageHeader({ name, time, hovered, interactive, action }: MessageHeaderProps) {
-  const playerClassName = cn(
-    'd-inline-block text-truncate align-top text-nowrap cb-username-max-length mr-1',
-    { 'text-primary': interactive && hovered },
-  );
-
   return (
     <>
-      <span className="font-weight-bold">
-        <span className={playerClassName}>{name}</span>
-      </span>
-      <span className="d-inline-flex align-items-center">
+      <Text component="span" fw={700}>
+        <Text
+          component="span"
+          truncate
+          mr="xs"
+          className="cb-username-max-length"
+          c={interactive && hovered ? 'blue' : undefined}
+          style={{ display: 'inline-block', verticalAlign: 'top' }}
+        >
+          {name}
+        </Text>
+      </Text>
+      <Group component="span" display="inline-flex" wrap="nowrap" gap={4} align="center">
         <MessageTimestamp time={time!} />
         {action}
-      </span>
+      </Group>
     </>
   );
 }
@@ -52,17 +56,17 @@ interface MessagePartProps {
 function MessagePart({ part, index, name }: MessagePartProps) {
   if (part.slice(1) === name) {
     return (
-      <span key={index} className="font-weight-bold bg-warning">
+      <Text key={index} component="span" fw={700} bg="yellow">
         {part}
-      </span>
+      </Text>
     );
   }
 
   if (part.startsWith('@')) {
     return (
-      <span key={index} className="font-weight-bold text-primary">
+      <Text key={index} component="span" fw={700} c="blue">
         {part}
-      </span>
+      </Text>
     );
   }
 
@@ -102,9 +106,9 @@ function Message({
   const isInteractive = Boolean(userId && displayMenu);
   const banAction =
     userId && name && onBanUser ? (
-      <button
-        type="button"
-        className="btn cb-tournament-chat-ban"
+      <ActionIcon
+        variant="transparent"
+        className="cb-tournament-chat-ban"
         title={i18n.t('Ban %{name}', { name })}
         aria-label={i18n.t('Ban %{name}', { name })}
         onClick={(event) => {
@@ -113,14 +117,14 @@ function Message({
         }}
       >
         <FontAwesomeIcon icon="ban" />
-      </button>
+      </ActionIcon>
     ) : null;
   const isOwnMessage = Boolean(userId && currentUserId && userId === currentUserId);
   const canDelete = Boolean(id != null && onDeleteMessage && (canDeleteAny || isOwnMessage));
   const deleteAction = canDelete ? (
-    <button
-      type="button"
-      className="btn cb-chat-message-delete"
+    <ActionIcon
+      variant="transparent"
+      className="cb-chat-message-delete"
       title={i18n.t('Delete message')}
       aria-label={i18n.t('Delete message')}
       onClick={(event) => {
@@ -129,7 +133,7 @@ function Message({
       }}
     >
       <FontAwesomeIcon icon="trash" />
-    </button>
+    </ActionIcon>
   ) : null;
 
   if (!text) {
@@ -146,9 +150,7 @@ function Message({
 
   const parts = text.split(/(@+[-a-zA-Z0-9_]+\b)/g);
 
-  const textPartsClassNames = cn('text-break', {
-    'cb-private-text': meta?.type === 'private',
-  });
+  const textPartsClassName = meta?.type === 'private' ? 'cb-private-text' : undefined;
   const messageHeader = (
     <MessageHeader
       name={name}
@@ -167,15 +169,18 @@ function Message({
   );
 
   return (
-    <div className="d-flex align-items-baseline flex-wrap mb-1">
-      <span className="d-flex flex-column w-100">
+    <Flex align="baseline" wrap="wrap" mb="xs">
+      <Stack component="span" gap={0} w="100%">
         {isInteractive ? (
-          <span
+          <Group
             ref={chatHeaderRef}
+            component="span"
+            justify="space-between"
+            wrap="nowrap"
+            gap="xs"
             role="button"
             tabIndex={0}
             title={`Message (${name})`}
-            className="d-flex justify-content-between"
             data-user-id={userId}
             data-user-name={name}
             onContextMenu={displayMenu}
@@ -183,23 +188,29 @@ function Message({
             onKeyPress={displayMenu}
           >
             {messageHeader}
-          </span>
+          </Group>
         ) : (
-          <span ref={chatHeaderRef} className="d-flex justify-content-between">
+          <Group
+            ref={chatHeaderRef}
+            component="span"
+            justify="space-between"
+            wrap="nowrap"
+            gap="xs"
+          >
             {messageHeader}
-          </span>
+          </Group>
         )}
         <span>
           <MessageTag messageType={meta?.type} />
-          <span className={textPartsClassNames}>
+          <Text component="span" className={textPartsClassName} style={{ wordBreak: 'break-word' }}>
             {parts.map((part, i) => (
               /* eslint-disable react/no-array-index-key */
               <MessagePart key={i} part={part} index={i} name={name} />
             ))}
-          </span>
+          </Text>
         </span>
-      </span>
-    </div>
+      </Stack>
+    </Flex>
   );
 }
 

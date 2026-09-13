@@ -5,6 +5,8 @@ import '@testing-library/jest-dom';
 
 import UserName from '../widgets/components/UserName';
 
+import { MantineTestProvider } from './helpers/mantine';
+
 vi.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'span',
 }));
@@ -21,6 +23,7 @@ describe('UserName', () => {
         hideLink
         hideOnlineIndicator
       />,
+      { wrapper: MantineTestProvider },
     );
 
     expect(screen.getByText('A-211250(2011)')).toBeInTheDocument();
@@ -33,6 +36,7 @@ describe('UserName', () => {
         hideLink
         hideOnlineIndicator
       />,
+      { wrapper: MantineTestProvider },
     );
 
     expect(screen.getByText('A-211250')).toBeInTheDocument();
@@ -47,6 +51,7 @@ describe('UserName', () => {
         hideLink
         hideOnlineIndicator
       />,
+      { wrapper: MantineTestProvider },
     );
 
     expect(screen.getByText('CasperDesigner')).toBeInTheDocument();

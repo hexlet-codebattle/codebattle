@@ -1,6 +1,9 @@
 import React, { memo, useState, useMemo } from 'react';
 
 import { Link } from '@inertiajs/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { Avatar, Badge, Box, Button, Flex, Group, Paper, Text, Title } from '@mantine/core';
 import cn from 'classnames';
 
 import i18n from '../../../i18n';
@@ -37,12 +40,14 @@ interface StatBoxProps {
 
 function StatBox({ label, value, highlight = false }: StatBoxProps) {
   return (
-    <div className="text-center">
-      <div className={cn('fw-bold', highlight ? 'fs-3 text-warning' : 'fs-5 text-white')}>
+    <Box ta="center">
+      <Text fw={700} c={highlight ? 'yellow' : 'white'}>
         {value}
-      </div>
-      <div className="text-muted small text-uppercase">{label}</div>
-    </div>
+      </Text>
+      <Text size="xs" c="dimmed" tt="uppercase">
+        {label}
+      </Text>
+    </Box>
   );
 }
 
@@ -53,50 +58,62 @@ interface PodiumCardProps {
 
 function PodiumCard({ result, isFirst = false }: PodiumCardProps) {
   return (
-    <div
-      className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
+    <Paper
+      h="100%"
+      radius="sm"
+      shadow="lg"
+      className={cn('cb-hof-podium-card', {
         'cb-gold-place-bg': result.place === 1,
         'cb-silver-place-bg': result.place === 2,
         'cb-bronze-place-bg': result.place === 3,
       })}
     >
-      <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
-        <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>{getMedalEmoji(result.place)}</div>
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        ta="center"
+        flex={1}
+        px="md"
+        py={isFirst ? 'lg' : 'md'}
+      >
+        <Box mb="sm">{getMedalEmoji(result.place)}</Box>
         {result.avatar_url && (
-          <img
+          <Avatar
             src={result.avatar_url}
             alt={result.user_name}
-            className="rounded-circle mb-2"
-            style={{ width: isFirst ? '64px' : '48px', height: isFirst ? '64px' : '48px' }}
+            size={isFirst ? 64 : 48}
+            radius="50%"
+            mb="sm"
           />
         )}
-        <h4 className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>{result.user_name}</h4>
-        <div className="mb-3">
+        <Text component="h4" c="white" mb="sm" fw={isFirst ? 700 : 500}>
+          {result.user_name}
+        </Text>
+        <Group justify="center" gap="xs" mb="md">
           {result.user_lang && (
-            <span className="mr-2">
-              <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
-            </span>
+            <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
           )}
-          {result.clan_name && <span className="text-muted">{result.clan_name}</span>}
-        </div>
-        <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
-          <div className="px-3">
+          {result.clan_name && <Text c="dimmed">{result.clan_name}</Text>}
+        </Group>
+        <Flex justify="center" mt={isFirst ? 'lg' : 'md'}>
+          <Box px="md">
             <StatBox label={i18n.t('Points')} value={result.total_points} highlight={isFirst} />
-          </div>
-          <div className="px-3">
+          </Box>
+          <Box px="md">
             <StatBox label={i18n.t('Wins')} value={result.total_wins_count} />
-          </div>
-        </div>
-        <div className="d-flex justify-content-center mt-3">
-          <div className="px-3">
+          </Box>
+        </Flex>
+        <Flex justify="center" mt="md">
+          <Box px="md">
             <StatBox label={i18n.t('Score')} value={result.total_score} />
-          </div>
-          <div className="px-3">
+          </Box>
+          <Box px="md">
             <StatBox label={i18n.t('Tournaments')} value={result.tournaments_count} />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Flex>
+      </Flex>
+    </Paper>
   );
 }
 
@@ -112,31 +129,35 @@ function ChampionsPodium({ top3 }: ChampionsPodiumProps) {
   const third = top3.find((r) => r.place === 3);
 
   return (
-    <div className="mb-5">
-      <h2 className="text-gold mb-4 text-center">{i18n.t('Champions')}</h2>
-      <div className="row align-items-end justify-content-center">
+    <Box mb="xl">
+      <Title order={2} c="gold" mb="lg" ta="center">
+        {i18n.t('Champions')}
+      </Title>
+      <Flex wrap="wrap" align="flex-end" justify="center">
         {/* Second place - left */}
-        <div className="col-md-4 col-lg-3">
+        <Box w={{ base: '100%', md: '33.3333%', lg: '25%' }} px="md">
           {second && (
-            <div style={{ marginTop: '2rem' }}>
+            <Box style={{ marginTop: '2rem' }}>
               <PodiumCard result={second} />
-            </div>
+            </Box>
           )}
-        </div>
+        </Box>
 
         {/* First place - center, elevated */}
-        <div className="col-md-4 col-lg-3">{first && <PodiumCard result={first} isFirst />}</div>
+        <Box w={{ base: '100%', md: '33.3333%', lg: '25%' }} px="md">
+          {first && <PodiumCard result={first} isFirst />}
+        </Box>
 
         {/* Third place - right */}
-        <div className="col-md-4 col-lg-3">
+        <Box w={{ base: '100%', md: '33.3333%', lg: '25%' }} px="md">
           {third && (
-            <div style={{ marginTop: '3rem' }}>
+            <Box style={{ marginTop: '3rem' }}>
               <PodiumCard result={third} />
-            </div>
+            </Box>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Flex>
+    </Box>
   );
 }
 
@@ -163,15 +184,15 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
 
   if (!season) {
     return (
-      <div className="cb-bg-panel cb-text min-vh-100 py-5">
-        <div className="container">
-          <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
-            <div className="card-body text-center py-5">
-              <p className="text-muted mb-0">{i18n.t('Season not found')}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
+        <Box w="100%" maw={1140} mx="auto" px="md">
+          <Paper radius="md" shadow="sm" bg="cbPanel">
+            <Box ta="center" py="xl">
+              <Text c="dimmed">{i18n.t('Season not found')}</Text>
+            </Box>
+          </Paper>
+        </Box>
+      </Box>
     );
   }
 
@@ -189,55 +210,70 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
     seasonStatus = 'completed';
   }
 
-  const statusBadge = {
-    upcoming: { class: 'bg-info', text: i18n.t('Upcoming') },
-    active: { class: 'bg-success', text: i18n.t('Active') },
-    completed: { class: 'bg-secondary', text: i18n.t('Completed') },
+  const statusBadgeColor = {
+    upcoming: 'cyan',
+    active: 'green',
+    completed: 'gray',
+  }[seasonStatus];
+
+  const statusBadgeText = {
+    upcoming: i18n.t('Upcoming'),
+    active: i18n.t('Active'),
+    completed: i18n.t('Completed'),
   }[seasonStatus];
 
   return (
-    <div className="cb-bg-panel cb-text min-vh-100 py-5">
-      <div className="container">
+    <Box c="cbText" mih="100vh" py="xl" style={{ background: 'var(--cb-bg-panel-background)' }}>
+      <Box w="100%" maw={1140} mx="auto" px="md">
         {/* Header */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5">
-          <div>
-            <div className="d-flex align-items-center mb-2">
-              <h1 className="text-gold fw-bold mb-0 mr-2">
+        <Flex
+          direction={{ base: 'column', md: 'row' }}
+          justify="space-between"
+          align={{ base: 'flex-start', md: 'center' }}
+          mb="xl"
+        >
+          <Box>
+            <Flex align="center" mb="sm">
+              <Title order={1} c="gold" mr="sm" fw={700}>
                 {season.name} {season.year}
-              </h1>
-              <span className={cn('badge', statusBadge.class)}>{statusBadge.text}</span>
-            </div>
-            <div className="text-muted">
-              <i className="bi bi-calendar3 mr-2" />
+              </Title>
+              <Badge color={statusBadgeColor}>{statusBadgeText}</Badge>
+            </Flex>
+            <Flex align="center" gap="xs" c="dimmed">
+              <FontAwesomeIcon icon={faCalendar} />
               {season.starts_at}
               {' — '}
               {season.ends_at}
-            </div>
-          </div>
-          <div className="d-flex mt-3 mt-md-0">
-            <Link href="/seasons" className="btn btn-outline-gold mr-2">
+            </Flex>
+          </Box>
+          <Flex mt={{ base: 'md', md: 0 }}>
+            <Button component={Link} href="/seasons" variant="outline" mr="sm" color="gold">
               {i18n.t('All Seasons')}
-            </Link>
-            <a href="/hall_of_fame" className="btn btn-outline-gold">
+            </Button>
+            <Button component="a" href="/hall_of_fame" variant="outline" color="gold">
               {i18n.t('Hall of Fame')}
-            </a>
-          </div>
-        </div>
+            </Button>
+          </Flex>
+        </Flex>
 
         {/* Champions Podium */}
         <ChampionsPodium top3={top3} />
 
         {/* Full Leaderboard */}
-        <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
-          <div className="card-header bg-transparent border-bottom border-secondary py-3">
-            <div className="d-flex justify-content-between align-items-center">
-              <h2 className="mb-0 text-gold fs-4">{i18n.t('Full Leaderboard')}</h2>
-              <span className="badge bg-secondary">
-                {i18n.t('%{count} players', { count: results.length })}
-              </span>
-            </div>
-          </div>
-          <div className="card-body p-0">
+        <Paper radius="md" shadow="sm" bg="cbPanel">
+          <Flex
+            justify="space-between"
+            align="center"
+            px="md"
+            py="md"
+            style={{ borderBottom: '1px solid #6c757d' }}
+          >
+            <Title order={2} c="gold">
+              {i18n.t('Full Leaderboard')}
+            </Title>
+            <Badge color="gray">{i18n.t('%{count} players', { count: results.length })}</Badge>
+          </Flex>
+          <Box>
             <LeaderboardTable
               results={results}
               onShowInsights={handleShowInsights}
@@ -261,8 +297,8 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
               displayedResults={leaderboardState.displayedResults}
               showInsightsButton
             />
-          </div>
-        </div>
+          </Box>
+        </Paper>
 
         {/* Player Insights Modal */}
         <PlayerInsightsModal
@@ -270,10 +306,16 @@ function SeasonShowPage({ season, results: initialResults }: SeasonShowPageProps
           onHide={handleCloseModal}
           player={selectedPlayer}
           allResults={results}
-          season={season as { id: number; name?: string; year?: number | string } | null}
+          season={
+            season as {
+              id: number;
+              name?: string;
+              year?: number | string;
+            } | null
+          }
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

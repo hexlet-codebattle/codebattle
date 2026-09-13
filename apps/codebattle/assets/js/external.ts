@@ -11,8 +11,8 @@
 // paths "./socket" or full ones "web/static/js/socket".
 
 import 'core-js/stable';
-import 'bootstrap';
 import 'phoenix_html';
+import './heex';
 import './pwa';
 import { renderEventPage, renderMainChannelWidget } from './widgets';
 

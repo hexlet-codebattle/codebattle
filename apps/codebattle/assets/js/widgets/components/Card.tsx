@@ -1,5 +1,7 @@
 import React, { type ReactNode } from 'react';
 
+import { Container, Paper, Title } from '@mantine/core';
+
 interface CardProps {
   children: ReactNode;
   title: ReactNode;
@@ -7,10 +9,14 @@ interface CardProps {
 
 function Card({ title, children }: CardProps) {
   return (
-    <div className="container-xl bg-white shadow-sm rounded py-4 mb-3">
-      <h3 className="text-center mb-4">{title}</h3>
-      {children}
-    </div>
+    <Container size="xl" px={0} mb="md">
+      <Paper bg="white" shadow="sm" radius="sm" py="lg">
+        <Title order={3} ta="center" mb="lg">
+          {title}
+        </Title>
+        {children}
+      </Paper>
+    </Container>
   );
 }
 

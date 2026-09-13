@@ -1,12 +1,11 @@
 import React, { memo, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Anchor, Box, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
-import Select from 'react-select';
 
-import { customStyle } from '@/components/LanguagePickerView';
+import CbSelect from '@/components/CbSelect';
 import UserInfo from '@/components/UserInfo';
 import { sendNewReportState } from '@/middlewares/TournamentAdmin';
 import {
@@ -19,12 +18,14 @@ import { type AppDispatch } from '@/slices';
 import { type Player } from '@/slices/initial';
 
 import i18next from '../../../i18n';
+import { rankingCellStyle } from '../../ui/table';
 
-const customEventTrClassName = cn('cb-custom-event-tr align-items-center');
+const customEventTrClassName = 'cb-custom-event-tr';
 
-const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 ml-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-);
+const tableDataCellStyle = {
+  ...rankingCellStyle,
+  marginLeft: '0.5rem',
+};
 
 interface ReportStateOption {
   label: string;
@@ -105,68 +106,79 @@ function ReportsPanel() {
   }
 
   return (
-    <div className="d-flex my-2">
-      <table className="table table-striped cb-custom-event-table border cb-border-color border-secondary cb-rounded">
-        <thead className="cb-text">
-          <tr>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Offender')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Reporter')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('State')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Inserted At')}</th>
-            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Box my="xs" style={{ display: 'flex' }}>
+      <Table
+        striped
+        className="cb-custom-event-table"
+        style={{ border: '1px solid var(--mantine-color-default-border)' }}
+      >
+        <Table.Thead c="cbText">
+          <Table.Tr>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Offender')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Reporter')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('State')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Inserted At')}
+            </Table.Th>
+            <Table.Th c="dimmed" fw="normal" p="xs" pl={24}>
+              {i18next.t('Actions')}
+            </Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {sortedReports.map((item) => {
             const offender = players[item.offenderId];
             const reporter = players[item.reporterId];
             return (
               <React.Fragment key={`report-${item.id}`}>
-                <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-                <tr className={customEventTrClassName}>
-                  <td className={tableDataCellClassName}>
+                <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+                <Table.Tr className={customEventTrClassName}>
+                  <Table.Td style={tableDataCellStyle}>
                     <UserInfo
                       user={offender}
                       banned={offender?.state === 'banned'}
                       hideOnlineIndicator
                       hideLink
                     />
-                  </td>
-                  <td className={tableDataCellClassName}>
+                  </Table.Td>
+                  <Table.Td style={tableDataCellStyle}>
                     <UserInfo user={reporter} hideOnlineIndicator hideLink />
-                  </td>
-                  <td className={tableDataCellClassName}>
-                    <Select<ReportStateOption>
-                      styles={
-                        customStyle as unknown as React.ComponentProps<
-                          typeof Select<ReportStateOption>
-                        >['styles']
-                      }
+                  </Table.Td>
+                  <Table.Td style={tableDataCellStyle}>
+                    <CbSelect<ReportStateOption>
                       value={{
                         label: getStateText(item.state),
                         value: item.state,
                       }}
                       onChange={changeReportState(item.id)}
                       options={reportStatusOptions}
+                      getOptionValue={(option) => option.value}
+                      getOptionLabel={(option) => option.label}
+                      searchable={false}
+                      w={210}
                     />
-                  </td>
-                  <td className={tableDataCellClassName}>
-                    <span className="text-white">
-                      {dayjs(item.insertedAt).format('YYYY-MM-DD HH:mm:ss')}
-                    </span>
-                  </td>
-                  <td className={tableDataCellClassName}>
-                    <a href={`/games/${item.gameId}?realtime=true`}>
+                  </Table.Td>
+                  <Table.Td style={tableDataCellStyle}>
+                    <Text c="white">{dayjs(item.insertedAt).format('YYYY-MM-DD HH:mm:ss')}</Text>
+                  </Table.Td>
+                  <Table.Td style={tableDataCellStyle}>
+                    <Anchor href={`/games/${item.gameId}?realtime=true`}>
                       <FontAwesomeIcon icon="link" />
-                    </a>
-                  </td>
-                </tr>
+                    </Anchor>
+                  </Table.Td>
+                </Table.Tr>
               </React.Fragment>
             );
           })}
-        </tbody>
-      </table>
-    </div>
+        </Table.Tbody>
+      </Table>
+    </Box>
   );
 }
 

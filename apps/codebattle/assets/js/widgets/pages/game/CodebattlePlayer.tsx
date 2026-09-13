@@ -241,7 +241,11 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
       mainService.send({ type: 'END' });
     }
 
-    this.setState({ handlerPosition, smoothHandlerPosition: handlerPosition, nextRecordId });
+    this.setState({
+      handlerPosition,
+      smoothHandlerPosition: handlerPosition,
+      nextRecordId,
+    });
   };
 
   updateGameState = () => {
@@ -314,7 +318,10 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
       const offset = handlerPosition + stepCoefficient;
       const newPosition = offset > 1 ? 1 : offset;
 
-      this.setState({ handlerPosition: newPosition, smoothHandlerPosition: newPosition });
+      this.setState({
+        handlerPosition: newPosition,
+        smoothHandlerPosition: newPosition,
+      });
 
       this.updateGameState();
       this.play(newPosition);
@@ -361,7 +368,16 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
     return (
       <>
         <div className="cb-replayer-controls-spacer" />
-        <div className="container-fluid fixed-bottom cb-replayer-controls-shell">
+        <div
+          className="cb-replayer-controls-shell"
+          style={{
+            width: '100%',
+            position: 'fixed',
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
+        >
           <ControlPanel
             nextRecordId={nextRecordId}
             roomMachineState={roomMachineState}

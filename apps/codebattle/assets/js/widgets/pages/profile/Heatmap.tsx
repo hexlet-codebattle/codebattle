@@ -1,5 +1,6 @@
 import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 
+import { Box, Flex, NativeSelect } from '@mantine/core';
 import CalendarHeatmap, { type ReactCalendarHeatmapValue } from 'react-calendar-heatmap';
 import { useDispatch } from 'react-redux';
 
@@ -98,7 +99,10 @@ function Heatmap() {
   const { activities, meta } = activityData;
   const totalGames = activities.reduce((sum, activity) => sum + activity.count, 0);
   const title = meta.year
-    ? i18n.t('%{count} games in %{year}', { count: totalGames, year: meta.year })
+    ? i18n.t('%{count} games in %{year}', {
+        count: totalGames,
+        year: meta.year,
+      })
     : i18n.t('%{count} games in the last 365 days', { count: totalGames });
   const range = `${dayjs(meta.start_date).format('MMM D, YYYY')} - ${dayjs(meta.end_date).format('MMM D, YYYY')}`;
 
@@ -115,7 +119,10 @@ function Heatmap() {
 
     setTooltip({
       text: value
-        ? i18n.t('%{count} games on %{date}', { count: value.count, date: value.date })
+        ? i18n.t('%{count} games on %{date}', {
+            count: value.count,
+            date: value.date,
+          })
         : i18n.t('No games'),
       x: targetRect.left - wrapperRect.left + targetRect.width / 2,
       y: targetRect.top - wrapperRect.top - 8,
@@ -126,19 +133,28 @@ function Heatmap() {
 
   return (
     <div className="cb-profile-heatmap">
-      <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between mb-3">
-        <div className="d-none d-lg-block" style={{ width: '176px' }} aria-hidden="true" />
-        <div className="mb-3 mb-lg-0 cb-profile-heatmap-heading flex-grow-1">
+      <Flex
+        direction={{ base: 'column', lg: 'row' }}
+        align="center"
+        justify="space-between"
+        mb="md"
+      >
+        <Box display={{ base: 'none', lg: 'block' }} w={176} aria-hidden="true" />
+        <Box
+          className="cb-profile-heatmap-heading"
+          mb={{ base: 'md', lg: 0 }}
+          style={{ flexGrow: 1 }}
+        >
           <div className="cb-profile-heatmap-title">
             <span>{title}</span>
             <span className="cb-profile-heatmap-separator">•</span>
             <span className="cb-profile-heatmap-range">{range}</span>
           </div>
-        </div>
-        <div className="cb-profile-heatmap-controls d-flex justify-content-center justify-content-lg-end">
-          <select
+        </Box>
+        <Flex className="cb-profile-heatmap-controls" justify={{ base: 'center', lg: 'flex-end' }}>
+          <NativeSelect
             id="heatmap-year-select"
-            className="custom-select cb-bg-panel cb-border-color text-white cb-profile-heatmap-select"
+            classNames={{ input: 'cb-profile-heatmap-select' }}
             value={selectedPeriod}
             onChange={(event) => setSelectedPeriod(event.target.value)}
             disabled={isLoading}
@@ -149,9 +165,9 @@ function Heatmap() {
                 {year}
               </option>
             ))}
-          </select>
-        </div>
-      </div>
+          </NativeSelect>
+        </Flex>
+      </Flex>
 
       <div className="cb-profile-heatmap-grid-wrapper" ref={gridWrapperRef}>
         {isLoading && (

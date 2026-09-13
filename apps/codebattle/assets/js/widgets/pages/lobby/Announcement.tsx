@@ -1,6 +1,3 @@
-// import React from 'react';
-// import Table from 'react-bootstrap/Table';
-
 function Announcement() {
   return null;
 }

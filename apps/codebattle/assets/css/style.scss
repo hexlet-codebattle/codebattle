@@ -46,7 +46,11 @@ $cb-bg-highlight-panel: #1c1c24;
 /* $cb-bg-highlight-panel: #1f1313;*/
 /* $cb-bg-highlight-panel: #13181f;*/
 
+$primary: #007bff;
 $secondary: #477591;
+$success: #28a745;
+$danger: #dc3545;
+$warning: #ffc107;
 $link-color: white;
 $error: #dc3545;
 $bg-orange: rgba(238, 55, 55);
@@ -86,11 +90,15 @@ $cb-rookie-bg: $iron;
   --cb-grade-rookie: #{$cb-rookie-bg};
 }
 
-@import 'bootstrap/scss/bootstrap';
+// Mantine core styles are wrapped in `@layer mantine`. Unlayered custom styles
+// above always win on conflicts, so existing custom-styled UI is unaffected
+// while Mantine components still get their own styling.
+@import '@mantine/core/styles.layer.css';
 @import 'nprogress/nprogress.css';
 @import 'gamePreview';
 @import 'skeleton';
 @import 'custom';
+@import 'heex-utilities';
 @import 'react-contexify/dist/ReactContexify.css';
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -217,7 +225,7 @@ input[type='range'].cb-range {
   --cb-range-track-bg: linear-gradient(
     90deg,
     #ff6a3d 0%,
-    $orange 50%,
+    #{$orange} 50%,
     #d63a3a 100%
   );
   --cb-range-track-rest: linear-gradient(
@@ -339,7 +347,7 @@ input[type='range'].cb-range {
 }
 
 [data-player-type] {
-  --flag-color: $cb-bg-panel;
+  --flag-color: #{$cb-bg-panel};
   background: linear-gradient(to top, var(--flag-color), $cb-bg-panel 15%);
 }
 
@@ -355,7 +363,7 @@ input[type='range'].cb-range {
   --flag-color: var(--danger);
 }
 
-.alert {
+.cb-alert {
   border-radius: unset;
 }
 
@@ -363,7 +371,7 @@ input[type='range'].cb-range {
   border: none;
   backdrop-filter: blur(10px);
 
-  &.alert-info {
+  &.cb-alert-info {
     background: linear-gradient(
       135deg,
       rgba(25, 135, 84, 0.9),
@@ -373,7 +381,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #198754;
   }
 
-  &.alert-success {
+  &.cb-alert-success {
     background: linear-gradient(
       135deg,
       rgba(25, 135, 84, 0.9),
@@ -383,7 +391,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #198754;
   }
 
-  &.alert-danger {
+  &.cb-alert-danger {
     background: linear-gradient(
       135deg,
       rgba(220, 53, 69, 0.9),
@@ -393,7 +401,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #dc3545;
   }
 
-  &.alert-warning {
+  &.cb-alert-warning {
     background: linear-gradient(
       135deg,
       rgba(255, 193, 7, 0.9),
@@ -403,7 +411,7 @@ input[type='range'].cb-range {
     border-left: 4px solid #ffc107;
   }
 
-  .close {
+  .cb-close {
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
     opacity: 0.8;
 
@@ -411,19 +419,6 @@ input[type='range'].cb-range {
       opacity: 1;
     }
   }
-}
-
-.alert-dark-theme.cb-game-win-alert.alert-success {
-  background: linear-gradient(
-    135deg,
-    rgba(25, 135, 84, 0.95),
-    rgba(240, 199, 94, 0.75)
-  );
-  color: #ffffff;
-  border-left: 4px solid #f0c75e;
-  box-shadow:
-    0 0 0 1px rgba(240, 199, 94, 0.25),
-    0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
 .gutter-vertical {
@@ -513,7 +508,12 @@ input[type='range'].cb-range {
 .btn-outline-orange {
   border-color: $orange;
   color: $orange;
-  @include button-outline-variant($orange);
+
+  &:hover {
+    color: var(--white);
+    background-color: $orange;
+    border-color: $orange;
+  }
 }
 
 .btn-check:hover {
@@ -1333,6 +1333,20 @@ a {
   font-size: 27px;
 }
 
+// Self-sufficient ports of the Bootstrap `.h1` (stat numbers) / `.lead`
+// (stat captions) typography the profile page used to carry — the media-query
+// shrinks below depend on these bases, which inlining would have beaten.
+.cb-stats-number {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.cb-stats-caption {
+  font-size: 20px;
+  font-weight: 300;
+}
+
 .cb-profile-avatar {
   width: min(100%, 180px);
 }
@@ -1405,7 +1419,7 @@ a {
 }
 
 .x-intent-background {
-  background-color: rgba($black, 0.25);
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 .x-opacity-0 {
@@ -1437,15 +1451,15 @@ a {
 }
 
 .x-bg-gray {
-  background-color: $gray-300 !important;
+  background-color: #dee2e6 !important;
 }
 
 .x-rounded-bottom-right {
-  border-bottom-right-radius: $border-radius !important;
+  border-bottom-right-radius: 0.25rem !important;
 }
 
 .x-rounded-bottom-left {
-  border-bottom-left-radius: $border-radius !important;
+  border-bottom-left-radius: 0.25rem !important;
 }
 
 .x-username-truncated {
@@ -1670,10 +1684,6 @@ main > #app {
   min-width: 250px;
 }
 
-.cb-game > [class*='col-'] {
-  min-width: 0;
-}
-
 .cb-game-chat-layout,
 .cb-game-chat-container {
   min-width: 0;
@@ -1685,7 +1695,7 @@ main > #app {
     padding-right: clamp(0.25rem, 1vw, 0.5rem);
   }
 
-  .main-nav .btn {
+  .main-nav .cb-btn {
     padding: clamp(0.2rem, 0.5vw, 0.5rem) clamp(0.4rem, 1vw, 0.75rem);
     font-size: clamp(0.75rem, 1vw, 0.875rem);
   }
@@ -1731,7 +1741,8 @@ main > #app {
     font-size: 22px;
   }
 
-  .lead {
+  .cb-lead,
+  .cb-stats-caption {
     font-size: 14px;
   }
 }
@@ -1762,7 +1773,8 @@ main > #app {
     font-size: 30px;
   }
 
-  .lead {
+  .cb-lead,
+  .cb-stats-caption {
     font-size: 16px;
   }
 
@@ -1802,7 +1814,12 @@ main > #app {
 .tag-btn-outline-orange {
   border-color: $orange;
   color: $orange;
-  @include button-outline-variant($orange);
+
+  &:hover {
+    color: var(--white);
+    background-color: $orange;
+    border-color: $orange;
+  }
 }
 
 .cb-game-chat-container {
@@ -1997,9 +2014,8 @@ $cb-bronze-bottom: #4a3223;
   }
 }
 
-.dropdown-menu,
 .cb-dropdown-menu {
-  & .dropdown-item.cb-dropdown-item {
+  & .cb-dropdown-item {
     color: white !important;
 
     &:hover:not(:active):not(.active),
@@ -2028,32 +2044,6 @@ $cb-bronze-bottom: #4a3223;
 
 div.cb-dropdown-menu {
   transform: translate3d(-100%, 0, 0);
-}
-
-.cb-height-info {
-  min-height: 300px;
-  height: 300px;
-
-  .nav-link.active {
-    color: white;
-    border-bottom: 1px;
-    background-color: $cb-secondary-hover-background;
-  }
-
-  .nav-link:hover {
-    color: white;
-    background-color: $cb-secondary-hover-background;
-  }
-
-  .nav-link:not(.active):hover {
-    color: white;
-    background-color: $cb-secondary-hover-background;
-    border-bottom: 1px;
-  }
-
-  @media (max-width: $sm) {
-    height: auto;
-  }
 }
 
 @keyframes scale {
@@ -2487,14 +2477,6 @@ a.cb-text:hover {
 
 a.cb-text-light:hover {
   color: white;
-}
-
-.cb-text-success {
-  color: $cb-success;
-}
-
-.cb-text-danger {
-  color: #f04c5c;
 }
 
 .cb-bg-secondary {
@@ -4372,20 +4354,6 @@ a.cb-text-light:hover {
   }
 }
 
-.cb-blur {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(16px);
-}
-
-.arrow::after,
-.bs-popover-bottom .arrow::after {
-  border-bottom-color: rgba(0, 0, 0);
-
-  .cb-blur & {
-    border-bottom-color: rgba(0, 0, 0, 0.3);
-  }
-}
-
 // Settings page
 .cb-settings-page {
   width: 100%;
@@ -4635,7 +4603,7 @@ a.cb-text-light:hover {
 }
 
 .cb-settings-social-links {
-  > .d-flex {
+  > * {
     margin-bottom: 8px !important;
     padding: 12px 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);

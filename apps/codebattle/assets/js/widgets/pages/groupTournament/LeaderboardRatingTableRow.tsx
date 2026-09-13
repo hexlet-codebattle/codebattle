@@ -1,7 +1,8 @@
 import React from 'react';
 import cn from 'classnames';
+import { Badge, Box, Table, Text } from '@mantine/core';
 import i18n from '../../../i18n';
-import { trClassName, tdClassName } from '../../utils/groupTournament';
+import { trClassName, tdCellProps } from '../../utils/groupTournament';
 import LeaderboardRatingRoundCell from './LeaderboardRatingRoundCell';
 import { type LeaderboardEntry } from './types';
 
@@ -11,6 +12,15 @@ interface LeaderboardRatingTableRowProps {
   rounds: number[];
   currentUserId?: number;
 }
+
+const cellProps = {
+  ...tdCellProps,
+  style: {
+    ...tdCellProps.style,
+    borderTopLeftRadius: '0.5rem',
+    borderBottomLeftRadius: '0.5rem',
+  },
+};
 
 const LeaderboardRatingTableRow = ({
   entry,
@@ -24,22 +34,15 @@ const LeaderboardRatingTableRow = ({
 
   return (
     <React.Fragment>
-      <tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
-      <tr
-        className={cn(trClassName(place), { 'text-muted': isLeft })}
+      <Table.Tr className="cb-custom-event-empty-space-tr" aria-hidden="true" />
+      <Table.Tr
+        className={cn(trClassName(place))}
+        c={isLeft ? 'dimmed' : undefined}
         style={isMe ? { outline: '2px solid #ffc107' } : undefined}
       >
-        <td
-          style={{
-            borderTopLeftRadius: '0.5rem',
-            borderBottomLeftRadius: '0.5rem',
-          }}
-          className={tdClassName}
-        >
-          {place}
-        </td>
-        <td className={tdClassName}>
-          <div
+        <Table.Td {...cellProps}>{place}</Table.Td>
+        <Table.Td {...tdCellProps}>
+          <Box
             title={entry.name || `#${entry.userId}`}
             className="cb-custom-event-name"
             style={{
@@ -50,11 +53,15 @@ const LeaderboardRatingTableRow = ({
             }}
           >
             {entry.name || `#${entry.userId}`}
-          </div>
-          {isLeft && <span className="badge badge-secondary ml-2">{i18n.t('Left')}</span>}
-        </td>
-        <td className={tdClassName}>
-          <div
+          </Box>
+          {isLeft && (
+            <Badge color="gray" ml="sm">
+              {i18n.t('Left')}
+            </Badge>
+          )}
+        </Table.Td>
+        <Table.Td {...tdCellProps}>
+          <Box
             title={entry.clan || ''}
             style={{
               textOverflow: 'ellipsis',
@@ -64,27 +71,30 @@ const LeaderboardRatingTableRow = ({
             }}
           >
             {entry.clan || '—'}
-          </div>
-        </td>
-        <td className={cn(tdClassName, 'text-center')}>
+          </Box>
+        </Table.Td>
+        <Table.Td {...tdCellProps} ta="center">
           {Number.isInteger(entry.sliceIndex) ? (entry.sliceIndex as number) + 1 : '—'}
-        </td>
+        </Table.Td>
         {rounds.map((r) => (
           <LeaderboardRatingRoundCell
             key={`c-${entry.userId}-${r}`}
             cell={entry.rounds && entry.rounds[r]}
           />
         ))}
-        <td
+        <Table.Td
+          {...tdCellProps}
+          ta="center"
+          fw={700}
           style={{
+            ...tdCellProps.style,
             borderTopRightRadius: '0.5rem',
             borderBottomRightRadius: '0.5rem',
           }}
-          className={cn(tdClassName, 'text-center font-weight-bold')}
         >
           {entry.totalScore ?? 0}
-        </td>
-      </tr>
+        </Table.Td>
+      </Table.Tr>
     </React.Fragment>
   );
 };

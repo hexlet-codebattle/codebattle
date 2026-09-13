@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Box } from '@mantine/core';
 import LeaderboardHeader from './LeaderboardHeader';
 import LeaderboardTabs from './LeaderboardTabs';
 import LeaderboardRatingTable from './LeaderboardRatingTable';
@@ -32,23 +33,37 @@ function Leaderboard({
   }
 
   return (
-    <div className="mt-3 p-3 w-100 overflow-auto cb-group-tournament-leaderboard-container">
-      <div className="p-3 cb-rounded overflow-auto">
-        <div className="my-2">
-          <div className="d-flex flex-column flex-grow-1 position-relative py-2 mh-100 rounded-left">
+    <Box
+      mt="lg"
+      p="md"
+      w="100%"
+      className="cb-group-tournament-leaderboard-container"
+      style={{ overflow: 'auto' }}
+    >
+      <Box p="md" style={{ overflow: 'auto', borderRadius: 'var(--mantine-radius-md)' }}>
+        <Box my="sm">
+          <Box
+            py="sm"
+            pos="relative"
+            style={{
+              maxHeight: '100%',
+              borderTopLeftRadius: '0.25rem',
+              borderBottomLeftRadius: '0.25rem',
+            }}
+          >
             <LeaderboardHeader
               currentRoundPosition={currentRoundPosition}
               roundsCount={roundsCount}
             />
             <LeaderboardTabs activeTab={activeTab} setActiveTab={setActiveTab} rounds={rounds} />
             {activeTab !== 'rating' ? (
-              <div className="px-3 py-2">
+              <Box px="md" py="sm">
                 <LeaderboardSliceRoundView
                   leaderboard={leaderboard}
                   roundNumber={Number(activeTab.replace('round-', ''))}
                   currentUserId={currentUserId}
                 />
-              </div>
+              </Box>
             ) : (
               <LeaderboardRatingTable
                 leaderboard={leaderboard}
@@ -56,10 +71,10 @@ function Leaderboard({
                 currentUserId={currentUserId}
               />
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

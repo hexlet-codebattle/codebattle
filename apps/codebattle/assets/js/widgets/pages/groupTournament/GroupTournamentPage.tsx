@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Flex } from '@mantine/core';
 
 import Loading from '@/components/Loading';
 import useGroupTournamentPage from '@/utils/useGroupTournamentPage';
@@ -99,11 +100,11 @@ function GroupTournamentPage({
 
   return (
     <>
-      <div className="row">
+      <Box>
         <Header name={tournamentName} status={status} groupTournament={data?.groupTournament} />
-      </div>
-      <div className="row mt-3 h-100">
-        <div className="col-lg-2 col-md-3 col-12 p-1 pb-4">
+      </Box>
+      <Flex mt="md" h="100%" wrap="wrap">
+        <Box w={{ base: '100%', md: '25%', lg: '16.6667%' }} p="xs" pb="lg">
           <EvolutionPanel
             items={data?.runs}
             groupTournament={data?.groupTournament}
@@ -119,8 +120,8 @@ function GroupTournamentPage({
             leaderboard={data?.leaderboard}
             currentUserId={currentUserId}
           />
-        </div>
-        <div className="col-lg-10 col-md-9 col-12 p-1 pb-4">
+        </Box>
+        <Box w={{ base: '100%', md: '75%', lg: '83.3333%' }} p="xs" pb="lg">
           <MainPanel
             status={status}
             run={selectedRun}
@@ -136,8 +137,8 @@ function GroupTournamentPage({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-        </div>
-      </div>
+        </Box>
+      </Flex>
       {!runOnExternalPlatform && (
         <EditorPanel
           inlineHidden

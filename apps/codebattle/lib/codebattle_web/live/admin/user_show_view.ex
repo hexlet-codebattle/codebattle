@@ -927,11 +927,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   defp label_value(""), do: "–"
   defp label_value(value), do: value
 
-  defp subscription_badge_class(:admin), do: "bg-info text-dark"
-  defp subscription_badge_class(:moderator), do: "bg-success"
-  defp subscription_badge_class(:premium), do: "bg-warning text-dark"
-  defp subscription_badge_class(:banned), do: "bg-danger"
-  defp subscription_badge_class(_), do: "bg-secondary"
+  defp subscription_badge_class(:admin), do: "cb-bg-info cb-text-dark"
+  defp subscription_badge_class(:moderator), do: "cb-bg-success"
+  defp subscription_badge_class(:premium), do: "cb-bg-warning cb-text-dark"
+  defp subscription_badge_class(:banned), do: "cb-bg-danger"
+  defp subscription_badge_class(_), do: "cb-bg-secondary"
 
   defp subscription_type_options do
     Enum.map(User.subscription_types(), fn type ->
@@ -951,24 +951,24 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     Calendar.strftime(datetime, "%d %b %Y")
   end
 
-  defp invite_state_badge("pending"), do: "badge bg-secondary"
-  defp invite_state_badge("creating"), do: "badge bg-info text-dark"
-  defp invite_state_badge("invited"), do: "badge bg-primary"
-  defp invite_state_badge("accepted"), do: "badge bg-success"
-  defp invite_state_badge("failed"), do: "badge bg-danger"
-  defp invite_state_badge("expired"), do: "badge bg-warning text-dark"
-  defp invite_state_badge(_), do: "badge bg-secondary"
+  defp invite_state_badge("pending"), do: "cb-badge cb-bg-secondary"
+  defp invite_state_badge("creating"), do: "cb-badge cb-bg-info cb-text-dark"
+  defp invite_state_badge("invited"), do: "cb-badge cb-bg-primary"
+  defp invite_state_badge("accepted"), do: "cb-badge cb-bg-success"
+  defp invite_state_badge("failed"), do: "cb-badge cb-bg-danger"
+  defp invite_state_badge("expired"), do: "cb-badge cb-bg-warning cb-text-dark"
+  defp invite_state_badge(_), do: "cb-badge cb-bg-secondary"
 
-  defp user_group_tournament_state_badge("pending"), do: "badge bg-secondary"
-  defp user_group_tournament_state_badge("provisioning"), do: "badge bg-info text-dark"
-  defp user_group_tournament_state_badge("ready"), do: "badge bg-success"
-  defp user_group_tournament_state_badge("failed"), do: "badge bg-danger"
-  defp user_group_tournament_state_badge(_), do: "badge bg-secondary"
+  defp user_group_tournament_state_badge("pending"), do: "cb-badge cb-bg-secondary"
+  defp user_group_tournament_state_badge("provisioning"), do: "cb-badge cb-bg-info cb-text-dark"
+  defp user_group_tournament_state_badge("ready"), do: "cb-badge cb-bg-success"
+  defp user_group_tournament_state_badge("failed"), do: "cb-badge cb-bg-danger"
+  defp user_group_tournament_state_badge(_), do: "cb-badge cb-bg-secondary"
 
-  defp provisioning_step_badge("pending"), do: "badge bg-secondary"
-  defp provisioning_step_badge("completed"), do: "badge bg-success"
-  defp provisioning_step_badge("failed"), do: "badge bg-danger"
-  defp provisioning_step_badge(_), do: "badge bg-secondary"
+  defp provisioning_step_badge("pending"), do: "cb-badge cb-bg-secondary"
+  defp provisioning_step_badge("completed"), do: "cb-badge cb-bg-success"
+  defp provisioning_step_badge("failed"), do: "cb-badge cb-bg-danger"
+  defp provisioning_step_badge(_), do: "cb-badge cb-bg-secondary"
 
   defp format_invite_datetime(nil), do: "–"
 
@@ -1012,11 +1012,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     }
   end
 
-  defp stage_status_class(:completed), do: "text-success"
-  defp stage_status_class(:started), do: "text-info"
-  defp stage_status_class(:failed), do: "text-danger"
-  defp stage_status_class(:passed), do: "text-success"
-  defp stage_status_class(_), do: "text-white"
+  defp stage_status_class(:completed), do: "cb-text-success"
+  defp stage_status_class(:started), do: "cb-text-info"
+  defp stage_status_class(:failed), do: "cb-text-danger"
+  defp stage_status_class(:passed), do: "cb-text-success"
+  defp stage_status_class(_), do: "cb-text-white"
 
   defp format_input_datetime(nil), do: ""
   defp format_input_datetime(%DateTime{} = datetime), do: DateTime.to_iso8601(datetime)
@@ -1060,29 +1060,29 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     ~H"""
     <% auth_token = normalize_auth_token(@user.auth_token) %>
     <% auth_link = build_auth_link(auth_token) %>
-    <div class="container-xl mt-3">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="cb-container-xl cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-4">
         <div>
-          <div class="cb-text text-uppercase small mb-2">Admin User Profile</div>
-          <h1 class="text-white mb-0">{display_name(@user)}</h1>
+          <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Admin User Profile</div>
+          <h1 class="cb-text-white cb-mb-0">{display_name(@user)}</h1>
         </div>
         <a
           href={Routes.admin_user_index_view_path(@socket, :index)}
-          class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+          class="cb-btn cb-btn-outline-secondary cb-rounded"
         >
           <i class="bi bi-arrow-left"></i> Back
         </a>
       </div>
 
-      <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 mb-4 overflow-hidden">
-        <div class="row g-4 align-items-stretch">
-          <div class="col-lg-4">
+      <div class="cb-bg-panel cb-border-color cb-border cb-shadow-sm cb-rounded cb-p-4 cb-mb-4 cb-overflow-hidden">
+        <div class="cb-row g-4 cb-align-stretch">
+          <div class="cb-col-lg-4">
             <div
-              class="cb-bg-highlight-panel cb-border-color border cb-rounded h-100 p-4 text-center position-relative"
+              class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-h-100 cb-p-4 cb-text-center cb-position-relative"
               style="background-image: radial-gradient(circle at top, rgba(90, 163, 255, 0.18), transparent 58%);"
             >
               <div
-                class="mx-auto mb-4 d-flex align-items-center justify-content-center cb-border-color border"
+                class="cb-mx-auto cb-mb-4 cb-d-flex cb-align-center cb-justify-center cb-border-color cb-border"
                 style="width: 148px; height: 148px; border-radius: 32px; background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01)); box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);"
               >
                 <img
@@ -1092,94 +1092,94 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 />
               </div>
 
-              <div class="d-flex justify-content-center flex-wrap gap-1 mb-3">
-                <span class={"badge text-uppercase " <> subscription_badge_class(@user.subscription_type)}>
+              <div class="cb-d-flex cb-justify-center cb-flex-wrap gap-1 cb-mb-3">
+                <span class={"cb-badge cb-text-uppercase " <> subscription_badge_class(@user.subscription_type)}>
                   {String.upcase(to_string(@user.subscription_type))}
                 </span>
-                <span class={"badge " <> if(@user.is_bot, do: "bg-danger", else: "bg-success")}>
+                <span class={"cb-badge " <> if(@user.is_bot, do: "cb-bg-danger", else: "cb-bg-success")}>
                   <i class={"bi me-1 " <> if(@user.is_bot, do: "bi-robot", else: "bi-person")}></i>
                   {if @user.is_bot, do: "Bot", else: "Human"}
                 </span>
                 <%= if @user.category do %>
-                  <span class="badge bg-secondary">{@user.category}</span>
+                  <span class="cb-badge cb-bg-secondary">{@user.category}</span>
                 <% end %>
               </div>
 
-              <h2 class="h3 text-white mb-1">{display_name(@user)}</h2>
-              <div class="cb-text mb-4">User ID #{@user.id}</div>
+              <h2 class="h3 cb-text-white cb-mb-1">{display_name(@user)}</h2>
+              <div class="cb-text cb-mb-4">User ID #{@user.id}</div>
 
-              <div class="row g-2 text-start">
-                <div class="col-12">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3">
-                    <div class="cb-text text-uppercase small">Rating</div>
-                    <div class="text-white h4 mb-0">{@user.rating}</div>
+              <div class="cb-row g-2 text-start">
+                <div class="cb-col-12">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3">
+                    <div class="cb-text cb-text-uppercase cb-small">Rating</div>
+                    <div class="cb-text-white h4 cb-mb-0">{@user.rating}</div>
                   </div>
                 </div>
-                <div class="col-12">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3">
-                    <div class="cb-text text-uppercase small mb-2">Subscription</div>
+                <div class="cb-col-12">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3">
+                    <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Subscription</div>
                     <.form
                       :let={f}
                       id={"user-profile-subscription-#{@user.id}"}
                       for={Ecto.Changeset.change(@user)}
                       phx-change="update_subscription_type"
                       phx-submit="update"
-                      class="m-0"
+                      class="cb-m-0"
                     >
                       {hidden_input(f, :user_id, value: @user.id)}
                       {select(f, :subscription_type, subscription_type_options(),
-                        class: "custom-select cb-bg-panel cb-border-color text-white cb-rounded"
+                        class: "cb-custom-select cb-bg-panel cb-border-color cb-text-white cb-rounded"
                       )}
                     </.form>
                   </div>
                 </div>
-                <div class="col-6">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3 h-100">
-                    <div class="cb-text text-uppercase small">Joined</div>
-                    <div class="text-white">{format_short_datetime(@user.inserted_at)}</div>
+                <div class="cb-col-6">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                    <div class="cb-text cb-text-uppercase cb-small">Joined</div>
+                    <div class="cb-text-white">{format_short_datetime(@user.inserted_at)}</div>
                   </div>
                 </div>
-                <div class="col-6">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3 h-100">
-                    <div class="cb-text text-uppercase small">Locale</div>
-                    <div class="text-white">{label_value(@user.locale)}</div>
+                <div class="cb-col-6">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                    <div class="cb-text cb-text-uppercase cb-small">Locale</div>
+                    <div class="cb-text-white">{label_value(@user.locale)}</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="col-lg-8">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded h-100 p-4">
-              <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3 h-100">
-                    <div class="cb-text text-uppercase small mb-2">Events Joined</div>
-                    <div class="text-white h3 mb-0">{length(@user_events)}</div>
+          <div class="cb-col-lg-8">
+            <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-h-100 cb-p-4">
+              <div class="cb-row g-3 cb-mb-4">
+                <div class="cb-col-md-4">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                    <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Events Joined</div>
+                    <div class="cb-text-white h3 cb-mb-0">{length(@user_events)}</div>
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3 h-100">
-                    <div class="cb-text text-uppercase small mb-2">Recent Games</div>
-                    <div class="text-white h3 mb-0">{length(@user_games)}</div>
+                <div class="cb-col-md-4">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                    <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Recent Games</div>
+                    <div class="cb-text-white h3 cb-mb-0">{length(@user_games)}</div>
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <div class="cb-bg-panel cb-border-color border cb-rounded p-3 h-100">
-                    <div class="cb-text text-uppercase small mb-2">Clan</div>
-                    <div class="text-white h5 mb-0">{clan_name(@user)}</div>
+                <div class="cb-col-md-4">
+                  <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-3 cb-h-100">
+                    <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Clan</div>
+                    <div class="cb-text-white h5 cb-mb-0">{clan_name(@user)}</div>
                   </div>
                 </div>
               </div>
 
-              <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <div class="text-white fw-bold">Rating Progress</div>
+              <div class="cb-mb-4">
+                <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-2">
+                  <div class="cb-text-white fw-bold">Rating Progress</div>
                   <div class="cb-text">{@progress}% of 2000</div>
                 </div>
-                <div class="progress cb-bg-panel cb-border-color border" style="height: 10px;">
+                <div class="cb-progress cb-bg-panel cb-border-color cb-border" style="height: 10px;">
                   <div
-                    class="progress-bar bg-warning"
+                    class="cb-progress-bar cb-bg-warning"
                     role="progressbar"
                     style={"width: #{@progress}%"}
                     aria-valuenow={@progress}
@@ -1190,15 +1190,15 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </div>
               </div>
 
-              <div class="cb-bg-panel cb-border-color border cb-rounded p-4 mb-4">
-                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+              <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mb-4">
+                <div class="cb-d-flex cb-flex-wrap cb-justify-between cb-align-start gap-3 cb-mb-3">
                   <div>
-                    <div class="cb-text text-uppercase small mb-2">Auth Access</div>
-                    <div class="text-white fw-bold">Token and login link</div>
+                    <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Auth Access</div>
+                    <div class="cb-text-white fw-bold">Token and login link</div>
                   </div>
-                  <div class="d-flex flex-wrap gap-2">
+                  <div class="cb-d-flex cb-flex-wrap gap-2">
                     <button
-                      class="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
+                      class="cb-btn cb-btn-sm cb-btn-secondary cb-rounded"
                       phx-click="reset_token"
                       phx-value-id={@user.id}
                     >
@@ -1206,7 +1206,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     </button>
                     <button
                       :if={auth_token != ""}
-                      class="btn btn-sm btn-outline-danger cb-rounded"
+                      class="cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded"
                       phx-click="delete_token"
                       phx-value-id={@user.id}
                     >
@@ -1215,7 +1215,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     <button
                       :if={auth_link}
                       type="button"
-                      class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                      class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                       title="Copy auth link"
                       onclick="navigator.clipboard.writeText(this.dataset.link)"
                       data-link={auth_link}
@@ -1226,9 +1226,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </div>
 
                 <%= if auth_link do %>
-                  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3">
-                    <div class="cb-text text-uppercase small mb-2">Preview</div>
-                    <div class="text-white text-break">
+                  <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3">
+                    <div class="cb-text cb-text-uppercase cb-small cb-mb-2">Preview</div>
+                    <div class="cb-text-white cb-text-break">
                       {short_auth_link_label(auth_link, auth_token)}
                     </div>
                   </div>
@@ -1237,15 +1237,15 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 <% end %>
               </div>
 
-              <div class="row g-0 border cb-border-color cb-rounded overflow-hidden">
-                <div class="col-md-6 border-end cb-border-color">
-                  <div class="d-flex justify-content-between px-3 py-3 border-bottom cb-border-color">
+              <div class="cb-row g-0 cb-border cb-border-color cb-rounded cb-overflow-hidden">
+                <div class="cb-col-md-6 border-end cb-border-color">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3 cb-border-bottom cb-border-color">
                     <span class="cb-text">Email</span>
-                    <span class="text-white text-end">{label_value(@user.email)}</span>
+                    <span class="cb-text-white text-end">{label_value(@user.email)}</span>
                   </div>
-                  <div class="d-flex justify-content-between px-3 py-3 border-bottom cb-border-color">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3 cb-border-bottom cb-border-color">
                     <span class="cb-text">GitHub</span>
-                    <span class="text-white text-end">
+                    <span class="cb-text-white text-end">
                       <%= if @user.github_id do %>
                         <a
                           href={"https://github.com/#{@user.github_name}"}
@@ -1259,51 +1259,51 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       <% end %>
                     </span>
                   </div>
-                  <div class="d-flex justify-content-between px-3 py-3 border-bottom cb-border-color">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3 cb-border-bottom cb-border-color">
                     <span class="cb-text">Discord</span>
-                    <span class="text-white text-end">{label_value(@user.discord_name)}</span>
+                    <span class="cb-text-white text-end">{label_value(@user.discord_name)}</span>
                   </div>
-                  <div class="d-flex justify-content-between px-3 py-3">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3">
                     <span class="cb-text">External OAuth</span>
-                    <span class="text-white text-end">
+                    <span class="cb-text-white text-end">
                       {label_value(@user.external_oauth_login || @user.external_oauth_id)}
                     </span>
                   </div>
                 </div>
 
-                <div class="col-md-6">
-                  <div class="d-flex justify-content-between px-3 py-3 border-bottom cb-border-color">
+                <div class="cb-col-md-6">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3 cb-border-bottom cb-border-color">
                     <span class="cb-text">Auth Token</span>
-                    <span class="text-white text-end text-break">
+                    <span class="cb-text-white text-end cb-text-break">
                       {if auth_token == "", do: "–", else: short_auth_token_label(auth_token)}
                     </span>
                   </div>
-                  <div class="d-flex justify-content-between px-3 py-3 border-bottom cb-border-color">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3 cb-border-bottom cb-border-color">
                     <span class="cb-text">Category</span>
-                    <span class="text-white text-end">{label_value(@user.category)}</span>
+                    <span class="cb-text-white text-end">{label_value(@user.category)}</span>
                   </div>
-                  <div class="d-flex justify-content-between px-3 py-3 border-bottom cb-border-color">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3 cb-border-bottom cb-border-color">
                     <span class="cb-text">Clan</span>
-                    <span class="text-white text-end">{clan_name(@user)}</span>
+                    <span class="cb-text-white text-end">{clan_name(@user)}</span>
                   </div>
-                  <div class="d-flex justify-content-between px-3 py-3">
+                  <div class="cb-d-flex cb-justify-between cb-px-3 cb-py-3">
                     <span class="cb-text">Joined</span>
-                    <span class="text-white text-end">
+                    <span class="cb-text-white text-end">
                       {Calendar.strftime(@user.inserted_at, "%B %-d, %Y")}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div class="cb-bg-panel cb-border-color border cb-rounded p-4 mt-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="text-white fw-bold">Editable Profile Fields</div>
+              <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-4 cb-mt-3">
+                <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+                  <div class="cb-text-white fw-bold">Editable Profile Fields</div>
                 </div>
-                <div class="row g-3">
-                  <div class="col-md-12">
-                    <form phx-submit="update_name" class="d-flex flex-column gap-2">
-                      <label class="cb-text small text-uppercase">User Name</label>
-                      <div class="d-flex gap-2">
+                <div class="cb-row g-3">
+                  <div class="cb-col-md-12">
+                    <form phx-submit="update_name" class="cb-d-flex cb-flex-column gap-2">
+                      <label class="cb-text cb-small cb-text-uppercase">User Name</label>
+                      <div class="cb-d-flex gap-2">
                         <input
                           type="text"
                           name="name"
@@ -1311,67 +1311,79 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           minlength="2"
                           maxlength="39"
                           required
-                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                          class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-border-color cb-text-white"
                         />
-                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                        <button
+                          type="submit"
+                          class="cb-btn cb-btn-sm cb-btn-success cb-rounded cb-text-nowrap"
+                        >
                           Save
                         </button>
                       </div>
                     </form>
                   </div>
-                  <div class="col-md-6">
-                    <form phx-submit="update_platform_login" class="d-flex flex-column gap-2">
-                      <label class="cb-text small text-uppercase">Platform Login</label>
-                      <div class="d-flex gap-2">
+                  <div class="cb-col-md-6">
+                    <form phx-submit="update_platform_login" class="cb-d-flex cb-flex-column gap-2">
+                      <label class="cb-text cb-small cb-text-uppercase">Platform Login</label>
+                      <div class="cb-d-flex gap-2">
                         <input
                           type="text"
                           name="external_platform_login"
                           value={@user.external_platform_login || ""}
                           placeholder="e.g. username on platform"
-                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                          class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-border-color cb-text-white"
                         />
-                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                        <button
+                          type="submit"
+                          class="cb-btn cb-btn-sm cb-btn-success cb-rounded cb-text-nowrap"
+                        >
                           Save
                         </button>
                       </div>
                     </form>
                   </div>
-                  <div class="col-md-6">
-                    <form phx-submit="update_platform_id" class="d-flex flex-column gap-2">
-                      <label class="cb-text small text-uppercase">Platform ID</label>
-                      <div class="d-flex gap-2">
+                  <div class="cb-col-md-6">
+                    <form phx-submit="update_platform_id" class="cb-d-flex cb-flex-column gap-2">
+                      <label class="cb-text cb-small cb-text-uppercase">Platform ID</label>
+                      <div class="cb-d-flex gap-2">
                         <input
                           type="text"
                           name="external_platform_id"
                           value={@user.external_platform_id || ""}
                           placeholder="e.g. platform user id"
-                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                          class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-border-color cb-text-white"
                         />
-                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                        <button
+                          type="submit"
+                          class="cb-btn cb-btn-sm cb-btn-success cb-rounded cb-text-nowrap"
+                        >
                           Save
                         </button>
                       </div>
                     </form>
                   </div>
-                  <div class="col-md-6">
-                    <form phx-submit="update_clan" class="d-flex flex-column gap-2">
-                      <label class="cb-text small text-uppercase">
+                  <div class="cb-col-md-6">
+                    <form phx-submit="update_clan" class="cb-d-flex cb-flex-column gap-2">
+                      <label class="cb-text cb-small cb-text-uppercase">
                         Clan
-                        <span class="text-white">
+                        <span class="cb-text-white">
                           {if @user.clan_id,
                             do: "(current: #{@user.clan} ##{@user.clan_id})",
                             else: "(none)"}
                         </span>
                       </label>
-                      <div class="d-flex gap-2">
+                      <div class="cb-d-flex gap-2">
                         <input
                           type="number"
                           name="clan_id"
                           value={@user.clan_id || ""}
                           placeholder="clan id (empty to clear)"
-                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                          class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-border-color cb-text-white"
                         />
-                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                        <button
+                          type="submit"
+                          class="cb-btn cb-btn-sm cb-btn-success cb-rounded cb-text-nowrap"
+                        >
                           Save
                         </button>
                       </div>
@@ -1384,48 +1396,48 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="text-white">
+      <div class="cb-row">
+        <div class="cb-col-md-12 cb-mb-4">
+          <div class="cb-bg-panel cb-border-color cb-border cb-shadow-sm cb-rounded cb-p-4 cb-h-100">
+            <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+              <div class="cb-text-white">
                 <i class="bi bi-diagram-3"></i>
                 User Group Tournaments
-                <span class="badge bg-secondary ms-2">{length(@user_group_tournaments)}</span>
+                <span class="cb-badge cb-bg-secondary ms-2">{length(@user_group_tournaments)}</span>
               </div>
             </div>
             <%= if @user_group_tournaments == [] do %>
               <div class="cb-text">No external setup records.</div>
             <% else %>
               <%= for ugt <- @user_group_tournaments do %>
-                <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-3">
+                  <div class="cb-d-flex cb-justify-between cb-align-start cb-mb-2">
                     <div>
-                      <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="text-white fw-bold">#{ugt.id}</span>
+                      <div class="cb-d-flex cb-align-center gap-2 cb-mb-1">
+                        <span class="cb-text-white fw-bold">#{ugt.id}</span>
                         <%= if ugt.group_tournament do %>
                           <a
                             href={"/admin/group_tournaments/#{ugt.group_tournament_id}"}
-                            class="text-info"
+                            class="cb-text-info"
                           >
                             {ugt.group_tournament.name}
                           </a>
-                          <span class="cb-text small">({ugt.group_tournament.slug})</span>
+                          <span class="cb-text cb-small">({ugt.group_tournament.slug})</span>
                         <% else %>
                           <span class="cb-text">No linked tournament</span>
                         <% end %>
                       </div>
-                      <div class="d-flex align-items-center gap-2">
+                      <div class="cb-d-flex cb-align-center gap-2">
                         <span class={user_group_tournament_state_badge(ugt.state)}>{ugt.state}</span>
-                        <span class="cb-text small">
+                        <span class="cb-text cb-small">
                           Updated: {format_invite_datetime(ugt.updated_at)}
                         </span>
                       </div>
                     </div>
-                    <div class="d-flex gap-1">
+                    <div class="cb-d-flex gap-1">
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-success cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-success cb-rounded"
                         phx-click="create_repo"
                         phx-value-id={ugt.id}
                         data-confirm="Create repository for this tournament from template?"
@@ -1434,7 +1446,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-warning cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded"
                         phx-click="add_repo_role"
                         phx-value-id={ugt.id}
                         data-confirm="Grant repo role for this tournament?"
@@ -1443,7 +1455,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-info cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-info cb-rounded"
                         phx-click="upsert_secret"
                         phx-value-id={ugt.id}
                         data-confirm="Upsert secret for this tournament?"
@@ -1452,7 +1464,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-primary cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-primary cb-rounded"
                         phx-click="occupy_workplace"
                         phx-value-id={ugt.id}
                         data-confirm="Occupy code-assist workplace for this user?"
@@ -1461,7 +1473,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-danger cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded"
                         phx-click="release_workplace"
                         phx-value-id={ugt.id}
                         data-confirm="Release code-assist workplace for this user?"
@@ -1470,7 +1482,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-warning cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded"
                         phx-click="add_viewer_role"
                         phx-value-id={ugt.id}
                         data-confirm="Grant viewer role on this repo?"
@@ -1479,7 +1491,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                         phx-click="toggle_user_group_tournament_details"
                         phx-value-id={ugt.id}
                       >
@@ -1487,7 +1499,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
-                        class="btn btn-sm btn-danger cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-danger cb-rounded"
                         phx-click="delete_user_group_tournament"
                         phx-value-id={ugt.id}
                         data-confirm="Remove this user from the tournament? This deletes the user_group_tournament record only — external repo/workplace are not touched."
@@ -1498,67 +1510,67 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                   </div>
 
                   <%= if @action_result && elem(@action_result, 1) == ugt.id do %>
-                    <div class={"small mb-2 " <> if(elem(@action_result, 0) == :ok, do: "text-success", else: "text-danger")}>
+                    <div class={"cb-small cb-mb-2 " <> if(elem(@action_result, 0) == :ok, do: "cb-text-success", else: "cb-text-danger")}>
                       {elem(@action_result, 2)}
                     </div>
                   <% end %>
 
-                  <div class="row g-2 mt-1">
-                    <div class="col-md-4">
-                      <div class="cb-bg-panel cb-border-color border cb-rounded p-2">
-                        <table class="table table-sm mb-0">
+                  <div class="cb-row g-2 cb-mt-1">
+                    <div class="cb-col-md-4">
+                      <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2">
+                        <table class="cb-table cb-table-sm cb-mb-0">
                           <tbody>
                             <tr>
-                              <td class="cb-text border-0 py-1" style="width: 90px;">Repo</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1" style="width: 90px;">Repo</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.repo_state)}>
                                   {ugt.repo_state}
                                 </span>
                               </td>
                             </tr>
                             <tr>
-                              <td class="cb-text border-0 py-1">Role</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1">Role</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.role_state)}>
                                   {ugt.role_state}
                                 </span>
                               </td>
                             </tr>
                             <tr>
-                              <td class="cb-text border-0 py-1">Secret</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1">Secret</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.secret_state)}>
                                   {ugt.secret_state}
                                 </span>
                               </td>
                             </tr>
                             <tr>
-                              <td class="cb-text border-0 py-1">Workplace</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1">Workplace</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.workplace_state)}>
                                   {ugt.workplace_state}
                                 </span>
                               </td>
                             </tr>
                             <tr>
-                              <td class="cb-text border-0 py-1">Release</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1">Release</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.release_state)}>
                                   {ugt.release_state}
                                 </span>
                               </td>
                             </tr>
                             <tr>
-                              <td class="cb-text border-0 py-1">Viewer role</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1">Viewer role</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.viewer_role_state)}>
                                   {ugt.viewer_role_state}
                                 </span>
                               </td>
                             </tr>
                             <tr>
-                              <td class="cb-text border-0 py-1">Dev role removal</td>
-                              <td class="border-0 py-1">
+                              <td class="cb-text cb-border-0 cb-py-1">Dev role removal</td>
+                              <td class="cb-border-0 cb-py-1">
                                 <span class={provisioning_step_badge(ugt.dev_role_removal_state)}>
                                   {ugt.dev_role_removal_state}
                                 </span>
@@ -1568,36 +1580,36 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                         </table>
                       </div>
                     </div>
-                    <div class="col-md-4">
-                      <div class="cb-bg-panel cb-border-color border cb-rounded p-2 small">
-                        <div class="mb-1">
+                    <div class="cb-col-md-4">
+                      <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2 cb-small">
+                        <div class="cb-mb-1">
                           <span class="cb-text">Repo slug:</span>
                           <%= if ugt.group_tournament do %>
-                            <code class="text-info">
+                            <code class="cb-text-info">
                               {UserGroupTournamentContext.repo_slug_for(@user, ugt.group_tournament)}
                             </code>
                           <% else %>
                             <span class="cb-text">–</span>
                           <% end %>
                         </div>
-                        <div class="mb-1">
+                        <div class="cb-mb-1">
                           <form
                             phx-submit="update_ugt_repo_url"
-                            class="d-flex align-items-center gap-1"
+                            class="cb-d-flex cb-align-center gap-1"
                           >
                             <input type="hidden" name="ugt_id" value={ugt.id} />
-                            <span class="cb-text text-nowrap">Repo URL:</span>
+                            <span class="cb-text cb-text-nowrap">Repo URL:</span>
                             <input
                               type="text"
                               name="repo_url"
                               value={ugt.repo_url || ""}
                               placeholder="https://..."
-                              class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white py-0"
+                              class="cb-form-control cb-form-control-sm cb-bg-highlight-panel cb-border-color cb-text-white cb-py-0"
                               style="font-size: 0.75rem;"
                             />
                             <button
                               type="submit"
-                              class="btn btn-sm btn-outline-success cb-rounded py-0 px-1"
+                              class="cb-btn cb-btn-sm cb-btn-outline-success cb-rounded cb-py-0 cb-px-1"
                               style="font-size: 0.7rem;"
                             >
                               Save
@@ -1607,7 +1619,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                 href={ugt.repo_url}
                                 target="_blank"
                                 rel="noopener"
-                                class="btn btn-sm btn-outline-info cb-rounded py-0 px-1"
+                                class="cb-btn cb-btn-sm cb-btn-outline-info cb-rounded cb-py-0 cb-px-1"
                                 style="font-size: 0.7rem;"
                                 title={ugt.repo_url}
                               >
@@ -1619,86 +1631,92 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                         <div>
                           <span class="cb-text">Token:</span>
                           <%= if ugt.token do %>
-                            <code class="text-white text-break">{ugt.token}</code>
+                            <code class="cb-text-white cb-text-break">{ugt.token}</code>
                           <% else %>
                             <span class="cb-text">–</span>
                           <% end %>
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-4">
-                      <div class="cb-bg-panel cb-border-color border cb-rounded p-2 small">
-                        <div class="mb-1">
+                    <div class="cb-col-md-4">
+                      <div class="cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2 cb-small">
+                        <div class="cb-mb-1">
                           <span class="cb-text">Role:</span>
-                          <span class="text-white">{label_value(ugt.role)}</span>
+                          <span class="cb-text-white">{label_value(ugt.role)}</span>
                         </div>
-                        <div class="mb-1">
+                        <div class="cb-mb-1">
                           <span class="cb-text">Secret key:</span>
-                          <span class="text-white">{label_value(ugt.secret_key)}</span>
+                          <span class="cb-text-white">{label_value(ugt.secret_key)}</span>
                         </div>
                         <div>
                           <span class="cb-text">Secret group:</span>
-                          <span class="text-white">{label_value(ugt.secret_group)}</span>
+                          <span class="cb-text-white">{label_value(ugt.secret_group)}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <%= if @expanded_user_group_tournament_id == ugt.id do %>
-                    <div class="row g-3 mt-2">
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Repo Response</div>
+                    <div class="cb-row g-3 cb-mt-2">
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">Repo Response</div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.repo_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Role Response</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">Role Response</div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.role_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Secret Response</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">Secret Response</div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.secret_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Workplace Response</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">
+                          Workplace Response
+                        </div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.workplace_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Release Response</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">Release Response</div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.release_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Viewer Role Response</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">
+                          Viewer Role Response
+                        </div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.viewer_role_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Dev Role Removal Response</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">
+                          Dev Role Removal Response
+                        </div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.dev_role_removal_response || %{}, pretty: true)}</code></pre>
                       </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Last Error</div>
+                      <div class="cb-col-lg-6">
+                        <div class="cb-text cb-text-uppercase cb-small cb-mb-1">Last Error</div>
                         <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          class="cb-text-white cb-mb-0 cb-small cb-bg-panel cb-border-color cb-border cb-rounded cb-p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.last_error || %{}, pretty: true)}</code></pre>
                       </div>
@@ -1711,19 +1729,19 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="text-white">
+      <div class="cb-row">
+        <div class="cb-col-md-12 cb-mb-4">
+          <div class="cb-bg-panel cb-border-color cb-border cb-shadow-sm cb-rounded cb-p-4 cb-h-100">
+            <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+              <div class="cb-text-white">
                 <i class="bi bi-envelope"></i>
                 External Platform Invites
-                <span class="badge bg-secondary ms-2">{length(@platform_invites)}</span>
+                <span class="cb-badge cb-bg-secondary ms-2">{length(@platform_invites)}</span>
               </div>
-              <form phx-submit="create_remote_invite" class="d-flex align-items-center gap-2">
+              <form phx-submit="create_remote_invite" class="cb-d-flex cb-align-center gap-2">
                 <select
                   name="group_tournament_id"
-                  class="form-select form-select-sm cb-bg-panel cb-border-color text-white"
+                  class="form-select form-select-sm cb-bg-panel cb-border-color cb-text-white"
                   style="width: auto; min-width: 200px;"
                 >
                   <option value="">No tournament</option>
@@ -1731,7 +1749,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     <option value={gt.id}>{gt.name} ({gt.slug})</option>
                   <% end %>
                 </select>
-                <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                <button
+                  type="submit"
+                  class="cb-btn cb-btn-sm cb-btn-success cb-rounded cb-text-nowrap"
+                >
                   Create Remote Invite
                 </button>
               </form>
@@ -1739,10 +1760,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
             <%= if @platform_invites == [] do %>
               <div class="cb-text">No platform invites.</div>
             <% else %>
-              <div class="table-responsive">
-                <table class="table table-sm table-dark table-bordered align-middle mb-0">
+              <div class="cb-table-responsive">
+                <table class="cb-table cb-table-sm cb-table-dark cb-table-bordered cb-align-middle cb-mb-0">
                   <thead>
-                    <tr class="cb-text small">
+                    <tr class="cb-text cb-small">
                       <th>ID</th>
                       <th>Tournament</th>
                       <th>State</th>
@@ -1756,12 +1777,12 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                   <tbody>
                     <%= for invite <- @platform_invites do %>
                       <tr>
-                        <td class="text-white">{invite.id}</td>
-                        <td class="text-white">
+                        <td class="cb-text-white">{invite.id}</td>
+                        <td class="cb-text-white">
                           <%= if invite.group_tournament do %>
                             <a
                               href={"/admin/group_tournaments/#{invite.group_tournament_id}"}
-                              class="text-info"
+                              class="cb-text-info"
                             >
                               {invite.group_tournament.name}
                             </a>
@@ -1772,25 +1793,25 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                         <td>
                           <span class={invite_state_badge(invite.state)}>{invite.state}</span>
                         </td>
-                        <td class="text-white small text-break" style="max-width: 180px;">
+                        <td class="cb-text-white cb-small cb-text-break" style="max-width: 180px;">
                           {label_value(invite.operation_id)}
                         </td>
-                        <td class="small" style="max-width: 280px;">
+                        <td class="cb-small" style="max-width: 280px;">
                           <%= if invite.invite_link do %>
-                            <div class="d-flex flex-column gap-1">
-                              <div class="d-flex gap-1">
+                            <div class="cb-d-flex cb-flex-column gap-1">
+                              <div class="cb-d-flex gap-1">
                                 <a
                                   href={invite.invite_link}
                                   target="_blank"
                                   rel="noopener"
-                                  class="btn btn-sm btn-success cb-rounded"
+                                  class="cb-btn cb-btn-sm cb-btn-success cb-rounded"
                                   title={invite.invite_link}
                                 >
                                   Open Invite
                                 </a>
                                 <button
                                   type="button"
-                                  class="btn btn-sm btn-outline-info cb-rounded"
+                                  class="cb-btn cb-btn-sm cb-btn-outline-info cb-rounded"
                                   title="Copy invite link"
                                   onclick="navigator.clipboard.writeText(this.dataset.link).then(() => this.textContent = 'Copied!')"
                                   data-link={invite.invite_link}
@@ -1798,23 +1819,23 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                   Copy
                                 </button>
                               </div>
-                              <code class="text-info text-break small">{invite.invite_link}</code>
+                              <code class="cb-text-info cb-text-break cb-small">{invite.invite_link}</code>
                             </div>
                           <% else %>
                             <span class="cb-text">–</span>
                           <% end %>
                         </td>
-                        <td class="text-white small">
+                        <td class="cb-text-white cb-small">
                           {format_invite_datetime(invite.expires_at)}
                         </td>
-                        <td class="text-white small">
+                        <td class="cb-text-white cb-small">
                           {format_invite_datetime(invite.updated_at)}
                         </td>
-                        <td class="text-nowrap">
+                        <td class="cb-text-nowrap">
                           <%= if invite.state == "failed" do %>
                             <button
                               type="button"
-                              class="btn btn-sm btn-outline-warning cb-rounded me-1"
+                              class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded me-1"
                               phx-click="retry_invite"
                               phx-value-id={invite.id}
                               data-confirm="Retry creating this invite?"
@@ -1826,7 +1847,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           <%= if invite.state == "creating" do %>
                             <button
                               type="button"
-                              class="btn btn-sm btn-outline-warning cb-rounded me-1"
+                              class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded me-1"
                               phx-click="poll_invite_status"
                               phx-value-id={invite.id}
                             >
@@ -1836,7 +1857,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           <%= if invite.state in ["invited", "creating"] do %>
                             <button
                               type="button"
-                              class="btn btn-sm btn-outline-primary cb-rounded me-1"
+                              class="cb-btn cb-btn-sm cb-btn-outline-primary cb-rounded me-1"
                               phx-click="refresh_invite_via_api"
                               phx-value-id={invite.id}
                               title="Fetch latest status from External Platform (GET /invites/{id})"
@@ -1847,7 +1868,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           <%= if invite.state != "accepted" do %>
                             <button
                               type="button"
-                              class="btn btn-sm btn-outline-success cb-rounded me-1"
+                              class="cb-btn cb-btn-sm cb-btn-outline-success cb-rounded me-1"
                               phx-click="mark_invite_accepted"
                               phx-value-id={invite.id}
                               data-confirm="Mark this invite as accepted?"
@@ -1857,7 +1878,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           <% end %>
                           <button
                             type="button"
-                            class="btn btn-sm btn-outline-info cb-rounded"
+                            class="cb-btn cb-btn-sm cb-btn-outline-info cb-rounded"
                             phx-click="toggle_invite_details"
                             phx-value-id={invite.id}
                           >
@@ -1865,7 +1886,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           </button>
                           <button
                             type="button"
-                            class="btn btn-sm btn-outline-danger cb-rounded ms-1"
+                            class="cb-btn cb-btn-sm cb-btn-outline-danger cb-rounded ms-1"
                             phx-click="delete_platform_invite"
                             phx-value-id={invite.id}
                             data-confirm="Delete this invite?"
@@ -1876,24 +1897,25 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </tr>
                       <%= if @expanded_invite_id == invite.id do %>
                         <tr>
-                          <td colspan="8" class="p-3">
+                          <td colspan="8" class="cb-p-3">
                             <%= if accepted = accepted_invite_payload(invite) do %>
-                              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-                                <div class="text-white fw-bold mb-2">
-                                  <i class="bi bi-check-circle-fill text-success"></i> Accepted Invite
+                              <div class="cb-bg-highlight-panel cb-border-color cb-border cb-rounded cb-p-3 cb-mb-3">
+                                <div class="cb-text-white fw-bold cb-mb-2">
+                                  <i class="bi bi-check-circle-fill cb-text-success"></i>
+                                  Accepted Invite
                                 </div>
-                                <dl class="row mb-0 small text-white">
+                                <dl class="cb-row cb-mb-0 cb-small cb-text-white">
                                   <%= for {label, value} <- accepted_invite_fields(accepted) do %>
-                                    <dt class="col-sm-3 cb-text">{label}</dt>
-                                    <dd class="col-sm-9 text-break">
-                                      <code class="text-info">{value}</code>
+                                    <dt class="cb-col-sm-3 cb-text">{label}</dt>
+                                    <dd class="cb-col-sm-9 cb-text-break">
+                                      <code class="cb-text-info">{value}</code>
                                     </dd>
                                   <% end %>
                                 </dl>
                               </div>
                             <% end %>
                             <pre
-                              class="text-white mb-0 small"
+                              class="cb-text-white cb-mb-0 cb-small"
                               style="max-height: 300px; overflow: auto; white-space: pre-wrap;"
                             ><code>{Jason.encode!(invite.response || %{}, pretty: true)}</code></pre>
                           </td>
@@ -1908,39 +1930,42 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="text-white">
+      <div class="cb-row">
+        <div class="cb-col-md-12 cb-mb-4">
+          <div class="cb-bg-panel cb-border-color cb-border cb-shadow-sm cb-rounded cb-p-4 cb-h-100">
+            <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-3">
+              <div class="cb-text-white">
                 <i class="bi bi-calendar-event"></i> User Events
               </div>
-              <div class="d-flex align-items-center gap-2">
+              <div class="cb-d-flex cb-align-center gap-2">
                 <%= if @available_events != [] do %>
-                  <form phx-submit="add_to_event" class="d-flex align-items-center gap-2">
+                  <form phx-submit="add_to_event" class="cb-d-flex cb-align-center gap-2">
                     <select
                       name="event_id"
-                      class="form-select form-select-sm cb-bg-panel cb-border-color text-white"
+                      class="form-select form-select-sm cb-bg-panel cb-border-color cb-text-white"
                     >
                       <%= for event <- @available_events do %>
                         <option value={event.id}>{event.title} ({event.slug})</option>
                       <% end %>
                     </select>
-                    <button type="submit" class="btn btn-sm btn-warning cb-rounded text-nowrap">
+                    <button
+                      type="submit"
+                      class="cb-btn cb-btn-sm cb-btn-warning cb-rounded cb-text-nowrap"
+                    >
                       Add to Event
                     </button>
                   </form>
                 <% end %>
-                <span class="cb-text small">Event Page:</span>
+                <span class="cb-text cb-small">Event Page:</span>
                 <button
-                  class={"btn btn-sm cb-rounded " <> if(@event_page_enabled, do: "btn-success", else: "btn-outline-secondary cb-btn-outline-secondary")}
+                  class={"cb-btn cb-btn-sm cb-rounded " <> if(@event_page_enabled, do: "cb-btn-success", else: "cb-btn-outline-secondary")}
                   phx-click="toggle_event_page"
                 >
                   {if @event_page_enabled, do: "Enabled", else: "Disabled"}
                 </button>
-                <span class="cb-text small">Moderator Role:</span>
+                <span class="cb-text cb-small">Moderator Role:</span>
                 <button
-                  class={"btn btn-sm cb-rounded " <> if(@is_moderator, do: "btn-success", else: "btn-outline-secondary cb-btn-outline-secondary")}
+                  class={"cb-btn cb-btn-sm cb-rounded " <> if(@is_moderator, do: "cb-btn-success", else: "cb-btn-outline-secondary")}
                   phx-click="toggle_moderator"
                 >
                   {if @is_moderator, do: "Enabled", else: "Disabled"}
@@ -1951,11 +1976,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
               <p class="cb-text">No events participated in yet.</p>
             <% else %>
               <%= for event <- @user_events do %>
-                <div class="mb-4">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="cb-mb-4">
+                  <div class="cb-d-flex cb-justify-between cb-align-start cb-mb-3">
                     <div>
-                      <h5 class="mb-1 text-white">{event.event.title}</h5>
-                      <p class="cb-text mb-1">
+                      <h5 class="cb-mb-1 cb-text-white">{event.event.title}</h5>
+                      <p class="cb-text cb-mb-1">
                         <small>
                           <strong>ID:</strong> {event.id} |
                           <strong>Date:</strong> {Calendar.strftime(
@@ -1964,30 +1989,30 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           )} | <strong>Slug:</strong> {event.event.slug}
                         </small>
                       </p>
-                      <p class="mb-1">
-                        <span class={"badge " <> (
+                      <p class="cb-mb-1">
+                        <span class={"cb-badge " <> (
                             case event.user_event.status do
-                              "completed" -> "bg-success"
-                              "failed" -> "bg-danger"
-                              "in_progress" -> "bg-info"
-                              _ -> "bg-secondary"
+                              "completed" -> "cb-bg-success"
+                              "failed" -> "cb-bg-danger"
+                              "in_progress" -> "cb-bg-info"
+                              _ -> "cb-bg-secondary"
                             end
                           )}>
                           {event.user_event.status}
                         </span>
                       </p>
-                      <p class="mb-1">
-                        <strong class="text-white">Current stage:</strong>
-                        <span class="text-white">{event.user_event.current_stage_slug || "–"}</span>
+                      <p class="cb-mb-1">
+                        <strong class="cb-text-white">Current stage:</strong>
+                        <span class="cb-text-white">{event.user_event.current_stage_slug || "–"}</span>
                       </p>
-                      <p class="mb-0 text-white">
+                      <p class="cb-mb-0 cb-text-white">
                         <strong>Started:</strong> {format_datetime(event.user_event.started_at)} |
                         <strong>Finished:</strong> {format_datetime(event.user_event.finished_at)}
                       </p>
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="cb-d-flex gap-2">
                       <button
-                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                         phx-click="open_edit_modal"
                         phx-value-user-event-id={event.user_event.id}
                       >
@@ -1995,23 +2020,23 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <a
                         href={Routes.event_path(@socket, :edit, event.id)}
-                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                        class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                       >
                         <i class="bi bi-pencil"></i> Edit Event
                       </a>
                     </div>
                   </div>
-                  <div class="table-responsive">
-                    <table class="table table-sm">
+                  <div class="cb-table-responsive">
+                    <table class="cb-table cb-table-sm">
                       <thead class="cb-text">
                         <tr>
-                          <th class="cb-border-color border-bottom">Stage</th>
-                          <th class="cb-border-color border-bottom">Event Status</th>
-                          <th class="cb-border-color border-bottom">User Status</th>
-                          <th class="cb-border-color border-bottom">Link</th>
-                          <th class="cb-border-color border-bottom">Start/End</th>
-                          <th class="cb-border-color border-bottom">Stats</th>
-                          <th class="cb-border-color border-bottom">Places</th>
+                          <th class="cb-border-color cb-border-bottom">Stage</th>
+                          <th class="cb-border-color cb-border-bottom">Event Status</th>
+                          <th class="cb-border-color cb-border-bottom">User Status</th>
+                          <th class="cb-border-color cb-border-bottom">Link</th>
+                          <th class="cb-border-color cb-border-bottom">Start/End</th>
+                          <th class="cb-border-color cb-border-bottom">Stats</th>
+                          <th class="cb-border-color cb-border-bottom">Places</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2022,14 +2047,14 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                 s.slug == event_stage.slug
                               end) %>
                             <tr>
-                              <td class="text-white cb-border-color">{event_stage.slug}</td>
+                              <td class="cb-text-white cb-border-color">{event_stage.slug}</td>
                               <td class="cb-border-color">
-                                <span class={"badge " <> (
+                                <span class={"cb-badge " <> (
                                     case event_stage.status do
-                                      :active -> "bg-success"
-                                      :pending -> "bg-secondary"
-                                      :passed -> "bg-info"
-                                      _ -> "bg-secondary"
+                                      :active -> "cb-bg-success"
+                                      :pending -> "cb-bg-secondary"
+                                      :passed -> "cb-bg-info"
+                                      _ -> "cb-bg-secondary"
                                     end
                                   )}>
                                   {event_stage.status}
@@ -2037,7 +2062,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               </td>
                               <td class="cb-border-color">
                                 <%= if user_stage do %>
-                                  <div class="d-flex align-items-center gap-1">
+                                  <div class="cb-d-flex cb-align-center gap-1">
                                     <select
                                       class={"form-select form-select-sm cb-bg-panel cb-border-color cb-rounded " <> stage_status_class(user_stage.status)}
                                       phx-change="update_stage_status"
@@ -2054,7 +2079,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                     </select>
                                     <%= if user_stage.status != :pending do %>
                                       <button
-                                        class="btn btn-sm btn-outline-warning cb-rounded text-nowrap"
+                                        class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded cb-text-nowrap"
                                         phx-click="reset_stage"
                                         phx-value-user-event-id={event.user_event.id}
                                         phx-value-stage-slug={user_stage.slug}
@@ -2069,7 +2094,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               </td>
                               <td class="cb-border-color">
                                 <%= if user_stage do %>
-                                  <div class="d-flex flex-column gap-1">
+                                  <div class="cb-d-flex cb-flex-column gap-1">
                                     <%= if user_stage.tournament_id do %>
                                       <a
                                         href={
@@ -2079,7 +2104,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                             user_stage.tournament_id
                                           )
                                         }
-                                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded text-nowrap"
+                                        class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded cb-text-nowrap"
                                       >
                                         Tournament #{user_stage.tournament_id}
                                       </a>
@@ -2087,7 +2112,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                     <%= if user_stage.group_tournament_id do %>
                                       <a
                                         href={"/admin/group_tournaments/#{user_stage.group_tournament_id}"}
-                                        class="btn btn-sm btn-outline-warning cb-btn-outline-warning cb-rounded text-nowrap mt-1"
+                                        class="cb-btn cb-btn-sm cb-btn-outline-warning cb-rounded cb-text-nowrap cb-mt-1"
                                       >
                                         Group #{user_stage.group_tournament_id}
                                       </a>
@@ -2100,7 +2125,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                   <span class="cb-text">–</span>
                                 <% end %>
                               </td>
-                              <td class="text-white cb-border-color">
+                              <td class="cb-text-white cb-border-color">
                                 <%= if user_stage && user_stage.started_at do %>
                                   <div>{format_datetime(user_stage.started_at)}</div>
                                   <div>
@@ -2111,7 +2136,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                   <span class="cb-text">–</span>
                                 <% end %>
                               </td>
-                              <td class="text-white cb-border-color">
+                              <td class="cb-text-white cb-border-color">
                                 <%= if user_stage do %>
                                   <div>
                                     Win/Games: {user_stage.wins_count} / {user_stage.games_count}
@@ -2122,7 +2147,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                   <span class="cb-text">–</span>
                                 <% end %>
                               </td>
-                              <td class="text-white cb-border-color">
+                              <td class="cb-text-white cb-border-color">
                                 <%= if user_stage do %>
                                   <div>Place in total_rank: {user_stage.place_in_total_rank}</div>
                                   <div>
@@ -2136,7 +2161,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           <% end %>
                         <% else %>
                           <tr>
-                            <td colspan="7" class="text-center cb-text cb-border-color">
+                            <td colspan="7" class="cb-text-center cb-text cb-border-color">
                               No stages defined for this event
                             </td>
                           </tr>
@@ -2144,7 +2169,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </tbody>
                     </table>
                   </div>
-                  <hr class="my-3" />
+                  <hr class="cb-my-3" />
                 </div>
               <% end %>
             <% end %>
@@ -2152,53 +2177,53 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="mb-3 text-white">
+      <div class="cb-row">
+        <div class="cb-col-md-12 cb-mb-4">
+          <div class="cb-bg-panel cb-border-color cb-border cb-shadow-sm cb-rounded cb-p-4 cb-h-100">
+            <div class="cb-mb-3 cb-text-white">
               <i class="bi bi-list-ul"></i> Recent Games
             </div>
             <%= if @user_games == [] do %>
-              <p class="cb-text mb-0">No games played yet.</p>
+              <p class="cb-text cb-mb-0">No games played yet.</p>
             <% else %>
-              <div class="table-responsive">
-                <table class="table table-sm mb-0">
+              <div class="cb-table-responsive">
+                <table class="cb-table cb-table-sm cb-mb-0">
                   <thead class="cb-text">
                     <tr>
-                      <th class="cb-border-color border-bottom">#</th>
-                      <th class="cb-border-color border-bottom">Date</th>
-                      <th class="cb-border-color border-bottom">Finished</th>
-                      <th class="cb-border-color border-bottom">Task</th>
-                      <th class="cb-border-color border-bottom">Status</th>
-                      <th class="cb-border-color border-bottom">Result</th>
-                      <th class="cb-border-color border-bottom"></th>
+                      <th class="cb-border-color cb-border-bottom">#</th>
+                      <th class="cb-border-color cb-border-bottom">Date</th>
+                      <th class="cb-border-color cb-border-bottom">Finished</th>
+                      <th class="cb-border-color cb-border-bottom">Task</th>
+                      <th class="cb-border-color cb-border-bottom">Status</th>
+                      <th class="cb-border-color cb-border-bottom">Result</th>
+                      <th class="cb-border-color cb-border-bottom"></th>
                     </tr>
                   </thead>
                   <tbody>
                     <%= for g <- @user_games do %>
                       <tr>
-                        <td class="text-white cb-border-color">{g.id}</td>
-                        <td class="text-white cb-border-color">{g.inserted_at}</td>
-                        <td class="text-white cb-border-color">{g.finishes_at}</td>
-                        <td class="text-white cb-border-color">{g.task_name}</td>
+                        <td class="cb-text-white cb-border-color">{g.id}</td>
+                        <td class="cb-text-white cb-border-color">{g.inserted_at}</td>
+                        <td class="cb-text-white cb-border-color">{g.finishes_at}</td>
+                        <td class="cb-text-white cb-border-color">{g.task_name}</td>
                         <td class="cb-border-color">
-                          <span class={"badge " <> (
+                          <span class={"cb-badge " <> (
                               case g.state do
-                                "finished" -> "bg-success"
-                                "timeout" -> "bg-warning text-dark"
-                                _ -> "bg-secondary"
+                                "finished" -> "cb-bg-success"
+                                "timeout" -> "cb-bg-warning cb-text-dark"
+                                _ -> "cb-bg-secondary"
                               end
                             )}>
                             {String.capitalize(g.state)}
                           </span>
                         </td>
-                        <td class="text-white cb-border-color">
+                        <td class="cb-text-white cb-border-color">
                           {String.capitalize(to_string(g.result))}
                         </td>
                         <td class="cb-border-color">
                           <.link
                             href={Routes.game_path(@socket, :show, g.id)}
-                            class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                            class="cb-btn cb-btn-sm cb-btn-outline-secondary cb-rounded"
                           >
                             <i class="fa fa-eye"></i>
                           </.link>
@@ -2216,32 +2241,32 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
     <%= if @show_modal do %>
       <div
-        class="modal fade show"
+        class="cb-modal cb-fade cb-show"
         tabindex="-1"
         style="display: block; background-color: rgba(0,0,0,0.5);"
       >
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content cb-bg-panel cb-border-color border text-white">
-            <div class="modal-header cb-border-color">
-              <h5 class="modal-title text-white">Edit User Event</h5>
+        <div class="cb-modal-dialog cb-modal-lg">
+          <div class="cb-modal-content cb-bg-panel cb-border-color cb-border cb-text-white">
+            <div class="cb-modal-header cb-border-color">
+              <h5 class="cb-modal-title cb-text-white">Edit User Event</h5>
               <button
                 type="button"
-                class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                class="cb-btn cb-btn-outline-secondary cb-rounded"
                 data-bs-dismiss="modal"
                 phx-click="close_modal"
               >
                 Close
               </button>
             </div>
-            <div class="modal-body">
+            <div class="cb-modal-body">
               <form phx-submit="update_user_event_stages">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label for="userEventStatus" class="form-label text-white">
+                <div class="cb-row g-3">
+                  <div class="cb-col-md-6">
+                    <label for="userEventStatus" class="form-label cb-text-white">
                       User Event Status
                     </label>
                     <select
-                      class="form-select cb-bg-panel cb-border-color text-white"
+                      class="form-select cb-bg-panel cb-border-color cb-text-white"
                       id="userEventStatus"
                       name="status"
                       value={@user_event_form.status}
@@ -2253,62 +2278,62 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       <% end %>
                     </select>
                   </div>
-                  <div class="col-md-6">
-                    <label for="currentStageSlug" class="form-label text-white">
+                  <div class="cb-col-md-6">
+                    <label for="currentStageSlug" class="form-label cb-text-white">
                       Current Stage Slug
                     </label>
                     <input
-                      class="form-control cb-bg-panel cb-border-color text-white"
+                      class="cb-form-control cb-bg-panel cb-border-color cb-text-white"
                       id="currentStageSlug"
                       name="current_stage_slug"
                       type="text"
                       value={@user_event_form.current_stage_slug}
                     />
                   </div>
-                  <div class="col-md-6">
-                    <label for="startedAt" class="form-label text-white">Started At</label>
+                  <div class="cb-col-md-6">
+                    <label for="startedAt" class="form-label cb-text-white">Started At</label>
                     <input
-                      class="form-control font-monospace cb-bg-panel cb-border-color text-white"
+                      class="cb-form-control cb-font-monospace cb-bg-panel cb-border-color cb-text-white"
                       id="startedAt"
                       name="started_at"
                       type="text"
                       value={@user_event_form.started_at}
                     />
-                    <div class="form-text cb-text">Use ISO8601, e.g. `2026-03-15T12:00:00Z`.</div>
+                    <div class="cb-form-text cb-text">Use ISO8601, e.g. `2026-03-15T12:00:00Z`.</div>
                   </div>
-                  <div class="col-md-6">
-                    <label for="finishedAt" class="form-label text-white">Finished At</label>
+                  <div class="cb-col-md-6">
+                    <label for="finishedAt" class="form-label cb-text-white">Finished At</label>
                     <input
-                      class="form-control font-monospace cb-bg-panel cb-border-color text-white"
+                      class="cb-form-control cb-font-monospace cb-bg-panel cb-border-color cb-text-white"
                       id="finishedAt"
                       name="finished_at"
                       type="text"
                       value={@user_event_form.finished_at}
                     />
-                    <div class="form-text cb-text">Leave empty to clear it.</div>
+                    <div class="cb-form-text cb-text">Leave empty to clear it.</div>
                   </div>
                 </div>
-                <div class="mb-3 mt-3">
-                  <label for="stagesJson" class="form-label text-white">Stages JSON</label>
+                <div class="cb-mb-3 cb-mt-3">
+                  <label for="stagesJson" class="form-label cb-text-white">Stages JSON</label>
                   <textarea
-                    class="form-control font-monospace cb-bg-panel cb-border-color text-white"
+                    class="cb-form-control cb-font-monospace cb-bg-panel cb-border-color cb-text-white"
                     id="stagesJson"
                     name="stages_json"
                     rows="15"
                   ><%= @stages_json %></textarea>
-                  <div class="form-text cb-text">
+                  <div class="cb-form-text cb-text">
                     Edit all per-stage fields here. Keep valid JSON and preserve `slug` for each row.
                   </div>
                 </div>
-                <div class="modal-footer cb-border-color">
+                <div class="cb-modal-footer cb-border-color">
                   <button
                     type="button"
-                    class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                    class="cb-btn cb-btn-outline-secondary cb-rounded"
                     phx-click="close_modal"
                   >
                     Close
                   </button>
-                  <button type="submit" class="btn btn-success cb-rounded">Save changes</button>
+                  <button type="submit" class="cb-btn cb-btn-success cb-rounded">Save changes</button>
                 </div>
               </form>
             </div>

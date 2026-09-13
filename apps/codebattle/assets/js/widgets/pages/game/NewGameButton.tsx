@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
 import qs from 'qs';
 import { connect } from 'react-redux';
 
@@ -25,19 +26,24 @@ function NewGameButton(props: NewGameButtonProps) {
     gameMode === (GameTypeCodes as Record<string, string>).regular
       ? 'withRandomPlayer'
       : 'withFriend';
-  const queryParamsString = qs.stringify({ level, type, timeout_seconds: timeoutSeconds });
+  const queryParamsString = qs.stringify({
+    level,
+    type,
+    timeout_seconds: timeoutSeconds,
+  });
   const gameUrl = `/games?${queryParamsString}`;
 
   return (
-    <button
-      type="button"
-      className="btn btn-secondary btn-block cb-rounded"
+    <Button
+      color="cbSecondary"
+      radius="md"
+      fullWidth
       data-method="post"
       data-csrf={window.csrf_token}
       data-to={gameUrl}
     >
       {i18n.t('Start new game')}
-    </button>
+    </Button>
   );
 }
 

@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { Box } from '@mantine/core';
+
 import { TournamentPlayerPage } from '../../widgets/App';
 
 export default function TournamentPlayer() {
   return (
-    <main className="vh-100 overflow-hidden">
+    <Box h="100vh" style={{ overflow: 'hidden' }}>
       <TournamentPlayerPage />
-    </main>
+    </Box>
   );
 }

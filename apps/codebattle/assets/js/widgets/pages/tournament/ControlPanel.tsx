@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useContext } from 'react';
 
+import { Flex, NativeSelect } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 
@@ -67,53 +68,43 @@ function ControlPanel({
   );
 
   return (
-    <div className="cb-tournament-control-panel d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between align-items-stretch gap-2">
-      <div className="d-flex align-items-stretch flex-grow-1 min-w-0 mb-2 mb-md-0">
+    <Flex
+      direction={{ base: 'column', md: 'row' }}
+      justify="space-between"
+      align="stretch"
+      gap="xs"
+      className="cb-tournament-control-panel"
+    >
+      <Flex align="stretch" flex={1} style={{ minWidth: 0 }}>
         {leftContent}
-      </div>
-      <div
-        className={cn(
-          'd-flex align-items-center text-nowrap justify-content-end ml-md-3',
-          hasCustomEventStyles && 'cb-custom-event-text',
-        )}
+      </Flex>
+      <Flex
+        align="center"
+        justify="flex-end"
+        className={cn(hasCustomEventStyles && 'cb-custom-event-text')}
       >
-        <select
+        <NativeSelect
           key="select_panel_mode"
-          className="form-control custom-select cb-bg-panel cb-border-color text-white cb-rounded"
           value={panelMode.panel}
           onChange={onChangePanelMode}
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath " +
-              "fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' " +
-              "stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e\")",
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 0.75rem center',
-            backgroundSize: '16px 12px',
-            paddingRight: '2.25rem',
-          }}
-        >
-          {allowedPanelModes.map(
-            (mode) =>
-              (![
-                PanelModeCodes.taskRatingAdvanced,
-                PanelModeCodes.taskDurationDistributionMode,
-                PanelModeCodes.topUserByTasksMode,
-              ].includes(mode) ||
-                mode === panelMode.panel) && (
-                <option
-                  key={mode}
-                  value={mode}
-                  className="cb-bg-panel text-white"
-                  disabled={mode === PanelModeCodes.playerMode && !isPlayer}
-                >
-                  {mapPanelModeToTitle[mode]}
-                </option>
-              ),
-          )}
-        </select>
-      </div>
-    </div>
+          radius="md"
+          data={allowedPanelModes
+            .filter(
+              (mode) =>
+                ![
+                  PanelModeCodes.taskRatingAdvanced,
+                  PanelModeCodes.taskDurationDistributionMode,
+                  PanelModeCodes.topUserByTasksMode,
+                ].includes(mode) || mode === panelMode.panel,
+            )
+            .map((mode) => ({
+              value: mode,
+              label: mapPanelModeToTitle[mode] || mode,
+              disabled: mode === PanelModeCodes.playerMode && !isPlayer,
+            }))}
+        />
+      </Flex>
+    </Flex>
   );
 }
 

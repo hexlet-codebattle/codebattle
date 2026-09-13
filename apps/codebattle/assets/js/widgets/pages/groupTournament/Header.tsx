@@ -1,5 +1,6 @@
 import React, { useState, useEffect, type CSSProperties } from 'react';
 import moment from 'moment';
+import { Badge, Box, Button, Flex, Text, Title } from '@mantine/core';
 import PictureInPicture from '@/components/PictureInPicture';
 import i18n from '../../../i18n';
 import useTimer from '../../utils/useTimer';
@@ -7,18 +8,20 @@ import { isOnBreak } from '../../utils/groupTournament';
 import { type GroupTournament } from './types';
 
 interface StatusBadge {
-  className?: string;
+  color?: string;
   style?: CSSProperties;
   labelKey: string;
 }
 
+const monospace = 'var(--mantine-font-family-monospace)';
+
 const statusBadge: Record<string, StatusBadge> = {
   active: {
-    className: 'border-success bg-success text-white p-2',
+    color: 'green',
     labelKey: 'Active',
   },
   finished: {
-    className: 'border-secondary bg-secondary text-white p-2',
+    color: 'gray',
     labelKey: 'Finished',
   },
   waiting_participants: {
@@ -51,16 +54,19 @@ function WaitingStartTimer({ startsAt }: WaitingStartTimerProps) {
   const label = overdue ? i18n.t('Tournament will start soon') : time;
 
   return (
-    <span
-      className="text-monospace rounded-pill px-4 py-2"
+    <Text
+      span
       style={{
+        fontFamily: monospace,
         fontSize: overdue ? '1.1rem' : '1.5rem',
         color,
         border: `1px solid ${color}`,
+        borderRadius: '999px',
+        padding: '0.5rem 1.5rem',
       }}
     >
       {label}
-    </span>
+    </Text>
   );
 }
 
@@ -125,26 +131,31 @@ function TournamentTimer({ groupTournament }: TournamentTimerProps) {
       : time;
 
   return (
-    <div className="d-flex align-items-center">
+    <Flex align="center">
       {showRoundCounter && (
-        <span
-          className="text-monospace text-white mr-3"
-          style={{ fontSize: '1.1rem', opacity: 0.85 }}
+        <Text
+          span
+          mr="md"
+          c="white"
+          style={{ fontFamily: monospace, fontSize: '1.1rem', opacity: 0.85 }}
         >
           {`${i18n.t('Round')} ${currentRound}/${roundsCount}`}
-        </span>
+        </Text>
       )}
-      <span
-        className="text-monospace rounded-pill px-4 py-2"
+      <Text
+        span
         style={{
+          fontFamily: monospace,
           fontSize: checkingSolutions ? '1.1rem' : '1.5rem',
           color,
           border: `1px solid ${color}`,
+          borderRadius: '999px',
+          padding: '0.5rem 1.5rem',
         }}
       >
         {label}
-      </span>
-    </div>
+      </Text>
+    </Flex>
   );
 }
 
@@ -158,32 +169,47 @@ function PipTimerContent({ status, groupTournament }: PipTimerContentProps) {
 
   if (status === 'finished' || groupTournament?.state === 'finished') {
     return (
-      <span
-        className="border border-secondary bg-secondary text-white rounded-pill px-4 py-2 font-weight-bold"
-        style={{ fontSize: '1.5rem' }}
+      <Text
+        span
+        c="white"
+        fw={700}
+        style={{
+          fontSize: '1.5rem',
+          padding: '0.5rem 1.5rem',
+          borderRadius: '999px',
+          backgroundColor: '#6c757d',
+          border: '1px solid #6c757d',
+        }}
       >
         {i18n.t('Finished')}
-      </span>
+      </Text>
     );
   }
 
   const isTimerActive = !isWaiting && groupTournament?.state === 'active';
 
   return (
-    <div className="d-flex flex-column align-items-center justify-content-center text-center p-2">
+    <Flex direction="column" align="center" justify="center" ta="center" p="sm">
       {isWaiting ? (
         <WaitingStartTimer startsAt={groupTournament?.startsAt} />
       ) : isTimerActive ? (
         <TournamentTimer groupTournament={groupTournament} />
       ) : (
-        <span
-          className="text-monospace rounded-pill px-4 py-2 border border-warning text-warning"
-          style={{ fontSize: '1.5rem' }}
+        <Text
+          span
+          style={{
+            fontFamily: monospace,
+            fontSize: '1.5rem',
+            color: '#ffc107',
+            border: '1px solid #ffc107',
+            borderRadius: '999px',
+            padding: '0.5rem 1.5rem',
+          }}
         >
           {i18n.t((status && statusBadge[status]?.labelKey) || 'Group Tournament')}
-        </span>
+        </Text>
       )}
-    </div>
+    </Flex>
   );
 }
 
@@ -226,37 +252,52 @@ function Header({ name, status, groupTournament }: HeaderProps) {
   }, [isPipSupported]);
 
   return (
-    <div className="cb-custom-event-profile d-flex align-items-center w-100 position-relative">
-      <h4 className="mb-0 mr-3 text-white">{name || i18n.t('Group Tournament')}</h4>
+    <Flex align="center" w="100%" pos="relative" className="cb-custom-event-profile">
+      <Title order={4} mb={0} mr="md" c="white">
+        {name || i18n.t('Group Tournament')}
+      </Title>
       {!groupTournament?.isInfinite && groupTournament?.type !== 'seed_only' && (
-        <div
-          className="position-absolute d-flex align-items-center"
-          style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
+        <Box
+          pos="absolute"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
         >
           {isWaiting ? (
             <WaitingStartTimer startsAt={groupTournament?.startsAt} />
           ) : (
             <TournamentTimer groupTournament={groupTournament} />
           )}
-        </div>
+        </Box>
       )}
-      <div className="d-flex align-items-center ml-auto">
-        <span
-          className={`${badge.className || ''} rounded-pill px-4 py-2 mr-3 font-weight-bold`}
+      <Flex align="center" ml="auto">
+        <Badge
+          color={badge.color}
+          c="white"
+          radius="xl"
+          px="lg"
+          py="sm"
+          mr="md"
+          fw={700}
           style={badge.style}
         >
           {i18n.t(badge.labelKey)}
-        </span>
-        <a
-          className="btn btn-outline-light rounded-pill px-4"
+        </Badge>
+        <Button
+          component="a"
+          variant="default"
+          radius="xl"
+          px="lg"
           href="https://t.me/+Z0_UGvNt_yE4ODcy"
         >
           {i18n.t('Support')}
-        </a>
-        <a className="btn btn-outline-light rounded-pill px-4" href="/">
+        </Button>
+        <Button component="a" variant="default" radius="xl" px="lg" href="/">
           {i18n.t('Back to event')}
-        </a>
-      </div>
+        </Button>
+      </Flex>
       {isPipSupported && !groupTournament?.isInfinite && groupTournament?.type !== 'seed_only' && (
         <PictureInPicture
           isActive={isPipActive}
@@ -267,7 +308,7 @@ function Header({ name, status, groupTournament }: HeaderProps) {
           <PipTimerContent status={status} groupTournament={groupTournament} />
         </PictureInPicture>
       )}
-    </div>
+    </Flex>
   );
 }
 

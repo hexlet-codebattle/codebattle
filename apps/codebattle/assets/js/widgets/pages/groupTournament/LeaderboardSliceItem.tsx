@@ -1,5 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
+import { Badge, Box, Flex, Table, Text } from '@mantine/core';
 import i18n from '../../../i18n';
 import LeaderboardSlicePlayerRow from './LeaderboardSlicePlayerRow';
 import { type SlicePlayer } from './types';
@@ -17,33 +18,53 @@ const LeaderboardSliceItem = ({
   hasCurrentUser,
   currentUserId,
 }: LeaderboardSliceItemProps) => (
-  <div
-    className={cn('cb-bg-panel cb-rounded p-2', {
-      'border border-warning': hasCurrentUser,
-    })}
-    style={{ minWidth: '20rem', flex: '1 1 22rem' }}
+  <Box
+    bg="cbPanel"
+    p="sm"
+    style={{
+      minWidth: '20rem',
+      flex: '1 1 22rem',
+      borderRadius: 'var(--mantine-radius-md)',
+      ...(hasCurrentUser ? { border: '1px solid #ffc107' } : {}),
+    }}
   >
-    <div className="d-flex justify-content-between border-bottom cb-border-color pb-1 mb-2 px-2">
-      <span className="font-weight-bold">
+    <Flex
+      justify="space-between"
+      px="sm"
+      pb="xs"
+      mb="sm"
+      style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
+    >
+      <Text fw={700}>
         {`${i18n.t('Slice')} ${sliceIndex + 1}`}
         {hasCurrentUser && (
-          <span className="badge badge-warning text-dark ml-2">{i18n.t('You')}</span>
+          <Badge color="yellow" c="black" ml="xs">
+            {i18n.t('You')}
+          </Badge>
         )}
-      </span>
-      <span className="text-muted small">
+      </Text>
+      <Text c="dimmed" size="sm">
         {i18n.t('%{count} players', { count: players.length })}
-      </span>
-    </div>
-    <table className="table table-sm cb-text-light mb-0">
-      <thead>
-        <tr>
-          <th className="border-0 font-weight-light p-1">#</th>
-          <th className="border-0 font-weight-light p-1">{i18n.t('Player')}</th>
-          <th className="border-0 font-weight-light p-1">{i18n.t('Clan')}</th>
-          <th className="border-0 font-weight-light p-1 text-right">{i18n.t('Score')}</th>
-        </tr>
-      </thead>
-      <tbody>
+      </Text>
+    </Flex>
+    <Table verticalSpacing="xs" c="cbTextLight" mb={0}>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th p="xs" fw={300}>
+            #
+          </Table.Th>
+          <Table.Th p="xs" fw={300}>
+            {i18n.t('Player')}
+          </Table.Th>
+          <Table.Th p="xs" fw={300}>
+            {i18n.t('Clan')}
+          </Table.Th>
+          <Table.Th p="xs" fw={300} ta="right">
+            {i18n.t('Score')}
+          </Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
         {players.map((p, idx) => (
           <LeaderboardSlicePlayerRow
             key={p.userId}
@@ -52,9 +73,9 @@ const LeaderboardSliceItem = ({
             currentUserId={currentUserId}
           />
         ))}
-      </tbody>
-    </table>
-  </div>
+      </Table.Tbody>
+    </Table>
+  </Box>
 );
 
 export default LeaderboardSliceItem;

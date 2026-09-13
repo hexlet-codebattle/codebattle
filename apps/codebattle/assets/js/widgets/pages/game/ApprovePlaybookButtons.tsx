@@ -1,5 +1,6 @@
 import React, { useCallback, memo } from 'react';
 
+import { Button, Group } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import { type AppDispatch } from '@/slices';
@@ -23,44 +24,28 @@ function ApprovePlaybookButtons({ playbookSolutionType }: ApprovePlaybookButtons
   switch (playbookSolutionType) {
     case SolutionTypeCodes.waitingModerator:
       return (
-        <div className="d-flex btn-block">
-          <button
-            type="button"
-            className="btn btn-outline-primary flex-grow-1 mr-1 rounded-lg"
-            onClick={approve}
-          >
+        <Group grow wrap="nowrap">
+          <Button variant="outline" radius="md" onClick={approve}>
             Approve
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-danger flex-grow-1 ml-1 rounded-lg"
-            onClick={reject}
-          >
+          </Button>
+          <Button variant="outline" color="red" radius="md" onClick={reject}>
             Ban
-          </button>
-        </div>
+          </Button>
+        </Group>
       );
     case SolutionTypeCodes.complete:
       return (
         <>
-          {/* <button */}
-          {/*   type="button" */}
-          {/*   className="btn btn-block btn-outline-danger rounded-lg" */}
-          {/*   onClick={reject} */}
-          {/* > */}
+          {/* <Button variant="outline" color="red" radius="md" fullWidth onClick={reject}> */}
           {/*   To banned list */}
-          {/* </button> */}
+          {/* </Button> */}
         </>
       );
     case SolutionTypeCodes.banned:
       return (
-        <button
-          type="button"
-          className="btn btn-block btn-outline-primary rounded-lg"
-          onClick={approve}
-        >
+        <Button variant="outline" radius="md" fullWidth onClick={approve}>
           To approved list
-        </button>
+        </Button>
       );
     default:
       return <></>;

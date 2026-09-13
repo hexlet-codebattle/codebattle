@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Group, Text } from '@mantine/core';
 import moment from 'moment';
 
 interface InfoMessageProps {
@@ -9,12 +10,14 @@ interface InfoMessageProps {
 
 function InfoMessage({ text, time }: InfoMessageProps) {
   return (
-    <div className="d-flex align-items-baseline flex-wrap">
-      <small className="text-muted text-small">{text}</small>
-      <small className="text-muted text-small ml-auto">
+    <Group align="baseline" gap="xs">
+      <Text component="small" size="sm" c="dimmed">
+        {text}
+      </Text>
+      <Text component="small" size="sm" c="dimmed" ml="auto">
         {time ? moment.unix(time).format('HH:mm:ss') : ''}
-      </small>
-    </div>
+      </Text>
+    </Group>
   );
 }
 

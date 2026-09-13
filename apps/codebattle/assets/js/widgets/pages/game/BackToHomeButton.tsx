@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
+
 import i18n from '../../../i18n';
 
 export default function BackToHomeButton() {
@@ -9,12 +11,8 @@ export default function BackToHomeButton() {
   };
 
   return (
-    <button
-      className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-      onClick={handleClick}
-      type="button"
-    >
+    <Button color="cbSecondary" radius="md" fullWidth onClick={handleClick}>
       {title}
-    </button>
+    </Button>
   );
 }

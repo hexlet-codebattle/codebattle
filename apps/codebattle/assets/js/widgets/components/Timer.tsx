@@ -9,7 +9,7 @@ interface TimerProps {
 function Timer({ time }: TimerProps) {
   const [duration] = useTimer(time);
 
-  return <span className="text-monospace">{duration}</span>;
+  return <span style={{ fontFamily: 'monospace' }}>{duration}</span>;
 }
 
 export default Timer;

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Box, Flex, Stack } from '@mantine/core';
+
 import Output, { type OutputData } from './Output';
 import OutputTab from './OutputTab';
 import TaskAssignment, { type TaskAssignmentProps } from './TaskAssignment';
@@ -12,23 +14,36 @@ interface SideInfoPanelProps {
 
 function SideInfoPanel({ taskPanelProps, outputData }: SideInfoPanelProps) {
   return (
-    <div
-      className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1"
-      style={{ height: 'calc(100vh - 92px)' }}
+    <Box
+      w={{ base: '100%', lg: '50%', xl: '33.3333%' }}
+      p="xs"
+      miw={0}
+      h="calc(100vh - 92px)"
+      style={{ display: 'flex', flexDirection: 'column' }}
     >
       <div>
         <TaskAssignment {...taskPanelProps} />
       </div>
-      <div className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto">
-        <div className="d-flex justify-content-around align-items-center w-100 p-2">
+      <Box
+        className="cb-card cb-overflow-y-auto"
+        mt="xs"
+        style={{ border: 0, boxShadow: 'var(--mantine-shadow-sm)' }}
+      >
+        <Flex justify="space-around" align="center" w="100%" p="sm">
           <TimerContainer />
           <OutputTab sideOutput={outputData} large />
-        </div>
-        <div className="d-flex flex-column w-100 h-100 user-select-none cb-overflow-y-auto">
+        </Flex>
+        <Stack
+          w="100%"
+          h="100%"
+          gap={0}
+          className="cb-overflow-y-auto"
+          style={{ userSelect: 'none' }}
+        >
           <Output hideContent={taskPanelProps.hideContent} sideOutput={outputData} />
-        </div>
-      </div>
-    </div>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from 'react';
 
+import { Box, Button, Flex, Text } from '@mantine/core';
 import cn from 'classnames';
 import { compress } from 'lz-string';
 import { useDispatch } from 'react-redux';
@@ -50,93 +51,147 @@ function CssBattleInfoPanel() {
   const showTargetControls = ['targetIsEmpty', 'targetIsInvalid'].includes(matchStats.status);
 
   return (
-    <div className="card cb-card border-0 h-100">
-      <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row justify-content-between px-3 py-3">
-        <div className="card cb-card d-flex flex-column mx-1" style={frameStyle}>
-          <div className="h-100 position-relative">
+    <Box className="cb-card" h="100%" style={{ border: 0 }}>
+      <Flex
+        direction={{ base: 'column', md: 'row', lg: 'row', xl: 'row' }}
+        justify="space-between"
+        px="md"
+        py="md"
+      >
+        <Box
+          className="cb-card"
+          style={{
+            ...frameStyle,
+            display: 'flex',
+            flexDirection: 'column',
+            margin: '0 4px',
+          }}
+        >
+          <Box h="100%" pos="relative">
             {isLoading && (
-              <div className="position-absolute cb-opacity-50 d-flex justify-content-center align-items-center h-100 w-100">
+              <Flex
+                pos="absolute"
+                className="cb-opacity-50"
+                justify="center"
+                align="center"
+                h="100%"
+                w="100%"
+              >
                 <Loading adaptive />
-              </div>
+              </Flex>
             )}
-            <div className={cn('position-relative h-100 w-100', { 'cb-opacity-25': isLoading })}>
+            <Box pos="relative" h="100%" w="100%" className={cn({ 'cb-opacity-25': isLoading })}>
               <img
                 alt=""
                 title={i18n.t('Right editor solution picture')}
-                className={cn('w-100 h-100 position-absolute', 'cb-opacity-05', {
-                  invisible: isLoading,
-                })}
+                className="cb-opacity-05"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                }}
                 ref={rightImgRef}
               />
               <img
                 alt=""
                 title={i18n.t('Left editor solution picture')}
-                className={cn(
-                  'w-100 h-100 position-absolute',
-                  // 'cb-opacity-75',
-                  { invisible: isLoading },
-                )}
+                style={{
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                  width: '100%',
+                  height: '100%',
+                }}
                 ref={leftImgRef}
               />
               <iframe
                 src="/cssbattle/builder"
                 title={i18n.t('left editor solution')}
-                className="border-0 w-100 h-100 position-absolute invisible"
+                style={{
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                  border: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
                 ref={leftSolutionIframe}
                 onLoad={handleLoadLeftIframe}
               />
               <iframe
                 src="/cssbattle/builder"
                 title={i18n.t('right editor solution')}
-                className="border-0 w-100 h-100 position-absolute invisible"
+                style={{
+                  position: 'absolute',
+                  visibility: isLoading ? 'hidden' : 'visible',
+                  border: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
                 ref={rightSolutionIframe}
                 onLoad={handleLoadRightIframe}
               />
-            </div>
-          </div>
-        </div>
-        <div ref={ref} className="card cb-card d-flex flex-column mx-1" style={frameStyle}>
-          <div className="h-100 position-relative">
-            <div
-              className={cn(
-                'h-100 w-100 d-flex position-absolute flex-column justify-content-center align-items-center',
-                { invisible: !showTargetControls },
-              )}
+            </Box>
+          </Box>
+        </Box>
+        <Box
+          ref={ref}
+          className="cb-card"
+          style={{
+            ...frameStyle,
+            display: 'flex',
+            flexDirection: 'column',
+            margin: '0 4px',
+          }}
+        >
+          <Box h="100%" pos="relative">
+            <Flex
+              pos="absolute"
+              direction="column"
+              justify="center"
+              align="center"
+              h="100%"
+              w="100%"
+              className={cn({ invisible: !showTargetControls })}
             >
-              <span className="mb-2">
+              <Text mb="sm">
                 {statusTitleMap[matchStats.status as keyof typeof statusTitleMap]}
-              </span>
-              <button
-                type="button"
-                className="btn btn-secondary cb-btn-secondary cb-rounded"
-                onClick={handleClick}
-              >
+              </Text>
+              <Button color="cbSecondary" radius="md" onClick={handleClick}>
                 Save current img
-              </button>
-            </div>
-            <div
-              className={cn(
-                'h-100 w-100 d-flex position-absolute text-center',
-                'flex-column justify-content-center align-items-center',
-                'text-muted h1 cb-opacity-75',
-                { invisible: !showStats || showTargetControls || isLoading },
-              )}
+              </Button>
+            </Flex>
+            <Flex
+              pos="absolute"
+              direction="column"
+              justify="center"
+              align="center"
+              ta="center"
+              c="dimmed"
+              h="100%"
+              w="100%"
+              className={cn('cb-opacity-75', {
+                invisible: !showStats || showTargetControls || isLoading,
+              })}
+              style={{ fontSize: 'var(--mantine-font-size-xl)' }}
             >
               {matchStats.result[0]?.success ? '100%' : matchStats.result[0]?.matchPercentage}
-            </div>
+            </Flex>
             <img
               alt=""
               title={i18n.t('target solution picture')}
-              className={cn('w-100 h-100 position-absolute', {
-                'cb-opacity-50 ': showStats,
-                invisible: showTargetControls || isLoading,
-              })}
+              className={cn({ 'cb-opacity-50': showStats })}
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                visibility: showTargetControls || isLoading ? 'hidden' : 'visible',
+              }}
               ref={targetImgRef}
             />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Flex>
+    </Box>
   );
 }
 

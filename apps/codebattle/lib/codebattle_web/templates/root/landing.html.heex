@@ -1,43 +1,43 @@
-<h1 class="d-none">Codebattle</h1>
+<h1 class="cb-d-none">Codebattle</h1>
 <div class="landing">
   <div class="landing-shell">
     <div class="landing-noise"></div>
     <div class="landing-orb orb-a"></div>
 
-    <div class="container-lg">
-      <nav class="navbar navbar-dark px-0 pt-4 landing-nav">
-        <a class="navbar-brand d-flex align-items-end" href="/">
+    <div class="cb-container-lg">
+      <nav class="cb-navbar cb-navbar-dark cb-px-0 cb-pt-4 landing-nav">
+        <a class="cb-navbar-brand cb-d-flex cb-align-end" href="/">
           <img alt="Logo" height="40" src={static_asset("images/logo.svg")} width="83" />
-          <div class="d-sm-flex d-none flex-column text-gray ml-2 pb-1">
+          <div class="cb-d-sm-flex cb-d-none cb-flex-column text-gray cb-ml-2 cb-pb-1">
             <span class="header-txt">Hexlet Codebattle</span>
             <span class="header-txt">Competitive coding platform</span>
           </div>
         </a>
-        <ul class="navbar-nav ml-auto flex-row landing-nav-actions">
-          <li class="nav-item mx-1">
+        <ul class="cb-navbar-nav cb-ml-auto cb-flex-row landing-nav-actions">
+          <li class="cb-nav-item cb-mx-1">
             <a href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-              <button class="btn btn-outline-success rounded-lg">{gettext("Sign in")}</button>
+              <button class="cb-btn cb-btn-outline-success cb-rounded-lg">{gettext("Sign in")}</button>
             </a>
           </li>
-          <li class="nav-item mx-1">
+          <li class="cb-nav-item cb-mx-1">
             <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-              <button class="btn btn-primary rounded-lg">{gettext("Sign up")}</button>
+              <button class="cb-btn cb-btn-primary cb-rounded-lg">{gettext("Sign up")}</button>
             </a>
           </li>
 
           <%= if Application.get_env(:codebattle, :dev_sign_in) do %>
-            <li class="nav-item mx-1">
+            <li class="cb-nav-item cb-mx-1">
               {button("Dev",
                 to: "/auth/dev_login?locale=en&subscription_type=free",
-                class: "btn btn-outline-danger rounded-lg"
+                class: "cb-btn cb-btn-outline-danger cb-rounded-lg"
               )}
               {button("Premium",
                 to: "/auth/dev_login?locale=en&subscription_type=premium",
-                class: "btn btn-outline-danger rounded-lg"
+                class: "cb-btn cb-btn-outline-danger cb-rounded-lg"
               )}
               {button("Admin",
                 to: "/auth/dev_login?locale=en&subscription_type=admin",
-                class: "btn btn-outline-danger rounded-lg"
+                class: "cb-btn cb-btn-outline-danger cb-rounded-lg"
               )}
             </li>
           <% end %>
@@ -46,7 +46,7 @@
     </div>
 
     <section class="hero">
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="hero-grid">
           <div class="hero-copy">
             <span class="eyebrow">Tournaments. Seasons. Code-first competition.</span>
@@ -57,14 +57,14 @@
             </p>
             <div class="hero-cta">
               <button
-                class="btn btn-try text-uppercase p-3 rounded-lg"
+                class="cb-btn btn-try cb-text-uppercase cb-p-3 cb-rounded-lg"
                 data-csrf={csrf_token()}
                 data-method="post"
                 data-to="/games/training"
               >
                 Try simple battle
               </button>
-              <span class="d-block mt-2 text-muted">No registration required</span>
+              <span class="cb-d-block cb-mt-2 cb-text-muted">No registration required</span>
             </div>
             <div class="hero-pills">
               <span class="pill">Live ladders</span>
@@ -87,7 +87,7 @@
               <div class="hero-panel-body">
                 <div class="leaderboard-list">
                   <%= if Enum.empty?(@current_season_leaderboard) do %>
-                    <p class="text-muted mb-0">Season standings will appear here soon.</p>
+                    <p class="cb-text-muted cb-mb-0">Season standings will appear here soon.</p>
                   <% else %>
                     <%= for result <- @current_season_leaderboard do %>
                       <div class="leaderboard-row">
@@ -126,7 +126,7 @@
     </section>
 
     <section class="section" id="seasons">
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Seasons and formats</p>
           <h2>Four seasons a year. One Grand Slam to crown the best.</h2>
@@ -173,7 +173,7 @@
     </section>
 
     <section class="section section-alt">
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="section-head" data-reveal>
           <p class="eyebrow">How it works</p>
           <h2>Join, battle, climb, repeat</h2>
@@ -215,7 +215,7 @@
     </section>
 
     <section class="section">
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Private tournaments</p>
           <h2>Build your own tournaments for friends or teams</h2>
@@ -257,7 +257,7 @@
     </section>
 
     <section class="section section-languages">
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Languages</p>
           <h2>Battle in your language</h2>
@@ -429,7 +429,7 @@
     </section>
 
     <section class="section section-alt">
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Community</p>
           <h2>Built by competitive coders</h2>
@@ -440,12 +440,12 @@
         <div class="community" data-reveal style="--reveal-delay: 120ms;">
           <div class="community-head">
             <a
-              class="text-uppercase text-white fw-500"
+              class="cb-text-uppercase cb-text-white fw-500"
               href="https://github.com/hexlet-codebattle/codebattle"
             >
               <img
                 alt=""
-                class="mr-sm-2 github-logo"
+                class="cb-mr-sm-2 github-logo"
                 decoding="async"
                 height="49"
                 loading="lazy"
@@ -453,7 +453,7 @@
                 width="49"
               /> Codebattle
             </a>
-            <div class="float-right mt-2 ml-auto">
+            <div class="cb-float-right cb-mt-2 cb-ml-auto">
               <a
                 href="https://github.com/hexlet-codebattle/codebattle"
                 target="_blank"
@@ -463,7 +463,7 @@
               </a>
             </div>
           </div>
-          <div class="d-flex flex-wrap my-3 contributors">
+          <div class="cb-d-flex cb-flex-wrap cb-my-3 contributors">
             {render("_contributors_codebattle.html")}
           </div>
           <div class="tag-row">
@@ -482,14 +482,14 @@
     </section>
 
     <section class="cta" data-reveal>
-      <div class="container-lg">
+      <div class="cb-container-lg">
         <div class="cta-card">
           <div>
             <h2>Ready to enter the arena?</h2>
             <p>Spin up a quick match or start planning your next season.</p>
           </div>
           <button
-            class="btn btn-try text-uppercase p-3 rounded-lg"
+            class="cb-btn btn-try cb-text-uppercase cb-p-3 cb-rounded-lg"
             data-csrf={csrf_token()}
             data-method="post"
             data-to="/games/training"
@@ -502,28 +502,28 @@
   </div>
 </div>
 
-<div class="footer text-white">
-  <div class="container-lg py-3 d-flex justify-content-between align-items-center text-gray flex-column flex-sm-row">
+<div class="footer cb-text-white">
+  <div class="cb-container-lg cb-py-3 cb-d-flex cb-justify-between cb-align-center text-gray cb-flex-column cb-flex-sm-row">
     <div>
-      <p class="mb-0 mr-4">
+      <p class="cb-mb-0 cb-mr-4">
         ©
-        <a class="text-muted" href="https://hexlet.io/">
+        <a class="cb-text-muted" href="https://hexlet.io/">
           Hexlet ltd,
         </a>
         2026
       </p>
-      <p class="mb-0">
+      <p class="cb-mb-0">
         Support:
-        <a class="text-muted ml-1" href="https://t.me/hexletcommunity/5" target="_blank">
+        <a class="cb-text-muted cb-ml-1" href="https://t.me/hexletcommunity/5" target="_blank">
           Tg#codebattle
         </a>
       </p>
     </div>
-    <div class="mt-3 mt-sm-0">
-      <p class="mb-0">
-        Design by: <span class="text-muted ml-2">ChatGPT</span>
+    <div class="cb-mt-3 cb-mt-sm-0">
+      <p class="cb-mb-0">
+        Design by: <span class="cb-text-muted cb-ml-2">ChatGPT</span>
       </p>
-      <p class="mb-0 mt-2 small text-muted">
+      <p class="cb-mb-0 cb-mt-2 cb-small cb-text-muted">
         Version: {app_short_version()}
       </p>
     </div>

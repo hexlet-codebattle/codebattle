@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
 import find from 'lodash/find';
 import { useSelector } from 'react-redux';
 
@@ -15,15 +16,16 @@ function StartTrainingButton() {
   const title = currentUserId === winner?.id ? i18n.t('Start simple battle') : i18n.t('Try again');
 
   return (
-    <button
-      type="button"
-      className="btn btn-secondary cb-btn-secondary btn-block rounded-lg"
+    <Button
+      color="cbSecondary"
+      radius="md"
+      fullWidth
       data-method="post"
       data-csrf={window.csrf_token}
       data-to={getCreateTrainingGameUrl()}
     >
       {title}
-    </button>
+    </Button>
   );
 }
 

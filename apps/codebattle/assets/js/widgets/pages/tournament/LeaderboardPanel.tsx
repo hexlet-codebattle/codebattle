@@ -1,5 +1,6 @@
 import React, { useEffect, memo, useState } from 'react';
 
+import { Text } from '@mantine/core';
 import { useDispatch } from 'react-redux';
 
 import { type AppDispatch } from '@/slices';
@@ -55,7 +56,9 @@ function LeaderboardPanel({
   }
 
   return (
-    <div className="text-center text-muted mt-4">{i18n.t('No leaderboard data available')}</div>
+    <Text ta="center" c="dimmed" mt="xl">
+      {i18n.t('No leaderboard data available')}
+    </Text>
   );
 }
 

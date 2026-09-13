@@ -43,66 +43,66 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-white">
+    <div class="cb-container-xl cb-bg-panel cb-shadow-sm cb-rounded cb-py-4 cb-mt-3">
+      <div class="cb-d-flex cb-justify-between cb-align-center cb-mb-4">
+        <h1 class="cb-text-white">
           <i class="bi bi-pencil-square"></i> Edit Season
         </h1>
         <a
           href={Routes.admin_season_index_view_path(@socket, :index)}
-          class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+          class="cb-btn cb-btn-outline-secondary cb-rounded"
         >
           <i class="bi bi-arrow-left"></i> Back to List
         </a>
       </div>
 
-      <div class="card cb-card shadow-sm border cb-border-color">
-        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
+      <div class="cb-card cb-shadow-sm cb-border cb-border-color">
+        <div class="cb-card-header cb-bg-highlight-panel cb-border-color cb-text-white">
           <span><i class="bi bi-pencil"></i> Season Information</span>
         </div>
-        <div class="card-body">
+        <div class="cb-card-body">
           <.form :let={f} for={@changeset} phx-submit="update">
-            <div class="row g-3">
-              <div class="col-md-6">
+            <div class="cb-row g-3">
+              <div class="cb-col-md-6">
                 {label(f, :name, class: "form-label")}
                 {text_input(f, :name,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded",
                   placeholder: "e.g., Spring Season"
                 )}
                 {error_tag(f, :name)}
               </div>
 
-              <div class="col-md-6">
+              <div class="cb-col-md-6">
                 {label(f, :year, class: "form-label")}
                 {number_input(f, :year,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded",
                   placeholder: "e.g., 2024"
                 )}
                 {error_tag(f, :year)}
               </div>
 
-              <div class="col-md-6">
+              <div class="cb-col-md-6">
                 {label(f, :starts_at, "Start Date", class: "form-label")}
                 {date_input(f, :starts_at,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded"
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded"
                 )}
                 {error_tag(f, :starts_at)}
               </div>
 
-              <div class="col-md-6">
+              <div class="cb-col-md-6">
                 {label(f, :ends_at, "End Date", class: "form-label")}
                 {date_input(f, :ends_at,
-                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded"
+                  class: "cb-form-control cb-bg-panel cb-border-color cb-text-white cb-rounded"
                 )}
                 {error_tag(f, :ends_at)}
               </div>
 
-              <div class="col-12">
-                <div class="btn-group" role="group">
-                  {submit("Save Changes", class: "btn btn-secondary cb-btn-secondary cb-rounded")}
+              <div class="cb-col-12">
+                <div class="cb-btn-group" role="group">
+                  {submit("Save Changes", class: "cb-btn cb-btn-secondary cb-rounded")}
                   <button
                     type="button"
-                    class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                    class="cb-btn cb-btn-outline-secondary cb-rounded"
                     phx-click="cancel"
                   >
                     Cancel
@@ -114,38 +114,38 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
         </div>
       </div>
 
-      <div class="card cb-card shadow-sm mt-4 border cb-border-color">
-        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
+      <div class="cb-card cb-shadow-sm cb-mt-4 cb-border cb-border-color">
+        <div class="cb-card-header cb-bg-highlight-panel cb-border-color cb-text-white">
           <span><i class="bi bi-info-circle"></i> Current Values</span>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
+        <div class="cb-card-body">
+          <div class="cb-row">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">ID</label>
-              <div class="fw-bold text-white">{@season.id}</div>
+              <div class="fw-bold cb-text-white">{@season.id}</div>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="cb-col-md-6 cb-mb-3">
               <label class="form-label cb-text">Duration</label>
-              <div class="fw-bold text-white">
+              <div class="fw-bold cb-text-white">
                 {Date.diff(@season.ends_at, @season.starts_at)} days
               </div>
             </div>
 
-            <div class="col-12 mb-3">
+            <div class="cb-col-12 cb-mb-3">
               <label class="form-label cb-text">Status</label>
               <div>
                 <%= cond do %>
                   <% Date.compare(@season.starts_at, Date.utc_today()) == :gt -> %>
-                    <span class="badge bg-info">
+                    <span class="cb-badge cb-bg-info">
                       <i class="bi bi-clock"></i> Upcoming
                     </span>
                   <% Date.compare(@season.ends_at, Date.utc_today()) == :lt -> %>
-                    <span class="badge bg-secondary">
+                    <span class="cb-badge cb-bg-secondary">
                       <i class="bi bi-check-circle"></i> Completed
                     </span>
                   <% true -> %>
-                    <span class="badge bg-success">
+                    <span class="cb-badge cb-bg-success">
                       <i class="bi bi-play-circle"></i> Active
                     </span>
                 <% end %>

@@ -58,7 +58,10 @@ const machine = {
         none: {
           on: {
             JOIN: { target: 'connected' },
-            FAILURE_JOIN: { target: 'disconnected', actions: ['handleFailureJoin'] },
+            FAILURE_JOIN: {
+              target: 'disconnected',
+              actions: ['handleFailureJoin'],
+            },
             FAILURE: { target: 'disconnected' },
           },
         },

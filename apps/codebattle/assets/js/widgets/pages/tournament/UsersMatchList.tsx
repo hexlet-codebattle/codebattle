@@ -1,13 +1,12 @@
 import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Box, Flex, Text, Tooltip } from '@mantine/core';
 import cn from 'classnames';
 import i18next from 'i18next';
 import moment from 'moment';
-import Tooltip from 'react-bootstrap/Tooltip';
 import { useSelector } from 'react-redux';
 
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import { type UserNameUser } from '@/components/UserName';
@@ -51,7 +50,6 @@ const matchBodyClassName = 'cb-tournament-match-body';
 const matchSummaryClassName = 'cb-tournament-match-summary';
 const matchHeaderClassName = 'cb-tournament-match-header';
 const matchPlayersClassName = 'cb-tournament-match-players';
-const playerSlotClassName = cn('d-flex align-items-center text-nowrap');
 const matchMetaClassName = 'cb-tournament-match-meta';
 const metaItemClassName = 'cb-tournament-match-meta-item';
 const metaIconClassName = 'cb-tournament-match-meta-icon';
@@ -214,7 +212,7 @@ interface MatchPlayerProps {
 
 function MatchPlayer({ userId, score, testPercent }: MatchPlayerProps) {
   return (
-    <div className={playerSlotClassName}>
+    <Flex align="center" wrap="nowrap">
       <UserTournamentInfo userId={userId} />
       {Number.isFinite(score) && (
         <span className="cb-tournament-match-score" title={i18next.t('Score')}>
@@ -226,7 +224,7 @@ function MatchPlayer({ userId, score, testPercent }: MatchPlayerProps) {
           {testPercent}%
         </span>
       )}
-    </div>
+    </Flex>
   );
 }
 
@@ -271,20 +269,41 @@ function UsersMatchList({
   }
 
   return (
-    <div className="d-flex flex-column">
+    <Flex direction="column">
       {!hideStats && matches.length > 0 && (
-        <div className="d-flex py-2 border-bottom cb-border-color align-items-center overflow-auto">
-          <span className="ml-2">
+        <Flex
+          py="xs"
+          align="center"
+          style={{
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+            overflow: 'auto',
+          }}
+        >
+          <Text component="span" ml="xs">
             {i18next.t('Wins:')} {player.winMatches.length}
-          </span>
-          <span className="ml-1 pl-1 border-left cb-border-color">
+          </Text>
+          <Text
+            component="span"
+            ml="xs"
+            pl="xs"
+            style={{
+              borderLeft: '1px solid var(--mantine-color-default-border)',
+            }}
+          >
             {i18next.t('AVG Tests:')} {Math.ceil(player.avgTests)}%
-          </span>
-          <span className="ml-1 pl-1 border-left cb-border-color">
+          </Text>
+          <Text
+            component="span"
+            ml="xs"
+            pl="xs"
+            style={{
+              borderLeft: '1px solid var(--mantine-color-default-border)',
+            }}
+          >
             {i18next.t('AVG Duration:')} {Math.ceil(player.avgDuration)}
             {` ${i18next.t('sec')}`}
-          </span>
-        </div>
+          </Text>
+        </Flex>
       )}
       {matches.map((match) => {
         const currentUserIsPlayer =
@@ -342,52 +361,44 @@ function UsersMatchList({
                 {matchResult && matchResult.result !== 'undefined' && (
                   <div className={matchMetaClassName}>
                     {!showScore && (
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`tests-${match.id}`}>{i18next.t('Tests percent')}</Tooltip>
-                        }
-                      >
+                      <Tooltip label={i18next.t('Tests percent')} position="top" withArrow>
                         <span className={metaItemClassName}>
                           <span className={metaIconClassName}>
-                            <FontAwesomeIcon className="text-success" icon="tasks" />
+                            <FontAwesomeIcon
+                              icon="tasks"
+                              style={{ color: 'var(--mantine-color-green-6)' }}
+                            />
                           </span>
                           {matchResult.resultPercent}
                         </span>
-                      </OverlayTrigger>
+                      </Tooltip>
                     )}
                     {Number.isFinite(match.durationSec) && (
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={
-                          <Tooltip id={`duration-${match.id}`}>
-                            {i18next.t('Duration (sec)')}
-                          </Tooltip>
-                        }
-                      >
+                      <Tooltip label={i18next.t('Duration (sec)')} position="top" withArrow>
                         <span className={metaItemClassName}>
                           <span className={metaIconClassName}>
-                            <FontAwesomeIcon className="text-primary" icon="stopwatch" />
+                            <FontAwesomeIcon
+                              icon="stopwatch"
+                              style={{ color: 'var(--mantine-color-blue-6)' }}
+                            />
                           </span>
                           <span className="cb-tournament-match-duration">{match.durationSec}</span>
                         </span>
-                      </OverlayTrigger>
+                      </Tooltip>
                     )}
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip id={`time-${match.id}`}>{i18next.t('Started - Finished')}</Tooltip>
-                      }
-                    >
+                    <Tooltip label={i18next.t('Started - Finished')} position="top" withArrow>
                       <span className={metaItemClassName}>
                         <span className={metaIconClassName}>
-                          <FontAwesomeIcon className="text-primary" icon="flag-checkered" />
+                          <FontAwesomeIcon
+                            icon="flag-checkered"
+                            style={{ color: 'var(--mantine-color-blue-6)' }}
+                          />
                         </span>
                         {match.startedAt ? toLocalTime(match.startedAt) : '-'}
-                        <span className="mx-1">-</span>
+                        <span style={{ margin: '0 4px' }}>-</span>
                         {match.finishedAt ? toLocalTime(match.finishedAt) : '-'}
                       </span>
-                    </OverlayTrigger>
+                    </Tooltip>
                   </div>
                 )}
               </div>
@@ -405,7 +416,7 @@ function UsersMatchList({
           </div>
         );
       })}
-    </div>
+    </Flex>
   );
 }
 

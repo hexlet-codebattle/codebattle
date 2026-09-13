@@ -1,7 +1,17 @@
 import React, { memo, useState, useCallback, useRef } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Flex,
+  Group,
+  NativeSelect,
+  Paper,
+  Text,
+  Title,
+} from '@mantine/core';
 import themeList from 'monaco-themes/themes/themelist.json';
 import { useSelector } from 'react-redux';
 
@@ -37,7 +47,8 @@ interface SpectatorEditorProps {
   // xstate v4 interpreter; typed loosely per migration conventions.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   spectatorService: any;
-  panelClassName: string;
+  panelClassName?: string;
+  style?: React.CSSProperties;
   // Extra props are forwarded from the parent but unused here.
   switchedWidgetsStatus?: boolean;
   handleSwitchWidgets?: () => void;
@@ -51,6 +62,7 @@ function SpectatorEditor({
   playerId,
   spectatorService,
   panelClassName,
+  style,
 }: SpectatorEditorProps) {
   const toolbarRef = useRef<HTMLDivElement>(null);
 
@@ -118,24 +130,31 @@ function SpectatorEditor({
     onChange: () => {},
   };
 
-  const pannelBackground = cn(panelClassName, {
-    'bg-warning': isChecking,
-  });
-
   return (
-    <div className={pannelBackground} data-editor-state={spectatorEditorState}>
-      <div className="card shadow-sm h-100">
-        <div ref={toolbarRef} className="rounded-top border-bottom">
-          <div
-            className="btn-toolbar justify-content-between align-items-center m-1"
-            role="toolbar"
-          >
-            <div className="d-flex justify-content-between">
+    <Box
+      className={panelClassName}
+      bg={isChecking ? 'yellow.4' : undefined}
+      h="100%"
+      p="xs"
+      style={style}
+      data-editor-state={spectatorEditorState}
+    >
+      <Paper shadow="sm" radius="sm" h="100%">
+        <Box
+          ref={toolbarRef}
+          style={{
+            borderTopLeftRadius: 'var(--mantine-radius-sm)',
+            borderTopRightRadius: 'var(--mantine-radius-sm)',
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+          }}
+        >
+          <Group justify="space-between" align="center" m="xs" gap="xs" role="toolbar">
+            <Flex justify="space-between" align="center">
               {!hidingControls && (
                 <>
-                  <div className="d-flex align-items-center p-1">
+                  <Flex align="center" p="xs">
                     {players[playerId as number] ? (
-                      <div className="py-2">
+                      <Box py="sm">
                         <UserInfo
                           user={players[playerId as number]}
                           placement={
@@ -145,13 +164,18 @@ function SpectatorEditor({
                           }
                           hideOnlineIndicator
                         />
-                      </div>
+                      </Box>
                     ) : (
-                      <h5 className="pt-2 pl-2">{i18n.t('Spectator')}</h5>
+                      <Title order={5} pt="sm" pl="sm">
+                        {i18n.t('Spectator')}
+                      </Title>
                     )}
-                  </div>
-                  <div
-                    className="btn-group align-items-center ml-2 mr-auto"
+                  </Flex>
+                  <Group
+                    align="center"
+                    ml="sm"
+                    mr="auto"
+                    gap={0}
                     role="group"
                     aria-label={i18n.t('Editor mode')}
                   >
@@ -161,84 +185,72 @@ function SpectatorEditor({
                         typeof DakModeButton
                       >)}
                     />
-                  </div>
-                  <div
-                    className="btn-group align-items-center ml-2 mr-auto"
+                  </Group>
+                  <Group
+                    align="center"
+                    ml="sm"
+                    mr="auto"
+                    gap="xs"
                     role="group"
                     aria-label={i18n.t('Editor size controls')}
                   >
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-light rounded-left"
-                      onClick={handleDecreaseFontSize}
-                    >
-                      -
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm mr-2 btn-light border-left rounded-right"
-                      onClick={handleIncreaseFontSize}
-                    >
-                      +
-                    </button>
-                    {fontSize}
-                  </div>
+                    <Button.Group>
+                      <Button variant="default" size="compact-sm" onClick={handleDecreaseFontSize}>
+                        -
+                      </Button>
+                      <Button variant="default" size="compact-sm" onClick={handleIncreaseFontSize}>
+                        +
+                      </Button>
+                    </Button.Group>
+                    <Text span size="sm">
+                      {fontSize}
+                    </Text>
+                  </Group>
 
-                  <div className="d-flex align-items-center">
-                    <select
+                  <Flex align="center">
+                    <NativeSelect
                       key="select_panel_mode"
-                      className="form-control custom-select rounded-lg"
+                      radius="md"
                       value={monacoTheme}
                       onChange={handleChangeMonacoTheme}
-                    >
-                      <option key="custom" value="custom">
-                        custom
-                      </option>
-                      {Object.values(themeList).map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      data={['custom', ...Object.values(themeList)]}
+                    />
+                  </Flex>
                 </>
               )}
-            </div>
-            <div className="d-flex align-items-center justify-content-center">
-              <div>
-                {/* <button */}
-                {/*   title="Swap game widgets" */}
-                {/*   type="button" */}
-                {/*   className={`btn btn-sm mr-1 rounded-lg ${switchedWidgetsStatus ? 'btn-primary' : 'btn-light'}`} */}
-                {/*   onClick={handleSwitchWidgets} */}
-                {/* > */}
-                {/*   <FontAwesomeIcon icon="exchange-alt" /> */}
-                {/* </button> */}
-                <button
-                  title={i18n.t('Swap game widgets')}
-                  type="button"
-                  className={`btn btn-sm mr-1 rounded-lg ${
-                    !hidingControls ? 'btn-primary' : 'btn-light'
-                  }`}
-                  onClick={handleSwitchHidingControls}
-                >
-                  <FontAwesomeIcon icon="eye" />
-                </button>
-              </div>
+            </Flex>
+            <Flex align="center" justify="center">
+              {/* <ActionIcon */}
+              {/*   title="Swap game widgets" */}
+              {/*   variant={switchedWidgetsStatus ? 'filled' : 'default'} */}
+              {/*   onClick={handleSwitchWidgets} */}
+              {/* > */}
+              {/*   <FontAwesomeIcon icon="exchange-alt" /> */}
+              {/* </ActionIcon> */}
+              <ActionIcon
+                title={i18n.t('Swap game widgets')}
+                variant={!hidingControls ? 'filled' : 'default'}
+                radius="md"
+                mr={4}
+                onClick={handleSwitchHidingControls}
+              >
+                <FontAwesomeIcon icon="eye" />
+              </ActionIcon>
               <LanguagePickerView
-                {...({ currentLangSlug: params.syntax, isDisabled: true } as React.ComponentProps<
-                  typeof LanguagePickerView
-                >)}
+                {...({
+                  currentLangSlug: params.syntax,
+                  isDisabled: true,
+                } as React.ComponentProps<typeof LanguagePickerView>)}
               />
-            </div>
-          </div>
-        </div>
+            </Flex>
+          </Group>
+        </Box>
         <ExtendedEditor {...editorParams} />
         <EditorResultIcon mode="spectator">
           <GameResultIcon mode="spectator" userId={params.userId as number} />
         </EditorResultIcon>
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 }
 

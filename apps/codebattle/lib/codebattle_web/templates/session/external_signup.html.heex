@@ -1,25 +1,25 @@
-<div class="container-fluid auth-container d-flex align-items-center justify-content-center vh-100">
+<div class="cb-container-fluid auth-container cb-d-flex cb-align-center cb-justify-center cb-vh-100">
   <div class="cup" />
   <div id="externalBackGround" class="rotating-background"></div>
-  <div class="auth-card text-center p-4">
-    <div class="battle-title mb-3">
+  <div class="auth-card cb-text-center cb-p-4">
+    <div class="battle-title cb-mb-3">
       {Application.get_env(:codebattle, :external)[:app_name]}
     </div>
 
-    <h1 class="main-title text-purple mb-3">
+    <h1 class="main-title text-purple cb-mb-3">
       {raw(Application.get_env(:codebattle, :external)[:app_slogan])}
     </h1>
 
-    <div class="login-description text-light mb-4">
+    <div class="login-description cb-text-light cb-mb-4">
       {Application.get_env(:codebattle, :external)[:app_signup_description]}
     </div>
 
-    <%= link to: Application.get_env(:codebattle, :free_users_redirect_url), class: "btn btn-yellow mb-4" do %>
+    <%= link to: Application.get_env(:codebattle, :free_users_redirect_url), class: "cb-btn btn-yellow cb-mb-4" do %>
       {Application.get_env(:codebattle, :external)[:app_signup_button]}
     <% end %>
 
     <%= form_for @conn, Routes.session_path(@conn, :delete), [as: :session, method: :delete], fn _f -> %>
-      <button type="submit" class="btn btn-gray">
+      <button type="submit" class="cb-btn btn-gray">
         {Application.get_env(:codebattle, :external)[:app_relogin_button]}
       </button>
     <% end %>

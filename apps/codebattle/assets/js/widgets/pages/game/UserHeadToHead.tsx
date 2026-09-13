@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
+import { Anchor, Box, Flex, Text } from '@mantine/core';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
@@ -34,31 +35,45 @@ function UserHeadToHead({ userId }: UserHeadToHeadProps) {
   }
 
   const wins = players.find((player) => player.id === userId)?.wins ?? 0;
-  const headToHeadClassName = cn('d-flex flex-nowrap ml-2 text-center', {
+  const scoreClassName = cn({
     'cb-game-score-won': winnerId === userId,
     'cb-game-score-lost': winnerId !== null && winnerId !== userId,
     'cb-game-score-draw': winnerId === null,
   });
   const href = opponentId ? `/h2h/${userId}/${opponentId}` : null;
+
   const content = (
     <>
-      <span className="d-none d-lg-flex d-md-flex">H2H:</span>
+      <Text display={{ base: 'none', md: 'flex', lg: 'flex' }} component="span">
+        H2H:
+      </Text>
       {wins}
     </>
   );
 
   if (!href) {
-    return <div className={headToHeadClassName}>{content}</div>;
+    return (
+      <Flex wrap="nowrap" ml="sm" ta="center" className={scoreClassName}>
+        {content}
+      </Flex>
+    );
   }
 
   return (
-    <a
+    <Anchor
       href={href}
-      className={cn(headToHeadClassName, 'text-decoration-none')}
+      className={scoreClassName}
       title={i18n.t('Open H2H')}
+      style={{
+        display: 'flex',
+        flexWrap: 'nowrap',
+        marginLeft: 'var(--mantine-spacing-sm)',
+        textAlign: 'center',
+        textDecoration: 'none',
+      }}
     >
       {content}
-    </a>
+    </Anchor>
   );
 }
 

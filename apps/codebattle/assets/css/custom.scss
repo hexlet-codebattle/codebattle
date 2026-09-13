@@ -42,6 +42,10 @@
   /* Display ellipsis for overflow text */
 }
 
+.cb-custom-event-td {
+  position: relative;
+}
+
 .cb-custom-event-td:not(:last-child)::after,
 .cb-custom-event-nav-item:not(:first-child)::after {
   content: '';
@@ -182,10 +186,6 @@
   color: #bfdbfe;
 }
 
-.text-gold {
-  color: #c9a56c !important;
-}
-
 .btn-gold {
   color: #151823;
   background-color: #c9a56c;
@@ -197,18 +197,6 @@
   color: #11131b;
   background-color: #b89460;
   border-color: #b89460;
-}
-
-.btn-outline-gold {
-  color: #c9a56c;
-  border-color: #c9a56c;
-}
-
-.btn-outline-gold:hover,
-.btn-outline-gold:focus {
-  color: #11131b;
-  background-color: #c9a56c;
-  border-color: #c9a56c;
 }
 
 .cb-hof-podium-card {
@@ -235,7 +223,7 @@
   z-index: 0;
 }
 
-.cb-hof-podium-card .card-body {
+.cb-hof-podium-card > * {
   position: relative;
   z-index: 1;
 }
@@ -1289,4 +1277,32 @@
 .cb-tab-btn--active {
   background-color: rgba(255, 255, 255, 0.12) !important;
   color: #fff !important;
+}
+
+// CbSelect (Mantine Combobox) — red-accented variant used by the create-game
+// dialog (TaskChoice task select + OpponentSelect). Port of the old
+// react-select inline styles: dark control/menu, red border, lighten-on-hover.
+.cb-select-danger-input {
+  background-color: #1c1c24;
+  border-color: #dc3545;
+  color: white;
+
+  &:hover {
+    border-color: #e04d5b;
+  }
+}
+
+.cb-select-danger-dropdown {
+  background-color: #1c1c24;
+}
+
+.cb-select-danger-option {
+  background-color: #1c1c24;
+  color: white;
+
+  &:hover,
+  &[data-combobox-selected] {
+    background-color: #2a2a35;
+    color: #eaffff;
+  }
 }

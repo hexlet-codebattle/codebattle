@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { Button, Text } from '@mantine/core';
 
 import i18next from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
@@ -30,30 +30,33 @@ function JoinButton({
   const text = isParticipant ? i18next.t('Leave') : i18next.t('Join');
   const actionIcon = isParticipant ? 'user-minus' : 'user-plus';
 
-  if (isParticipant && !isShowLeave) {
+  if (!isShow || (isParticipant && !isShowLeave)) {
     return null;
   }
 
+  const customClassName = hasCustomEventStyles
+    ? isParticipant
+      ? 'cb-custom-event-btn-outline-danger'
+      : 'cb-custom-event-btn-outline-secondary'
+    : undefined;
+
   return (
     <>
-      {title && isShow && <p>{title}</p>}
-      <button
+      {title && <Text>{title}</Text>}
+      <Button
         type="button"
         onClick={() => {
           onClick(teamId);
         }}
-        className={cn('btn text-nowrap rounded-lg', {
-          'btn-outline-danger': isParticipant && !hasCustomEventStyles,
-          'btn-outline-secondary cb-btn-outline-secondary': !isParticipant && !hasCustomEventStyles,
-          'cb-custom-event-btn-outline-danger': isParticipant && hasCustomEventStyles,
-          'cb-custom-event-btn-outline-secondary': !isParticipant && hasCustomEventStyles,
-          'd-none': !isShow,
-        })}
+        variant="outline"
+        color={isParticipant ? 'red' : 'cbSecondary'}
+        radius="md"
+        className={customClassName}
         disabled={disabled}
+        leftSection={<FontAwesomeIcon icon={actionIcon} />}
       >
-        <FontAwesomeIcon className="mr-2" icon={actionIcon} />
         {text}
-      </button>
+      </Button>
     </>
   );
 }

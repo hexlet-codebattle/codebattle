@@ -1,12 +1,14 @@
 import React from 'react';
 
+import { Button } from '@mantine/core';
+
 import i18n from '../../../i18n';
 
 function SignUpButton() {
   return (
-    <a className="btn btn-success cb-btn-success btn-block text-white cb-rounded" href="/users/new">
+    <Button component="a" href="/users/new" color="cbSuccess" radius="md" fullWidth>
       {i18n.t('Sign up')}
-    </a>
+    </Button>
   );
 }
 

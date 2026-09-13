@@ -327,7 +327,8 @@ defmodule Codebattle.Tournament.Helpers do
     do: fixed_ladder_tick_timeout(seconds)
 
   def current_round_timeout_seconds(%{timeout_mode: mode, round_timeout_seconds: seconds})
-      when mode in ["per_round_fixed", "per_round_with_rematch"] and is_integer(seconds), do: seconds
+      when mode in ["per_round_fixed", "per_round_with_rematch"] and is_integer(seconds),
+      do: seconds
 
   def current_round_timeout_seconds(tournament), do: task_time_to_solve(tournament)
 

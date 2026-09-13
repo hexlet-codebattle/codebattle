@@ -55,10 +55,10 @@ defmodule Mix.Tasks.GetContributors do
   defp template(params) do
     """
     <a href="#{params["html_url"]}" target="_blank" title="#{params["login"]} #{params["contributions"]}">
-      <div class="m-1">
+      <div class="cb-m-1">
         <img
           alt="#{params["login"]}"
-          class="rounded-circle contributor-img"
+          class="cb-rounded-circle contributor-img"
           src="#{params["avatar_url"]}"
         />
       </div>

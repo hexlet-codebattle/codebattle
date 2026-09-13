@@ -31,7 +31,7 @@ defmodule CodebattleWeb.ClanControllerTest do
     assert html =~ "Players"
     assert html =~ "Created at"
     assert html =~ ~s(sort=players_count)
-    assert html =~ ~s(<td class="align-middle text text-white cb-border-color">2</td>)
+    assert html =~ ~s(<td class="cb-align-middle text cb-text-white cb-border-color">2</td>)
     refute html =~ "Alpha Long Name"
     refute html =~ "Delete"
   end

@@ -84,7 +84,7 @@ function TournamentContextMenu({
       {children}
       <Menu role="menu" id={menuId}>
         <Item aria-label={i18n.t('Ban')} onClick={handleBanClick}>
-          <FontAwesomeIcon className="mr-2" icon="ban" />
+          <FontAwesomeIcon style={{ marginRight: '0.5rem' }} icon="ban" />
           <span>{i18n.t('Ban')}</span>
         </Item>
       </Menu>

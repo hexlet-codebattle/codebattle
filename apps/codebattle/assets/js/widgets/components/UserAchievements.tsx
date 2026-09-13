@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Box } from '@mantine/core';
+
 import AchievementBadge from './AchievementBadge';
 import type { Achievement } from './achievementTypes';
 
@@ -19,11 +21,11 @@ function UserAchievements({ achievements }: UserAchievementsProps) {
   }
 
   return (
-    <div className="cb-achievements-grid mt-2">
+    <Box className="cb-achievements-grid" mt="sm">
       {visibleAchievements.map((achievement) => (
         <AchievementBadge key={achievement.type} achievement={achievement} />
       ))}
-    </div>
+    </Box>
   );
 }
 

@@ -1,11 +1,10 @@
 import React, { memo, useCallback, useState } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import cn from 'classnames';
-import Button from 'react-bootstrap/Button';
+import { Button, Flex, Stack, Text } from '@mantine/core';
 import { useSelector } from 'react-redux';
 
-import Modal from '@/components/BootstrapModal';
+import Modal from '@/components/CbModal';
 import ScheduleNavigationTab from '@/components/ScheduleNavigationBar';
 import TournamentDescription from '@/components/TournamentDescription';
 import TournamentPreviewPanel from '@/components/TournamentPreviewPanel';
@@ -53,54 +52,68 @@ export const EventModal = NiceModal.create(
     }, [modal, clearEvent]);
 
     return (
-      <Modal
-        size="lg"
-        show={modal.visible}
-        onHide={modal.hide}
-        contentClassName="cb-bg-panel cb-text"
-      >
-        <Modal.Header className="cb-border-color" closeButton>
-          <Modal.Title className="d-flex flex-column">
-            {event.resourse.grade !== grades.open && (
-              <span className="text-white">Codebattle League 2025</span>
-            )}
-            {i18n.t('Tournament: %{name}', { name: eventTitle })}
+      <Modal size="lg" show={modal.visible} onHide={modal.hide}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <Stack gap={0}>
+              {event.resourse.grade !== grades.open && (
+                <Text c="white">Codebattle League 2025</Text>
+              )}
+              {i18n.t('Tournament: %{name}', { name: eventTitle })}
+            </Stack>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="d-flex flex-column">
+          <Flex direction="column">
             <ScheduleNavigationTab
-              className="w-100 d-flex justify-content-between p-2"
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0.5rem',
+              }}
               events={events}
               event={event}
               setEvent={setCurrentEvent as (event?: { resourse: { id: number | string } }) => void}
             />
             <TournamentPreviewPanel
-              className="d-flex justify-content-center w-100 h-100"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+              }}
               tournament={event.resourse}
               start={event.start as string | number | Date}
               end={event.end as string | number | Date}
             />
             <TournamentDescription
-              className="d-flex flex-column align-items-center cb-rounded w-100 h-100 p-3"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                padding: '1rem',
+              }}
               tournament={event.resourse}
             />
-          </div>
+          </Flex>
         </Modal.Body>
-        <Modal.Footer className="cb-border-color">
+        <Modal.Footer>
           {event.resourse.id && (
-            <a
+            <Button
+              component="a"
               href={isAdmin || !isUpcoming ? `/tournaments/${event.resourse.id}` : 'blank'}
-              className={cn('btn btn-secondary cb-btn-secondary pr-2 cb-rounded', {
-                disabled: isUpcoming,
-              })}
-              // @ts-expect-error anchors don't support `disabled`; preserved to keep runtime markup unchanged
+              color="cbSecondary"
+              radius="md"
+              pr="xs"
               disabled={isUpcoming}
             >
               {i18n.t('Open Tournament')}
-            </a>
+            </Button>
           )}
-          <Button onClick={handleClose} className="btn btn-secondary cb-btn-secondary cb-rounded">
+          <Button onClick={handleClose} color="cbSecondary" radius="md">
             {i18n.t('Close')}
           </Button>
         </Modal.Footer>

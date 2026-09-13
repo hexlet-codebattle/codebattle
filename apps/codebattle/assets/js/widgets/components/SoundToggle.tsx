@@ -27,17 +27,40 @@ function SoundToggle({ variant = 'menu' }: SoundToggleProps) {
   return (
     <button
       type="button"
-      className={cn('d-flex align-items-center', {
-        'dropdown-item cb-dropdown-item text-white': isMenu,
-        'btn cb-settings-sound-toggle rounded-lg px-3': !isMenu,
+      className={cn({
+        'cb-dropdown-item': isMenu,
+        'cb-settings-sound-toggle': !isMenu,
       })}
+      style={
+        isMenu
+          ? {
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              padding: '0.25rem 1.5rem',
+            }
+          : {
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: '0.5rem',
+              paddingLeft: '1rem',
+              paddingRight: '1rem',
+            }
+      }
       aria-label={i18n.t(muted ? 'Turn sound on' : 'Mute sound')}
       aria-pressed={muted}
       onClick={toggleSound}
     >
-      <FontAwesomeIcon fixedWidth className="mr-2" icon={muted ? faVolumeMute : faVolumeUp} />
+      <span style={{ marginRight: '0.5rem' }}>
+        <FontAwesomeIcon fixedWidth icon={muted ? faVolumeMute : faVolumeUp} />
+      </span>
       <span>{i18n.t('Sound')}</span>
-      <span className={cn({ 'ml-auto text-muted': isMenu, 'ml-2': !isMenu })}>
+      <span
+        style={{
+          marginLeft: isMenu ? 'auto' : '0.5rem',
+          color: isMenu ? 'var(--mantine-color-dimmed)' : undefined,
+        }}
+      >
         {i18n.t(muted ? 'Off' : 'On')}
       </span>
     </button>

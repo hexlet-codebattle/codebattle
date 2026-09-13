@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Box, Button, Flex, Paper, Table, Text, Title } from '@mantine/core';
+
 import { getPageProp } from '@/inertia/pageProps';
 import { type AppDispatch } from '@/slices/store';
 
@@ -80,44 +82,52 @@ function TournamentAdminWidget() {
     const allMatches = playerMatches[playerId] || [];
 
     if (allMatches.length === 0) {
-      return <span className="text-muted">No matches</span>;
+      return (
+        <Text span c="dimmed">
+          No matches
+        </Text>
+      );
     }
 
     return (
-      <div className="d-flex flex-wrap gap-1">
+      <Flex wrap="wrap" gap={4}>
         {allMatches.map((match) => {
-          // Determine button color based on match state
-          let buttonClass = 'btn-outline-secondary';
+          // Determine button color based on match state.
+          let variant: 'outline' | 'filled' = 'outline';
+          let color: string = 'cbSecondary';
           if (match.state === 'finished') {
-            buttonClass = match.winnerId === playerId ? 'btn-success' : 'btn-danger';
+            variant = 'filled';
+            color = match.winnerId === playerId ? 'cbSuccess' : 'red';
           } else if (match.state === 'playing') {
-            buttonClass = 'btn-primary';
+            variant = 'filled';
+            color = 'orange';
           } else if (match.state === 'timeout') {
-            buttonClass = 'btn-warning';
+            color = 'yellow';
           }
 
-          // Check if this is the active game
+          // Check if this is the active game.
           const isActiveGame =
             tournamentAdmin.activeGameId && match.gameId === tournamentAdmin.activeGameId;
-          // No need for inline styles as we're using CSS animations
-          const buttonStyle: React.CSSProperties = {};
           const title = isActiveGame ? '⭐ ACTIVE GAME - ' : '';
 
           return (
-            <button
-              type="button"
+            <Button
               key={match.id}
+              size="compact-xs"
+              variant={variant}
+              color={color}
+              mr={4}
+              mb={4}
+              className={isActiveGame ? 'active-game' : ''}
               onClick={() => dispatch(pushActiveMatchToStream(match.gameId))}
-              className={`btn ${buttonClass} btn-sm me-1 mb-1 ${isActiveGame ? 'active-game' : ''}`}
               title={`${title}Match ID: ${match.id}, State: ${match.state}, Started: ${new Date(match.startedAt).toLocaleTimeString()}`}
-              style={buttonStyle}
             >
               #{match.gameId}
               {isActiveGame ? <span className="active-game-indicator">🔄</span> : ''}
-            </button>
+            </Button>
           );
         })}
-      </div>
+      </Flex>
     );
   };
 
@@ -153,7 +163,11 @@ function TournamentAdminWidget() {
 
   const renderRankingTable = () => {
     if (!tournament?.ranking?.entries || tournament.ranking.entries.length === 0) {
-      return <div className="text-center mt-3">No ranking data available</div>;
+      return (
+        <Text ta="center" mt="md">
+          No ranking data available
+        </Text>
+      );
     }
 
     const ranking = tournament.ranking as {
@@ -164,68 +178,68 @@ function TournamentAdminWidget() {
     };
 
     return (
-      <div className="ranking-table-container">
-        <table className="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Active</th>
-              <th scope="col">Place</th>
-              <th scope="col">Name</th>
-              <th scope="col">Clan</th>
-              <th scope="col">Score</th>
-              <th scope="col">Matches</th>
-            </tr>
-          </thead>
-          <tbody>
+      <Box style={{ overflowX: 'auto' }}>
+        <Table striped>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th scope="col">ID</Table.Th>
+              <Table.Th scope="col">Active</Table.Th>
+              <Table.Th scope="col">Place</Table.Th>
+              <Table.Th scope="col">Name</Table.Th>
+              <Table.Th scope="col">Clan</Table.Th>
+              <Table.Th scope="col">Score</Table.Th>
+              <Table.Th scope="col">Matches</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {(tournament.ranking.entries as RankingEntry[]).map((rankingPlayer) => {
               const players = tournament.players as Record<number, Record<string, unknown>>;
               return (
-                <tr key={rankingPlayer.id}>
-                  <td>{rankingPlayer.id}</td>
-                  <td>
+                <Table.Tr key={rankingPlayer.id}>
+                  <Table.Td>{rankingPlayer.id}</Table.Td>
+                  <Table.Td>
                     {players[rankingPlayer.id]?.drawIndex ===
                     players[rankingPlayer.id]?.maxDrawIndex
                       ? 'Active'
                       : 'InActive'}
-                  </td>
-                  <td>{rankingPlayer.place}</td>
-                  <td>{rankingPlayer.name}</td>
-                  <td>{rankingPlayer.clan || '-'}</td>
-                  <td>{rankingPlayer.score}</td>
-                  <td>{renderPlayerMatchButtons(rankingPlayer.id)}</td>
-                </tr>
+                  </Table.Td>
+                  <Table.Td>{rankingPlayer.place}</Table.Td>
+                  <Table.Td>{rankingPlayer.name}</Table.Td>
+                  <Table.Td>{rankingPlayer.clan || '-'}</Table.Td>
+                  <Table.Td>{rankingPlayer.score}</Table.Td>
+                  <Table.Td>{renderPlayerMatchButtons(rankingPlayer.id)}</Table.Td>
+                </Table.Tr>
               );
             })}
-          </tbody>
-        </table>
-        <div className="text-muted small text-center">
+          </Table.Tbody>
+        </Table>
+        <Text ta="center" c="dimmed" size="xs">
           Page {ranking.pageNumber} of {Math.ceil(ranking.totalEntries / ranking.pageSize)}• Total
           players: {ranking.totalEntries}
-        </div>
-      </div>
+        </Text>
+      </Box>
     );
   };
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-12">
-          <h1 className="text-center">Tournament Admin Widget</h1>
-          <h2 className="text-center">
-            Tournament Name:
-            {tournament?.name as React.ReactNode}
-          </h2>
+    <Box w="100%" px="md">
+      <Title order={1} ta="center">
+        Tournament Admin Widget
+      </Title>
+      <Title order={2} ta="center">
+        Tournament Name:
+        {tournament?.name as React.ReactNode}
+      </Title>
 
-          <div className="card cb-card shadow-sm mt-4">
-            <div className="card-header bg-primary text-white">
-              <h4 className="mb-0">Player Rankings & Matches</h4>
-            </div>
-            <div className="card-body">{renderRankingTable()}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Paper shadow="sm" mt="lg" withBorder>
+        <Box bg="cbHighlight" p="md" style={{ borderBottom: '1px solid #4c4c5a' }}>
+          <Title order={4} c="white" m={0}>
+            Player Rankings & Matches
+          </Title>
+        </Box>
+        <Box p="md">{renderRankingTable()}</Box>
+      </Paper>
+    </Box>
   );
 }
 
