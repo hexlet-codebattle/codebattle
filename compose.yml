@@ -1,5 +1,14 @@
 name: codebattle-devcontainer
 
+x-zig-runner: &zig-runner
+  # The runner creates a sandbox per request, as in the Kubernetes deployment.
+  privileged: true
+  user: "0:0"
+  entrypoint: /runner/codebattle_runner
+  environment:
+    DEBUG: "false"
+  restart: unless-stopped
+
 services:
   app:
     build:
@@ -17,6 +26,8 @@ services:
       CODEBATTLE_DB_PORT: ${CODEBATTLE_DB_PORT:-5432}
       CODEBATTLE_DB_USERNAME: ${CODEBATTLE_DB_USERNAME:-postgres}
       CODEBATTLE_DEVCONTAINER: "1"
+      CODEBATTLE_DEV_RUNNER_LANGS: ${CODEBATTLE_DEV_RUNNER_LANGS:-js,python}
+      CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE: http://runner-{lang}:4040/run
       CODEBATTLE_LIVE_VIEW_SALT: ${CODEBATTLE_LIVE_VIEW_SALT:-dev-only-salt}
       CODEBATTLE_PORT: ${CODEBATTLE_PORT:-4000}
       CODEBATTLE_RUNNER_PORT: ${CODEBATTLE_RUNNER_PORT:-4001}
@@ -50,6 +61,89 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  runner-js:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/js:25.4.0
+    profiles: [runner-js]
+
+  runner-python:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/python:3.14.5
+    profiles: [runner-python]
+
+  runner-clojure:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/clojure:1.12.4
+    profiles: [runner-clojure]
+
+  runner-cpp:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/cpp:23
+    profiles: [runner-cpp]
+
+  runner-csharp:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/csharp:10.0.102
+    profiles: [runner-csharp]
+
+  runner-dart:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/dart:3.10.0
+    profiles: [runner-dart]
+
+  runner-elixir:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/elixir:1.19.5
+    profiles: [runner-elixir]
+
+  runner-golang:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/golang:1.25.6
+    profiles: [runner-golang]
+
+  runner-java:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/java:25.0.2
+    profiles: [runner-java]
+
+  runner-kotlin:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/kotlin:2.3.0
+    profiles: [runner-kotlin]
+    environment:
+      DEBUG: "false"
+      SLOW_KOTLIN: "1"
+
+  runner-php:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/php:8.5.2
+    profiles: [runner-php]
+
+  runner-ruby:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/ruby:4.0.1
+    profiles: [runner-ruby]
+
+  runner-rust:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/rust:1.93.0
+    profiles: [runner-rust]
+
+  runner-swift:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/swift:6.2.3
+    profiles: [runner-swift]
+
+  runner-ts:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/js:25.4.0
+    profiles: [runner-ts]
+
+  runner-zig:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/zig:0.15.2
+    profiles: [runner-zig]
 
   db:
     image: postgres:18-alpine@sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2

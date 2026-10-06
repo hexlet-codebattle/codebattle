@@ -11,6 +11,8 @@ root_dir = File.cwd!()
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 
+default_executor = if System.get_env("CODEBATTLE_DEVCONTAINER") == "1", do: "zig", else: "local"
+
 config :codebattle, ChromicPDF, on_demand: true
 
 config :codebattle, Codebattle.Invite,
@@ -57,7 +59,24 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY", "x-key")
 config :codebattle, :external_platform_adapter, Codebattle.ExternalPlatform.Fake
 config :codebattle, :tournament_run_upcoming, false
-config :codebattle, checker_executor: Local
+config :codebattle, :zig_runner_url_template, System.get_env("CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE")
+
+config :codebattle,
+  checker_executor:
+    if(System.get_env("CODEBATTLE_EXECUTOR", default_executor) == "zig",
+      do: Codebattle.CodeCheck.Executor.RemoteZig,
+      else: Local
+    )
+
+if System.get_env("CODEBATTLE_DEVCONTAINER") == "1" do
+  config :runner,
+    white_list_lang_slugs:
+      "CODEBATTLE_DEV_RUNNER_LANGS"
+      |> System.get_env("js,python")
+      |> String.split(",", trim: true)
+      |> Enum.map(&String.trim/1)
+end
+
 config :codebattle, env: :dev
 
 # Do not include metadata nor timestamps in development logs

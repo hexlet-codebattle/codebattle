@@ -127,7 +127,7 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }: Languag
     [currentLang],
   );
 
-  if (isDisabled || options.length < 2) {
+  if (isDisabled || options.length === 0) {
     return (
       <button className="btn btn-sm p-2" type="button" disabled>
         <LangTitle {...currentLang} />

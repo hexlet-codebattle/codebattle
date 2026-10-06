@@ -18,6 +18,7 @@ import {
 // import editorThemes from '../../config/editorThemes';
 import editorUserTypes from '../../config/editorUserTypes';
 import GameModeCodes from '../../config/gameModes';
+import GameStateCodes from '../../config/gameStateCodes';
 import {
   editorStateSelector,
   inPreviewRoomSelector,
@@ -129,9 +130,12 @@ function EditorContainer({
   const currentUserIsBot = useSelector(selectors.currentUserIsBotSelector);
   const gameId = useSelector(selectors.gameIdSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
-  const { tournamentId, startsAt, hideBannedPlayerControls } = useSelector(
-    selectors.gameStatusSelector,
-  );
+  const {
+    tournamentId,
+    startsAt,
+    hideBannedPlayerControls,
+    state: gameState,
+  } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -193,7 +197,11 @@ function EditorContainer({
     () => editorService.send({ type: 'user_check_solution' }),
     [editorService],
   );
-  const checkResult = isActiveGame ? checkActiveTaskSolution : noop;
+  const canCheckSolution =
+    editorCurrent.context.editorState === 'active' &&
+    !openedReplayer &&
+    (isActiveGame || (isGameOver && gameState === GameStateCodes.gameOver));
+  const checkResult = canCheckSolution ? checkActiveTaskSolution : noop;
 
   const isNeedHotKeys = editorCurrent.context.type === editorUserTypes.currentUser;
 
@@ -229,8 +237,8 @@ function EditorContainer({
     currentEditorLangSlug,
     ...userSettings,
     showGiveUpBtn: !isTournamentGame,
-    checkBtnStatus: isActiveGame ? userSettings.checkBtnStatus : EditorBtnStatuses.disabled,
-    resetBtnStatus: isActiveGame ? userSettings.resetBtnStatus : EditorBtnStatuses.disabled,
+    checkBtnStatus: canCheckSolution ? userSettings.checkBtnStatus : EditorBtnStatuses.disabled,
+    resetBtnStatus: canCheckSolution ? userSettings.resetBtnStatus : EditorBtnStatuses.disabled,
     giveUpBtnStatus: isActiveGame ? userSettings.giveUpBtnStatus : EditorBtnStatuses.disabled,
   };
 

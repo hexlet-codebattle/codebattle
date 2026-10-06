@@ -2,6 +2,7 @@
   "name": "Codebattle",
   "dockerComposeFile": "../compose.yml",
   "service": "app",
+  "runServices": ["app", "runner-js", "runner-python"],
   "workspaceFolder": "/workspace",
   "remoteUser": "codebattle",
   "// updateRemoteUserUID": "Must stay false: bin/dev always runs as the image uid 1000, and the _build/deps/node_modules/plts volumes are owned by it. Letting the editor remap the user to the host uid makes those volumes unwritable from the editor container.",

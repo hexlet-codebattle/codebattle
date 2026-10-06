@@ -1,11 +1,18 @@
 BUILDX_OUTPUT ?= --load
 DEV := ./bin/dev
-DEV_COMPOSE := docker compose --project-name codebattle-devcontainer --project-directory . --file compose.yml
+DEV_COMPOSE := docker compose --project-name codebattle-devcontainer --project-directory . --file compose.yml --profile '*'
 
-.PHONY: dev-up dev-build dev-rebuild dev-stop dev-down dev-logs dev-shell dev-exec
+.PHONY: dev-up dev-build dev-rebuild dev-stop dev-down dev-logs dev-shell dev-exec dev-runner-pull
 
 dev-up:
 	$(DEV) true
+
+dev-runner-pull:
+	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
+		echo "Run 'make dev-runner-pull' from the host."; \
+		exit 2; \
+	fi
+	$(DEV) --pull-runners
 
 dev-build:
 	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
@@ -18,6 +25,7 @@ dev-rebuild: dev-build
 	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" != "1" ]; then \
 		$(DEV_COMPOSE) up --detach --force-recreate app; \
 	fi
+	$(DEV) true
 
 dev-stop:
 	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \

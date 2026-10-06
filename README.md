@@ -87,6 +87,31 @@ Runner image build and publish targets still execute through the host container
 engine because they orchestrate other containers. Treat those targets as
 privileged operations and use them only with trusted code.
 
+Solution checks use the Zig HTTP runner in separate language containers on the
+Compose network. `make dev-up` starts JavaScript and Python runners by default;
+`make server` starts Phoenix and Vite. The runner services are privileged to
+create their per-request sandboxes, while the app container stays non-root and
+does not receive a Docker socket. Runner ports are not published to the host.
+
+Select languages with a comma-separated setting in the host `.env`:
+
+```dotenv
+CODEBATTLE_DEV_RUNNER_LANGS=js,python,cpp
+```
+
+Then run `make dev-up` and restart `make server`. The language picker uses the
+same allowlist. Supported slugs are `clojure`, `cpp`, `csharp`, `dart`, `elixir`,
+`golang`, `java`, `js`, `kotlin`, `php`, `python`, `ruby`, `rust`, `swift`, `ts`,
+and `zig`. A shell environment value overrides `.env`. Previously started
+runner containers may remain running until `make dev-down`.
+
+If language images are already cached locally, refresh them with
+`make dev-runner-pull` on the host, then `make dev-up` and restart the server.
+
+Editor devcontainer startup also starts the default JS and Python services.
+For a custom list, run `make dev-up` from the host before opening the container
+and update `.devcontainer/devcontainer.json`'s `runServices` list to match.
+
 ### Profile js bundle
 
 ### Support

@@ -17,6 +17,52 @@ compose() {
     "$@"
 }
 
+# Read only this non-secret setting; never source the host .env as shell code.
+if [ -z "${CODEBATTLE_DEV_RUNNER_LANGS:-}" ] && [ -f "$repo_dir/.env" ]; then
+  CODEBATTLE_DEV_RUNNER_LANGS=$(awk '
+    /^[[:space:]]*CODEBATTLE_DEV_RUNNER_LANGS[[:space:]]*=/ {
+      sub(/^[^=]*=/, ""); value = $0
+    }
+    END {
+      gsub(/^[[:space:]"\047]+|[[:space:]"\047]+$/, "", value)
+      print value
+    }
+  ' "$repo_dir/.env")
+fi
+CODEBATTLE_DEV_RUNNER_LANGS=${CODEBATTLE_DEV_RUNNER_LANGS:-js,python}
+export CODEBATTLE_DEV_RUNNER_LANGS
+
+# Validate before any container operations, including the startup retry.
+set -f
+runner_services=""
+for lang in $(printf '%s' "$CODEBATTLE_DEV_RUNNER_LANGS" | tr ',' ' '); do
+  case "$lang" in
+    clojure|cpp|csharp|dart|elixir|golang|java|js|kotlin|php|python|ruby|rust|swift|ts|zig)
+      runner_services="$runner_services runner-$lang"
+      ;;
+    *)
+      echo "bin/dev: unsupported runner language: $lang" >&2
+      exit 1
+      ;;
+  esac
+done
+if [ -z "$runner_services" ]; then
+  echo "bin/dev: CODEBATTLE_DEV_RUNNER_LANGS must contain at least one language." >&2
+  exit 1
+fi
+
+if [ "${1:-}" = "--pull-runners" ]; then
+  set -- $runner_services
+  compose pull "$@"
+  exit
+fi
+
+up() {
+  # runner_services contains only validated service names, split intentionally.
+  set -- app $runner_services
+  compose up --detach "$@"
+}
+
 app_running() {
   [ -n "$(compose ps --quiet --status running app 2>/dev/null)" ]
 }
@@ -32,11 +78,11 @@ fi
 # project, so `up` regularly recreates the container. Docker occasionally still
 # holds the published ports of the container it just removed; one retry after
 # dropping the stale container clears that.
-if ! compose up --detach app; then
+if ! up; then
   echo "bin/dev: 'docker compose up' failed, retrying once without the stale container..." >&2
   compose rm --stop --force app >/dev/null 2>&1 || true
   sleep 2
-  compose up --detach app
+  up
 fi
 
 # Compose resolves the `.:/workspace` bind mount against its project directory.

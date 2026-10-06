@@ -112,6 +112,48 @@ defmodule Codebattle.Game.EngineTest do
     refute Enum.any?(timed_out_game.players, &(&1.result == "won"))
   end
 
+  test "checks solutions after a win while the game is live without changing its result" do
+    winner = insert(:user)
+    opponent = insert(:user)
+    {:ok, game} = Game.Engine.create_game(%{players: [winner, opponent], state: "playing", level: "easy"})
+    on_exit(fn -> Game.GlobalSupervisor.terminate_game(game.id) end)
+
+    assert {:ok, finished, %{solution_status: true}} =
+             Game.Context.check_result(game.id, %{
+               user: winner,
+               editor_text: "correct solution",
+               editor_lang: "js"
+             })
+
+    results = Enum.map(finished.players, &{&1.id, &1.result})
+    stored_game = Codebattle.Repo.get!(Game, game.id)
+
+    for {user, text, status} <- [
+          {opponent, "solve_percent_33", "failure"},
+          {opponent, "correct solution", "ok"},
+          {winner, "correct solution", "ok"}
+        ] do
+      assert {:ok, checked, %{solution_status: false, check_result: result}} =
+               Game.Context.check_result(game.id, %{user: user, editor_text: text, editor_lang: "js"})
+
+      assert result.status == status
+      assert checked.is_live
+      assert checked.state == "game_over"
+      assert Enum.map(checked.players, &{&1.id, &1.result}) == results
+      assert Game.Helpers.get_player(checked, user.id).editor_text == text
+      assert Codebattle.Repo.get!(Game, game.id) == stored_game
+    end
+
+    Game.GlobalSupervisor.terminate_game(game.id)
+
+    assert {:error, :game_is_dead} =
+             Game.Context.check_result(game.id, %{
+               user: opponent,
+               editor_text: "correct solution",
+               editor_lang: "js"
+             })
+  end
+
   test "propagates transition errors while a live server is frozen" do
     user1 = insert(:user)
     user2 = insert(:user)

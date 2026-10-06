@@ -1,9 +1,39 @@
 defmodule Codebattle.CodeCheck.Executor.RemoteZigTest do
-  use Codebattle.DataCase, async: true
+  use Codebattle.DataCase, async: false
 
   alias Codebattle.CodeCheck.Checker.Token
   alias Codebattle.CodeCheck.Executor.RemoteZig
   alias Runner.Languages
+
+  describe "runner_url/1" do
+    setup do
+      previous = Application.get_env(:codebattle, :zig_runner_url_template)
+
+      on_exit(fn ->
+        if previous do
+          Application.put_env(:codebattle, :zig_runner_url_template, previous)
+        else
+          Application.delete_env(:codebattle, :zig_runner_url_template)
+        end
+      end)
+
+      :ok
+    end
+
+    test "routes languages to their Compose service" do
+      Application.put_env(:codebattle, :zig_runner_url_template, "http://runner-{lang}:4040/run")
+
+      assert RemoteZig.runner_url("js") == "http://runner-js:4040/run"
+      assert RemoteZig.runner_url("python") == "http://runner-python:4040/run"
+    end
+
+    test "keeps Kubernetes routing when no template is configured" do
+      Application.delete_env(:codebattle, :zig_runner_url_template)
+      namespace = Application.get_env(:codebattle, :k8s_namespace, "default")
+
+      assert RemoteZig.runner_url("js") == "http://runner-js.#{namespace}.svc/run"
+    end
+  end
 
   defp build_token(lang_slug, solution_text) do
     task = build(:task)
