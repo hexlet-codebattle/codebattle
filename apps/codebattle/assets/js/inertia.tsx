@@ -74,9 +74,13 @@ export const initializeInertiaApp = () => {
         throw new Error(`Unknown Inertia page: ${name}`);
       }
 
-      return loadPage();
+      return (await loadPage()).default;
     },
     setup({ App, el, props }) {
+      if (!el) {
+        return;
+      }
+
       setPageProps(props.initialPage.props);
       createRoot(el).render(<App {...props} />);
     },

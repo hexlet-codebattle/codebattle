@@ -1,4 +1,4 @@
-FROM node:24.11-alpine AS assets-image
+FROM node:24.15-alpine AS assets-image
 ENV MIX_ENV=prod
 
 WORKDIR /tmp/codebattle

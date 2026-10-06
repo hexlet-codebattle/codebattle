@@ -184,6 +184,7 @@ defmodule Codebattle.Bot.Server do
   @spec init_socket(state()) :: state()
   defp init_socket(state) do
     socket_opts = [
+      json_library: Codebattle.Bot.SocketJson,
       url: "ws://localhost:#{@port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot_id)}"
     ]
 

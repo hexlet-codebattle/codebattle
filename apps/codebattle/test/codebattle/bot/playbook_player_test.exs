@@ -4,7 +4,6 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
   alias Codebattle.Bot
   alias Codebattle.Bot.PlaybookPlayer
   alias Codebattle.Game
-  alias Codebattle.Game.Helpers
   alias Codebattle.Task
   alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
@@ -137,13 +136,13 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
 
       {:ok, _response, _socket} = subscribe_and_join(socket, GameChannel, game_topic)
 
-      # 30s task => bot spends 25s typing, so after ~3s it has typed a prefix
-      :timer.sleep(3_000)
+      # Wait for typing rather than assuming the websocket joins within 3 seconds.
+      bot_id = bot.id
+
+      assert_push("editor:data", %{user_id: ^bot_id, lang_slug: "python", editor_text: bot_editor_text}, 10_000)
 
       game = Game.Context.get_game!(game.id)
       assert game.state == "playing"
-
-      bot_editor_text = Helpers.get_first_player(game).editor_text
 
       assert bot_editor_text != ""
       assert String.starts_with?(@python_solution, bot_editor_text)

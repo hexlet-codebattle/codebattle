@@ -15,7 +15,7 @@ config :codebattle, Codebattle.Bot,
   min_bot_step_timeout: 0
 
 config :codebattle, Codebattle.Invite,
-  timeout: to_timeout(second: 1000),
+  timeout: to_timeout(second: 1_000),
   # Configure your database
   lifetime: to_timeout(second: 0)
 

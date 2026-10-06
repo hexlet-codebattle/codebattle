@@ -1,6 +1,7 @@
 # Used by "mix format"
 [
   plugins: [Styler, Phoenix.LiveView.HTMLFormatter],
+  styler: [minimum_supported_elixir_version: "1.14.0"],
   inputs: [
     "*.{heex,ex,exs}",
     "priv/*/seeds.exs",

@@ -41,9 +41,9 @@ if [ "${#JS_STAGED_FILES[@]}" -eq 0 ] \
 fi
 
 if [ "${#ELIXIR_STAGED_FILES[@]}" -gt 0 ]; then
-  mix format "${ELIXIR_STAGED_FILES[@]}"
+  ./bin/dev mix format "${ELIXIR_STAGED_FILES[@]}"
   git add -- "${ELIXIR_STAGED_FILES[@]}"
-  mix credo
+  ./bin/dev mix credo --strict
 fi
 
 if [ "${#JS_STAGED_FILES[@]}" -gt 0 ]; then
@@ -52,8 +52,8 @@ if [ "${#JS_STAGED_FILES[@]}" -gt 0 ]; then
     JS_APP_FILES+=("${file#${APP_PREFIX}}")
   done
 
-  pnpm --dir "$APP_DIR" exec oxfmt --write "${JS_APP_FILES[@]}"
-  pnpm --dir "$APP_DIR" exec oxlint --fix "${JS_APP_FILES[@]}" || true
+  ./bin/dev pnpm --dir "$APP_DIR" exec oxfmt --write "${JS_APP_FILES[@]}"
+  ./bin/dev pnpm --dir "$APP_DIR" exec oxlint --fix "${JS_APP_FILES[@]}" || true
   git add -- "${JS_STAGED_FILES[@]}"
 fi
 
@@ -63,7 +63,7 @@ if [ "${#SCSS_STAGED_FILES[@]}" -gt 0 ]; then
     SCSS_APP_FILES+=("${file#${APP_PREFIX}}")
   done
 
-  pnpm --dir "$APP_DIR" exec prettier --write "${SCSS_APP_FILES[@]}"
-  pnpm --dir "$APP_DIR" exec stylelint --fix "${SCSS_APP_FILES[@]}" || true
+  ./bin/dev pnpm --dir "$APP_DIR" exec prettier --write "${SCSS_APP_FILES[@]}"
+  ./bin/dev pnpm --dir "$APP_DIR" exec stylelint --fix "${SCSS_APP_FILES[@]}" || true
   git add -- "${SCSS_STAGED_FILES[@]}"
 fi
