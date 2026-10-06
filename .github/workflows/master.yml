@@ -118,7 +118,8 @@ jobs:
         working-directory: .
 
       - name: Mix tests
-        run: make test
+        # setup-beam and the service database belong to this runner.
+        run: make DEV=env test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -191,7 +192,7 @@ jobs:
         working-directory: .
 
       - name: Mix credo
-        run: mix credo
+        run: mix credo --strict
         working-directory: .
 
       # - name: Hex audit
@@ -203,7 +204,7 @@ jobs:
       #   working-directory: .
 
       - name: Mix dialyzer
-        run: make dialyzer
+        run: make DEV=env dialyzer
 
   frontend_quality:
     if: github.repository == 'hexlet-codebattle/codebattle'
@@ -218,7 +219,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.11.0
+          version: 11.18.0
           run_install: false
 
       - name: Setup Node

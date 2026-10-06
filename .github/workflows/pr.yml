@@ -93,21 +93,21 @@ jobs:
         working-directory: .
 
       - name: Mix dialyzer
-        run: make dialyzer
+        run: make DEV=env dialyzer
 
       # --- pnpm setup & caching ---
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+          run_install: false
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'pnpm'
           cache-dependency-path: ./apps/codebattle/pnpm-lock.yaml
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.11.0
-          run_install: false
 
       - name: Install pnpm dependencies
         run: pnpm install --frozen-lockfile
@@ -139,7 +139,8 @@ jobs:
         working-directory: .
 
       - name: Mix tests
-        run: make test
+        # setup-beam and the service database belong to this runner.
+        run: make DEV=env test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
