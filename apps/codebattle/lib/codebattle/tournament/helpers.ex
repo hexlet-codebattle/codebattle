@@ -310,8 +310,13 @@ defmodule Codebattle.Tournament.Helpers do
       :ranking_table,
       :tasks_table
     ])
+    |> Map.update(:meta, %{}, &public_meta/1)
     |> Map.put(:current_round_timeout_seconds, current_round_timeout_seconds(tournament))
   end
+
+  # Game pass codes unlock locked tournament games, so they must never reach clients.
+  def public_meta(meta) when is_map(meta), do: Map.drop(meta, [:game_passwords, "game_passwords"])
+  def public_meta(_meta), do: %{}
 
   def current_round_timeout_seconds(%{current_round_timeout_seconds: seconds}) when is_integer(seconds), do: seconds
 

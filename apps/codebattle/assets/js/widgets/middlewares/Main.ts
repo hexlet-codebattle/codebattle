@@ -27,12 +27,23 @@ const mapViewerStateToWeight: Record<string, number> = {
   playing: 5,
 };
 
-const getMajorState = (metas: Array<{ state: string }>): string =>
-  metas.reduce(
-    (state: string, item) =>
-      mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state] ? state : item.state,
-    'online',
+interface PresenceMeta {
+  state: string;
+  link?: string | null;
+}
+
+const safeLinkPattern = /^\/(games|tournaments)\/\d+$/;
+
+export const getMajorMeta = (metas: PresenceMeta[]): { state: string; link: string | null } => {
+  const major = metas.reduce<PresenceMeta>(
+    (acc, item) =>
+      mapViewerStateToWeight[acc.state] > mapViewerStateToWeight[item.state] ? acc : item,
+    { state: 'online' },
   );
+  const link = major.link && safeLinkPattern.test(major.link) ? major.link : null;
+
+  return { state: major.state, link };
+};
 
 const getUserStateByPath = () => {
   const { pathname } = document.location;
@@ -119,10 +130,11 @@ const initPresence = (followId?: number) => (dispatch: any) => {
     followId,
   });
   channel.syncPresence((list) => {
-    const updatedList = list.map((userInfo: any) => ({
-      ...userInfo,
-      currentState: getMajorState(userInfo.userPresence),
-    }));
+    const updatedList = list.map((userInfo: any) => {
+      const { state, link } = getMajorMeta(userInfo.userPresence);
+
+      return { ...userInfo, currentState: state, currentLink: link };
+    });
     dispatch(actions.syncPresenceList(updatedList));
   });
 

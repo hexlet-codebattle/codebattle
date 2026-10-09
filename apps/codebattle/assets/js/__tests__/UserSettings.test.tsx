@@ -13,6 +13,8 @@ vi.mock('@fortawesome/react-fontawesome', () => ({
 }));
 
 vi.mock('calcite-react/Slider', () => ({ default: 'input' }));
+// the API tokens section loads its own data; covered separately
+vi.mock('../widgets/pages/settings/ApiTokensSection', () => ({ default: () => null }));
 vi.mock('../widgets/components/LanguageIcon', () => ({
   default: ({ lang }: { lang?: string }) => <span data-testid={`language-icon-${lang}`} />,
 }));

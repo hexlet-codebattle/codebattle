@@ -213,15 +213,49 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def check_result(%Game{state: "timeout"}, _params), do: {:error, :game_timeout}
-
   def check_result(game, params) do
-    if timeout_expired?(game) do
-      with {:ok, _game} <- trigger_timeout(game) do
+    cond do
+      # The UI locks a banned player's editor, but the server must reject the check too:
+      # otherwise a banned or kicked tournament player could still win the game.
+      banned_player?(game, params.user.id) ->
+        {:error, :banned}
+
+      game.state == "timeout" ->
+        post_timeout_check(game, params)
+
+      timeout_expired?(game) ->
+        with {:ok, _game} <- trigger_timeout(game) do
+          {:error, :game_timeout}
+        end
+
+      true ->
+        do_check_result(game, params)
+    end
+  end
+
+  defp banned_player?(game, user_id), do: Enum.any?(game.players, &(&1.id == user_id and &1.is_banned))
+
+  # After a timeout the game process stays alive for `post_timeout_minutes/1`, and until it is
+  # terminated players may still check their solution. The check changes nothing: no FSM
+  # transition, no playbook records, no global events — game results, tournament scores
+  # (computed from the stored players) and ratings stay as they were at the timeout.
+  defp post_timeout_check(game, %{user: user, editor_text: editor_text, editor_lang: editor_lang}) do
+    cond do
+      !player?(game, user.id) ->
+        {:error, :not_a_player}
+
+      FunWithFlags.enabled?(:post_timeout_check_disabled) ->
         {:error, :game_timeout}
-      end
-    else
-      do_check_result(game, params)
+
+      true ->
+        check_result =
+          CodeCheck.check_solution(get_game_task(game), editor_text, editor_lang, %{
+            user_id: user.id,
+            game_id: game.id,
+            tournament_id: game.tournament_id
+          })
+
+        {:ok, game, %{check_result: check_result, solution_status: false, post_timeout: true}}
     end
   end
 
@@ -525,15 +559,16 @@ defmodule Codebattle.Game.Engine do
 
     Codebattle.PubSub.broadcast("game:finished", %{game: updated_game})
     BotDetection.schedule_analysis_after_game(updated_game)
-    terminate_game_after(game, timeout_termination_delay(game))
+    terminate_game_after(game, post_timeout_minutes(game))
     store_playbook_async(game)
     updated_game
   end
 
   defp maybe_finalize_timeout(_game, _old_game_state, new_game), do: new_game
 
-  defp timeout_termination_delay(%{tournament_id: tournament_id}) when not is_nil(tournament_id), do: 1
-  defp timeout_termination_delay(_game), do: 15
+  # How long a timed-out game process lives on; players can check solutions meanwhile.
+  def post_timeout_minutes(%{tournament_id: tournament_id}) when not is_nil(tournament_id), do: 1
+  def post_timeout_minutes(_game), do: 15
 
   defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do
     init_playbook(game)

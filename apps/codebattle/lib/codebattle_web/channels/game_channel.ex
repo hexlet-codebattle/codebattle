@@ -93,7 +93,7 @@ defmodule CodebattleWeb.GameChannel do
          #  clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
          state: tournament.state,
          type: tournament.type,
-         meta: tournament.meta,
+         meta: Tournament.Helpers.public_meta(tournament.meta),
          break_state: tournament.break_state,
          last_round_started_at: tournament.last_round_started_at,
          last_round_ended_at: tournament.last_round_ended_at,
@@ -271,14 +271,15 @@ defmodule CodebattleWeb.GameChannel do
            editor_text: editor_text,
            editor_lang: lang_slug
          }) do
-      {:ok, game, %{solution_status: solution_status, check_result: check_result}} ->
+      {:ok, game, %{solution_status: solution_status, check_result: check_result} = result} ->
         broadcast!(socket, "user:check_complete", %{
           solution_status: solution_status,
           user_id: user.id,
           state: game.state,
           players: game.players,
           check_result: check_result,
-          award: game.award
+          award: game.award,
+          post_timeout: Map.get(result, :post_timeout, false)
         })
 
         {:noreply, socket}

@@ -461,7 +461,10 @@ defmodule Codebattle.Tournament.Context do
 
   @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def update(tournament, params) do
-    params = Map.put_new(params, "creator_id", tournament.creator_id)
+    params =
+      params
+      |> Map.put_new("creator_id", tournament.creator_id)
+      |> Map.put_new("access_token", tournament.access_token)
 
     tournament
     |> Tournament.changeset(prepare_tournament_params(params))
@@ -636,9 +639,10 @@ defmodule Codebattle.Tournament.Context do
 
     match_timeout_seconds = params[:match_timeout_seconds] || "180"
 
+    # An existing token survives edits: regenerating it would kill every invite link.
     access_token =
       case params[:access_type] do
-        "token" -> generate_access_token()
+        "token" -> params[:access_token] || generate_access_token()
         _ -> nil
       end
 

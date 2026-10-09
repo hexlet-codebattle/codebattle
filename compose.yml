@@ -135,6 +135,11 @@ services:
     image: ghcr.io/hexlet-codebattle/swift:6.2.3
     profiles: [runner-swift]
 
+  runner-dlang:
+    <<: *zig-runner
+    image: ghcr.io/hexlet-codebattle/dlang:ldc2
+    profiles: [runner-dlang]
+
   runner-ts:
     <<: *zig-runner
     image: ghcr.io/hexlet-codebattle/js:25.4.0

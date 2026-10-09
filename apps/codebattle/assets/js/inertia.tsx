@@ -66,6 +66,10 @@ export const initializeInertiaApp = () => {
       color: '#2ae881',
       showSpinner: false,
     },
+    // Phoenix checks CSRF via this header (Inertia v3 no longer uses axios defaults)
+    http: {
+      xsrfHeaderName: 'x-csrf-token',
+    },
     resolve: async (name) => {
       const pagePath = `./inertia/pages/${name}.tsx`;
       const loadPage = pages[pagePath];

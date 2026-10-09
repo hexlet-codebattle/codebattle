@@ -90,8 +90,20 @@ describe('game editor solution checks', () => {
     act(() => mainService.stop());
   });
 
-  test.each(['timeout', 'stored', 'replay', 'banned'])('disables checking for %s', (mode) => {
-    state.game.gameStatus.state = mode === 'timeout' ? 'timeout' : 'game_over';
+  test('allows checking after a timeout while the game is still live', () => {
+    state.game.gameStatus.state = 'timeout';
+    const mainService = createActor(machines.game);
+    mainService.start();
+    mainService.send({ type: 'LOAD_GAME', payload: { state: 'timeout' } });
+    renderEditor(mainService);
+
+    fireEvent.keyDown(window, { key: 'Enter', ctrlKey: true });
+    expect(checkSolution).toHaveBeenCalledOnce();
+    act(() => mainService.stop());
+  });
+
+  test.each(['stored', 'replay', 'banned'])('disables checking for %s', (mode) => {
+    state.game.gameStatus.state = 'game_over';
     if (mode === 'stored') editorMode.value = 'load_stored_editor';
     if (mode === 'banned') editorMode.value = 'load_banned_editor';
     const mainService = createActor(machines.game, {

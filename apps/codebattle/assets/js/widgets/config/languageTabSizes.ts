@@ -14,5 +14,6 @@ export default {
   rust: 2,
   swift: 2,
   ts: 2,
+  dlang: 4,
   zig: 2,
 };

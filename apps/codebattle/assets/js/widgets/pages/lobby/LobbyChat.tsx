@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo, useCallback } from 'react';
 
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEye, faGamepad, faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
@@ -30,7 +30,10 @@ interface ChatPlayer {
   id: number;
   user: UserNameUser;
   currentState?: string;
+  currentLink?: string | null;
 }
+
+const linkIconByState = { watching: faEye, playing: faGamepad, tournament: faTrophy };
 
 interface UsersListProps {
   list: ChatPlayer[];
@@ -43,15 +46,29 @@ function UsersList({ list, title, displayMenu, mode }: UsersListProps) {
   return (
     <>
       {list.length !== 0 && <div>{`${i18n.t(title)}: `}</div>}
-      {list.map((player) => (
-        <ChatUserInfo
-          mode={mode}
-          key={player.id}
-          user={player.user}
-          displayMenu={displayMenu as ChatUserInfoDisplayMenu}
-          className="mb-1"
-        />
-      ))}
+      {list.map((player) => {
+        const icon = linkIconByState[player.currentState as keyof typeof linkIconByState];
+
+        return (
+          <div key={player.id} className="d-flex align-items-center mb-1">
+            <ChatUserInfo
+              mode={mode}
+              user={player.user}
+              displayMenu={displayMenu as ChatUserInfoDisplayMenu}
+            />
+            {icon && player.currentLink && (
+              <a
+                href={player.currentLink}
+                className="ml-2 text-muted"
+                title={i18n.t('Open')}
+                aria-label={i18n.t('Open')}
+              >
+                <FontAwesomeIcon icon={icon} />
+              </a>
+            )}
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -69,6 +86,7 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }: ChatGroupedPlaye
     lobby: lobbyList = [],
     playing: playingList = [],
     task: builderList = [],
+    tournament: tournamentList = [],
   } = groupBy(players, 'currentState');
 
   return (
@@ -83,6 +101,12 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }: ChatGroupedPlaye
         mode={mode}
         title={i18n.t('Playing')}
         list={playingList}
+        displayMenu={displayMenu}
+      />
+      <UsersList
+        mode={mode}
+        title={i18n.t('In tournament')}
+        list={tournamentList}
         displayMenu={displayMenu}
       />
       <UsersList mode={mode} title={i18n.t('Lobby')} list={lobbyList} displayMenu={displayMenu} />

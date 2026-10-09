@@ -190,8 +190,25 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create_by_task(conn, %{"task_id" => task_id}) do
-    task = Task.get!(task_id)
+    case get_visible_task(conn.assigns.current_user, task_id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "NOT_FOUND"})
 
+      task ->
+        create_game_by_task(conn, task)
+    end
+  end
+
+  defp get_visible_task(user, task_id) do
+    case Integer.parse(to_string(task_id)) do
+      {id, ""} -> Task.get_task_by_id_for_user(user, id)
+      _ -> nil
+    end
+  end
+
+  defp create_game_by_task(conn, task) do
     game_params = %{
       level: task.level,
       task: task,

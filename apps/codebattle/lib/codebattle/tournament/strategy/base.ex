@@ -116,6 +116,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
         |> Map.put(:players_count, players_count(tournament))
         |> db_save!(:with_ets)
+        |> release_excluded_player_match(user_id)
       end
 
       def leave(tournament, _user_id), do: tournament
@@ -208,7 +209,10 @@ defmodule Codebattle.Tournament.Base do
             game_ids: game_ids
           })
 
-          new_tournament |> db_save!(:with_ets) |> tap(&broadcast_tournament_update/1)
+          new_tournament
+          |> db_save!(:with_ets)
+          |> tap(&broadcast_tournament_update/1)
+          |> release_excluded_player_match(player.id)
         else
           tournament
         end
@@ -238,6 +242,45 @@ defmodule Codebattle.Tournament.Base do
 
       def toggle_ban_player(tournament, %{user_id: user_id}) do
         toggle_cheater_player(tournament, %{user_id: user_id})
+      end
+
+      # A kicked or banned player must not hold the round up. If nobody else in their live
+      # match is still playing for real (only a bot or other excluded players are left), the
+      # game is ended now as a timeout. Otherwise the opponent keeps playing and the excluded
+      # player is banned in the game, so they can no longer win it. Either way the match then
+      # finishes through the regular game-finished event, which also finishes the round.
+      defp release_excluded_player_match(%{state: "active"} = tournament, user_id) do
+        case Enum.find(get_matches(tournament, "playing"), &(user_id in &1.player_ids)) do
+          nil ->
+            tournament
+
+          match ->
+            if Enum.any?(match.player_ids -- [user_id], &still_playing?(tournament, &1)) do
+              ban_in_game(match.game_id, user_id)
+            else
+              Game.Context.trigger_timeout(match.game_id)
+            end
+
+            tournament
+        end
+      end
+
+      defp release_excluded_player_match(tournament, _user_id), do: tournament
+
+      defp still_playing?(tournament, player_id) do
+        case Tournament.Players.get_player(tournament, player_id) do
+          nil -> false
+          %{is_bot: true} -> false
+          %{state: "banned"} -> false
+          _player -> true
+        end
+      end
+
+      defp ban_in_game(game_id, user_id) do
+        with {:ok, game} <- Game.Context.fetch_game(game_id),
+             %{is_banned: false} <- Enum.find(game.players, &(&1.id == user_id)) do
+          Game.Context.toggle_ban_player(game_id, %{player_id: user_id})
+        end
       end
 
       def toggle_cheater_player(tournament, %{user_id: user_id}) do

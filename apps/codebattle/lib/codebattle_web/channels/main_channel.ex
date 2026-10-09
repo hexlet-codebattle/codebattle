@@ -11,7 +11,11 @@ defmodule CodebattleWeb.MainChannel do
 
   def join("main", %{"state" => state} = params, socket) do
     current_user = socket.assigns.current_user
-    socket = assign(socket, :presence_path, params["path"])
+
+    socket =
+      socket
+      |> assign(:presence_path, params["path"])
+      |> assign(:presence_link, presence_link(params["path"]))
 
     active_game_id =
       if !current_user.is_guest do
@@ -106,13 +110,7 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_in("change_presence_state", %{"state" => state}, socket) do
-    Presence.update(socket, socket.assigns.current_user.id, %{
-      online_at: inspect(System.system_time(:second)),
-      state: state,
-      path: socket.assigns[:presence_path],
-      user: socket.assigns.current_user,
-      id: socket.assigns.current_user.id
-    })
+    Presence.update(socket, socket.assigns.current_user.id, presence_meta(socket, state))
 
     {:noreply, socket}
   end
@@ -153,14 +151,7 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_info({:after_join, state}, socket) do
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.current_user.id, %{
-        online_at: inspect(System.system_time(:second)),
-        state: state,
-        path: socket.assigns[:presence_path],
-        user: socket.assigns.current_user,
-        id: socket.assigns.current_user.id
-      })
+    {:ok, _} = Presence.track(socket, socket.assigns.current_user.id, presence_meta(socket, state))
 
     push(socket, "presence_state", Presence.list(socket))
 
@@ -214,6 +205,38 @@ defmodule CodebattleWeb.MainChannel do
     case Integer.parse(to_string(tournament_id)) do
       {id, _} -> Tournament.Context.get(id)
       :error -> nil
+    end
+  end
+
+  defp presence_meta(socket, state) do
+    %{
+      online_at: inspect(System.system_time(:second)),
+      state: state,
+      path: socket.assigns[:presence_path],
+      link: socket.assigns[:presence_link],
+      user: socket.assigns.current_user,
+      id: socket.assigns.current_user.id
+    }
+  end
+
+  # `path` comes from the client and is shown to admins as is; `link` is the sanitized
+  # version that every lobby viewer gets: only public games and tournaments.
+  def presence_link(path) when is_binary(path) do
+    cond do
+      match = Regex.run(~r{^/games/(\d+)/?$}, path) -> public_game_link(Enum.at(match, 1))
+      match = Regex.run(~r{^/tournaments/(\d+)/?$}, path) -> "/tournaments/#{Enum.at(match, 1)}"
+      true -> nil
+    end
+  end
+
+  def presence_link(_path), do: nil
+
+  defp public_game_link(game_id) do
+    with false <- FunWithFlags.enabled?(:user_only_see_own_games),
+         {:ok, %{visibility_type: visibility}} when visibility != "hidden" <- Game.Context.fetch_game(game_id) do
+      "/games/#{game_id}"
+    else
+      _ -> nil
     end
   end
 end

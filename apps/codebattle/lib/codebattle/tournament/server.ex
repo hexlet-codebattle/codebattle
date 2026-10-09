@@ -11,6 +11,8 @@ defmodule Codebattle.Tournament.Server do
   @type tournament_id :: pos_integer()
   @tournament_info_table :tournament_info_cache
   @freeze_retry_ms 1_000
+  # Events after which the current round may have nothing left to wait for.
+  @round_closing_events [:leave, :toggle_ban_player, :toggle_cheater_player, :game_over_match]
   # Ladder: don't insert a pre-tick break if the next scheduled tick is already imminent.
   @ladder_min_break_gap_ms 3_000
   # Let the game's own timeout finish first; this deadline is the safety net for a stuck
@@ -365,12 +367,15 @@ defmodule Codebattle.Tournament.Server do
 
       update_tournament_info_cache(new_tournament)
 
-      new_state = maybe_arm_matchmaking_tick(event_type, %{state | tournament: new_tournament})
+      new_state =
+        event_type
+        |> maybe_arm_matchmaking_tick(%{state | tournament: new_tournament})
+        |> maybe_schedule_round_finish_after(event_type)
 
       # TODO: rethink broadcasting during applying event, maybe put inside tournament module
       broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
-      {:reply, new_tournament, new_state}
+      {:reply, new_state.tournament, new_state}
     end
   end
 
@@ -843,6 +848,22 @@ defmodule Codebattle.Tournament.Server do
     if ref = Map.get(state, :matchmaking_timer_ref), do: Process.cancel_timer(ref)
     consume_matchmaking_timer(state)
   end
+
+  # Excluding a player or closing a match by hand can leave the current round with nothing
+  # left to wait for, and no game-finished event will come to finish it. Re-check here.
+  defp maybe_schedule_round_finish_after(%{tournament: tournament} = state, event_type)
+       when event_type in @round_closing_events do
+    if tournament.state == "active" and tournament.type != "ladder" and not in_break?(tournament) and
+         get_round_matches(tournament, tournament.current_round_position) != [] and
+         should_schedule_round_finish?(tournament) do
+      {:noreply, new_state} = schedule_round_finish(state)
+      new_state
+    else
+      state
+    end
+  end
+
+  defp maybe_schedule_round_finish_after(state, _event_type), do: state
 
   defp should_schedule_round_finish?(%{round_state: "round_finishing"}), do: false
 

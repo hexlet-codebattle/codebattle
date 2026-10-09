@@ -234,6 +234,107 @@ defmodule Codebattle.Tournament.SwissTest do
     assert tournament.break_state == "off"
   end
 
+  describe "excluding a player in the middle of a round" do
+    for event <- [:leave, :toggle_cheater_player] do
+      test "#{event} of the last real player in a bot match finishes the round" do
+        {tournament, _creator} = start_swiss_tournament(3)
+        matches = get_matches(tournament)
+        [human_match, bot_match] = Enum.sort_by(matches, &length(real_player_ids(tournament, &1)), :desc)
+
+        {:ok, _game} = GameContext.trigger_timeout(human_match.game_id)
+        Process.sleep(200)
+        assert TournamentContext.get(tournament.id).current_round_position == 0
+
+        [excluded_id] = real_player_ids(tournament, bot_match)
+        Server.handle_event(tournament.id, unquote(event), %{user_id: excluded_id})
+        Process.sleep(1_600)
+
+        tournament = TournamentContext.get(tournament.id)
+        assert tournament.current_round_position == 1
+        assert {:ok, %{state: "timeout"}} = GameContext.fetch_game(bot_match.game_id)
+      end
+    end
+
+    test "keeps waiting for a real opponent, who can still win, while the excluded player cannot" do
+      {tournament, _creator} = start_swiss_tournament(4)
+      [match_a, match_b] = get_matches(tournament)
+      [excluded_id, opponent_id] = match_b.player_ids
+
+      {:ok, _game} = GameContext.trigger_timeout(match_a.game_id)
+      Server.handle_event(tournament.id, :leave, %{user_id: excluded_id})
+      Process.sleep(200)
+
+      assert TournamentContext.get(tournament.id).current_round_position == 0
+      assert {:ok, game} = GameContext.fetch_game(match_b.game_id)
+      assert game.state == "playing"
+      assert Enum.find(game.players, &(&1.id == excluded_id)).is_banned
+      refute Enum.find(game.players, &(&1.id == opponent_id)).is_banned
+
+      excluded = Codebattle.Repo.get!(Codebattle.User, excluded_id)
+
+      assert {:error, :banned} =
+               GameContext.check_result(match_b.game_id, %{user: excluded, editor_text: "", editor_lang: "js"})
+
+      {:ok, _game} = GameContext.trigger_timeout(match_b.game_id)
+      Process.sleep(1_600)
+
+      assert TournamentContext.get(tournament.id).current_round_position == 1
+    end
+
+    test "closing the last playing match by hand finishes the round" do
+      {tournament, _creator} = start_swiss_tournament(4)
+      [match_a, match_b] = get_matches(tournament)
+
+      {:ok, _game} = GameContext.trigger_timeout(match_a.game_id)
+      Process.sleep(200)
+      Server.handle_event(tournament.id, :game_over_match, %{match_id: match_b.id})
+      Process.sleep(1_600)
+
+      assert TournamentContext.get(tournament.id).current_round_position == 1
+    end
+  end
+
+  defp start_swiss_tournament(players_count) do
+    task = insert(:task, level: "easy", time_to_solve_sec: 600)
+    pack = insert(:task_pack, task_ids: [task.id, task.id, task.id])
+    creator = insert(:user)
+    users = insert_list(players_count, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Swiss exclusion",
+        "description" => "exclusion mid-round",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => pack.name,
+        "creator" => creator,
+        "break_duration_seconds" => 1,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "ranking_type" => "by_user",
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "rounds_limit" => "3",
+        "players_limit" => players_count
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    {TournamentContext.get(tournament.id), creator}
+  end
+
+  defp real_player_ids(tournament, match) do
+    Enum.filter(match.player_ids, fn id ->
+      case Tournament.Players.get_player(tournament, id) do
+        nil -> false
+        %{is_bot: true} -> false
+        _player -> true
+      end
+    end)
+  end
+
   defp build_live_tournament(attrs) do
     tournament_id = System.unique_integer([:positive, :monotonic])
 

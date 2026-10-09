@@ -95,4 +95,26 @@ defmodule Runner.SolutionGeneratorTypeTests.AllLanguagesTypeTest do
     assert template =~ "std.StringHashMap(i64)"
     assert template =~ "m.put(\"key\", 0)"
   end
+
+  test "dlang generates a solution template and a checker for nested types" do
+    task =
+      Task.new!(%{
+        input_signature: [%{argument_name: "arr", type: %{name: "array", nested: %{name: "string"}}}],
+        output_signature: %{type: %{name: "hash", nested: %{name: "integer"}}},
+        asserts: [%{arguments: [["a", "b"]], expected: %{"a" => 1}}, %{arguments: [[]], expected: %{}}],
+        asserts_examples: []
+      })
+
+    meta = Languages.meta("dlang")
+    template = SolutionGenerator.call(task, meta)
+
+    assert template =~ "long[string] solution(string[] arr)"
+    assert template =~ ~s(["key": 0])
+
+    checker = Runner.CheckerGenerator.call(task, meta, "seed")
+
+    assert checker =~ ~s(string[] arr1 = ["a", "b"];)
+    assert checker =~ "solution.solution(arr1)"
+    assert checker =~ "string[] arr2 = [];"
+  end
 end

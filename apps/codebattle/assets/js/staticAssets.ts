@@ -43,6 +43,7 @@ import '../static/images/landing/languages/rust.svg?url';
 import '../static/images/landing/languages/swift.svg?url';
 import '../static/images/landing/languages/ts.svg?url';
 import '../static/images/landing/languages/zig.svg?url';
+import '../static/images/landing/languages/dlang.svg?url';
 
 // Note: Favicons are intentionally NOT imported here because:
 // 1. They rarely change

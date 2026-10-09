@@ -3,6 +3,52 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.UserParams
+
+  # Everything the Jason encoder exposes except secrets and runtime state.
+  @public_fields [
+    :access_type,
+    :auto_redirect_to_game,
+    :break_duration_seconds,
+    :break_state,
+    :creator_id,
+    :current_round_id,
+    :current_round_timeout_seconds,
+    :current_round_position,
+    :description,
+    :event_id,
+    :exclude_banned_players,
+    :group_tournament_id,
+    :grade,
+    :id,
+    :is_live,
+    :last_round_ended_at,
+    :last_round_started_at,
+    :match_timeout_seconds,
+    :moderator_ids,
+    :name,
+    :players_count,
+    :players_limit,
+    :ranking_type,
+    :round_timeout_seconds,
+    :rounds_limit,
+    :score_strategy,
+    :started_at,
+    :starts_at,
+    :state,
+    :stats,
+    :task_pack_name,
+    :task_provider,
+    :task_strategy,
+    :timeout_mode,
+    :tournament_timeout_seconds,
+    :type,
+    :use_chat,
+    :use_clan,
+    :use_event_ranking,
+    :use_infinite_break,
+    :use_timer
+  ]
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
@@ -13,8 +59,8 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
       user: current_user
     }
 
-    season_tournaments = Tournament.Context.get_season_tournaments(filter)
-    user_tournaments = Tournament.Context.get_user_tournaments(filter)
+    season_tournaments = Enum.map(Tournament.Context.get_season_tournaments(filter), &public_tournament/1)
+    user_tournaments = Enum.map(Tournament.Context.get_user_tournaments(filter), &public_tournament/1)
     json(conn, %{season_tournaments: season_tournaments, user_tournaments: user_tournaments})
   end
 
@@ -52,34 +98,39 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     }
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id} = params) do
+    current_user = conn.assigns.current_user
     tournament = Tournament.Context.get!(id)
 
-    json(conn, %{tournament: tournament})
+    cond do
+      Helpers.can_moderate?(tournament, current_user) ->
+        json(conn, %{tournament: tournament})
+
+      Helpers.can_access?(tournament, current_user, params) ->
+        json(conn, %{tournament: public_tournament(tournament)})
+
+      true ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "NOT_FOUND"})
+    end
   end
 
   def create(conn, %{"tournament" => tournament_params}) do
     current_user = conn.assigns.current_user
 
-    params =
-      Map.merge(
-        tournament_params,
-        %{
-          "creator" => current_user,
-          "user_timezone" => Map.get(tournament_params, "user_timezone", "UTC")
-        }
-      )
-
-    case Tournament.Context.create(params) do
-      {:ok, tournament} ->
-        conn
-        |> put_status(:created)
-        |> json(%{tournament: tournament})
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{errors: format_errors(changeset)})
+    with {:ok, permitted_params} <- UserParams.permit(tournament_params, current_user),
+         params =
+           Map.merge(permitted_params, %{
+             "creator" => current_user,
+             "user_timezone" => Map.get(permitted_params, "user_timezone", "UTC")
+           }),
+         {:ok, tournament} <- Tournament.Context.create(params) do
+      conn
+      |> put_status(:created)
+      |> json(%{tournament: tournament})
+    else
+      {:error, reason} -> render_error(conn, reason)
     end
   end
 
@@ -89,21 +140,12 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
 
     # Check if user has permission to update
     if Helpers.can_moderate?(tournament, current_user) do
-      params =
-        Map.put(
-          tournament_params,
-          "user_timezone",
-          Map.get(tournament_params, "user_timezone", "UTC")
-        )
-
-      case Tournament.Context.update(tournament, params) do
-        {:ok, tournament} ->
-          json(conn, %{tournament: tournament})
-
-        {:error, %Ecto.Changeset{} = changeset} ->
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{errors: format_errors(changeset)})
+      with {:ok, permitted_params} <- UserParams.permit(tournament_params, current_user, tournament),
+           params = Map.put(permitted_params, "user_timezone", Map.get(permitted_params, "user_timezone", "UTC")),
+           {:ok, tournament} <- Tournament.Context.update(tournament, params) do
+        json(conn, %{tournament: tournament})
+      else
+        {:error, reason} -> render_error(conn, reason)
       end
     else
       conn
@@ -155,6 +197,30 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
       {:ok, datetime, _} -> datetime
       {:error, _} -> nil
     end
+  end
+
+  defp public_tournament(tournament) do
+    tournament
+    |> Map.from_struct()
+    |> Map.take(@public_fields)
+  end
+
+  defp render_error(conn, %Ecto.Changeset{} = changeset) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{errors: format_errors(changeset)})
+  end
+
+  defp render_error(conn, errors) when is_map(errors) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{errors: errors})
+  end
+
+  defp render_error(conn, reason) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{errors: %{base: [to_string(reason)]}})
   end
 
   defp format_errors(changeset) do

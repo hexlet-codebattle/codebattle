@@ -549,8 +549,8 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       assert live_tournament.moderator_ids == [new_moderator.id]
     end
 
-    test "updates meta from the form meta_json field in db and live tournament state", %{conn: conn} do
-      creator = insert(:user)
+    test "admin updates meta from the form meta_json field in db and live tournament state", %{conn: conn} do
+      creator = insert(:admin)
 
       {:ok, tournament} =
         Context.create(%{
@@ -601,7 +601,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
     end
 
     test "keeps meta empty when meta_json is blank or invalid", %{conn: conn} do
-      creator = insert(:user)
+      creator = insert(:admin)
 
       {:ok, tournament} =
         Context.create(%{
@@ -696,5 +696,216 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       assert page_info["total_entries"] == 3
       assert page_info["total_pages"] == 2
     end
+  end
+
+  describe "#show access" do
+    test "does not leak a private tournament to a stranger", %{conn: conn} do
+      stranger = insert(:user)
+      tournament = insert(:token_tournament, creator_id: insert(:user).id, access_token: "secret-token")
+
+      conn
+      |> log_in_user(stranger.id)
+      |> get(Routes.api_v1_tournament_path(conn, :show, tournament.id))
+      |> json_response(404)
+    end
+
+    test "shows a private tournament without secrets to a user with the access token", %{conn: conn} do
+      user = insert(:user)
+      tournament = insert(:token_tournament, creator_id: insert(:user).id, access_token: "secret-token")
+
+      assert %{"tournament" => body} =
+               conn
+               |> log_in_user(user.id)
+               |> get(Routes.api_v1_tournament_path(conn, :show, tournament.id), %{"access_token" => "secret-token"})
+               |> json_response(200)
+
+      assert body["id"] == tournament.id
+      refute Map.has_key?(body, "access_token")
+      refute Map.has_key?(body, "players")
+      refute Map.has_key?(body, "matches")
+      refute Map.has_key?(body, "meta")
+    end
+
+    test "shows the access token to the creator", %{conn: conn} do
+      creator = insert(:user)
+      tournament = insert(:token_tournament, creator_id: creator.id, access_token: "secret-token")
+
+      assert %{"tournament" => %{"access_token" => "secret-token"}} =
+               conn
+               |> log_in_user(creator.id)
+               |> get(Routes.api_v1_tournament_path(conn, :show, tournament.id))
+               |> json_response(200)
+    end
+
+    test "index items carry no secrets", %{conn: conn} do
+      user = insert(:user)
+
+      insert(:token_tournament,
+        creator_id: user.id,
+        access_token: "secret-token",
+        grade: "open",
+        starts_at: DateTime.add(DateTime.utc_now(), 1, :day)
+      )
+
+      assert %{"user_tournaments" => [item]} =
+               conn
+               |> log_in_user(user.id)
+               |> get(Routes.api_v1_tournament_path(conn, :index))
+               |> json_response(200)
+
+      for key <- ~w(access_token players matches meta cheater_ids) do
+        refute Map.has_key?(item, key)
+      end
+    end
+  end
+
+  describe "#create permissions" do
+    test "ignores fields a regular user must not set", %{conn: conn} do
+      user = insert(:user)
+      event = insert(:event, title: "Season event")
+
+      assert %{"tournament" => %{"id" => id}} =
+               conn
+               |> log_in_user(user.id)
+               |> post(Routes.api_v1_tournament_path(conn, :create), %{
+                 "tournament" =>
+                   tournament_form_params(%{
+                     "grade" => "grand_slam",
+                     "event_id" => event.id,
+                     "use_event_ranking" => true,
+                     "state" => "finished",
+                     "task_ids" => [1, 2, 3],
+                     "cheater_ids" => [user.id],
+                     "meta_json" => ~s({"players_redirect_url": "https://evil.example", "task_pack_id": 1})
+                   })
+               })
+               |> json_response(201)
+
+      tournament = Context.get_from_db!(id)
+
+      assert tournament.grade == "open"
+      assert tournament.event_id == nil
+      assert tournament.use_event_ranking == false
+      assert tournament.state == "waiting_participants"
+      assert tournament.cheater_ids == []
+      assert tournament.meta == %{}
+    end
+
+    test "lets an admin set the grade", %{conn: conn} do
+      admin = insert(:admin)
+
+      assert %{"tournament" => %{"id" => id}} =
+               conn
+               |> log_in_user(admin.id)
+               |> post(Routes.api_v1_tournament_path(conn, :create), %{
+                 "tournament" => tournament_form_params(%{"grade" => "masters"})
+               })
+               |> json_response(201)
+
+      assert Context.get_from_db!(id).grade == "masters"
+    end
+
+    test "rejects a hidden task pack of another user", %{conn: conn} do
+      user = insert(:user)
+      task = insert(:task, visibility: "hidden")
+      pack = insert(:task_pack, name: "grand_slam_s9_2099", visibility: "hidden", task_ids: [task.id])
+
+      assert %{"errors" => %{"task_pack_name" => [_]}} =
+               conn
+               |> log_in_user(user.id)
+               |> post(Routes.api_v1_tournament_path(conn, :create), %{
+                 "tournament" => tournament_form_params(%{"task_provider" => "task_pack", "task_pack_name" => pack.name})
+               })
+               |> json_response(422)
+    end
+
+    test "accepts an own hidden task pack and a public one", %{conn: conn} do
+      user = insert(:user)
+      task = insert(:task)
+      own_pack = insert(:task_pack, visibility: "hidden", creator_id: user.id, task_ids: [task.id])
+      public_pack = insert(:task_pack, task_ids: [task.id])
+      conn = log_in_user(conn, user.id)
+
+      for pack <- [own_pack, public_pack] do
+        conn
+        |> post(Routes.api_v1_tournament_path(conn, :create), %{
+          "tournament" => tournament_form_params(%{"task_provider" => "task_pack", "task_pack_name" => pack.name})
+        })
+        |> json_response(201)
+      end
+    end
+  end
+
+  describe "#update permissions" do
+    test "a regular moderator cannot change the grade or meta", %{conn: conn} do
+      creator = insert(:user)
+
+      {:ok, tournament} =
+        Context.create(
+          tournament_form_params(%{
+            "creator" => creator,
+            "grade" => "masters",
+            "meta" => %{game_passwords: ["secret"]}
+          })
+        )
+
+      conn
+      |> log_in_user(creator.id)
+      |> put(Routes.api_v1_tournament_path(conn, :update, tournament.id), %{
+        "tournament" =>
+          tournament_form_params(%{
+            "name" => "Renamed",
+            "grade" => "grand_slam",
+            "meta_json" => ~s({"players_redirect_url": "https://evil.example"})
+          })
+      })
+      |> json_response(200)
+
+      updated = Context.get_from_db!(tournament.id)
+
+      assert updated.name == "Renamed"
+      assert updated.grade == "masters"
+      assert updated.meta == %{game_passwords: ["secret"]}
+    end
+
+    test "a regular moderator keeps an unchanged hidden task pack", %{conn: conn} do
+      creator = insert(:user)
+      task = insert(:task, visibility: "hidden")
+      pack = insert(:task_pack, visibility: "hidden", task_ids: [task.id])
+
+      {:ok, tournament} =
+        Context.create(
+          tournament_form_params(%{
+            "creator" => creator,
+            "task_provider" => "task_pack",
+            "task_pack_name" => pack.name
+          })
+        )
+
+      conn
+      |> log_in_user(creator.id)
+      |> put(Routes.api_v1_tournament_path(conn, :update, tournament.id), %{
+        "tournament" =>
+          tournament_form_params(%{"name" => "Renamed", "task_provider" => "task_pack", "task_pack_name" => pack.name})
+      })
+      |> json_response(200)
+    end
+  end
+
+  defp tournament_form_params(overrides) do
+    Map.merge(
+      %{
+        "name" => "Form tournament",
+        "description" => "Created from the form",
+        "starts_at" => "2026-02-24T06:00",
+        "user_timezone" => "Etc/UTC",
+        "type" => "swiss",
+        "level" => "easy",
+        "break_duration_seconds" => 0,
+        "players_limit" => 16,
+        "rounds_limit" => 1
+      },
+      overrides
+    )
   end
 end

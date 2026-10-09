@@ -420,6 +420,13 @@ runner-java:
 	    --security-opt=no-new-privileges=false \
 	    ghcr.io/hexlet-codebattle/java:25.0.2
 
+runner-dlang:
+	 docker run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/dlang:ldc2
+
 runner-zig:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \

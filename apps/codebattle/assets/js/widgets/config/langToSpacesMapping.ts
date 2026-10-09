@@ -11,5 +11,6 @@ export default {
   ruby: true,
   swift: true,
   ts: true,
+  dlang: true,
   zig: true,
 };

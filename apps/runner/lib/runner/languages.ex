@@ -8,6 +8,7 @@ defmodule Runner.Languages do
     "cpp",
     "csharp",
     "dart",
+    "dlang",
     "elixir",
     "golang",
     "java",
@@ -647,6 +648,55 @@ defmodule Runner.Languages do
         version: :dynamic,
         arguments_delimiter: ", ",
         type_templates: %{@type_templates | hash_inners: ":<%= key %> <%= value %>"}
+      }
+    },
+    "dlang" => %LanguageMeta{
+      name: "D",
+      slug: "dlang",
+      output_version: 2,
+      # ldc2 (dmd frontend) — dmd has no arm64 backend and images are multi-arch
+      version: "ldc2",
+      check_dir: "check",
+      container_run_timeout: "20s",
+      solution_file_name: "solution.d",
+      checker_file_name: "checker.d",
+      image: "ghcr.io/hexlet-codebattle/dlang:ldc2",
+      solution_template: """
+      import std;
+
+      <%= expected %> solution(<%= arguments %>) {
+          <%= expected %> ans = <%= default_value %>;
+          return ans;
+      }
+      // <%= comment %>
+      """,
+      arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[<%= value %>]",
+        "boolean" => "false",
+        "hash" => "[\"key\": <%= value %>]"
+      },
+      expected_template: "<%= type %>",
+      types: %{
+        "integer" => "long",
+        "float" => "double",
+        "string" => "string",
+        "array" => "<%= inner_type %>[]",
+        "boolean" => "bool",
+        "hash" => "<%= inner_type %>[string]"
+      },
+      checker_meta: %{
+        version: :static,
+        type_templates: %{
+          @type_templates
+          | hash_empty: "null",
+            hash_value: "[<%= entries %>]"
+        },
+        defining_variable_template: "<%= type %> <%= name %>",
+        nested_value_expression_template: "<%= value %>"
       }
     },
     "zig" => %LanguageMeta{

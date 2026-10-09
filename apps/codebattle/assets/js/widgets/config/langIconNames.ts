@@ -3,6 +3,7 @@ export default {
   cpp: 'cpp',
   csharp: 'csharp',
   dart: 'dart',
+  dlang: 'dlang',
   elixir: 'elixir',
   golang: 'golang',
   java: 'java',

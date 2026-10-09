@@ -1,0 +1,21 @@
+static import solution;
+import cb_runtime;
+
+void main() {
+    string[] results;
+
+    try {
+        <%= for %{arguments: arguments} <- checks do %>
+        {
+            <%= for %{defining: defining, value: value} <- arguments.info do %>
+            <%= defining %> = <%= value %>;
+            <% end %>
+            results ~= runTest(() => solution.solution(<%= arguments.expression %>));
+        }
+        <% end %>
+    } catch (Throwable e) {
+        results ~= errorLine(e.msg);
+    }
+
+    finish(results);
+}

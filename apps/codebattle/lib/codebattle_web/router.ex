@@ -64,6 +64,15 @@ defmodule CodebattleWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  # Public API v1: personal token required everywhere, per-user limits. Kept separate from
+  # :public_api, where group_task_solutions reads its own Bearer tokens.
+  pipeline :public_api_v1 do
+    plug(:accepts, ["json"])
+    plug(:put_secure_browser_headers)
+    plug(CodebattleWeb.Plugs.PublicApi.TokenAuth)
+    plug(CodebattleWeb.Plugs.PublicApi.RateLimit)
+  end
+
   pipeline :mounted_apps do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -290,6 +299,31 @@ defmodule CodebattleWeb.Router do
     end
   end
 
+  scope "/public_api", CodebattleWeb.PublicApi, as: :public_api do
+    get("/v1/openapi.json", V1.SpecController, :show)
+    get("/docs", V1.SpecController, :docs)
+  end
+
+  scope "/public_api/v1", CodebattleWeb.PublicApi.V1, as: :public_api_v1 do
+    pipe_through(:public_api_v1)
+
+    get("/me", MeController, :show)
+    get("/me/active_game", MeController, :active_game)
+    get("/me/games", MeController, :games)
+    get("/me/tournaments", MeController, :tournaments)
+
+    get("/tournaments/schedule", TournamentController, :schedule)
+    get("/tournaments/:id", TournamentController, :show)
+    get("/tournaments/:id/ranking", TournamentController, :ranking)
+    post("/tournaments", TournamentController, :create)
+    patch("/tournaments/:id", TournamentController, :update)
+    post("/tournaments/:id/start", TournamentController, :start)
+    post("/tournaments/:id/cancel", TournamentController, :cancel)
+
+    post("/games", GameController, :create)
+    post("/games/:id/cancel", GameController, :cancel)
+  end
+
   scope "/api", CodebattleWeb.Api, as: :api do
     pipe_through(:api)
 
@@ -319,6 +353,9 @@ defmodule CodebattleWeb.Router do
       delete("/settings/account", SettingsController, :archive_account)
       get("/settings/sessions", SettingsController, :sessions)
       delete("/settings/sessions/:id", SettingsController, :delete_user_session)
+      get("/settings/api_tokens", SettingsController, :api_tokens)
+      post("/settings/api_tokens", SettingsController, :create_api_token)
+      delete("/settings/api_tokens/:id", SettingsController, :delete_api_token)
       resources("/tasks", TaskController, only: [:index, :show, :update])
       get("/tasks/:id/stats", TaskController, :stats)
       get("/tournaments/history", TournamentController, :history)

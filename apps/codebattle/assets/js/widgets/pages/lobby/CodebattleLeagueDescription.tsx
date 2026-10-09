@@ -352,7 +352,7 @@ function CodebattleLeagueDescription() {
                     </p>
                     <p className="mb-0">
                       {i18n.t(
-                        '16 supported - clojure, cpp, csharp, dart, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts.',
+                        '17 supported - clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts.',
                       )}
                     </p>
                   </div>

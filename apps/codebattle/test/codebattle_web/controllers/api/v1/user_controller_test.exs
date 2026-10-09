@@ -448,6 +448,43 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     end
   end
 
+  describe "premium requests" do
+    test "a user can send a premium request only for themselves", %{conn: conn} do
+      user = insert(:user)
+      other = insert(:user)
+      conn = log_in_user(conn, user.id)
+
+      conn
+      |> post("/api/v1/user/#{other.id}/send_premium_request", %{"status" => "yes"})
+      |> json_response(403)
+
+      conn
+      |> post("/api/v1/user/#{user.id}/send_premium_request", %{"status" => "yes"})
+      |> json_response(200)
+    end
+
+    test "a guest cannot send a premium request", %{conn: conn} do
+      conn
+      |> post("/api/v1/user/0/send_premium_request", %{"status" => "yes"})
+      |> json_response(401)
+    end
+
+    test "only an admin can list premium requests", %{conn: conn} do
+      user = insert(:user)
+      admin = insert(:admin)
+
+      conn
+      |> log_in_user(user.id)
+      |> get("/api/v1/user/premium_requests")
+      |> json_response(403)
+
+      conn
+      |> log_in_user(admin.id)
+      |> get("/api/v1/user/premium_requests")
+      |> json_response(200)
+    end
+  end
+
   describe "#current" do
     test "shows current_user when logged in", %{conn: conn} do
       user = insert(:user)

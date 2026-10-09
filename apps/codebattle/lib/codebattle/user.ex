@@ -213,6 +213,7 @@ defmodule Codebattle.User do
     |> case do
       {:ok, {updated_user, session_data}} ->
         UserSession.disconnect_many(session_data.revoked_session_ids)
+        Codebattle.UserApiToken.revoke_all(updated_user.id)
         {:ok, updated_user, session_data}
 
       {:error, {:user, %Ecto.Changeset{} = changeset}} ->
@@ -462,6 +463,7 @@ defmodule Codebattle.User do
     case result do
       {:ok, {archived_user, session_ids}} ->
         UserSession.disconnect_many(session_ids)
+        Codebattle.UserApiToken.revoke_all(archived_user.id)
         {:ok, archived_user}
 
       {:error, reason} ->
@@ -494,6 +496,7 @@ defmodule Codebattle.User do
       )
 
     UserSession.revoke_all(user.id)
+    Codebattle.UserApiToken.revoke_all(user.id)
     result
   end
 

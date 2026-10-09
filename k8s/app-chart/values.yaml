@@ -159,6 +159,9 @@ zigRunners:
     - name: dart
       image: ghcr.io/hexlet-codebattle/dart:3.10.0
       replicaCount: 1
+    - name: dlang
+      image: ghcr.io/hexlet-codebattle/dlang:ldc2
+      replicaCount: 1
     - name: elixir
       image: ghcr.io/hexlet-codebattle/elixir:1.19.5
       replicaCount: 1

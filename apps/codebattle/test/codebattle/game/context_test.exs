@@ -215,6 +215,29 @@ defmodule Codebattle.Game.ContextTest do
       assert old_game.id < new_game.id
     end
 
+    test "checks a solution after the timeout while the process lives, without changing the game" do
+      user1 = insert(:user)
+      user2 = insert(:user)
+      stranger = insert(:user)
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+      {:ok, timed_out} = Game.Context.trigger_timeout(game.id)
+      params = %{user: user1, editor_text: "code", editor_lang: "js"}
+
+      assert {:ok, after_check, %{post_timeout: true, solution_status: false}} =
+               Game.Context.check_result(game.id, params)
+
+      results = fn game -> Enum.map(game.players, &{&1.id, &1.result, &1.result_percent}) end
+
+      assert after_check.state == "timeout"
+      assert results.(after_check) == results.(timed_out)
+      assert results.(Game.Context.get_game!(game.id)) == results.(timed_out)
+
+      assert {:error, :not_a_player} = Game.Context.check_result(game.id, %{params | user: stranger})
+
+      :ok = Game.Context.terminate_game(game.id)
+      assert {:error, :game_is_dead} = Game.Context.check_result(game.id, params)
+    end
+
     test "toggles a live ban and terminates a game by id" do
       user1 = insert(:user)
       user2 = insert(:user)

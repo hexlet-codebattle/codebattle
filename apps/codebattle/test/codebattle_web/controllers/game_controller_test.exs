@@ -171,6 +171,40 @@ defmodule CodebattleWeb.GameControllerTest do
     end
   end
 
+  describe "POST /games/create_by_task visibility" do
+    test "returns 404 for a hidden task of another user", %{conn: conn} do
+      user = insert(:user)
+      task = insert(:task, visibility: "hidden")
+
+      conn
+      |> log_in_user(user.id)
+      |> post(Routes.game_path(conn, :create_by_task), %{"task_id" => task.id})
+      |> json_response(404)
+    end
+
+    test "returns 404 for a malformed task id", %{conn: conn} do
+      user = insert(:user)
+
+      conn
+      |> log_in_user(user.id)
+      |> post(Routes.game_path(conn, :create_by_task), %{"task_id" => "1; drop"})
+      |> json_response(404)
+    end
+
+    test "creates a game for an own hidden task", %{conn: conn} do
+      user = insert(:user)
+      task = insert(:task, visibility: "hidden", creator_id: user.id)
+
+      %{"game_id" => game_id} =
+        conn
+        |> log_in_user(user.id)
+        |> post(Routes.game_path(conn, :create_by_task), %{"task_id" => task.id})
+        |> json_response(200)
+
+      on_exit(fn -> Game.Context.terminate_game(game_id) end)
+    end
+  end
+
   describe "POST /games/:id/join" do
     test "joins game", %{conn: conn} do
       task = insert(:task, level: "elementary")

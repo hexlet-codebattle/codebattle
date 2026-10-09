@@ -29,6 +29,10 @@ defmodule Codebattle.Application do
           id: :auth_rate_limit_cache
         ),
         Supervisor.child_spec(
+          {Cachex, name: :public_api_rate_limit_cache},
+          id: :public_api_rate_limit_cache
+        ),
+        Supervisor.child_spec(
           {Cachex, name: :email_change_rate_limit_cache},
           id: :email_change_rate_limit_cache
         ),

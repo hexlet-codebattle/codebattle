@@ -3,6 +3,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
   alias Codebattle.Repo
   alias Codebattle.User
+  alias Codebattle.UserApiToken
   alias Codebattle.UserSession
   alias CodebattleWeb.EmailChangeRateLimit
   alias CodebattleWeb.UserAuth
@@ -208,6 +209,43 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
         |> json(%{error: "session could not be revoked"})
     end
   end
+
+  def api_tokens(conn, _params) do
+    tokens = Enum.map(UserApiToken.list_active(conn.assigns.current_user.id), &present_api_token/1)
+    json(conn, %{api_tokens: tokens, scopes: available_scopes(conn.assigns.current_user)})
+  end
+
+  def create_api_token(conn, params) do
+    case UserApiToken.create(conn.assigns.current_user, params) do
+      {:ok, record, token} ->
+        conn
+        |> put_status(:created)
+        |> json(%{api_token: present_api_token(record), token: token})
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: Ecto.Changeset.traverse_errors(changeset, fn {message, _opts} -> message end)})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: %{base: [to_string(reason)]}})
+    end
+  end
+
+  def delete_api_token(conn, %{"id" => id}) do
+    case UserApiToken.revoke_for_user(conn.assigns.current_user.id, id) do
+      {:ok, _token} -> json(conn, %{status: "ok"})
+      {:error, _reason} -> conn |> put_status(:not_found) |> json(%{error: "token not found"})
+    end
+  end
+
+  def present_api_token(token) do
+    Map.take(token, [:id, :name, :token_prefix, :scopes, :last_used_at, :expires_at, :inserted_at])
+  end
+
+  def available_scopes(user), do: Enum.filter(UserApiToken.scopes(), &UserApiToken.can_use_scope?(user, &1))
 
   defp password_rate_limited?(user_id) do
     case Cachex.get(:password_attempts_cache, user_id) do

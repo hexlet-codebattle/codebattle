@@ -8,6 +8,8 @@ minimumReleaseAgeExclude:
   - vite@8.1.4 || 8.3.3
   - baseline-browser-mapping@2.11.4
   - pixelmatch@8.0.0
+  - '@inertiajs/core@3.9.1'
+  - '@inertiajs/react@3.9.1'
 
 overrides:
   'axios': ^1.20.0

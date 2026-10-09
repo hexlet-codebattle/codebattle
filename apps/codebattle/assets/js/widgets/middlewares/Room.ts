@@ -488,7 +488,8 @@ export const activeGameReady =
     };
 
     const handleNewCheckResult = (responseData: any) => {
-      const { state, solutionStatus, checkResult, players, userId, award } = responseData;
+      const { state, solutionStatus, checkResult, players, userId, award, postTimeout } =
+        responseData;
       if (solutionStatus) {
         channel
           .push(channelMethods.gameHeadToHead, {})
@@ -500,6 +501,7 @@ export const activeGameReady =
         actions.updateExecutionOutput({
           ...checkResult,
           userId,
+          postTimeout: !!postTimeout,
         }),
       );
       dispatch(actions.updateGameStatus({ state, solutionStatus }));
@@ -742,7 +744,7 @@ export const connectToGame = (gameRoomService: any, options: any) => (dispatch: 
 export const connectToEditor = (service: any, isBanned: boolean) => () =>
   isRecord ? storedEditorReady(service) : activeEditorReady(service, isBanned);
 
-export const checkGameSolution = () => (dispatch: any, getState: any) => {
+export const checkGameSolution = (onRejected?: () => void) => (dispatch: any, getState: any) => {
   const state = getState();
   const currentUserId: any = selectors.currentUserIdSelector(state);
   const { text, lang } = selectors.getSolution(currentUserId)(state);
@@ -757,7 +759,22 @@ export const checkGameSolution = () => (dispatch: any, getState: any) => {
     langSlug: lang,
   };
 
-  channel.push(channelMethods.checkResult, payload);
+  channel.push(channelMethods.checkResult, payload).receive('error', ({ reason }: any) => {
+    // After a timeout the game process lives on briefly; once it is gone checks are refused.
+    if (reason === 'game_is_dead' || reason === 'game_timeout') {
+      dispatch(
+        actions.updateExecutionOutput({
+          userId: currentUserId,
+          status: 'game_is_dead',
+          output: '',
+          result: {},
+          asserts: [],
+        }),
+      );
+    }
+    dispatch(actions.updateCheckStatus({ [currentUserId]: false }));
+    onRejected?.();
+  });
 };
 
 export const compressEditorHeight = (userId: number) => (dispatch: any) =>

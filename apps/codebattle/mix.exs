@@ -61,7 +61,7 @@ defmodule Codebattle.MixProject do
       {:fun_with_flags, "~> 1.11"},
       {:fun_with_flags_ui, "~> 1.0"},
       {:gettext, "~> 1.0"},
-      {:inertia, "~> 2.6"},
+      {:inertia, "~> 3.0"},
       {:oban, "~> 2.19"},
       {:oban_web, "~> 2.11"},
       {:nimble_csv, "~> 1.1"},

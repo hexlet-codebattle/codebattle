@@ -168,9 +168,9 @@ function EditorContainer({
   const editorService = useActorRef(
     editorMachine.provide({
       actions: {
-        userSendSolution: ({ context: ctx }: any) => {
+        userSendSolution: ({ context: ctx, self }: any) => {
           if (ctx.editorState === 'active') {
-            dispatch(GameActions.checkGameSolution());
+            dispatch(GameActions.checkGameSolution(() => self.send({ type: 'check_rejected' })));
           }
         },
         handleTimeoutFailureChecking: ({ context: ctx }: any) => {
@@ -200,7 +200,9 @@ function EditorContainer({
   const canCheckSolution =
     editorCurrent.context.editorState === 'active' &&
     !openedReplayer &&
-    (isActiveGame || (isGameOver && gameState === GameStateCodes.gameOver));
+    (isActiveGame ||
+      (isGameOver &&
+        (gameState === GameStateCodes.gameOver || gameState === GameStateCodes.timeout)));
   const checkResult = canCheckSolution ? checkActiveTaskSolution : noop;
 
   const isNeedHotKeys = editorCurrent.context.type === editorUserTypes.currentUser;

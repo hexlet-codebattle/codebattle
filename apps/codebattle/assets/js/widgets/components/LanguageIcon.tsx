@@ -8,6 +8,7 @@ import {
   SiClojure,
   SiCplusplus,
   SiCss,
+  SiD,
   SiElixir,
   SiGo,
   SiJavascript,
@@ -210,6 +211,13 @@ const iconRenderers: Record<string, IconRenderer> = {
     }),
   typescript: (className, style, color) =>
     renderSimpleIcon(SiTypescript, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
+  dlang: (className, style, color) =>
+    renderSimpleIcon(SiD, {
       className,
       style,
       color,

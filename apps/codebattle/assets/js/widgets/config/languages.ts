@@ -4,6 +4,8 @@ const languages = {
   csharp: 'csharp',
   css: 'css',
   dart: 'dart',
+  // Monaco has no D grammar; C++ highlighting fits D syntax well enough
+  dlang: 'cpp',
   elixir: 'elixir',
   golang: 'go',
   java: 'java',

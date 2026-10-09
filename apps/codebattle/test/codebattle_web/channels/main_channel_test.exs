@@ -116,4 +116,17 @@ defmodule CodebattleWeb.MainChannelTest do
       payload: %{active_game_id: _}
     }
   end
+
+  describe "presence_link/1" do
+    test "keeps public games and tournaments, drops hidden games and junk" do
+      public_game = insert(:game, state: "playing", visibility_type: "public")
+      hidden_game = insert(:game, state: "playing", visibility_type: "hidden")
+
+      assert MainChannel.presence_link("/games/#{public_game.id}") == "/games/#{public_game.id}"
+      assert MainChannel.presence_link("/games/#{hidden_game.id}") == nil
+      assert MainChannel.presence_link("/tournaments/42") == "/tournaments/42"
+      assert MainChannel.presence_link("javascript:alert(1)") == nil
+      assert MainChannel.presence_link(nil) == nil
+    end
+  end
 end

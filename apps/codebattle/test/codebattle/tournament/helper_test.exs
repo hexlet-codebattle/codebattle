@@ -41,4 +41,17 @@ defmodule Codebattle.Tournament.HelperTest do
 
     assert %{} = get_player_ranking_stats(tournament)
   end
+
+  test "public_meta drops game pass codes" do
+    assert public_meta(%{game_passwords: ["secret"], players_redirect_url: "https://hexlet.io"}) ==
+             %{players_redirect_url: "https://hexlet.io"}
+
+    assert public_meta(nil) == %{}
+  end
+
+  test "prepare_to_json does not expose game pass codes" do
+    tournament = %Tournament{meta: %{game_passwords: ["secret"], bot_id: 7}, current_round_timeout_seconds: 60}
+
+    assert prepare_to_json(tournament).meta == %{bot_id: 7}
+  end
 end

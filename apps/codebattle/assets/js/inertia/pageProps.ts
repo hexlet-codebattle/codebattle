@@ -2,9 +2,15 @@ export type InertiaPageProps = Record<string, unknown>;
 
 let currentProps: InertiaPageProps | undefined;
 
+// Inertia v3 renders the initial page as <script data-page="app" type="application/json">;
+// older servers put it in the `data-page` attribute of #app. Modules read props at import
+// time, before Inertia's setup() runs, so this has to read the DOM itself.
+const readSerializedPage = (): string | undefined =>
+  document.querySelector('script[data-page="app"][type="application/json"]')?.textContent ??
+  document.getElementById('app')?.dataset.page;
+
 const readInitialPageProps = (): InertiaPageProps => {
-  const element = document.getElementById('app');
-  const serializedPage = element?.dataset.page;
+  const serializedPage = readSerializedPage();
 
   if (!serializedPage) {
     const sharedProps = document.getElementById('inertia-shared-props')?.dataset.props;

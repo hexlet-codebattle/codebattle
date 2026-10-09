@@ -160,6 +160,8 @@ const editor = {
             guard: 'isUserEvent',
           },
         ],
+        // the server refused the check (e.g. the timed-out game process is already gone)
+        check_rejected: 'idle',
         unload_editor: 'loading',
         banned_user: {
           target: 'banned',

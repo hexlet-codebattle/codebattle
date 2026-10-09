@@ -24,6 +24,7 @@ import UserSettingsForm, {
   type UserSettingsData,
   type UserSettingsFormValues,
 } from './UserSettingsForm';
+import ApiTokensSection from './ApiTokensSection';
 import EmailSettingsForm, { type EmailSettingsFormValues } from './EmailSettingsForm';
 
 interface Notification {
@@ -468,6 +469,7 @@ function UserSettings() {
           )}
         </section>
       </div>
+      <ApiTokensSection />
       <section
         className="cb-settings-section border-danger mt-4"
         aria-labelledby="archive-account-title"

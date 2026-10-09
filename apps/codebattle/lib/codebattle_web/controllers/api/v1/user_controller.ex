@@ -182,18 +182,33 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def send_premium_request(conn, %{"id" => user_id, "status" => status}) do
-    PremiumRequest.upsert_premium_request!(String.to_integer(user_id), status)
-    json(conn, %{})
+    current_user = conn.assigns.current_user
+
+    cond do
+      current_user.is_guest ->
+        conn |> put_status(:unauthorized) |> json(%{error: "unauthorized"})
+
+      user_id != to_string(current_user.id) ->
+        conn |> put_status(:forbidden) |> json(%{error: "forbidden"})
+
+      true ->
+        PremiumRequest.upsert_premium_request!(current_user.id, status)
+        json(conn, %{})
+    end
   end
 
   def premium_requests(conn, _params) do
-    requests = PremiumRequest.all()
+    if User.admin?(conn.assigns.current_user) do
+      requests = PremiumRequest.all()
 
-    json(conn, %{
-      requests: requests,
-      yes_count: get_requests_count_by_status(requests, "yes"),
-      no_count: get_requests_count_by_status(requests, "no")
-    })
+      json(conn, %{
+        requests: requests,
+        yes_count: get_requests_count_by_status(requests, "yes"),
+        no_count: get_requests_count_by_status(requests, "no")
+      })
+    else
+      conn |> put_status(:forbidden) |> json(%{error: "forbidden"})
+    end
   end
 
   def current(conn, _) do

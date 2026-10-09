@@ -1,0 +1,31 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG ALPINE_TAG=3.23
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+
+# ldc2 rather than dmd: dmd has no arm64 backend, and every image must be multi-arch.
+# ldc shares the dmd frontend, so code written for dmd compiles unchanged.
+FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG}
+
+RUN apk add --no-cache ldc ldc-runtime gcc musl-dev make
+
+RUN grep -q '^app:' /etc/group || addgroup -S -g 10001 app \
+  && id -u app >/dev/null 2>&1 || adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+
+WORKDIR /usr/src/app
+
+# Checker helpers live outside the mounted check dir.
+COPY cb_runtime.d /opt/cb/cb_runtime.d
+COPY check ./check
+COPY Makefile ./
+
+# Smoke test: the image must compile and run the sample checker.
+RUN make --silent test && rm -rf /tmp/check /tmp/cb-obj
+
+RUN chown -R app:app /usr/src/app || true
+USER app
+
+EXPOSE 4040
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

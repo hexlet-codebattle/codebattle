@@ -18,6 +18,7 @@ export interface OutputAssert {
 }
 
 export interface OutputData {
+  postTimeout?: boolean;
   status?: string;
   output?: string;
   outputError?: string;
@@ -119,6 +120,25 @@ interface OutputProps {
 function Output({ fontSize, sideOutput, hideContent }: OutputProps) {
   if (hideContent) {
     return <></>;
+  }
+
+  if (sideOutput.status === 'game_is_dead') {
+    return (
+      <div className="alert text-white pb-2">
+        <pre>{i18next.t('Time for checking after the game is over')}</pre>
+      </div>
+    );
+  }
+
+  if (sideOutput.postTimeout) {
+    return (
+      <>
+        <div className="alert alert-warning mb-1 py-1">
+          {i18next.t('Checked after the time ran out: the result does not count')}
+        </div>
+        <Output fontSize={fontSize} sideOutput={{ ...sideOutput, postTimeout: false }} />
+      </>
+    );
   }
 
   const { status, output, outputError, asserts, version = 0 } = sideOutput;

@@ -1685,8 +1685,8 @@ msgstr "Швейцарские турниры"
 msgid "Multiple rounds; in each round, players are paired vs players with similar cumulative score; no repeat pairings (unless unavoidable on round 1 bootstrap or via bot fill-ins)."
 msgstr "Несколько раундов; в каждом раунде игроки попадают против соперников с близким суммарным счётом; повторные пары не допускаются, если только это не неизбежно."
 
-msgid "16 supported - clojure, cpp, csharp, dart, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
-msgstr "Поддерживаются 16 языков: clojure, cpp, csharp, dart, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+msgid "17 supported - clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+msgstr "Поддерживаются 17 языков: clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
 
 msgid "Create a CSS Game"
 msgstr "Создать CSS-игру"
@@ -3842,3 +3842,78 @@ msgstr "Введите ARCHIVE для подтверждения"
 
 msgid "Archive permanently"
 msgstr "Архивировать навсегда"
+
+msgid "In tournament"
+msgstr "В турнире"
+
+msgid "Time for checking after the game is over"
+msgstr "Время на проверку после окончания игры вышло"
+
+msgid "Checked after the time ran out: the result does not count"
+msgstr "Проверка после окончания времени: на результат не влияет"
+
+msgid "API tokens"
+msgstr "API-токены"
+
+msgid "Personal tokens for bots, CLI and devices."
+msgstr "Персональные токены для ботов, CLI и устройств."
+
+msgid "API documentation"
+msgstr "Документация API"
+
+msgid "Copy the token now, it will not be shown again:"
+msgstr "Скопируйте токен сейчас, больше он не будет показан:"
+
+msgid "Token name"
+msgstr "Название токена"
+
+msgid "Expires in"
+msgstr "Срок действия"
+
+msgid "30 days"
+msgstr "30 дней"
+
+msgid "90 days"
+msgstr "90 дней"
+
+msgid "1 year"
+msgstr "1 год"
+
+msgid "Never (read-only tokens)"
+msgstr "Бессрочно (только для read)"
+
+msgid "Create token"
+msgstr "Создать токен"
+
+msgid "No API tokens"
+msgstr "Нет API-токенов"
+
+msgid "Last used"
+msgstr "Использован"
+
+msgid "Expires"
+msgstr "Истекает"
+
+msgid "Never expires"
+msgstr "Бессрочный"
+
+msgid "Revoke"
+msgstr "Отозвать"
+
+msgid "e.g. Gauntlet or my bot"
+msgstr "например, Gauntlet или мой бот"
+
+msgid "Available for accounts older than a week"
+msgstr "Доступно для аккаунтов старше недели"
+
+msgid "Your profile, games, tournaments and the schedule"
+msgstr "Профиль, игры, турниры и расписание"
+
+msgid "Create and cancel your games"
+msgstr "Создание и отмена своих игр"
+
+msgid "Create, edit, start and cancel private tournaments"
+msgstr "Создание, изменение, запуск и отмена приватных турниров"
+
+msgid "Never used"
+msgstr "Не использовался"
