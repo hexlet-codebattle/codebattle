@@ -1,7 +1,6 @@
 defmodule Codebattle.Tournament.UpcomingRunnerTest do
   use Codebattle.DataCase, async: false
 
-  alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.UpcomingRunner
 
