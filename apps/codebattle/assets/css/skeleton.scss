@@ -207,7 +207,8 @@ $item-bg: #15202b;
   }
 }
 
-#app:not(:empty) + #lobby-loading-shell {
+// `~`, not `+`: Inertia v3 puts a <script data-page> between #app and the shell
+#app:not(:empty) ~ #lobby-loading-shell {
   display: none;
 }
 

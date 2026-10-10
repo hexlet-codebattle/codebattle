@@ -189,7 +189,15 @@ const input = {
   externalStyles: path.resolve(__dirname, "assets/css/external.scss"),
 };
 
-export default defineConfig(({ command, mode }) => ({
+// Phoenix stops its watchers by closing stdin; exit with it, otherwise an
+// orphaned dev server keeps the port and the next `make server` fails.
+function exitOnStdinClose(command) {
+  if (command !== "serve" || process.env.VITEST) return;
+  process.stdin.on("close", () => process.exit(0));
+  process.stdin.resume();
+}
+
+export default defineConfig(({ command, mode }) => (exitOnStdinClose(command), {
 
   css: {
     preprocessorOptions: {
