@@ -16,7 +16,7 @@ COPY apps/codebattle/priv/gettext ./priv/gettext
 
 RUN pnpm run build
 
-FROM elixir:1.19.1-otp-28-alpine AS compile-image
+FROM elixir:1.20.4-otp-29-alpine AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -71,7 +71,7 @@ RUN chmod +x /opt/nginx-assets-entrypoint.sh
 
 CMD ["/opt/nginx-assets-entrypoint.sh"]
 
-FROM elixir:1.19.1-otp-28-alpine AS runtime-image
+FROM elixir:1.20.4-otp-29-alpine AS runtime-image
 
 RUN apk add --no-cache ca-certificates chromium git make curl vim
 

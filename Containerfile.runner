@@ -1,4 +1,4 @@
-FROM elixir:1.19-otp-28-alpine AS compile-image
+FROM elixir:1.20.4-otp-29-alpine AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -20,7 +20,7 @@ COPY ./apps/runner/ ./apps/runner/
 RUN mix release runner \
   && mv _build/prod/rel/runner /opt/release
 
-FROM elixir:1.19-otp-28-alpine AS runtime-image
+FROM elixir:1.20.4-otp-29-alpine AS runtime-image
 
 ENV GOON_VERSION v1.1.1
 
