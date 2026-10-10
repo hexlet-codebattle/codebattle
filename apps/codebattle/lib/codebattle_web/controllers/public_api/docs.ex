@@ -12,6 +12,10 @@ defmodule CodebattleWeb.PublicApi.Docs do
   @spec_path Path.join(@priv, "openapi/public_api_v1.json")
   @external_resource @guide_path
   @external_resource @spec_path
+  # Embedded at compile time: releases don't ship the source tree these paths point into.
+  @guide File.read!(@guide_path)
+  @spec_json File.read!(@spec_path)
+  @version :erlang.phash2(@guide <> @spec_json)
 
   @site "https://codebattle.hexlet.io"
   @groups [{"me", "Me"}, {"tournaments", "Tournaments"}, {"games", "Games"}]
@@ -43,7 +47,7 @@ defmodule CodebattleWeb.PublicApi.Docs do
   end
 
   defp cached(key, fun) do
-    term_key = {__MODULE__, key, :erlang.phash2(File.read!(@spec_path) <> File.read!(@guide_path))}
+    term_key = {__MODULE__, key, @version}
 
     case :persistent_term.get(term_key, nil) do
       nil ->
@@ -57,8 +61,8 @@ defmodule CodebattleWeb.PublicApi.Docs do
   end
 
   defp build_markdown do
-    spec = @spec_path |> File.read!() |> Jason.decode!(objects: :ordered_objects) |> normalize()
-    guide = File.read!(@guide_path)
+    spec = @spec_json |> Jason.decode!(objects: :ordered_objects) |> normalize()
+    guide = @guide
 
     Enum.join([String.trim_trailing(guide), endpoints(spec), objects(spec)], "\n\n") <> "\n"
   end

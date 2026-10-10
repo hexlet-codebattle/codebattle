@@ -21,7 +21,7 @@ ENV MIX_ENV=prod
 
 WORKDIR /opt/app
 
-RUN apk update && apk add --no-cache build-base git ca-certificates make curl \
+RUN apk update && apk add --no-cache build-base git ca-certificates make curl brotli gzip \
   && mix local.hex --force \
   && mix local.rebar --force
 
@@ -38,13 +38,24 @@ COPY ./apps/runner/ ./apps/runner/
 
 COPY --from=assets-image /tmp/codebattle/priv/static ./apps/codebattle/priv/static
 
+# phx.digest writes digested copies plus .gz for its gzippable extensions.
+# Add .br for every compressible file (and .gz where digest skipped it) so
+# nginx can serve precompressed variants via brotli_static/gzip_static.
 RUN mix phx.digest \
+  && find apps/codebattle/priv/static/assets -type f \( \
+    -name "*.js" -o -name "*.mjs" -o -name "*.css" -o -name "*.html" -o \
+    -name "*.json" -o -name "*.map" -o -name "*.svg" -o -name "*.txt" -o \
+    -name "*.xml" -o -name "*.csv" -o -name "*.ico" -o -name "*.ttf" -o \
+    -name "*.otf" -o -name "*.eot" \
+  \) -print0 \
+  | xargs -0 -r -P "$(nproc)" -n 16 sh -c \
+    'for f; do brotli -f -q 11 "$f"; [ -f "$f.gz" ] || gzip -k -9 "$f"; done' _ \
   && mix release codebattle \
   && mv _build/prod/rel/codebattle /opt/release
 
 FROM alpine:3.23 AS nginx-assets
 
-RUN apk add --no-cache nginx nginx-mod-http-brotli brotli
+RUN apk add --no-cache nginx nginx-mod-http-brotli
 
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY nginx-assets-entrypoint.sh /opt/nginx-assets-entrypoint.sh
@@ -52,20 +63,6 @@ COPY nginx-assets-entrypoint.sh /opt/nginx-assets-entrypoint.sh
 COPY --from=compile-image /opt/release/lib/codebattle-0.1.0/priv/static/assets/ /var/www/assets
 
 RUN nginx -t
-
-RUN find /var/www/assets -type f \( \
-    -name "*.js" -o \
-    -name "*.mjs" -o \
-    -name "*.css" -o \
-    -name "*.html" -o \
-    -name "*.json" -o \
-    -name "*.map" -o \
-    -name "*.svg" -o \
-    -name "*.txt" -o \
-    -name "*.xml" -o \
-    -name "*.csv" -o \
-    -name "*.ico" \
-  \) -exec sh -c 'gzip -f -k -9 "$1" && brotli -f -q 11 "$1"' _ {} \;
 
 RUN chmod +x /opt/nginx-assets-entrypoint.sh
 
