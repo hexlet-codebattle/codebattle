@@ -81,8 +81,9 @@ spec:
             periodSeconds: {{ .Values.codebattle.probes.startup.periodSeconds }}
             failureThreshold: {{ .Values.codebattle.probes.startup.failureThreshold }}
           command:
-            - make
-            - start
+            - /bin/sh
+            - -c
+            - bin/codebattle eval "Codebattle.Utils.Release.migrate" && exec bin/codebattle start
           lifecycle:
             preStop:
               exec:

@@ -30,6 +30,7 @@ jobs:
           filters: |
             codebattle_image:
               - 'Containerfile.codebattle'
+              - 'Makefile'
               - 'nginx.conf'
               - 'nginx-assets-entrypoint.sh'
               - 'mix.exs'
