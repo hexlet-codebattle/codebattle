@@ -132,6 +132,10 @@ export const channelMethods = {
   matchmakingRestart: 'matchmaking:restart',
 };
 
-socket.connect();
+// Under vitest there is no server: a live socket keeps reconnecting on timers and fires
+// after the jsdom environment is torn down ("location is not defined").
+if (import.meta.env.MODE !== 'test') {
+  socket.connect();
+}
 
 export default socket;
