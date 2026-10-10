@@ -29,6 +29,11 @@ const languages = {
 export const cssProcessors = ['css', 'less', 'sass', 'stylus'];
 export const dbNames = ['postgresql', 'mysql', 'mongodb'];
 
+// Display names where the Monaco language id above is not the language's name
+export const languageDisplayNames: Record<string, string> = {
+  dlang: 'D',
+};
+
 export const constructorLangauges = ['ruby'];
 
 export default languages;

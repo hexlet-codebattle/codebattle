@@ -71,6 +71,7 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
     plug(CodebattleWeb.Plugs.PublicApi.TokenAuth)
     plug(CodebattleWeb.Plugs.PublicApi.RateLimit)
+    plug(CodebattleWeb.Plugs.PublicApi.RequireJson)
   end
 
   pipeline :mounted_apps do
@@ -304,6 +305,12 @@ defmodule CodebattleWeb.Router do
     get("/docs", V1.SpecController, :docs)
   end
 
+  scope "/", CodebattleWeb.PublicApi, as: :public_api do
+    get("/api-docs", DocsController, :show)
+    get("/api-docs.md", DocsController, :markdown)
+    get("/llms.txt", DocsController, :llms_txt)
+  end
+
   scope "/public_api/v1", CodebattleWeb.PublicApi.V1, as: :public_api_v1 do
     pipe_through(:public_api_v1)
 
@@ -313,6 +320,7 @@ defmodule CodebattleWeb.Router do
     get("/me/tournaments", MeController, :tournaments)
 
     get("/tournaments/schedule", TournamentController, :schedule)
+    get("/tournaments/live", TournamentController, :live)
     get("/tournaments/:id", TournamentController, :show)
     get("/tournaments/:id/ranking", TournamentController, :ranking)
     post("/tournaments", TournamentController, :create)

@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.UpcomingRunner do
   @moduledoc """
   This module is responsible for running every minute tournaments from schedule
+  and for canceling tournaments that stayed in waiting_participants for too long
   """
   use GenServer
 
@@ -13,6 +14,9 @@ defmodule Codebattle.Tournament.UpcomingRunner do
 
   @upcoming_time_before_live_mins 10
 
+  @stale_check_timeout to_timeout(minute: 10)
+  @stale_waiting_after_hours 12
+
   @spec start_link([]) :: GenServer.on_start()
   def start_link(_) do
     GenServer.start_link(__MODULE__, :noop, name: __MODULE__)
@@ -22,6 +26,7 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   def init(_state) do
     if @tournament_run_upcoming do
       Process.send_after(self(), :run_upcoming, @worker_timeout)
+      Process.send_after(self(), :cancel_stale_waiting, @stale_check_timeout)
     end
 
     {:ok, :noop}
@@ -32,6 +37,14 @@ defmodule Codebattle.Tournament.UpcomingRunner do
     run_upcoming()
 
     Process.send_after(self(), :run_upcoming, @worker_timeout)
+
+    {:noreply, state}
+  end
+
+  def handle_info(:cancel_stale_waiting, state) do
+    cancel_stale_waiting()
+
+    Process.send_after(self(), :cancel_stale_waiting, @stale_check_timeout)
 
     {:noreply, state}
   end
@@ -48,5 +61,17 @@ defmodule Codebattle.Tournament.UpcomingRunner do
       _ ->
         :noop
     end
+  end
+
+  def cancel_stale_waiting do
+    cutoff = DateTime.add(DateTime.utc_now(:second), -@stale_waiting_after_hours, :hour)
+
+    cutoff
+    |> Tournament.Context.get_stale_waiting_tournaments()
+    |> Enum.map(fn tournament ->
+      Tournament.Context.cancel_stale_tournament(tournament)
+      Logger.info("Tournament #{tournament.id} canceled: waiting for participants too long")
+      tournament.id
+    end)
   end
 end

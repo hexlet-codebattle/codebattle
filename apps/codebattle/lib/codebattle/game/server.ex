@@ -20,6 +20,9 @@ defmodule Codebattle.Game.Server do
     :exit, _reason -> {:error, :not_found}
   end
 
+  @spec alive?(integer()) :: boolean()
+  def alive?(game_id), do: Registry.lookup(Codebattle.Registry, "game_srv:#{game_id}") != []
+
   def get_playbook_records(game_id) do
     records = GenServer.call(server_name(game_id), :get_playbook_records)
     {:ok, records}

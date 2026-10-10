@@ -201,18 +201,49 @@ defmodule Codebattle.Game.ContextTest do
       assert {:error, :no_tournament} = Game.Context.unlock_game(game.id, "secret")
     end
 
-    test "finds a user's newest active game for integer and string ids" do
+    test "finds a user's live game for integer and string ids" do
       user = insert(:user)
       opponent = insert(:user)
-      players = [Player.build(user), Player.build(opponent)]
+      insert(:task, level: "easy")
 
-      old_game = insert(:game, state: "playing", players: players, player_ids: [user.id, opponent.id])
-      new_game = insert(:game, state: "playing", players: players, player_ids: [user.id, opponent.id])
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user, opponent], level: "easy"})
+      on_exit(fn -> GlobalSupervisor.terminate_game(game.id) end)
 
-      assert Game.Context.get_active_game_id(user.id) == new_game.id
-      assert Game.Context.get_active_game_id(Integer.to_string(user.id)) == new_game.id
+      assert Game.Context.get_active_game_id(user.id) == game.id
+      assert Game.Context.get_active_game_id(Integer.to_string(user.id)) == game.id
+      assert Game.Context.get_active_game_id(opponent.id) == game.id
       assert Game.Context.get_active_game_id(nil) == nil
-      assert old_game.id < new_game.id
+    end
+
+    # Regression: a bot game waits in the lobby (low id) while a newer DB row of the same
+    # user is stuck in "playing" without a process (deploy restart, tournament restart, ...).
+    # The stale row used to shadow the live joined game, so /me/active_game returned nil.
+    test "skips stale playing rows without a live process" do
+      user = insert(:user)
+      insert(:task, level: "easy")
+
+      {:ok, bot_game} =
+        Game.Context.create_game(%{
+          state: "waiting_opponent",
+          type: "duo",
+          mode: "standard",
+          visibility_type: "public",
+          level: "easy",
+          players: [Codebattle.Bot.Context.build()]
+        })
+
+      on_exit(fn -> GlobalSupervisor.terminate_game(bot_game.id) end)
+
+      stale = insert(:game, state: "playing", players: [Player.build(user)], player_ids: [user.id])
+      assert stale.id > bot_game.id
+      assert Game.Context.get_active_game_id(user.id) == nil
+
+      {:ok, _} = Game.Context.join_game(bot_game.id, user)
+
+      assert Game.Context.get_active_game_id(user.id) == bot_game.id
+      # joining must keep the task in the DB row (it used to be nulled)
+      assert %{state: "playing", task_id: task_id} = Codebattle.Repo.get!(Game, bot_game.id)
+      assert task_id == bot_game.task_id and not is_nil(task_id)
     end
 
     test "checks a solution after the timeout while the process lives, without changing the game" do

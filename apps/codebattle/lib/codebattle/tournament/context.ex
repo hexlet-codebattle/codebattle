@@ -130,6 +130,41 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
+  @doc """
+  Tournaments still waiting for participants although both their creation time and
+  `starts_at` are older than `cutoff`: nobody started them and nobody will.
+  """
+  @spec get_stale_waiting_tournaments(DateTime.t()) :: list(Tournament.t())
+  def get_stale_waiting_tournaments(cutoff) do
+    naive_cutoff = DateTime.to_naive(cutoff)
+
+    Repo.all(
+      from(t in Tournament,
+        order_by: t.id,
+        where:
+          t.state == "waiting_participants" and
+            t.starts_at < ^cutoff and
+            t.inserted_at < ^naive_cutoff
+      )
+    )
+  end
+
+  @doc """
+  Cancels a stale waiting tournament through its server; if the server is gone,
+  marks the DB row canceled so it stops showing up as waiting.
+  """
+  @spec cancel_stale_tournament(Tournament.t()) :: :ok
+  def cancel_stale_tournament(%Tournament{id: id}) do
+    handle_event(id, :cancel, %{})
+
+    Repo.update_all(
+      from(t in Tournament, where: t.id == ^id and t.state == "waiting_participants"),
+      set: [state: "canceled", updated_at: NaiveDateTime.utc_now(:second)]
+    )
+
+    :ok
+  end
+
   @spec get_season_tournaments(%{
           from: DateTime.t(),
           to: DateTime.t(),
@@ -625,7 +660,7 @@ defmodule Codebattle.Tournament.Context do
 
     cond_result =
       if params[:starts_at] do
-        params[:starts_at] <> ":00"
+        with_seconds(params[:starts_at])
       else
         NaiveDateTime.utc_now()
         |> NaiveDateTime.add(60 * 60, :second)
@@ -656,6 +691,11 @@ defmodule Codebattle.Tournament.Context do
       meta: parse_meta(params),
       show_results: show_results
     })
+  end
+
+  # The UI form sends minutes ("2026-10-17T19:00"); the public API sends seconds as well.
+  defp with_seconds(starts_at) do
+    if Regex.match?(~r/T\d\d:\d\d$/, starts_at), do: starts_at <> ":00", else: starts_at
   end
 
   defp default_timeout_mode(%{type: type}) when type in ["ladder", :ladder], do: "per_task"

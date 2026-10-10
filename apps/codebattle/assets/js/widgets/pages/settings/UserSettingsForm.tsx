@@ -13,7 +13,7 @@ import LanguageIcon from '@/components/LanguageIcon';
 
 import i18n from '../../../i18n';
 import SoundToggle from '../../components/SoundToggle';
-import languages, { cssProcessors, dbNames } from '../../config/languages';
+import languages, { cssProcessors, dbNames, languageDisplayNames } from '../../config/languages';
 import schemas from '../../formik';
 import { createPlayer } from '../../lib/sound';
 
@@ -108,7 +108,9 @@ const passwordValidationSchema = {
     }),
 };
 
-const playingLanguages = Object.entries(omit(languages, [...cssProcessors, ...dbNames]));
+const playingLanguages = Object.entries(omit(languages, [...cssProcessors, ...dbNames])).map(
+  ([slug, name]): [string, string] => [slug, languageDisplayNames[slug] || name],
+);
 const cssLanguages = Object.entries(pick(languages, cssProcessors));
 const databaseTypes = Object.entries(pick(languages, dbNames));
 

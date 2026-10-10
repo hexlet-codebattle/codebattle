@@ -12,7 +12,11 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
     token
   end
 
-  defp api(conn, token), do: put_req_header(conn, "authorization", "Bearer " <> token)
+  defp api(conn, token) do
+    conn
+    |> put_req_header("authorization", "Bearer " <> token)
+    |> put_req_header("content-type", "application/json")
+  end
 
   describe "tokens" do
     test "stores only the hash and dies with the account", %{conn: _conn} do
@@ -94,12 +98,137 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
     end
   end
 
+  describe "validation errors" do
+    test "the message names each failed field", %{conn: conn} do
+      user = old_user()
+      token = token(user, ["read", "tournaments:write"])
+      past = DateTime.utc_now() |> DateTime.add(-1, :minute) |> DateTime.to_iso8601()
+
+      assert %{"error" => %{"message" => message, "details" => details}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/tournaments", %{name: "API cup", starts_at: past, level: "easy", color: "red"})
+               |> json_response(422)
+
+      assert message == "Invalid parameters: color is not allowed; starts_at must be in the future"
+      assert details == %{"color" => "is not allowed", "starts_at" => "must be in the future"}
+    end
+  end
+
+  describe "request bodies" do
+    test "a JSON body without the JSON content type gets a clear 415", %{conn: conn} do
+      user = old_user()
+      token = token(user, ["read", "tournaments:write"])
+      body = Jason.encode!(%{name: "API cup", description: "x", level: "easy"})
+
+      assert %{"error" => %{"code" => "unsupported_media_type", "message" => message}} =
+               conn
+               |> api(token)
+               |> put_req_header("content-type", "application/x-www-form-urlencoded")
+               |> post("/public_api/v1/tournaments", body)
+               |> json_response(415)
+
+      assert message =~ "Content-Type: application/json"
+    end
+  end
+
+  describe "me/games" do
+    test "pages by cursor and narrows by from/to", %{conn: conn} do
+      user = old_user()
+      token = token(user)
+
+      [old, mid, new] =
+        for days_ago <- [10, 5, 1] do
+          insert(:game,
+            state: "game_over",
+            player_ids: [user.id],
+            starts_at: NaiveDateTime.add(NaiveDateTime.utc_now(), -days_ago, :day)
+          )
+        end
+
+      ids = fn query ->
+        conn
+        |> api(token)
+        |> get("/public_api/v1/me/games", query)
+        |> json_response(200)
+        |> Map.fetch!("games")
+        |> Enum.map(& &1["id"])
+      end
+
+      assert ids.(%{}) == [new.id, mid.id, old.id]
+      assert ids.(%{cursor: mid.id}) == [old.id]
+
+      from = Date.to_iso8601(Date.add(Date.utc_today(), -7))
+      to = DateTime.to_iso8601(DateTime.add(DateTime.utc_now(), -2, :day))
+      assert ids.(%{from: from, to: to}) == [mid.id]
+
+      assert %{"error" => %{"code" => "validation_failed", "details" => %{"from" => _}}} =
+               conn |> api(token) |> get("/public_api/v1/me/games", %{from: "yesterday"}) |> json_response(422)
+    end
+  end
+
+  describe "tournaments/live" do
+    test "lists live public and related private tournaments regardless of starts_at", %{conn: conn} do
+      user = old_user()
+      token = token(user)
+      long_ago = DateTime.add(DateTime.utc_now(:second), -3, :day)
+
+      public = insert(:tournament, state: "waiting_participants", access_type: "public", starts_at: long_ago)
+      mine = insert(:token_tournament, state: "active", creator_id: user.id, starts_at: long_ago)
+      _foreign = insert(:token_tournament, state: "waiting_participants", starts_at: long_ago)
+      _finished = insert(:tournament, state: "finished", access_type: "public")
+
+      ids =
+        conn
+        |> api(token)
+        |> get("/public_api/v1/tournaments/live")
+        |> json_response(200)
+        |> Map.fetch!("tournaments")
+        |> Enum.map(& &1["id"])
+
+      assert ids == [mine.id, public.id]
+    end
+  end
+
+  describe "joined bot game" do
+    test "a game joined from the lobby is the active game and lands in history", %{conn: conn} do
+      insert(:task, level: "easy")
+      user = old_user()
+      token = token(user, ["read"])
+
+      {:ok, game} =
+        Game.Context.create_game(%{
+          state: "waiting_opponent",
+          type: "duo",
+          mode: "standard",
+          visibility_type: "public",
+          level: "easy",
+          players: [Codebattle.Bot.Context.build()]
+        })
+
+      on_exit(fn -> Game.Context.terminate_game(game.id) end)
+
+      {:ok, _} = Game.Context.join_game(game.id, user)
+      game_id = game.id
+
+      assert %{"game" => %{"id" => ^game_id}} =
+               conn |> api(token) |> get("/public_api/v1/me/active_game") |> json_response(200)
+    end
+  end
+
   describe "tournaments" do
     test "creates a private open tournament visible only to related users", %{conn: conn} do
       user = old_user()
       token = token(user, ["read", "tournaments:write"])
-      starts_at = DateTime.utc_now() |> DateTime.add(1, :day) |> DateTime.to_iso8601()
-      body = %{name: "API cup", description: "made by a bot", starts_at: starts_at, level: "easy", rounds_limit: 2}
+      starts_at = :second |> DateTime.utc_now() |> DateTime.add(1, :day) |> DateTime.add(23, :second)
+
+      body = %{
+        name: "API cup",
+        description: "made by a bot",
+        starts_at: DateTime.to_iso8601(starts_at),
+        level: "easy",
+        rounds_limit: 2
+      }
 
       assert %{"error" => %{"details" => %{"grade" => "is not allowed"}}} =
                conn
@@ -114,10 +243,14 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
 
       stored = Tournament.Context.get_from_db!(id)
       assert stored.grade == "open" and stored.task_provider == "level" and stored.creator_id == user.id
+      # seconds survive: the UI form's minute precision doesn't apply to the API
+      assert DateTime.compare(stored.starts_at, starts_at) == :eq
 
       # editing keeps the invite link alive
       assert %{"tournament" => %{"name" => "API cup 2", "access_token" => ^access_token}} =
                conn |> api(token) |> patch("/public_api/v1/tournaments/#{id}", %{name: "API cup 2"}) |> json_response(200)
+
+      assert DateTime.compare(Tournament.Context.get_from_db!(id).starts_at, starts_at) == :eq
 
       stranger_token = token(old_user())
 

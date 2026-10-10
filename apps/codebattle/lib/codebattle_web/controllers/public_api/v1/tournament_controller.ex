@@ -15,6 +15,7 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
 
   @schedule_days 14
   @schedule_states ~w(upcoming waiting_participants active)
+  @live_states ~w(waiting_participants active)
   @editable_states ~w(upcoming waiting_participants)
   @participant_top 20
 
@@ -33,7 +34,7 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
   }
   @create_required ~w(name description starts_at level)
 
-  plug(:require_scope, "read" when action in [:schedule, :show, :ranking])
+  plug(:require_scope, "read" when action in [:schedule, :live, :show, :ranking])
   plug(:require_scope, "tournaments:write" when action in [:create, :update, :start, :cancel])
 
   def schedule(conn, _params) do
@@ -50,6 +51,27 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
       |> Enum.map(&JSON.tournament(&1, nil))
 
     json(conn, %{tournaments: tournaments})
+  end
+
+  # Tournaments running right now or open for joining, whatever their starts_at:
+  # public ones plus private ones the user created, moderates or plays in.
+  def live(conn, _params) do
+    user = conn.assigns.current_user
+    user_id = Integer.to_string(user.id)
+
+    tournaments =
+      from(t in Tournament,
+        where: t.state in @live_states,
+        where:
+          t.access_type == "public" or t.creator_id == ^user.id or ^user.id in t.moderator_ids or
+            fragment("((? #>> '{}')::jsonb) \\? ?", t.players, ^user_id),
+        order_by: [desc: t.id],
+        limit: 100
+      )
+      |> Repo.all()
+      |> Enum.map(&JSON.tournament(&1, user))
+
+    conn |> no_store() |> json(%{tournaments: tournaments})
   end
 
   def show(conn, %{"id" => id}) do
@@ -209,11 +231,11 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
     end
   end
 
-  # Tournament.Context expects "YYYY-MM-DDTHH:MM" plus user_timezone.
+  # Tournament.Context takes a naive "YYYY-MM-DDTHH:MM[:SS]" plus user_timezone; keep the seconds.
   defp format_starts_at(%DateTime{} = datetime),
-    do: datetime |> DateTime.shift_zone!("Etc/UTC") |> Calendar.strftime("%Y-%m-%dT%H:%M")
+    do: datetime |> DateTime.shift_zone!("Etc/UTC") |> Calendar.strftime("%Y-%m-%dT%H:%M:%S")
 
-  defp format_starts_at(%NaiveDateTime{} = naive), do: Calendar.strftime(naive, "%Y-%m-%dT%H:%M")
+  defp format_starts_at(%NaiveDateTime{} = naive), do: Calendar.strftime(naive, "%Y-%m-%dT%H:%M:%S")
 
   defp require_fields(body, fields) do
     case Enum.reject(fields, &Map.has_key?(body, &1)) do

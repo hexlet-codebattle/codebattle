@@ -9,7 +9,7 @@ import RoomContext from '../../components/RoomContext';
 import playbackModes from '../../config/playbackModes';
 import { replayerMachineStates } from '../../machines/game';
 import * as GameActions from '../../middlewares/Room';
-import { parse } from '../../lib/player';
+import { getPlaybookStartTime, hasReplayableRecords, parse } from '../../lib/player';
 import { playbookRecordsSelector } from '../../selectors';
 import { actions, type RootState } from '../../slices';
 
@@ -38,6 +38,7 @@ interface CodebattlePlayerStateProps {
   mainEvents: MainEvent[];
   startTime: number | null;
   totalDuration: number | null;
+  hasActivity: boolean;
 }
 
 interface CodebattlePlayerDispatchProps {
@@ -335,8 +336,15 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
   };
 
   render() {
-    const { recordsCount, mainEvents, roomMachineState, records, startTime, totalDuration } =
-      this.props;
+    const {
+      recordsCount,
+      mainEvents,
+      roomMachineState,
+      records,
+      startTime,
+      totalDuration,
+      hasActivity,
+    } = this.props;
 
     const {
       isEnabled,
@@ -348,7 +356,13 @@ class CodebattlePlayer extends Component<CodebattlePlayerProps, CodebattlePlayer
       playbackMode,
     } = this.state;
 
-    if (!roomMachineState.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
+    // Nothing to replay (nobody typed or checked): a timeline of a few seconds of chat
+    // joins over template code only confuses viewers, so hide the replayer.
+    if (
+      !roomMachineState.matches({ replayer: replayerMachineStates.on }) ||
+      recordsCount === 0 ||
+      !hasActivity
+    ) {
       return null;
     }
 
@@ -408,7 +422,7 @@ const mapStateToProps = (state: RootState): CodebattlePlayerStateProps => {
   const recordsCount = records.length;
   const mainEvents = state.playbook.mainEvents as MainEvent[];
 
-  const startTime = getRecordTime(records, 0);
+  const startTime = getPlaybookStartTime(state.playbook.initRecords, records);
   const endTime = getRecordTime(records, recordsCount - 1);
   const totalDuration =
     startTime !== null && endTime !== null ? Math.max(0, endTime - startTime) : null;
@@ -420,6 +434,7 @@ const mapStateToProps = (state: RootState): CodebattlePlayerStateProps => {
     mainEvents,
     startTime,
     totalDuration,
+    hasActivity: hasReplayableRecords(records),
   };
 };
 

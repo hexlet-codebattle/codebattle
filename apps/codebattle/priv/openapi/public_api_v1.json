@@ -3,7 +3,7 @@
   "info": {
     "title": "Codebattle Public API",
     "version": "1.0.0",
-    "description": "Narrow, me-centric API for bots, CLI and devices. Every request needs a personal token (Settings \u2192 API tokens): `Authorization: Bearer cbp_...`. Objects you are not related to answer 404. Limits are per user: 60 requests/min, 5 games/min and 30/day, 5 tournaments/day, at most 3 unfinished API-created tournaments. In v1 only additive changes happen."
+    "description": "Narrow, me-centric API for bots, CLIs and devices. Every request needs a personal token (Settings → API tokens): `Authorization: Bearer cbp_...`. Objects you are not related to answer 404. Limits are per user: 60 requests/min, 5 games/min and 30/day, 5 tournaments/day, at most 3 unfinished API-created tournaments. In v1 only additive changes happen. Human and LLM-friendly docs: https://codebattle.hexlet.io/api-docs (Markdown: /api-docs.md)."
   },
   "servers": [
     {
@@ -36,6 +36,7 @@
                   "invalid_token",
                   "insufficient_scope",
                   "not_found",
+                  "unsupported_media_type",
                   "validation_failed",
                   "quota_exceeded",
                   "rate_limited",
@@ -49,6 +50,12 @@
                 "type": "object"
               }
             }
+          }
+        },
+        "example": {
+          "error": {
+            "code": "not_found",
+            "message": "Not found"
           }
         }
       },
@@ -82,6 +89,14 @@
               "null"
             ]
           }
+        },
+        "example": {
+          "id": 42,
+          "name": "ada",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1?v=4",
+          "rating": 1461,
+          "rank": 12,
+          "lang": "dlang"
         }
       },
       "GamePlayer": {
@@ -127,6 +142,16 @@
             ],
             "description": "Hidden for opponents while the game is live"
           }
+        },
+        "example": {
+          "id": 42,
+          "name": "ada",
+          "avatar_url": null,
+          "rating": 1461,
+          "lang": "python",
+          "is_bot": false,
+          "result": "won",
+          "result_percent": 100.0
         }
       },
       "Game": {
@@ -136,7 +161,8 @@
             "type": "integer"
           },
           "url": {
-            "type": "string"
+            "type": "string",
+            "example": "https://codebattle.hexlet.io/games/324274"
           },
           "state": {
             "type": "string",
@@ -169,7 +195,8 @@
               "string",
               "null"
             ],
-            "format": "date-time"
+            "format": "date-time",
+            "description": "starts_at + timeout_seconds: when the game times out"
           },
           "finishes_at": {
             "type": [
@@ -207,6 +234,45 @@
               "$ref": "#/components/schemas/GamePlayer"
             }
           }
+        },
+        "example": {
+          "id": 324274,
+          "url": "https://codebattle.hexlet.io/games/324274",
+          "state": "game_over",
+          "level": "easy",
+          "type": "duo",
+          "starts_at": "2026-10-10T18:40:00Z",
+          "timeout_seconds": 600,
+          "ends_at": "2026-10-10T18:50:00Z",
+          "finishes_at": "2026-10-10T18:46:12Z",
+          "tournament_id": null,
+          "task": {
+            "id": 1201,
+            "name": "pair_with_maximum_product",
+            "level": "easy"
+          },
+          "players": [
+            {
+              "id": 42,
+              "name": "ada",
+              "avatar_url": null,
+              "rating": 1461,
+              "lang": "python",
+              "is_bot": false,
+              "result": "won",
+              "result_percent": 100.0
+            },
+            {
+              "id": -1,
+              "name": "Codebot",
+              "avatar_url": null,
+              "rating": 1200,
+              "lang": "js",
+              "is_bot": true,
+              "result": "lost",
+              "result_percent": 40.0
+            }
+          ]
         }
       },
       "Tournament": {
@@ -225,13 +291,22 @@
             "type": "string"
           },
           "state": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "waiting_participants",
+              "active",
+              "finished",
+              "canceled",
+              "timeout"
+            ]
           },
           "level": {
             "type": "string"
           },
           "grade": {
-            "type": "string"
+            "type": "string",
+            "description": "`open` for user tournaments; season grades for official ones"
           },
           "access_type": {
             "type": "string",
@@ -320,6 +395,32 @@
             "type": "string",
             "description": "Creator and moderators only"
           }
+        },
+        "example": {
+          "id": 5775,
+          "name": "Friday practice",
+          "url": "https://codebattle.hexlet.io/tournaments/5775",
+          "type": "swiss",
+          "state": "active",
+          "level": "easy",
+          "grade": "open",
+          "access_type": "token",
+          "starts_at": "2026-10-10T19:00:00Z",
+          "started_at": "2026-10-10T19:00:04Z",
+          "players_count": 8,
+          "players_limit": 16,
+          "rounds_limit": 3,
+          "current_round": {
+            "position": 1,
+            "started_at": "2026-10-10T19:12:00Z",
+            "ends_at": "2026-10-10T19:22:00Z"
+          },
+          "break": {
+            "active": false,
+            "ends_at": null
+          },
+          "access_token": "Xy7pQw2LmN4rTz8aB",
+          "invite_url": "https://codebattle.hexlet.io/tournaments/5775?access_token=Xy7pQw2LmN4rTz8aB"
         }
       },
       "RankingEntry": {
@@ -343,6 +444,13 @@
               "null"
             ]
           }
+        },
+        "example": {
+          "id": 42,
+          "name": "ada",
+          "place": 1,
+          "score": 42,
+          "lang": "python"
         }
       },
       "TournamentInput": {
@@ -352,17 +460,20 @@
           "name": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 100
+            "maxLength": 100,
+            "example": "Friday practice"
           },
           "description": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 2000
+            "maxLength": 2000,
+            "example": "Weekly practice for our team"
           },
           "starts_at": {
             "type": "string",
             "format": "date-time",
-            "description": "In the future, at most 30 days ahead"
+            "description": "In the future, at most 30 days ahead",
+            "example": "2026-10-17T19:00:00Z"
           },
           "level": {
             "type": "string",
@@ -371,17 +482,20 @@
               "easy",
               "medium",
               "hard"
-            ]
+            ],
+            "example": "easy"
           },
           "players_limit": {
             "type": "integer",
             "minimum": 2,
-            "maximum": 64
+            "maximum": 64,
+            "example": 16
           },
           "rounds_limit": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 10
+            "maximum": 10,
+            "example": 3
           },
           "timeout_mode": {
             "type": "string",
@@ -461,6 +575,16 @@
             }
           }
         }
+      },
+      "UnsupportedMediaType": {
+        "description": "The body is not sent as application/json",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       }
     }
   },
@@ -503,7 +627,8 @@
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
           }
-        }
+        },
+        "description": "Who the token belongs to. A cheap way to check that a token works."
       }
     },
     "/me/active_game": {
@@ -539,6 +664,47 @@
                       "format": "date-time"
                     }
                   }
+                },
+                "example": {
+                  "game": {
+                    "id": 324274,
+                    "url": "https://codebattle.hexlet.io/games/324274",
+                    "state": "playing",
+                    "level": "easy",
+                    "type": "duo",
+                    "starts_at": "2026-10-10T18:40:00Z",
+                    "timeout_seconds": 600,
+                    "ends_at": "2026-10-10T18:50:00Z",
+                    "finishes_at": null,
+                    "tournament_id": null,
+                    "task": {
+                      "id": 1201,
+                      "name": "pair_with_maximum_product",
+                      "level": "easy"
+                    },
+                    "players": [
+                      {
+                        "id": 42,
+                        "name": "ada",
+                        "avatar_url": null,
+                        "rating": 1461,
+                        "lang": "python",
+                        "is_bot": false,
+                        "result": "undefined",
+                        "result_percent": 60.0
+                      },
+                      {
+                        "id": -1,
+                        "name": "Codebot",
+                        "avatar_url": null,
+                        "rating": 1200,
+                        "lang": "js",
+                        "is_bot": true,
+                        "result": "undefined"
+                      }
+                    ]
+                  },
+                  "server_time": "2026-10-10T18:43:20Z"
                 }
               }
             }
@@ -555,7 +721,8 @@
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
           }
-        }
+        },
+        "description": "The game you are playing right now, or `null`. Poll it (every few seconds is fine) to notice a game started from the web or by a tournament. Compute the remaining time as `ends_at - server_time`, not against your own clock."
       }
     },
     "/me/games": {
@@ -604,17 +771,42 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
           }
         },
         "parameters": [
           {
             "name": "cursor",
             "in": "query",
+            "description": "`next_cursor` from the previous page: returns games with a smaller id.",
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Only games started at or after this moment. ISO 8601 date (`2026-10-01`, midnight UTC) or datetime.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2026-10-01"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Only games started before this moment. ISO 8601 date or datetime.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2026-10-10T18:00:00Z"
           }
-        ]
+        ],
+        "description": "Finished games (`game_over` or `timeout`), 50 per page, newest first. Pagination is keyset-based: `next_cursor` is the id of the last game on the page; pass it back as `cursor` to get the next, older page. `next_cursor` is `null` on the last page. `from`/`to` narrow the result by game start time and combine with `cursor`."
       }
     },
     "/me/tournaments": {
@@ -665,14 +857,62 @@
             "in": "query",
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Filter by state, e.g. `active` or `finished`."
           }
-        ]
+        ],
+        "description": "Up to 50 tournaments you created, moderate or joined as a player, newest first."
       }
     },
     "/tournaments/schedule": {
       "get": {
         "summary": "Public upcoming and active tournaments for the next 14 days",
+        "security": [
+          {
+            "bearerAuth": [
+              "read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tournaments": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Tournament"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "description": "Public tournaments that start between 1 day ago and 14 days ahead and are not finished yet: what the lobby shows as upcoming. For everything running right now use `GET /tournaments/live`."
+      }
+    },
+    "/tournaments/live": {
+      "get": {
+        "summary": "Tournaments running now or open for joining",
+        "description": "Tournaments in `waiting_participants` or `active` state regardless of `starts_at`: all public ones plus private ones you created, moderate or play in. Newest first, at most 100.",
         "security": [
           {
             "bearerAuth": [
@@ -754,6 +994,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ValidationFailed"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
           }
         },
         "requestBody": {
@@ -833,7 +1076,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Creates a private (`access_type: token`) tournament of grade `open`; tasks are picked by `level`. Share `invite_url` with players. Quota: 5 per day and at most 3 unfinished API-created tournaments."
       }
     },
     "/tournaments/{id}": {
@@ -884,7 +1128,8 @@
               "type": "integer"
             }
           }
-        ]
+        ],
+        "description": "Works for tournaments related to you and for public ones. The creator and moderators also get `access_token` and `invite_url`."
       },
       "patch": {
         "summary": "Edit your tournament before it starts",
@@ -925,6 +1170,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ValidationFailed"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
           }
         },
         "parameters": [
@@ -1008,7 +1256,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Only the fields you send change. Allowed while the tournament is `upcoming` or `waiting_participants`."
       }
     },
     "/tournaments/{id}/ranking": {
@@ -1043,10 +1292,23 @@
                         {
                           "type": "null"
                         }
-                      ]
+                      ],
+                      "description": "Participants only: your own row"
                     },
                     "page_info": {
-                      "type": "object"
+                      "type": "object",
+                      "description": "Creator and moderators only",
+                      "properties": {
+                        "page_number": {
+                          "type": "integer"
+                        },
+                        "page_size": {
+                          "type": "integer"
+                        },
+                        "total_entries": {
+                          "type": "integer"
+                        }
+                      }
                     }
                   }
                 }
@@ -1090,7 +1352,8 @@
               "maximum": 100
             }
           }
-        ]
+        ],
+        "description": "The creator and moderators get the full ranking with `page` / `page_size` (max 100). Participants get the top 20 and their own row in `me`."
       }
     },
     "/tournaments/{id}/start": {
@@ -1144,7 +1407,8 @@
               "type": "integer"
             }
           }
-        ]
+        ],
+        "description": "Starts your tournament now with the players who have joined."
       }
     },
     "/tournaments/{id}/cancel": {
@@ -1195,7 +1459,8 @@
               "type": "integer"
             }
           }
-        ]
+        ],
+        "description": "Cancels your tournament and finishes its games."
       }
     },
     "/games": {
@@ -1237,6 +1502,14 @@
                       }
                     }
                   }
+                },
+                "example": {
+                  "game": {
+                    "id": 324280,
+                    "url": "https://codebattle.hexlet.io/games/324280",
+                    "join_url": null,
+                    "state": "playing"
+                  }
                 }
               }
             }
@@ -1255,6 +1528,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ValidationFailed"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
           }
         },
         "requestBody": {
@@ -1295,7 +1571,8 @@
               }
             }
           }
-        }
+        },
+        "description": "`opponent: bot` starts the game immediately against Codebot. `opponent: link` creates a hidden game waiting for an opponent; send them `join_url`. You can have only one active game at a time. Quota: 5 games per minute, 30 per day."
       }
     },
     "/games/{id}/cancel": {
@@ -1314,7 +1591,23 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "game": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "canceled"
+                          ]
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1344,7 +1637,8 @@
               "type": "integer"
             }
           }
-        ]
+        ],
+        "description": "Only a game in `waiting_opponent` state can be canceled."
       }
     }
   }

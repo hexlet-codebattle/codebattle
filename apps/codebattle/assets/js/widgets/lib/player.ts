@@ -336,6 +336,46 @@ export const addRecord = ({
   }
 };
 
+// Record types that change what the editors show. A stored playbook without any of
+// them (e.g. a game that timed out while nobody typed: only `init` records plus
+// chat joins/greetings from the first seconds) has nothing to replay.
+const replayableRecordTypes = new Set(['update_editor_data', 'check_complete']);
+
+export const hasReplayableRecords = (records: string[] | null | undefined): boolean =>
+  !!records &&
+  records.some((record) => {
+    try {
+      return replayableRecordTypes.has(parse(record).type);
+    } catch {
+      return false;
+    }
+  });
+
+// Timeline origin: the game start (`init` records), falling back to the first record.
+export const getPlaybookStartTime = (
+  initRecords: unknown[] | null | undefined,
+  records: string[] | null | undefined,
+): number | null => {
+  const initTimes = (initRecords || [])
+    .map((record) => (record as PlaybookRecord | null)?.time)
+    .filter((time): time is number => typeof time === 'number');
+
+  if (initTimes.length > 0) {
+    return Math.min(...initTimes);
+  }
+
+  if (!records || records.length === 0) {
+    return null;
+  }
+
+  try {
+    const { time } = parse(records[0]);
+    return typeof time === 'number' ? time : null;
+  } catch {
+    return null;
+  }
+};
+
 export const getFinalState = ({
   recordId,
   records,

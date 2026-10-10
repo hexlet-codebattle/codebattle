@@ -26,6 +26,8 @@ defmodule Codebattle.Game.Context do
   @type tournament_id :: non_neg_integer()
   @type editor_summary :: map()
 
+  @active_game_candidates_limit 20
+
   @allowed_summary_integer_fields ~w(
     key_event_count
     printable_key_count
@@ -456,16 +458,20 @@ defmodule Codebattle.Game.Context do
     get_active_game_id(String.to_integer(user_id))
   end
 
+  # A DB row can stay "playing" after its process is gone (deploy restart, tournament
+  # restart / terminate_tournament_games, crashes), so the newest "playing" row is not
+  # necessarily the live game. Such a stale row would shadow a live game with a lower id,
+  # e.g. a bot game that waited in the lobby for hours before the user joined it.
   def get_active_game_id(user_id) do
-    Repo.one(
-      from(g in Game,
-        where: g.state == "playing",
-        where: fragment("? @> ARRAY[?]::integer[]", g.player_ids, ^user_id),
-        order_by: [desc: g.id],
-        limit: 1,
-        select: g.id
-      )
+    from(g in Game,
+      where: g.state == "playing",
+      where: fragment("? @> ARRAY[?]::integer[]", g.player_ids, ^user_id),
+      order_by: [desc: g.id],
+      limit: @active_game_candidates_limit,
+      select: g.id
     )
+    |> Repo.all()
+    |> Enum.find(&Game.Server.alive?/1)
   end
 
   def report_on_player(game_id, reporter, offender_id) do

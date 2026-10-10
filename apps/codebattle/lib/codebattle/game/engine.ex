@@ -202,9 +202,9 @@ defmodule Codebattle.Game.Engine do
            player_ids: Enum.map(players, & &1.id),
            state: "playing",
            starts_at: now,
-           task_id: Map.get(game.task, "id", nil),
-           css_task_id: Map.get(game.css_task, "id", nil),
-           sql_task_id: Map.get(game.sql_task, "id", nil),
+           task_id: task_id(game.task),
+           css_task_id: task_id(game.css_task),
+           sql_task_id: task_id(game.sql_task),
            task_type: game.task_type
          }),
          :ok <- maybe_fire_playing_game_side_effects(game),
@@ -672,6 +672,11 @@ defmodule Codebattle.Game.Engine do
 
   defp put_task(params, %CssTask{} = task), do: Map.put(params, :css_task, task)
   defp put_task(params, %SqlTask{} = task), do: Map.put(params, :sql_task, task)
+
+  # Live games hold task structs (atom keys); `Map.get(task, "id")` used to null the DB task_id on join.
+  defp task_id(%{id: id}), do: id
+  defp task_id(%{"id" => id}), do: id
+  defp task_id(_task), do: nil
 
   defp get_game_task(%{task_type: "css"} = game), do: game.css_task
   defp get_game_task(%{task_type: "sql"} = game), do: game.sql_task

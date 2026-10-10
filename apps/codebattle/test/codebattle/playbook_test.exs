@@ -56,4 +56,15 @@ defmodule Codebattle.PlaybookTest do
     assert playbook.data.count == 2
     assert Enum.any?(playbook.data.records, &(&1.type == :update_editor_data))
   end
+
+  test "records a timeout so the replay timeline reaches the end of the game" do
+    state =
+      [%{id: 1, name: "a", editor_text: "", editor_lang: "js"}]
+      |> Context.init_records()
+      |> Context.add_record(:timeout, %{})
+
+    assert [%{type: :timeout, record_id: 1, time: time} | _] = state.records
+    assert is_integer(time)
+    assert state.id == 2
+  end
 end

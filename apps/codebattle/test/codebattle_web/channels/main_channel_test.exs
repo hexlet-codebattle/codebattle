@@ -54,7 +54,7 @@ defmodule CodebattleWeb.MainChannelTest do
 
     assert response == %{active_game_id: nil}
 
-    game = insert(:game, player_ids: [user.id], state: "playing")
+    game = start_live_game(user)
 
     {:ok, response, _socket} =
       subscribe_and_join(creator_socket, MainChannel, "main", %{
@@ -67,7 +67,7 @@ defmodule CodebattleWeb.MainChannelTest do
 
   test "follow unfollow", %{creator_socket: creator_socket} do
     user = insert(:user)
-    game = insert(:game, player_ids: [user.id], state: "playing")
+    game = start_live_game(user)
     game_id = game.id
 
     {:ok, response, socket} =
@@ -77,7 +77,7 @@ defmodule CodebattleWeb.MainChannelTest do
 
     assert response == %{active_game_id: nil}
 
-    push(socket, "user:follow", %{user_id: user.id + 1})
+    push(socket, "user:follow", %{user_id: user.id + 100_000})
 
     assert_receive %Reply{
       topic: "main",
@@ -91,6 +91,7 @@ defmodule CodebattleWeb.MainChannelTest do
       payload: %{active_game_id: ^game_id}
     }
 
+    Game.Context.terminate_game(game_id)
     Game.Context.create_game(%{players: [user]})
     :timer.sleep(100)
 
@@ -128,5 +129,13 @@ defmodule CodebattleWeb.MainChannelTest do
       assert MainChannel.presence_link("javascript:alert(1)") == nil
       assert MainChannel.presence_link(nil) == nil
     end
+  end
+
+  # get_active_game_id only returns games with a live process
+  defp start_live_game(user) do
+    insert(:task, level: "easy")
+    {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user, insert(:user)], level: "easy"})
+    on_exit(fn -> Game.GlobalSupervisor.terminate_game(game.id) end)
+    game
   end
 end

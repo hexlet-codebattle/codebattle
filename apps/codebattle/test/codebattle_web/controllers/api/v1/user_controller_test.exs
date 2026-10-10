@@ -122,7 +122,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       game1 = insert(:game, state: "game_over")
       game2 = insert(:game, state: "game_over")
       game3 = insert(:game, state: "game_over")
-      %{id: game4_id} = insert(:game, state: "playing", player_ids: [user1.id])
+      %{id: game4_id} = start_live_game(user1)
       insert(:user_game, user: user1, creator: false, game: game1, result: "won", lang: "js")
       insert(:user_game, user: user2, creator: false, game: game1, result: "lost", lang: "js")
       insert(:user_game, user: user1, creator: false, game: game2, result: "lost", lang: "ruby")
@@ -275,7 +275,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       user = insert(:user, %{name: "1", github_id: 1, rating: 2400})
       bot = insert(:user, %{is_bot: true, name: "bot"})
       game = insert(:game, state: "game_over")
-      %{id: active_game_id} = insert(:game, state: "playing", player_ids: [user.id])
+      %{id: active_game_id} = start_live_game(user)
 
       insert(:user_game, user: user, creator: false, game: game, result: "won", lang: "js")
       insert(:user_game, user: bot, creator: false, game: game, result: "lost", lang: "js")
@@ -506,5 +506,13 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
       assert resp_body == %{"id" => 0}
     end
+  end
+
+  # get_active_game_id only returns games with a live process
+  defp start_live_game(user) do
+    insert(:task, level: "easy")
+    {:ok, game} = Codebattle.Game.Context.create_game(%{state: "playing", players: [user, insert(:user)], level: "easy"})
+    on_exit(fn -> Codebattle.Game.GlobalSupervisor.terminate_game(game.id) end)
+    game
   end
 end

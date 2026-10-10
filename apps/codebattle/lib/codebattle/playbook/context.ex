@@ -19,7 +19,10 @@ defmodule Codebattle.Playbook.Context do
     :update_editor_data,
     :start_check,
     :check_complete,
-    :game_over
+    :game_over,
+    # Marks the end of a timed-out game, so a replay's timeline spans the whole game
+    # instead of stopping at the last chat/editor event.
+    :timeout
   ]
 
   def exists?(game_id) do
@@ -61,7 +64,6 @@ defmodule Codebattle.Playbook.Context do
 
   def add_record(playbook_state, :check_success, _params), do: playbook_state
   def add_record(playbook_state, :check_failure, _params), do: playbook_state
-  def add_record(playbook_state, :timeout, _params), do: playbook_state
   def add_record(playbook_state, :rematch_send_offer, _params), do: playbook_state
   def add_record(playbook_state, :rematch_reject, _params), do: playbook_state
   def add_record(playbook_state, :join, _params), do: playbook_state

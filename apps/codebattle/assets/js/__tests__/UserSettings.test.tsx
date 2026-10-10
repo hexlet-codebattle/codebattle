@@ -331,6 +331,19 @@ describe('UserSettings test cases', () => {
     expect(getAllByTestId('language-icon-python').length).toBeGreaterThan(0);
   });
 
+  test('labels D by its name, not by its editor highlighter', async () => {
+    const { getByTestId, findByText, queryAllByText, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    await user.click(getByTestId('code-langSelect'));
+
+    expect(await findByText('D')).toBeInTheDocument();
+    expect(queryAllByText('Cpp')).toHaveLength(1);
+  });
+
   test('changes a password without sending password fields to the settings endpoint', async () => {
     const passwordStore = configureStore({
       reducer,
