@@ -217,12 +217,6 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     |> json(%{errors: errors})
   end
 
-  defp render_error(conn, reason) do
-    conn
-    |> put_status(:unprocessable_entity)
-    |> json(%{errors: %{base: [to_string(reason)]}})
-  end
-
   defp format_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
