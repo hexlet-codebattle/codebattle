@@ -128,12 +128,13 @@ outdated:
 release:
 	$(DEV) env MIX_ENV=prod mix release
 
+# Release-image entrypoints: run inside the prod container, not via bin/dev.
 start:
-	$(DEV) bin/codebattle eval "Codebattle.Utils.Release.migrate"
-	$(DEV) bin/codebattle start
+	bin/codebattle eval "Codebattle.Utils.Release.migrate"
+	bin/codebattle start
 
 runner-start:
-	$(DEV) bin/runner start
+	bin/runner start
 
 clean:
 	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
