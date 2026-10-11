@@ -98,6 +98,124 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
     end
   end
 
+  describe "invites" do
+    test "invite by name, see it on both sides, accept into a game", %{conn: conn} do
+      insert(:task, level: "easy")
+      creator = old_user()
+      recipient = old_user()
+      creator_token = token(creator, ["read", "games:write"])
+      recipient_token = token(recipient, ["read", "games:write"])
+
+      assert %{"invite" => %{"id" => id, "direction" => "outgoing", "state" => "pending", "level" => "easy"}} =
+               conn
+               |> api(creator_token)
+               |> post("/public_api/v1/invites", %{recipient_name: recipient.name, level: "easy"})
+               |> json_response(201)
+
+      assert %{"invites" => [%{"id" => ^id, "direction" => "incoming", "creator" => %{"name" => name}}]} =
+               conn |> api(recipient_token) |> get("/public_api/v1/me/invites") |> json_response(200)
+
+      assert name == creator.name
+
+      # strangers can't touch it
+      stranger_token = token(old_user(), ["read", "games:write"])
+      assert conn |> api(stranger_token) |> post("/public_api/v1/invites/#{id}/accept") |> json_response(404)
+      # the creator can't accept their own invite
+      assert conn |> api(creator_token) |> post("/public_api/v1/invites/#{id}/accept") |> json_response(404)
+
+      assert %{"invite" => %{"state" => "accepted", "game_id" => game_id, "game_url" => _}} =
+               conn |> api(recipient_token) |> post("/public_api/v1/invites/#{id}/accept") |> json_response(200)
+
+      on_exit(fn -> Game.Context.terminate_game(game_id) end)
+
+      assert %{"game" => %{"id" => ^game_id}} =
+               conn |> api(creator_token) |> get("/public_api/v1/me/active_game") |> json_response(200)
+    end
+
+    test "either side cancels; invalid recipients are explained", %{conn: conn} do
+      creator = old_user()
+      recipient = old_user()
+      token = token(creator, ["read", "games:write"])
+
+      assert %{"error" => %{"details" => %{"recipient" => "can't invite yourself"}}} =
+               conn |> api(token) |> post("/public_api/v1/invites", %{recipient_id: creator.id}) |> json_response(422)
+
+      assert %{"error" => %{"details" => %{"recipient_name" => "no such user"}}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/invites", %{recipient_name: "nobody-here"})
+               |> json_response(422)
+
+      assert %{"invite" => %{"id" => id}} =
+               conn |> api(token) |> post("/public_api/v1/invites", %{recipient_id: recipient.id}) |> json_response(201)
+
+      assert %{"error" => %{"message" => message}} =
+               conn |> api(token) |> post("/public_api/v1/invites", %{recipient_id: recipient.id}) |> json_response(422)
+
+      assert message =~ "already a pending invite"
+
+      recipient_token = token(recipient, ["read", "games:write"])
+
+      assert %{"invite" => %{"state" => "canceled"}} =
+               conn |> api(recipient_token) |> post("/public_api/v1/invites/#{id}/cancel") |> json_response(200)
+
+      assert %{"invites" => []} = conn |> api(token) |> get("/public_api/v1/me/invites") |> json_response(200)
+    end
+
+    test "long polling returns at once on a stale version and wakes up on an invite", %{conn: conn} do
+      creator = old_user()
+      recipient = old_user()
+      token = token(recipient)
+
+      assert %{"invites" => [], "version" => version} =
+               conn |> api(token) |> get("/public_api/v1/me/invites") |> json_response(200)
+
+      assert %{"error" => %{"details" => %{"wait" => _}}} =
+               conn |> api(token) |> get("/public_api/v1/me/invites", %{wait: "120"}) |> json_response(422)
+
+      Task.start(fn ->
+        Process.sleep(200)
+        Codebattle.Invite.Actions.create(creator, %{recipient_id: recipient.id})
+      end)
+
+      started = System.monotonic_time(:millisecond)
+
+      assert %{"invites" => [%{"direction" => "incoming"}], "version" => new_version} =
+               conn
+               |> api(token)
+               |> get("/public_api/v1/me/invites", %{wait: "5", version: version})
+               |> json_response(200)
+
+      assert System.monotonic_time(:millisecond) - started < 4000
+      refute new_version == version
+
+      # a version that is already stale answers immediately
+      assert %{"invites" => [_]} =
+               conn
+               |> api(token)
+               |> get("/public_api/v1/me/invites", %{wait: "30", version: version})
+               |> json_response(200)
+    end
+  end
+
+  describe "users/online" do
+    test "lists online registered users with their busiest state", %{conn: conn} do
+      user = old_user()
+      friend = insert(:user, rating: 1600)
+      token = token(user)
+
+      # two tabs: the lobby and a game
+      {:ok, _} = CodebattleWeb.Presence.track(self(), "main", friend.id, %{user: friend, state: "lobby", link: nil})
+      tab = spawn(fn -> Process.sleep(:infinity) end)
+      {:ok, _} = CodebattleWeb.Presence.track(tab, "main", friend.id, %{user: friend, state: "playing", link: "/games/7"})
+
+      assert %{"users" => users} = conn |> api(token) |> get("/public_api/v1/users/online") |> json_response(200)
+
+      assert [%{"id" => id, "state" => "playing", "url" => url}] = Enum.filter(users, &(&1["id"] == friend.id))
+      assert id == friend.id and url =~ "/games/7"
+    end
+  end
+
   describe "validation errors" do
     test "the message names each failed field", %{conn: conn} do
       user = old_user()

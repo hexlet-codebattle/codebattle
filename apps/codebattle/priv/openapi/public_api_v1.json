@@ -523,6 +523,199 @@
             "type": "boolean"
           }
         }
+      },
+      "Invite": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "canceled",
+              "expired",
+              "dropped"
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "incoming",
+              "outgoing"
+            ],
+            "description": "`incoming`: you are the recipient and can accept"
+          },
+          "level": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeout_seconds": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "creator": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "avatar_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rating": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          },
+          "recipient": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "avatar_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rating": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          },
+          "game_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Set once accepted"
+          },
+          "game_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "id": 9001,
+          "state": "pending",
+          "direction": "incoming",
+          "level": "easy",
+          "timeout_seconds": 600,
+          "creator": {
+            "id": 77,
+            "name": "grace",
+            "avatar_url": null,
+            "rating": 1520
+          },
+          "recipient": {
+            "id": 42,
+            "name": "ada",
+            "avatar_url": null,
+            "rating": 1461
+          },
+          "game_id": null,
+          "game_url": null,
+          "created_at": "2026-10-10T19:01:00Z"
+        }
+      },
+      "OnlineUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rating": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "rank": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "lang": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "online",
+              "lobby",
+              "task",
+              "tournament",
+              "watching",
+              "playing"
+            ],
+            "description": "The busiest of the user's open tabs"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Game or tournament the user is on, if any"
+          }
+        },
+        "example": {
+          "id": 77,
+          "name": "grace",
+          "avatar_url": null,
+          "rating": 1520,
+          "rank": 8,
+          "lang": "dlang",
+          "state": "playing",
+          "url": "https://codebattle.hexlet.io/games/324274"
+        }
       }
     },
     "responses": {
@@ -862,6 +1055,147 @@
           }
         ],
         "description": "Up to 50 tournaments you created, moderate or joined as a player, newest first."
+      }
+    },
+    "/me/invites": {
+      "get": {
+        "summary": "My pending invites, incoming and outgoing",
+        "description": "Pending invites where you are the creator or the recipient. Supports long polling instead of frequent polls: pass `wait` (seconds, up to 30) and the `version` from your previous response. If the list already differs from that version the answer is immediate; otherwise the request is held until an invite is created, accepted or canceled, or until `wait` runs out, and then returns the current list. Loop on it to react to invites within a second with about two requests a minute. An accepted invite leaves the list; the creator finds the game via `GET /me/active_game`.",
+        "security": [
+          {
+            "bearerAuth": [
+              "read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wait",
+            "in": "query",
+            "description": "Hold the request up to this many seconds (0..30) while nothing changes.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
+            },
+            "example": 25
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "`version` from the previous response.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "1x3kq9"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "invites": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Invite"
+                      }
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Changes whenever the list changes; pass it back with `wait`"
+                    },
+                    "server_time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                },
+                "example": {
+                  "invites": [
+                    {
+                      "id": 9001,
+                      "state": "pending",
+                      "direction": "incoming",
+                      "level": "easy",
+                      "timeout_seconds": 600,
+                      "creator": {
+                        "id": 77,
+                        "name": "grace",
+                        "avatar_url": null,
+                        "rating": 1520
+                      },
+                      "recipient": {
+                        "id": 42,
+                        "name": "ada",
+                        "avatar_url": null,
+                        "rating": 1461
+                      },
+                      "game_id": null,
+                      "game_url": null,
+                      "created_at": "2026-10-10T19:01:00Z"
+                    }
+                  ],
+                  "version": "1x3kq9",
+                  "server_time": "2026-10-10T19:01:05Z"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/me/events": {
+      "get": {
+        "summary": "Live stream of everything that happens to you (SSE)",
+        "description": "A Server-Sent Events stream: one request that stays open. It starts with `hello` (your current state: active game, pending invites, unfinished tournaments), then sends one event per change: invites, your games, tournaments you play in or run. A `: ping` comment comes every 15 seconds. The server closes the stream after an hour with a `bye` event; reconnect and you get a fresh `hello`. At most 2 open streams per user. See **Event stream** above for every event and client examples.",
+        "security": [
+          {
+            "bearerAuth": [
+              "read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An open event stream; see the Event stream section for every event",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "retry: 3000\n\nid: 1791702000000\nevent: hello\ndata: {\"user\":{\"id\":42,\"name\":\"ada\",...},\"active_game\":null,\"invites\":[],\"tournaments\":[],\"server_time\":\"2026-10-11T07:00:00Z\"}\n\nid: 1791702012345\nevent: invite.created\ndata: {\"invite\":{\"id\":9001,\"direction\":\"incoming\",\"creator\":{\"id\":77,\"name\":\"grace\",...},...},\"server_time\":\"2026-10-11T07:00:12Z\"}\n\n: ping\n\nid: 1791702020000\nevent: game.started\ndata: {\"game\":{\"id\":324274,\"state\":\"playing\",\"url\":\"https://codebattle.hexlet.io/games/324274\",...},\"server_time\":\"2026-10-11T07:00:20Z\"}"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
       }
     },
     "/tournaments/schedule": {
@@ -1639,6 +1973,251 @@
           }
         ],
         "description": "Only a game in `waiting_opponent` state can be canceled."
+      }
+    },
+    "/invites": {
+      "post": {
+        "summary": "Invite a user to a game",
+        "description": "Sends an invite that the recipient sees in the lobby and in `GET /me/invites`. One pending invite per pair of users.",
+        "security": [
+          {
+            "bearerAuth": [
+              "games:write"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "recipient_id": {
+                    "type": "integer",
+                    "description": "Whom to invite. Pass this or `recipient_name`.",
+                    "example": 77
+                  },
+                  "recipient_name": {
+                    "type": "string",
+                    "description": "Exact user name, handy for voice commands"
+                  },
+                  "level": {
+                    "type": "string",
+                    "enum": [
+                      "elementary",
+                      "easy",
+                      "medium",
+                      "hard"
+                    ],
+                    "example": "easy"
+                  },
+                  "timeout_seconds": {
+                    "type": "integer",
+                    "minimum": 60,
+                    "maximum": 3600,
+                    "description": "Game length, default 3600"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "invite": {
+                      "$ref": "#/components/schemas/Invite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/invites/{id}/accept": {
+      "post": {
+        "summary": "Accept an invite sent to you",
+        "description": "Starts the game for both players; the response has `game_id` and `game_url`. Fails with `422` if one of you is already in a game (the invite is then dropped).",
+        "security": [
+          {
+            "bearerAuth": [
+              "games:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "invite": {
+                      "$ref": "#/components/schemas/Invite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/invites/{id}/cancel": {
+      "post": {
+        "summary": "Decline or withdraw an invite",
+        "description": "The recipient declines, the creator withdraws. Only pending invites.",
+        "security": [
+          {
+            "bearerAuth": [
+              "games:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "invite": {
+                      "$ref": "#/components/schemas/Invite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/users/online": {
+      "get": {
+        "summary": "Who is online",
+        "description": "Registered users with codebattle open right now, highest rating first, with what they are doing. Changes slowly: polling every 30–60 seconds is plenty.",
+        "security": [
+          {
+            "bearerAuth": [
+              "read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/OnlineUser"
+                      }
+                    },
+                    "server_time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
       }
     }
   }

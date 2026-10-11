@@ -14,22 +14,6 @@ defmodule CodebattleWeb.LobbyLoadingHelpers do
     >
       <span class="sr-only">{gettext("Loading...")}</span>
       <div aria-hidden="true">
-        <div class="cb-lobby-loading-hero">
-          <div class="cb-lobby-loading-emblem">
-            <span>&lt;/&gt;</span>
-          </div>
-          <div class="cb-lobby-loading-copy">
-            <span class="cb-lobby-loading-kicker">
-              <span class="cb-lobby-loading-status-dot"></span>
-              {gettext("Codebattle lobby")}
-            </span>
-            <h1>{gettext("Preparing your arena")}</h1>
-            <p>{gettext("Syncing live games, rankings, and challengers...")}</p>
-            <div class="cb-lobby-loading-progress">
-              <span></span>
-            </div>
-          </div>
-        </div>
         <div class="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2">
           <div class="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
             <div class="cb-bg-panel cb-rounded d-flex flex-column p-3 cb-lobby-loading-main">

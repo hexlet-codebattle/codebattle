@@ -8,6 +8,7 @@ defmodule CodebattleWeb.PublicApi.V1.MeController do
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias CodebattleWeb.PublicApi.V1.JSON
+  alias CodebattleWeb.PublicApi.V1.Snapshot
 
   @page_size 50
 
@@ -22,15 +23,7 @@ defmodule CodebattleWeb.PublicApi.V1.MeController do
   def active_game(conn, _params) do
     user = conn.assigns.current_user
 
-    game =
-      with game_id when not is_nil(game_id) <- Game.Context.get_active_game_id(user.id),
-           {:ok, %{is_live: true, state: "playing"} = game} <- Game.Context.fetch_game(game_id) do
-        JSON.game(game, user.id)
-      else
-        _ -> nil
-      end
-
-    conn |> no_store() |> json(%{game: game, server_time: JSON.server_time()})
+    conn |> no_store() |> json(%{game: Snapshot.active_game(user), server_time: JSON.server_time()})
   end
 
   # Keyset pagination: `next_cursor` is the id of the last game on the page; pass it back as

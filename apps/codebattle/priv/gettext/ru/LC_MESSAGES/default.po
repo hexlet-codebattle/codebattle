@@ -3917,3 +3917,15 @@ msgstr "Создание, изменение, запуск и отмена пр�
 
 msgid "Never used"
 msgstr "Не использовался"
+
+msgid "QR code for the invite link"
+msgstr "QR-код ссылки-приглашения"
+
+msgid "Scan the QR code to join the game"
+msgstr "Отсканируйте QR-код, чтобы присоединиться к игре"
+
+msgid "Show QR"
+msgstr "Показать QR"
+
+msgid "Hide QR"
+msgstr "Скрыть QR"

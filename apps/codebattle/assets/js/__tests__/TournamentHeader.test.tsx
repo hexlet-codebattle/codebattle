@@ -101,3 +101,56 @@ test('TournamentHeader omits grade details for open tournaments', () => {
   expect(screen.queryByText('Ranking Points')).not.toBeInTheDocument();
   expect(screen.queryByLabelText('open grade')).not.toBeInTheDocument();
 });
+
+const renderPrivateHeader = (props = {}) =>
+  render(
+    <TournamentHeader
+      id={42}
+      state="waiting_participants"
+      streamMode={false}
+      breakState="off"
+      startsAt={new Date().toISOString()}
+      accessType="token"
+      accessToken="secret-token"
+      isLive
+      name="Private Arena"
+      players={{}}
+      playersCount={0}
+      currentUserId={1}
+      isOnline
+      canModerate
+      toggleShowBots={vi.fn()}
+      toggleStreamMode={vi.fn()}
+      handleStartRound={vi.fn()}
+      handleOpenDetails={vi.fn()}
+      {...props}
+    />,
+  );
+
+test('TournamentHeader toggles a QR code of the private invite url', async () => {
+  const user = userEvent.setup();
+  renderPrivateHeader();
+
+  expect(screen.queryByTestId('tournament-access-qr-code')).not.toBeInTheDocument();
+
+  const toggle = screen.getByTestId('tournament-access-qr-toggle');
+  expect(toggle).toHaveTextContent('Show QR');
+  await user.click(toggle);
+
+  const qr = screen.getByTestId('tournament-access-qr-code');
+  expect(qr).toHaveAttribute(
+    'data-value',
+    'http://localhost/tournaments/42?access_token=secret-token',
+  );
+  expect(qr.querySelector('svg')).toBeInTheDocument();
+  expect(toggle).toHaveTextContent('Hide QR');
+
+  await user.click(toggle);
+  expect(screen.queryByTestId('tournament-access-qr-code')).not.toBeInTheDocument();
+});
+
+test('TournamentHeader hides the QR toggle for public tournaments', () => {
+  renderPrivateHeader({ accessType: 'public' });
+
+  expect(screen.queryByTestId('tournament-access-qr-toggle')).not.toBeInTheDocument();
+});

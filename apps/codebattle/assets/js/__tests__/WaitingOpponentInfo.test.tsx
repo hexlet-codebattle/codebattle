@@ -28,3 +28,20 @@ test('WaitingOpponentInfo copy button', async () => {
 
   expect(copy).toHaveBeenCalledWith(url);
 });
+
+test('WaitingOpponentInfo renders a QR code of the absolute join url', () => {
+  render(<WaitingOpponentInfo gameUrl="http://localhost/games/123?foo=bar#chat" />);
+
+  const qr = screen.getByTestId('game-invite-qr-code');
+  expect(qr).toHaveAttribute('data-value', 'http://localhost/games/123');
+  expect(qr.querySelector('svg')).toBeInTheDocument();
+});
+
+test('WaitingOpponentInfo resolves a relative game url against the origin', () => {
+  render(<WaitingOpponentInfo gameUrl="/games/7" />);
+
+  expect(screen.getByTestId('game-invite-qr-code')).toHaveAttribute(
+    'data-value',
+    `${window.location.origin}/games/7`,
+  );
+});

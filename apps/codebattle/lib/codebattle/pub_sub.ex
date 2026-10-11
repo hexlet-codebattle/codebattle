@@ -2,6 +2,7 @@ defmodule Codebattle.PubSub do
   @moduledoc false
   alias Codebattle.PubSub.Events
   alias Codebattle.PubSub.Message
+  alias Codebattle.PubSub.UserEvents
 
   require Logger
 
@@ -28,11 +29,24 @@ defmodule Codebattle.PubSub do
   def broadcast(event_name, params) do
     Logger.debug("Event Broadcast: #{event_name}")
 
+    result =
+      event_name
+      |> Events.get_messages(params)
+      |> Enum.map(fn %{topic: topic} = message ->
+        Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
+      end)
+
+    broadcast_user_events(event_name, params)
+    result
+  end
+
+  # Per-user copies for the public API event stream; never break the domain broadcast.
+  defp broadcast_user_events(event_name, params) do
     event_name
-    |> Events.get_messages(params)
-    |> Enum.map(fn %{topic: topic} = message ->
-      Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
-    end)
+    |> UserEvents.messages(params)
+    |> Enum.each(fn %{topic: topic} = message -> Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message) end)
+  rescue
+    error -> Logger.error("User events for #{event_name} failed: #{Exception.message(error)}")
   end
 
   def broadcast_from(from, event_name, params) do

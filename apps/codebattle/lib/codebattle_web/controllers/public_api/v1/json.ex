@@ -106,6 +106,30 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
 
   defp break(_tournament), do: %{active: false, ends_at: nil}
 
+  def invite(invite, viewer_id) do
+    %{
+      id: invite.id,
+      state: invite.state,
+      direction: if(invite.recipient_id == viewer_id, do: "incoming", else: "outgoing"),
+      level: invite.game_params && invite.game_params.level,
+      timeout_seconds: invite.game_params && invite.game_params.timeout_seconds,
+      creator: user_card(invite.creator),
+      recipient: user_card(invite.recipient),
+      game_id: invite.game_id,
+      game_url: invite.game_id && url("/games/#{invite.game_id}"),
+      created_at: time(invite.inserted_at)
+    }
+  end
+
+  def online_user(user, state, link) do
+    user
+    |> user_card()
+    |> Map.merge(%{rank: user.rank, lang: user.lang, state: state, url: link && url(link)})
+  end
+
+  defp user_card(%{id: id} = user), do: %{id: id, name: user.name, avatar_url: user.avatar_url, rating: user.rating}
+  defp user_card(_user), do: nil
+
   def ranking_entry(entry) do
     Map.take(entry, [:id, :name, :place, :score, :lang])
   end

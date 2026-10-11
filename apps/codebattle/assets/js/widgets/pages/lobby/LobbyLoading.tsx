@@ -7,22 +7,6 @@ function LobbyLoading() {
     <div className="container-lg cb-text cb-lobby-loading" role="status" aria-live="polite">
       <span className="sr-only">{i18n.t('Loading...')}</span>
       <div aria-hidden="true">
-        <div className="cb-lobby-loading-hero">
-          <div className="cb-lobby-loading-emblem">
-            <span>&lt;/&gt;</span>
-          </div>
-          <div className="cb-lobby-loading-copy">
-            <span className="cb-lobby-loading-kicker">
-              <span className="cb-lobby-loading-status-dot" />
-              {i18n.t('Codebattle lobby')}
-            </span>
-            <h1>{i18n.t('Preparing your arena')}</h1>
-            <p>{i18n.t('Syncing live games, rankings, and challengers...')}</p>
-            <div className="cb-lobby-loading-progress">
-              <span />
-            </div>
-          </div>
-        </div>
         <div className="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2">
           <div className="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
             <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 cb-lobby-loading-main">

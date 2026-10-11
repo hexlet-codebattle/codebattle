@@ -220,23 +220,15 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   # `path` comes from the client and is shown to admins as is; `link` is the sanitized
-  # version that every lobby viewer gets: only public games and tournaments.
+  # version every lobby viewer gets. Access is checked when the link is opened
+  # (GameController.can_access_game?), so the lobby links every game and tournament.
   def presence_link(path) when is_binary(path) do
     cond do
-      match = Regex.run(~r{^/games/(\d+)/?$}, path) -> public_game_link(Enum.at(match, 1))
+      match = Regex.run(~r{^/games/(\d+)/?$}, path) -> "/games/#{Enum.at(match, 1)}"
       match = Regex.run(~r{^/tournaments/(\d+)/?$}, path) -> "/tournaments/#{Enum.at(match, 1)}"
       true -> nil
     end
   end
 
   def presence_link(_path), do: nil
-
-  defp public_game_link(game_id) do
-    with false <- FunWithFlags.enabled?(:user_only_see_own_games),
-         {:ok, %{visibility_type: visibility}} when visibility != "hidden" <- Game.Context.fetch_game(game_id) do
-      "/games/#{game_id}"
-    else
-      _ -> nil
-    end
-  end
 end

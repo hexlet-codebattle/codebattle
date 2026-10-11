@@ -3,12 +3,22 @@ import React from 'react';
 import i18n from 'i18next';
 
 import CopyButton from '../../components/CopyButton';
+import InviteQrCode from '../../components/InviteQrCode';
 
 interface WaitingOpponentInfoProps {
   gameUrl: string;
 }
 
+// Absolute join URL (origin + path) without query string or hash.
+export const buildJoinUrl = (gameUrl: string) => {
+  const url = new URL(gameUrl, window.location.origin);
+
+  return `${url.origin}${url.pathname}`;
+};
+
 function WaitingOpponentInfo({ gameUrl }: WaitingOpponentInfoProps) {
+  const joinUrl = buildJoinUrl(gameUrl);
+
   return (
     <div className="container py-3">
       <div className="col-xl-8 col-lg-10 col-12 mx-auto px-0">
@@ -39,6 +49,12 @@ function WaitingOpponentInfo({ gameUrl }: WaitingOpponentInfoProps) {
                 Cancel
               </button>
             </div>
+          </div>
+          <div className="d-flex flex-column align-items-center mt-4">
+            <InviteQrCode value={joinUrl} size={256} testId="game-invite-qr-code" />
+            <small className="mt-2 text-white-50">
+              {i18n.t('Scan the QR code to join the game')}
+            </small>
           </div>
         </div>
       </div>

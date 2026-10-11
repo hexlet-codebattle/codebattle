@@ -72,6 +72,7 @@
     "phoenix_live_view": "^1.2.12",
     "pixelmatch": "^8.0.0",
     "popper.js": "^1.16.1",
+    "qrcode.react": "^4.2.0",
     "qs": "^6.16.0",
     "quill-delta": "^5.1.0",
     "react": "^19.3.0",

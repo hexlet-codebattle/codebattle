@@ -35,6 +35,9 @@ interface ChatPlayer {
 
 const linkIconByState = { watching: faEye, playing: faGamepad, tournament: faTrophy };
 
+// "/games/324274" → "#324274"; links are sanitized server-side to /games/:id or /tournaments/:id
+const linkLabel = (link: string) => `#${link.split('/').pop()}`;
+
 interface UsersListProps {
   list: ChatPlayer[];
   title: string;
@@ -42,33 +45,41 @@ interface UsersListProps {
   mode?: string;
 }
 
+export function PlayerActivity({ player }: { player: ChatPlayer }) {
+  const icon = linkIconByState[player.currentState as keyof typeof linkIconByState];
+
+  if (!icon || !player.currentLink) {
+    return null;
+  }
+
+  return (
+    <a
+      href={player.currentLink}
+      className="ml-2 badge badge-pill cb-bg-highlight-panel text-white text-decoration-none"
+      title={i18n.t('Open')}
+      aria-label={`${i18n.t('Open')} ${player.currentLink}`}
+      data-testid={`player-activity-${player.id}`}
+    >
+      <FontAwesomeIcon icon={icon} className="mr-1" />
+      {linkLabel(player.currentLink)}
+    </a>
+  );
+}
+
 function UsersList({ list, title, displayMenu, mode }: UsersListProps) {
   return (
     <>
       {list.length !== 0 && <div>{`${i18n.t(title)}: `}</div>}
-      {list.map((player) => {
-        const icon = linkIconByState[player.currentState as keyof typeof linkIconByState];
-
-        return (
-          <div key={player.id} className="d-flex align-items-center mb-1">
-            <ChatUserInfo
-              mode={mode}
-              user={player.user}
-              displayMenu={displayMenu as ChatUserInfoDisplayMenu}
-            />
-            {icon && player.currentLink && (
-              <a
-                href={player.currentLink}
-                className="ml-2 text-muted"
-                title={i18n.t('Open')}
-                aria-label={i18n.t('Open')}
-              >
-                <FontAwesomeIcon icon={icon} />
-              </a>
-            )}
-          </div>
-        );
-      })}
+      {list.map((player) => (
+        <div key={player.id} className="d-flex align-items-center mb-1">
+          <ChatUserInfo
+            mode={mode}
+            user={player.user}
+            displayMenu={displayMenu as ChatUserInfoDisplayMenu}
+          />
+          <PlayerActivity player={player} />
+        </div>
+      ))}
     </>
   );
 }

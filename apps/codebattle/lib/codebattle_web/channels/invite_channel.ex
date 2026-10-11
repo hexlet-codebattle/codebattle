@@ -3,7 +3,6 @@ defmodule CodebattleWeb.InviteChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Invite
-  alias Codebattle.PubSub.Message
 
   def join("invites", _payload, socket) do
     current_user = socket.assigns.current_user
@@ -29,146 +28,37 @@ defmodule CodebattleWeb.InviteChannel do
   end
 
   def handle_in("invites:create", payload, socket) do
-    creator_id = socket.assigns.current_user.id
-    recipient_id = payload["recipient_id"] || raise "recipient is absent!"
-
-    if creator_id == recipient_id do
-      raise "Incorrect user for invite!"
-    end
-
-    if Invite.has_pending_invites?(creator_id, recipient_id) do
-      raise "Invite already created!"
-    end
-
-    level = payload["level"] || "elementary"
-    type = "public"
-    timeout_seconds = payload["timeout_seconds"] || 3600
-    task_id = payload["task_id"] || nil
-
-    game_params = %{
-      level: level,
-      type: type,
-      timeout_seconds: timeout_seconds
+    params = %{
+      recipient_id: payload["recipient_id"],
+      level: payload["level"],
+      timeout_seconds: payload["timeout_seconds"],
+      task_id: payload["task_id"]
     }
 
-    reply =
-      create_invite(%{
-        creator_id: creator_id,
-        recipient_id: recipient_id,
-        game_params: game_params,
-        task_id: task_id
-      })
-
-    {:reply, reply, socket}
+    case Invite.Actions.create(socket.assigns.current_user, params) do
+      {:ok, invite} -> {:reply, {:ok, %{invite: invite}}, socket}
+      {:error, reason} -> {:reply, {:error, %{reason: reason}}, socket}
+    end
   end
 
   def handle_in("invites:cancel", payload, socket) do
-    user_id = socket.assigns.current_user.id
+    user = socket.assigns.current_user
 
-    case Invite.cancel_invite(%{
-           id: payload["id"],
-           user_id: user_id
-         }) do
-      {:ok, invite} ->
-        data = %{
-          state: invite.state,
-          id: invite.id,
-          game_params: invite.game_params,
-          creator_id: invite.creator_id,
-          recipient_id: invite.recipient_id,
-          executor_id: user_id,
-          creator: invite.creator,
-          recipient: invite.recipient
-        }
-
-        broadcast_invite(
-          "invites:#{invite.creator_id}",
-          "invites:canceled",
-          %{invite: data}
-        )
-
-        broadcast_invite(
-          "invites:#{invite.recipient_id}",
-          "invites:canceled",
-          %{invite: data}
-        )
-
-        {:reply, {:ok, %{invite: data}}, socket}
-
-      {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
-
-      {:error, reason, invite} ->
-        data = invite_payload(invite, user_id)
-
-        broadcast_invite(
-          "invites:#{invite.creator_id}",
-          "invites:dropped",
-          %{invite: data}
-        )
-
-        broadcast_invite(
-          "invites:#{invite.recipient_id}",
-          "invites:dropped",
-          %{invite: data}
-        )
-
-        {:reply, {:error, %{reason: reason, invite: data}}, socket}
+    case Invite.Actions.cancel(payload["id"], user) do
+      {:ok, invite} -> {:reply, {:ok, Invite.Actions.payload(invite, user.id)}, socket}
+      {:error, reason} -> {:reply, {:error, %{reason: reason}}, socket}
     end
   end
 
   def handle_in("invites:accept", payload, socket) do
-    user_id = socket.assigns.current_user.id
+    user = socket.assigns.current_user
 
-    case Invite.accept_invite(%{
-           id: payload["id"],
-           recipient_id: user_id
-         }) do
-      {:ok, %{invite: invite, dropped_invites: dropped_invites}} ->
-        data = %{
-          state: invite.state,
-          id: invite.id,
-          game_id: invite.game_id,
-          game_params: invite.game_params,
-          creator_id: invite.creator_id,
-          recipient_id: invite.recipient_id,
-          executor_id: user_id,
-          creator: invite.creator,
-          recipient: invite.recipient
-        }
+    case Invite.Actions.accept(payload["id"], user) do
+      {:ok, invite} ->
+        {:reply, {:ok, Invite.Actions.payload(invite, user.id)}, socket}
 
-        broadcast_invite(
-          "invites:#{invite.creator_id}",
-          "invites:accepted",
-          %{invite: data}
-        )
-
-        broadcast_invite(
-          "invites:#{invite.recipient_id}",
-          "invites:accepted",
-          %{invite: data}
-        )
-
-        Enum.each(dropped_invites, fn invite ->
-          data = %{
-            state: invite.state,
-            id: invite.id
-          }
-
-          broadcast_invite(
-            "invites:#{invite.creator_id}",
-            "invites:dropped",
-            %{invite: data}
-          )
-
-          broadcast_invite(
-            "invites:#{invite.recipient_id}",
-            "invites:dropped",
-            %{invite: data}
-          )
-        end)
-
-        {:reply, {:ok, %{invite: data}}, socket}
+      {:error, reason, invite} ->
+        {:reply, {:error, Map.put(Invite.Actions.payload(invite, user.id), :reason, reason)}, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
@@ -177,62 +67,5 @@ defmodule CodebattleWeb.InviteChannel do
 
   def handle_in(_topic, _payload, socket) do
     {:noreply, socket}
-  end
-
-  defp create_invite(params) do
-    case Invite.create_invite(params) do
-      {:ok, invite} ->
-        data = %{
-          state: invite.state,
-          id: invite.id,
-          game_params: params.game_params,
-          creator_id: invite.creator_id,
-          recipient_id: invite.recipient_id,
-          executor_id: invite.creator_id,
-          creator: invite.creator,
-          recipient: invite.recipient
-        }
-
-        broadcast_invite(
-          "invites:#{invite.creator_id}",
-          "invites:created",
-          %{invite: data}
-        )
-
-        broadcast_invite(
-          "invites:#{invite.recipient_id}",
-          "invites:created",
-          %{invite: data}
-        )
-
-        {:ok, %{invite: invite}}
-
-      {:error, reason} ->
-        {:error, %{reason: reason}}
-    end
-  end
-
-  defp invite_payload(invite, executor_id) do
-    %{
-      state: invite.state,
-      id: invite.id,
-      game_id: invite.game_id,
-      game_params: invite.game_params,
-      creator_id: invite.creator_id,
-      recipient_id: invite.recipient_id,
-      executor_id: executor_id,
-      creator: invite.creator,
-      recipient: invite.recipient
-    }
-  end
-
-  defp broadcast_invite(topic, event, payload) do
-    message = %Message{
-      topic: topic,
-      event: event,
-      payload: payload
-    }
-
-    Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
   end
 end

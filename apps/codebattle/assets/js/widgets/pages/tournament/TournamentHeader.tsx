@@ -1,5 +1,6 @@
-import React, { memo, useContext, useMemo } from 'react';
+import React, { memo, useContext, useMemo, useState } from 'react';
 
+import { faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import moment from 'moment';
@@ -10,6 +11,7 @@ import { getRankingPoints, grades } from '@/config/grades';
 
 import i18next from '../../../i18n';
 import CopyButton from '../../components/CopyButton';
+import InviteQrCode from '../../components/InviteQrCode';
 import TournamentStates from '../../config/tournament';
 import TournamentTypes from '../../config/tournamentTypes';
 import { localizeTournamentName } from '../../utils/localizeTournamentName';
@@ -222,6 +224,7 @@ function TournamentHeader({
     [state, breakState, hideResults],
   );
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
+  const [showAccessQr, setShowAccessQr] = useState(false);
 
   const stateClassName = cn(
     'badge mr-2',
@@ -243,7 +246,11 @@ function TournamentHeader({
           'badge-primary': hideResults && state === TournamentStates.finished,
         },
   );
-  const copyBtnClassName = cn('btn btn-sm rounded-right', {
+  const copyBtnClassName = cn('btn btn-sm', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
+  });
+  const qrBtnClassName = cn('btn btn-sm rounded-right', {
     'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
@@ -382,7 +389,7 @@ function TournamentHeader({
             {canModerate && !streamMode && accessType === 'token' && (
               <div
                 className={cn(
-                  'd-flex justify-content-end mt-2 pt-2',
+                  'd-flex flex-column mt-2 pt-2',
                   'cb-grid-divider overflow-auto border-top cb-border-color',
                 )}
               >
@@ -397,7 +404,26 @@ function TournamentHeader({
                     value={tournamentAccessUrl}
                     disabled={!isLive || !isOnline}
                   />
+                  <button
+                    type="button"
+                    className={qrBtnClassName}
+                    onClick={() => setShowAccessQr((value) => !value)}
+                    aria-expanded={showAccessQr}
+                    data-testid="tournament-access-qr-toggle"
+                  >
+                    <FontAwesomeIcon icon={faQrcode} className="mr-1" />
+                    {showAccessQr ? i18next.t('Hide QR') : i18next.t('Show QR')}
+                  </button>
                 </div>
+                {showAccessQr && (
+                  <div className="d-flex justify-content-center mt-3">
+                    <InviteQrCode
+                      value={tournamentAccessUrl}
+                      size={280}
+                      testId="tournament-access-qr-code"
+                    />
+                  </div>
+                )}
               </div>
             )}
             {showDeadTournamentWarning && (

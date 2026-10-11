@@ -9,6 +9,8 @@ defmodule CodebattleWeb.Router do
   alias CodebattleWeb.Admin.TournamentDuplicatorController
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.MaintenanceMode
+  alias CodebattleWeb.Plugs.PublicApi.RateLimit
+  alias CodebattleWeb.Plugs.PublicApi.TokenAuth
   alias CodebattleWeb.Plugs.RescrictAccess
 
   require Logger
@@ -69,9 +71,16 @@ defmodule CodebattleWeb.Router do
   pipeline :public_api_v1 do
     plug(:accepts, ["json"])
     plug(:put_secure_browser_headers)
-    plug(CodebattleWeb.Plugs.PublicApi.TokenAuth)
-    plug(CodebattleWeb.Plugs.PublicApi.RateLimit)
+    plug(TokenAuth)
+    plug(RateLimit)
     plug(CodebattleWeb.Plugs.PublicApi.RequireJson)
+  end
+
+  # The SSE event stream: same auth and limits, but clients send Accept: text/event-stream.
+  pipeline :public_api_v1_stream do
+    plug(:put_secure_browser_headers)
+    plug(TokenAuth)
+    plug(RateLimit)
   end
 
   pipeline :mounted_apps do
@@ -311,6 +320,12 @@ defmodule CodebattleWeb.Router do
     get("/llms.txt", DocsController, :llms_txt)
   end
 
+  scope "/public_api/v1", CodebattleWeb.PublicApi.V1, as: :public_api_v1_stream do
+    pipe_through(:public_api_v1_stream)
+
+    get("/me/events", EventController, :stream)
+  end
+
   scope "/public_api/v1", CodebattleWeb.PublicApi.V1, as: :public_api_v1 do
     pipe_through(:public_api_v1)
 
@@ -330,6 +345,13 @@ defmodule CodebattleWeb.Router do
 
     post("/games", GameController, :create)
     post("/games/:id/cancel", GameController, :cancel)
+
+    get("/me/invites", InviteController, :index)
+    post("/invites", InviteController, :create)
+    post("/invites/:id/accept", InviteController, :accept)
+    post("/invites/:id/cancel", InviteController, :cancel)
+
+    get("/users/online", UserController, :online)
   end
 
   scope "/api", CodebattleWeb.Api, as: :api do

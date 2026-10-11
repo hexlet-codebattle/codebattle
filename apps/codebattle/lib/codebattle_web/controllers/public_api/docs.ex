@@ -18,8 +18,14 @@ defmodule CodebattleWeb.PublicApi.Docs do
   @version :erlang.phash2(@guide <> @spec_json)
 
   @site "https://codebattle.hexlet.io"
-  @groups [{"me", "Me"}, {"tournaments", "Tournaments"}, {"games", "Games"}]
-  @objects ~w(Me Game GamePlayer Tournament RankingEntry Error)
+  @groups [
+    {"me", "Me"},
+    {"tournaments", "Tournaments"},
+    {"games", "Games"},
+    {"invites", "Invites"},
+    {"users", "Users"}
+  ]
+  @objects ~w(Me Game GamePlayer Tournament RankingEntry Invite OnlineUser Error)
   @sample_time "2026-10-10T19:03:18Z"
 
   @spec markdown() :: String.t()
@@ -103,11 +109,14 @@ defmodule CodebattleWeb.PublicApi.Docs do
     query = Enum.filter(params, &(&1["in"] == "query"))
     body_schema = get_in(op, ["requestBody", "content", "application/json", "schema"])
 
-    {status, response} =
+    {status, content} =
       op["responses"]
       |> pairs()
       |> Enum.find(fn {code, _} -> String.starts_with?(code, "2") end)
-      |> then(fn {code, resp} -> {code, get_in(resolve(spec, resp), ["content", "application/json"])} end)
+      |> then(fn {code, resp} -> {code, get_in(resolve(spec, resp), ["content"]) || %{}} end)
+
+    response = content["application/json"]
+    stream = content["text/event-stream"]
 
     errors =
       op["responses"]
@@ -123,14 +132,21 @@ defmodule CodebattleWeb.PublicApi.Docs do
       "Scope: `#{scope(op)}`",
       query != [] && "**Query parameters**\n\n" <> param_table(query),
       body_schema && "**Request body**\n\n" <> field_table(spec, resolve(spec, body_schema), true),
-      "**Example request**\n\n```bash\n" <> curl(spec, path, method, query, body_schema) <> "\n```",
-      response && response["schema"] &&
-        "**Response `#{status}`**\n\n```json\n" <> pretty(response_example(spec, response)) <> "\n```",
+      "**Example request**\n\n```bash\n" <> curl(spec, path, method, query, body_schema, stream != nil) <> "\n```",
+      response_block(spec, status, response, stream),
       errors != [] && "Errors: " <> Enum.map_join(errors, ", ", &"`#{&1}`")
     ]
     |> Enum.filter(&(is_binary(&1) and &1 != ""))
     |> Enum.join("\n\n")
   end
+
+  defp response_block(_spec, status, _response, %{"example" => example}),
+    do: "**Response `#{status}`** (`text/event-stream`, stays open)\n\n```text\n" <> example <> "\n```"
+
+  defp response_block(spec, status, %{"schema" => _} = response, _stream),
+    do: "**Response `#{status}`**\n\n```json\n" <> pretty(response_example(spec, response)) <> "\n```"
+
+  defp response_block(_spec, _status, _response, _stream), do: nil
 
   defp scope(op), do: op |> get_in(["security"]) |> List.first() |> Map.get("bearerAuth") |> List.first()
 
@@ -143,7 +159,7 @@ defmodule CodebattleWeb.PublicApi.Docs do
     "| Name | Type | Description |\n|------|------|-------------|\n" <> rows
   end
 
-  defp curl(spec, path, method, query, body_schema) do
+  defp curl(spec, path, method, query, body_schema, stream?) do
     path = String.replace(path, "{id}", "123")
 
     qs =
@@ -157,9 +173,14 @@ defmodule CodebattleWeb.PublicApi.Docs do
 
     lines =
       [
-        if(method == "GET", do: ~s(curl -s "#{url}"), else: ~s(curl -s -X #{method} "#{url}")),
+        cond do
+          stream? -> ~s(curl -sN "#{url}")
+          method == "GET" -> ~s(curl -s "#{url}")
+          true -> ~s(curl -s -X #{method} "#{url}")
+        end,
         ~s(  -H "Authorization: Bearer $CODEBATTLE_TOKEN")
       ] ++
+        if(stream?, do: [~s(  -H "Accept: text/event-stream")], else: []) ++
         if body_schema do
           body = spec |> example(body_schema, :required) |> Jason.encode!()
           [~s(  -H "Content-Type: application/json"), "  -d '#{body}'"]

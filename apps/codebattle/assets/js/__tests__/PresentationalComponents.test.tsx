@@ -48,7 +48,10 @@ describe('presentational components', () => {
     const { container } = render(<LobbyLoading />);
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading...');
-    expect(screen.getByText('Preparing your arena')).toBeInTheDocument();
+    expect(screen.queryByText('Preparing your arena')).not.toBeInTheDocument();
+    expect(container.querySelector('[aria-hidden="true"]')).toContainElement(
+      container.querySelector('.cb-text-skeleton'),
+    );
     expect(container.querySelectorAll('.cb-text-skeleton')).toHaveLength(18);
   });
 
