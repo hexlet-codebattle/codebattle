@@ -197,6 +197,39 @@ defmodule Codebattle.Tournament.LadderTest do
       assert [%Player{id: 1}, %Player{id: 22}] = hd(pairs)
     end
 
+    test "a small field keeps pairing every tick once everyone has played everyone" do
+      for players_count <- [3, 4, 5] do
+        tournament = build_live_tournament(%{players_count: players_count, rounds_limit: 12})
+        put_players(tournament, 1..players_count)
+
+        Enum.reduce(0..11, tournament, fn tick, tournament ->
+          {tournament, pairs} = Ladder.build_round_pairs(%{tournament | current_round_position: tick})
+
+          human_ids = pairs |> List.flatten() |> Enum.reject(& &1.is_bot) |> Enum.map(& &1.id)
+          bot_pairs = Enum.count(pairs, fn [_a, b] -> b.is_bot end)
+
+          # Every player gets a game each tick; the bot only covers an odd field.
+          assert Enum.sort(human_ids) == Enum.to_list(1..players_count)
+          assert bot_pairs == rem(players_count, 2)
+          tournament
+        end)
+      end
+    end
+
+    test "with an odd small field the bye rotates before anyone gets it twice" do
+      tournament = build_live_tournament(%{players_count: 3, rounds_limit: 12})
+      put_players(tournament, 1..3)
+
+      {_tournament, bye_ids} =
+        Enum.reduce(1..3, {tournament, []}, fn tick, {tournament, bye_ids} ->
+          {tournament, pairs} = Ladder.build_round_pairs(%{tournament | current_round_position: tick})
+          [[bye_player, _bot]] = Enum.filter(pairs, fn [_a, b] -> b.is_bot end)
+          {tournament, [bye_player.id | bye_ids]}
+        end)
+
+      assert Enum.sort(bye_ids) == [1, 2, 3]
+    end
+
     test "pairs a large pool with bounded matchmaking work" do
       tournament = build_live_tournament(%{players_count: 1_000})
       put_players(tournament, 1..1_000)
