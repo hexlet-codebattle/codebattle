@@ -27,7 +27,6 @@ import MatchConfirmationModal from './MatchConfirmationModal';
 import PlayersRankingPanel from './PlayersRankingPanel';
 import StartRoundConfirmationModal from './StartRoundConfirmationModal';
 import TournamentChat from './TournamentChat';
-import TournamentClanTable from './TournamentClanTable';
 import TournamentHeader from './TournamentHeader';
 
 // The tournament redux state is intentionally loosely typed (Record with an index
@@ -284,8 +283,7 @@ function Tournament() {
     return canModerateTournament || (tournament.moderatorIds || []).includes(currentUserId);
   }, [currentUserId, canModerateTournament, tournament.moderatorIds]);
   const hiddenSidePanel =
-    streamMode ||
-    (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
+    streamMode || (tournament.state === TournamentStates.finished && !tournament.useChat);
 
   const panelClassName = cn('mb-2', {
     'container-fluid': !streamMode,
@@ -586,8 +584,7 @@ function Tournament() {
                   showAdminPane={false}
                 />
                 {tournament.useChat && <TournamentChat />}
-                {tournament.useClan && <TournamentClanTable />}
-                {tournament.state !== TournamentStates.finished && !tournament.useClan && (
+                {tournament.state !== TournamentStates.finished && (
                   <PlayersRankingPanel
                     canModerate={canModerate}
                     playersCount={tournament.playersCount}

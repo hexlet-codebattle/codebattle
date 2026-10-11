@@ -420,6 +420,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   def get_wins_count_by_user(tournament) do
     __MODULE__
     |> where([tr], tr.tournament_id == ^tournament.id and tr.result_percent == ^Decimal.new("100.0"))
+    |> where([tr], tr.was_cheated == false)
     |> group_by([tr], tr.user_id)
     |> select([tr], {tr.user_id, count(tr.id)})
     |> Repo.all()
@@ -534,36 +535,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     end)
   end
 
-  def get_user_ranking(%{use_clan: false} = tournament) do
-    query =
-      from(r in __MODULE__,
-        left_join: c in Clan,
-        on: r.clan_id == c.id,
-        select: %{
-          id: r.user_id,
-          name: r.user_name,
-          lang: max(r.user_lang),
-          clan_id: c.id,
-          clan: c.name,
-          score: sum(r.score),
-          place: over(row_number(), :overall_partition)
-        },
-        where: r.tournament_id == ^tournament.id,
-        where: r.was_cheated == false,
-        group_by: [r.user_id, r.user_name, c.id],
-        # tiebreak: points desc, then less total time, then user_id asc (= better semifinal place)
-        order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id]]]
-      )
-
-    query
-    |> Repo.all()
-    |> Enum.reduce(%{}, fn %{id: id} = value, acc ->
-      Map.put(acc, id, value)
-    end)
-  end
-
-  def get_user_ranking(%{use_clan: true} = tournament) do
+  def get_user_ranking(tournament) do
     query =
       from(r in __MODULE__,
         left_join: c in Clan,
@@ -617,6 +589,28 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> Enum.reduce(%{}, fn %{id: id} = value, acc ->
       Map.put(acc, id, value)
     end)
+  end
+
+  @doc """
+  Per-user totals over all rounds in one query: the sum of the round deltas of
+  `get_user_round_delta/2` and the wins of `get_wins_count_by_user/1`.
+  """
+  def get_user_totals(tournament) do
+    from(r in __MODULE__,
+      select: {
+        r.user_id,
+        %{
+          score: sum(r.score),
+          total_duration_sec: sum(r.duration_sec),
+          wins_count: filter(count(r.id), r.result_percent == ^Decimal.new("100.0"))
+        }
+      },
+      where: r.tournament_id == ^tournament.id,
+      where: r.was_cheated == false,
+      group_by: r.user_id
+    )
+    |> Repo.all()
+    |> Map.new()
   end
 
   def get_user_round_delta(tournament, round_position) do

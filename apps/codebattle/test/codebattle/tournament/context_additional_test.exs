@@ -66,9 +66,12 @@ defmodule Codebattle.Tournament.ContextAdditionalTest do
     Tournament.Players.put_player(with_tables, player)
     Tournament.Matches.put_match(with_tables, match)
 
-    snapshot = Tournament.Context.upsert!(with_tables, :with_ets)
-    assert snapshot.players[creator.id].id == creator.id
-    assert snapshot.matches[8].game_id == 80
+    # The ETS-backed save keeps the snapshot maps out of the returned struct.
+    saved = Tournament.Context.upsert!(with_tables, :with_ets)
+    assert {saved.players, saved.matches} == {%{}, %{}}
+    snapshot = Tournament.Context.get_from_db!(tournament.id)
+    assert Helpers.get_player(snapshot, creator.id).id == creator.id
+    assert Helpers.get_match(snapshot, 8).game_id == 80
 
     # The server's older struct must not undo the latest ETS snapshot when it
     # saves only scalar state, e.g. when opening the next Ladder bucket.

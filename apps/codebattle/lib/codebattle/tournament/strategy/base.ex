@@ -4,7 +4,6 @@ defmodule Codebattle.Tournament.Base do
   Defines interface for tournament type
   """
 
-  alias Codebattle.Event
   alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.UserGameReport
@@ -43,21 +42,11 @@ defmodule Codebattle.Tournament.Base do
 
         Tournament.Ranking.add_new_player(tournament, tournament_player)
 
-        if tournament.use_clan do
-          Tournament.Clans.add_players_clan(tournament, tournament_player)
-        end
-
         Map.put(tournament, :players_count, players_count(tournament))
       end
 
       def add_players(tournament, %{users: users}) do
         Enum.reduce(users, tournament, &add_player(&2, &1))
-      end
-
-      defp maybe_add_player_clan(tournament, player) do
-        if tournament.use_clan do
-          Tournament.Clans.add_players_clan(tournament, player)
-        end
       end
 
       def join(%{state: "waiting_participants"} = tournament, %{users: users} = params) do
@@ -73,7 +62,7 @@ defmodule Codebattle.Tournament.Base do
         else
           tournament
           |> add_player(player)
-          |> db_save!(:with_ets)
+          |> request_persist()
         end
       end
 
@@ -85,21 +74,23 @@ defmodule Codebattle.Tournament.Base do
         else
           tournament
           |> add_player(player)
-          |> db_save!(:with_ets)
+          |> request_persist()
         end
       end
 
       # Ladder is continuous pool-matchmaking: a player joining an in-progress tournament is
       # added (to ETS) as an active player and gets picked up by `idle_pool/1` on the next
-      # matchmaking tick, which also persists the join via its own `db_save!`. No round
-      # synchronization or DB write needed here.
+      # matchmaking tick. The tick saves only scalar fields, so the join is persisted by the
+      # debounced snapshot like any other join.
       def join(%{state: "active", type: "ladder"} = tournament, params) do
         player = Map.put(params.user, :lang, params.user.lang)
 
         if player?(tournament, player.id) or players_count(tournament) >= tournament.players_limit do
           tournament
         else
-          add_player(tournament, player)
+          tournament
+          |> add_player(player)
+          |> request_persist()
         end
       end
 
@@ -115,7 +106,7 @@ defmodule Codebattle.Tournament.Base do
 
         tournament
         |> Map.put(:players_count, players_count(tournament))
-        |> db_save!(:with_ets)
+        |> request_persist()
         |> release_excluded_player_match(user_id)
       end
 
@@ -198,7 +189,8 @@ defmodule Codebattle.Tournament.Base do
         if player do
           new_player = %{player | state: "banned"}
           cheater_ids = Enum.uniq([player.id | tournament.cheater_ids || []])
-          new_tournament = update_struct(tournament, %{cheater_ids: cheater_ids})
+          # A cheater changes past results, so no round stays settled.
+          new_tournament = update_struct(tournament, %{cheater_ids: cheater_ids, results_synced_round_position: -1})
 
           Tournament.Players.put_player(new_tournament, new_player)
           UserGameReport.mark_as_confirmed(new_tournament.id, player.id)
@@ -210,7 +202,7 @@ defmodule Codebattle.Tournament.Base do
           })
 
           new_tournament
-          |> db_save!(:with_ets)
+          |> request_persist()
           |> tap(&broadcast_tournament_update/1)
           |> release_excluded_player_match(player.id)
         else
@@ -228,7 +220,7 @@ defmodule Codebattle.Tournament.Base do
 
         new_player = %{player | state: new_state}
         cheater_ids = List.delete(tournament.cheater_ids || [], player.id)
-        new_tournament = update_struct(tournament, %{cheater_ids: cheater_ids})
+        new_tournament = update_struct(tournament, %{cheater_ids: cheater_ids, results_synced_round_position: -1})
         Tournament.Players.put_player(new_tournament, new_player)
 
         Codebattle.PubSub.broadcast("tournament:player:unbanned", %{
@@ -237,7 +229,7 @@ defmodule Codebattle.Tournament.Base do
           game_ids: game_ids
         })
 
-        new_tournament |> db_save!(:with_ets) |> tap(&broadcast_tournament_update/1)
+        new_tournament |> request_persist() |> tap(&broadcast_tournament_update/1)
       end
 
       def toggle_ban_player(tournament, %{user_id: user_id}) do
@@ -928,6 +920,19 @@ defmodule Codebattle.Tournament.Base do
 
       def db_save!(tournament, type \\ nil), do: Tournament.Context.upsert!(tournament, type)
 
+      # Asks the tournament server (the caller of every strategy event) to write the full
+      # snapshot after its debounce window. Scalar fields changed with the same event are
+      # in the server state by then and are saved with it.
+      # One message per server turn is enough: a batch join of N players must not queue N.
+      def request_persist(tournament) do
+        if !Process.get(:tournament_persist_requested) do
+          Process.put(:tournament_persist_requested, true)
+          send(self(), :persist_requested)
+        end
+
+        tournament
+      end
+
       def build_and_save_round!(tournament) do
         round =
           tournament
@@ -948,7 +953,13 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def finish_tournament(tournament) do
-        if get_matches(tournament, "playing") == [] do
+        if playing_matches?(tournament) do
+          finish_all_playing_matches(tournament)
+          timeout_ms = Application.get_env(:codebattle, :tournament_finish_timeout_ms)
+          Process.send_after(self(), :finish_tournament_force, timeout_ms)
+
+          update_struct(tournament, %{state: "timeout", finished_at: DateTime.utc_now(:second)})
+        else
           tournament
           |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
           |> compute_final_standings()
@@ -963,12 +974,6 @@ defmodule Codebattle.Tournament.Base do
 
             tournament
           end)
-        else
-          finish_all_playing_matches(tournament)
-          timeout_ms = Application.get_env(:codebattle, :tournament_finish_timeout_ms)
-          Process.send_after(self(), :finish_tournament_force, timeout_ms)
-
-          update_struct(tournament, %{state: "timeout", finished_at: DateTime.utc_now(:second)})
         end
       end
 
@@ -1020,7 +1025,9 @@ defmodule Codebattle.Tournament.Base do
       defp reset_players_for_retry(tournament) do
         players =
           case get_players(tournament) do
-            [] -> Map.values(tournament.players)
+            # A freshly restarted server has empty ETS and keeps no snapshot maps in its
+            # state: the roster comes from the persisted snapshot.
+            [] -> tournament.id |> Tournament.Context.get_from_db!() |> Map.get(:players, %{}) |> Map.values()
             ets_players -> ets_players
           end
 
@@ -1397,12 +1404,6 @@ defmodule Codebattle.Tournament.Base do
           end
         end)
 
-        tournament
-      end
-
-      defp maybe_save_event_results(%{use_clan: true, event_id: event_id} = tournament) when not is_nil(event_id) do
-        Event.EventClanResult.save_results(tournament)
-        Event.EventResult.save_results(tournament)
         tournament
       end
 

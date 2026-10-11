@@ -209,37 +209,41 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
 
   describe "/api/v1/events/:id/leaderboard with event reuslts" do
     setup ctx do
-      tournament = insert(:tournament, use_clan: true, event_id: ctx.event.id)
+      # Stored event standings (written by clan tournaments before use_clan was removed).
+      Codebattle.Repo.insert_all(Codebattle.Event.EventClanResult, [
+        %{event_id: ctx.event.id, clan_id: ctx.clan1.id, players_count: 2, place: 1, score: 40},
+        %{event_id: ctx.event.id, clan_id: ctx.clan2.id, players_count: 1, place: 2, score: 30}
+      ])
 
-      insert(:tournament_result,
-        tournament_id: tournament.id,
-        user_id: ctx.user1.id,
-        user_name: ctx.user1.name,
-        clan_id: ctx.user1.clan_id,
-        duration_sec: 2,
-        score: 20
-      )
-
-      insert(:tournament_result,
-        tournament_id: tournament.id,
-        user_id: ctx.user2.id,
-        user_name: ctx.user2.name,
-        clan_id: ctx.user2.clan_id,
-        duration_sec: 1,
-        score: 20
-      )
-
-      insert(:tournament_result,
-        tournament_id: tournament.id,
-        user_id: ctx.user3.id,
-        user_name: ctx.user3.name,
-        clan_id: ctx.user3.clan_id,
-        duration_sec: 10,
-        score: 30
-      )
-
-      Codebattle.Event.EventClanResult.save_results(tournament)
-      Codebattle.Event.EventResult.save_results(tournament)
+      Codebattle.Repo.insert_all(Codebattle.Event.EventResult, [
+        %{
+          event_id: ctx.event.id,
+          clan_id: ctx.clan2.id,
+          user_id: ctx.user3.id,
+          user_name: "u3",
+          place: 1,
+          clan_place: 1,
+          score: 30
+        },
+        %{
+          event_id: ctx.event.id,
+          clan_id: ctx.clan1.id,
+          user_id: ctx.user2.id,
+          user_name: "u2",
+          place: 2,
+          clan_place: 1,
+          score: 20
+        },
+        %{
+          event_id: ctx.event.id,
+          clan_id: ctx.clan1.id,
+          user_id: ctx.user1.id,
+          user_name: "u1",
+          place: 3,
+          clan_place: 2,
+          score: 20
+        }
+      ])
 
       ctx
     end

@@ -159,7 +159,7 @@ defmodule CodebattleWeb.ChatChannel do
   defp can_delete_any_message?(_chat_type, user), do: Codebattle.User.admin?(user)
 
   defp tournament_moderator?(tournament_id, user) do
-    case Codebattle.Tournament.Context.get(tournament_id) do
+    case Codebattle.Tournament.Context.get_info(tournament_id) do
       nil -> false
       tournament -> Codebattle.Tournament.Helpers.can_moderate?(tournament, user)
     end

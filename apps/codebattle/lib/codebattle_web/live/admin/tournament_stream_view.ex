@@ -26,6 +26,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentStreamView do
     if connected?(socket) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:matches")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
       # Drive the "round ends in" countdown.
       Process.send_after(self(), :tick, 1000)

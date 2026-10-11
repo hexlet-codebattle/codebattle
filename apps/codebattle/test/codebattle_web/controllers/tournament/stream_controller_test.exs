@@ -222,6 +222,23 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
     end
   end
 
+  describe "build_json_state/1 — clans" do
+    test "lists the clans of the shown players with their names" do
+      clan = insert(:clan, name: "clan-a", long_name: "Clan A")
+
+      players = %{
+        1 => struct(Tournament.Player, %{id: 1, name: "p1", place: 1, clan_id: clan.id, clan: "clan-a"}),
+        2 => struct(Tournament.Player, %{id: 2, name: "p2", place: 2})
+      }
+
+      state = StreamController.build_json_state(swiss(players, %{}))
+
+      assert state.clans == %{to_string(clan.id) => %{name: "clan-a", long_name: "Clan A"}}
+      assert %{clan_id: clan_id, clan: "clan-a"} = Enum.find(state.players, &(&1.id == "1"))
+      assert clan_id == to_string(clan.id)
+    end
+  end
+
   defp swiss(players, attrs) do
     base = %{
       id: System.unique_integer([:positive]),
@@ -230,7 +247,6 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
       current_round_position: 0,
       break_state: "off",
       rounds_limit: 8,
-      use_clan: false,
       players: players,
       players_table: nil,
       matches_table: nil

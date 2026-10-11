@@ -27,7 +27,6 @@ defmodule Codebattle.Tournament.HelperTest do
         "ranking_type" => "by_clan",
         "type" => "swiss",
         "state" => "waiting_participants",
-        "use_clan" => "true",
         "rounds_limit" => "3",
         "players_limit" => 200
       })

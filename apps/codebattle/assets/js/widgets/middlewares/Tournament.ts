@@ -60,7 +60,6 @@ const initTournamentChannel = (currentChannel: Channel) => (dispatch: any) => {
         topPlayerIds: response.topPlayerIds || [],
         matches: {},
         ranking: response.ranking ? camelizeKeys(response.ranking) : { entries: [] },
-        clans: response.clans || {},
         players: {},
         channel: { online: true },
         playersPageNumber: 1,
@@ -179,7 +178,6 @@ export const connectToTournament = (newTournamentId: number) => (dispatch: any, 
     dispatch(
       actions.updateTournamentData({
         ranking: response.ranking,
-        clans: response.clans,
       }),
     );
   };

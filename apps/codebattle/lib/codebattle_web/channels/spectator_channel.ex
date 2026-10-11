@@ -9,10 +9,9 @@ defmodule CodebattleWeb.SpectatorChannel do
     player_id = String.to_integer(player_id)
     tournament_id = payload["tournament_id"]
 
-    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{player_id}")
-
-    with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
+    with tournament when not is_nil(tournament) <- Tournament.Context.get_info(tournament_id),
          true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
+      Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{player_id}")
       game_id = Tournament.Helpers.get_active_game_id(tournament, player_id)
       matches = Tournament.Helpers.get_matches_by_players(tournament, [player_id])
 

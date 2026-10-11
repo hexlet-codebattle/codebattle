@@ -63,6 +63,36 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
     end
   end
 
+  @doc """
+  Sets every player's score, time and wins from all-round `totals` (see
+  `TournamentResult.get_user_totals/1`) and rebuilds the ranking with one sort.
+  """
+  def set_ranking_from_totals(tournament, totals) do
+    round_position = tournament.current_round_position
+
+    tournament
+    |> Players.get_players()
+    |> Enum.each(fn player ->
+      total = Map.get(totals, player.id, %{})
+
+      # place is reset like in the full replay: players left out of the ranking (banned,
+      # bots) must not keep a stale place; ranked players get theirs right below.
+      Players.put_player(tournament, %{
+        player
+        | score: Map.get(total, :score) || 0,
+          total_duration_sec: Map.get(total, :total_duration_sec) || 0,
+          wins_count: Map.get(total, :wins_count) || 0,
+          place: 0,
+          last_ranked_round_position: round_position
+      })
+    end)
+
+    ranking = build_ranking(tournament)
+    set_places_with_score_to_players(tournament, ranking)
+    Ranking.put_ranking(tournament, ranking)
+    tournament
+  end
+
   def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
     place = Ranking.next_place(tournament)
 

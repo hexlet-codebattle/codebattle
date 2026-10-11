@@ -389,7 +389,7 @@ defmodule CodebattleWeb.GameController do
     do: Map.put(game_params, :hide_banned_player_controls, true)
 
   defp maybe_put_tournament_player_restrictions(game_params, game, _user) do
-    tournament = Tournament.Context.get(game.tournament_id)
+    tournament = Tournament.Context.get_info(game.tournament_id)
 
     Map.put(
       game_params,

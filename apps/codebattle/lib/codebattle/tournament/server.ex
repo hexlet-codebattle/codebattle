@@ -33,7 +33,6 @@ defmodule Codebattle.Tournament.Server do
   ]
 
   @virtual_fields [
-    :clans_table,
     :matches_table,
     :players_table,
     :ranking_table,
@@ -47,11 +46,19 @@ defmodule Codebattle.Tournament.Server do
     :players_count,
     :event_ranking,
     :task_ids,
-    :current_round_timeout_seconds
+    :current_round_timeout_seconds,
+    :results_synced_round_position
   ]
   # API
   def start_link(tournament_id) do
     GenServer.start_link(__MODULE__, tournament_id, name: server_name(tournament_id))
+  end
+
+  @doc "Writes a pending debounced snapshot now (before a graceful stop)."
+  def flush_persist(id) do
+    GenServer.call(server_name(id), :flush_persist, 20_000)
+  catch
+    :exit, _reason -> :ok
   end
 
   def get_tournament_info(id) do
@@ -189,19 +196,22 @@ defmodule Codebattle.Tournament.Server do
     matches_table = Tournament.Matches.create_table(tournament_id)
     tasks_table = Tournament.Tasks.create_table(tournament_id)
     ranking_table = Tournament.Ranking.create_table(tournament_id)
-    clans_table = Tournament.Clans.create_table(tournament_id)
 
     Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
 
+    db_tournament = Tournament.Context.get_from_db!(tournament_id)
+    # Players live in ETS; the jsonb snapshot maps are kept out of the state so that
+    # get_tournament calls and task closures don't copy them.
+    snapshot_players_count = map_size(db_tournament.players || %{})
+
     tournament =
-      tournament_id
-      |> Tournament.Context.get_from_db!()
+      db_tournament
+      |> Map.merge(%{players: %{}, matches: %{}})
       |> Tournament.Context.mark_as_live()
       |> Map.put(:matches_table, matches_table)
       |> Map.put(:players_table, players_table)
       |> Map.put(:ranking_table, ranking_table)
       |> Map.put(:tasks_table, tasks_table)
-      |> Map.put(:clans_table, clans_table)
 
     if tournament.grade != "open" and tournament.state == "waiting_participants" do
       time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
@@ -221,7 +231,9 @@ defmodule Codebattle.Tournament.Server do
        break_timer_expired: false,
        next_matchmaking_tick_at: nil,
        matchmaking_timer_ref: nil,
-       matchmaking_timer_kind: nil
+       matchmaking_timer_kind: nil,
+       persist_timer_ref: nil,
+       snapshot_players_count: snapshot_players_count
      }}
   end
 
@@ -249,6 +261,10 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def handle_call(:flush_persist, _from, state) do
+    {:reply, :ok, flush_pending_persist(state)}
+  end
+
   def handle_call(:freeze, _from, state) do
     {:reply, :ok, %{state | frozen: true}}
   end
@@ -258,6 +274,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_call(:export_state, _from, state) do
+    state = flush_pending_persist(state)
     tournament = state.tournament
 
     snapshot = %{
@@ -267,7 +284,6 @@ defmodule Codebattle.Tournament.Server do
         matches: safe_tab2list(tournament.matches_table),
         tasks: safe_tab2list(tournament.tasks_table),
         ranking: safe_tab2list(tournament.ranking_table),
-        clans: safe_tab2list(tournament.clans_table),
         tournament_info_cache: safe_info_cache(tournament.id)
       }
     }
@@ -396,7 +412,7 @@ defmodule Codebattle.Tournament.Server do
     if state.frozen do
       defer_message(:start_grade_tournament, "start_grade_tournament", state)
     else
-      maybe_start_grade_tournament(tournament)
+      maybe_start_grade_tournament(tournament, Map.get(state, :snapshot_players_count, 0))
       {:noreply, %{state | tournament: tournament}}
     end
   end
@@ -598,6 +614,23 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  # Join/leave/ban change only ETS; the full jsonb snapshot is written at most once per
+  # debounce window instead of once per event (a batch join is a single save).
+  def handle_info(:persist_requested, state) do
+    Process.delete(:tournament_persist_requested)
+
+    if Map.get(state, :persist_timer_ref) do
+      {:noreply, state}
+    else
+      ref = Process.send_after(self(), :persist_snapshot, persist_debounce_ms())
+      {:noreply, Map.put(state, :persist_timer_ref, ref)}
+    end
+  end
+
+  def handle_info(:persist_snapshot, state) do
+    {:noreply, persist_snapshot(%{state | persist_timer_ref: nil})}
+  end
+
   def handle_info(:terminate, %{tournament: tournament} = state) do
     Tournament.GlobalSupervisor.terminate_tournament_async(tournament.id)
     {:noreply, state}
@@ -626,15 +659,15 @@ defmodule Codebattle.Tournament.Server do
 
   # Only a tournament still waiting may auto-start/cancel. players_count is virtual and
   # is 0 right after a boot/crash restore, so count from ETS and the persisted snapshot.
-  defp maybe_start_grade_tournament(%{state: "waiting_participants"} = tournament) do
-    if grade_players_count(tournament) > 0 do
+  defp maybe_start_grade_tournament(%{state: "waiting_participants"} = tournament, snapshot_players_count) do
+    if max(players_count(tournament), snapshot_players_count) > 0 do
       cast_event(tournament.id, :start, %{})
     else
       cast_event(tournament.id, :cancel, %{})
     end
   end
 
-  defp maybe_start_grade_tournament(_tournament), do: :noop
+  defp maybe_start_grade_tournament(_tournament, _snapshot_players_count), do: :noop
 
   defp retry_missing_match(%{payload: payload} = message, %{tournament: tournament} = state) do
     retries = Map.get(message, :retries, 0)
@@ -654,10 +687,6 @@ defmodule Codebattle.Tournament.Server do
       Logger.error("Tournament #{tournament.id}: dropping game finish for unknown match #{inspect(payload.ref)}")
       {:noreply, state}
     end
-  end
-
-  defp grade_players_count(tournament) do
-    max(players_count(tournament), map_size(tournament.players || %{}))
   end
 
   defp update_tournament_info_cache(tournament) do
@@ -703,6 +732,29 @@ defmodule Codebattle.Tournament.Server do
     # TODO: updated
   end
 
+  defp flush_pending_persist(state) do
+    case Map.get(state, :persist_timer_ref) do
+      nil ->
+        state
+
+      ref ->
+        Process.cancel_timer(ref)
+        persist_snapshot(%{state | persist_timer_ref: nil})
+    end
+  end
+
+  # The returned struct carries the players/matches maps; keep them out of the state.
+  defp persist_snapshot(%{tournament: tournament} = state) do
+    Tournament.Context.upsert!(tournament, :with_ets)
+    state
+  rescue
+    e ->
+      Logger.error("Tournament #{tournament.id} snapshot save failed: #{Exception.message(e)}")
+      state
+  end
+
+  defp persist_debounce_ms, do: Application.get_env(:codebattle, :tournament_persist_debounce_ms, 5_000)
+
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_srv::#{id}"}}
 
   defp export_tournament_struct(tournament) do
@@ -712,16 +764,17 @@ defmodule Codebattle.Tournament.Server do
       :__meta__,
       :creator,
       :event,
+      :players,
+      :matches,
       :players_table,
       :matches_table,
       :tasks_table,
-      :ranking_table,
-      :clans_table
+      :ranking_table
     ])
   end
 
   defp merge_snapshot_tournament(tournament, snapshot_tournament) do
-    attrs = Map.drop(snapshot_tournament, [:players_table, :matches_table, :tasks_table, :ranking_table, :clans_table])
+    attrs = Map.drop(snapshot_tournament, [:players_table, :matches_table, :tasks_table, :ranking_table])
 
     struct(tournament, attrs)
   end
@@ -730,6 +783,7 @@ defmodule Codebattle.Tournament.Server do
     replace_table_rows(tournament.players_table, Map.get(ets_snapshot, :players, []))
 
     replace_table_rows(tournament.matches_table, Map.get(ets_snapshot, :matches, []))
+    Tournament.Matches.rebuild_index(tournament)
     replace_table_rows(tournament.tasks_table, Map.get(ets_snapshot, :tasks, []))
     replace_table_rows(tournament.ranking_table, Map.get(ets_snapshot, :ranking, []))
 
@@ -737,7 +791,6 @@ defmodule Codebattle.Tournament.Server do
     |> Ranking.get_all()
     |> then(&Ranking.put_ranking(tournament, &1))
 
-    replace_table_rows(tournament.clans_table, Map.get(ets_snapshot, :clans, []))
     restore_info_cache(tournament.id, Map.get(ets_snapshot, :tournament_info_cache))
     tournament
   end
@@ -1034,7 +1087,7 @@ defmodule Codebattle.Tournament.Server do
   # scheduled tick is not imminent and the tournament defines a break, else tick now.
   defp maybe_drain_ladder_wave(%{tournament: tournament} = state) do
     cond do
-      get_matches(tournament, "playing") != [] ->
+      playing_matches?(tournament) ->
         {:noreply, state}
 
       not tournament.module.ticks_remaining?(tournament) ->

@@ -393,8 +393,7 @@ defmodule Codebattle.Tournament.SwissTest do
         players_table: Tournament.Players.create_table(tournament_id),
         matches_table: Tournament.Matches.create_table(tournament_id),
         ranking_table: Tournament.Ranking.create_table(tournament_id),
-        tasks_table: Tournament.Tasks.create_table(tournament_id),
-        clans_table: Tournament.Clans.create_table(tournament_id)
+        tasks_table: Tournament.Tasks.create_table(tournament_id)
       })
       |> Map.merge(attrs)
 
@@ -404,8 +403,7 @@ defmodule Codebattle.Tournament.SwissTest do
           tournament.players_table,
           tournament.matches_table,
           tournament.ranking_table,
-          tournament.tasks_table,
-          tournament.clans_table
+          tournament.tasks_table
         ],
         &safe_delete_ets/1
       )

@@ -215,7 +215,7 @@ defmodule CodebattleWeb.MainChannel do
 
   defp fetch_tournament(tournament_id) do
     case Integer.parse(to_string(tournament_id)) do
-      {id, _} -> Tournament.Context.get(id)
+      {id, _} -> Tournament.Context.get_info(id)
       :error -> nil
     end
   end

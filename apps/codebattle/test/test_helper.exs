@@ -21,5 +21,5 @@ end
 :logger.add_primary_filter(:ignore_db_client_disconnects, {ignore_db_client_disconnects, []})
 
 ExUnit.start(capture_log: true, timeout: 99_999_999)
-ExUnit.configure(timeout: :infinity, exclude: [pending: true], trace: false)
+ExUnit.configure(timeout: :infinity, exclude: [pending: true, perf: true], trace: false)
 Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, :manual)

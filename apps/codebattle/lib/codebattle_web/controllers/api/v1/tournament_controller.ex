@@ -44,7 +44,6 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     :tournament_timeout_seconds,
     :type,
     :use_chat,
-    :use_clan,
     :use_event_ranking,
     :use_infinite_break,
     :use_timer

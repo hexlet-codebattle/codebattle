@@ -90,7 +90,6 @@ defmodule CodebattleWeb.GameChannel do
          event_id: tournament.event_id,
          tournament_id: game.tournament_id,
          ranking: ranking,
-         #  clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
          state: tournament.state,
          type: tournament.type,
          meta: Tournament.Helpers.public_meta(tournament.meta),
@@ -576,8 +575,9 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(message, socket) do
-    Logger.warning("GameChannel Unexpected message: " <> inspect(message))
+  # Tournament broadcasts this channel does not forward (joins, results, ...) arrive
+  # here for every game of a large tournament; logging them would flood the logger.
+  def handle_info(_message, socket) do
     {:noreply, socket}
   end
 

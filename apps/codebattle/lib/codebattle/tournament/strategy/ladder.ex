@@ -16,7 +16,8 @@ defmodule Codebattle.Tournament.Ladder do
   Matching is standings-sorted and prefers fresh (non-rematch) opponents (`played_pair_ids`)
   among nearby players; a human rematch is preferred over a bot. With an odd pool the bot
   plays the lowest-standing player who hasn't had it yet.
-  Ranking is recomputed on every tick from all finished games.
+  Ranking is recomputed on every tick from all finished games: results are rebuilt for
+  every round that is not settled yet, then all totals come from one aggregate query.
   """
   use Codebattle.Tournament.Base
 
@@ -117,7 +118,7 @@ defmodule Codebattle.Tournament.Ladder do
   # force-killing in-flight games.
   @impl Tournament.Base
   def finish_tournament?(tournament) do
-    not ticks_remaining?(tournament) and get_matches(tournament, "playing") == []
+    not ticks_remaining?(tournament) and not playing_matches?(tournament)
   end
 
   # Initial matching (round 0), run from the generic start flow. Everyone is idle at start,
@@ -181,17 +182,50 @@ defmodule Codebattle.Tournament.Ladder do
     |> broadcast_round_created()
   end
 
-  # Ranking & places are recomputed from all finished games by reusing the exact function
-  # the final standings use, so the live leaderboard and the final result are one code path.
+  # Ranking & places are recomputed from all finished games. Round results come from the
+  # same SQL the final standings replay, but only for rounds that are not settled yet: a
+  # round is settled once none of its games is playing, and its results never change after
+  # that (a ban resets the settled mark, the final standings replay everything). Totals over
+  # all rounds then come from one aggregate query and one sort.
   defp recompute_ranking(tournament) do
     tournament
-    |> compute_final_standings()
+    |> sync_unsettled_round_results()
+    |> then(&Tournament.Ranking.set_ranking_from_totals(&1, Tournament.TournamentResult.get_user_totals(&1)))
     |> tap(fn tournament ->
       broadcast_tournament_update(tournament)
 
       Codebattle.PubSub.broadcast("tournament:results_updated", %{
         tournament_id: tournament.id
       })
+    end)
+  end
+
+  defp sync_unsettled_round_results(tournament) do
+    current = tournament.current_round_position
+    first = Map.get(tournament, :results_synced_round_position, -1) + 1
+
+    if first > current do
+      tournament
+    else
+      settled_upto = last_settled_round(tournament, first, current)
+
+      Enum.each(first..current//1, fn round_position ->
+        tournament
+        |> update_struct(%{current_round_position: round_position})
+        |> Tournament.TournamentResult.upsert_results()
+      end)
+
+      update_struct(tournament, %{results_synced_round_position: settled_upto})
+    end
+  end
+
+  # Checked before the results are rebuilt: a game that finishes later in the tick leaves
+  # its round unsettled, so it is rebuilt again on the next tick.
+  defp last_settled_round(tournament, first, current) do
+    Enum.reduce_while(first..current//1, first - 1, fn round_position, settled ->
+      if Tournament.Matches.playing?(tournament, round_position),
+        do: {:halt, settled},
+        else: {:cont, round_position}
     end)
   end
 

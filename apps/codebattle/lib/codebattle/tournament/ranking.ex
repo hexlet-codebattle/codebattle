@@ -58,6 +58,11 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_page(tournament, page, page_size)
   end
 
+  @spec set_ranking_from_totals(Tournament.t(), map()) :: Tournament.t()
+  def set_ranking_from_totals(tournament, totals) do
+    ByUser.set_ranking_from_totals(tournament, totals)
+  end
+
   @spec add_new_player(Tournament.t(), Tournament.Player.t()) :: Tournament.t()
   def add_new_player(tournament, %{is_bot: true}), do: tournament
 

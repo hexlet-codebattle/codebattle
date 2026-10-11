@@ -39,8 +39,7 @@ defmodule Codebattle.Tournament.SwissCheaterRecalculationTest do
         "state" => "waiting_participants",
         "rounds_limit" => Integer.to_string(@rounds),
         "players_limit" => @players_count,
-        "use_chat" => "false",
-        "use_clan" => "false"
+        "use_chat" => "false"
       })
 
     Tournament.Server.handle_event(tournament.id, :join, %{users: users})

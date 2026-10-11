@@ -133,6 +133,15 @@ defmodule Codebattle.Tournament.Helpers do
     Tournament.Matches.get_round_playing_matches(tournament, tournament.current_round_position)
   end
 
+  def playing_matches?(%{matches_table: nil} = tournament), do: get_matches(tournament, "playing") != []
+  def playing_matches?(tournament), do: Tournament.Matches.playing?(tournament)
+
+  def current_round_playing_matches?(%{matches_table: nil} = tournament),
+    do: get_current_round_playing_matches(tournament) != []
+
+  def current_round_playing_matches?(tournament),
+    do: Tournament.Matches.playing?(tournament, tournament.current_round_position)
+
   def match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
 
   def get_player_ids(tournament), do: tournament |> get_players() |> Enum.map(& &1.id)
@@ -204,28 +213,6 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.map(&calc_match_result/1)
     |> Enum.reduce([0, 0], fn [x1, x2], [a1, a2] -> [x1 + a1, x2 + a2] end)
   end
-
-  def get_clans_by_ranking(%{use_clan: false}, _), do: %{}
-
-  def get_clans_by_ranking(tournament, %{entries: ranking}) when is_list(ranking) do
-    get_clans_by_ranking(tournament, ranking)
-  end
-
-  def get_clans_by_ranking(tournament, ranking) when is_map(ranking) do
-    get_clans_by_ranking(tournament, Map.values(ranking))
-  end
-
-  def get_clans_by_ranking(tournament, ranking) when is_list(ranking) do
-    if tournament.use_clan do
-      ranking
-      |> Enum.map(& &1.id)
-      |> then(&Tournament.Clans.get_clans(tournament, &1))
-    else
-      %{}
-    end
-  end
-
-  def get_clans_by_ranking(_tournament, _ranking), do: %{}
 
   def get_player_latest_match(tournament, player_id) do
     with player when not is_nil(player) <- get_player(tournament, player_id),
@@ -303,7 +290,6 @@ defmodule Codebattle.Tournament.Helpers do
     |> Map.drop([
       :__struct__,
       :__meta__,
-      :clans_table,
       :creator,
       :cheater_ids,
       :matches,
@@ -373,7 +359,6 @@ defmodule Codebattle.Tournament.Helpers do
   def tournament_info(tournament) do
     Map.take(tournament, [
       :id,
-      :clans_table,
       :type,
       :ranking_type,
       :matches_table,

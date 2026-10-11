@@ -439,13 +439,16 @@ defmodule Codebattle.PubSub.Events do
         }
       end)
 
-    common_message = %Message{
-      topic: "tournament:#{params.tournament.id}:common",
+    # Participants get their own match on their player topic. The full match feed goes
+    # only to the admin and stream views: on :common every finished game would be pushed
+    # to every participant's tournament and game channel (O(N²) per round).
+    matches_message = %Message{
+      topic: "tournament:#{params.tournament.id}:matches",
       event: "tournament:match:upserted",
       payload: %{match: params.match, players: players}
     }
 
-    [common_message | player_messages]
+    [matches_message | player_messages]
   end
 
   def get_messages("tournament:game:wait", params) do

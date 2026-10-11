@@ -104,6 +104,99 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
              [1, 2, 3, 4]
   end
 
+  test "ticks rebuild only unsettled rounds and rank from all-round totals" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-settled", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(4, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder settled rounds",
+        "description" => "ladder settled rounds",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-settled",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    finish_all_playing_matches(tournament)
+    Process.sleep(400)
+
+    # Round 0 drained before the tick, so it is settled; the live scores are the totals.
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 1
+    assert tournament.results_synced_round_position == 0
+    assert live_scores(tournament) == db_totals(tournament)
+    assert Enum.any?(live_scores(tournament), fn {_id, score} -> score > 0 end)
+
+    # A settled round is not rebuilt by later ticks.
+    [%{user_id: tampered_id} | _] = Repo.all(where(TournamentResult, tournament_id: ^tournament.id, round_position: 0))
+
+    Repo.update_all(where(TournamentResult, tournament_id: ^tournament.id, round_position: 0, user_id: ^tampered_id),
+      set: [score: 999_999]
+    )
+
+    finish_all_playing_matches(tournament)
+    Process.sleep(400)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 2
+    assert tournament.results_synced_round_position == 1
+    assert live_scores(tournament)[tampered_id] >= 999_999
+    assert live_scores(tournament) == db_totals(tournament)
+  end
+
+  test "a late join into an active ladder is persisted to the snapshot" do
+    tasks = insert_list(2, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-late-join", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    [late | users] = insert_list(3, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder late join",
+        "description" => "ladder late join",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-late-join",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+    Server.handle_event(tournament.id, :join, %{user: late})
+    Server.flush_persist(tournament.id)
+
+    persisted = TournamentContext.get_from_db!(tournament.id)
+    assert persisted.state == "active"
+    assert late.id in Enum.map(Map.values(persisted.players), & &1.id)
+  end
+
   test "draining a wave early inserts a break before the next tick, then opens the next round" do
     tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
     insert(:task_pack, name: "ladder-break", task_ids: Enum.map(tasks, & &1.id))
@@ -347,6 +440,15 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     server_state = :sys.get_state(server_pid)
     assert server_state.matchmaking_timer_ref == nil
     assert server_state.matchmaking_timer_kind == nil
+  end
+
+  defp live_scores(tournament) do
+    tournament |> get_players() |> Enum.reject(& &1.is_bot) |> Map.new(&{&1.id, &1.score})
+  end
+
+  defp db_totals(tournament) do
+    totals = TournamentResult.get_user_totals(tournament)
+    tournament |> get_players() |> Enum.reject(& &1.is_bot) |> Map.new(&{&1.id, get_in(totals, [&1.id, :score]) || 0})
   end
 
   defp finish_all_playing_matches(tournament) do

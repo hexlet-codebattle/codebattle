@@ -579,8 +579,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
           players_table: Tournament.Players.create_table(tournament_id),
           matches_table: Tournament.Matches.create_table(tournament_id),
           ranking_table: Tournament.Ranking.create_table(tournament_id),
-          tasks_table: Tournament.Tasks.create_table(tournament_id),
-          clans_table: Tournament.Clans.create_table(tournament_id)
+          tasks_table: Tournament.Tasks.create_table(tournament_id)
         },
         attrs
       )

@@ -2404,9 +2404,6 @@ msgstr "Choose player"
 msgid "Choose task level for"
 msgstr "Choose task level for"
 
-msgid "Clan mode"
-msgstr "Clan mode"
-
 msgid "Completed tournaments"
 msgstr "Completed tournaments"
 

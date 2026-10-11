@@ -181,7 +181,6 @@ defmodule Codebattle.Tournament.RankingTest do
             ranking_table: Ranking.create_table(tournament_id),
             matches_table: Tournament.Matches.create_table(tournament_id),
             tasks_table: Tournament.Tasks.create_table(tournament_id),
-            clans_table: Tournament.Clans.create_table(tournament_id),
             players: %{},
             matches: %{},
             meta: %{}
@@ -196,8 +195,7 @@ defmodule Codebattle.Tournament.RankingTest do
           tournament.players_table,
           tournament.ranking_table,
           tournament.matches_table,
-          tournament.tasks_table,
-          tournament.clans_table
+          tournament.tasks_table
         ],
         &safe_delete_ets/1
       )

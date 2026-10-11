@@ -70,7 +70,7 @@ defmodule Codebattle.Clan do
     Repo.get_by!(__MODULE__, name: name)
   end
 
-  @spec get_by_ids(String.t()) :: list(t())
+  @spec get_by_ids([pos_integer()]) :: list(t())
   def get_by_ids(ids) do
     __MODULE__
     |> where([c], c.id in ^ids)

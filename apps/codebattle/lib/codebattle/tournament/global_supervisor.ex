@@ -35,6 +35,8 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
   def terminate_tournament(tournament_id) do
     # Drop the cache first: it holds refs to ETS tables that die with the server, and the
     # caller may be the tournament server itself.
+    Tournament.Server.flush_persist(tournament_id)
+
     if :ets.whereis(@tournament_info_table) != :undefined do
       :ets.delete(@tournament_info_table, tournament_id)
     end

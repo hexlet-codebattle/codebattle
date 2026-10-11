@@ -55,7 +55,6 @@ defmodule Codebattle.Tournament do
              :tournament_timeout_seconds,
              :type,
              :use_chat,
-             :use_clan,
              :use_event_ranking,
              :use_infinite_break,
              :use_timer
@@ -121,14 +120,12 @@ defmodule Codebattle.Tournament do
     field(:tournament_timeout_seconds, :integer)
     field(:type, :string, default: "swiss")
     field(:use_chat, :boolean, default: true)
-    field(:use_clan, :boolean, default: false)
     field(:use_event_ranking, :boolean, default: false)
     field(:use_infinite_break, :boolean, default: false)
     field(:use_timer, :boolean, default: true)
     field(:winner_ids, {:array, :integer})
 
     # ETS storage
-    field(:clans_table, :string, virtual: true)
     field(:matches_table, :string, virtual: true)
     field(:players_table, :string, virtual: true)
     field(:ranking_table, :string, virtual: true)
@@ -144,6 +141,8 @@ defmodule Codebattle.Tournament do
     field(:players_count, :integer, virtual: true, default: 0)
     field(:event_ranking, :map, virtual: true, default: %{})
     field(:task_ids, {:array, :integer}, virtual: true, default: [])
+    # Ladder: every round up to this one is settled and its results are in the database.
+    field(:results_synced_round_position, :integer, virtual: true, default: -1)
 
     timestamps()
   end
@@ -192,7 +191,6 @@ defmodule Codebattle.Tournament do
       :tournament_timeout_seconds,
       :type,
       :use_chat,
-      :use_clan,
       :use_event_ranking,
       :use_infinite_break,
       :use_timer

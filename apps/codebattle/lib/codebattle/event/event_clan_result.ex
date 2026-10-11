@@ -62,37 +62,4 @@ defmodule Codebattle.Event.EventClanResult do
     })
     |> Repo.paginate(%{page: page_number, page_size: page_size, total: true})
   end
-
-  def save_results(tournament) do
-    clean_results(tournament.event_id)
-
-    sql = """
-    INSERT INTO event_clan_results
-      (
-      clan_id,
-      event_id,
-      players_count,
-      score,
-      place
-      )
-      SELECT
-        clan_id,
-        #{tournament.event_id},
-        COUNT(distinct user_id),
-        SUM(score),
-        ROW_NUMBER() OVER (ORDER BY SUM(score) DESC, SUM(duration_sec) ASC, COUNT(user_id) DESC)
-      FROM
-        tournament_results
-        WHERE tournament_id in (select id from tournaments where event_id = #{tournament.event_id})
-        GROUP BY clan_id
-    """
-
-    Ecto.Adapters.SQL.query!(Repo, sql)
-  end
-
-  def clean_results(event_id) do
-    __MODULE__
-    |> where([er], er.event_id == ^event_id)
-    |> Repo.delete_all()
-  end
 end

@@ -77,7 +77,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
       tournament_id: tournament.id,
       current_round: current_round(tournament),
       players: serialize_players(players, user_history, win_probs, active_ids),
-      clans: serialize_clans(tournament),
+      clans: serialize_clans(players),
       active_game_id: TournamentAdminChannel.get_active_game(tournament.id)
     }
   end
@@ -123,6 +123,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
       id: to_string(player.id),
       name: player.name,
       clan_id: player.clan_id && to_string(player.clan_id),
+      clan: player.clan,
       total_score: player.score || 0,
       total_tasks: length(player.matches_ids || []),
       won_tasks: player.wins_count || 0,
@@ -133,9 +134,15 @@ defmodule CodebattleWeb.Tournament.StreamController do
     }
   end
 
-  defp serialize_clans(%{use_clan: true} = tournament), do: format_clans(Tournament.Clans.get_all(tournament))
-
-  defp serialize_clans(_tournament), do: %{}
+  # Clan names of the players shown on stream, keyed like serialize_player's clan_id.
+  defp serialize_clans(players) do
+    players
+    |> Enum.map(& &1.clan_id)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+    |> Codebattle.Clan.get_by_ids()
+    |> Map.new(&{to_string(&1.id), %{name: &1.name, long_name: &1.long_name}})
+  end
 
   defp safe_get_players(tournament) do
     Helpers.get_players(tournament)
@@ -170,12 +177,6 @@ defmodule CodebattleWeb.Tournament.StreamController do
     else
       %{}
     end
-  end
-
-  defp format_clans(clans) do
-    Map.new(clans, fn {id, clan} ->
-      {to_string(id), %{name: clan[:name], long_name: clan[:long_name]}}
-    end)
   end
 
   def admin(conn, params) do

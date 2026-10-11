@@ -86,7 +86,6 @@ interface Tournament {
   tournamentTimeoutSeconds?: number | null;
   breakDurationSeconds?: number;
   useChat?: boolean;
-  useClan?: boolean;
   excludeBannedPlayers?: boolean;
   rankingType?: string;
   scoreStrategy?: string;

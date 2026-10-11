@@ -3516,9 +3516,6 @@ msgstr "Выберите игрока"
 msgid "Choose task level for"
 msgstr "Выберите уровень задачи для"
 
-msgid "Clan mode"
-msgstr "Клановый режим"
-
 msgid "Completed tournaments"
 msgstr "Завершённые турниры"
 

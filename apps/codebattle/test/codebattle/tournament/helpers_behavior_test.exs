@@ -182,7 +182,6 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       refute moderator?(tournament, nil)
       assert to_id(:already_an_atom) == :already_an_atom
       assert get_max_draw_index([]) == 0
-      assert get_clans_by_ranking(%{tournament | use_clan: nil}, [%{id: 1}]) == %{}
     end
 
     test "calculates round timeout through all fallback branches" do
@@ -248,7 +247,7 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       assert current_round_timeout_seconds(tournament) == 300
     end
 
-    test "builds json-safe tournament info, clan lookups, total games, and ranking stats" do
+    test "builds json-safe tournament info, total games, and ranking stats" do
       clan = insert(:clan, name: "clan-a", long_name: "Clan A")
       task = insert(:task)
 
@@ -257,7 +256,6 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
           id: System.unique_integer([:positive]),
           state: "active",
           current_round_position: 3,
-          use_clan: true,
           task_provider: "task_pack",
           task_strategy: "sequential",
           task_ids: [task.id],
@@ -292,7 +290,6 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
         })
 
       Tournament.Tasks.put_task(tournament, task)
-      Tournament.Clans.put_clans(tournament, [clan])
 
       Repo.insert!(%TournamentResult{
         tournament_id: tournament.id,
@@ -342,15 +339,6 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
                }
              ]
 
-      assert get_clans_by_ranking(tournament, [%{id: clan.id}]) == %{
-               clan.id => %{id: clan.id, name: clan.name, long_name: clan.long_name}
-             }
-
-      assert get_clans_by_ranking(tournament, %{entries: [%{id: clan.id}]})[clan.id].name == clan.name
-      assert get_clans_by_ranking(tournament, %{clan.id => %{id: clan.id}})[clan.id].name == clan.name
-      assert get_clans_by_ranking(%{tournament | use_clan: false}, [%{id: clan.id}]) == %{}
-      assert get_clans_by_ranking(tournament, :unexpected) == %{}
-
       assert get_players_total_games_count(tournament, get_player(tournament, 1)) == 1
       assert get_players_total_games_count(%{tournament | task_provider: "level"}, nil) == 0
       assert get_players_total_games_count(%{tournament | task_provider: "level"}, get_player(tournament, 1)) == 1
@@ -363,7 +351,6 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
 
       assert tournament_info(tournament) == %{
                id: tournament.id,
-               clans_table: tournament.clans_table,
                type: tournament.type,
                ranking_type: tournament.ranking_type,
                matches_table: tournament.matches_table,
@@ -409,8 +396,7 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
             players_table: Tournament.Players.create_table(tournament_id),
             matches_table: Tournament.Matches.create_table(tournament_id),
             ranking_table: Tournament.Ranking.create_table(tournament_id),
-            tasks_table: Tournament.Tasks.create_table(tournament_id),
-            clans_table: Tournament.Clans.create_table(tournament_id)
+            tasks_table: Tournament.Tasks.create_table(tournament_id)
           },
           attrs
         )
@@ -425,8 +411,7 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
           tournament.players_table,
           tournament.matches_table,
           tournament.ranking_table,
-          tournament.tasks_table,
-          tournament.clans_table
+          tournament.tasks_table
         ],
         &safe_delete_ets/1
       )

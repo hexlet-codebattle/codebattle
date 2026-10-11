@@ -42,6 +42,34 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
     assert %{score: 20, place: 1, total_duration_sec: 30} = Players.get_player(tournament, 3)
   end
 
+  test "ranking from totals orders by score then time and clears places of excluded players" do
+    tournament = %{
+      type: "ladder",
+      ranking_type: "by_user",
+      state: "active",
+      current_round_position: 3,
+      players_table: Players.create_table(System.unique_integer([:positive])),
+      ranking_table: Ranking.create_table(System.unique_integer([:positive]))
+    }
+
+    Players.put_player(tournament, Player.new!(%{id: 1, name: "p1", score: 99, place: 1}))
+    Players.put_player(tournament, Player.new!(%{id: 2, name: "p2", place: 2}))
+    Players.put_player(tournament, Player.new!(%{id: 3, name: "p3", place: 3}))
+    Players.put_player(tournament, %{Player.new!(%{id: 4, name: "banned", score: 50, place: 4}) | state: "banned"})
+
+    totals = %{
+      2 => %{score: 30, total_duration_sec: 50, wins_count: 1},
+      3 => %{score: 30, total_duration_sec: 40, wins_count: 2}
+    }
+
+    ByUser.set_ranking_from_totals(tournament, totals)
+
+    assert Enum.map(Ranking.get_first(tournament, 10), & &1.id) == [3, 2, 1]
+    assert %{place: 1, score: 30, wins_count: 2} = Players.get_player(tournament, 3)
+    assert %{place: 3, score: 0, wins_count: 0} = Players.get_player(tournament, 1)
+    assert %{place: 0, score: 0} = Players.get_player(tournament, 4)
+  end
+
   test "waiting participants are seeded by id before results exist" do
     tournament =
       :tournament

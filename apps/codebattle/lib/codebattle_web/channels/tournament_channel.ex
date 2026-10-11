@@ -7,7 +7,7 @@ defmodule CodebattleWeb.TournamentChannel do
   alias Codebattle.Tournament.TournamentResult
   alias Codebattle.Tournament.TournamentUserResult
 
-  require Logger
+  @ranking_push_delay_ms 2_000
 
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
@@ -29,10 +29,8 @@ defmodule CodebattleWeb.TournamentChannel do
              :ranking_type,
              :players,
              :matches,
-             :use_clan,
              :players_table,
              :ranking_table,
-             :clans_table,
              :matches_table,
              :tasks_table
            ])
@@ -308,10 +306,8 @@ defmodule CodebattleWeb.TournamentChannel do
             :ranking_type,
             :players,
             :matches,
-            :use_clan,
             :players_table,
             :ranking_table,
-            :clans_table,
             :matches_table,
             :tasks_table
           ])
@@ -328,30 +324,23 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:player:joined", payload: payload}, socket) do
-    tournament = socket.assigns.tournament_info
-    ranking = get_nearest_ranking_for_user(tournament, socket.assigns.current_user)
-    push(socket, "tournament:player:joined", payload)
+  # Every channel used to rebuild and push its ranking page on each join/leave, i.e.
+  # O(N²) work while N players register. The event itself is pushed as is; the ranking
+  # page follows at most once per @ranking_push_delay_ms.
+  def handle_info(%{event: event, payload: payload}, socket)
+      when event in ["tournament:player:joined", "tournament:player:left"] do
+    push(socket, event, payload)
 
-    push(socket, "tournament:ranking_update", %{
-      ranking: ranking,
-      clans: build_clans_payload(tournament, ranking)
-    })
-
-    {:noreply, socket}
+    {:noreply, schedule_ranking_push(socket)}
   end
 
-  def handle_info(%{event: "tournament:player:left", payload: payload}, socket) do
+  def handle_info(:push_ranking, socket) do
     tournament = socket.assigns.tournament_info
     ranking = get_nearest_ranking_for_user(tournament, socket.assigns.current_user)
-    push(socket, "tournament:player:left", payload)
 
-    push(socket, "tournament:ranking_update", %{
-      ranking: ranking,
-      clans: build_clans_payload(tournament, ranking)
-    })
+    push(socket, "tournament:ranking_update", %{ranking: ranking})
 
-    {:noreply, socket}
+    {:noreply, assign(socket, ranking_push_scheduled: false)}
   end
 
   def handle_info(%{event: "tournament:redirect", payload: payload}, socket) do
@@ -360,9 +349,17 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(message, socket) do
-    Logger.warning("TournamentChannel Unexpected message: " <> inspect(message))
+  def handle_info(_message, socket) do
     {:noreply, socket}
+  end
+
+  defp schedule_ranking_push(socket) do
+    if socket.assigns[:ranking_push_scheduled] do
+      socket
+    else
+      Process.send_after(self(), :push_ranking, @ranking_push_delay_ms)
+      assign(socket, ranking_push_scheduled: true)
+    end
   end
 
   defp get_tournament_join_payload(tournament, nil) do
@@ -379,7 +376,6 @@ defmodule CodebattleWeb.TournamentChannel do
       matches: [],
       players: players,
       ranking: ranking,
-      # clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: nil,
       tournament: Helpers.prepare_to_json(tournament)
     }
@@ -408,7 +404,6 @@ defmodule CodebattleWeb.TournamentChannel do
 
     Map.merge(player_data, %{
       ranking: nearest_ranking,
-      # clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)
     })
@@ -470,12 +465,6 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp parse_pos_integer(_value, default), do: default
-
-  defp build_clans_payload(%{use_clan: true} = tournament, ranking) do
-    Helpers.get_clans_by_ranking(tournament, ranking)
-  end
-
-  defp build_clans_payload(_tournament, _ranking), do: %{}
 
   defp get_nearest_ranking_for_user(tournament, current_user, page_size \\ 16) do
     page =

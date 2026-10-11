@@ -3,6 +3,7 @@ defmodule Codebattle.PubSub.EventsTest do
 
   alias Codebattle.Game.Player
   alias Codebattle.PubSub.Events
+  alias Codebattle.Tournament.Players
 
   describe "tournament:player:redirect" do
     test "targets the player's main channel" do
@@ -22,6 +23,26 @@ defmodule Codebattle.PubSub.EventsTest do
                  player_id: 42,
                  url: "https://example.com/next"
                })
+    end
+  end
+
+  describe "tournament:match:upserted" do
+    test "goes to the two players and the match feed, not to every participant" do
+      tournament = %{id: 77, players_table: Players.create_table(77)}
+
+      for id <- [1, 2] do
+        Players.put_player(tournament, Codebattle.Tournament.Player.new!(%{id: id, name: "p#{id}"}))
+      end
+
+      match = %Codebattle.Tournament.Match{id: 5, player_ids: [1, 2], state: "game_over"}
+
+      topics =
+        "tournament:match:upserted"
+        |> Events.get_messages(%{tournament: tournament, match: match})
+        |> Enum.map(& &1.topic)
+        |> Enum.sort()
+
+      assert topics == ["tournament:77:matches", "tournament:77:player:1", "tournament:77:player:2"]
     end
   end
 

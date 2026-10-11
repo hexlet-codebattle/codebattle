@@ -67,7 +67,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
     end
 
     test "aggregates ranking by user when language changes" do
-      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user")
       user = insert(:user, name: "u1")
       user_id = user.id
 
@@ -108,7 +108,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
     end
 
     test "ranking tiebreak: equal score and time -> lower user_id ranks higher (semifinal place)" do
-      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user")
       low = insert(:user, name: "low")
       high = insert(:user, name: "high")
       # Гарантируем low.id < high.id независимо от порядка вставки.
@@ -608,7 +608,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       user81 = insert(:user, name: "u81", clan_id: clan8.id)
 
       tournament =
-        insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+        insert(:tournament, type: "swiss", ranking_type: "by_user")
 
       insert_game(task4, tournament, user11, user21, 100, 100.0, 70.0)
       insert_game(task4, tournament, user12, user22, 200, 100.0, 60.0)
@@ -1042,7 +1042,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
 
     test "get_top_user_by_task_ranking includes users without clan" do
       task = insert(:task, level: "easy", name: "solo")
-      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user")
 
       user_with_clan = insert(:user, name: "with-clan", clan_id: insert(:clan, name: "c1", long_name: "l1").id)
       user_without_clan = insert(:user, name: "without-clan")
@@ -1070,7 +1070,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
     end
 
     test "get_tasks_ranking sorts tasks by round position" do
-      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user")
       task_round_1 = insert(:task, level: "easy", name: "round-1")
       task_round_2 = insert(:task, level: "medium", name: "round-2")
 
@@ -1313,7 +1313,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
 
     test "builds clan-enabled user ranking and excludes cheated rows" do
       clan = insert(:clan, name: "Ranking clan")
-      tournament = insert(:tournament, ranking_type: "by_user", use_clan: true)
+      tournament = insert(:tournament, ranking_type: "by_user")
       honest = insert(:user, clan_id: clan.id)
       cheater = insert(:user, clan_id: clan.id)
       honest_id = honest.id

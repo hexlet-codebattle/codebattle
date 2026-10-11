@@ -35,6 +35,17 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
+  @doc """
+  Scalar fields plus ETS table refs, read from the info cache without calling the
+  tournament server; `nil` when the tournament does not exist.
+  """
+  @spec get_info(tournament_id()) :: map() | Tournament.t() | nil
+  def get_info(tournament_id) do
+    get_tournament_info(tournament_id)
+  rescue
+    Ecto.NoResultsError -> nil
+  end
+
   @spec get!(tournament_id()) :: Tournament.t() | no_return()
   def get!(id) do
     case Tournament.Server.get_tournament(id) do
@@ -409,7 +420,6 @@ defmodule Codebattle.Tournament.Context do
     :tournament_timeout_seconds,
     :type,
     :use_chat,
-    :use_clan,
     :use_event_ranking,
     :use_infinite_break,
     :use_timer
@@ -542,7 +552,17 @@ defmodule Codebattle.Tournament.Context do
       conflict_target: :id,
       on_conflict: {:replace_all_except, [:id, :inserted_at]}
     )
+    |> drop_snapshot_maps()
   end
+
+  @doc """
+  A live tournament keeps players and matches in ETS; the jsonb snapshot maps would only
+  be copied around with the struct, so they are emptied.
+  """
+  def drop_snapshot_maps(%{players_table: table} = tournament) when not is_nil(table),
+    do: %{tournament | players: %{}, matches: %{}}
+
+  def drop_snapshot_maps(tournament), do: tournament
 
   @spec restart(Tournament.t()) :: :ok
   def restart(tournament) do
@@ -606,7 +626,7 @@ defmodule Codebattle.Tournament.Context do
   defp drop_tournament_tables(nil), do: :ok
 
   defp drop_tournament_tables(tournament_info) do
-    Enum.each([:players_table, :matches_table, :tasks_table, :ranking_table, :clans_table], fn key ->
+    Enum.each([:players_table, :matches_table, :tasks_table, :ranking_table], fn key ->
       case Map.get(tournament_info, key) do
         nil ->
           :ok
@@ -911,7 +931,6 @@ defmodule Codebattle.Tournament.Context do
         matches: Enum.map(matches, &{&1.id, &1.state, &1.round_position, &1}),
         tasks: build_restore_tasks_rows(tournament),
         ranking: Enum.map(ranking, &{&1.place, &1.id, &1}),
-        clans: [],
         tournament_info_cache: nil
       }
     }
@@ -927,8 +946,7 @@ defmodule Codebattle.Tournament.Context do
       :players_table,
       :matches_table,
       :tasks_table,
-      :ranking_table,
-      :clans_table
+      :ranking_table
     ])
   end
 

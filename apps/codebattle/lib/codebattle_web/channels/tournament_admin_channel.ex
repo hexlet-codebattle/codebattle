@@ -70,6 +70,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
          true <- Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:matches")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
 
       {
@@ -461,13 +462,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   defp get_tournament_join_payload(tournament) do
-    clans =
-      if tournament.use_clan do
-        Tournament.Clans.get_all(tournament)
-      else
-        %{}
-      end
-
     # if tournament.type in ["swiss"] do
     #   []
     # else
@@ -484,8 +478,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
       tournament: Helpers.prepare_to_json(tournament),
       ranking: Tournament.Ranking.get_page(tournament, 1, @default_ranking_size),
       players: Helpers.get_players(tournament),
-      matches: matches,
-      clans: clans
+      matches: matches
     }
   end
 

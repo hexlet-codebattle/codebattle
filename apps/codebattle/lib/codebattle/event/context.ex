@@ -162,7 +162,6 @@ defmodule Codebattle.Event.Context do
             event_id: event.id,
             access_type: "token",
             use_chat: false,
-            use_clan: false,
             state: "waiting_participants",
             break_duration_seconds: 5,
             grade: "open",

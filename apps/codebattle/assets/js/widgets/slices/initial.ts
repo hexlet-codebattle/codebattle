@@ -218,7 +218,6 @@ const initialReports = { ...defaultReportsParams, ...reportsParams };
 
 const defaultTournamentParams = {
   id: undefined,
-  clans: {},
   creator: {},
   grade: '',
   creatorId: null,

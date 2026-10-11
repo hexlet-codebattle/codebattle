@@ -28,8 +28,8 @@ defmodule Codebattle.Tournament.Swiss do
   @impl Tournament.Base
   def finish_round_after_match?(tournament) do
     # The round closes as soon as its last game is done, whatever the field size.
-    # Only playing matches are copied out of ETS, not the whole round history.
-    get_current_round_playing_matches(tournament) == []
+    # The playing index answers this without copying any match out of ETS.
+    not current_round_playing_matches?(tournament)
   end
 
   @impl Tournament.Base

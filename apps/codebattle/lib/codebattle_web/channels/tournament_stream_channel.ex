@@ -16,6 +16,7 @@ defmodule CodebattleWeb.TournamentStreamChannel do
          true <- Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:matches")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
 
       {
