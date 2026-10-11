@@ -8,6 +8,7 @@ import i18next from 'i18next';
 import isEmpty from 'lodash/isEmpty';
 import { useSelector } from 'react-redux';
 
+import chatBadWords from '../config/chatBadWords';
 import messageTypes from '../config/messageTypes';
 import { addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
@@ -109,6 +110,7 @@ export default function ChatInput({
           badwordsRef.current.add(enData.default || enData);
           badwordsRef.current.add(ruData.default || ruData);
           badwordsRef.current.add(rlData.default || rlData);
+          badwordsRef.current.add(chatBadWords);
           setBadwordsReady(true);
         }
       } catch (error) {

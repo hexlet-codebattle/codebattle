@@ -17,6 +17,9 @@ defmodule CodebattleWeb.Api.V1.UserController do
     [bucket: "sign_up", limit: 10, window: to_timeout(minute: 10)] when action in [:create]
   )
 
+  # Session guests (see User.generate_guest_id/0) have no stored data: serve them like guest 0.
+  plug(:normalize_guest_id when action in [:stats, :rivals, :achievements, :tournaments])
+
   def index(conn, params) do
     payload = UserView.render_rating(params)
 
@@ -216,6 +219,18 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
     json(conn, %{id: current_user.id})
   end
+
+  defp normalize_guest_id(%{params: %{"id" => id}} = conn, _opts) do
+    case Integer.parse(id) do
+      {int_id, ""} when int_id != 0 ->
+        if User.guest_id?(int_id), do: put_in(conn.params["id"], "0"), else: conn
+
+      _ ->
+        conn
+    end
+  end
+
+  defp normalize_guest_id(conn, _opts), do: conn
 
   def get_requests_count_by_status(requests, status) do
     requests

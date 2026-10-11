@@ -128,7 +128,8 @@ function UserInfo({
     return <span className="text-white">John Doe</span>;
   }
 
-  if (user?.id === 0) {
+  // Guests (id 0 or a per-session id) have no profile to show.
+  if (user.id === 0 || user.isGuest) {
     return <span className="text-white">{user.name}</span>;
   }
 

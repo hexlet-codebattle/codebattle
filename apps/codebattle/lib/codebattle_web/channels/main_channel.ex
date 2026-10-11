@@ -36,6 +36,12 @@ defmodule CodebattleWeb.MainChannel do
         end
       end
 
+    # Guests aren't tracked (they would flood the online list), but they still need the
+    # initial presence state, otherwise the client ignores presence diffs and shows everyone offline.
+    if current_user.is_guest and !FunWithFlags.enabled?(:skip_presence) do
+      send(self(), :push_presence_state)
+    end
+
     {:ok, %{active_game_id: active_game_id}, socket}
   end
 
@@ -153,6 +159,12 @@ defmodule CodebattleWeb.MainChannel do
   def handle_info({:after_join, state}, socket) do
     {:ok, _} = Presence.track(socket, socket.assigns.current_user.id, presence_meta(socket, state))
 
+    push(socket, "presence_state", Presence.list(socket))
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:push_presence_state, socket) do
     push(socket, "presence_state", Presence.list(socket))
 
     {:noreply, socket}

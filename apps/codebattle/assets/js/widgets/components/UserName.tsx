@@ -9,6 +9,7 @@ import LanguageIcon from './LanguageIcon';
 export interface UserNameUser {
   id: string | number;
   isBot?: boolean;
+  isGuest?: boolean;
   lang?: string;
   name: string;
   rank?: number;

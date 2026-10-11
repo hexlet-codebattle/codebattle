@@ -1,0 +1,56 @@
+// Compact battle layout for phones and handhelds (e.g. an 800×480 gaming handheld with a
+// keyboard): edge-to-edge columns, chat below the editors, and less chrome on short screens.
+// Contributed by a player who battles from a handheld; the classes replace their attribute
+// and nth-child selectors.
+
+.cb-feedback-button {
+  display: flex;
+}
+
+@media (max-width: 800px) {
+  .cb-game-container {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .cb-game {
+    padding: 0 !important; // overrides the px-1 utility
+  }
+
+  // task, my editor, opponent editor, then chat
+  .cb-game > .cb-game-chat {
+    order: 3;
+  }
+
+  .cb-nav-github {
+    display: none !important; // overrides the d-flex utility
+  }
+
+  .cb-game .px-3 {
+    padding: 5px !important;
+  }
+
+  .cb-feedback-button {
+    display: none;
+  }
+}
+
+@media (max-height: 480px) {
+  .cb-game .col-12 {
+    padding: 1px !important;
+  }
+
+  .main-nav {
+    padding: 0;
+    height: 30px;
+  }
+
+  .cb-game .py-2 {
+    padding: 0 !important;
+  }
+
+  .cb-game .btn-toolbar {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

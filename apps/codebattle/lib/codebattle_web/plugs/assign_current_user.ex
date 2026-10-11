@@ -56,9 +56,22 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
   end
 
   defp assign_guest(conn) do
+    {conn, guest_id} = ensure_guest_id(conn)
+
     conn
-    |> assign(:current_user, User.build_guest())
+    |> assign(:current_user, User.build_guest(guest_id))
     |> assign(:current_user_session, nil)
+  end
+
+  defp ensure_guest_id(conn) do
+    guest_id = get_session(conn, :guest_id)
+
+    if User.guest_id?(guest_id) and guest_id != User.guest_id() do
+      {conn, guest_id}
+    else
+      guest_id = User.generate_guest_id()
+      {put_session(conn, :guest_id, guest_id), guest_id}
+    end
   end
 
   defp handle_stale_session(conn) do

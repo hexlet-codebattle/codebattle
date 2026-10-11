@@ -86,4 +86,14 @@ defmodule Codebattle.Auth.User.FirebaseUserTest do
     assert archived.email == nil
     assert archived.firebase_uid == nil
   end
+
+  test "rejects passwords outside 8-128 characters before calling Firebase" do
+    for {password, message} <- [
+          {"1234567", "Should be at least 8 characters"},
+          {String.duplicate("a", 129), "Should be at most 128 characters"}
+        ] do
+      assert {:error, %{password: ^message}} =
+               FirebaseUser.create(%{name: "newplayer", email: "new@example.com", password: password})
+    end
+  end
 end

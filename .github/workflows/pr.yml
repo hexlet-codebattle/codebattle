@@ -18,7 +18,7 @@ jobs:
       MIX_ENV: test
       POSTGRES_PASSWORD: postgres
       OTP_VERSION: '29.0.3'
-      ELIXIR_VERSION: '1.20.2'
+      ELIXIR_VERSION: '1.20.4'
 
     services:
       db:

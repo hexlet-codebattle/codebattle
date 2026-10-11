@@ -279,6 +279,9 @@ function SignIn() {
             if (errors.email) {
               formik.setFieldError('email', errors.email);
             }
+            if (errors.password) {
+              formik.setFieldError('password', errors.password);
+            }
             if (errors.base) {
               const message =
                 errors.base === 'EMAIL_NOT_VERIFIED'
@@ -345,6 +348,9 @@ function SignUp() {
             if (errors.email) {
               formik.setFieldError('email', errors.email);
             }
+            if (errors.password) {
+              formik.setFieldError('password', errors.password);
+            }
             if (errors.base) {
               formik.setFieldError('base', errors.base);
             }
@@ -393,6 +399,9 @@ function ResetPassword() {
             const { errors } = error.response.data;
             if (errors.email) {
               formik.setFieldError('email', errors.email);
+            }
+            if (errors.password) {
+              formik.setFieldError('password', errors.password);
             }
             if (errors.base) {
               formik.setFieldError('base', errors.base);

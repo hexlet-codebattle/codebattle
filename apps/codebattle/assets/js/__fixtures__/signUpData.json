@@ -85,18 +85,6 @@
       "Should be at least 8 characters",
       "password"
     ],
-    [
-      "password validation: no letter",
-      "!@#$1234",
-      "Should contain at least one letter",
-      "password"
-    ],
-    [
-      "password validation: no number",
-      "passwordonly",
-      "Should contain at least one number",
-      "password"
-    ],
     ["password validation: empty", "", "Password required", "password"]
   ],
   "validData": {

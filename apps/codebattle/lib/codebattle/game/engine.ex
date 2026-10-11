@@ -215,6 +215,11 @@ defmodule Codebattle.Game.Engine do
 
   def check_result(game, params) do
     cond do
+      # Only players may submit; otherwise a spectator's passing check would finish the game
+      # with every real player marked as lost.
+      !player?(game, params.user.id) ->
+        {:error, :not_a_player}
+
       # The UI locks a banned player's editor, but the server must reject the check too:
       # otherwise a banned or kicked tournament player could still win the game.
       banned_player?(game, params.user.id) ->
@@ -339,6 +344,10 @@ defmodule Codebattle.Game.Engine do
   end
 
   def give_up(game, user) do
+    if player?(game, user.id), do: do_give_up(game, user), else: {:error, :not_a_player}
+  end
+
+  defp do_give_up(game, user) do
     case fire_transition(game.id, :give_up, %{id: user.id}) do
       {:ok, {_old_game_state, new_game}} ->
         {:ok, _game} = store_result!(new_game)
@@ -417,7 +426,11 @@ defmodule Codebattle.Game.Engine do
     fire_transition(game.id, :unlock_game)
   end
 
-  def update_editor_data(game, params) do
+  def update_editor_data(game, %{id: user_id} = params) do
+    if player?(game, user_id), do: do_update_editor_data(game, params), else: {:error, :not_a_player}
+  end
+
+  defp do_update_editor_data(game, params) do
     case fire_transition(game.id, :update_editor_data, params) do
       {:ok, {_old_game_state, game}} -> {:ok, game}
       {:error, reason} -> {:error, reason}
@@ -442,7 +455,7 @@ defmodule Codebattle.Game.Engine do
         create_user_game!(%{
           game_id: game.id,
           is_bot: player.is_bot,
-          user_id: player.id,
+          user_id: if(player.is_guest, do: User.guest_id(), else: player.id),
           result: player.result,
           creator: player.creator,
           rating: player.rating,

@@ -95,7 +95,7 @@ function FeedbackWidget() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded d-flex align-items-center"
+        className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded cb-feedback-button align-items-center"
         style={{
           position: 'fixed',
           right: '16px',

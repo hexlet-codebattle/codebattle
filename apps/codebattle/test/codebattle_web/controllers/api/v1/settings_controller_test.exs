@@ -201,11 +201,11 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       too_short =
         patch(conn, "/api/v1/settings/password", %{
           "current_password" => @old_password,
-          "password" => "too-short",
-          "password_confirmation" => "too-short"
+          "password" => "short",
+          "password_confirmation" => "short"
         })
 
-      assert "should be at least 12 character(s)" in json_response(too_short, 422)["errors"]["password"]
+      assert "should be at least 8 character(s)" in json_response(too_short, 422)["errors"]["password"]
 
       over_bcrypt_limit = String.duplicate("é", 37)
 
@@ -216,7 +216,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           "password_confirmation" => over_bcrypt_limit
         })
 
-      assert "should be at most 72 bytes" in json_response(too_long, 422)["errors"]["password"]
+      assert "is too long" in json_response(too_long, 422)["errors"]["password"]
       assert Repo.get!(User, user.id).password_hash == user.password_hash
     end
 

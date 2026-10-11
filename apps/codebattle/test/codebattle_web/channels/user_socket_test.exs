@@ -41,4 +41,21 @@ defmodule CodebattleWeb.UserSocketTest do
 
     assert :error = connect(UserSocket, %{"token" => legacy_token})
   end
+
+  test "connects a guest with the id from their session token" do
+    token = Phoenix.Token.sign(socket(UserSocket), "user_token", {:guest, -1_000_000_042})
+
+    assert {:ok, socket} = connect(UserSocket, %{"token" => token})
+    assert socket.assigns.current_user.is_guest
+    assert socket.assigns.current_user.id == -1_000_000_042
+  end
+
+  test "rejects guest tokens carrying a real user or bot id" do
+    user = insert(:user)
+    token = Phoenix.Token.sign(socket(UserSocket), "user_token", {:guest, user.id})
+    bot_token = Phoenix.Token.sign(socket(UserSocket), "user_token", {:guest, -5})
+
+    assert :error = connect(UserSocket, %{"token" => token})
+    assert :error = connect(UserSocket, %{"token" => bot_token})
+  end
 end

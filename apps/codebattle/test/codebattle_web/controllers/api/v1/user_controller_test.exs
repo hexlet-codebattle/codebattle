@@ -330,10 +330,22 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       refute_receive :queried_user_games
     end
 
+    test "serves session guests like the anonymous guest", %{conn: conn} do
+      guest_id = Codebattle.User.generate_guest_id()
+
+      resp_body =
+        conn
+        |> get(Routes.api_v1_user_path(conn, :achievements, guest_id))
+        |> json_response(200)
+
+      assert resp_body["user"]["is_guest"]
+      assert resp_body["achievements"] == []
+    end
+
     test "returns 404 for missing user", %{conn: conn} do
       resp_body =
         conn
-        |> get(Routes.api_v1_user_path(conn, :achievements, -9))
+        |> get(Routes.api_v1_user_path(conn, :achievements, 999_999_999))
         |> json_response(404)
 
       assert resp_body == %{"error" => "NOT_FOUND"}
@@ -504,7 +516,8 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
       resp_body = json_response(conn, 200)
 
-      assert resp_body == %{"id" => 0}
+      assert %{"id" => guest_id} = resp_body
+      assert guest_id < 0
     end
   end
 

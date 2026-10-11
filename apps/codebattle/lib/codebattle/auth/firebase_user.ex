@@ -20,8 +20,9 @@ defmodule Codebattle.Auth.User.FirebaseUser do
     end
   end
 
-  def create(%{name: name} = user_attrs) do
-    with :ok <- check_nickname(name) do
+  def create(%{name: name, password: password} = user_attrs) do
+    with :ok <- check_nickname(name),
+         :ok <- check_password(password) do
       register_in_firebase(user_attrs)
     end
   end
@@ -69,6 +70,19 @@ defmodule Codebattle.Auth.User.FirebaseUser do
         :ok
     end
   end
+
+  # Same rule as the sign-up form: length only, any characters (Cyrillic, spaces, emoji) allowed,
+  # following NIST SP 800-63B. Firebase enforces the same policy; checking here first gives a
+  # readable error instead of a raw Firebase one.
+  defp check_password(password) when is_binary(password) do
+    case String.length(password) do
+      length when length < 8 -> {:error, %{password: "Should be at least 8 characters"}}
+      length when length > 128 -> {:error, %{password: "Should be at most 128 characters"}}
+      _ -> :ok
+    end
+  end
+
+  defp check_password(_password), do: {:error, %{password: "Password required"}}
 
   defp register_in_firebase(%{name: name, email: email, password: password}) do
     case firebase_post("signUp", %{email: email, password: password}) do

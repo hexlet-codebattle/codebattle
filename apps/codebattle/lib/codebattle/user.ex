@@ -184,7 +184,7 @@ defmodule Codebattle.User do
     user
     |> cast(params, [:current_password, :password, :password_confirmation])
     |> validate_required([:current_password, :password, :password_confirmation])
-    |> validate_length(:password, min: 12, message: "should be at least 12 character(s)")
+    |> validate_length(:password, min: 8, message: "should be at least 8 character(s)")
     |> validate_password_byte_length()
     |> validate_confirmation(:password)
     |> validate_current_password()
@@ -242,12 +242,14 @@ defmodule Codebattle.User do
     |> assign_clan(params, user.id)
   end
 
-  @spec build_guest() :: t()
-  def build_guest do
+  # Every anonymous visitor gets their own negative id (kept in the session), so two guests
+  # never share an identity. 0 remains the legacy/anonymous id used where no session exists.
+  @spec build_guest(integer()) :: t()
+  def build_guest(id \\ @guest_id) do
     %__MODULE__{
       is_guest: true,
-      id: @guest_id,
-      name: "John Doe",
+      id: id,
+      name: guest_name(id),
       subscription_type: :free,
       lang: Application.get_env(:codebattle, :default_lang_slug),
       rating: 1200,
@@ -273,6 +275,18 @@ defmodule Codebattle.User do
 
   @spec guest_id() :: integer()
   def guest_id, do: @guest_id
+
+  # Bots are stored with small negative ids (-5, -6, ...), so session guests get a range of their own.
+  @session_guest_id_offset 1_000_000_000
+
+  @spec generate_guest_id() :: integer()
+  def generate_guest_id, do: -(@session_guest_id_offset + :rand.uniform(@session_guest_id_offset))
+
+  @spec guest_id?(term()) :: boolean()
+  def guest_id?(id), do: id == @guest_id or (is_integer(id) and id <= -@session_guest_id_offset)
+
+  defp guest_name(@guest_id), do: "John Doe"
+  defp guest_name(id), do: "Guest #{rem(abs(id), 10_000)}"
 
   @spec get!(raw_id(), preload :: term()) :: t() | no_return()
   def get!(user_id, preload \\ []) do
@@ -526,7 +540,8 @@ defmodule Codebattle.User do
       if byte_size(password) <= 72 do
         []
       else
-        [password: "should be at most 72 bytes"]
+        # bcrypt only uses the first 72 bytes (~36 Cyrillic letters).
+        [password: "is too long"]
       end
     end)
   end

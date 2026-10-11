@@ -185,6 +185,27 @@ defmodule Codebattle.Game.EngineTest do
     assert {:ok, ^finished} = Game.Engine.trigger_timeout(finished)
   end
 
+  test "rejects editor updates, checks and give-ups from non-players" do
+    user1 = insert(:user)
+    user2 = insert(:user)
+    spectator = insert(:user)
+    {:ok, game} = Game.Engine.create_game(%{players: [user1, user2], state: "playing", level: "easy"})
+    on_exit(fn -> Game.GlobalSupervisor.terminate_game(game.id) end)
+
+    assert {:error, :not_a_player} =
+             Game.Engine.update_editor_data(game, %{id: spectator.id, editor_text: "x", editor_lang: "js"})
+
+    assert {:error, :not_a_player} =
+             Game.Engine.check_result(game, %{user: spectator, editor_text: "x", editor_lang: "js"})
+
+    assert {:error, :not_a_player} = Game.Engine.give_up(game, spectator)
+
+    other_guest = Codebattle.User.build_guest(Codebattle.User.generate_guest_id())
+    assert {:error, :not_a_player} = Game.Engine.give_up(game, other_guest)
+
+    assert %{state: "playing"} = Game.Context.get_game!(game.id)
+  end
+
   test "persists the selected editor type after CSS and SQL games" do
     user = insert(:user, subscription_type: :premium, style_lang: "sass", db_type: "mysql")
 

@@ -85,7 +85,7 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }: RoomW
             <NetworkAlert />
             <FeedbackAlertNotification />
             <div
-              className={cn('container-fluid', {
+              className={cn('container-fluid cb-game-container', {
                 'd-none': roomLocked,
                 invisible: !visible,
               })}

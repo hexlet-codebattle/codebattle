@@ -151,7 +151,7 @@ function CssBattleInfoWidget(_props: CssBattleInfoWidgetProps) {
           </div>
         </div>
       </div>
-      <div className="col-12 col-lg-6 p-1 cb-height-info">
+      <div className="col-12 col-lg-6 p-1 cb-height-info cb-game-chat">
         <ChatWidget />
       </div>
     </>

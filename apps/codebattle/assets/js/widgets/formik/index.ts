@@ -69,8 +69,6 @@ const schemas = {
     password: Yup.string()
       .min(8, 'Should be at least 8 characters')
       .max(128, 'Should be at most 128 characters')
-      .matches(/[a-zA-Z]/, 'Should contain at least one letter')
-      .matches(/[0-9]/, 'Should contain at least one number')
       .required('Password required'),
     passwordConfirmation: Yup.string()
       .required('Confirmation required')

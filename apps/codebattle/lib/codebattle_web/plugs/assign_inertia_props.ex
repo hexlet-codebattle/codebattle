@@ -43,7 +43,7 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
     Map.take(season, [:name, :year, :starts_at, :ends_at])
   end
 
-  defp socket_token_payload(%{is_guest: true} = user, nil), do: user.id
+  defp socket_token_payload(%{is_guest: true} = user, nil), do: {:guest, user.id}
   defp socket_token_payload(user, session), do: {user.id, session.id}
 
   defp present_user_sessions(%{is_guest: true}, _current_session, _request_path), do: []

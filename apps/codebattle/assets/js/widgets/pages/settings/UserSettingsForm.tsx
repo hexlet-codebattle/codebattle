@@ -92,13 +92,13 @@ const passwordValidationSchema = {
     .test('required-password', "Field can't be empty", function (value) {
       return !hasPasswordValue(this.parent) || Boolean(value?.trim());
     })
-    .test('password-min-length', 'Should be at least 12 characters', function (value) {
-      return !hasPasswordValue(this.parent) || (value?.length ?? 0) >= 12;
+    .test('password-min-length', 'Should be at least 8 characters', function (value) {
+      return !hasPasswordValue(this.parent) || (value?.length ?? 0) >= 8;
     })
-    .test('password-max-bytes', 'Should be at most 72 bytes', function (value) {
+    // bcrypt only uses the first 72 bytes (~36 Cyrillic letters).
+    .test('password-max-bytes', 'Is too long', function (value) {
       return !value || new TextEncoder().encode(value).length <= 72;
-    })
-    .matches(/^\S*$/, "Can't contain empty symbols"),
+    }),
   passwordConfirmation: Yup.string()
     .test('required-password-confirmation', "Field can't be empty", function (value) {
       return !hasPasswordValue(this.parent) || Boolean(value?.trim());

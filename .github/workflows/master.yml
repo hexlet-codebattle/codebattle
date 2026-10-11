@@ -59,7 +59,7 @@ jobs:
       CODEBATTLE_DB_NAME: codebattle_test
       CODEBATTLE_DB_SSL: 'false'
       OTP_VERSION: '29.0.3'
-      ELIXIR_VERSION: '1.20.2'
+      ELIXIR_VERSION: '1.20.4'
 
     services:
       db:
@@ -137,7 +137,7 @@ jobs:
     env:
       MIX_ENV: test
       OTP_VERSION: '29.0.3'
-      ELIXIR_VERSION: '1.20.2'
+      ELIXIR_VERSION: '1.20.4'
 
     steps:
       - uses: actions/checkout@v4

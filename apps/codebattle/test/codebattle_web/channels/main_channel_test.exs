@@ -43,6 +43,22 @@ defmodule CodebattleWeb.MainChannelTest do
     assert list == payload
   end
 
+  test "pushes presence state to guests without tracking them", %{creator_socket: creator_socket} do
+    {:ok, _response, _socket} =
+      subscribe_and_join(creator_socket, MainChannel, "main", %{state: "lobby"})
+
+    assert_push("presence_state", _creator_payload)
+
+    guest_token = Phoenix.Token.sign(socket(UserSocket), "user_token", {:guest, -1_000_000_007})
+    {:ok, guest_socket} = connect(UserSocket, %{"token" => guest_token})
+
+    {:ok, _response, guest_socket} = subscribe_and_join(guest_socket, MainChannel, "main", %{state: "lobby"})
+
+    assert_push("presence_state", payload)
+    assert Map.has_key?(payload, to_string(creator_socket.assigns.current_user.id))
+    refute Map.has_key?(Presence.list(guest_socket), "-1000000007")
+  end
+
   test "sends active_game_id on join", %{creator_socket: creator_socket} do
     user = insert(:user)
 
