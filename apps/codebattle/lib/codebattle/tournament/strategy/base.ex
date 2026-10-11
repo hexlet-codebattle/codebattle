@@ -910,7 +910,6 @@ defmodule Codebattle.Tournament.Base do
             round_position: tournament.current_round_position,
             state: "playing",
             task: task,
-            task_id: blueprint.task_id,
             timeout_seconds: get_round_game_timeout(tournament, task),
             tournament_id: tournament.id,
             type: game_type(),
