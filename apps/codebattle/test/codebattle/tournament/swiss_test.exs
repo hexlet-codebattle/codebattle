@@ -72,6 +72,28 @@ defmodule Codebattle.Tournament.SwissTest do
     assert Tournament.Matches.get_match(tournament, 1).state == "game_over"
   end
 
+  test "finish_round_after_match? closes the round of a large field once every game is done" do
+    tournament = build_live_tournament(%{players_count: 300, current_round_position: 1})
+
+    for id <- 1..3 do
+      Tournament.Matches.put_match(tournament, %Match{
+        id: id,
+        round_position: 1,
+        state: "game_over",
+        player_ids: [id * 2, id * 2 + 1]
+      })
+    end
+
+    # A game still playing from an earlier round must not hold up the current one.
+    Tournament.Matches.put_match(tournament, %Match{id: 4, round_position: 0, state: "playing"})
+
+    assert Swiss.finish_round_after_match?(tournament)
+
+    Tournament.Matches.put_match(tournament, %Match{id: 5, round_position: 1, state: "playing"})
+
+    refute Swiss.finish_round_after_match?(tournament)
+  end
+
   test "defers finished game events until the match exists" do
     tournament = build_live_tournament(%{players_count: 2})
     state = %{tournament: tournament, frozen: false}
@@ -83,7 +105,23 @@ defmodule Codebattle.Tournament.SwissTest do
     }
 
     assert {:noreply, ^state} = Server.handle_info(message, state)
-    assert_receive ^message, 1_200
+    expected = Map.put(message, :retries, 1)
+    assert_receive ^expected, 1_200
+  end
+
+  test "drops finished game events for a missing match after max retries" do
+    tournament = build_live_tournament(%{players_count: 2})
+    state = %{tournament: tournament, frozen: false}
+
+    message = %{
+      topic: "game:tournament:#{tournament.id}",
+      event: "game:tournament:finished",
+      payload: %{ref: 404, game_id: 123, game_state: "game_over", player_results: %{}, duration_sec: 1},
+      retries: 60
+    }
+
+    assert {:noreply, ^state} = Server.handle_info(message, state)
+    refute_receive %{event: "game:tournament:finished"}, 1_200
   end
 
   test "toggle_cheater_player updates player state and tournament cheater ids" do

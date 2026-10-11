@@ -64,7 +64,6 @@ const initTournamentChannel = (dispatch: any, isAdminWidged = false) => {
     dispatch(actions.updateTournamentRanking(response.ranking));
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
-    dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
     dispatch(actions.setReports(compact(response.reports)));
   };
 
@@ -90,9 +89,6 @@ export const connectToTournament =
       dispatch(actions.updateTournamentMatches(compact(response.matches || [])));
       if (response.ranking) {
         dispatch(actions.updateTournamentRanking(response.ranking));
-      }
-      if (response.tasksInfo) {
-        dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
       }
     };
 
@@ -271,10 +267,6 @@ export const uploadPlayersMatches = (playerId: number) => (dispatch: any, getSta
       })
       .catch((error) => console.error(error));
   }
-};
-
-export const createCustomRound = (params: any) => {
-  channel.push('tournament:start_round', params);
 };
 
 export const startTournament = () => {

@@ -60,7 +60,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   """
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "75_percentile"} = tournament)
-      when type in ["swiss", "top200"] do
+      when type in ["swiss"] do
     round_position = tournament.current_round_position || 0
     player_cheater_sql = player_cheater_sql(tournament)
     game_has_cheater_sql = game_has_cheater_sql("g", tournament)
@@ -188,7 +188,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   # Cheater handling matches "75_percentile": a cheater scores 0, and the honest opponent who
   # lost to a cheater is compensated with the full base_score.
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "static_base_score"} = tournament)
-      when type in ["swiss", "top200", "ladder"] do
+      when type in ["swiss", "ladder"] do
     round_position = tournament.current_round_position || 0
     round_timeout = max(round_timeout_seconds(tournament), 1)
     winner_multiplier = static_winner_multiplier_sql(type, round_timeout)
@@ -414,12 +414,6 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   # Round duration used as the speed-multiplier anchor in the static_base_score strategy.
-  # Top200 hardcodes per-position timings, so delegate to its strategy; others use the
-  # tournament's configured round_timeout_seconds.
-  defp round_timeout_seconds(%{type: "top200"} = tournament) do
-    Tournament.Top200.round_timeout_seconds(tournament)
-  end
-
   defp round_timeout_seconds(%{round_timeout_seconds: secs}) when is_integer(secs) and secs > 0, do: secs
   defp round_timeout_seconds(_tournament), do: 180
 
@@ -660,7 +654,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       FROM
           tournament_results tr
       WHERE
-          tr.tournament_id = #{tournament.id}
+          tr.tournament_id = $1
       GROUP BY
           tr.clan_id, tr.user_id
     ),
@@ -689,7 +683,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       FROM
           TopPlayers tp
       WHERE
-          tp.player_rank <= #{players_limit}
+          tp.player_rank <= $2
     ),
     ClanScores AS (
       SELECT
@@ -702,7 +696,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           t5p.clan_id
       ORDER BY
           total_clan_score DESC
-      LIMIT #{clans_limit}
+      LIMIT $3
     ),
     Top7ClansTop5Players AS (
       SELECT
@@ -738,7 +732,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       t.clan_rank,
       t.total_score DESC
     """
-    |> Repo.query!()
+    |> Repo.query!([tournament.id, players_limit, clans_limit])
     |> map_repo_result()
   end
 
@@ -785,8 +779,8 @@ defmodule Codebattle.Tournament.TournamentResult do
     FROM
         tournament_results
     WHERE
-        tournament_id = #{tournament.id}
-        AND task_id = #{task_id}
+        tournament_id = $1
+        AND task_id = $2
         AND result_percent = 100.0
         AND score > 0
     ),
@@ -818,15 +812,15 @@ defmodule Codebattle.Tournament.TournamentResult do
     ON
       tr.duration_sec >= interval_start
       AND tr.duration_sec < interval_end
-      AND tr.task_id = #{task_id}
+      AND tr.task_id = $2
       AND tr.result_percent = 100.0
-      AND tr.tournament_id = #{tournament.id}
+      AND tr.tournament_id = $1
     GROUP BY
       interval_start, interval_end
     ORDER BY
       interval_start
     """
-    |> Repo.query!()
+    |> Repo.query!([tournament.id, task_id])
     |> map_repo_result()
   end
 
@@ -840,14 +834,14 @@ defmodule Codebattle.Tournament.TournamentResult do
         SUM(tr.score) / NULLIF(COUNT(DISTINCT tr.user_id), 0) AS performance,
         CASE
             WHEN (player_counts.max_player_count - player_counts.min_player_count) != 0
-            THEN (ROUND((1.0 *(COUNT(DISTINCT tr.user_id) - player_counts.min_player_count) /  (player_counts.max_player_count - player_counts.min_player_count)) * #{max_radius - 1}) + 1)::int
+            THEN (ROUND((1.0 *(COUNT(DISTINCT tr.user_id) - player_counts.min_player_count) /  (player_counts.max_player_count - player_counts.min_player_count)) * ($2::int - 1)) + 1)::int
             ELSE 1
         END AS radius
     FROM
         tournament_results tr,
-        (SELECT MIN(cnt) AS min_player_count, MAX(cnt) AS max_player_count FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM tournament_results GROUP BY clan_id) AS counts) AS player_counts
+        (SELECT MIN(cnt) AS min_player_count, MAX(cnt) AS max_player_count FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM tournament_results WHERE tournament_id = $1 GROUP BY clan_id) AS counts) AS player_counts
     WHERE
-        tr.tournament_id = #{tournament.id}
+        tr.tournament_id = $1
     GROUP BY
         tr.clan_id, player_counts.min_player_count, player_counts.max_player_count
     )
@@ -866,9 +860,9 @@ defmodule Codebattle.Tournament.TournamentResult do
     ORDER BY
       cr.total_score DESC
     LIMIT
-      #{limit}
+      $3
     """
-    |> Repo.query!()
+    |> Repo.query!([tournament.id, max_radius, limit])
     |> map_repo_result()
   end
 

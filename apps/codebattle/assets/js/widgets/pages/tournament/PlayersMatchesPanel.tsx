@@ -20,7 +20,6 @@ import { type AppDispatch } from '@/slices';
 
 import TournamentPlayersPagination from './TournamentPlayersPagination';
 import TournamentUserPanel from './TournamentUserPanel';
-import Top200RedirectButton from './Top200RedirectButton';
 
 const filterControlsClassName = cn(
   'd-flex flex-column flex-md-row align-items-md-center justify-content-between',
@@ -78,11 +77,10 @@ interface PlayersListProps {
   matchList: PanelMatch[];
   currentUserId: number;
   searchedUserId?: number;
-  hideBots?: boolean;
 }
 
 const PlayersList = memo(
-  ({ players, matchList, currentUserId, searchedUserId, hideBots }: PlayersListProps) =>
+  ({ players, matchList, currentUserId, searchedUserId }: PlayersListProps) =>
     players.map((player) => {
       if (player.id === searchedUserId) {
         return <></>;
@@ -103,7 +101,6 @@ const PlayersList = memo(
           lang={player.lang}
           isBanned={player.isBanned}
           searchedUserId={searchedUserId}
-          hideBots={hideBots}
         />
       );
     }),
@@ -148,15 +145,11 @@ interface PlayersMatchesPanelProps {
   players: Record<number, MatchesPanelPlayer>;
   topPlayerIds?: number[];
   currentUserId: number;
-  currentRoundPosition: number;
   playersCount: number;
-  playersRedirectUrl?: string;
   pageNumber: number;
   pageSize: number;
-  hideBots?: boolean;
   hideResults?: boolean;
   canModerate?: boolean;
-  type?: string;
 }
 
 function PlayersMatchesPanel({
@@ -166,15 +159,11 @@ function PlayersMatchesPanel({
   players,
   topPlayerIds,
   currentUserId,
-  currentRoundPosition,
   playersCount,
-  playersRedirectUrl,
   pageNumber,
   pageSize,
-  hideBots,
   hideResults,
   canModerate,
-  type,
 }: PlayersMatchesPanelProps) {
   const dispatch = useDispatch<AppDispatch>();
   const [searchTerm, setSearchTerm] = useState('');
@@ -200,10 +189,9 @@ function PlayersMatchesPanel({
       : (topPlayerIds || []).map((id) => players[id]).filter(Boolean);
 
     return sortedPlayers
-      .filter((player) => !(player.isBot && hideBots))
       .filter((player) => isFuzzyMatch((player.name || '').toLowerCase(), normalizedSearch))
       .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  }, [players, topPlayerIds, hideBots, normalizedSearch]);
+  }, [players, topPlayerIds, normalizedSearch]);
 
   const normalizedPageSize = Number(pageSize);
   const safePageSize = normalizedPageSize > 0 ? normalizedPageSize : 16;
@@ -288,16 +276,9 @@ function PlayersMatchesPanel({
   }, [dispatch, pageNumber, totalPages]);
 
   const showHideResultsNotice = hideResults;
-  const currentPlayer = players[currentUserId];
 
   return (
     <>
-      <Top200RedirectButton
-        currentRoundPosition={currentRoundPosition}
-        player={currentPlayer}
-        playersRedirectUrl={playersRedirectUrl}
-        type={type}
-      />
       {showHideResultsNotice && (
         <div
           className={cn(
@@ -338,7 +319,6 @@ function PlayersMatchesPanel({
             matchList={matchList}
             currentUserId={currentUserId}
             searchedUserId={searchedUser?.id}
-            hideBots={hideBots}
           />
         </>
       ) : (
@@ -353,7 +333,6 @@ function PlayersMatchesPanel({
             matchList={matchList}
             currentUserId={currentUserId}
             searchedUserId={searchedUser?.id}
-            hideBots={hideBots}
           />
         </>
       )}

@@ -255,7 +255,6 @@ const defaultTournamentParams = {
   playersPageSize: 16,
   useChat: false,
   showResults: true,
-  showBots: true,
 
   // client params
   channel: { online: false },
@@ -397,11 +396,9 @@ export interface TournamentState {
   players: Record<number, Record<string, unknown>> | unknown[];
   gameResults: Record<string, unknown>;
   ranking: { entries: Array<{ id: number; [key: string]: unknown }> };
-  taskList?: unknown[];
   topPlayerIds: number[];
   playersPageNumber: number;
   channel: ChannelState;
-  showBots: boolean;
   creatorId: number | null;
   showResults: boolean;
   [key: string]: unknown;

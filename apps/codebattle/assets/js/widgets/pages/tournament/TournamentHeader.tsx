@@ -13,7 +13,6 @@ import i18next from '../../../i18n';
 import CopyButton from '../../components/CopyButton';
 import InviteQrCode from '../../components/InviteQrCode';
 import TournamentStates from '../../config/tournament';
-import TournamentTypes from '../../config/tournamentTypes';
 import { localizeTournamentName } from '../../utils/localizeTournamentName';
 import useTimer from '../../utils/useTimer';
 
@@ -161,7 +160,6 @@ interface TournamentHeaderProps {
   lastRoundStartedAt?: string;
   lastRoundEndedAt?: string;
   startsAt: string;
-  type?: string;
   accessType?: string;
   accessToken: string;
   isLive?: boolean;
@@ -172,12 +170,10 @@ interface TournamentHeaderProps {
   level?: string;
   grade?: string;
   currentUserId: number;
-  showBots?: boolean;
   hideResults?: boolean;
   isOnline?: boolean;
   isOver?: boolean;
   canModerate?: boolean;
-  toggleShowBots: () => void;
   toggleStreamMode: () => void;
   // Bound to a boolean state setter by the parent, but invoked with a string by
   // the control buttons — kept permissive to preserve the existing runtime wiring.
@@ -197,7 +193,6 @@ function TournamentHeader({
   lastRoundStartedAt,
   lastRoundEndedAt,
   startsAt,
-  type,
   accessType,
   accessToken,
   isLive,
@@ -207,12 +202,10 @@ function TournamentHeader({
   level,
   grade,
   currentUserId,
-  showBots = true,
   hideResults = true,
   isOnline,
   isOver,
   canModerate,
-  toggleShowBots,
   toggleStreamMode,
   handleStartRound,
   handleOpenDetails,
@@ -268,7 +261,6 @@ function TournamentHeader({
     state === TournamentStates.active ||
     state === TournamentStates.finished ||
     state === TournamentStates.canceled;
-  const canToggleShowBots = type === TournamentTypes.show;
   const tournamentAccessUrl = useMemo(
     () => buildTournamentAccessUrl(tournamentId, accessToken),
     [tournamentId, accessToken],
@@ -374,13 +366,10 @@ function TournamentHeader({
                     canFinishRound={canFinishRound}
                     canFinishTournament={canFinishTournament}
                     canRestart={canRestart}
-                    canToggleShowBots={canToggleShowBots}
-                    showBots={showBots}
                     hideResults={hideResults}
                     disabled={!isOnline}
                     handleStartRound={handleStartRound}
                     handleOpenDetails={handleOpenDetails}
-                    toggleShowBots={toggleShowBots}
                     toggleStreamMode={toggleStreamMode}
                   />
                 </div>

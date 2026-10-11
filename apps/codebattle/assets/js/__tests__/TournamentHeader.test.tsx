@@ -26,7 +26,6 @@ test('TournamentHeader copies full private tournament url', async () => {
       lastRoundStartedAt={undefined}
       lastRoundEndedAt={undefined}
       startsAt={new Date().toISOString()}
-      type="team"
       accessType="token"
       accessToken="secret-token"
       isLive
@@ -35,12 +34,10 @@ test('TournamentHeader copies full private tournament url', async () => {
       playersCount={0}
       playersLimit={100}
       currentUserId={1}
-      showBots
       hideResults
       isOnline
       isOver
       canModerate
-      toggleShowBots={vi.fn()}
       toggleStreamMode={vi.fn()}
       handleStartRound={vi.fn()}
       handleOpenDetails={vi.fn()}
@@ -66,7 +63,6 @@ test('TournamentHeader shows the grade icon and first-place ranking points', () 
       players={{}}
       playersCount={0}
       currentUserId={1}
-      toggleShowBots={vi.fn()}
       toggleStreamMode={vi.fn()}
       handleStartRound={vi.fn()}
       handleOpenDetails={vi.fn()}
@@ -91,7 +87,6 @@ test('TournamentHeader omits grade details for open tournaments', () => {
       players={{}}
       playersCount={0}
       currentUserId={1}
-      toggleShowBots={vi.fn()}
       toggleStreamMode={vi.fn()}
       handleStartRound={vi.fn()}
       handleOpenDetails={vi.fn()}
@@ -119,7 +114,6 @@ const renderPrivateHeader = (props = {}) =>
       currentUserId={1}
       isOnline
       canModerate
-      toggleShowBots={vi.fn()}
       toggleStreamMode={vi.fn()}
       handleStartRound={vi.fn()}
       handleOpenDetails={vi.fn()}

@@ -81,4 +81,40 @@ defmodule CodebattleWeb.TournamentChannelAuthTest do
     assert_reply(ref, :ok, %{results: [%{clan_id: clan_id, clan_name: "hexlet"}]})
     assert clan_id == clan.id
   end
+
+  test "get_results ignores non-integer numeric params instead of injecting them into SQL" do
+    creator = insert(:user)
+    user = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Tournament with result queries",
+        "description" => "Result queries",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    assert {:ok, user_socket} = connect(UserSocket, %{"token" => user_socket_token(user)})
+
+    assert {:ok, _response, channel_socket} =
+             subscribe_and_join(user_socket, TournamentChannel, "tournament:#{tournament.id}", %{})
+
+    injection = "5) UNION SELECT 1 --"
+
+    for params <- [
+          %{"type" => "top_users_by_clan_ranking", "players_limit" => injection, "clans_limit" => injection},
+          %{"type" => "task_duration_distribution", "task_id" => injection},
+          %{"type" => "clans_bubble_distribution", "max_radius" => injection},
+          %{"type" => "top_user_by_task_ranking", "task_id" => injection, "limit" => injection}
+        ] do
+      ref = push(channel_socket, "tournament:get_results", %{"params" => params})
+      assert_reply(ref, :ok, %{results: []})
+    end
+  end
 end

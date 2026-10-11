@@ -130,14 +130,16 @@ defmodule Codebattle.Tournament.ContextAdditionalTest do
   end
 
   test "classifies every restorable tournament strategy and recalculates a non-finished snapshot as a no-op" do
-    show = insert(:tournament, type: "show", state: "waiting_participants")
-    versus = insert(:tournament, type: "versus", state: "active")
+    swiss = insert(:tournament, type: "swiss", state: "waiting_participants")
+    ladder = insert(:tournament, type: "ladder", state: "active")
+    retired = insert(:tournament, type: "top200", state: "active")
 
     restored = Map.new(Tournament.Context.get_tournament_for_restore(), &{&1.id, &1})
-    assert restored[show.id].module == Tournament.Show
-    assert restored[versus.id].module == Tournament.Versus
-    assert restored[show.id].is_live
-    assert restored[versus.id].is_live
+    assert restored[swiss.id].module == Tournament.Swiss
+    assert restored[ladder.id].module == Tournament.Ladder
+    assert restored[swiss.id].is_live
+    assert restored[ladder.id].is_live
+    refute Map.has_key?(restored, retired.id)
 
     upcoming = insert(:tournament, type: "swiss", state: "upcoming")
     assert Tournament.Context.recalculate_results(upcoming.id).id == upcoming.id

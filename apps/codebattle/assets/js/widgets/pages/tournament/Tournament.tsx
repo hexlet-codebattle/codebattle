@@ -230,11 +230,8 @@ function InfoPanel({
       {!isParticipant && joinCta}
       <CustomTournamentInfoPanel
         canModerate={canModerate}
-        currentRoundPosition={tournament.currentRoundPosition}
         currentUserId={currentUserId}
-        hideBots={!tournament.showBots}
         hideResults={hideResults}
-        matchTimeoutSeconds={tournament.matchTimeoutSeconds}
         matches={tournament.matches}
         pageNumber={tournament.playersPageNumber}
         pageSize={tournament.playersPageSize}
@@ -243,13 +240,8 @@ function InfoPanel({
         ranking={tournament.ranking}
         roundsLimit={tournament.roundsLimit}
         state={tournament.state}
-        taskList={tournament.taskList}
         topPlayerIds={tournament.topPlayerIds}
         type={tournament.type}
-        playersRedirectUrl={tournament.meta?.playersRedirectUrl}
-        hideCustomGameConsole={
-          tournament.type !== 'versus' || tournament.state !== TournamentStates.active
-        }
       />
     </>
   );
@@ -305,9 +297,6 @@ function Tournament() {
   const onCloseRoundConfirmationModal = useCallback(() => {
     setStartRoundConfirmationModalShowing(false);
   }, [setStartRoundConfirmationModalShowing]);
-  const toggleShowBots = useCallback(() => {
-    dispatch(actions.toggleShowBots());
-  }, [dispatch]);
   const toggleStreamMode = useCallback(() => {
     if (streamMode) {
       // document.getElementsByTagName('main')[0].style.zoom = '100%';
@@ -505,14 +494,11 @@ function Tournament() {
               players={tournament.players}
               playersCount={tournament.playersCount}
               playersLimit={tournament.playersLimit}
-              showBots={tournament.showBots}
               hideResults={hideResults}
               startsAt={tournament.startsAt}
               state={tournament.state}
-              type={tournament.type}
               handleStartRound={handleStartRound}
               handleOpenDetails={handleOpenDetails}
-              toggleShowBots={toggleShowBots}
               toggleStreamMode={toggleStreamMode}
               showHeaderPane
               showAdminPane={false}
@@ -546,14 +532,11 @@ function Tournament() {
                   players={tournament.players}
                   playersCount={tournament.playersCount}
                   playersLimit={tournament.playersLimit}
-                  showBots={tournament.showBots}
                   hideResults={hideResults}
                   startsAt={tournament.startsAt}
                   state={tournament.state}
-                  type={tournament.type}
                   handleStartRound={handleStartRound}
                   handleOpenDetails={handleOpenDetails}
-                  toggleShowBots={toggleShowBots}
                   toggleStreamMode={toggleStreamMode}
                   showHeaderPane={false}
                   showAdminPane
@@ -593,14 +576,11 @@ function Tournament() {
                   players={tournament.players}
                   playersCount={tournament.playersCount}
                   playersLimit={tournament.playersLimit}
-                  showBots={tournament.showBots}
                   hideResults={hideResults}
                   startsAt={tournament.startsAt}
                   state={tournament.state}
-                  type={tournament.type}
                   handleStartRound={handleStartRound}
                   handleOpenDetails={handleOpenDetails}
-                  toggleShowBots={toggleShowBots}
                   toggleStreamMode={toggleStreamMode}
                   showHeaderPane
                   showAdminPane={false}

@@ -12,30 +12,12 @@ interface TournamentTypeProps {
 }
 
 function TournamentType({ type }: TournamentTypeProps) {
-  if (type === TournamentTypeCodes.versus) {
-    return i18n.t('Versus');
-  }
-
   if (type === TournamentTypeCodes.swiss) {
     return i18n.t('Swiss');
   }
 
-  if (type === TournamentTypeCodes.individual) {
-    return <FontAwesomeIcon icon="users" />;
-  }
-
-  if (type === TournamentTypeCodes.team) {
-    return (
-      <>
-        <FontAwesomeIcon icon="users" />
-        vs
-        <FontAwesomeIcon icon="users" />
-      </>
-    );
-  }
-
-  if (type === TournamentTypeCodes.show) {
-    return <FontAwesomeIcon icon="wine-bottle" />;
+  if (type === TournamentTypeCodes.ladder) {
+    return i18n.t('Ladder');
   }
 
   return <FontAwesomeIcon title={i18n.t('Unknown tournament type')} icon="question-circle" />;

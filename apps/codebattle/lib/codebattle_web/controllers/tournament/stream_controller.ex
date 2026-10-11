@@ -91,18 +91,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
   defp completed_rounds(%{break_state: "on", current_round_position: pos}), do: (pos || 0) + 1
   defp completed_rounds(%{current_round_position: pos}), do: pos || 0
 
-  # Set of player ids still "active" in the funnel.
-  #   - top200 play-off phase (last 3 rounds, 4→2→1): bracket survivors — the
-  #     deepest draw_index wave (top200 bumps draw_index for each pair's winner).
-  #   - otherwise (Swiss phase / other types): top-N by place per the cutoff table.
-  defp active_player_ids(%{type: "top200"} = tournament, players) do
-    if completed_rounds(tournament) >= 6 do
-      bracket_survivor_ids(players)
-    else
-      cutoff_player_ids(players, completed_rounds(tournament))
-    end
-  end
-
+  # Set of player ids still "active" in the funnel: top-N by place per the cutoff table.
   defp active_player_ids(tournament, players) do
     cutoff_player_ids(players, completed_rounds(tournament))
   end
@@ -117,14 +106,6 @@ defmodule CodebattleWeb.Tournament.StreamController do
         |> Enum.filter(&(is_integer(&1.place) and &1.place >= 1 and &1.place <= cutoff))
         |> MapSet.new(& &1.id)
     end
-  end
-
-  defp bracket_survivor_ids(players) do
-    max_draw_index = players |> Enum.map(&(&1.draw_index || 0)) |> Enum.max(fn -> 0 end)
-
-    players
-    |> Enum.filter(&((&1.draw_index || 0) == max_draw_index))
-    |> MapSet.new(& &1.id)
   end
 
   # No round finished yet → everyone is still active; otherwise top-N by place.

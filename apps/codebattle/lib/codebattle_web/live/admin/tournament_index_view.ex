@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   use CodebattleWeb, :live_view
 
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.Simulator
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,8 +11,7 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
      assign(socket,
        layout: {CodebattleWeb.LayoutView, :admin},
        tournaments: list_tournaments(),
-       duplicate_result: nil,
-       creating_simulation: false
+       duplicate_result: nil
      )}
   end
 
@@ -56,37 +54,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
   def handle_event("cancel", %{"id" => id}, socket) do
     Tournament.Server.handle_event(String.to_integer(id), :cancel, %{})
     {:noreply, assign(socket, :tournaments, list_tournaments())}
-  end
-
-  def handle_event("create_simulation", _params, socket) do
-    socket =
-      socket
-      |> assign(:creating_simulation, true)
-      |> start_async(:create_simulation, fn -> Simulator.Setup.create(%{}) end)
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_async(:create_simulation, {:ok, {:ok, users}}, socket) do
-    {:noreply,
-     socket
-     |> assign(:creating_simulation, false)
-     |> put_flash(:info, "Loaded #{length(users)} Top200 simulator players from DB.")}
-  end
-
-  def handle_async(:create_simulation, {:ok, {:error, reason}}, socket) do
-    {:noreply,
-     socket
-     |> assign(:creating_simulation, false)
-     |> put_flash(:error, "Failed to create simulator: #{inspect(reason)}")}
-  end
-
-  def handle_async(:create_simulation, {:exit, reason}, socket) do
-    {:noreply,
-     socket
-     |> assign(:creating_simulation, false)
-     |> put_flash(:error, "Simulator creation crashed: #{inspect(reason)}")}
   end
 
   defp list_tournaments do
@@ -179,25 +146,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
             </tbody>
           </table>
         </div>
-      </div>
-
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4 mt-3">
-        <h3 class="text-white mb-3">Top200 Simulator</h3>
-        <p class="cb-text mb-3">
-          Inserts or updates 200 Top200 simulator players with fixed ids, names,
-          ranks, languages, categories, and clans.
-        </p>
-        <button
-          type="button"
-          phx-click="create_simulation"
-          data-confirm="Insert or update 200 Top200 simulator players?"
-          disabled={@creating_simulation}
-          class="btn btn-warning text-white cb-rounded"
-        >
-          {if @creating_simulation,
-            do: "Inserting…",
-            else: "Insert Top200 Players"}
-        </button>
       </div>
 
       <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4 mt-3">

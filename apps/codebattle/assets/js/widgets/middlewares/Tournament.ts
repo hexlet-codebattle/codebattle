@@ -62,7 +62,6 @@ const initTournamentChannel = (currentChannel: Channel) => (dispatch: any) => {
         ranking: response.ranking ? camelizeKeys(response.ranking) : { entries: [] },
         clans: response.clans || {},
         players: {},
-        showBots: response.tournament.type !== TournamentTypes.show,
         channel: { online: true },
         playersPageNumber: 1,
         playersPageSize: 16,
@@ -71,7 +70,6 @@ const initTournamentChannel = (currentChannel: Channel) => (dispatch: any) => {
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
-    dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
   };
 
   currentChannel.onMessage((_event: string, payload: any) => camelizeKeys(payload));
@@ -94,9 +92,6 @@ export const connectToTournament = (newTournamentId: number) => (dispatch: any, 
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
     dispatch(actions.updateTournamentMatches(compact(response.matches || [])));
-    if (response.tasksInfo) {
-      dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
-    }
   };
 
   const handleMatchesUpdate = (response: any) => {

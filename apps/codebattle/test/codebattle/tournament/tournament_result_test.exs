@@ -108,7 +108,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
     end
 
     test "ranking tiebreak: equal score and time -> lower user_id ranks higher (semifinal place)" do
-      tournament = insert(:tournament, type: "top200", ranking_type: "by_user", use_clan: false)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
       low = insert(:user, name: "low")
       high = insert(:user, name: "high")
       # Гарантируем low.id < high.id независимо от порядка вставки.
@@ -1341,10 +1341,10 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                TournamentResult.get_user_ranking(tournament)[honest_id]
     end
 
-    test "uses Top200 timing and tolerates a live table without the matching game" do
+    test "static base score tolerates a live table without the matching game" do
       tournament =
         insert(:tournament,
-          type: "top200",
+          type: "swiss",
           ranking_type: "by_user",
           score_strategy: "static_base_score",
           current_round_position: 0

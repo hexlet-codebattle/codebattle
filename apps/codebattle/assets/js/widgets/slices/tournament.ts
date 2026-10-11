@@ -31,9 +31,7 @@ const tournament = createSlice({
       { payload }: PayloadAction<Partial<TournamentState> & { type?: string }>,
     ) => ({
       ...state,
-      ...([TournamentTypes.versus, TournamentTypes.swiss, TournamentTypes.show].includes(
-        payload.type as string,
-      )
+      ...([TournamentTypes.swiss].includes(payload.type as string)
         ? omit(payload, ['matches', 'players'])
         : payload),
     }),
@@ -53,9 +51,6 @@ const tournament = createSlice({
         ...state.matches,
         ...newMatches,
       };
-    },
-    setTournamentTaskList: (state, { payload }: PayloadAction<unknown[]>) => {
-      state.taskList = payload;
     },
     addTournamentPlayer: (state, { payload }: PayloadAction<{ player: TournamentPlayerData }>) => {
       state.players = { ...state.players, [payload.player.id]: payload.player };
@@ -109,11 +104,6 @@ const tournament = createSlice({
     },
     setTournamentPlayersPageNumber: (state, { payload }: PayloadAction<number>) => {
       state.playersPageNumber = payload;
-    },
-    toggleShowBots: (state) => {
-      if (state.type === TournamentTypes.show) {
-        state.showBots = !state.showBots;
-      }
     },
     changeTournamentState: (state, { payload }: PayloadAction<{ id: number; state: string }>) => {
       if (payload.id === state.id) {

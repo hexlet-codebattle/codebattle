@@ -11,6 +11,8 @@ defmodule Codebattle.Tournament.Server do
   @type tournament_id :: pos_integer()
   @tournament_info_table :tournament_info_cache
   @freeze_retry_ms 1_000
+  # A finished game whose match never shows up (e.g. after a restart) is retried for ~1 min.
+  @match_missing_max_retries 60
   # Events after which the current round may have nothing left to wait for.
   @round_closing_events [:leave, :toggle_ban_player, :toggle_cheater_player, :game_over_match]
   # Ladder: don't insert a pre-tick break if the next scheduled tick is already imminent.
@@ -48,7 +50,7 @@ defmodule Codebattle.Tournament.Server do
   ]
   # API
   def start_link(tournament_id) do
-    GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
+    GenServer.start_link(__MODULE__, tournament_id, name: server_name(tournament_id))
   end
 
   def get_tournament_info(id) do
@@ -178,6 +180,10 @@ defmodule Codebattle.Tournament.Server do
       ])
     end
 
+    # The info cache lives in GlobalSupervisor's table and survives this process, so an
+    # entry here means the supervisor is restarting us after a crash (ETS data is gone).
+    restarted? = :ets.member(@tournament_info_table, tournament_id)
+
     players_table = Tournament.Players.create_table(tournament_id)
     matches_table = Tournament.Matches.create_table(tournament_id)
     tasks_table = Tournament.Tasks.create_table(tournament_id)
@@ -196,9 +202,15 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:tasks_table, tasks_table)
       |> Map.put(:clans_table, clans_table)
 
-    if tournament.grade != "open" and tournament.state not in ["canceled", "finished"] do
+    if tournament.grade != "open" and tournament.state == "waiting_participants" do
       time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
       Process.send_after(self(), :start_grade_tournament, max(time_diff_ms, 0))
+    end
+
+    update_tournament_info_cache(tournament)
+
+    if restarted? and tournament.state in ["waiting_participants", "active"] do
+      send(self(), :restore_after_crash)
     end
 
     {:ok,
@@ -383,11 +395,7 @@ defmodule Codebattle.Tournament.Server do
     if state.frozen do
       defer_message(:start_grade_tournament, "start_grade_tournament", state)
     else
-      case tournament do
-        %{players_count: pc} = t when pc > 0 -> cast_event(t.id, :start, %{})
-        %{players_count: 0} = t -> cast_event(t.id, :cancel, %{})
-      end
-
+      maybe_start_grade_tournament(tournament)
       {:noreply, %{state | tournament: tournament}}
     end
   end
@@ -512,7 +520,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_info(
-        %{topic: "game:tournament:" <> _t_id, event: "game:tournament:finished", payload: payload},
+        %{topic: "game:tournament:" <> _t_id, event: "game:tournament:finished", payload: payload} = message,
         %{tournament: tournament} = state
       ) do
     if state.frozen do
@@ -526,11 +534,7 @@ defmodule Codebattle.Tournament.Server do
 
       case match do
         nil ->
-          defer_message(
-            %{topic: "game:tournament:#{tournament.id}", event: "game:tournament:finished", payload: payload},
-            "game_tournament_match_missing",
-            state
-          )
+          retry_missing_match(message, state)
 
         %{state: "playing"} = match ->
           maybe_finish_live_match(state, tournament, match, payload)
@@ -594,7 +598,22 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_info(:terminate, %{tournament: tournament} = state) do
-    Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+    Tournament.GlobalSupervisor.terminate_tournament_async(tournament.id)
+    {:noreply, state}
+  end
+
+  # Restore runs through this server's public API (import_state / handle_event), so it
+  # must happen from another process once init has returned.
+  def handle_info(:restore_after_crash, %{tournament: tournament} = state) do
+    Logger.warning("Tournament #{tournament.id} restarted after crash, restoring state")
+    tournament_id = tournament.id
+
+    Task.start(fn ->
+      tournament_id
+      |> Tournament.Context.get_from_db!()
+      |> Tournament.Context.restore_after_release()
+    end)
+
     {:noreply, state}
   end
 
@@ -603,6 +622,42 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
+
+  # Only a tournament still waiting may auto-start/cancel. players_count is virtual and
+  # is 0 right after a boot/crash restore, so count from ETS and the persisted snapshot.
+  defp maybe_start_grade_tournament(%{state: "waiting_participants"} = tournament) do
+    if grade_players_count(tournament) > 0 do
+      cast_event(tournament.id, :start, %{})
+    else
+      cast_event(tournament.id, :cancel, %{})
+    end
+  end
+
+  defp maybe_start_grade_tournament(_tournament), do: :noop
+
+  defp retry_missing_match(%{payload: payload} = message, %{tournament: tournament} = state) do
+    retries = Map.get(message, :retries, 0)
+
+    if retries < @match_missing_max_retries do
+      defer_message(
+        %{
+          topic: "game:tournament:#{tournament.id}",
+          event: "game:tournament:finished",
+          payload: payload,
+          retries: retries + 1
+        },
+        "game_tournament_match_missing",
+        state
+      )
+    else
+      Logger.error("Tournament #{tournament.id}: dropping game finish for unknown match #{inspect(payload.ref)}")
+      {:noreply, state}
+    end
+  end
+
+  defp grade_players_count(tournament) do
+    max(players_count(tournament), map_size(tournament.players || %{}))
+  end
 
   defp update_tournament_info_cache(tournament) do
     tournament_info = Map.drop(tournament, @tournament_info_drop_fields)

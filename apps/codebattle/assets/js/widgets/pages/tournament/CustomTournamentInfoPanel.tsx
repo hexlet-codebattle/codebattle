@@ -17,7 +17,6 @@ import ReportsPanel from './ReportsPanel';
 import StatisticsCard from './StatisticsCard';
 import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
 import TaskRankingPanel from './TaskRankingPanel';
-import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 
 const basePanelModes = [PanelModeCodes.playerMode, PanelModeCodes.leaderboardMode];
 const finishedPanelModes = [
@@ -58,44 +57,32 @@ interface InfoPanelPlayer {
 
 interface CustomTournamentInfoPanelProps {
   canModerate?: boolean;
-  currentRoundPosition?: number;
   currentUserId: number;
-  hideBots?: boolean;
-  hideCustomGameConsole?: boolean;
   hideResults?: boolean;
-  matchTimeoutSeconds?: number;
   matches: Record<number, { playerIds: number[]; [key: string]: unknown }>;
   pageNumber: number;
   pageSize: number;
   players: Record<number, InfoPanelPlayer>;
   playersCount: number;
-  playersRedirectUrl?: string;
   ranking?: { entries?: unknown[]; [key: string]: unknown };
   roundsLimit?: number;
   state: string;
-  taskList?: unknown[];
   topPlayerIds?: number[];
   type?: string;
 }
 
 function CustomTournamentInfoPanel({
   canModerate = false,
-  currentRoundPosition = 0,
   currentUserId,
-  hideBots = false,
-  hideCustomGameConsole = false,
   hideResults = false,
-  matchTimeoutSeconds,
   matches,
   pageNumber,
   pageSize,
   players,
   playersCount,
-  playersRedirectUrl,
   ranking,
   roundsLimit = 1,
   state,
-  taskList,
   topPlayerIds,
   type,
 }: CustomTournamentInfoPanelProps) {
@@ -221,16 +208,6 @@ function CustomTournamentInfoPanel({
 
   return (
     <>
-      {!hideCustomGameConsole && canModerate && (
-        <TournamentGameCreatePanel
-          type={type}
-          players={players as React.ComponentProps<typeof TournamentGameCreatePanel>['players']}
-          matches={matches as React.ComponentProps<typeof TournamentGameCreatePanel>['matches']}
-          taskList={taskList as React.ComponentProps<typeof TournamentGameCreatePanel>['taskList']}
-          currentRoundPosition={currentRoundPosition ?? 0}
-          defaultMatchTimeoutSeconds={matchTimeoutSeconds}
-        />
-      )}
       {/* <SwitchTransition mode="out-in"> */}
       {/*   <CSSTransition */}
       {/*     key={panelMode} */}
@@ -269,15 +246,12 @@ function CustomTournamentInfoPanel({
         )}
         {panelMode.panel === PanelModeCodes.playerMode && (
           <PlayerStatsPanel
-            currentRoundPosition={currentRoundPosition ?? 0}
             roundsLimit={roundsLimit}
             matches={matches as React.ComponentProps<typeof PlayerStatsPanel>['matches']}
             players={players as React.ComponentProps<typeof PlayerStatsPanel>['players']}
             type={type}
             currentUserId={currentUserId}
-            hideBots={hideBots}
             canModerate={canModerate}
-            playersRedirectUrl={playersRedirectUrl}
           />
         )}
         {panelMode.panel === PanelModeCodes.ratingMode && (
@@ -288,15 +262,11 @@ function CustomTournamentInfoPanel({
             players={players}
             topPlayerIds={topPlayerIds}
             currentUserId={currentUserId}
-            currentRoundPosition={currentRoundPosition}
             playersCount={playersCount}
-            playersRedirectUrl={playersRedirectUrl}
             pageNumber={pageNumber}
             pageSize={pageSize}
-            hideBots={hideBots}
             canModerate={canModerate}
             hideResults={(hideResults && !canModerate) || (!players[currentUserId] && !canModerate)}
-            type={type}
           />
         )}
         {panelMode.panel === PanelModeCodes.topUserByClansMode && (

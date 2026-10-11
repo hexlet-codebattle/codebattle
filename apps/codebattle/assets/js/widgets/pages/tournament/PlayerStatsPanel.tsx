@@ -6,7 +6,6 @@ import reverse from 'lodash/reverse';
 import { type Player } from '@/slices/initial';
 
 import Loading from '../../components/Loading';
-import Top200RedirectButton from './Top200RedirectButton';
 import UsersMatchList from './UsersMatchList';
 
 interface PlayerStatsMatch {
@@ -15,26 +14,20 @@ interface PlayerStatsMatch {
 }
 
 interface PlayerStatsPanelProps {
-  currentRoundPosition: number;
   matches: Record<number, PlayerStatsMatch>;
   players: Record<number, Player>;
   currentUserId: number;
-  hideBots?: boolean;
   canModerate?: boolean;
-  playersRedirectUrl?: string;
   type?: string;
   // accepted for parity with the original JS call site; unused by this component
   roundsLimit?: number;
 }
 
 function PlayerStatsPanel({
-  currentRoundPosition,
   matches,
   players,
   currentUserId,
-  hideBots,
   canModerate,
-  playersRedirectUrl,
   type,
 }: PlayerStatsPanelProps) {
   const currentPlayer = players[currentUserId];
@@ -51,12 +44,6 @@ function PlayerStatsPanel({
 
   return (
     <div className="d-flex flex-column cb-rounded shadow-sm cb-bg-panel">
-      <Top200RedirectButton
-        currentRoundPosition={currentRoundPosition}
-        player={currentPlayer}
-        playersRedirectUrl={playersRedirectUrl}
-        type={type}
-      />
       {currentPlayer.state === 'banned' && (
         <div className="alert alert-warning m-2 mb-0" role="alert">
           {i18next.t(
@@ -70,7 +57,6 @@ function PlayerStatsPanel({
         matches={matchList as React.ComponentProps<typeof UsersMatchList>['matches']}
         canModerate={canModerate ?? false}
         hideStats
-        hideBots={hideBots}
         showScoreFormula={type === 'ladder'}
       />
     </div>

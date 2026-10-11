@@ -28,12 +28,9 @@ interface TournamentMainControlButtonsProps {
   canStartRound?: boolean;
   canFinishRound?: boolean;
   canFinishTournament?: boolean;
-  canToggleShowBots?: boolean;
   canRestart?: boolean;
-  showBots?: boolean;
   hideResults?: boolean;
   disabled?: boolean;
-  toggleShowBots: () => void;
   handleStartRound: (value: any) => void;
   handleOpenDetails: () => void;
   toggleStreamMode: () => void;
@@ -47,12 +44,9 @@ function TournamentMainControlButtons({
   canStartRound,
   canFinishRound,
   canFinishTournament,
-  canToggleShowBots,
   canRestart,
-  showBots,
   hideResults,
   disabled = true,
-  toggleShowBots,
   handleStartRound,
   handleOpenDetails,
   toggleStreamMode,
@@ -338,15 +332,6 @@ function TournamentMainControlButtons({
               >
                 <FontAwesomeIcon className="mr-2" icon="video" />
                 {i18n.t('Toggle stream mode')}
-              </button>
-              <button
-                type="button"
-                className={subtleBtnClassName}
-                onClick={toggleShowBots}
-                disabled={disabled || !canToggleShowBots}
-              >
-                <FontAwesomeIcon className="mr-2" icon="robot" />
-                {i18n.t(showBots ? 'Hide bots' : 'Show bots')}
               </button>
               {accessType === 'token' && (
                 <button

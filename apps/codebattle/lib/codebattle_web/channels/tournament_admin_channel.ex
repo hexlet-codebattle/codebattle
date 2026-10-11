@@ -376,20 +376,10 @@ defmodule CodebattleWeb.TournamentAdminChannel do
         Helpers.get_players(socket.assigns.tournament_info)
       end
 
-    tasks_info =
-      if payload.tournament.type == "versus" do
-        payload.tournament
-        |> Helpers.get_tasks()
-        |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
-      else
-        []
-      end
-
     push(socket, "tournament:update", %{
       tournament: payload.tournament,
       players: players,
-      matches: matches,
-      tasks_info: tasks_info
+      matches: matches
     })
 
     {:noreply, socket}
@@ -471,15 +461,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   defp get_tournament_join_payload(tournament) do
-    tasks_info =
-      if tournament.type == "versus" do
-        tournament
-        |> Helpers.get_tasks()
-        |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
-      else
-        %{}
-      end
-
     clans =
       if tournament.use_clan do
         Tournament.Clans.get_all(tournament)
@@ -498,7 +479,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     active_game_id = get_active_game(tournament.id)
 
     %{
-      tasks_info: tasks_info,
       active_game_id: active_game_id,
       reports: UserGameReport.list_by_tournament(tournament.id, limit: 300),
       tournament: Helpers.prepare_to_json(tournament),

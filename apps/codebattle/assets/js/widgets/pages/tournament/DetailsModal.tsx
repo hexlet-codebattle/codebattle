@@ -160,7 +160,6 @@ function DetailsModal({ tournament, modalShowing, setModalShowing }: DetailsModa
         items: [
           { label: i18n.t('Players'), value: formatValue(tournament.playersCount) },
           { label: i18n.t('Players limit'), value: formatValue(tournament.playersLimit) },
-          { label: i18n.t('Bots visible'), value: formatValue(tournament.showBots) },
           { label: i18n.t('Chat enabled'), value: formatValue(tournament.useChat) },
           { label: i18n.t('Clan mode'), value: formatValue(tournament.useClan) },
           { label: i18n.t('Live'), value: formatValue(tournament.isLive) },

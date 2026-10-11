@@ -758,6 +758,8 @@ defmodule Codebattle.Tournament.Context do
       |> add_module()
       |> mark_as_live()
     end)
+    # Retired tournament types have no strategy left to run them.
+    |> Enum.reject(&is_nil(&1.module))
   end
 
   def restore_live_tournaments do
@@ -789,12 +791,11 @@ defmodule Codebattle.Tournament.Context do
 
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
 
-  defp get_module(%{type: "top200"}), do: Tournament.Top200
-  defp get_module(%{type: "individual"}), do: Tournament.Individual
-  defp get_module(%{type: "show"}), do: Tournament.Show
   defp get_module(%{type: "swiss"}), do: Tournament.Swiss
-  defp get_module(%{type: "versus"}), do: Tournament.Versus
   defp get_module(%{type: "ladder"}), do: Tournament.Ladder
+  # Retired types (top200, show, versus, individual) stay readable as finished history
+  # but have no strategy, so they can't run.
+  defp get_module(_tournament), do: nil
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
 

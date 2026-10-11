@@ -26,15 +26,13 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def finish_round_after_match?(tournament) do
-    # For smaller tournaments we finish the round as soon as all matches are done;
-    # for larger ones we wait for all games to finish to avoid early churn.
-    if tournament.players_count < 128 do
-      matches = get_round_matches(tournament, tournament.current_round_position)
+    # The round closes as soon as its last game is done, whatever the field size.
+    # Only playing matches are copied out of ETS, not the whole round history.
+    round_position = tournament.current_round_position
 
-      Enum.all?(matches, &(&1.state != "playing"))
-    else
-      false
-    end
+    tournament
+    |> get_matches("playing")
+    |> Enum.all?(&(&1.round_position != round_position))
   end
 
   @impl Tournament.Base

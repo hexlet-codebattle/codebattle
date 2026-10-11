@@ -53,7 +53,6 @@ defmodule Codebattle.Application do
         {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.GroupTournament.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
-        {Codebattle.Tournament.Simulator.Supervisor, []},
         {Codebattle.Tournament.Restorer, []},
         {Codebattle.InvitesKillerServer, []},
         %{

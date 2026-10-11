@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament do
   @task_providers ~w(level task_pack all)
   @task_strategies ~w(random sequential per_round_pair)
   @timeout_modes ~w(per_task per_round_fixed per_round_with_rematch per_tournament)
-  @types ~w(swiss top200 ladder)
+  @types ~w(swiss ladder)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 

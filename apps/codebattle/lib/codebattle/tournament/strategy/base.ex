@@ -357,7 +357,7 @@ defmodule Codebattle.Tournament.Base do
         broadcast_tournament_canceled(new_tournament)
 
         Game.Context.terminate_tournament_games(tournament.id)
-        Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+        Tournament.GlobalSupervisor.terminate_tournament_async(tournament.id)
 
         new_tournament
       end
@@ -726,7 +726,6 @@ defmodule Codebattle.Tournament.Base do
         tournament
         |> update_struct(%{round_state: "active"})
         |> broadcast_round_created()
-        |> setup_round_active_game()
       end
 
       defp maybe_set_task_ids(%{current_round_position: 0} = tournament) do
@@ -782,9 +781,9 @@ defmodule Codebattle.Tournament.Base do
       defp bulk_create_round_games_and_matches(batch, tournament, task) do
         game_params =
           Enum.map(batch, fn pairing ->
-            {[p1, p2] = players, match_id} = pairing
+            {players, match_id} = pairing
 
-            base_params = %{
+            params = %{
               players: players,
               ref: match_id,
               round_id: tournament.current_round_id,
@@ -795,14 +794,9 @@ defmodule Codebattle.Tournament.Base do
               tournament_id: tournament.id,
               type: game_type(),
               use_chat: tournament.use_chat,
-              use_timer: tournament.use_timer
+              use_timer: tournament.use_timer,
+              timeout_seconds: get_round_game_timeout(tournament, task)
             }
-
-            params =
-              base_params
-              |> maybe_set_free_task(tournament, p1)
-              |> maybe_add_award(tournament)
-              |> then(&Map.put(&1, :timeout_seconds, get_round_game_timeout(tournament, &1.task)))
 
             {params, players, match_id}
           end)
@@ -812,18 +806,29 @@ defmodule Codebattle.Tournament.Base do
 
         created_games = Game.Context.bulk_create_games(game_creation_params)
 
-        _ =
-          created_games
-          |> Enum.zip(game_params)
-          |> Task.async_stream(
-            fn {game, {_params, players, _match_id}} ->
-              build_and_run_match(tournament, players, game)
-            end,
-            max_concurrency: System.schedulers_online(),
-            ordered: false,
-            timeout: 30_000
-          )
-          |> Enum.to_list()
+        created_games
+        |> Enum.zip(game_params)
+        |> Task.async_stream(
+          fn {game, {_params, players, _match_id}} ->
+            build_and_run_match(tournament, players, game)
+          end,
+          max_concurrency: System.schedulers_online(),
+          ordered: false,
+          timeout: 30_000,
+          # A stuck task must not exit the tournament server that awaits the stream.
+          on_timeout: :kill_task
+        )
+        |> log_stream_failures(tournament, "build_and_run_match")
+      end
+
+      defp log_stream_failures(stream, tournament, label) do
+        Enum.each(stream, fn
+          {:ok, _result} ->
+            :ok
+
+          {:exit, reason} ->
+            Logger.error("Tournament #{tournament.id} #{label} task failed: #{inspect(reason)}")
+        end)
       end
 
       defp create_rematch_game(tournament, players, ref) do
@@ -835,8 +840,9 @@ defmodule Codebattle.Tournament.Base do
             nil
 
           task ->
+            # TODO: leave rematch timeout behavior unchanged for now.
             {:ok, game} =
-              %{
+              Game.Context.create_game(%{
                 level: task.level,
                 players: players,
                 ref: ref,
@@ -844,15 +850,12 @@ defmodule Codebattle.Tournament.Base do
                 round_position: tournament.current_round_position,
                 state: "playing",
                 task: task,
-                # TODO: leave rematch timeout behavior unchanged for now.
                 timeout_seconds: get_rematch_game_timeout(tournament),
                 tournament_id: tournament.id,
                 type: game_type(),
                 use_chat: tournament.use_chat,
                 use_timer: tournament.use_timer
-              }
-              |> maybe_add_award(tournament)
-              |> Game.Context.create_game()
+              })
 
             game
         end
@@ -898,7 +901,7 @@ defmodule Codebattle.Tournament.Base do
         task = get_task(tournament, blueprint.task_id) || Codebattle.Task.get!(blueprint.task_id)
 
         {:ok, game} =
-          %{
+          Game.Context.create_game(%{
             grade: tournament.grade,
             level: blueprint.level || task.level,
             players: players,
@@ -913,9 +916,7 @@ defmodule Codebattle.Tournament.Base do
             type: game_type(),
             use_chat: tournament.use_chat,
             use_timer: tournament.use_timer
-          }
-          |> maybe_add_award(tournament)
-          |> Game.Context.create_game()
+          })
 
         build_and_run_match(tournament, players, game, false)
       end
@@ -971,9 +972,6 @@ defmodule Codebattle.Tournament.Base do
       end
 
       # Default: replay every round from scratch to rebuild scores, ranking and wins.
-      # Strategies whose final standings are already correct on the player structs
-      # (e.g. Top200, where only the top-8 need bracket re-placement) override this
-      # to avoid recalculating all results.
       def compute_final_standings(tournament) do
         tournament
         |> reset_player_scores()
@@ -1085,7 +1083,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "swiss"} = tournament, _round_params),
         do: tournament
 
-      # per_round_with_rematch and per_round_fixed (for show type) need the round timer
+      # per_round_with_rematch and per_round_fixed need the round timer
       defp maybe_start_round_timer(tournament, round_params) do
         timeout_seconds =
           Map.get(round_params, :remaining_timeout_seconds, round_timeout_seconds(tournament))
@@ -1235,15 +1233,10 @@ defmodule Codebattle.Tournament.Base do
       end
 
       # Duration of the current round in seconds. Defaults to the tournament's
-      # round_timeout_seconds field; strategies (e.g. Top200) override this to vary
-      # the timeout by current_round_position. Both the per-game timeout and the
-      # round auto-finish timer read it, so a single override covers both.
+      # round_timeout_seconds field; strategies (e.g. Ladder) override it. Both the
+      # per-game timeout and the round auto-finish timer read it, so a single override
+      # covers both.
       def round_timeout_seconds(tournament), do: tournament.round_timeout_seconds
-
-      # Hook fired right after a round is created. Strategies override it to pick the
-      # game the stream should focus on at round start (default: leave selection to the
-      # admin / streamer auto-select). Must return the tournament unchanged.
-      def setup_round_active_game(tournament), do: tournament
 
       # Fired by the server on the matchmaking-tick timer. Default no-op; continuous
       # strategies (Ladder) override this to pair the idle pool and recompute ranking.
@@ -1311,61 +1304,37 @@ defmodule Codebattle.Tournament.Base do
         else
           # Process matches in parallel with Task.async_stream
           # Process all matches and await completion
-          _ =
-            matches_to_finish
-            |> Task.async_stream(
-              fn match ->
-                # trigger game timeout and set player results
-                {:ok, game} = Game.Context.trigger_timeout(match.game_id)
-
-                handle_game_result(tournament, %{
-                  ref: match.id,
-                  game_state: "timeout",
-                  player_results: Game.Helpers.get_player_results(game),
-                  duration_sec: game.duration_sec
-                })
-              end,
-              max_concurrency: System.schedulers_online() * 2,
-              timeout: 10_000
-            )
-            |> Enum.to_list()
+          matches_to_finish
+          |> Task.async_stream(
+            fn match -> finish_playing_match(tournament, match) end,
+            max_concurrency: System.schedulers_online() * 2,
+            timeout: 10_000,
+            on_timeout: :kill_task
+          )
+          |> log_stream_failures(tournament, "finish_playing_match")
 
           tournament
         end
       end
 
-      defp maybe_add_award(game_params, %{type: "show"} = tournament) do
-        tournament.meta
-        |> Map.get(:rounds_config)
-        |> case do
-          nil ->
-            Map.put(game_params, :award, nil)
+      defp finish_playing_match(tournament, match) do
+        # trigger game timeout and set player results
+        case Game.Context.trigger_timeout(match.game_id) do
+          {:ok, game} ->
+            handle_game_result(tournament, %{
+              ref: match.id,
+              game_state: "timeout",
+              player_results: Game.Helpers.get_player_results(game),
+              duration_sec: game.duration_sec
+            })
 
-          config ->
-            config
-            |> Enum.at(tournament.current_round_position)
-            |> case do
-              %{award: award} ->
-                Map.put(game_params, :award, award)
-
-              _ ->
-                Map.put(game_params, :award, nil)
-            end
+          error ->
+            Logger.error("Tournament #{tournament.id} failed to time out game #{match.game_id}: #{inspect(error)}")
         end
-      end
-
-      defp maybe_add_award(game_params, _tournament), do: game_params
-
-      defp maybe_set_free_task(game_params, %Tournament{type: "show", task_strategy: "sequential"} = tournament, player) do
-        task_id = Enum.at(tournament.task_ids, Enum.count(player.task_ids))
-
-        game_params
-        |> Map.put(:task_id, task_id)
-        |> Map.put(:task, get_task(tournament, task_id))
-      end
-
-      defp maybe_set_free_task(game_params, _tournament, _player) do
-        game_params
+      rescue
+        # async_stream tasks are linked: a raise here would take down the tournament server.
+        error ->
+          Logger.error("Tournament #{tournament.id} failed to time out game #{match.game_id}: #{inspect(error)}")
       end
 
       defp get_or_build_tournament_bot(tournament) do
@@ -1470,8 +1439,7 @@ defmodule Codebattle.Tournament.Base do
                      compute_final_standings: 1,
                      matchmaking_tick: 1,
                      prepare_match_player_results: 3,
-                     round_timeout_seconds: 1,
-                     setup_round_active_game: 1
+                     round_timeout_seconds: 1
     end
   end
 end

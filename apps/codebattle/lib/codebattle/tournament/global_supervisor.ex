@@ -33,9 +33,22 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
   end
 
   def terminate_tournament(tournament_id) do
+    # Drop the cache first: it holds refs to ETS tables that die with the server, and the
+    # caller may be the tournament server itself.
+    if :ets.whereis(@tournament_info_table) != :undefined do
+      :ets.delete(@tournament_info_table, tournament_id)
+    end
+
     Supervisor.terminate_child(__MODULE__, to_string(tournament_id))
     Supervisor.delete_child(__MODULE__, to_string(tournament_id))
   rescue
     _ -> Logger.error("tournament not found while terminating #{tournament_id}")
+  end
+
+  # For callers running inside the tournament's own supervision tree: terminating
+  # synchronously would kill the caller before delete_child runs.
+  def terminate_tournament_async(tournament_id) do
+    Task.start(fn -> terminate_tournament(tournament_id) end)
+    :ok
   end
 end

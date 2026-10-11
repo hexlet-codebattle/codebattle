@@ -236,7 +236,6 @@ interface UsersMatchListProps {
   canModerate: boolean;
   matches: Match[];
   hideStats?: boolean;
-  hideBots?: boolean;
   showScoreFormula?: boolean;
   showScore?: boolean;
 }
@@ -247,7 +246,6 @@ function UsersMatchList({
   canModerate,
   matches,
   hideStats = false,
-  hideBots = false,
   showScoreFormula = false,
   showScore = false,
 }: UsersMatchListProps) {
@@ -290,10 +288,7 @@ function UsersMatchList({
         const currentUserIsPlayer =
           currentUserId === match.playerIds[0] || currentUserId === match.playerIds[1];
         const isWinner = playerId === match.winnerId;
-        const visiblePlayerIds = hideBots
-          ? match.playerIds.filter((id) => id >= 0)
-          : match.playerIds;
-        const matchPlayerIds = orderMatchPlayerIds(visiblePlayerIds, playerId);
+        const matchPlayerIds = orderMatchPlayerIds(match.playerIds, playerId);
         const matchResult = match.playerResults[playerId];
         const showPlayerScores = showScore && !showScoreFormula;
         const scoreOf = (id: number) =>

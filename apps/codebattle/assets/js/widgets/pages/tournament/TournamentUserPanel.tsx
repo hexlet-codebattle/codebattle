@@ -24,7 +24,6 @@ interface TournamentUserPanelProps {
   lang?: string;
   isBanned?: boolean;
   searchedUserId?: number;
-  hideBots?: boolean;
 }
 
 function TournamentUserPanel({
@@ -38,7 +37,6 @@ function TournamentUserPanel({
   lang,
   isBanned = false,
   searchedUserId = 0,
-  hideBots,
 }: TournamentUserPanelProps) {
   const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState(false);
@@ -136,7 +134,6 @@ function TournamentUserPanel({
             playerId={userId}
             matches={matches as React.ComponentProps<typeof UsersMatchList>['matches']}
             canModerate={canModerate}
-            hideBots={hideBots}
             hideStats
             showScore
             // `isBanned`/`canBan` are ignored by UsersMatchList but passed for parity with the

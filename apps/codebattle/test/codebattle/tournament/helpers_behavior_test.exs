@@ -132,7 +132,6 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       assert waiting_participants?(tournament)
       assert canceled?(%{tournament | state: "canceled"})
       assert finished?(%{tournament | state: "finished"})
-      assert individual?(tournament)
       refute public?(tournament)
       assert visible_by_token?(tournament)
       assert in_break?(tournament)

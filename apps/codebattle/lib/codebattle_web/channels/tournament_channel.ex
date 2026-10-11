@@ -179,7 +179,12 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:matches:request_for_round", _params, socket) do
     tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
-    matches = Helpers.get_matches(tournament_info, tournament_info.current_round_position)
+    matches =
+      if tournament_info do
+        Helpers.get_round_matches(tournament_info, tournament_info.current_round_position)
+      else
+        []
+      end
 
     {:reply, {:ok, %{matches: matches}}, socket}
   end
@@ -223,30 +228,26 @@ defmodule CodebattleWeb.TournamentChannel do
         %{"type" => "top_users_by_clan_ranking"} ->
           TournamentResult.get_top_users_by_clan_ranking(
             tournament,
-            Map.get(params, "players_limit", 5),
-            Map.get(params, "clans_limit", 7)
+            int_param(params, "players_limit", 5, 1..100),
+            int_param(params, "clans_limit", 7, 1..100)
           )
 
         %{"type" => "tasks_ranking"} ->
           TournamentResult.get_tasks_ranking(tournament)
 
         %{"type" => "task_duration_distribution", "task_id" => task_id} ->
-          TournamentResult.get_task_duration_distribution(
-            tournament,
-            task_id
-          )
+          with_task_id(task_id, &TournamentResult.get_task_duration_distribution(tournament, &1))
 
         %{"type" => "clans_bubble_distribution"} ->
           TournamentResult.get_clans_bubble_distribution(
             tournament,
-            Map.get(params, "max_radius", 7)
+            int_param(params, "max_radius", 7, 1..50)
           )
 
         %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
-          TournamentResult.get_top_user_by_task_ranking(
-            tournament,
+          with_task_id(
             task_id,
-            Map.get(params, "limit", 40)
+            &TournamentResult.get_top_user_by_task_ranking(tournament, &1, int_param(params, "limit", 40, 1..100))
           )
 
         _ ->
@@ -412,6 +413,32 @@ defmodule CodebattleWeb.TournamentChannel do
       tournament: Helpers.prepare_to_json(tournament)
     })
   end
+
+  # Client-supplied numbers feed raw SQL; only accept bounded integers.
+  defp int_param(params, key, default, lo..hi//_) do
+    case to_int(Map.get(params, key)) do
+      nil -> default
+      value -> value |> max(lo) |> min(hi)
+    end
+  end
+
+  defp with_task_id(task_id, fun) do
+    case to_int(task_id) do
+      nil -> []
+      id -> fun.(id)
+    end
+  end
+
+  defp to_int(value) when is_integer(value), do: value
+
+  defp to_int(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} -> int
+      _ -> nil
+    end
+  end
+
+  defp to_int(_value), do: nil
 
   def user_authorized?(tournament, current_user, payload) do
     if FunWithFlags.enabled?(:skip_tournament_websocket_auth) do
