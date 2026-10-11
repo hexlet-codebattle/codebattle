@@ -48,8 +48,8 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
     round_position = tournament.current_round_position
     round_deltas = TournamentResult.get_user_round_delta(tournament, round_position)
 
-    if Enum.empty?(round_deltas) do
-      # No results yet: seed the initial ranking ordered by player id.
+    if tournament.state in ["upcoming", "waiting_participants"] and Enum.empty?(round_deltas) do
+      # Before the tournament starts, seed the initial ranking ordered by player id.
       ranking = build_initial_ranking(tournament)
       set_places_with_score_to_players(tournament, ranking)
       Ranking.put_ranking(tournament, ranking)
@@ -64,7 +64,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   end
 
   def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
-    place = Ranking.count(tournament) + 1
+    place = Ranking.next_place(tournament)
 
     Ranking.put_single_record(tournament, place, %{
       id: player.id,

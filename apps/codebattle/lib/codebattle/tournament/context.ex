@@ -54,6 +54,7 @@ defmodule Codebattle.Tournament.Context do
   @spec get_from_db!(tournament_id()) :: Tournament.t() | no_return()
   def get_from_db!(id) do
     Tournament
+    |> where([t], t.type in ^Tournament.types())
     |> Repo.get!(id)
     |> Repo.preload([:creator])
     |> add_module()
@@ -95,7 +96,7 @@ defmodule Codebattle.Tournament.Context do
     Repo.all(
       from(t in Tournament,
         order_by: [desc: t.id],
-        where: t.state in ^states,
+        where: t.state in ^states and t.type in ^Tournament.types(),
         limit: 15,
         preload: [:creator]
       )
@@ -522,7 +523,7 @@ defmodule Codebattle.Tournament.Context do
     |> Map.put(:updated_at, TimeHelper.utc_now())
     |> Repo.insert!(
       conflict_target: :id,
-      on_conflict: {:replace_all_except, [:id, :inserted_at]}
+      on_conflict: {:replace_all_except, [:id, :inserted_at, :players, :matches]}
     )
   end
 
@@ -758,8 +759,6 @@ defmodule Codebattle.Tournament.Context do
       |> add_module()
       |> mark_as_live()
     end)
-    # Retired tournament types have no strategy left to run them.
-    |> Enum.reject(&is_nil(&1.module))
   end
 
   def restore_live_tournaments do
@@ -793,9 +792,6 @@ defmodule Codebattle.Tournament.Context do
 
   defp get_module(%{type: "swiss"}), do: Tournament.Swiss
   defp get_module(%{type: "ladder"}), do: Tournament.Ladder
-  # Retired types (top200, show, versus, individual) stay readable as finished history
-  # but have no strategy, so they can't run.
-  defp get_module(_tournament), do: nil
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
 
@@ -844,7 +840,7 @@ defmodule Codebattle.Tournament.Context do
     _ = Round.disable_all_rounds(tournament.id)
 
     played_pair_ids =
-      build_played_pair_ids(players, historical_matches ++ current_round_blueprints)
+      build_played_pair_ids(historical_matches ++ current_round_blueprints)
 
     params = %{
       completed_round_position: completed_round_position,
@@ -912,7 +908,7 @@ defmodule Codebattle.Tournament.Context do
         |> export_restore_tournament(),
       ets: %{
         players: Enum.map(players, &{&1.id, &1.state, &1}),
-        matches: Enum.map(matches, &{&1.id, &1.state, &1}),
+        matches: Enum.map(matches, &{&1.id, &1.state, &1.round_position, &1}),
         tasks: build_restore_tasks_rows(tournament),
         ranking: Enum.map(ranking, &{&1.place, &1.id, &1}),
         clans: [],
@@ -1051,29 +1047,12 @@ defmodule Codebattle.Tournament.Context do
 
   defp completed_round_position_for_restore(%{current_round_position: round_position}), do: round_position - 1
 
-  defp build_played_pair_ids(players, matches_or_blueprints) do
-    players_by_id = Map.new(players, &{&1.id, &1})
-
-    Enum.reduce(matches_or_blueprints, MapSet.new(), fn %{player_ids: player_ids}, acc ->
-      case Enum.sort(player_ids) do
-        [p1, p2] ->
-          if human_pair?(players_by_id, p1, p2) do
-            MapSet.put(acc, [p1, p2])
-          else
-            acc
-          end
-
-        _ ->
-          acc
-      end
+  # Bot games are kept as well: they mark who already had a bye.
+  defp build_played_pair_ids(matches_or_blueprints) do
+    Enum.reduce(matches_or_blueprints, MapSet.new(), fn
+      %{player_ids: [p1, p2]}, acc -> MapSet.put(acc, Tournament.Pairing.key(p1, p2))
+      _match, acc -> acc
     end)
-  end
-
-  defp human_pair?(players_by_id, p1, p2) do
-    case {Map.get(players_by_id, p1), Map.get(players_by_id, p2)} do
-      {%{is_bot: false}, %{is_bot: false}} -> true
-      _ -> false
-    end
   end
 
   defp remaining_round_seconds(%{timeout_mode: mode}) when mode not in ["per_round_fixed", "per_round_with_rematch"],

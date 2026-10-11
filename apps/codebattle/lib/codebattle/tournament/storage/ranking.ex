@@ -21,37 +21,60 @@ defmodule Codebattle.Tournament.Storage.Ranking do
   end
 
   def create_table(id) do
-    :ets.new(
-      :"t_#{id}_ranking",
-      [
-        :ordered_set,
-        :public,
-        {:write_concurrency, true},
-        {:read_concurrency, true}
-      ]
-    )
+    table =
+      :ets.new(
+        :"t_#{id}_ranking",
+        [
+          :set,
+          :public,
+          {:write_concurrency, true},
+          {:read_concurrency, true}
+        ]
+      )
+
+    :ets.insert(table, {:max_place, 0})
+    table
   end
 
   def put_ranking(tournament, elements) do
-    elements
-    |> Enum.map(&{&1.place, &1.id, &1})
-    |> then(fn records ->
-      with_table(tournament, [], fn table ->
-        try do
-          :ets.delete_all_objects(table)
-          :ets.insert(table, records)
-        rescue
-          _e ->
-            Logger.error("Error inserting ranking records: #{inspect(records)}")
-            []
-        end
-      end)
+    with_table(tournament, [], fn table ->
+      old_entries = :ets.select(table, [{{{:id, :_}, :"$1"}, [], [:"$1"]}])
+      new_ids = MapSet.new(elements, & &1.id)
+      new_places = MapSet.new(elements, & &1.place)
+      max_place = Enum.reduce(elements, 0, &max(&1.place, &2))
+      records = Enum.flat_map(elements, &records/1)
+
+      # ETS inserts the complete list atomically, including the id index. Readers
+      # keep seeing a populated leaderboard while obsolete rows are removed.
+      :ets.insert(table, [{:max_place, max_place} | records])
+
+      old_entries
+      |> Enum.map(& &1.place)
+      |> Enum.reject(&MapSet.member?(new_places, &1))
+      |> Enum.each(&:ets.delete(table, &1))
+
+      old_entries
+      |> Enum.map(& &1.id)
+      |> Enum.reject(&MapSet.member?(new_ids, &1))
+      |> Enum.each(&:ets.delete(table, {:id, &1}))
+
+      true
     end)
+  rescue
+    _e ->
+      Logger.error("Error inserting #{length(elements)} ranking records")
+      []
   end
 
   def put_single_record(tournament, place, record) do
     with_table(tournament, :ok, fn table ->
-      :ets.insert(table, {place, record.id, record})
+      case :ets.lookup(table, place) do
+        [{^place, old_id, _record}] when old_id != record.id -> :ets.delete(table, {:id, old_id})
+        _ -> :ok
+      end
+
+      max_place = max(place, :ets.lookup_element(table, :max_place, 2))
+      :ets.insert(table, [{:max_place, max_place}, {place, record.id, record}, {{:id, record.id}, record}])
     end)
   rescue
     _e ->
@@ -59,24 +82,21 @@ defmodule Codebattle.Tournament.Storage.Ranking do
   end
 
   def drop_player(tournament, player_id) do
-    match_spec = [{{:"$1", player_id, :"$2"}, [], [true]}]
-
     with_table(tournament, 0, fn table ->
-      try do
-        :ets.select_delete(table, match_spec)
-      rescue
-        _e ->
-          Logger.error("Error dropping player from ranking: #{inspect({player_id, tournament})}")
+      case :ets.lookup(table, {:id, player_id}) do
+        [{{:id, ^player_id}, %{place: place}}] ->
+          :ets.delete(table, place)
+          :ets.delete(table, {:id, player_id})
+          1
+
+        [] ->
+          0
       end
     end)
   end
 
   def get_first(tournament, limit) do
-    with_table(tournament, [], fn table ->
-      :ets.select(table, [
-        {{:"$1", :_, :"$3"}, [{:>=, :"$1", 1}, {:"=<", :"$1", limit}], [:"$3"]}
-      ])
-    end)
+    get_slice(tournament, 1, limit)
   rescue
     _e ->
       Logger.error("Error getting first ranking records: #{inspect({tournament, limit})}")
@@ -85,7 +105,9 @@ defmodule Codebattle.Tournament.Storage.Ranking do
 
   def get_all(tournament) do
     with_table(tournament, [], fn table ->
-      :ets.select(table, [{{:_, :_, :"$3"}, [], [:"$3"]}])
+      table
+      |> :ets.select([{{:_, :_, :"$3"}, [], [:"$3"]}])
+      |> Enum.sort_by(& &1.place)
     end)
   rescue
     _e ->
@@ -95,8 +117,8 @@ defmodule Codebattle.Tournament.Storage.Ranking do
 
   def get_by_id(tournament, id) do
     with_table(tournament, nil, fn table ->
-      case :ets.select(table, [{{:_, :"$2", :"$3"}, [{:==, :"$2", id}], [:"$3"]}]) do
-        [ranking_entity] -> ranking_entity
+      case :ets.lookup(table, {:id, id}) do
+        [{{:id, ^id}, ranking_entity}] -> ranking_entity
         [] -> nil
       end
     end)
@@ -108,7 +130,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
 
   def count(tournament) do
     with_table(tournament, 0, fn table ->
-      :ets.select_count(table, [{:_, [], [true]}])
+      div(:ets.info(table, :size) - 1, 2)
     end)
   rescue
     _e ->
@@ -116,15 +138,35 @@ defmodule Codebattle.Tournament.Storage.Ranking do
       0
   end
 
+  def next_place(tournament) do
+    with_table(tournament, 1, &(:ets.lookup_element(&1, :max_place, 2) + 1))
+  end
+
+  def get_slice(_tournament, start_place, end_place) when start_place > end_place, do: []
+
   def get_slice(tournament, start_place, end_place) do
     with_table(tournament, [], fn table ->
-      :ets.select(table, [
-        {{:"$1", :_, :"$3"}, [{:>=, :"$1", start_place}, {:"=<", :"$1", end_place}], [:"$3"]}
-      ])
+      max_place = :ets.lookup_element(table, :max_place, 2)
+      slice_records(table, max(start_place, 1), min(end_place, max_place))
     end)
   rescue
     _e ->
       Logger.error("Error getting slice of ranking records: #{inspect({tournament, start_place, end_place})}")
       []
   end
+
+  defp slice_records(_table, start_place, end_place) when start_place > end_place, do: []
+
+  defp slice_records(table, start_place, end_place) do
+    Enum.flat_map(start_place..end_place, &records_at_place(table, &1))
+  end
+
+  defp records_at_place(table, place) do
+    case :ets.lookup(table, place) do
+      [{^place, _id, record}] -> [record]
+      [] -> []
+    end
+  end
+
+  defp records(record), do: [{record.place, record.id, record}, {{:id, record.id}, record}]
 end

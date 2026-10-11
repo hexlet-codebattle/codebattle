@@ -139,7 +139,8 @@ defmodule Codebattle.Tournament do
     field(:round_op_id, :integer, virtual: true)
     field(:round_op_status, :string, virtual: true, default: "idle")
     field(:round_state, :string, virtual: true, default: "active")
-    field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
+    # Runtime pair history, see Tournament.Pairing.
+    field(:played_pair_ids, :any, virtual: true, default: MapSet.new())
     field(:players_count, :integer, virtual: true, default: 0)
     field(:event_ranking, :map, virtual: true, default: %{})
     field(:task_ids, {:array, :integer}, virtual: true, default: [])
@@ -172,7 +173,6 @@ defmodule Codebattle.Tournament do
       :meta,
       :moderator_ids,
       :name,
-      :played_pair_ids,
       :players,
       :players_count,
       :players_limit,

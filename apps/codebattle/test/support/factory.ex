@@ -173,7 +173,7 @@ defmodule CodebattleWeb.Factory do
 
   def tournament_factory do
     %Codebattle.Tournament{
-      type: "individual",
+      type: "swiss",
       break_duration_seconds: 0,
       name: "name",
       description: "tournament description",
@@ -192,7 +192,7 @@ defmodule CodebattleWeb.Factory do
 
   def token_tournament_factory do
     %Codebattle.Tournament{
-      type: "individual",
+      type: "swiss",
       break_duration_seconds: 0,
       access_type: "token",
       access_token: "asdfasdfasdf",

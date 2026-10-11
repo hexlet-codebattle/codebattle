@@ -2,6 +2,7 @@ defmodule Codebattle.Tournament.SwissPairingTest do
   use Codebattle.DataCase, async: false
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Pairing
   alias Codebattle.Tournament.Player
   alias Codebattle.Tournament.Swiss
 
@@ -21,7 +22,7 @@ defmodule Codebattle.Tournament.SwissPairingTest do
     {updated_tournament, pairs} = Swiss.build_round_pairs(tournament)
 
     assert pair_ids(pairs) == [[1, 2], [3, 4]]
-    assert MapSet.equal?(MapSet.new(updated_tournament.played_pair_ids), MapSet.new([[1, 2], [3, 4]]))
+    assert updated_tournament.played_pair_ids == MapSet.new([{1, 2}, {3, 4}])
   end
 
   test "round one pairs unmatched player with a bot" do
@@ -43,15 +44,47 @@ defmodule Codebattle.Tournament.SwissPairingTest do
     assert pair_ids(Enum.take(pairs, 2)) == [[1, 2], [3, 4]]
     assert length(pairs) == 3
 
-    assert [[%Player{id: 5}, %Player{is_bot: true}]] = Enum.take(pairs, -1)
-    assert MapSet.equal?(MapSet.new(updated_tournament.played_pair_ids), MapSet.new([[1, 2], [3, 4]]))
+    assert [[%Player{id: 5}, %Player{is_bot: true} = bot]] = Enum.take(pairs, -1)
+    assert updated_tournament.played_pair_ids == MapSet.new([{1, 2}, {3, 4}, Pairing.key(5, bot.id)])
+  end
+
+  test "the bye goes to the lowest-standing player who hasn't had one yet" do
+    bot = Codebattle.Bot.Context.build()
+
+    tournament =
+      build_tournament(%{
+        current_round_position: 1,
+        played_pair_ids: MapSet.new([{1, 2}, {3, 4}, Pairing.key(5, bot.id)]),
+        players: players_with_scores([{1, 100}, {2, 90}, {3, 80}, {4, 70}, {5, 60}])
+      })
+
+    {updated_tournament, pairs} = Swiss.build_round_pairs(tournament)
+
+    # Player 5 is last but already had the bot, so player 4 takes it this time.
+    assert [[%Player{id: 4}, %Player{is_bot: true}]] = Enum.take(pairs, -1)
+    assert pair_ids(Enum.drop(pairs, -1)) == [[1, 3], [2, 5]]
+    assert MapSet.member?(updated_tournament.played_pair_ids, Pairing.key(4, bot.id))
+  end
+
+  test "equal standings pair deterministically by time spent, then id" do
+    players =
+      Map.new([{1, 30}, {2, 10}, {3, 20}, {4, 10}], fn {id, duration} ->
+        {id, Player.new!(%{id: id, name: "p#{id}", score: 50, total_duration_sec: duration, state: "active"})}
+      end)
+
+    tournament = build_tournament(%{current_round_position: 1, players: players})
+
+    {_updated_tournament, pairs} = Swiss.build_round_pairs(tournament)
+
+    # Order is 2 (10s), 4 (10s), 3 (20s), 1 (30s).
+    assert Enum.map(pairs, fn pair -> Enum.map(pair, & &1.id) end) == [[2, 4], [3, 1]]
   end
 
   test "later rounds sort by score and avoid repeated opponents when possible" do
     tournament =
       build_tournament(%{
         current_round_position: 1,
-        played_pair_ids: MapSet.new([[1, 2], [3, 4]]),
+        played_pair_ids: MapSet.new([{1, 2}, {3, 4}]),
         players:
           players_with_scores([
             {1, 100},
@@ -70,7 +103,7 @@ defmodule Codebattle.Tournament.SwissPairingTest do
     tournament =
       build_tournament(%{
         current_round_position: 2,
-        played_pair_ids: MapSet.new([[1, 2], [1, 3], [1, 4]]),
+        played_pair_ids: MapSet.new([{1, 2}, {1, 3}, {1, 4}]),
         players:
           players_with_scores([
             {1, 100},
@@ -98,7 +131,8 @@ defmodule Codebattle.Tournament.SwissPairingTest do
           ]
           |> players_with_scores()
           |> Map.put(5, Player.new!(%{id: 5, name: "bot", is_bot: true, score: 999, state: "active"}))
-          |> Map.put(6, Player.new!(%{id: 6, name: "banned", score: 999, state: "banned"}))
+          # Player.new! doesn't cast state, so the ban is set on the struct.
+          |> Map.put(6, %{Player.new!(%{id: 6, name: "banned", is_bot: false, score: 999}) | state: "banned"})
       })
 
     {_updated_tournament, pairs} = Swiss.build_round_pairs(tournament)

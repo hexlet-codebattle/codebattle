@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Swiss do
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Pairing
 
   @impl Tournament.Base
   def game_type, do: "duo"
@@ -28,11 +29,7 @@ defmodule Codebattle.Tournament.Swiss do
   def finish_round_after_match?(tournament) do
     # The round closes as soon as its last game is done, whatever the field size.
     # Only playing matches are copied out of ETS, not the whole round history.
-    round_position = tournament.current_round_position
-
-    tournament
-    |> get_matches("playing")
-    |> Enum.all?(&(&1.round_position != round_position))
+    get_current_round_playing_matches(tournament) == []
   end
 
   @impl Tournament.Base
@@ -42,15 +39,16 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def build_round_pairs(tournament) do
-    {player_pairs, unmatched_players, played_pair_ids} = build_player_pairs(tournament)
-
-    {tournament, opponent_bot} = get_or_build_tournament_bot(tournament)
-
-    unmatched_pairs = Enum.map(unmatched_players, fn player -> [player, opponent_bot] end)
+    played = tournament.played_pair_ids
+    players = tournament |> get_players() |> Enum.filter(&pairable?/1) |> Pairing.sort(tournament)
+    {tournament, bot} = get_or_build_tournament_bot(tournament)
+    {bye_players, players} = Pairing.pick_bye(players, bot, played)
+    {pairs, played} = pair_players(players, [], played)
+    played = Pairing.record_byes(played, bye_players, bot)
 
     {
-      update_struct(tournament, %{played_pair_ids: played_pair_ids}),
-      Enum.concat(player_pairs, unmatched_pairs)
+      update_struct(tournament, %{played_pair_ids: played}),
+      pairs ++ Enum.map(bye_players, &[&1, bot])
     }
   end
 
@@ -77,96 +75,21 @@ defmodule Codebattle.Tournament.Swiss do
     end
   end
 
-  defp build_player_pairs(%{current_round_position: 0} = tournament) do
-    player_pairs =
-      tournament
-      |> get_players()
-      |> Enum.filter(&(&1.is_bot == false and &1.state != "banned"))
-      |> Enum.sort_by(& &1.id)
-      |> Enum.chunk_every(2)
+  defp pairable?(player), do: !player.is_bot and player.state != "banned"
 
-    {player_pairs, unmatched_players} =
-      player_pairs
-      |> List.last()
-      |> case do
-        [player] -> {List.delete_at(player_pairs, -1), [player]}
-        _ -> {player_pairs, []}
-      end
+  # Greedy Swiss: each player, top of the standings first, takes the nearest opponent they
+  # haven't faced yet, or the nearest one at all when everyone left is a rematch. The
+  # field is even here (the bye is taken out beforehand).
+  defp pair_players([], pairs, played), do: {Enum.reverse(pairs), played}
 
-    played_pair_ids =
-      player_pairs
-      |> Enum.filter(&(length(&1) == 2))
-      |> Enum.reduce(MapSet.new(), fn [p1, p2], acc ->
-        MapSet.put(acc, Enum.sort([p1.id, p2.id]))
-      end)
+  defp pair_players([player | rest], pairs, played) do
+    index = Enum.find_index(rest, &(not Pairing.played?(played, player, &1))) || 0
+    {before, [opponent | after_opponent]} = Enum.split(rest, index)
 
-    {player_pairs, unmatched_players, played_pair_ids}
-  end
-
-  defp build_player_pairs(tournament) do
-    played_pair_ids = MapSet.new(tournament.played_pair_ids)
-
-    sorted_players =
-      tournament
-      |> get_players()
-      |> Enum.filter(&(&1.is_bot == false and &1.state != "banned"))
-      |> Enum.sort_by(& &1.score, :desc)
-
-    {player_pairs, unmatched_players, played_pair_ids} =
-      build_new_pairs(sorted_players, [], played_pair_ids)
-
-    {Enum.reverse(player_pairs), unmatched_players, played_pair_ids}
-  end
-
-  def build_new_pairs([], player_pairs, played_pair_ids) do
-    {player_pairs, [], played_pair_ids}
-  end
-
-  def build_new_pairs([unmatched_player], player_pairs, played_pair_ids) do
-    {player_pairs, [unmatched_player], played_pair_ids}
-  end
-
-  def build_new_pairs([p1, p2], player_pairs, played_pair_ids) do
-    pair_ids = Enum.sort([p1.id, p2.id])
-
-    {[[p1, p2] | player_pairs], [], MapSet.put(played_pair_ids, pair_ids)}
-  end
-
-  def build_new_pairs([player | remain_players], player_pairs, played_pair_ids) do
-    {player_pair, pair_ids, remain_players} =
-      remain_players
-      |> Enum.reduce_while(
-        {player, remain_players, played_pair_ids},
-        fn candidate, _acc ->
-          pair_ids = Enum.sort([player.id, candidate.id])
-
-          if MapSet.member?(played_pair_ids, pair_ids) do
-            {:cont, {player, remain_players, played_pair_ids}}
-          else
-            {:halt, {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
-          end
-        end
-      )
-      |> case do
-        {:new, player_pair, pair_ids, remain_players} ->
-          {player_pair, pair_ids, remain_players}
-
-        {player, [candidate | rest_players], _played_pair_ids} ->
-          {
-            [player, candidate],
-            Enum.sort([player.id, candidate.id]),
-            rest_players
-          }
-      end
-
-    build_new_pairs(
-      remain_players,
-      [player_pair | player_pairs],
-      MapSet.put(played_pair_ids, pair_ids)
+    pair_players(
+      before ++ after_opponent,
+      [[player, opponent] | pairs],
+      Pairing.record(played, player, opponent)
     )
-  end
-
-  defp drop_player(players, player_id) do
-    Enum.reject(players, &(&1.id == player_id))
   end
 end

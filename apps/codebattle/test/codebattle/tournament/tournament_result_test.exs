@@ -1233,6 +1233,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       Matches.put_match(live_tournament, %Codebattle.Tournament.Match{
         id: 7,
         game_id: game.id,
+        round_position: tournament.current_round_position,
         player_ids: [winner.id, loser.id],
         player_results: %{
           winner.id => %{result: "won", result_percent: 100.0},

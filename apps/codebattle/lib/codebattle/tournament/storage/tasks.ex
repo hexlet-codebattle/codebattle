@@ -63,6 +63,6 @@ defmodule Codebattle.Tournament.Tasks do
   end
 
   def count(tournament) do
-    :ets.select_count(tournament.tasks_table, [{:_, [], [true]}])
+    :ets.info(tournament.tasks_table, :size)
   end
 end

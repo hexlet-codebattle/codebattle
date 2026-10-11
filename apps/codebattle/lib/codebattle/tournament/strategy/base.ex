@@ -371,6 +371,7 @@ defmodule Codebattle.Tournament.Base do
             players: %{},
             meta: reset_meta(tournament.meta),
             matches: %{},
+            played_pair_ids: MapSet.new(),
             break_state: "off",
             players_count: 0,
             current_round_position: 0,
@@ -404,6 +405,7 @@ defmodule Codebattle.Tournament.Base do
             update_struct(tournament, %{
               meta: reset_meta(tournament.meta),
               matches: %{},
+              played_pair_ids: MapSet.new(),
               break_state: "off",
               cheater_ids: [],
               players_count: 0,

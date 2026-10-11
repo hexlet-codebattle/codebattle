@@ -6,6 +6,60 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
   alias Codebattle.Tournament.Ranking
   alias Codebattle.Tournament.Ranking.ByUser
 
+  test "a join after a departure appends without overwriting a remaining player's place" do
+    tournament = %{
+      type: "ladder",
+      ranking_type: "by_user",
+      state: "active",
+      ranking_table: Ranking.create_table(System.unique_integer([:positive]))
+    }
+
+    for id <- 1..3, do: ByUser.add_new_player(tournament, Player.new!(%{id: id, name: "p#{id}"}))
+    Ranking.drop_player(tournament, 2)
+    ByUser.add_new_player(tournament, Player.new!(%{id: 4, name: "p4"}))
+
+    assert Enum.map(Ranking.get_first(tournament, 10), & &1.id) == [1, 3, 4]
+    assert Ranking.get_by_id(tournament, 3).place == 3
+    assert Ranking.get_by_id(tournament, 4).place == 4
+  end
+
+  test "a new round without results preserves cumulative score and duration ordering" do
+    tournament =
+      :tournament
+      |> insert(type: "ladder", state: "active", current_round_position: 2)
+      |> Map.merge(%{
+        players_table: Players.create_table(System.unique_integer([:positive])),
+        ranking_table: Ranking.create_table(System.unique_integer([:positive]))
+      })
+
+    for {id, score, duration} <- [{1, 5, 10}, {2, 20, 40}, {3, 20, 30}] do
+      Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", score: score, total_duration_sec: duration}))
+    end
+
+    ByUser.set_ranking(tournament)
+
+    assert Enum.map(Ranking.get_first(tournament, 3), & &1.id) == [3, 2, 1]
+    assert %{score: 20, place: 1, total_duration_sec: 30} = Players.get_player(tournament, 3)
+  end
+
+  test "waiting participants are seeded by id before results exist" do
+    tournament =
+      :tournament
+      |> insert(type: "swiss", state: "waiting_participants", current_round_position: 0)
+      |> Map.merge(%{
+        players_table: Players.create_table(System.unique_integer([:positive])),
+        ranking_table: Ranking.create_table(System.unique_integer([:positive]))
+      })
+
+    for {id, score} <- [{1, 0}, {2, 20}] do
+      Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", score: score}))
+    end
+
+    ByUser.set_ranking(tournament)
+
+    assert Enum.map(Ranking.get_first(tournament, 2), & &1.id) == [1, 2]
+  end
+
   test "set_places_with_score_to_players updates place and score without overwriting lang" do
     tournament_id = System.unique_integer([:positive])
 

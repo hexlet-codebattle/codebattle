@@ -69,6 +69,15 @@ defmodule Codebattle.Tournament.ContextAdditionalTest do
     snapshot = Tournament.Context.upsert!(with_tables, :with_ets)
     assert snapshot.players[creator.id].id == creator.id
     assert snapshot.matches[8].game_id == 80
+
+    # The server's older struct must not undo the latest ETS snapshot when it
+    # saves only scalar state, e.g. when opening the next Ladder bucket.
+    Tournament.Context.upsert!(%{with_tables | description: "new round", current_round_position: 1})
+    persisted = Tournament.Context.get_from_db!(tournament.id)
+    assert persisted.description == "new round"
+    assert persisted.current_round_position == 1
+    assert Helpers.get_player(persisted, creator.id).id == creator.id
+    assert Helpers.get_match(persisted, 8).game_id == 80
   end
 
   test "moves an upcoming tournament live and accepts struct-based events" do

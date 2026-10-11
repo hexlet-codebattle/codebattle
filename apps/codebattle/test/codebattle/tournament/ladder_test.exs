@@ -6,6 +6,7 @@ defmodule Codebattle.Tournament.LadderTest do
   alias Codebattle.Tournament.Context, as: TournamentContext
   alias Codebattle.Tournament.Ladder
   alias Codebattle.Tournament.Match
+  alias Codebattle.Tournament.Pairing
   alias Codebattle.Tournament.Player
   alias Codebattle.Tournament.Server
 
@@ -73,7 +74,7 @@ defmodule Codebattle.Tournament.LadderTest do
       tournament =
         build_live_tournament(%{
           players_count: 2,
-          played_pair_ids: MapSet.new([[1, 2]])
+          played_pair_ids: MapSet.new([{1, 2}])
         })
 
       put_players(tournament, 1..2)
@@ -89,7 +90,7 @@ defmodule Codebattle.Tournament.LadderTest do
       tournament =
         build_live_tournament(%{
           players_count: 4,
-          played_pair_ids: MapSet.new([[1, 4], [2, 3], [3, 4]])
+          played_pair_ids: MapSet.new([{1, 4}, {2, 3}, {3, 4}])
         })
 
       put_players(tournament, 1..4)
@@ -102,6 +103,24 @@ defmodule Codebattle.Tournament.LadderTest do
       assert pair_ids == [[1, 3], [2, 4]]
     end
 
+    test "rematches the nearest player when the nearby fresh-opponent window is exhausted" do
+      tournament =
+        build_live_tournament(%{
+          players_count: 42,
+          played_pair_ids: MapSet.new(2..21, &{1, &1})
+        })
+
+      for id <- 1..42 do
+        Tournament.Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", score: 42 - id}))
+      end
+
+      {_tournament, pairs} = Ladder.build_round_pairs(tournament)
+
+      assert [%Player{id: 1}, %Player{id: 2}] = hd(pairs)
+      assert length(pairs) == 21
+      assert pairs |> List.flatten() |> Enum.map(& &1.id) |> Enum.uniq() |> length() == 42
+    end
+
     test "bot-fills only the genuinely-odd player when everyone has faced everyone" do
       insert(:user, is_bot: true)
 
@@ -109,7 +128,7 @@ defmodule Codebattle.Tournament.LadderTest do
         build_live_tournament(%{
           players_count: 3,
           # every pair among players 1..3 has already been played
-          played_pair_ids: MapSet.new([[1, 2], [1, 3], [2, 3]])
+          played_pair_ids: MapSet.new([{1, 2}, {1, 3}, {2, 3}])
         })
 
       put_players(tournament, 1..3)
@@ -130,18 +149,68 @@ defmodule Codebattle.Tournament.LadderTest do
       assert human_ids == [1, 2, 3]
     end
 
-    test "records only human pairs in played_pair_ids" do
-      insert(:user, is_bot: true)
+    test "records the human pair and the bye in played_pair_ids" do
       tournament = build_live_tournament(%{players_count: 3})
       put_players(tournament, 1..3)
 
-      {tournament, _pairs} = Ladder.build_round_pairs(tournament)
+      {tournament, pairs} = Ladder.build_round_pairs(tournament)
 
-      played = MapSet.new(tournament.played_pair_ids)
-      # exactly one human pair recorded (the third player was bot-filled)
-      assert MapSet.size(played) == 1
-      # every recorded key is a pair of two humans (ids 1..3), never involving a bot id
-      assert Enum.all?(played, fn [a, b] -> a in 1..3 and b in 1..3 end)
+      [_human_pair, [bye_player, bot]] = pairs
+      assert bot.is_bot
+      assert MapSet.size(tournament.played_pair_ids) == 2
+      assert MapSet.member?(tournament.played_pair_ids, Pairing.key(bye_player.id, bot.id))
+    end
+
+    test "the bye goes to the lowest-standing player who hasn't had one yet" do
+      bot = Codebattle.Bot.Context.build()
+
+      # put_players scores players by id, so player 1 is last in the standings.
+      tournament =
+        build_live_tournament(%{
+          players_count: 3,
+          current_round_position: 1,
+          played_pair_ids: MapSet.new([Pairing.key(1, bot.id)])
+        })
+
+      put_players(tournament, 1..3)
+
+      {_tournament, pairs} = Ladder.build_round_pairs(tournament)
+
+      assert [[%Player{id: 2}, %Player{is_bot: true}]] = Enum.filter(pairs, fn [_a, b] -> b.is_bot end)
+    end
+
+    test "widens the fresh-opponent window to cover every round already played" do
+      tournament =
+        build_live_tournament(%{
+          players_count: 42,
+          rounds_limit: 30,
+          played_pair_ids: MapSet.new(2..21, &{1, &1})
+        })
+
+      for id <- 1..42 do
+        Tournament.Players.put_player(tournament, Player.new!(%{id: id, name: "p#{id}", score: 42 - id}))
+      end
+
+      {_tournament, pairs} = Ladder.build_round_pairs(tournament)
+
+      # 2..21 are past opponents; with 30 rounds the window reaches player 22.
+      assert [%Player{id: 1}, %Player{id: 22}] = hd(pairs)
+    end
+
+    test "pairs a large pool with bounded matchmaking work" do
+      tournament = build_live_tournament(%{players_count: 1_000})
+      put_players(tournament, 1..1_000)
+
+      {:reductions, before_pairing} = Process.info(self(), :reductions)
+      {updated, pairs} = Ladder.build_round_pairs(tournament)
+      {:reductions, after_pairing} = Process.info(self(), :reductions)
+
+      assert length(pairs) == 500
+      assert MapSet.size(updated.played_pair_ids) == 500
+      assert pairs |> List.flatten() |> Enum.map(& &1.id) |> Enum.uniq() |> length() == 1_000
+      # A broad CPU-work budget catches an accidental return to whole-pool candidate
+      # scoring without relying on wall-clock speed or scheduling on the test machine.
+      assert after_pairing - before_pairing < 5_000_000
     end
   end
 

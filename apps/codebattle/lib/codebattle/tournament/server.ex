@@ -5,6 +5,7 @@ defmodule Codebattle.Tournament.Server do
   import Codebattle.Tournament.Helpers
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Storage.Ranking
 
   require Logger
 
@@ -727,9 +728,15 @@ defmodule Codebattle.Tournament.Server do
 
   defp load_ets_snapshot(tournament, ets_snapshot) do
     replace_table_rows(tournament.players_table, Map.get(ets_snapshot, :players, []))
+
     replace_table_rows(tournament.matches_table, Map.get(ets_snapshot, :matches, []))
     replace_table_rows(tournament.tasks_table, Map.get(ets_snapshot, :tasks, []))
     replace_table_rows(tournament.ranking_table, Map.get(ets_snapshot, :ranking, []))
+
+    tournament
+    |> Ranking.get_all()
+    |> then(&Ranking.put_ranking(tournament, &1))
+
     replace_table_rows(tournament.clans_table, Map.get(ets_snapshot, :clans, []))
     restore_info_cache(tournament.id, Map.get(ets_snapshot, :tournament_info_cache))
     tournament

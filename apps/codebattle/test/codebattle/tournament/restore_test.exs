@@ -274,7 +274,8 @@ defmodule Codebattle.Tournament.RestoreTest do
       assert Enum.sort(Enum.map(get_matches(restored), & &1.state)) ==
                Enum.sort(["game_over", "timeout", "canceled", "canceled", "timeout"])
 
-      assert restored.played_pair_ids == MapSet.new()
+      # The human only ever played the bot, which is remembered as their bye.
+      assert restored.played_pair_ids == MapSet.new([Tournament.Pairing.key(human.id, bot.id)])
     end
   end
 end

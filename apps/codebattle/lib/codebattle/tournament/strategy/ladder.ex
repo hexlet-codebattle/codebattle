@@ -13,14 +13,17 @@ defmodule Codebattle.Tournament.Ladder do
     * `rounds_limit`         — total number of matching ticks (each player plays ≤ N games)
     * `round_timeout_seconds` — fixed game timeout for non-`per_task` modes, and fallback tick interval
 
-  Matching is score-sorted and prefers fresh (non-rematch) opponents (`played_pair_ids`),
-  but falls back to a human rematch rather than a bot when a player's only available
-  opponents are ones they've already faced. A bot is used only for a genuinely-odd final
-  player. Ranking is recomputed on every tick from all finished games.
+  Matching is standings-sorted and prefers fresh (non-rematch) opponents (`played_pair_ids`)
+  among nearby players; a human rematch is preferred over a bot. With an odd pool the bot
+  plays the lowest-standing player who hasn't had it yet.
+  Ranking is recomputed on every tick from all finished games.
   """
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Pairing
+
+  @min_opponent_window 20
 
   @impl Tournament.Base
   def game_type, do: "duo"
@@ -204,85 +207,68 @@ defmodule Codebattle.Tournament.Ladder do
     tournament
     |> get_players("active")
     |> Enum.reject(&(&1.is_bot == true or MapSet.member?(busy, &1.id)))
-    |> Enum.sort_by(& &1.score, :desc)
+    |> Pairing.sort(tournament)
   end
 
-  # Pair score-sorted players, preferring fresh (non-rematch) opponents. Anyone the
-  # no-rematch pass can't place is then paired with another leftover — a human rematch is
-  # preferred over a bot — so a bot is used only for a genuinely-odd final player. All
-  # human–human pairs (fresh and rematch) are recorded in played_pair_ids.
+  # Pair the standings-sorted pool, preferring fresh opponents among nearby players. With
+  # an odd pool the bot takes the lowest-standing player who hasn't had it yet.
   defp pair_and_bot_fill(tournament, players) do
-    played = MapSet.new(tournament.played_pair_ids)
-    {fresh_pairs, unmatched, played} = pair_no_rematch(players, [], [], played)
-    {rematch_pairs, leftovers, played} = pair_leftovers(unmatched, [], played)
-    human_pairs = fresh_pairs ++ rematch_pairs
+    played = tournament.played_pair_ids
 
-    {tournament, pairs} =
-      case leftovers do
-        [] ->
-          {tournament, human_pairs}
-
-        leftovers ->
-          {tournament, bot} = get_or_build_tournament_bot(tournament)
-          {tournament, human_pairs ++ Enum.map(leftovers, &[&1, bot])}
+    {tournament, bye_pairs, players, played} =
+      if rem(length(players), 2) == 0 do
+        {tournament, [], players, played}
+      else
+        {tournament, bot} = get_or_build_tournament_bot(tournament)
+        {bye_players, players} = Pairing.pick_bye(players, bot, played)
+        {tournament, Enum.map(bye_players, &[&1, bot]), players, Pairing.record_byes(played, bye_players, bot)}
       end
 
-    {update_struct(tournament, %{played_pair_ids: played}), pairs}
+    {pairs, played} = pair_players(players, [], played, opponent_window(tournament))
+
+    {update_struct(tournament, %{played_pair_ids: played}), pairs ++ bye_pairs}
   end
 
-  # Fallback for players the no-rematch pass left unmatched (their only available opponents
-  # were ones they'd already faced): pair them off with each other rather than a bot. Only a
-  # genuinely-odd final player remains, to be bot-filled by the caller.
-  defp pair_leftovers([a, b | rest], pairs, played) do
-    key = Enum.sort([a.id, b.id])
-    pair_leftovers(rest, [[a, b] | pairs], MapSet.put(played, key))
+  # A player has faced at most rounds_limit - 1 opponents, so a window one wider than that
+  # always holds a fresh opponent whenever one is left at all.
+  defp opponent_window(tournament), do: max(@min_opponent_window, (tournament.rounds_limit || 0) + 1)
+
+  defp pair_players([], pairs, played, _window), do: {Enum.reverse(pairs), played}
+
+  defp pair_players([player | rest], pairs, played, window) do
+    {opponent, remaining} =
+      case take_fresh_opponent(player, rest, played, window) do
+        :none -> {hd(rest), tl(rest)}
+        fresh -> fresh
+      end
+
+    pair_players(remaining, [[player, opponent] | pairs], Pairing.record(played, player, opponent), window)
   end
 
-  defp pair_leftovers(leftovers, pairs, played) do
-    {Enum.reverse(pairs), leftovers, played}
-  end
+  # Among fresh opponents in the window, take the one with the fewest fresh options of its
+  # own: picking a constrained opponent first avoids forcing someone else into a rematch.
+  # Only the window prefix is traversed or copied; the rest of the pool is shared.
+  defp take_fresh_opponent(player, candidates, played, window_size) do
+    window = Enum.take(candidates, window_size)
 
-  defp pair_no_rematch([], pairs, leftovers, played) do
-    {Enum.reverse(pairs), Enum.reverse(leftovers), played}
-  end
-
-  defp pair_no_rematch([player | rest], pairs, leftovers, played) do
-    case take_fresh_opponent(player, rest, played) do
-      {opponent, remaining} ->
-        key = Enum.sort([player.id, opponent.id])
-        pair_no_rematch(remaining, [[player, opponent] | pairs], leftovers, MapSet.put(played, key))
-
-      :none ->
-        pair_no_rematch(rest, pairs, [player | leftovers], played)
-    end
-  end
-
-  # Prefer the fresh candidate with the fewest alternatives of their own. Taking a
-  # constrained opponent first avoids a common greedy-matching failure where the
-  # highest-score candidate is picked immediately and another player is needlessly
-  # forced into a rematch even though an all-fresh pairing exists.
-  defp take_fresh_opponent(player, candidates, played) do
     fresh_candidates =
-      Enum.reject(candidates, &played_pair?(played, player, &1))
+      window
+      |> Enum.with_index()
+      |> Enum.reject(fn {candidate, _index} -> Pairing.played?(played, player, candidate) end)
 
     case fresh_candidates do
       [] ->
         :none
 
       _ ->
-        opponent =
-          Enum.min_by(fresh_candidates, fn candidate ->
-            candidates
-            |> List.delete(candidate)
-            |> Enum.count(&(not played_pair?(played, candidate, &1)))
+        {opponent, index} =
+          Enum.min_by(fresh_candidates, fn {candidate, _index} ->
+            Enum.count(window, &(&1.id != candidate.id and not Pairing.played?(played, candidate, &1)))
           end)
 
-        {opponent, List.delete(candidates, opponent)}
+        {before, [_opponent | after_opponent]} = Enum.split(candidates, index)
+        {opponent, before ++ after_opponent}
     end
-  end
-
-  defp played_pair?(played, player, opponent) do
-    MapSet.member?(played, Enum.sort([player.id, opponent.id]))
   end
 
   # Public: the server consults this on wave-drain to decide break-vs-finish.

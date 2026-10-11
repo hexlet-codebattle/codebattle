@@ -112,19 +112,25 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def get_current_round_matches(tournament) do
-    tournament
-    |> get_matches()
-    |> Enum.filter(&(&1.round_position == tournament.current_round_position))
+    get_round_matches(tournament, tournament.current_round_position)
   end
 
-  def get_round_matches(tournament, round_position) do
+  def get_round_matches(%{matches_table: nil} = tournament, round_position) do
     tournament |> get_matches() |> Enum.filter(&(&1.round_position == round_position))
   end
 
-  def get_current_round_playing_matches(tournament) do
+  def get_round_matches(tournament, round_position) do
+    Tournament.Matches.get_round_matches(tournament, round_position)
+  end
+
+  def get_current_round_playing_matches(%{matches_table: nil} = tournament) do
     tournament
     |> get_matches()
     |> Enum.filter(&(&1.round_position == tournament.current_round_position and &1.state == "playing"))
+  end
+
+  def get_current_round_playing_matches(tournament) do
+    Tournament.Matches.get_round_playing_matches(tournament, tournament.current_round_position)
   end
 
   def match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))

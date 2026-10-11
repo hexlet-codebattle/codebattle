@@ -374,7 +374,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   defp sync_match_scores(tournament, rows) do
     matches_by_game_id =
       tournament
-      |> Tournament.Matches.get_matches()
+      |> Tournament.Matches.get_round_matches(tournament.current_round_position || 0)
       |> Map.new(&{&1.game_id, &1})
 
     rows

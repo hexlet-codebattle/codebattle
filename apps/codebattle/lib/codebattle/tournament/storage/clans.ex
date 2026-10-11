@@ -41,6 +41,6 @@ defmodule Codebattle.Tournament.Storage.Clans do
   end
 
   def count(tournament) do
-    :ets.select_count(tournament.clans_table, [{:_, [], [true]}])
+    :ets.info(tournament.clans_table, :size)
   end
 end

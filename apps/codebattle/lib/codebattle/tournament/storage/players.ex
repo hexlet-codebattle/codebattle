@@ -20,7 +20,7 @@ defmodule Codebattle.Tournament.Players do
   end
 
   def count(tournament) do
-    :ets.select_count(tournament.players_table, [{:_, [], [true]}])
+    :ets.info(tournament.players_table, :size)
   end
 
   def put_player(tournament, player) do
