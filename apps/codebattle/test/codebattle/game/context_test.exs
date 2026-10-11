@@ -401,4 +401,16 @@ defmodule Codebattle.Game.ContextTest do
                Game.Context.report_on_player(game.id, missing_admin, offender.id)
     end
   end
+
+  describe "cast_user_timeout_seconds/1" do
+    test "clamps client time limits to 1-60 minutes" do
+      assert Game.Context.cast_user_timeout_seconds(480) == 480
+      assert Game.Context.cast_user_timeout_seconds("480") == 480
+      assert Game.Context.cast_user_timeout_seconds(1) == 60
+      assert Game.Context.cast_user_timeout_seconds(-1) == 60
+      assert Game.Context.cast_user_timeout_seconds(999_999) == 3600
+      assert Game.Context.cast_user_timeout_seconds(nil) == nil
+      assert Game.Context.cast_user_timeout_seconds("abc") == nil
+    end
+  end
 end

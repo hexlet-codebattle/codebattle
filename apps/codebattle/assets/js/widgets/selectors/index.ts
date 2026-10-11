@@ -15,6 +15,7 @@ import editorThemes from '../config/editorThemes';
 import editorUserTypes from '../config/editorUserTypes';
 import GameStateCodes from '../config/gameStateCodes';
 import SubscriptionTypeCodes from '../config/subscriptionTypes';
+import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 import userTypes from '../config/userTypes';
 import { replayerMachineStates } from '../machines/game';
@@ -424,8 +425,12 @@ export const currentChatUserSelector = (state: RootState) => {
   return find(chatUsersSelector(state), { id: currentUserId });
 };
 
+// A task language picked on the game page sticks only while the site language stays the same;
+// after switching the site language, task descriptions follow it again.
 export const taskDescriptionLanguageSelector = (state: RootState) =>
-  state.gameUI.taskDescriptionLanguage;
+  state.gameUI.taskDescriptionSiteLocale === taskDescriptionLanguages.default
+    ? state.gameUI.taskDescriptionLanguage
+    : taskDescriptionLanguages.default;
 
 export const playbookStatusSelector = (state: RootState) => state.playbook.state;
 

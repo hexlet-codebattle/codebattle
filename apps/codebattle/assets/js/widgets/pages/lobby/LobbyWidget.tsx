@@ -84,8 +84,16 @@ function CreateGameButton({ onClick, isOnline, isContinue }: CreateGameButtonPro
       className={createBasicGameBtnClassName}
       onClick={onClick}
       disabled={!isOnline}
+      aria-busy={!isOnline}
     >
-      {isContinue ? i18n.t('Continue battle') : i18n.t('Create a battle')}
+      {/* Creating a game needs the lobby connection; on slow networks say why the button waits. */}
+      {!isOnline && (
+        <>
+          <span className="spinner-border spinner-border-sm mr-2" aria-hidden="true" />
+          {i18n.t('Connecting...')}
+        </>
+      )}
+      {isOnline && (isContinue ? i18n.t('Continue battle') : i18n.t('Create a battle'))}
     </button>
   );
 }

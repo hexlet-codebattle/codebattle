@@ -3929,3 +3929,6 @@ msgstr "Показать QR"
 
 msgid "Hide QR"
 msgstr "Скрыть QR"
+
+msgid "Connecting..."
+msgstr "Подключение..."

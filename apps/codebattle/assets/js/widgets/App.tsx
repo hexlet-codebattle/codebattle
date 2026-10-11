@@ -33,6 +33,7 @@ const gameUIPersistWhitelist = [
   'followName',
   'followPaused',
   'taskDescriptionLanguage',
+  'taskDescriptionSiteLocale',
   'tournamentVisibleMode',
 ];
 

@@ -170,6 +170,24 @@ defmodule Codebattle.Game.Context do
     }
   end
 
+  @min_user_timeout_seconds 60
+  @max_user_timeout_seconds 3600
+
+  # Clamps a game time limit sent by a client (lobby / invites) to the 1-60 minute range the
+  # UI offers. nil or junk falls back to the caller's default.
+  @spec cast_user_timeout_seconds(term()) :: pos_integer() | nil
+  def cast_user_timeout_seconds(seconds) when is_integer(seconds),
+    do: seconds |> max(@min_user_timeout_seconds) |> min(@max_user_timeout_seconds)
+
+  def cast_user_timeout_seconds(seconds) when is_binary(seconds) do
+    case Integer.parse(seconds) do
+      {int, ""} -> cast_user_timeout_seconds(int)
+      _ -> nil
+    end
+  end
+
+  def cast_user_timeout_seconds(_seconds), do: nil
+
   @spec create_game(game_params) :: {:ok, Game.t()} | {:error, atom}
   def create_game(game_params) do
     if Codebattle.Deployment.draining?() do

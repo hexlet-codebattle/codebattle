@@ -31,7 +31,7 @@ defmodule CodebattleWeb.InviteChannel do
     params = %{
       recipient_id: payload["recipient_id"],
       level: payload["level"],
-      timeout_seconds: payload["timeout_seconds"],
+      timeout_seconds: Codebattle.Game.Context.cast_user_timeout_seconds(payload["timeout_seconds"]),
       task_id: payload["task_id"]
     }
 

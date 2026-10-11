@@ -39,7 +39,7 @@ defmodule CodebattleWeb.LobbyChannel do
       game_params =
         %{
           level: payload["level"],
-          timeout_seconds: payload["timeout_seconds"]
+          timeout_seconds: Game.Context.cast_user_timeout_seconds(payload["timeout_seconds"])
         }
         |> add_players(payload, user)
         |> maybe_add_task(payload, user)

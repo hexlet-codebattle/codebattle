@@ -2814,3 +2814,6 @@ msgstr "Create, edit, start and cancel private tournaments"
 
 msgid "Never used"
 msgstr "Never used"
+
+msgid "Connecting..."
+msgstr "Connecting..."

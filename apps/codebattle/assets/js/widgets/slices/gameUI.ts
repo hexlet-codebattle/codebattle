@@ -13,6 +13,8 @@ export interface GameUIState {
   editorMode: string;
   editorTheme: string;
   taskDescriptionLanguage: string;
+  // Site locale at the time the task language was picked; a later site language change resets the pick.
+  taskDescriptionSiteLocale: string;
   showToastActionsAfterGame: boolean;
   isShowGuide: boolean;
   videoMuted: boolean;
@@ -31,6 +33,8 @@ const initialState: GameUIState = {
   editorMode: editorModes.default,
   editorTheme: editorThemes.dark,
   taskDescriptionLanguage: taskDescriptionLanguages.default,
+  // Empty until the user picks a language, so picks persisted before this field existed are ignored.
+  taskDescriptionSiteLocale: '',
   showToastActionsAfterGame: false,
   isShowGuide: false,
   videoMuted: false,
@@ -51,6 +55,7 @@ const gameUI = createSlice({
     },
     setTaskDescriptionLanguage: (state, { payload }: PayloadAction<string>) => {
       state.taskDescriptionLanguage = payload;
+      state.taskDescriptionSiteLocale = taskDescriptionLanguages.default;
     },
     updateGameUI: (state, { payload }: PayloadAction<Partial<GameUIState>>) => {
       Object.assign(state, payload);
