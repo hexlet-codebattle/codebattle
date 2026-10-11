@@ -247,6 +247,25 @@ defmodule Codebattle.Tournament.LadderTest do
     end
   end
 
+  describe "round schedule" do
+    test "fixed-timeout ladders plan every round without knowing the tasks" do
+      tournament =
+        build_live_tournament(%{rounds_limit: 4, timeout_mode: "per_round_fixed", round_timeout_seconds: 100})
+
+      # Ticks at 3/4 of the round timeout; the last round lasts the game timeout + grace.
+      assert Ladder.planned_round_durations(tournament) == [75, 75, 75, 102]
+    end
+
+    test "per_task ladders plan from each round's task, with fallbacks for missing ones" do
+      tournament =
+        build_live_tournament(%{rounds_limit: 3, timeout_mode: "per_task", round_timeout_seconds: 50})
+
+      tasks = [%{base_score: 30, time_to_solve_sec: 90}, nil, %{base_score: 10, time_to_solve_sec: 40}]
+
+      assert Ladder.round_durations(tournament, tasks) == [30, 50, 42]
+    end
+  end
+
   describe "finish predicates" do
     test "finish_round_after_match? is always false (no break/round-finish machinery)" do
       tournament = build_live_tournament(%{rounds_limit: 3, current_round_position: 1})
@@ -255,6 +274,7 @@ defmodule Codebattle.Tournament.LadderTest do
 
     test "finish_tournament? true only when ticks are exhausted and no game is playing" do
       base = build_live_tournament(%{rounds_limit: 3})
+      Tournament.Players.put_player(base, Player.new!(%{id: 1, name: "p1"}))
 
       # ticks remain -> not finished
       refute Ladder.finish_tournament?(%{base | current_round_position: 0})
@@ -269,6 +289,23 @@ defmodule Codebattle.Tournament.LadderTest do
       )
 
       refute Ladder.finish_tournament?(%{base | current_round_position: 2})
+    end
+
+    test "finish_tournament? true when nobody is left to pair, even with ticks remaining" do
+      base = build_live_tournament(%{rounds_limit: 3})
+      Tournament.Players.put_player(base, %{Player.new!(%{id: 1, name: "left"}) | state: "banned"})
+      Tournament.Players.put_player(base, Player.new!(%{id: -1, name: "bot", is_bot: true}))
+
+      # Only a banned player and the bot: no tick could ever pair anyone again.
+      assert Ladder.finish_tournament?(%{base | current_round_position: 0})
+
+      # ...but a game still in flight drains first.
+      Tournament.Matches.put_match(
+        base,
+        %Match{id: 0, player_ids: [1, -1], round_position: 0, state: "playing"}
+      )
+
+      refute Ladder.finish_tournament?(%{base | current_round_position: 0})
     end
   end
 
@@ -467,7 +504,8 @@ defmodule Codebattle.Tournament.LadderTest do
 
   describe "server matchmaking tick" do
     test "notifies player channels after ladder scores are recomputed" do
-      tournament = build_live_tournament(%{players_count: 0, rounds_limit: 3})
+      tournament = build_live_tournament(%{players_count: 1, rounds_limit: 3})
+      put_busy_player(tournament)
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
 
       Ladder.matchmaking_tick(tournament)
@@ -484,10 +522,12 @@ defmodule Codebattle.Tournament.LadderTest do
           rounds_limit: 3,
           round_timeout_seconds: 60,
           timeout_mode: "per_task",
-          task_ids: [task.id]
+          # Every tick opens a round, so the next interval comes from the next round's task.
+          task_ids: [task.id, task.id, task.id]
         })
 
       Tournament.Tasks.put_task(tournament, task)
+      put_busy_player(tournament)
 
       state = %{
         tournament: tournament,
@@ -653,6 +693,16 @@ defmodule Codebattle.Tournament.LadderTest do
   end
 
   # Helpers
+
+  # A human still in a playing game: ticks have nobody to pair yet the tournament goes on.
+  defp put_busy_player(tournament) do
+    Tournament.Players.put_player(tournament, Player.new!(%{id: 1, name: "p1"}))
+
+    Tournament.Matches.put_match(
+      tournament,
+      %Match{id: 0, player_ids: [1, -1], round_position: 0, state: "playing"}
+    )
+  end
 
   defp put_players(tournament, ids) do
     for id <- ids do

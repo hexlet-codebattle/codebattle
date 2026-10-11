@@ -1,18 +1,26 @@
 import React, { memo } from 'react';
 
+import i18next from 'i18next';
+
 import Notifications from './Notifications';
+import TournamentGameRoundClock from './TournamentGameRoundClock';
 import TournamentRankingTable from './TournamentRankingTable';
 
+// Game page side panel of a tournament game, stacked to fit its fixed height: the round
+// clock, a toolbar with the ranking title and the game actions, then the ranking, which
+// scrolls on its own so nothing overlaps.
 function TournamentCurrentPlayerRankingPanel() {
   return (
-    <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-bg-panel text-white cb-rounded">
-      <TournamentRankingTable />
-      <div className="flex-shrink-1 p-0 border-left rounded-right cb-border-color cb-game-control-container">
-        <div className="d-flex flex-column justify-content-start overflow-auto h-100">
-          <div className="px-3 py-3 w-100 d-flex flex-column">
-            <Notifications />
-          </div>
+    <div className="cb-tournament-game-panel shadow-sm h-100 cb-bg-panel text-white cb-rounded">
+      <TournamentGameRoundClock />
+      <div className="cb-tournament-game-panel-toolbar">
+        <span className="font-weight-bold">{i18next.t('Ranking')}</span>
+        <div className="cb-tournament-game-panel-actions">
+          <Notifications />
         </div>
+      </div>
+      <div className="cb-tournament-game-panel-ranking">
+        <TournamentRankingTable />
       </div>
     </div>
   );

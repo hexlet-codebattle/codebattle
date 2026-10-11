@@ -68,6 +68,58 @@ defmodule Codebattle.TaskTest do
     assert {:ok, _deleted} = Task.delete(task)
   end
 
+  describe "level timing" do
+    defp task_params(attrs) do
+      Map.merge(
+        %{
+          name: "timing-#{System.unique_integer([:positive])}",
+          level: "medium",
+          description_en: "sum",
+          examples: "1 + 1",
+          asserts: [%{arguments: [1, 1], expected: 2}],
+          input_signature: [],
+          output_signature: %{type: %{name: "integer"}},
+          origin: "github",
+          state: "active",
+          visibility: "public"
+        },
+        attrs
+      )
+    end
+
+    test "a new task without timing gets its level's defaults" do
+      for {level, base_score, time_to_solve_sec} <- [
+            {"elementary", 60, 120},
+            {"easy", 90, 180},
+            {"medium", 150, 300},
+            {"hard", 240, 480}
+          ] do
+        task = Task.upsert!(task_params(%{level: level}))
+        assert {task.base_score, task.time_to_solve_sec} == {base_score, time_to_solve_sec}
+      end
+    end
+
+    test "explicit timing wins over the level defaults" do
+      task = Task.upsert!(task_params(%{base_score: 77, time_to_solve_sec: 99}))
+      assert {task.base_score, task.time_to_solve_sec} == {77, 99}
+    end
+
+    test "re-importing a task without timing applies its level's defaults" do
+      params = task_params(%{level: "hard"})
+      Task.upsert!(Map.merge(params, %{base_score: 60, time_to_solve_sec: 180}))
+
+      task = Task.upsert!(params)
+      assert {task.base_score, task.time_to_solve_sec} == {240, 480}
+    end
+
+    test "editing an existing task without timing keeps its values" do
+      task = Task.upsert!(task_params(%{base_score: 77, time_to_solve_sec: 99}))
+      {:ok, task} = Task.update(task, %{description_en: "changed"})
+
+      assert {task.base_score, task.time_to_solve_sec} == {77, 99}
+    end
+  end
+
   test "exposes supported enum values" do
     assert "easy" in Task.levels()
     assert "public" in Task.visibility_types()

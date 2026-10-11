@@ -50,6 +50,10 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     [%{game_id: gid} | _] = round0
     assert GameContext.get_game!(gid).timeout_seconds == 70
 
+    # The client countdown targets the armed tick: per_task ticks every base_score seconds.
+    assert tournament.last_round_started_at
+    assert_in_delta DateTime.diff(tournament.next_round_at, DateTime.utc_now()), 300, 2
+
     # Finish both round-0 games. When the pool empties, the early tick opens round 1
     # and pairs the idle players with fresh (non-rematch) opponents.
     finish_all_playing_matches(tournament)
@@ -59,6 +63,10 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert tournament.current_round_position == 1
     round1 = get_matches(tournament, "playing")
     assert length(round1) == 2
+
+    # Round 1 is the final wave: the countdown targets the final deadline (game timeout +
+    # grace), not another matchmaking tick.
+    assert_in_delta DateTime.diff(tournament.next_round_at, DateTime.utc_now()), 72, 2
 
     # No human pair repeats across the two rounds.
     keys =
@@ -239,9 +247,18 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
 
     assert_receive %Message{
                      event: "tournament:round_finished",
-                     payload: %{tournament: %{break_state: "on", last_round_ended_at: last_round_ended_at}}
+                     payload: %{
+                       tournament: %{
+                         break_state: "on",
+                         last_round_ended_at: last_round_ended_at,
+                         next_round_at: break_over_at
+                       }
+                     }
                    },
                    1_000
+
+    # During the break the countdown targets the break end, not the far-away tick.
+    assert_in_delta DateTime.diff(break_over_at, DateTime.utc_now()), 2, 1
 
     assert_receive %Message{
                      event: "tournament:updated",
@@ -260,12 +277,325 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert get_matches(tournament, "playing") == []
 
     # Once the break elapses, the tick opens round 1 and clears the break.
-    Process.sleep(2_000)
+    assert_receive %Message{
+                     event: "tournament:round_created",
+                     payload: %{
+                       tournament: %{
+                         break_state: "off",
+                         current_round_position: 1,
+                         last_round_started_at: round1_started_at,
+                         next_round_at: next_tick_at
+                       }
+                     }
+                   },
+                   3_000
+
+    assert NaiveDateTime.compare(round1_started_at, last_round_ended_at) != :lt
+    assert_in_delta DateTime.diff(next_tick_at, DateTime.utc_now()), 300, 2
+    Process.sleep(100)
 
     tournament = TournamentContext.get(tournament.id)
     assert tournament.break_state == "off"
     assert tournament.current_round_position == 1
     assert length(get_matches(tournament, "playing")) == 2
+  end
+
+  test "a single player plays the bot every round, then the tournament finishes" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-solo", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    user = insert(:user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder solo",
+        "description" => "ladder solo",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-solo",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: [user]})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    play_round = fn tournament, round_position, finish ->
+      assert tournament.state == "active"
+      assert tournament.current_round_position == round_position
+      assert tournament.next_round_at
+
+      # The lone player is paired with the bot every round, even though they already met.
+      assert [%{player_ids: player_ids} = match] = get_matches(tournament, "playing")
+      assert user.id in player_ids
+      [bot_id] = player_ids -- [user.id]
+      assert get_player(tournament, bot_id).is_bot
+      assert match.round_position == round_position
+
+      finish.(tournament)
+      Process.sleep(400)
+      {TournamentContext.get(tournament.id), bot_id}
+    end
+
+    win = &win_active_match(&1, user)
+    timeout = &finish_all_playing_matches/1
+
+    {tournament, bot_id} = play_round.(TournamentContext.get(tournament.id), 0, win)
+    {tournament, ^bot_id} = play_round.(tournament, 1, timeout)
+
+    # Round 2 is the final wave: its countdown targets the final deadline (70s + grace).
+    assert_in_delta DateTime.diff(tournament.next_round_at, DateTime.utc_now()), 72, 2
+    {tournament, ^bot_id} = play_round.(tournament, 2, win)
+
+    assert tournament.state == "finished"
+    assert get_matches(tournament, "playing") == []
+    assert length(get_matches(tournament)) == 3
+
+    # Only the human is ranked; the bot never shows up in standings.
+    assert [%{user_id: user_id, place: 1, score: score}] = TournamentUserResult.get_leaderboard(tournament.id)
+    assert user_id == user.id
+    assert score > 0
+    refute Enum.any?(TournamentUserResult.get_leaderboard(tournament.id), &(&1.user_id == bot_id))
+  end
+
+  test "the tournament finishes when its only player leaves instead of ticking forever" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-empty", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    user = insert(:user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder empty",
+        "description" => "ladder empty",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-empty",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        # A real break would otherwise be inserted before the next tick.
+        "break_duration_seconds" => 30,
+        "rounds_limit" => "5",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: [user]})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    assert [_bot_match] = get_matches(tournament, "playing")
+
+    # Leaving ends the bot game; with nobody left to pair, no further round can ever open.
+    Server.handle_event(tournament.id, :leave, %{user_id: user.id})
+    Process.sleep(500)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.state == "finished"
+    assert tournament.break_state == "off"
+    assert get_matches(tournament, "playing") == []
+  end
+
+  test "a tick with nobody idle still opens an empty round on schedule" do
+    # base_score 2 → a matchmaking tick every 2s, while games run on a 70s clock.
+    tasks = insert_list(3, :task, level: "easy", base_score: 2, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-busy", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(4, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder busy",
+        "description" => "ladder busy",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-busy",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    first_tick_at = tournament.next_round_at
+    round0_games = get_matches(tournament, "playing")
+    assert length(round0_games) == 2
+    Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+
+    # Everyone is still playing when the tick fires: round 1 opens anyway, with no games.
+    assert_receive %Message{
+                     event: "tournament:round_created",
+                     payload: %{tournament: %{current_round_position: 1, next_round_at: second_tick_at}}
+                   },
+                   3_000
+
+    Process.sleep(100)
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 1
+    assert get_matches(tournament, "playing") == round0_games
+    assert tournament |> get_matches() |> Enum.filter(&(&1.round_position == 1)) == []
+
+    # The round started at its planned moment, so the schedule does not drift.
+    assert DateTime.diff(second_tick_at, first_tick_at, :millisecond) == 2_000
+    assert tournament.next_round_at == second_tick_at
+  end
+
+  test "a player's games keep the tournament round numbers of the rounds they played" do
+    # Ticks every second while the game runs on a 70s clock.
+    tasks = insert_list(4, :task, level: "easy", base_score: 1, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-numbers", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    user = insert(:user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder numbers",
+        "description" => "ladder numbers",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-numbers",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "4",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: [user]})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    # Rounds 2 and 3 open (empty) while the player is still in their round-1 game.
+    Process.sleep(2_500)
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 2
+
+    # Finishing early opens the last round right away, and the player plays it.
+    win_active_match(tournament, user)
+    Process.sleep(500)
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 3
+
+    # The player's games are rounds 1 and 4 (positions 0 and 3), not "their 1st and 2nd".
+    assert tournament |> get_matches_by_players([user.id]) |> Enum.map(& &1.round_position) |> Enum.sort() ==
+             [0, 3]
+  end
+
+  test "the round schedule is planned before the start and kept once it begins" do
+    [t1, t2, t3] = [
+      insert(:task, level: "easy", base_score: 60, time_to_solve_sec: 180),
+      insert(:task, level: "easy", base_score: 90, time_to_solve_sec: 200),
+      insert(:task, level: "easy", base_score: 120, time_to_solve_sec: 240)
+    ]
+
+    insert(:task_pack, name: "ladder-plan", task_ids: [t1.id, t2.id, t3.id])
+    creator = insert(:user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder plan",
+        "description" => "ladder plan",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-plan",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 0,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    # Ticks follow each round's base_score; the last round lasts its game time + grace.
+    planned = [60, 90, 242]
+    assert TournamentContext.get(tournament.id).round_durations == planned
+
+    Server.handle_event(tournament.id, :join, %{users: insert_list(2, :user)})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.round_durations == planned
+    assert_in_delta DateTime.diff(tournament.next_round_at, DateTime.utc_now()), 60, 2
+  end
+
+  test "an early drain never inserts a break that would delay the scheduled round" do
+    # Ticks every 3s, but a 30s break: a break would push round 1 past its planned start.
+    tasks = insert_list(3, :task, level: "easy", base_score: 3, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-cap", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(2, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder cap",
+        "description" => "ladder cap",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-cap",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 30,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    planned_round1_at = tournament.next_round_at
+    finish_all_playing_matches(tournament)
+    Process.sleep(400)
+
+    # No break and no early tick: the players simply wait for the planned round.
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "off"
+    assert tournament.current_round_position == 0
+
+    Process.sleep(max(DateTime.diff(planned_round1_at, DateTime.utc_now(), :millisecond), 0) + 400)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.current_round_position == 1
+    assert length(get_matches(tournament, "playing")) == 1
   end
 
   test "the UI start_round event ends the break early and opens the next round" do
@@ -288,9 +618,10 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
         "task_strategy" => "sequential",
         "type" => "ladder",
         "state" => "waiting_participants",
-        # A long break so the test would never pass by waiting it out — only the forced tick advances.
+        # A long break (that still ends before the 300s tick) so the test would never pass by
+        # waiting it out — only the forced tick advances.
         "round_timeout_seconds" => 300,
-        "break_duration_seconds" => 600,
+        "break_duration_seconds" => 120,
         "rounds_limit" => "3",
         "players_limit" => 4
       })

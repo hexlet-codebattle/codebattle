@@ -303,6 +303,8 @@ defmodule Codebattle.Tournament.Helpers do
     ])
     |> Map.update(:meta, %{}, &public_meta/1)
     |> Map.put(:current_round_timeout_seconds, current_round_timeout_seconds(tournament))
+    # Lets clients correct their clock before counting down to server timestamps.
+    |> Map.put(:server_time, DateTime.utc_now(:millisecond))
   end
 
   # Game pass codes unlock locked tournament games, so they must never reach clients.

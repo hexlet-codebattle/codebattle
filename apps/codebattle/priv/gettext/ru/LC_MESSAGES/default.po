@@ -3932,3 +3932,99 @@ msgstr "Скрыть QR"
 
 msgid "Connecting..."
 msgstr "Подключение..."
+
+msgid "Next round"
+msgstr "Следующий раунд"
+
+msgid "Round in progress"
+msgstr "Идёт раунд"
+
+msgid "Final round"
+msgstr "Финальный раунд"
+
+msgid "Pairing players"
+msgstr "Подбор пар"
+
+msgid "Wrapping up"
+msgstr "Завершение"
+
+msgid "Round %{round} starts in"
+msgstr "Раунд %{round} начнётся через"
+
+msgid "Round %{round} ends in"
+msgstr "Раунд %{round} закончится через"
+
+msgid "Final games end in"
+msgstr "Финальные игры закончатся через"
+
+msgid "Matching opponents…"
+msgstr "Подбираем соперников…"
+
+msgid "Waiting for the last games"
+msgstr "Ждём завершения последних игр"
+
+msgid "Players still in a game skip the round"
+msgstr "Кто ещё играет, пропускает этот раунд"
+
+msgid "Take a breath — new pairs are made when the break ends"
+msgstr "Передохни — новые пары составятся после перерыва"
+
+msgid "No new pairs — results are final when these games end"
+msgstr "Новых пар не будет — итоги подведём после этих игр"
+
+msgid "Round %{round} of %{total}"
+msgstr "Раунд %{round} из %{total}"
+
+msgid "Rounds: %{count}"
+msgstr "Раундов: %{count}"
+
+msgid "Round %{round} · %{time}"
+msgstr "Раунд %{round} · %{time}"
+
+msgid "Round %{round}"
+msgstr "Раунд %{round}"
+
+msgid "Rounds left: %{count}"
+msgstr "Осталось раундов: %{count}"
+
+msgid "Last round"
+msgstr "Последний раунд"
+
+msgid "Ends by %{time}"
+msgstr "Закончится не позже %{time}"
+
+msgid "Your game is live"
+msgstr "Твоя игра идёт"
+
+msgid "You have played your last round — final standings come soon"
+msgstr "Твой последний раунд сыгран — итоговая таблица скоро появится"
+
+msgid "You're in the pool — you'll get an opponent when the next round starts"
+msgstr "Ты в очереди — соперник найдётся в начале следующего раунда"
+
+msgid "Final round — no new pairs after this game"
+msgstr "Финальный раунд — после этой игры новых пар не будет"
+
+msgid "That was your last game in this tournament"
+msgstr "Это была твоя последняя игра в турнире"
+
+msgid "Round %{round} is the last one — finish before the countdown ends to play it"
+msgstr "Раунд %{round} последний — закончи игру до конца отсчёта, чтобы сыграть в нём"
+
+msgid "Finish before the countdown ends to play round %{round}"
+msgstr "Закончи игру до конца отсчёта, чтобы сыграть в раунде %{round}"
+
+msgid "You'll get a new opponent when round %{round} starts"
+msgstr "Новый соперник найдётся в начале раунда %{round}"
+
+msgid "Starts at %{time}"
+msgstr "Начало в %{time}"
+
+msgid "up to %{duration}"
+msgstr "до %{duration}"
+
+msgid "Your round"
+msgstr "Твой раунд"
+
+msgid "Game round"
+msgstr "Раунд игры"

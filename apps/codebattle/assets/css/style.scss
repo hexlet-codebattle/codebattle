@@ -3594,6 +3594,405 @@ a.cb-text-light:hover {
   }
 }
 
+/* Tournament round clock: countdown to the next round / tick, break or final wave */
+.cb-round-clock {
+  --cb-clock-accent: #{lighten($secondary, 18%)};
+  --cb-clock-accent-soft: #{rgba(lighten($secondary, 18%), 0.18)};
+
+  text-align: left;
+  color: $cb-text-light-color;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: $cb-border-radius;
+  background:
+    linear-gradient(135deg, var(--cb-clock-accent-soft), transparent 65%),
+    rgba($cb-bg-highlight-panel, 0.75);
+  border: 1px solid rgba($cb-border-color, 0.6);
+  border-left: 3px solid var(--cb-clock-accent);
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+
+  &.cb-round-clock-phase-break {
+    --cb-clock-accent: #f0ad4e;
+    --cb-clock-accent-soft: #{rgba(#f0ad4e, 0.18)};
+  }
+
+  &.cb-round-clock-phase-final {
+    --cb-clock-accent: #ff7a59;
+    --cb-clock-accent-soft: #{rgba(#ff7a59, 0.18)};
+  }
+
+  &.cb-round-clock-phase-pairing {
+    --cb-clock-accent: #{lighten($cb-success, 8%)};
+    --cb-clock-accent-soft: #{rgba($cb-success, 0.2)};
+  }
+
+  &.cb-round-clock-phase-finishing {
+    --cb-clock-accent: #{$cb-secondary-focus-border};
+    --cb-clock-accent-soft: #{rgba($cb-secondary-focus-border, 0.16)};
+  }
+
+  &.cb-round-clock-urgent {
+    --cb-clock-accent: #{$error};
+    --cb-clock-accent-soft: #{rgba($error, 0.2)};
+  }
+}
+
+.cb-round-clock-main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.cb-round-clock-ring {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+}
+
+.cb-round-clock-ring-track,
+.cb-round-clock-ring-value {
+  fill: none;
+  stroke-width: 5;
+}
+
+.cb-round-clock-ring-track {
+  stroke: rgba($cb-border-color, 0.55);
+}
+
+.cb-round-clock-ring-value {
+  stroke: var(--cb-clock-accent);
+  stroke-linecap: round;
+  transition:
+    stroke-dashoffset 0.25s linear,
+    stroke 0.3s ease;
+}
+
+.cb-round-clock-ring-spin {
+  transform-origin: 32px 32px;
+  animation: cb-round-clock-spin 1.1s linear infinite;
+}
+
+.cb-round-clock-ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-family-monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.cb-round-clock-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.cb-round-clock-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cb-clock-accent);
+}
+
+.cb-round-clock-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.cb-round-clock-hint {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: rgba($cb-text-light-color, 0.7);
+}
+
+.cb-round-clock-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  line-height: 1.1;
+
+  .cb-round-clock-counter-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cb-round-clock-counter-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba($cb-text-light-color, 0.6);
+  }
+}
+
+.cb-round-clock-status {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba($cb-border-color, 0.5);
+  font-size: 0.85rem;
+  color: rgba($cb-text-light-color, 0.85);
+
+  .cb-round-clock-status-icon {
+    flex-shrink: 0;
+    color: var(--cb-clock-accent);
+  }
+
+  &.cb-round-clock-status-playing .cb-round-clock-status-icon {
+    color: lighten($cb-success, 8%);
+  }
+}
+
+/* Compact round clock for tight panels (game page) */
+.cb-round-clock-compact {
+  gap: 0.45rem;
+  padding: 0.55rem 0.75rem;
+
+  .cb-round-clock-main {
+    gap: 0.65rem;
+  }
+
+  .cb-round-clock-ring {
+    width: 44px;
+    height: 44px;
+  }
+
+  .cb-round-clock-ring-label {
+    font-size: 0.7rem;
+  }
+
+  .cb-round-clock-eyebrow {
+    font-size: 0.62rem;
+  }
+
+  .cb-round-clock-title {
+    font-size: 0.88rem;
+  }
+
+  .cb-round-clock-counter .cb-round-clock-counter-value {
+    font-size: 1rem;
+  }
+
+  .cb-round-clock-schedule {
+    margin-top: -0.2rem;
+    font-size: 0.7rem;
+  }
+}
+
+.cb-round-clock-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: rgba($cb-text-light-color, 0.8);
+
+  .cb-round-clock-status-icon {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--cb-clock-accent);
+  }
+}
+
+/* Tournament game side panel: clock, toolbar and a scrolling ranking in a fixed height */
+.cb-tournament-game-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  overflow: hidden;
+
+  > .cb-round-clock {
+    flex-shrink: 0;
+  }
+}
+
+.cb-tournament-game-panel-toolbar {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  padding: 0 0.25rem;
+}
+
+/* Game actions (history, back to tournament, next game, ...) as small toolbar buttons */
+.cb-tournament-game-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    margin: 0;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .btn-block + .btn-block {
+    margin-top: 0;
+  }
+
+  .alert {
+    flex-basis: 100%;
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+.cb-tournament-game-panel-ranking {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Segmented round track: done | current | next (fills with the countdown) | upcoming */
+.cb-round-track {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+}
+
+.cb-round-track-segment {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 2px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba($cb-border-color, 0.55);
+}
+
+.cb-round-track-segment-done {
+  background: rgba($cb-success, 0.75);
+}
+
+.cb-round-track-segment-current {
+  background: var(--cb-clock-accent-soft);
+
+  .cb-round-track-fill {
+    animation: cb-round-clock-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+/* The round the viewed game belongs to */
+.cb-round-track-segment-marked {
+  box-shadow:
+    0 0 0 1px $cb-bg-highlight-panel,
+    0 0 0 3px rgba(#fff, 0.85);
+}
+
+.cb-round-track-segment-next {
+  background: var(--cb-clock-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--cb-clock-accent-soft);
+}
+
+.cb-round-track-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--cb-clock-accent);
+  transition: width 0.25s linear;
+}
+
+.cb-round-clock-urgent {
+  .cb-round-clock-ring-label {
+    animation: cb-round-clock-pulse 1s ease-in-out infinite;
+  }
+}
+
+.cb-round-clock-schedule {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  margin-top: -0.35rem;
+  font-size: 0.75rem;
+  color: rgba($cb-text-light-color, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Planned ladder schedule on the join panel (before the start) */
+.cb-join-schedule {
+  --cb-clock-accent: #{lighten($secondary, 18%)};
+  --cb-clock-accent-soft: #{rgba(lighten($secondary, 18%), 0.18)};
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .cb-round-track-segment {
+    background: var(--cb-clock-accent-soft);
+  }
+}
+
+.cb-join-schedule-times {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  color: rgba($cb-text-light-color, 0.75);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes cb-round-clock-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cb-round-clock-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-round-clock-ring-spin,
+  .cb-round-track-segment-current .cb-round-track-fill,
+  .cb-round-clock-urgent .cb-round-clock-ring-label {
+    animation: none;
+  }
+}
+
 /* Tournament chat: a compact single-room dark panel */
 .cb-tournament-chat {
   height: 450px;

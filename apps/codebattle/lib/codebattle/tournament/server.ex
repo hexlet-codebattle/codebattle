@@ -16,11 +16,8 @@ defmodule Codebattle.Tournament.Server do
   @match_missing_max_retries 60
   # Events after which the current round may have nothing left to wait for.
   @round_closing_events [:leave, :toggle_ban_player, :toggle_cheater_player, :game_over_match]
-  # Ladder: don't insert a pre-tick break if the next scheduled tick is already imminent.
+  # Ladder: only insert a pre-tick break that ends at least this long before the scheduled tick.
   @ladder_min_break_gap_ms 3_000
-  # Let the game's own timeout finish first; this deadline is the safety net for a stuck
-  # final wave, not a competing timeout clock.
-  @ladder_final_deadline_grace_seconds 2
   @tournament_info_drop_fields [
     :__struct__,
     :__meta__,
@@ -47,6 +44,8 @@ defmodule Codebattle.Tournament.Server do
     :event_ranking,
     :task_ids,
     :current_round_timeout_seconds,
+    :next_round_at,
+    :round_durations,
     :results_synced_round_position
   ]
   # API
@@ -212,6 +211,7 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:players_table, players_table)
       |> Map.put(:ranking_table, ranking_table)
       |> Map.put(:tasks_table, tasks_table)
+      |> plan_ladder()
 
     if tournament.grade != "open" and tournament.state == "waiting_participants" do
       time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
@@ -252,7 +252,7 @@ defmodule Codebattle.Tournament.Server do
         |> Map.from_struct()
         |> Map.drop([:__meta__] ++ @virtual_fields)
 
-      merged_tournament = Map.merge(state.tournament, persisted_fields)
+      merged_tournament = state.tournament |> Map.merge(persisted_fields) |> plan_ladder()
 
       update_tournament_info_cache(merged_tournament)
 
@@ -394,6 +394,7 @@ defmodule Codebattle.Tournament.Server do
           apply(module, event_type, [tournament, params])
         end
 
+      new_tournament = if event_type == :restart, do: plan_ladder(new_tournament), else: new_tournament
       update_tournament_info_cache(new_tournament)
 
       new_state =
@@ -903,14 +904,7 @@ defmodule Codebattle.Tournament.Server do
   # matchmaking cadence and is not extended by repeated events in the same final wave.
   defp arm_matchmaking_tick(%{tournament: %{type: "ladder", state: "active"} = tournament} = state) do
     if tournament.module.ticks_remaining?(tournament) do
-      interval = max(tournament.module.round_timeout_seconds(tournament) || 60, 1)
-
-      arm_ladder_timer(
-        state,
-        :matchmaking_tick,
-        {:matchmaking_tick, tournament.current_round_position},
-        interval
-      )
+      arm_ladder_timer(state, :matchmaking_tick, {:matchmaking_tick, tournament.current_round_position})
     else
       arm_ladder_final_deadline(state, tournament)
     end
@@ -927,29 +921,81 @@ defmodule Codebattle.Tournament.Server do
          Map.get(state, :matchmaking_timer_ref) do
       state
     else
-      interval =
-        tournament.module.final_deadline_seconds(tournament) +
-          @ladder_final_deadline_grace_seconds
-
-      arm_ladder_timer(
-        state,
-        :final_deadline,
-        {:ladder_final_deadline, tournament.current_round_position},
-        interval
-      )
+      arm_ladder_timer(state, :final_deadline, {:ladder_final_deadline, tournament.current_round_position})
     end
   end
 
-  defp arm_ladder_timer(state, kind, message, interval) do
+  # The timer fires at the tournament's `next_round_at`, which clients count down to. During a
+  # break the break-over message opens the next round, so a periodic tick re-armed mid-break
+  # runs on its own interval and must not move the break-end countdown.
+  defp arm_ladder_timer(%{tournament: tournament} = state, kind, message) do
     state = clear_matchmaking_timer(state)
-    ref = Process.send_after(self(), message, to_timeout(second: interval))
+    tournament = ensure_round_durations(tournament)
+
+    interval_ms = tournament.module.next_timer_seconds(tournament) * 1000
+    now = DateTime.utc_now(:millisecond)
+
+    {tournament, delay_ms} =
+      if in_break?(tournament) do
+        {tournament, interval_ms}
+      else
+        target = next_round_target(tournament.next_round_at, now, interval_ms)
+        tournament = Map.put(tournament, :next_round_at, target)
+        update_tournament_info_cache(tournament)
+        {tournament, DateTime.diff(target, now, :millisecond)}
+      end
+
+    ref = Process.send_after(self(), message, delay_ms)
 
     Map.merge(state, %{
+      tournament: tournament,
       matchmaking_timer_ref: ref,
       matchmaking_timer_kind: kind,
-      next_matchmaking_tick_at: System.monotonic_time(:millisecond) + interval * 1000
+      next_matchmaking_tick_at: System.monotonic_time(:millisecond) + delay_ms
     })
   end
+
+  # The schedule is virtual: rebuild it from the round tasks after a crash restore.
+  defp ensure_round_durations(%{round_durations: [_ | _]} = tournament), do: tournament
+
+  defp ensure_round_durations(%{task_ids: task_ids} = tournament) when is_list(task_ids) do
+    Map.put(tournament, :round_durations, tournament.module.round_durations(tournament))
+  end
+
+  defp ensure_round_durations(tournament), do: tournament
+
+  # Plan a waiting ladder's schedule up front so the join page can show it. Reads the task
+  # pack from the database, so it only runs on boot, on edits and on restart.
+  defp plan_ladder(%{type: "ladder", state: "waiting_participants"} = tournament) do
+    Map.put(tournament, :round_durations, tournament.module.planned_round_durations(tournament))
+  rescue
+    error ->
+      Logger.warning("Tournament #{tournament.id}: cannot plan the ladder schedule: #{Exception.message(error)}")
+      tournament
+  end
+
+  defp plan_ladder(tournament), do: tournament
+
+  # A round the ladder just opened was stamped (and broadcast) with its next_round_at: keep
+  # it. A tick that opened nothing (nobody idle) broadcasts nothing and leaves the fired
+  # target in the past: advance it by whole intervals, so the cadence never drifts and
+  # clients can extrapolate it exactly. Anything else (restore, missing) starts from now.
+  defp next_round_target(%DateTime{} = target, now, interval_ms) do
+    ahead_ms = DateTime.diff(target, now, :millisecond)
+
+    cond do
+      ahead_ms > 0 and ahead_ms <= interval_ms ->
+        target
+
+      ahead_ms <= 0 and -ahead_ms < interval_ms * 10 ->
+        DateTime.add(target, (div(-ahead_ms, interval_ms) + 1) * interval_ms, :millisecond)
+
+      true ->
+        DateTime.add(now, interval_ms, :millisecond)
+    end
+  end
+
+  defp next_round_target(_target, now, interval_ms), do: DateTime.add(now, interval_ms, :millisecond)
 
   defp consume_matchmaking_timer(state) do
     Map.merge(state, %{
@@ -1082,32 +1128,34 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  # A wave has games still playing — nothing to do; wait for them to finish.
-  # Otherwise the pool has drained: insert a break before the next tick when the next
-  # scheduled tick is not imminent and the tournament defines a break, else tick now.
+  # A wave has games still playing — nothing to do; wait for them to finish. Otherwise the
+  # pool has drained and the next round may open early — but never later than planned, so
+  # the published schedule stays an upper bound: without a break tick now; with one, insert
+  # it only when it ends before the scheduled tick, else simply let that tick open the round.
   defp maybe_drain_ladder_wave(%{tournament: tournament} = state) do
+    break_ms = (tournament.break_duration_seconds || 0) * 1000
+
     cond do
       playing_matches?(tournament) ->
         {:noreply, state}
 
-      not tournament.module.ticks_remaining?(tournament) ->
-        # Final drain — let the tick decide whether to finish the tournament.
+      tournament.module.finish_tournament?(tournament) ->
+        # Final drain, or nobody left to pair: the tick finishes the tournament, no break.
         run_ladder_tick_now(state)
 
-      break_before_next_tick?(state) ->
+      break_ms == 0 ->
+        run_ladder_tick_now(state)
+
+      ms_to_next_tick(state) > break_ms + @ladder_min_break_gap_ms ->
         start_ladder_break(state)
 
       true ->
-        run_ladder_tick_now(state)
+        {:noreply, state}
     end
   end
 
-  defp break_before_next_tick?(%{tournament: tournament, next_matchmaking_tick_at: next_at}) do
-    break_seconds = tournament.break_duration_seconds || 0
-    gap_ms = if next_at, do: next_at - System.monotonic_time(:millisecond), else: 0
-
-    break_seconds > 0 and gap_ms > @ladder_min_break_gap_ms
-  end
+  defp ms_to_next_tick(%{next_matchmaking_tick_at: nil}), do: 0
+  defp ms_to_next_tick(%{next_matchmaking_tick_at: next_at}), do: next_at - System.monotonic_time(:millisecond)
 
   defp run_ladder_tick_now(%{tournament: tournament} = state) do
     new_tournament = tournament.module.matchmaking_tick(tournament)
@@ -1130,6 +1178,7 @@ defmodule Codebattle.Tournament.Server do
       Map.merge(tournament, %{
         break_state: "on",
         last_round_ended_at: NaiveDateTime.utc_now(:second),
+        next_round_at: tournament.module.next_round_at(tournament, break_seconds),
         round_state: "break"
       })
 

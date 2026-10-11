@@ -7,23 +7,55 @@ import { useSelector } from 'react-redux';
 
 import Modal from '@/components/BootstrapModal';
 import Loading from '@/components/Loading';
+import TournamentRoundClock from '@/components/TournamentRoundClock';
 import { type RootState } from '@/slices';
 
 import gifs from '../../config/gifs';
 import ModalCodes from '../../config/modalCodes';
-import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
+import TournamentStates from '../../config/tournament';
+import { gamePlayersSelector, currentUserIdSelector, tournamentSelector } from '../../selectors';
+import { type RoundClockInput } from '../../utils/tournamentRoundClock';
 
 function TournamentInfoPanel() {
   const waitType = useSelector((state: RootState) => state.game.waitType);
+  const tournament = useSelector(tournamentSelector) as unknown as RoundClockInput & {
+    gameRoundPosition?: number | null;
+  };
+  const isTournamentActive = tournament?.state === TournamentStates.active;
 
   switch (waitType) {
     case 'tournament':
-      return i18n.t('Tournament finished');
+      // A ladder's last wave keeps running after this game; the tournament ends with it.
+      if (isTournamentActive) {
+        return (
+          <div className="d-flex flex-column align-items-stretch w-100">
+            <span className="py-2 h5">{i18n.t('That was your last game in this tournament')}</span>
+            <TournamentRoundClock
+              tournament={tournament}
+              gameRoundPosition={tournament.gameRoundPosition}
+              gameRoundLabel={i18n.t('Your round')}
+            />
+          </div>
+        );
+      }
+
+      return <span className="py-2 h4">{i18n.t('Tournament finished')}</span>;
     case 'round':
-      return i18n.t('Round is over, wait for the next round');
+      return (
+        <div className="d-flex flex-column align-items-stretch w-100">
+          <span className="py-2 h5">{i18n.t('Round is over, wait for the next round')}</span>
+          {isTournamentActive && (
+            <TournamentRoundClock
+              tournament={tournament}
+              gameRoundPosition={tournament.gameRoundPosition}
+              gameRoundLabel={i18n.t('Your round')}
+            />
+          )}
+        </div>
+      );
     case 'rematch':
       return (
-        <div className="d-flex flex-row">
+        <div className="d-flex flex-row py-2 h4">
           <Loading adaptive />
           <span className="pl-2">{i18n.t('Loading next game')}</span>
         </div>
@@ -77,9 +109,7 @@ const AnimationModal = NiceModal.create(() => {
         </div>
         {Boolean(tournamentId) && (
           <div className="d-flex text-center text-white justify-content-center">
-            <span className="py-2 h4">
-              <TournamentInfoPanel />
-            </span>
+            <TournamentInfoPanel />
           </div>
         )}
       </Modal.Body>

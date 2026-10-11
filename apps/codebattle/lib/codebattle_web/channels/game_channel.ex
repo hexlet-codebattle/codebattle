@@ -96,6 +96,11 @@ defmodule CodebattleWeb.GameChannel do
          break_state: tournament.break_state,
          last_round_started_at: tournament.last_round_started_at,
          last_round_ended_at: tournament.last_round_ended_at,
+         next_round_at: Map.get(tournament, :next_round_at),
+         # The round this game belongs to; the tournament may have moved on since it started.
+         game_round_position: Map.get(game, :round_position),
+         round_durations: Map.get(tournament, :round_durations),
+         server_time: DateTime.utc_now(:millisecond),
          break_duration_seconds: tournament.break_duration_seconds,
          current_round_timeout_seconds: Tournament.Helpers.current_round_timeout_seconds(tournament),
          task_ids: tournament.task_ids,

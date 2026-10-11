@@ -10,7 +10,9 @@ import Markdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
+import { RoundTrack, formatClockTime } from '../../components/TournamentRoundClock';
 import TournamentStates from '../../config/tournament';
+import TournamentTypes from '../../config/tournamentTypes';
 import { type TournamentState } from '../../slices/initial';
 import { type RootState, type AppDispatch } from '../../slices/store';
 import { connectToChat } from '../../middlewares/Chat';
@@ -18,6 +20,11 @@ import { connectToTournament, joinTournament } from '../../middlewares/Tournamen
 import { connectToTournament as connectToTournamentAdmin } from '../../middlewares/TournamentAdmin';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
+import {
+  formatClockDuration,
+  getRoundSchedule,
+  type RoundSchedule,
+} from '../../utils/tournamentRoundClock';
 import useSearchParams from '../../utils/useSearchParams';
 
 import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
@@ -44,6 +51,28 @@ const getTournamentPresentationStatus = (state: string) => {
 
 const capitalize = (value?: string) =>
   value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+
+// The ladder runs on a fixed timetable, so the whole tournament can be shown before it
+// starts. Times are only meaningful while the planned start is still ahead.
+function LadderSchedulePreview({ schedule }: { schedule: RoundSchedule }) {
+  const [openedAt] = useState(() => Date.now());
+  const startsAtMs = schedule.rounds[0]?.startsAtMs;
+  const showTimes = startsAtMs != null && startsAtMs > openedAt;
+
+  return (
+    <div className="cb-join-schedule" data-testid="ladder-schedule-preview">
+      <RoundTrack totalRounds={schedule.rounds.length} currentIndex={-1} schedule={schedule} />
+      {showTimes && (
+        <div className="cb-join-schedule-times">
+          <span>{i18next.t('Starts at %{time}', { time: formatClockTime(startsAtMs) })}</span>
+          <span>
+            {i18next.t('Ends by %{time}', { time: formatClockTime(schedule.finishAtMs) })}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface JoinMetaItem {
   icon: string;
@@ -78,6 +107,7 @@ function TournamentJoinPanel({
       ? i18next.t('This tournament is live — join now to jump into the next round.')
       : i18next.t('Join this tournament to take part in the matches.');
 
+  const schedule = getRoundSchedule(tournament);
   const matchMinutes = tournament.matchTimeoutSeconds
     ? Math.max(1, Math.round(tournament.matchTimeoutSeconds / 60))
     : undefined;
@@ -105,6 +135,15 @@ function TournamentJoinPanel({
       icon: 'stopwatch',
       label: i18next.t('Match time'),
       value: matchMinutes ? i18next.t('%{count} min', { count: matchMinutes }) : undefined,
+    },
+    {
+      icon: 'clock',
+      label: i18next.t('Duration'),
+      value: schedule
+        ? i18next.t('up to %{duration}', {
+            duration: formatClockDuration(schedule.totalSeconds * 1000),
+          })
+        : undefined,
     },
     {
       icon: 'signal',
@@ -137,6 +176,7 @@ function TournamentJoinPanel({
           ))}
         </div>
       )}
+      {schedule && <LadderSchedulePreview schedule={schedule} />}
       <div className={cn('cb-join-actions', { 'cb-join-primary-btn': !isParticipant })}>
         <JoinButton
           isShow
@@ -282,6 +322,19 @@ function Tournament() {
 
     return canModerateTournament || (tournament.moderatorIds || []).includes(currentUserId);
   }, [currentUserId, canModerateTournament, tournament.moderatorIds]);
+  // Ladder participants see a shortcut to their live game next to the round clock.
+  const activeGameId = useMemo(() => {
+    if (tournament.type !== TournamentTypes.ladder || !currentUserId) return null;
+
+    const playingMatch = Object.values(
+      (tournament.matches || {}) as Record<
+        string,
+        { state?: string; playerIds?: number[]; gameId?: number }
+      >,
+    ).find((match) => match.state === 'playing' && (match.playerIds || []).includes(currentUserId));
+
+    return playingMatch?.gameId ?? null;
+  }, [tournament.type, tournament.matches, currentUserId]);
   const hiddenSidePanel =
     streamMode || (tournament.state === TournamentStates.finished && !tournament.useChat);
 
@@ -488,6 +541,13 @@ function Tournament() {
               level={tournament.level}
               grade={tournament.grade}
               currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+              currentRoundPosition={tournament.currentRoundPosition}
+              roundsLimit={tournament.roundsLimit}
+              nextRoundAt={tournament.nextRoundAt}
+              clockOffsetMs={tournament.clockOffsetMs}
+              roundDurations={tournament.roundDurations}
+              activeGameId={activeGameId}
+              type={tournament.type}
               name={tournament.name}
               players={tournament.players}
               playersCount={tournament.playersCount}
@@ -526,6 +586,13 @@ function Tournament() {
                   level={tournament.level}
                   grade={tournament.grade}
                   currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+                  currentRoundPosition={tournament.currentRoundPosition}
+                  roundsLimit={tournament.roundsLimit}
+                  nextRoundAt={tournament.nextRoundAt}
+                  clockOffsetMs={tournament.clockOffsetMs}
+                  roundDurations={tournament.roundDurations}
+                  activeGameId={activeGameId}
+                  type={tournament.type}
                   name={tournament.name}
                   players={tournament.players}
                   playersCount={tournament.playersCount}
@@ -570,6 +637,13 @@ function Tournament() {
                   level={tournament.level}
                   grade={tournament.grade}
                   currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+                  currentRoundPosition={tournament.currentRoundPosition}
+                  roundsLimit={tournament.roundsLimit}
+                  nextRoundAt={tournament.nextRoundAt}
+                  clockOffsetMs={tournament.clockOffsetMs}
+                  roundDurations={tournament.roundDurations}
+                  activeGameId={activeGameId}
+                  type={tournament.type}
                   name={tournament.name}
                   players={tournament.players}
                   playersCount={tournament.playersCount}

@@ -45,6 +45,17 @@ defmodule Codebattle.Task do
     "hard" => 3
   }
 
+  # Default timing per level, used when a task doesn't set its own: `base_score` is the
+  # task's points (and, in a ladder, the seconds between rounds), `time_to_solve_sec` is
+  # the game time limit. Harder tasks take longer and are worth more.
+  @level_timing %{
+    "elementary" => %{base_score: 60, time_to_solve_sec: 120},
+    "easy" => %{base_score: 90, time_to_solve_sec: 180},
+    "medium" => %{base_score: 150, time_to_solve_sec: 300},
+    "hard" => %{base_score: 240, time_to_solve_sec: 480}
+  }
+  @default_timing %{base_score: 60, time_to_solve_sec: 180}
+
   @state_order %{
     "blank" => 0,
     "draft" => 1,
@@ -120,6 +131,7 @@ defmodule Codebattle.Task do
       :type,
       :visibility
     ])
+    |> put_level_timing(params)
     |> validate_required([:examples, :description_en, :name, :level, :asserts, :base_score])
     |> validate_number(:base_score, greater_than: 0)
     |> validate_inclusion(:state, @states)
@@ -127,6 +139,24 @@ defmodule Codebattle.Task do
     |> validate_inclusion(:origin, @origin_types)
     |> validate_inclusion(:visibility, @visibility_types)
     |> unique_constraint(:name)
+  end
+
+  def level_timing(level), do: Map.get(@level_timing, level, @default_timing)
+
+  # A new task that doesn't set its timing gets its level's defaults. Existing tasks keep
+  # theirs: an edit without these fields must not reset them.
+  defp put_level_timing(%Ecto.Changeset{data: %{__meta__: %{state: :built}}} = changeset, params) do
+    timing = level_timing(get_field(changeset, :level))
+
+    Enum.reduce(timing, changeset, fn {field, value}, changeset ->
+      if param_given?(params, field), do: changeset, else: put_change(changeset, field, value)
+    end)
+  end
+
+  defp put_level_timing(changeset, _params), do: changeset
+
+  defp param_given?(params, field) do
+    not is_nil(Map.get(params, field) || Map.get(params, Atom.to_string(field)))
   end
 
   def upsert!(params) do
@@ -138,7 +168,7 @@ defmodule Codebattle.Task do
           arguments_generator: Map.get(params, :arguments_generator, ""),
           asserts: params.asserts,
           asserts_examples: Map.get(params, :asserts_examples, []),
-          base_score: Map.get(params, :base_score, 60),
+          base_score: Map.get(params, :base_score) || level_timing(params.level).base_score,
           comment: Map.get(params, :comment),
           creator_id: params[:creator_id],
           description_en: params.description_en,
@@ -147,7 +177,7 @@ defmodule Codebattle.Task do
           generator_lang: Map.get(params, :generator_lang, "js"),
           input_signature: params.input_signature,
           level: params.level,
-          time_to_solve_sec: Map.get(params, :time_to_solve_sec) || 180,
+          time_to_solve_sec: Map.get(params, :time_to_solve_sec) || level_timing(params.level).time_to_solve_sec,
           origin: params.origin,
           output_signature: params.output_signature,
           solution: Map.get(params, :solution, ""),
@@ -314,7 +344,9 @@ defmodule Codebattle.Task do
       solutions: %{},
       examples_list: [],
       arguments_generator: "",
-      generator_lang: "js"
+      generator_lang: "js",
+      base_score: @level_timing["elementary"].base_score,
+      time_to_solve_sec: @level_timing["elementary"].time_to_solve_sec
     }
 
   @spec get_shuffled_task_ids(String.t()) :: list(integer())

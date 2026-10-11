@@ -63,7 +63,8 @@ defmodule CodebattleWeb.GameChannelTest do
           state: "playing",
           players: [user1, user2],
           level: "easy",
-          tournament_id: tournament.id
+          tournament_id: tournament.id,
+          round_position: 2
         })
 
       {:ok, response, _socket} =
@@ -74,6 +75,8 @@ defmodule CodebattleWeb.GameChannelTest do
       assert response.current_player == nil
       assert response.in_main_draw == false
       assert response.tournament.tournament_id == tournament.id
+      # The game page shows the round of this game, not the tournament's current round.
+      assert response.tournament.game_round_position == 2
     end
 
     test "sends tournament game info for player missing from tournament roster", %{

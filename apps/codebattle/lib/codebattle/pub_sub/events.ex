@@ -125,7 +125,12 @@ defmodule Codebattle.PubSub.Events do
             match_timeout_seconds: params.tournament.match_timeout_seconds,
             break_duration_seconds: params.tournament.break_duration_seconds,
             last_round_started_at: params.tournament.last_round_started_at,
+            next_round_at: Map.get(params.tournament, :next_round_at),
+            server_time: DateTime.utc_now(:millisecond),
+            round_durations: Map.get(params.tournament, :round_durations),
+            rounds_limit: params.tournament.rounds_limit,
             state: params.tournament.state,
+            type: params.tournament.type,
             break_state: "off",
             current_round_position: params.tournament.current_round_position
           }
@@ -152,6 +157,8 @@ defmodule Codebattle.PubSub.Events do
             break_duration_seconds: params.tournament.break_duration_seconds,
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
+            next_round_at: Map.get(params.tournament, :next_round_at),
+            server_time: DateTime.utc_now(:millisecond),
             current_round_position: params.tournament.current_round_position,
             break_state: "on"
           }

@@ -23,8 +23,14 @@ defmodule Codebattle.Tournament.Ladder do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Pairing
+  alias Codebattle.Tournament.TaskProvider
 
   @min_opponent_window 20
+  # Let the game's own timeout finish first; the final-wave deadline is the safety net for
+  # a stuck final wave, not a competing timeout clock.
+  @final_deadline_grace_seconds 2
+  # A tick processed within this long after its planned moment counts as on schedule.
+  @scheduled_tick_tolerance_ms 5_000
 
   @impl Tournament.Base
   def game_type, do: "duo"
@@ -74,32 +80,87 @@ defmodule Codebattle.Tournament.Ladder do
   end
 
   @impl Tournament.Base
-  def round_timeout_seconds(%{timeout_mode: "per_task"} = tournament) do
-    case get_task(tournament, nil) do
-      %{base_score: base_score} when is_integer(base_score) and base_score > 0 ->
-        base_score
-
-      _ ->
-        tournament.round_timeout_seconds
-    end
-  end
-
-  def round_timeout_seconds(tournament), do: fixed_tick_timeout(tournament.round_timeout_seconds)
+  def round_timeout_seconds(tournament), do: tick_seconds(tournament, get_task(tournament, nil))
 
   # The last wave has no next matchmaking tick. Its safety deadline follows the real game
   # timeout: the current task in per_task mode, or the configured round timeout otherwise.
   # Tasks are already preloaded in ETS, so this never performs a database query.
-  def final_deadline_seconds(%{timeout_mode: "per_task"} = tournament) do
-    case get_task(tournament, nil) do
-      %{time_to_solve_sec: seconds} when is_integer(seconds) and seconds > 0 ->
-        seconds
+  def final_deadline_seconds(tournament), do: game_seconds(tournament, get_task(tournament, nil))
 
-      _ ->
-        positive_timeout(tournament.round_timeout_seconds)
+  # Seconds until the server's next ladder timer fires for the current round: the next
+  # matchmaking tick while ticks remain, else the final-wave safety deadline. The server
+  # arms its timer with this value and `stamp_round_clock/1` publishes the same moment to
+  # clients as `next_round_at`, so the UI countdown and the real timer agree.
+  def next_timer_seconds(tournament) do
+    round_seconds(tournament, tournament.current_round_position, get_task(tournament, nil))
+  end
+
+  def next_round_at(tournament, seconds \\ nil) do
+    DateTime.add(DateTime.utc_now(:millisecond), seconds || next_timer_seconds(tournament), :second)
+  end
+
+  # The planned schedule: how long each round lasts, by position — until the next tick, and
+  # for the last round until its final deadline. Every tick opens a round (even an empty
+  # one), so the whole tournament is known in advance: an early drain only moves rounds
+  # earlier, never later. `tasks` are the round tasks in order (nil where unknown).
+  def round_durations(tournament, tasks) do
+    for position <- 0..(tournament.rounds_limit - 1)//1 do
+      round_seconds(tournament, position, Enum.at(tasks, position))
     end
   end
 
-  def final_deadline_seconds(tournament), do: positive_timeout(tournament.round_timeout_seconds)
+  # The schedule once the tournament has started: round tasks are fixed and in ETS.
+  def round_durations(tournament) do
+    tasks =
+      for position <- 0..(tournament.rounds_limit - 1)//1 do
+        tournament |> Map.put(:current_round_position, position) |> get_task(nil)
+      end
+
+    round_durations(tournament, tasks)
+  end
+
+  # The schedule before the start, when it can be known: fixed-timeout modes don't depend on
+  # tasks, and a sequential task pack fixes the task order. Random tasks are only picked at
+  # the start, so their schedule is published then. Reads the database; call it rarely.
+  def planned_round_durations(%{timeout_mode: "per_task"} = tournament) do
+    case tournament do
+      %{task_provider: "task_pack", task_strategy: "sequential", task_pack_name: name} when is_binary(name) ->
+        task_ids = TaskProvider.get_task_ids(tournament)
+        tasks_by_id = task_ids |> Codebattle.Task.get_by_ids() |> Map.new(&{&1.id, &1})
+        round_durations(tournament, Enum.map(task_ids, &Map.get(tasks_by_id, &1)))
+
+      _ ->
+        nil
+    end
+  end
+
+  def planned_round_durations(tournament), do: round_durations(tournament, [])
+
+  defp round_seconds(tournament, position, task) do
+    if position < tournament.rounds_limit - 1 do
+      max(tick_seconds(tournament, task) || 60, 1)
+    else
+      game_seconds(tournament, task) + @final_deadline_grace_seconds
+    end
+  end
+
+  defp tick_seconds(%{timeout_mode: "per_task"} = tournament, task) do
+    case task do
+      %{base_score: base_score} when is_integer(base_score) and base_score > 0 -> base_score
+      _ -> tournament.round_timeout_seconds
+    end
+  end
+
+  defp tick_seconds(tournament, _task), do: fixed_tick_timeout(tournament.round_timeout_seconds)
+
+  defp game_seconds(%{timeout_mode: "per_task"} = tournament, task) do
+    case task do
+      %{time_to_solve_sec: seconds} when is_integer(seconds) and seconds > 0 -> seconds
+      _ -> positive_timeout(tournament.round_timeout_seconds)
+    end
+  end
+
+  defp game_seconds(tournament, _task), do: positive_timeout(tournament.round_timeout_seconds)
 
   defp fixed_tick_timeout(seconds) when is_integer(seconds) and seconds > 0 do
     seconds
@@ -114,18 +175,29 @@ defmodule Codebattle.Tournament.Ladder do
   defp positive_timeout(_seconds), do: 60
 
   # The tournament is over once all `rounds_limit` ticks are dispatched and their games
-  # have drained. The playing-matches guard also protects the framework's finish path from
-  # force-killing in-flight games.
+  # have drained, or once nobody is left to pair (every player left or was banned) — no
+  # point running empty rounds to the end of the schedule. The playing-matches guard also
+  # protects the framework's finish path from force-killing in-flight games.
   @impl Tournament.Base
   def finish_tournament?(tournament) do
-    not ticks_remaining?(tournament) and not playing_matches?(tournament)
+    not playing_matches?(tournament) and
+      (not ticks_remaining?(tournament) or not active_players?(tournament))
+  end
+
+  defp active_players?(tournament) do
+    tournament
+    |> get_players("active")
+    |> Enum.any?(&(&1.is_bot != true))
   end
 
   # Initial matching (round 0), run from the generic start flow. Everyone is idle at start,
   # so this pairs the whole active roster (bot-filling the odd one out).
   @impl Tournament.Base
   def build_round_pairs(tournament) do
-    pair_and_bot_fill(tournament, idle_pool(tournament))
+    tournament
+    |> update_struct(%{round_durations: round_durations(tournament)})
+    |> stamp_round_clock()
+    |> pair_and_bot_fill(idle_pool(tournament))
   end
 
   # No rematch game. Broadcast the wait overlay so the players' game UIs unblock. Whether
@@ -142,9 +214,10 @@ defmodule Codebattle.Tournament.Ladder do
   end
 
   # Fired by the server every `round_timeout_seconds` (and on the empty-pool early tick /
-  # post-break tick). Recompute the live ranking, then either finish or match the idle pool.
-  # A periodic tick that fires mid-break is a no-op beyond ranking: the break-over message
-  # is the authoritative trigger for the next round, so it must not create games early.
+  # post-break tick). Recompute the live ranking, then either finish or open the next round.
+  # Every tick opens a round, even when nobody is free to play it (an empty round), so the
+  # tournament follows its planned schedule. A periodic tick that fires mid-break is a no-op
+  # beyond ranking: the break-over message is the authoritative trigger for the next round.
   @impl Tournament.Base
   def matchmaking_tick(tournament) do
     if finish_tournament?(tournament) do
@@ -156,31 +229,47 @@ defmodule Codebattle.Tournament.Ladder do
 
       cond do
         in_break?(tournament) -> tournament
-        ticks_remaining?(tournament) -> match_idle_pool(tournament)
+        ticks_remaining?(tournament) -> run_tick(tournament, idle_pool(tournament))
         true -> tournament
       end
     end
   end
 
-  defp match_idle_pool(tournament) do
-    case idle_pool(tournament) do
-      [] -> tournament
-      idle -> run_tick(tournament, idle)
-    end
-  end
-
-  # A productive tick: open a new round (bucket), pair the idle pool (+ bot-fill), start games.
+  # Open a new round (bucket), pair the idle pool (+ bot-fill) and start its games. With
+  # nobody idle the round is empty: players still in a game skip it.
   defp run_tick(tournament, idle) do
     tournament = increment_current_round(tournament)
     tournament = build_and_save_round!(tournament)
     tournament = update_struct(tournament, %{current_round_timeout_seconds: round_timeout_seconds(tournament)})
-    {tournament, pairs} = pair_and_bot_fill(tournament, idle)
+    {tournament, pairs} = tournament |> stamp_round_clock() |> pair_and_bot_fill(idle)
 
     {tournament, pairs}
     |> bulk_insert_round_games(%{})
     |> db_save!()
     |> broadcast_round_created()
   end
+
+  # Every opened round records when it started and when the next one is due, so the
+  # round_created broadcast already carries the countdown players see before the server
+  # re-arms its timer with the same `next_timer_seconds/1`. A round opened by its scheduled
+  # tick starts at the planned moment, not when the tick got processed, so the schedule
+  # never drifts; an early start (drain, break end, admin) starts now.
+  defp stamp_round_clock(tournament) do
+    now = DateTime.utc_now(:millisecond)
+    started_at = scheduled_start(Map.get(tournament, :next_round_at), now)
+
+    update_struct(tournament, %{
+      last_round_started_at: started_at |> DateTime.to_naive() |> NaiveDateTime.truncate(:second),
+      next_round_at: DateTime.add(started_at, next_timer_seconds(tournament), :second)
+    })
+  end
+
+  defp scheduled_start(%DateTime{} = planned, now) do
+    late_ms = DateTime.diff(now, planned, :millisecond)
+    if late_ms >= 0 and late_ms < @scheduled_tick_tolerance_ms, do: planned, else: now
+  end
+
+  defp scheduled_start(_planned, now), do: now
 
   # Ranking & places are recomputed from all finished games. Round results come from the
   # same SQL the final standings replay, but only for rounds that are not settled yet: a

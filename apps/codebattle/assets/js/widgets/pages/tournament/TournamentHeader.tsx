@@ -3,7 +3,6 @@ import React, { memo, useContext, useMemo, useState } from 'react';
 import { faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import moment from 'moment';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getIconForGrade from '@/components/icons/Grades';
@@ -12,7 +11,9 @@ import { getRankingPoints, grades } from '@/config/grades';
 import i18next from '../../../i18n';
 import CopyButton from '../../components/CopyButton';
 import InviteQrCode from '../../components/InviteQrCode';
+import TournamentRoundClock from '../../components/TournamentRoundClock';
 import TournamentStates from '../../config/tournament';
+import TournamentTypes from '../../config/tournamentTypes';
 import { localizeTournamentName } from '../../utils/localizeTournamentName';
 import useTimer from '../../utils/useTimer';
 
@@ -74,85 +75,75 @@ function TournamentTimer({ startsAt, isOnline }: TournamentTimerProps) {
   );
 }
 
-interface TournamentRemainingTimerProps {
-  startsAt?: string;
-  duration?: number;
-}
-
-export function TournamentRemainingTimer({ startsAt, duration }: TournamentRemainingTimerProps) {
-  const endsAt = useMemo(() => moment.utc(startsAt).add(duration, 'seconds'), [startsAt, duration]);
-  const [time, seconds] = useTimer(endsAt);
-
-  return Number(seconds) > 0 ? time : '';
-}
-
 interface TournamentStateDescriptionProps {
   state: string;
   startsAt: string;
-  breakState: string;
-  breakDurationSeconds?: number;
-  currentRoundTimeoutSeconds?: number;
-  lastRoundStartedAt?: string;
-  lastRoundEndedAt?: string;
-  isLive?: boolean;
-  isOver?: boolean;
   isOnline?: boolean;
 }
 
+// Active tournaments render the round clock instead of a one-line description.
 function TournamentStateDescription({
   state,
   startsAt,
-  breakState,
-  breakDurationSeconds,
-  currentRoundTimeoutSeconds,
-  lastRoundStartedAt,
-  lastRoundEndedAt,
   isOnline,
 }: TournamentStateDescriptionProps) {
   if (state === TournamentStates.waitingParticipants) {
     return <TournamentTimer startsAt={startsAt} isOnline={isOnline} />;
   }
 
-  if (state === TournamentStates.active && breakState === 'off') {
-    if (!Number.isInteger(currentRoundTimeoutSeconds)) {
-      return null;
-    }
-
-    return (
-      <span>
-        {i18next.t('Round ends in ')}
-        <TournamentRemainingTimer
-          key={lastRoundStartedAt}
-          startsAt={lastRoundStartedAt}
-          duration={currentRoundTimeoutSeconds}
-        />
-      </span>
-    );
-  }
-
-  if (state === TournamentStates.active && breakState === 'on') {
-    if (!lastRoundEndedAt || !Number.isInteger(breakDurationSeconds)) {
-      return <span>{i18next.t('Next round will start soon')}</span>;
-    }
-
-    return (
-      <span>
-        {i18next.t('Next round will start in ')}
-        <TournamentRemainingTimer
-          key={lastRoundEndedAt}
-          startsAt={lastRoundEndedAt}
-          duration={breakDurationSeconds}
-        />
-      </span>
-    );
-  }
-
   return getDescriptionByState(state);
+}
+
+interface LadderPlayerStatusProps {
+  activeGameId?: number | null;
+  isLastRound: boolean;
+}
+
+// Where the current ladder participant stands between ticks: in a live game, waiting in the
+// pool for the next round, or done after the final round.
+function LadderPlayerStatus({ activeGameId, isLastRound }: LadderPlayerStatusProps) {
+  if (activeGameId) {
+    return (
+      <div className="cb-round-clock-status cb-round-clock-status-playing">
+        <FontAwesomeIcon icon="laptop-code" className="cb-round-clock-status-icon" />
+        <span className="flex-grow-1">{i18next.t('Your game is live')}</span>
+        <a className="btn btn-sm btn-success cb-rounded" href={`/games/${activeGameId}`}>
+          {i18next.t('Open game')}
+        </a>
+      </div>
+    );
+  }
+
+  if (isLastRound) {
+    return (
+      <div className="cb-round-clock-status">
+        <FontAwesomeIcon icon="flag-checkered" className="cb-round-clock-status-icon" />
+        <span>{i18next.t('You have played your last round — final standings come soon')}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="cb-round-clock-status">
+      <FontAwesomeIcon icon="users" className="cb-round-clock-status-icon" />
+      <span>
+        {i18next.t("You're in the pool — you'll get an opponent when the next round starts")}
+      </span>
+    </div>
+  );
 }
 
 interface TournamentHeaderProps {
   id: number;
   state: string;
+  type?: string | null;
+  currentRoundPosition?: number | null;
+  roundsLimit?: number | null;
+  nextRoundAt?: string | null;
+  clockOffsetMs?: number | null;
+  roundDurations?: number[] | null;
+  // The current user's playing game (ladder participants), if any.
+  activeGameId?: number | null;
   streamMode?: boolean;
   breakState: string;
   breakDurationSeconds?: number;
@@ -186,6 +177,13 @@ interface TournamentHeaderProps {
 function TournamentHeader({
   id: tournamentId,
   state,
+  type,
+  currentRoundPosition,
+  roundsLimit,
+  nextRoundAt,
+  clockOffsetMs,
+  roundDurations,
+  activeGameId,
   streamMode,
   breakState,
   breakDurationSeconds,
@@ -204,7 +202,6 @@ function TournamentHeader({
   currentUserId,
   hideResults = true,
   isOnline,
-  isOver,
   canModerate,
   toggleStreamMode,
   handleStartRound,
@@ -273,6 +270,10 @@ function TournamentHeader({
   const isGradeTournament = gradeName !== grades.open;
   const firstPlaceRankingPoints = isGradeTournament ? getRankingPoints(gradeName)[0] : null;
   const tournamentName = localizeTournamentName(name, gradeName);
+  const isActive = state === TournamentStates.active;
+  const isParticipant = !!players[currentUserId];
+  const isLastRound =
+    !!roundsLimit && roundsLimit > 0 && (currentRoundPosition ?? 0) + 1 >= roundsLimit;
 
   return (
     <>
@@ -307,21 +308,39 @@ function TournamentHeader({
             </div>
             <div className="d-flex align-items-center flex-wrap overflow-auto">
               <span className={stateClassName}>{stateBadgeTitle}</span>
-              <span className="h6 mb-0 text-nowrap">
-                <TournamentStateDescription
-                  state={state}
-                  startsAt={startsAt}
-                  breakState={breakState}
-                  breakDurationSeconds={breakDurationSeconds}
-                  currentRoundTimeoutSeconds={currentRoundTimeoutSeconds}
-                  lastRoundStartedAt={lastRoundStartedAt}
-                  lastRoundEndedAt={lastRoundEndedAt}
-                  isLive={isLive}
-                  isOver={isOver}
-                  isOnline={isOnline}
-                />
-              </span>
+              {!isActive && (
+                <span className="h6 mb-0 text-nowrap">
+                  <TournamentStateDescription
+                    state={state}
+                    startsAt={startsAt}
+                    isOnline={isOnline}
+                  />
+                </span>
+              )}
             </div>
+            {isActive && (
+              <TournamentRoundClock
+                className="mt-3"
+                tournament={{
+                  type,
+                  state,
+                  breakState,
+                  currentRoundPosition,
+                  roundsLimit,
+                  currentRoundTimeoutSeconds,
+                  breakDurationSeconds,
+                  lastRoundStartedAt,
+                  lastRoundEndedAt,
+                  nextRoundAt,
+                  clockOffsetMs,
+                  roundDurations,
+                }}
+              >
+                {type === TournamentTypes.ladder && isParticipant && (
+                  <LadderPlayerStatus activeGameId={activeGameId} isLastRound={isLastRound} />
+                )}
+              </TournamentRoundClock>
+            )}
             {(playersCount != null || level) && (
               <div className="cb-tournament-header-meta">
                 {playersCount != null && (

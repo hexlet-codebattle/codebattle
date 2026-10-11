@@ -37,6 +37,8 @@ defmodule Codebattle.Tournament do
              :meta,
              :moderator_ids,
              :name,
+             :next_round_at,
+             :round_durations,
              :players,
              :players_count,
              :players_limit,
@@ -97,6 +99,12 @@ defmodule Codebattle.Tournament do
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
     field(:level, :string, default: "easy")
+    # Ladder: when the next round opens (or the final wave is force-finished). Set together
+    # with the server's matchmaking timer, so clients can render an exact countdown.
+    field(:next_round_at, :utc_datetime_usec, virtual: true)
+    # Ladder: the planned length of every round in seconds (see Ladder.round_durations/2),
+    # so clients can show the whole schedule and the finish time in advance.
+    field(:round_durations, {:array, :integer}, virtual: true)
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:matches, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})

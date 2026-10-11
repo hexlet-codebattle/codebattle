@@ -2,6 +2,7 @@ import { createAction, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import omit from 'lodash/omit';
 
 import TournamentTypes from '../config/tournamentTypes';
+import { parseUtcMs } from '../utils/tournamentRoundClock';
 
 import initial, { type TournamentState } from './initial';
 
@@ -17,24 +18,42 @@ interface TournamentMatch {
 
 const initialState = initial.tournament;
 
+// Round countdowns target server timestamps (`nextRoundAt`). Payloads carry the server's
+// clock, so record how far the local clock is off when they arrive (in `prepare`, which is
+// where RTK wants non-deterministic values) instead of trusting the browser clock.
+const withClockOffset = <T extends object>(payload: T): T => {
+  const { serverTime } = payload as { serverTime?: unknown };
+  const serverMs = typeof serverTime === 'string' ? parseUtcMs(serverTime) : null;
+
+  return serverMs == null ? payload : { ...payload, clockOffsetMs: serverMs - Date.now() };
+};
+
 export const updateTournamentStateAction = createAction('updateTournamentState');
 
 const tournament = createSlice({
   name: 'tournament',
   initialState,
   reducers: {
-    setTournamentData: (_state, { payload }: PayloadAction<TournamentState>) => ({
-      ...payload,
-    }),
-    updateTournamentData: (
-      state,
-      { payload }: PayloadAction<Partial<TournamentState> & { type?: string }>,
-    ) => ({
-      ...state,
-      ...([TournamentTypes.swiss].includes(payload.type as string)
-        ? omit(payload, ['matches', 'players'])
-        : payload),
-    }),
+    setTournamentData: {
+      reducer: (_state, { payload }: PayloadAction<TournamentState>) => ({
+        ...payload,
+      }),
+      prepare: (payload: TournamentState) => ({ payload: withClockOffset(payload) }),
+    },
+    updateTournamentData: {
+      reducer: (
+        state,
+        { payload }: PayloadAction<Partial<TournamentState> & { type?: string }>,
+      ) => ({
+        ...state,
+        ...([TournamentTypes.swiss].includes(payload.type as string)
+          ? omit(payload, ['matches', 'players'])
+          : payload),
+      }),
+      prepare: (payload: Partial<TournamentState> & { type?: string }) => ({
+        payload: withClockOffset(payload),
+      }),
+    },
     updateTournamentMatches: (state, { payload }: PayloadAction<TournamentMatch[]>) => {
       const newMatches = payload.reduce<Record<number, Record<string, unknown>>>(
         (acc, match) => ({

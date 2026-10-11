@@ -23,6 +23,8 @@ task_solutions = %{
   "cpp" => "int solution(int a, int b) {\n  return a + b;\n}\n"
 }
 
+# Task timing (base_score, time_to_solve_sec) comes from the per-level defaults in
+# Codebattle.Task.level_timing/1, so elementary..hard tasks run 2..8 minutes.
 Enum.each(1..16, fn x ->
   for level <- levels do
     task_params = %{
