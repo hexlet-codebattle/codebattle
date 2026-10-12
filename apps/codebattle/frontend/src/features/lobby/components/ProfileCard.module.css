@@ -1,0 +1,19 @@
+.stats {
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  padding: 6px 0;
+}
+
+.stat + .stat {
+  border-left: 1px solid var(--cb-border);
+}
+
+.season {
+  flex-shrink: 0;
+  line-height: 1.35;
+
+  &:hover {
+    color: var(--cb-text-strong);
+  }
+}

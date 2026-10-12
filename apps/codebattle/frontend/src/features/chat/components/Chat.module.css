@@ -1,0 +1,79 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rooms {
+  /* Matches OnlinePlayers' header so the split card's top bars line up. */
+  min-height: 44px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.messages {
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+}
+
+.message {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mantine-spacing-xs);
+  padding: 1px 6px;
+  margin-top: 6px;
+  border-radius: 6px;
+  line-height: 1.45;
+
+  &[data-grouped] {
+    margin-top: 0;
+  }
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+}
+
+/* Fixed gutter keeps grouped lines aligned; their time only shows on hover. */
+.time {
+  flex-shrink: 0;
+  width: 38px;
+
+  .message[data-grouped] & {
+    visibility: hidden;
+  }
+
+  .message[data-grouped]:hover & {
+    visibility: visible;
+  }
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.text {
+  color: var(--cb-text);
+  white-space: pre-wrap;
+}
+
+.delete {
+  opacity: 0;
+  align-self: center;
+
+  .message:hover & {
+    opacity: 1;
+  }
+}
+
+.composer {
+  display: flex;
+  gap: var(--mantine-spacing-xs);
+  padding: var(--mantine-spacing-sm);
+  border-top: 1px solid var(--cb-border);
+}
+

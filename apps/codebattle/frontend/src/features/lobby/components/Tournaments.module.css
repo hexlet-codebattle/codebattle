@@ -1,0 +1,66 @@
+.card {
+  transition: border-color 120ms ease;
+
+  &:hover {
+    border-color: var(--grade-color);
+  }
+
+  &[data-live] {
+    border-color: color-mix(in srgb, var(--cb-danger) 55%, var(--cb-border));
+  }
+}
+
+/* Grade-coloured details: ranking points and the start countdown. */
+.accent {
+  color: var(--grade-color);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cb-danger) 18%, transparent);
+  color: var(--cb-danger);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liveDot {
+    animation: none;
+  }
+}
+
+.muted {
+  flex-shrink: 0;
+  color: var(--cb-text-muted);
+}
+
+.players {
+  flex-shrink: 0;
+  color: var(--cb-text-muted);
+}

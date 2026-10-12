@@ -6,6 +6,7 @@ defmodule CodebattleWeb.RootController do
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
   alias CodebattleWeb.LayoutView
+  alias CodebattleWeb.NewFrontend
 
   plug(:put_view, CodebattleWeb.RootView)
   plug(:put_layout, html: {LayoutView, :app})
@@ -59,6 +60,7 @@ defmodule CodebattleWeb.RootController do
 
         conn
         |> assign(:show_lobby_loading_shell, true)
+        |> NewFrontend.maybe_put_layout()
         |> render_inertia(
           "Lobby",
           %{

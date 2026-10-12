@@ -1,0 +1,5 @@
+/* Rows carry their own padding and dividers. */
+.body {
+  padding: 0;
+  border-top: 1px solid var(--cb-border);
+}

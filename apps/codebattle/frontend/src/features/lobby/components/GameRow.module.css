@@ -1,0 +1,59 @@
+.row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  border-bottom: 1px solid var(--cb-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'level actions'
+      'players players';
+  }
+}
+
+.level {
+  justify-self: start;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: level;
+  }
+}
+
+.players {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: players;
+  }
+}
+
+.player {
+  min-width: 0;
+}
+
+.vs {
+  font-family: var(--mantine-font-family-monospace);
+}
+
+
+.actions {
+  justify-self: end;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: actions;
+  }
+}

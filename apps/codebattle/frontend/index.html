@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codebattle theme</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;800&display=swap"
+    />
+    <script>
+      // Set the scheme before first paint so a saved "light" choice doesn't flash dark.
+      try {
+        var scheme = localStorage.getItem('mantine-color-scheme-value');
+        document.documentElement.setAttribute(
+          'data-mantine-color-scheme',
+          scheme === 'light' ? 'light' : 'dark',
+        );
+      } catch (e) {
+        document.documentElement.setAttribute('data-mantine-color-scheme', 'dark');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/showcase/main.tsx"></script>
+  </body>
+</html>

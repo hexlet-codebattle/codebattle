@@ -1,0 +1,13 @@
+.box {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.15em;
+  color: var(--cb-lang-icon);
+
+  /* No language set: neutral </> glyph, a bit quieter than real logos. */
+  &[data-fallback] {
+    opacity: 0.6;
+  }
+}

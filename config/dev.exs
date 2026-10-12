@@ -42,7 +42,11 @@ config :codebattle, CodebattleWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   cache_static_lookup: false,
-  watchers: [pnpm: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")]]
+  watchers: [
+    pnpm: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")],
+    # New Mantine frontend (CodebattleWeb.NewFrontend), dev server on CODEBATTLE_FRONTEND_PORT.
+    pnpm: ["dev", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle/frontend")]
+  ]
 
 # Watch static and templates for browser reloading.
 config :codebattle, CodebattleWeb.Endpoint,

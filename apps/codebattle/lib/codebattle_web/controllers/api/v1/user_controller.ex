@@ -313,6 +313,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
         payload = %{
           user: user,
           active_game_id: active_game_id,
+          last_active_at: Codebattle.UserSession.last_active_at(user.id),
           achievements: achievements,
           metrics: metrics
         }

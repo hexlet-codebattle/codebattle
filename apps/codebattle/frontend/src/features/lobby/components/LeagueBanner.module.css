@@ -1,0 +1,18 @@
+/* Sidebar card with a faint gold wash from the Grand Slam colour. */
+.banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-sm);
+  border: 1px solid color-mix(in srgb, var(--cb-grade-grand_slam) 40%, var(--cb-border));
+  border-radius: var(--cb-radius);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--cb-grade-grand_slam) 14%, transparent), transparent 70%),
+    var(--cb-panel);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mantine-spacing-xs);
+}

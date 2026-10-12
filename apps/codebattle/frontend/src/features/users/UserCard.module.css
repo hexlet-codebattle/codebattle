@@ -1,0 +1,103 @@
+.trigger {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: bottom;
+  cursor: pointer;
+  border-radius: 4px;
+  outline-offset: 2px;
+
+  &:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--cb-text-muted);
+    text-underline-offset: 3px;
+  }
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cb-border);
+
+  &[data-online] {
+    background: var(--cb-success);
+  }
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'avatar name actions'
+    'avatar status status';
+  column-gap: var(--mantine-spacing-sm);
+  row-gap: 2px;
+  align-items: center;
+}
+
+.avatar {
+  grid-area: avatar;
+}
+
+.name {
+  grid-area: name;
+}
+
+.status {
+  grid-area: status;
+  align-self: start;
+}
+
+.actions {
+  grid-area: actions;
+  margin-right: -6px;
+}
+
+.stats {
+  padding: 6px 0;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+}
+
+.gradeWins {
+  color: var(--cb-text-strong);
+
+  &[data-zero] {
+    opacity: 0.4;
+  }
+}
+
+.won {
+  color: var(--cb-success);
+}
+
+.lost {
+  color: var(--cb-danger);
+}
+
+/* Achievement tiles tinted with their metal (--tone is a --cb-grade-* colour). */
+.tile {
+  min-height: 62px;
+  padding: 6px 4px;
+  border: 1px solid color-mix(in srgb, var(--tone) 50%, transparent);
+  border-radius: var(--cb-radius);
+  background: color-mix(in srgb, var(--tone) 16%, transparent);
+}
+
+.tileTitle {
+  color: var(--tone);
+}
+
+.tileValue {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 800;
+  color: var(--cb-text-strong);
+  text-align: center;
+}

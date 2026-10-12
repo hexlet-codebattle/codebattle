@@ -2814,3 +2814,351 @@ msgstr "Never used"
 
 msgid "Connecting..."
 msgstr "Connecting..."
+
+# New frontend (apps/codebattle/frontend)
+
+msgid "%{date} at %{time}"
+msgstr "%{date} at %{time}"
+
+msgid "1st place"
+msgstr "1st place"
+
+msgid "About this tournament"
+msgstr "About this tournament"
+
+msgid "Add clan"
+msgstr "Add clan"
+
+msgid "All-time"
+msgstr "All-time"
+
+msgid "Ban in chat"
+msgstr "Ban in chat"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Close chat with %{name}"
+msgstr "Close chat with %{name}"
+
+msgid "Codebattle League rules"
+msgstr "Codebattle League rules"
+
+msgid "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+msgstr "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+
+msgid "Connection lost. Reconnecting…"
+msgstr "Connection lost. Reconnecting…"
+
+msgid "Copied"
+msgstr "Copied"
+
+msgid "Copy invite link"
+msgstr "Copy invite link"
+
+msgid "Copy name"
+msgstr "Copy name"
+
+msgid "Could not create the game. Try again."
+msgstr "Could not create the game. Try again."
+
+msgid "Couldn't load the leaderboard."
+msgstr "Couldn't load the leaderboard."
+
+msgid "Create"
+msgstr "Create"
+
+msgid "Custom tournament"
+msgstr "Custom tournament"
+
+msgid "Editing a task"
+msgstr "Editing a task"
+
+msgid "Elo"
+msgstr "Elo"
+
+msgid "Elo gained this month"
+msgstr "Elo gained this month"
+
+msgid "Elo gained this week"
+msgstr "Elo gained this week"
+
+msgid "Elo gained this year"
+msgstr "Elo gained this year"
+
+msgid "Elo rating"
+msgstr "Elo rating"
+
+msgid "Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun 21 – Sep 21. Season points reset every season; Elo rating never does. Each season ends with a Grand Slam on the 21st at 16:00 UTC."
+msgstr "Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun 21 – Sep 21. Season points reset every season; Elo rating never does. Each season ends with a Grand Slam on the 21st at 16:00 UTC."
+
+msgid "In a game"
+msgstr "In a game"
+
+msgid "Join battle"
+msgstr "Join battle"
+
+msgid "Loading tasks…"
+msgstr "Loading tasks…"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "No active season"
+msgstr "No active season"
+
+msgid "No messages yet. Say hi!"
+msgstr "No messages yet. Say hi!"
+
+msgid "No results this season yet."
+msgstr "No results this season yet."
+
+msgid "No tasks match"
+msgstr "No tasks match"
+
+msgid "Nobody has played this month."
+msgstr "Nobody has played this month."
+
+msgid "Nobody has played this week."
+msgstr "Nobody has played this week."
+
+msgid "Nobody has played this year."
+msgstr "Nobody has played this year."
+
+msgid "Nobody has played yet."
+msgstr "Nobody has played yet."
+
+msgid "Online now"
+msgstr "Online now"
+
+msgid "Players: %{count}"
+msgstr "Players: %{count}"
+
+msgid "Points halve with each place down to 2; every other finisher gets 2 points. Prize and participation points don't stack."
+msgstr "Points halve with each place down to 2; every other finisher gets 2 points. Prize and participation points don't stack."
+
+msgid "Private message to %{name}"
+msgstr "Private message to %{name}"
+
+msgid "Prize places"
+msgstr "Prize places"
+
+msgid "Random player"
+msgstr "Random player"
+
+msgid "Registration open"
+msgstr "Registration open"
+
+msgid "Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › Pro. Open tournaments are created by players and award no points."
+msgstr "Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › Pro. Open tournaments are created by players and award no points."
+
+msgid "Rules"
+msgstr "Rules"
+
+msgid "S%{name} ’%{year}"
+msgstr "S%{name} ’%{year}"
+
+msgid "Season %{name}"
+msgstr "Season %{name}"
+
+msgid "Season %{name}, %{year}"
+msgstr "Season %{name}, %{year}"
+
+msgid "Season and Grand Slam champions enter the Hall of Fame."
+msgstr "Season and Grand Slam champions enter the Hall of Fame."
+
+msgid "Season ranking"
+msgstr "Season ranking"
+
+msgid "Send private message"
+msgstr "Send private message"
+
+msgid "Start a private conversation with %{name}."
+msgstr "Start a private conversation with %{name}."
+
+msgid "Started at %{time}"
+msgstr "Started at %{time}"
+
+msgid "Starting soon"
+msgstr "Starting soon"
+
+msgid "Switch to dark theme"
+msgstr "Switch to dark theme"
+
+msgid "Switch to light theme"
+msgstr "Switch to light theme"
+
+msgid "There are no active games right now. Create one!"
+msgstr "There are no active games right now. Create one!"
+
+msgid "Total season points"
+msgstr "Total season points"
+
+msgid "Tournament wins this season"
+msgstr "Tournament wins this season"
+
+msgid "Tournaments played this season"
+msgstr "Tournaments played this season"
+
+msgid "Tournaments: %{count}"
+msgstr "Tournaments: %{count}"
+
+msgid "Waiting for opponent"
+msgstr "Waiting for opponent"
+
+msgid "Watch"
+msgstr "Watch"
+
+msgid "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
+msgstr "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
+
+msgid "Wins: %{wins} / %{games}"
+msgstr "Wins: %{wins} / %{games}"
+
+msgid "Year"
+msgstr "Year"
+
+msgid "game #%{id}"
+msgstr "game #%{id}"
+
+msgid "private"
+msgstr "private"
+
+
+msgid "to %{name}"
+msgstr "to %{name}"
+
+msgid "top %{count}"
+msgstr "top %{count}"
+
+msgid "tournament #%{id}"
+msgstr "tournament #%{id}"
+
+msgid "until %{date}"
+msgstr "until %{date}"
+
+msgid "in %{time}"
+msgstr "in %{time}"
+
+msgid "%{name} accepted your invite. Starting the battle…"
+msgstr "%{name} accepted your invite. Starting the battle…"
+
+msgid "%{name} canceled the invite"
+msgstr "%{name} canceled the invite"
+
+msgid "%{name} invites you"
+msgstr "%{name} invites you"
+
+msgid "%{name} invites you to a battle"
+msgstr "%{name} invites you to a battle"
+
+msgid "Anonymous"
+msgstr "Anonymous"
+
+msgid "Battle invite"
+msgstr "Battle invite"
+
+msgid "Couldn't load this player's stats."
+msgstr "Couldn't load this player's stats."
+
+msgid "Deploy finished. Syncing latest session..."
+msgstr "Deploy finished. Syncing latest session..."
+
+msgid "Deploy handoff incomplete. Reconnecting..."
+msgstr "Deploy handoff incomplete. Reconnecting..."
+
+msgid "Deploy in progress. Reconnecting game session..."
+msgstr "Deploy in progress. Reconnecting game session..."
+
+msgid "Follow"
+msgstr "Follow"
+
+msgid "Follow: open their games automatically"
+msgstr "Follow: open their games automatically"
+
+msgid "Highest Win"
+msgstr "Highest Win"
+
+msgid "Invite accepted"
+msgstr "Invite accepted"
+
+msgid "Invite not found."
+msgstr "Invite not found."
+
+msgid "Invite sent to %{name}. Waiting for the reply…"
+msgstr "Invite sent to %{name}. Waiting for the reply…"
+
+msgid "Invite to a battle"
+msgstr "Invite to a battle"
+
+msgid "Invite to battle"
+msgstr "Invite to battle"
+
+msgid "No invites. Hover a player to invite them to a battle."
+msgstr "No invites. Hover a player to invite them to a battle."
+
+msgid "Nobody found"
+msgstr "Nobody found"
+
+msgid "Not in a game"
+msgstr "Not in a game"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "One of you is already in a game."
+msgstr "One of you is already in a game."
+
+msgid "Polyglot"
+msgstr "Polyglot"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Searching…"
+msgstr "Searching…"
+
+msgid "Season Wins"
+msgstr "Season Wins"
+
+msgid "Send invite"
+msgstr "Send invite"
+
+msgid "The server is restarting. Try again in a moment."
+msgstr "The server is restarting. Try again in a moment."
+
+msgid "There is already a pending invite between you two."
+msgstr "There is already a pending invite between you two."
+
+msgid "This invite is no longer active."
+msgstr "This invite is no longer active."
+
+msgid "This player can't be invited."
+msgstr "This player can't be invited."
+
+msgid "Tournament wins"
+msgstr "Tournament wins"
+
+msgid "Type a name to search"
+msgstr "Type a name to search"
+
+msgid "Watch the game"
+msgstr "Watch the game"
+
+msgid "You are following %{name}"
+msgstr "You are following %{name}"
+
+msgid "You can't invite yourself."
+msgstr "You can't invite yourself."
+
+msgid "You invited %{name}"
+msgstr "You invited %{name}"
+
+msgid "Language not set"
+msgstr "Language not set"
+
+msgid "Seen %{when}"
+msgstr "Seen %{when}"
+
+msgid "Seen recently"
+msgstr "Seen recently"

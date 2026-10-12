@@ -252,6 +252,18 @@ jobs:
         run: pnpm run test
         working-directory: ./apps/codebattle
 
+      - name: Install new frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./apps/codebattle/frontend
+
+      - name: New frontend typecheck
+        run: pnpm run typecheck
+        working-directory: ./apps/codebattle/frontend
+
+      - name: New frontend build
+        run: pnpm run build
+        working-directory: ./apps/codebattle/frontend
+
   build_images:
     needs: [changes, backend_tests, elixir_quality, frontend_quality]
     if: |

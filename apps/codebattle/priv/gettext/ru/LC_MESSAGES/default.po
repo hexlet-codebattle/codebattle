@@ -4028,3 +4028,363 @@ msgstr "Твой раунд"
 
 msgid "Game round"
 msgstr "Раунд игры"
+
+# New frontend (apps/codebattle/frontend)
+
+msgid "%{date} at %{time}"
+msgstr "%{date} в %{time}"
+
+msgid "1st place"
+msgstr "1-е место"
+
+msgid "About this tournament"
+msgstr "О турнире"
+
+msgid "Add clan"
+msgstr "Добавить клан"
+
+msgid "All-time"
+msgstr "Всё время"
+
+msgid "Ban in chat"
+msgstr "Забанить в чате"
+
+msgid "Bot"
+msgstr "Бот"
+
+msgid "Close chat with %{name}"
+msgstr "Закрыть чат с %{name}"
+
+msgid "Codebattle League rules"
+msgstr "Правила Лиги Codebattle"
+
+msgid "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+msgstr "Соревнования ещё не начались. Загляни в расписание ближайших турниров."
+
+msgid "Connection lost. Reconnecting…"
+msgstr "Соединение потеряно. Переподключаемся…"
+
+msgid "Copied"
+msgstr "Скопировано"
+
+msgid "Copy invite link"
+msgstr "Скопировать ссылку-приглашение"
+
+msgid "Copy name"
+msgstr "Скопировать имя"
+
+msgid "Could not create the game. Try again."
+msgstr "Не удалось создать игру. Попробуй ещё раз."
+
+msgid "Couldn't load the leaderboard."
+msgstr "Не удалось загрузить рейтинг."
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Custom tournament"
+msgstr "Пользовательский турнир"
+
+msgid "Editing a task"
+msgstr "Редактируют задачу"
+
+msgid "Elo"
+msgstr "Эло"
+
+msgid "Elo gained this month"
+msgstr "Эло за этот месяц"
+
+msgid "Elo gained this week"
+msgstr "Эло за эту неделю"
+
+msgid "Elo gained this year"
+msgstr "Эло за этот год"
+
+msgid "Elo rating"
+msgstr "Рейтинг Эло"
+
+msgid "Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun 21 – Sep 21. Season points reset every season; Elo rating never does. Each season ends with a Grand Slam on the 21st at 16:00 UTC."
+msgstr "Четыре сезона в году: 21 сен – 21 дек, 21 дек – 21 мар, 21 мар – 21 июн, 21 июн – 21 сен. Сезонные очки обнуляются каждый сезон, рейтинг Эло — никогда. Каждый сезон завершается Гранд-слэмом 21-го числа в 16:00 UTC."
+
+msgid "In a game"
+msgstr "В игре"
+
+msgid "Join battle"
+msgstr "Присоединиться"
+
+msgid "Loading tasks…"
+msgstr "Загружаем задачи…"
+
+msgid "Navigation"
+msgstr "Навигация"
+
+msgid "No active season"
+msgstr "Нет активного сезона"
+
+msgid "No messages yet. Say hi!"
+msgstr "Сообщений пока нет. Поздоровайся!"
+
+msgid "No results this season yet."
+msgstr "В этом сезоне пока нет результатов."
+
+msgid "No tasks match"
+msgstr "Подходящих задач нет"
+
+msgid "Nobody has played this month."
+msgstr "В этом месяце ещё никто не играл."
+
+msgid "Nobody has played this week."
+msgstr "На этой неделе ещё никто не играл."
+
+msgid "Nobody has played this year."
+msgstr "В этом году ещё никто не играл."
+
+msgid "Nobody has played yet."
+msgstr "Ещё никто не играл."
+
+msgid "Online now"
+msgstr "Сейчас онлайн"
+
+msgid "Players: %{count}"
+msgstr "Игроков: %{count}"
+
+msgid "Points halve with each place down to 2; every other finisher gets 2 points. Prize and participation points don't stack."
+msgstr "С каждым местом очки уменьшаются вдвое, до 2; все остальные участники получают по 2 очка. Призовые очки и очки за участие не суммируются."
+
+msgid "Private message to %{name}"
+msgstr "Личное сообщение для %{name}"
+
+msgid "Prize places"
+msgstr "Призовые места"
+
+msgid "Random player"
+msgstr "Случайный игрок"
+
+msgid "Registration open"
+msgstr "Регистрация открыта"
+
+msgid "Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › Pro. Open tournaments are created by players and award no points."
+msgstr "Новичок проходит каждые 4 часа, Челленджер — ежедневно в 16:00 UTC. Слот 16:00 раз в неделю занимает один турнир по приоритету: Гранд-слэм › Мастерс › Элита › Про. Открытые турниры создают сами игроки, очков за них не дают."
+
+msgid "Rules"
+msgstr "Правила"
+
+msgid "S%{name} ’%{year}"
+msgstr "С%{name} ’%{year}"
+
+msgid "Season %{name}"
+msgstr "Сезон %{name}"
+
+msgid "Season %{name}, %{year}"
+msgstr "Сезон %{name}, %{year}"
+
+msgid "Season and Grand Slam champions enter the Hall of Fame."
+msgstr "Чемпионы сезонов и Гранд-слэмов попадают в Зал славы."
+
+msgid "Season ranking"
+msgstr "Рейтинг сезона"
+
+msgid "Send private message"
+msgstr "Написать личное сообщение"
+
+msgid "Start a private conversation with %{name}."
+msgstr "Начни личную переписку с %{name}."
+
+msgid "Started at %{time}"
+msgstr "Начался в %{time}"
+
+msgid "Starting soon"
+msgstr "Скоро начнётся"
+
+msgid "Switch to dark theme"
+msgstr "Включить тёмную тему"
+
+msgid "Switch to light theme"
+msgstr "Включить светлую тему"
+
+msgid "There are no active games right now. Create one!"
+msgstr "Сейчас нет активных игр. Создай свою!"
+
+msgid "Total season points"
+msgstr "Сумма сезонных очков"
+
+msgid "Tournament wins this season"
+msgstr "Победы в турнирах за сезон"
+
+msgid "Tournaments played this season"
+msgstr "Сыгранные турниры за сезон"
+
+msgid "Tournaments: %{count}"
+msgstr "Турниров: %{count}"
+
+msgid "Waiting for opponent"
+msgstr "Ожидание соперника"
+
+msgid "Watch"
+msgstr "Смотреть"
+
+msgid "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
+msgstr "Играй в сезонных турнирах, набирай очки и борись за место в Зале славы. Победитель каждого сезона получает эксклюзивный мерч Codebattle."
+
+msgid "Wins: %{wins} / %{games}"
+msgstr "Побед: %{wins} / %{games}"
+
+msgid "Year"
+msgstr "Год"
+
+msgid "game #%{id}"
+msgstr "игра #%{id}"
+
+msgid "private"
+msgstr "лично"
+
+
+msgid "to %{name}"
+msgstr "для %{name}"
+
+msgid "top %{count}"
+msgstr "топ-%{count}"
+
+msgid "tournament #%{id}"
+msgstr "турнир #%{id}"
+
+msgid "until %{date}"
+msgstr "до %{date}"
+
+msgid "in %{time}"
+msgstr "через %{time}"
+
+msgid "Ranking Points_one"
+msgstr "очко"
+
+msgid "Ranking Points_few"
+msgstr "очка"
+
+msgid "Ranking Points_many"
+msgstr "очков"
+
+msgid "Ranking Points_other"
+msgstr "очка"
+
+msgid "%{name} accepted your invite. Starting the battle…"
+msgstr "%{name} принял(а) приглашение. Начинаем битву…"
+
+msgid "%{name} canceled the invite"
+msgstr "%{name} отменил(а) приглашение"
+
+msgid "%{name} invites you"
+msgstr "%{name} зовёт тебя"
+
+msgid "%{name} invites you to a battle"
+msgstr "%{name} вызывает тебя на битву"
+
+msgid "Anonymous"
+msgstr "Аноним"
+
+msgid "Battle invite"
+msgstr "Вызов на битву"
+
+msgid "Couldn't load this player's stats."
+msgstr "Не удалось загрузить статистику игрока."
+
+msgid "Deploy finished. Syncing latest session..."
+msgstr "Обновление завершено. Синхронизируем сессию..."
+
+msgid "Deploy handoff incomplete. Reconnecting..."
+msgstr "Обновление прошло не полностью. Переподключаемся..."
+
+msgid "Deploy in progress. Reconnecting game session..."
+msgstr "Идёт обновление. Переподключаем игровую сессию..."
+
+msgid "Follow"
+msgstr "Следить"
+
+msgid "Follow: open their games automatically"
+msgstr "Следить: автоматически открывать их игры"
+
+msgid "Highest Win"
+msgstr "Лучшая победа"
+
+msgid "Invite accepted"
+msgstr "Приглашение принято"
+
+msgid "Invite not found."
+msgstr "Приглашение не найдено."
+
+msgid "Invite sent to %{name}. Waiting for the reply…"
+msgstr "Приглашение отправлено: %{name}. Ждём ответа…"
+
+msgid "Invite to a battle"
+msgstr "Вызов на битву"
+
+msgid "Invite to battle"
+msgstr "Вызвать на битву"
+
+msgid "No invites. Hover a player to invite them to a battle."
+msgstr "Приглашений нет. Наведи на игрока, чтобы вызвать его на битву."
+
+msgid "Nobody found"
+msgstr "Никого не нашли"
+
+msgid "Not in a game"
+msgstr "Сейчас не играет"
+
+msgid "Offline"
+msgstr "Не в сети"
+
+msgid "One of you is already in a game."
+msgstr "Кто-то из вас уже в игре."
+
+msgid "Polyglot"
+msgstr "Полиглот"
+
+msgid "Resume"
+msgstr "Продолжить"
+
+msgid "Searching…"
+msgstr "Ищем…"
+
+msgid "Season Wins"
+msgstr "Победы в сезонах"
+
+msgid "Send invite"
+msgstr "Отправить вызов"
+
+msgid "The server is restarting. Try again in a moment."
+msgstr "Сервер перезапускается. Попробуй через минуту."
+
+msgid "There is already a pending invite between you two."
+msgstr "Между вами уже есть активное приглашение."
+
+msgid "This invite is no longer active."
+msgstr "Это приглашение уже неактивно."
+
+msgid "This player can't be invited."
+msgstr "Этого игрока нельзя пригласить."
+
+msgid "Tournament wins"
+msgstr "Победы в турнирах"
+
+msgid "Type a name to search"
+msgstr "Введи имя для поиска"
+
+msgid "Watch the game"
+msgstr "Смотреть игру"
+
+msgid "You are following %{name}"
+msgstr "Ты следишь за %{name}"
+
+msgid "You can't invite yourself."
+msgstr "Нельзя пригласить самого себя."
+
+msgid "You invited %{name}"
+msgstr "Ты пригласил(а) %{name}"
+
+msgid "Language not set"
+msgstr "Язык не выбран"
+
+msgid "Seen %{when}"
+msgstr "Был(а) %{when}"
+
+msgid "Seen recently"
+msgstr "Был(а) недавно"

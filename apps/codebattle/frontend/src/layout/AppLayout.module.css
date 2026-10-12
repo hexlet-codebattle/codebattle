@@ -1,0 +1,55 @@
+.header {
+  background: var(--cb-sunken);
+  border-color: var(--cb-border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  min-width: 0;
+  color: var(--cb-text-strong);
+  text-decoration: none;
+}
+
+.logo {
+  display: flex;
+  flex-shrink: 0;
+
+  & svg {
+    width: auto;
+    height: 30px;
+  }
+}
+
+.collabLogo {
+  height: 30px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.brandText {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.online {
+  padding-inline: var(--mantine-spacing-xs);
+}
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cb-text-muted);
+}
+
+.userButton {
+  padding: 3px 6px 3px 10px;
+  border-radius: var(--cb-radius);
+  color: var(--cb-text-muted);
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+}

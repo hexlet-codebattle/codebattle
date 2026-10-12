@@ -300,6 +300,32 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       assert is_list(achievements)
     end
 
+    test "includes when the user was last active (latest session activity)", %{conn: conn} do
+      user = insert(:user)
+      never_signed_in = insert(:user)
+      older = ~U[2025-01-10 08:00:00Z]
+      newer = ~U[2025-03-02 12:30:00Z]
+
+      for last_seen_at <- [older, newer] do
+        Repo.insert!(%Codebattle.UserSession{
+          user_id: user.id,
+          token_hash: :crypto.strong_rand_bytes(32),
+          last_seen_at: last_seen_at,
+          expires_at: DateTime.add(newer, 30, :day)
+        })
+      end
+
+      assert %{"last_active_at" => "2025-03-02T12:30:00Z"} =
+               conn
+               |> get(Routes.api_v1_user_path(conn, :achievements, user.id))
+               |> json_response(200)
+
+      assert %{"last_active_at" => nil} =
+               conn
+               |> get(Routes.api_v1_user_path(conn, :achievements, never_signed_in.id))
+               |> json_response(200)
+    end
+
     test "uses denormalized achievements without scanning user games", %{conn: conn} do
       user = insert(:user)
       game = insert(:game, state: "game_over")

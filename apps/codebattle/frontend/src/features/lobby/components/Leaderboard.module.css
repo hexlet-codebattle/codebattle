@@ -1,0 +1,88 @@
+.rowLabel {
+  width: 46px;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+/* Equal-width tabs filling the row. */
+.tabs {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tab {
+  padding-inline: 4px;
+}
+
+.list {
+  border-top: 1px solid var(--cb-border);
+  transition: opacity 120ms ease;
+
+  &[data-stale] {
+    opacity: 0.6;
+  }
+}
+
+.row {
+  padding: 6px var(--mantine-spacing-md);
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+
+  &[data-me] {
+    background: color-mix(in srgb, var(--cb-success) 12%, transparent);
+  }
+}
+
+/* Top three wear gold / silver / bronze (--cb-medal-*, tuned per scheme for contrast). */
+.position {
+  width: 22px;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+  color: var(--cb-text-muted);
+
+  &[data-place] {
+    height: 22px;
+    line-height: 22px;
+    border-radius: 50%;
+    color: var(--cb-medal-text);
+  }
+
+  &[data-place='1'] {
+    background: var(--cb-medal-1);
+  }
+
+  &[data-place='2'] {
+    background: var(--cb-medal-2);
+  }
+
+  &[data-place='3'] {
+    background: var(--cb-medal-3);
+  }
+}
+
+.up {
+  color: var(--cb-success);
+}
+
+.down {
+  color: var(--cb-danger);
+}
+
+/* The caller's own row when it isn't on the current page. */
+.mePinned {
+  border-top: 1px dashed var(--cb-border);
+}
+
+.footer {
+  border-top: 1px solid var(--cb-border);
+}
+

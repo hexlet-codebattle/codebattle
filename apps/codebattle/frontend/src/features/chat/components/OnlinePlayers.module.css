@@ -1,0 +1,52 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Same height as the chat's room bar so the two headers line up. */
+.header {
+  min-height: 44px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cb-text-muted);
+}
+
+/* Language logo · name · activity pill, like the legacy list. */
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--cb-panel);
+  border: 1px solid var(--cb-border);
+  color: var(--cb-text-strong);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--mantine-color-slate-4);
+  }
+}

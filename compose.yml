@@ -33,6 +33,7 @@ services:
       CODEBATTLE_RUNNER_PORT: ${CODEBATTLE_RUNNER_PORT:-4001}
       CODEBATTLE_SECRET_KEY_BASE: ${CODEBATTLE_SECRET_KEY_BASE:-dev-only-secret-key-base-dev-only-secret-key-base-dev-only-secret-key-base}
       CODEBATTLE_VITE_PORT: ${CODEBATTLE_VITE_PORT:-8080}
+      CODEBATTLE_FRONTEND_PORT: ${CODEBATTLE_FRONTEND_PORT:-8081}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-ASFD}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-ASFD}
       FIREBASE_API_KEY: ${FIREBASE_API_KEY:-0}
@@ -43,12 +44,14 @@ services:
     ports:
       - "127.0.0.1:${CODEBATTLE_PORT:-4000}:${CODEBATTLE_PORT:-4000}"
       - "127.0.0.1:${CODEBATTLE_VITE_PORT:-8080}:${CODEBATTLE_VITE_PORT:-8080}"
+      - "127.0.0.1:${CODEBATTLE_FRONTEND_PORT:-8081}:${CODEBATTLE_FRONTEND_PORT:-8081}"
     volumes:
       - .:/workspace
       - ./.devcontainer/empty.env:/workspace/.env:ro
       - build:/workspace/_build
       - deps:/workspace/deps
       - node_modules:/workspace/apps/codebattle/node_modules
+      - frontend_node_modules:/workspace/apps/codebattle/frontend/node_modules
       - plts:/workspace/priv/plts
       - pnpm_store:/home/codebattle/.local/share/pnpm
     tmpfs:
@@ -169,6 +172,7 @@ services:
 volumes:
   build:
   deps:
+  frontend_node_modules:
   node_modules:
   pg_data18:
   plts:

@@ -1,0 +1,146 @@
+/* Overrides wired into theme.ts via classNames. Selectors stay flat so
+   per-instance className props still win without !important. */
+
+/* Framed so light/transparent images (the default logo avatar) stay visible on any surface. */
+.avatar {
+  border: 1px solid var(--cb-border);
+  background: var(--cb-avatar-bg);
+}
+
+.panel {
+  background: var(--cb-panel-gradient);
+  border-color: var(--cb-border);
+}
+
+.cardSection {
+  border-color: var(--cb-border);
+}
+
+/* Inputs sit "sunken" in panels and lift to the panel colour on focus. */
+.input {
+  background: var(--cb-sunken);
+  border-color: var(--cb-border);
+  color: var(--cb-text-strong);
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    background: var(--cb-panel);
+  }
+
+  &:focus,
+  &:focus-within {
+    border-color: var(--mantine-color-slate-3);
+  }
+}
+
+.label {
+  color: var(--cb-text);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.button {
+  font-family: var(--mantine-font-family-headings);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Legacy .nav-tabs: dim tabs, slate highlight when active. */
+.tabsList {
+  --tab-border-color: var(--cb-border);
+  gap: 2px;
+}
+
+.tab {
+  color: var(--cb-text-muted);
+  background: var(--cb-tab);
+  font-family: var(--mantine-font-family-headings);
+  font-weight: 500;
+
+  &:where(:hover) {
+    color: var(--cb-text-strong);
+    background: var(--cb-tab-hover);
+  }
+
+  &:where([data-active]) {
+    color: var(--mantine-color-white);
+    background: var(--mantine-color-slate-5);
+  }
+}
+
+.dropdown {
+  background: var(--cb-panel);
+  border-color: var(--cb-border);
+  box-shadow: var(--cb-shadow-panel);
+}
+
+.menuItem {
+  color: var(--cb-text-strong);
+
+  &:where([data-hovered]) {
+    background: var(--cb-tab-hover);
+  }
+}
+
+.modalContent {
+  background: var(--cb-panel-gradient);
+  border: 1px solid var(--cb-border);
+}
+
+.modalHeader {
+  background: transparent;
+}
+
+.modalTitle {
+  font-family: var(--mantine-font-family-headings);
+  font-weight: 600;
+  color: var(--cb-text-strong);
+}
+
+.table {
+  --table-border-color: var(--cb-border);
+  --table-hover-color: var(--cb-hover);
+  --table-striped-color: var(--cb-stripe);
+}
+
+.th {
+  color: var(--cb-text-muted);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.segmentedRoot {
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+}
+
+.segmentedIndicator {
+  background: var(--mantine-color-slate-5);
+}
+
+.segmentedLabel {
+  &:where([data-active]) {
+    color: var(--mantine-color-white);
+  }
+}
+
+.tooltip {
+  background: var(--mantine-color-dark-8);
+  border: 1px solid var(--cb-border);
+  color: var(--mantine-color-white);
+}
+
+.anchor {
+  transition: color 0.1s ease-in;
+
+  &:hover {
+    color: var(--cb-danger);
+  }
+}
+
+.title {
+  color: var(--cb-text-strong);
+}

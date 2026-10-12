@@ -1,0 +1,5 @@
+# Standalone package: the new frontend shares no dependencies with ../assets.
+minimumReleaseAgeExclude:
+  - vite@8.3.4
+  - '@inertiajs/core@3.9.1'
+  - '@inertiajs/react@3.9.1'

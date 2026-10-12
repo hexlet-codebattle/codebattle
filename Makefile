@@ -71,6 +71,7 @@ install-mix:
 install-pnpm:
 	$(DEV) pnpm --dir apps/codebattle install --frozen-lockfile
 	$(DEV) pnpm --dir apps/codebattle run build:mem
+	$(DEV) pnpm --dir apps/codebattle/frontend install --frozen-lockfile
 
 server:
 	$(DEV) iex -S mix phx.server
@@ -107,6 +108,10 @@ lint-js-fix:
 
 check-js:
 	$(DEV) pnpm --dir apps/codebattle run check
+
+check-frontend:
+	$(DEV) pnpm --dir apps/codebattle/frontend run typecheck
+	$(DEV) pnpm --dir apps/codebattle/frontend run build
 
 dialyzer:
 	$(DEV) mix dialyzer

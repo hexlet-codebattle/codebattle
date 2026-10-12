@@ -1,0 +1,22 @@
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.online {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--cb-border);
+  background: var(--cb-sunken);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    max-height: 280px;
+    border-left: 0;
+    border-top: 1px solid var(--cb-border);
+  }
+}

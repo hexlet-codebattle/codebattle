@@ -243,6 +243,19 @@ defmodule Codebattle.UserSession do
     end
   end
 
+  @doc """
+  When the user was last active: the latest `last_seen_at` over all their
+  sessions (touched at most every #{@touch_interval_seconds}s on authenticated
+  requests). `nil` if they never signed in since sessions were introduced.
+  """
+  @spec last_active_at(pos_integer()) :: DateTime.t() | nil
+  def last_active_at(user_id) do
+    __MODULE__
+    |> where([s], s.user_id == ^user_id)
+    |> select([s], max(s.last_seen_at))
+    |> Repo.one()
+  end
+
   defp touch(nil, _current_time), do: nil
 
   defp touch(session, current_time) do

@@ -130,6 +130,18 @@ jobs:
       - name: Run jest
         run: pnpm test
         working-directory: ./apps/codebattle
+
+      - name: Install new frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./apps/codebattle/frontend
+
+      - name: New frontend typecheck
+        run: pnpm run typecheck
+        working-directory: ./apps/codebattle/frontend
+
+      - name: New frontend build
+        run: pnpm run build
+        working-directory: ./apps/codebattle/frontend
       # --- end pnpm block ---
 
       - name: Setup db

@@ -37,6 +37,7 @@ RUN apk add --no-cache \
       /workspace/deps \
       /workspace/priv/plts \
       /workspace/apps/codebattle/node_modules \
+      /workspace/apps/codebattle/frontend/node_modules \
       "/home/${USERNAME}/.cache" \
       "/home/${USERNAME}/.local/share/pnpm" \
   && chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}" /workspace

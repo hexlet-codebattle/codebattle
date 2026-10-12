@@ -1,0 +1,7 @@
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}

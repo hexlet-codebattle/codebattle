@@ -1,0 +1,11 @@
+.dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cb-border);
+
+  &[data-online] {
+    background: var(--cb-success);
+  }
+}

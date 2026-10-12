@@ -16,6 +16,21 @@ COPY apps/codebattle/priv/gettext ./priv/gettext
 
 RUN pnpm run build
 
+# New Mantine frontend (apps/codebattle/frontend): a separate package and build.
+FROM node:24.15-alpine AS frontend-image
+
+# Mirrors the repo layout: the app imports translations from ../priv/gettext.
+WORKDIR /tmp/codebattle/frontend
+
+RUN npm install --global pnpm@11.11.0
+
+COPY apps/codebattle/frontend/package.json apps/codebattle/frontend/pnpm-lock.yaml apps/codebattle/frontend/pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY apps/codebattle/priv/gettext ../priv/gettext
+COPY apps/codebattle/frontend ./
+RUN pnpm run build
+
 FROM elixir:1.20.4-otp-29-alpine AS compile-image
 ENV MIX_ENV=prod
 
@@ -37,6 +52,8 @@ COPY ./apps/codebattle/ ./apps/codebattle/
 COPY ./apps/runner/ ./apps/runner/
 
 COPY --from=assets-image /tmp/codebattle/priv/static ./apps/codebattle/priv/static
+# Served at /assets/v2 by nginx and Phoenix (see CodebattleWeb.NewFrontend).
+COPY --from=frontend-image /tmp/codebattle/frontend/dist ./apps/codebattle/priv/static/assets/v2
 
 # phx.digest writes digested copies plus .gz for its gzippable extensions.
 # Add .br for every compressible file (and .gz where digest skipped it) so

@@ -1,0 +1,37 @@
+.swatch {
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  width: 64px;
+  height: 40px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+}
+
+.shade {
+  width: 36px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.gameRoom {
+  overflow: hidden;
+}
+
+.gameRoomBar {
+  background: var(--cb-sunken);
+  border-color: var(--cb-border);
+  border-style: solid;
+  border-width: 0 0 1px;
+
+  &:last-child {
+    border-width: 1px 0 0;
+  }
+}
+
+.editor {
+  flex: 1;
+  background: var(--cb-editor);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+}

@@ -86,6 +86,8 @@ defmodule CodebattleWeb.Router do
   pipeline :mounted_apps do
     plug(:accepts, ["html"])
     plug(:fetch_session)
+    # AdminOnly redirects non-admins with a flash message.
+    plug(:fetch_flash)
     plug(:put_secure_browser_headers)
   end
 
@@ -365,6 +367,8 @@ defmodule CodebattleWeb.Router do
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
+      get("/leaderboard/elo", LeaderboardController, :elo)
+      get("/leaderboard/season", LeaderboardController, :season)
       get("/user/nearby_users", UserController, :nearby_users)
       get("/user/:id/stats", UserController, :stats)
       get("/user/:id/rivals", UserController, :rivals)

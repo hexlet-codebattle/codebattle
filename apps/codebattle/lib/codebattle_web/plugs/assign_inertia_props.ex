@@ -31,16 +31,37 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
         )
     }
 
+    # Only the new frontend reads branding. Computing it costs a GitHub stars
+    # lookup (synchronous on a cold cache), so legacy users don't pay for it.
+    props =
+      if CodebattleWeb.NewFrontend.enabled?(conn),
+        do: Map.put(props, "branding", present_branding(current_user)),
+        else: props
+
     conn
     |> then(fn conn -> Enum.reduce(props, conn, fn {key, value}, conn -> assign_prop(conn, key, value) end) end)
     |> Plug.Conn.assign(:frontend_shared_props, props)
     |> Plug.Conn.assign(:ticker_text, nil)
   end
 
+  # Header branding for the new frontend (the legacy layout reads these in HEEx itself).
+  defp present_branding(current_user) do
+    %{
+      logo_title: Application.get_env(:codebattle, :logo_title),
+      app_subtitle: Application.get_env(:codebattle, :app_subtitle),
+      logo_title_position: Application.get_env(:codebattle, :logo_title_position),
+      collab_logo: CodebattleWeb.LayoutView.collab_logo(current_user),
+      collab_logo_minor: CodebattleWeb.LayoutView.collab_logo_minor(current_user),
+      github_stars: CodebattleWeb.GithubStarsHelpers.github_stars_count_text(),
+      hide_invites: FunWithFlags.enabled?(:hide_invites),
+      hide_user_dropdown: FunWithFlags.enabled?(:hide_user_dropdown)
+    }
+  end
+
   defp present_season(nil), do: nil
 
   defp present_season(season) do
-    Map.take(season, [:name, :year, :starts_at, :ends_at])
+    Map.take(season, [:id, :name, :year, :starts_at, :ends_at])
   end
 
   defp socket_token_payload(%{is_guest: true} = user, nil), do: {:guest, user.id}
