@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useInviteDialog } from '@/features/invites/dialog';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
-import type { TournamentGrade } from '@/features/lobby/types';
 import { followUser, unfollowUser } from '@/features/main/useMainChannel';
 import { useFollowStore } from '@/features/main/store';
 import { usePresenceStore } from '@/features/presence/store';
@@ -24,7 +23,8 @@ import { UserAvatar } from '@/shared/UserAvatar';
 import { useSharedProps } from '@/shared/useSharedProps';
 import { LangIcon } from '@/shared/LangIcon';
 
-import { type Achievement, fetchUserCard, type UserCardData } from './api';
+import { AchievementTile, GRADE_WINS, PRESENCE_LABELS, visibleAchievements } from './achievements';
+import { fetchUserCard } from './api';
 import classes from './UserCard.module.css';
 
 export interface CardUser {
@@ -33,69 +33,6 @@ export interface CardUser {
   avatar_url?: string | null;
   is_bot?: boolean;
   is_guest?: boolean;
-}
-
-const GRADE_WINS: { grade: TournamentGrade; key: keyof UserCardData['metrics']['tournaments_stats'] }[] = [
-  { grade: 'grand_slam', key: 'grand_slam_wins' },
-  { grade: 'masters', key: 'masters_wins' },
-  { grade: 'elite', key: 'elite_wins' },
-  { grade: 'pro', key: 'pro_wins' },
-  { grade: 'challenger', key: 'challenger_wins' },
-  { grade: 'rookie', key: 'rookie_wins' },
-];
-
-const PRESENCE_LABELS: Record<string, string> = {
-  playing: 'In a game',
-  watching: 'Watching',
-  tournament: 'In tournament',
-  lobby: 'Lobby',
-  task: 'Editing a task',
-  online: 'Online',
-};
-
-// Achievement type → title (i18n key) and tile tone (a --cb-grade-* metal).
-const ACHIEVEMENTS: Record<string, { title: string; tone: string }> = {
-  games_played_milestone: { title: 'Games', tone: 'challenger' },
-  graded_tournaments_played_milestone: { title: 'Tournaments', tone: 'rookie' },
-  highest_tournament_win_grade: { title: 'Highest Win', tone: 'grand_slam' },
-  polyglot: { title: 'Polyglot', tone: 'pro' },
-  season_champion_wins: { title: 'Season Wins', tone: 'masters' },
-  grand_slam_champion_wins: { title: 'Grand Slam', tone: 'grand_slam' },
-  best_win_streak: { title: 'Best Streak', tone: 'elite' },
-};
-
-function AchievementTile({ achievement }: { achievement: Achievement }) {
-  const { t } = useTranslation();
-  const config = ACHIEVEMENTS[achievement.type] ?? { title: achievement.type, tone: 'rookie' };
-  const { meta } = achievement;
-
-  let value: ReactNode = meta.label ?? meta.count ?? '—';
-  let tone = config.tone;
-
-  if (achievement.type === 'highest_tournament_win_grade' && meta.grade) {
-    tone = meta.grade;
-    value = <GradeIcon grade={meta.grade as TournamentGrade} size={24} />;
-  } else if (achievement.type === 'polyglot') {
-    value = (
-      <Text size="xs" fw={700} lh={1.2} lineClamp={2}>
-        {(meta.languages ?? []).join(' · ')}
-      </Text>
-    );
-  }
-
-  return (
-    <Tooltip
-      label={achievement.type === 'polyglot' ? `${t(config.title)}: ${(meta.languages ?? []).join(', ')}` : t(config.title)}
-      openDelay={300}
-    >
-      <Stack gap={2} align="center" justify="center" className={classes.tile} style={{ '--tone': `var(--cb-grade-${tone})` }}>
-        <Text fz={10} fw={700} tt="uppercase" lts="0.04em" className={classes.tileTitle} ta="center" lh={1.1}>
-          {t(config.title)}
-        </Text>
-        <div className={classes.tileValue}>{value}</div>
-      </Stack>
-    </Tooltip>
-  );
 }
 
 function Stat({ label, value }: { label: string; value: ReactNode }) {
@@ -148,7 +85,7 @@ function CardContent({ user, onDirectMessage, onBan }: { user: CardUser } & Card
   const activeGameId = data?.active_game_id ?? null;
   const stats = data?.metrics.game_stats;
   const tournaments = data?.metrics.tournaments_stats;
-  const achievements = (data?.achievements ?? []).filter(({ type }) => type in ACHIEVEMENTS || !type.endsWith('_stats'));
+  const achievements = visibleAchievements(data?.achievements);
 
   return (
     <Stack gap="sm">

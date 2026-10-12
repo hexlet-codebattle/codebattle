@@ -31,6 +31,7 @@ defmodule CodebattleWeb.TournamentController do
       url: Routes.tournament_url(conn, :index)
     })
     |> assign(:page_title, "Tournaments")
+    |> CodebattleWeb.NewFrontend.maybe_put_layout()
     |> render_inertia("TournamentIndex", %{
       "page_title" => "Tournaments",
       "last_tournament" => last_tournament,
@@ -72,9 +73,12 @@ defmodule CodebattleWeb.TournamentController do
         description: "Edit tournament settings"
       })
       |> assign(:page_title, "Edit #{tournament.name}")
+      |> CodebattleWeb.NewFrontend.maybe_put_layout()
       |> render_inertia("TournamentEdit", %{
         "page_title" => "Edit #{tournament.name}",
         "tournament_id" => tournament.id,
+        # The new frontend fills the form from this instead of fetching the tournament.
+        "tournament" => edit_tournament_json(tournament),
         "task_pack_names" => task_pack_names,
         "user_timezone" => user_timezone
       })
@@ -142,6 +146,19 @@ defmodule CodebattleWeb.TournamentController do
   # Shaped to match TournamentForm's field names so the "Use my last tournament's
   # settings" button can prefill the form. `starts_at` is intentionally omitted
   # (it must be a future time the organizer picks anew).
+  defp edit_tournament_json(tournament) do
+    creator = tournament.creator_id && User.get(tournament.creator_id)
+
+    tournament
+    |> last_tournament_json()
+    |> Map.merge(%{
+      id: tournament.id,
+      state: tournament.state,
+      starts_at: tournament.starts_at,
+      creator: creator && %{id: creator.id, name: creator.name}
+    })
+  end
+
   defp last_tournament_json(nil), do: nil
 
   defp last_tournament_json(tournament) do

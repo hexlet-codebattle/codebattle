@@ -1,0 +1,220 @@
+/* Place chip: gold / silver / bronze for the top three (--cb-medal-*), plain digits below. */
+.place {
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+  color: var(--cb-text-muted);
+
+  &[data-place] {
+    height: 24px;
+    line-height: 24px;
+    border-radius: 6px;
+    color: var(--cb-medal-text);
+  }
+
+  &[data-place='1'] {
+    background: var(--cb-medal-1);
+  }
+
+  &[data-place='2'] {
+    background: var(--cb-medal-2);
+  }
+
+  &[data-place='3'] {
+    background: var(--cb-medal-3);
+  }
+}
+
+/* Podium: 2nd · 1st · 3rd, the winner raised; stacked 1-2-3 on phones. */
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--mantine-spacing-md);
+  max-width: 900px;
+  margin: 0 auto;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.step {
+  --medal: var(--cb-medal-3);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--mantine-spacing-lg) var(--mantine-spacing-md) var(--mantine-spacing-md);
+  border: 1px solid var(--cb-border);
+  border-top: 3px solid var(--medal);
+  border-radius: var(--cb-radius);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--medal) 14%, var(--cb-panel)) 0%, var(--cb-panel) 60%);
+  box-shadow: var(--cb-shadow-panel);
+  text-align: center;
+  min-width: 0;
+
+  &[data-place='1'] {
+    --medal: var(--cb-medal-1);
+    padding-top: calc(var(--mantine-spacing-xl) * 1.5);
+    order: 2;
+  }
+
+  &[data-place='2'] {
+    --medal: var(--cb-medal-2);
+    padding-top: var(--mantine-spacing-xl);
+    order: 1;
+  }
+
+  &[data-place='3'] {
+    order: 3;
+  }
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    &[data-place] {
+      order: 0;
+      padding-top: var(--mantine-spacing-lg);
+    }
+  }
+}
+
+.stepPlace {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--medal);
+  color: var(--cb-medal-text);
+  font-family: var(--mantine-font-family-monospace);
+  font-weight: 800;
+  font-size: var(--mantine-font-size-sm);
+}
+
+.stepStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--cb-border);
+}
+
+/* Leaderboard table. */
+.table {
+  & td,
+  & th {
+    white-space: nowrap;
+  }
+
+  & tbody tr[data-me] {
+    background: color-mix(in srgb, var(--cb-success) 12%, transparent);
+  }
+
+  & tbody tr[data-flash] {
+    animation: flash 1.6s ease-out;
+  }
+}
+
+@keyframes flash {
+  from {
+    background: color-mix(in srgb, var(--cb-success) 35%, transparent);
+  }
+}
+
+/* Horizontal share bars (clans, languages, grades, median comparison). */
+.bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cb-sunken);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: var(--mantine-color-slate-5);
+  transition: width 400ms ease-out;
+
+  &[data-tone='muted'] {
+    background: var(--mantine-color-slate-3);
+  }
+
+  &[data-tone='success'] {
+    background: var(--cb-success);
+  }
+}
+
+/* Weekly points column chart. */
+.trend {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 160px;
+  padding-top: 8px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.trendCol {
+  flex: 1;
+  min-width: 6px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  cursor: default;
+
+  &:hover .trendBar {
+    background: var(--cb-success);
+  }
+}
+
+.trendBar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--mantine-color-slate-5);
+  transition: background 120ms ease;
+}
+
+/* Season cards (index and previous champions). */
+.seasonCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-sm);
+  height: 100%;
+
+  &[data-status='active'] {
+    border-color: color-mix(in srgb, var(--cb-success) 55%, var(--cb-border));
+  }
+}
+
+.championRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: var(--cb-radius);
+
+  &:nth-child(odd) {
+    background: var(--cb-sunken);
+  }
+}
+
+.stat {
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+  min-width: 0;
+}

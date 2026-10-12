@@ -190,13 +190,13 @@ export function Tournaments({ isAdmin }: { isAdmin: boolean }) {
       <Stack gap={4} align="center">
         <Title order={3}>{t('Tournaments')}</Title>
         <Group gap={4} justify="center">
-          <Button component="a" href="/schedule#contest" variant="subtle" size="compact-sm" leftSection={<IconHistory size={14} />}>
+          <Button component="a" href="/tournaments#list" variant="subtle" size="compact-sm" leftSection={<IconHistory size={14} />}>
             {t('History')}
           </Button>
-          <Button component="a" href="/schedule#my" variant="subtle" size="compact-sm" leftSection={<IconCalendarUser size={14} />}>
+          <Button component="a" href="/tournaments#my" variant="subtle" size="compact-sm" leftSection={<IconCalendarUser size={14} />}>
             {t('My Tournaments')}
           </Button>
-          <Button component="a" href="/tournaments" variant="subtle" size="compact-sm" leftSection={<IconPlus size={14} />}>
+          <Button component="a" href="/tournaments#create" variant="subtle" size="compact-sm" leftSection={<IconPlus size={14} />}>
             {t('Create')}
           </Button>
         </Group>

@@ -1,0 +1,238 @@
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cb-border);
+
+  &[data-online] {
+    background: var(--cb-text-muted);
+  }
+}
+
+.github {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats {
+  margin: calc(var(--mantine-spacing-md) * -1);
+}
+
+.stat {
+  padding: var(--mantine-spacing-md) var(--mantine-spacing-xs);
+
+  & + & {
+    border-left: 1px solid var(--cb-border);
+  }
+}
+
+/* Bar list (games / tournament wins). */
+.barRow {
+  display: grid;
+  grid-template-columns: minmax(90px, 30%) minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+}
+
+.barLabel {
+  min-width: 0;
+  font-size: var(--mantine-font-size-sm);
+  color: var(--cb-text);
+}
+
+.barTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--cb-sunken);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  transition: width 600ms ease-out;
+}
+
+/* Seasons list. */
+.season {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  padding: 6px 8px;
+  border-radius: var(--cb-radius);
+  color: inherit;
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+}
+
+.seasonPlace,
+.place {
+  font-family: var(--mantine-font-family-monospace);
+  font-weight: 700;
+  font-size: var(--mantine-font-size-xs);
+}
+
+.seasonPlace {
+  min-width: 40px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  text-align: center;
+  color: var(--cb-text-strong);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+}
+
+.seasonPlace,
+.place {
+  &[data-place='1'],
+  &[data-place='2'],
+  &[data-place='3'] {
+    color: var(--cb-medal-text);
+    border-color: transparent;
+  }
+
+  &[data-place='1'] {
+    background: var(--cb-medal-1);
+  }
+
+  &[data-place='2'] {
+    background: var(--cb-medal-2);
+  }
+
+  &[data-place='3'] {
+    background: var(--cb-medal-3);
+  }
+}
+
+.place[data-place] {
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+/* Rivals and languages. */
+.rival {
+  padding: 6px 8px;
+  border-radius: var(--cb-radius);
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+}
+
+.record {
+  flex-shrink: 0;
+}
+
+.won {
+  color: var(--cb-success);
+}
+
+.lost {
+  color: var(--cb-danger);
+}
+
+.langChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-sunken);
+  font-size: var(--mantine-font-size-sm);
+}
+
+/* History tables. */
+.linkRow {
+  cursor: pointer;
+}
+
+.rowLink {
+  color: var(--cb-text-strong);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tableFooter {
+  border-top: 1px solid var(--cb-border);
+}
+
+.gameRow {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  border-bottom: 1px solid var(--cb-border);
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'level show'
+      'players players'
+      'date date';
+  }
+}
+
+.level {
+  justify-self: start;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: level;
+  }
+}
+
+.players {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: players;
+  }
+}
+
+.player {
+  min-width: 0;
+}
+
+.date {
+  white-space: nowrap;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: date;
+  }
+}
+
+.show {
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-area: show;
+    justify-self: end;
+  }
+}
+
+.markSpacer {
+  display: inline-block;
+  width: 14px;
+}

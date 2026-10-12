@@ -462,7 +462,7 @@ defmodule CodebattleWeb.Router do
       get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)
     end
 
-    resources("/clans", ClanController, only: [:index, :show, :delete])
+    resources("/clans", ClanController, only: [:index, :show, :create, :update, :delete])
 
     get("/e/:slug", PublicEventController, :show)
     post("/e/:slug/stage", PublicEventController, :stage)

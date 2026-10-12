@@ -70,6 +70,11 @@ defmodule Codebattle.SeasonResult do
     )
   end
 
+  @spec count_by_season(pos_integer()) :: non_neg_integer()
+  def count_by_season(season_id) do
+    Repo.aggregate(from(sr in __MODULE__, where: sr.season_id == ^season_id), :count)
+  end
+
   @spec get_leaderboard(pos_integer(), pos_integer()) :: [t()]
   def get_leaderboard(season_id, limit \\ 100) do
     Repo.all(

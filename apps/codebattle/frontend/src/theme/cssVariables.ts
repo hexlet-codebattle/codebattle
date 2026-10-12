@@ -2,6 +2,29 @@ import type { CSSVariablesResolver } from '@mantine/core';
 
 import { grades } from './colors';
 
+// Palettes badges can be tinted with (theme colours + Mantine's gray).
+export const BADGE_COLORS = ['dark', 'slate', 'gray', 'green', 'red', 'orange', 'blue', 'violet', 'yellow'] as const;
+
+/**
+ * "light" badges: Mantine's dark-scheme tint is shade 9 darkened by half — fine
+ * for alerts, but small pills turn near-black. In dark, use a translucent tint
+ * with a bright text shade instead; light keeps Mantine's pastel tints.
+ */
+const badgeVariables = (scheme: 'dark' | 'light') =>
+  Object.fromEntries(
+    BADGE_COLORS.flatMap((color) =>
+      scheme === 'dark'
+        ? [
+            [`--cb-badge-${color}-bg`, `color-mix(in srgb, var(--mantine-color-${color}-5) 20%, transparent)`],
+            [`--cb-badge-${color}-color`, `var(--mantine-color-${color}-2)`],
+          ]
+        : [
+            [`--cb-badge-${color}-bg`, `var(--mantine-color-${color}-light)`],
+            [`--cb-badge-${color}-color`, `var(--mantine-color-${color}-light-color)`],
+          ],
+    ),
+  );
+
 const gradeVariables = (scheme: 'dark' | 'light') =>
   Object.fromEntries(Object.entries(grades).map(([grade, color]) => [`--cb-grade-${grade}`, color[scheme]]));
 
@@ -26,6 +49,7 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
   },
   light: {
     ...gradeVariables('light'),
+    ...badgeVariables('light'),
     // Leaderboard 1st/2nd/3rd: deep enough for white digits on a light page.
     '--cb-medal-1': '#8a6a24',
     '--cb-medal-2': '#5b6574',
@@ -47,6 +71,8 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--cb-text-strong': '#14141a',
     '--cb-tab': '#eceef4',
     '--cb-tab-hover': '#dfe2eb',
+    '--cb-tab-active': 'var(--cb-panel)',
+    '--cb-tab-active-text': 'var(--cb-text-strong)',
     '--cb-hover': 'rgba(20, 20, 40, 0.04)',
     '--cb-stripe': 'rgba(20, 20, 40, 0.02)',
     '--cb-shadow-panel': '0 6px 16px rgba(20, 20, 40, 0.08)',
@@ -63,6 +89,7 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
   },
   dark: {
     ...gradeVariables('dark'),
+    ...badgeVariables('dark'),
     '--cb-medal-1': 'var(--cb-grade-grand_slam)',
     '--cb-medal-2': 'var(--cb-grade-masters)',
     '--cb-medal-3': 'var(--cb-grade-elite)',
@@ -81,6 +108,8 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--cb-text-strong': '#ffffff',
     '--cb-tab': '#21242e',
     '--cb-tab-hover': 'var(--mantine-color-slate-5)',
+    '--cb-tab-active': 'var(--mantine-color-slate-5)',
+    '--cb-tab-active-text': 'var(--mantine-color-white)',
     '--cb-hover': 'rgba(255, 255, 255, 0.04)',
     '--cb-stripe': 'rgba(255, 255, 255, 0.02)',
     '--cb-shadow-panel': '0 8px 18px rgba(0, 0, 0, 0.25)',

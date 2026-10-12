@@ -12,7 +12,7 @@ import { GradeIcon } from './GradeIcon';
 import classes from './LeagueBanner.module.css';
 
 // Season points by final place; everyone else who finished gets 2 (legacy league rules).
-const GRADES: { grade: TournamentGrade; players: number; rounds: number; points: number[] }[] = [
+export const LEAGUE_GRADES: { grade: TournamentGrade; players: number; rounds: number; points: number[] }[] = [
   { grade: 'rookie', players: 8, rounds: 4, points: [8, 4, 2] },
   { grade: 'challenger', players: 16, rounds: 6, points: [16, 8, 4, 2] },
   { grade: 'pro', players: 32, rounds: 8, points: [128, 64, 32, 16, 8, 4, 2] },
@@ -21,7 +21,7 @@ const GRADES: { grade: TournamentGrade; players: number; rounds: number; points:
   { grade: 'grand_slam', players: 256, rounds: 14, points: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] },
 ];
 
-function RulesModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
+export function RulesModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const { t } = useTranslation();
 
   return (
@@ -55,7 +55,7 @@ function RulesModal({ opened, onClose }: { opened: boolean; onClose: () => void 
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {GRADES.map(({ grade, players, rounds, points }) => (
+                {LEAGUE_GRADES.map(({ grade, players, rounds, points }) => (
                   <Table.Tr key={grade}>
                     <Table.Td>
                       <Group gap={8} wrap="nowrap">

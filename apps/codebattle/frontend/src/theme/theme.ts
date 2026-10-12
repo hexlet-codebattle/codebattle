@@ -24,6 +24,7 @@ import {
 
 import { blue, dark, grades, green, orange, red, slate, violet, yellow } from './colors';
 import classes from './components.module.css';
+import { BADGE_COLORS } from './cssVariables';
 
 // Legacy slate buttons lighten on hover; Mantine's default darkens.
 const variantColorResolver: VariantColorsResolver = (input) => {
@@ -88,7 +89,17 @@ export const theme = createTheme({
     Anchor: Anchor.extend({ classNames: { root: classes.anchor } }),
     // Avatars are slightly rounded squares, never circles.
     Avatar: Avatar.extend({ defaultProps: { radius: 'sm', color: 'slate' }, classNames: { root: classes.avatar } }),
-    Badge: Badge.extend({ defaultProps: { radius: 'xl', variant: 'light' } }),
+    Badge: Badge.extend({
+      defaultProps: { radius: 'xl', variant: 'light' },
+      // Per-scheme tints for the light variant (see badgeVariables in cssVariables.ts).
+      vars: (theme, props) => {
+        const variant = props.variant ?? 'light';
+        const color = props.color ?? theme.primaryColor;
+        if (variant !== 'light' || !(BADGE_COLORS as readonly string[]).includes(color)) return { root: {} };
+
+        return { root: { '--badge-bg': `var(--cb-badge-${color}-bg)`, '--badge-color': `var(--cb-badge-${color}-color)` } };
+      },
+    }),
     // Neutral by default (white/outlined on light, slate on dark); colours are opt-in.
     Button: Button.extend({ defaultProps: { variant: 'default' }, classNames: { root: classes.button } }),
     Card: Card.extend({

@@ -3,6 +3,7 @@ defmodule CodebattleWeb.HallOfFameController do
 
   alias Codebattle.Season
   alias Codebattle.SeasonResult
+  alias CodebattleWeb.NewFrontend
 
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
@@ -35,10 +36,13 @@ defmodule CodebattleWeb.HallOfFameController do
       description: "Hall of Fame for Codebattle League"
     })
     |> assign(:page_title, "Codebattle Hall of Fame")
+    |> NewFrontend.maybe_put_layout()
     |> render_inertia("HallOfFame", %{
       "page_title" => "Codebattle Hall of Fame",
       "current_season" => current_season,
       "current_season_results" => current_season_results,
+      # The results are the top 100; percentiles need the whole field.
+      "current_season_players" => if(current_season, do: SeasonResult.count_by_season(current_season.id), else: 0),
       "previous_seasons_winners" => previous_seasons_winners
     })
   end

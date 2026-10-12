@@ -1,0 +1,122 @@
+.signature {
+  display: block;
+  padding: var(--mantine-spacing-sm);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-sm);
+  color: var(--cb-text);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.keyword {
+  color: var(--cb-text-muted);
+}
+
+.argName {
+  color: var(--cb-text-strong);
+  font-weight: 600;
+}
+
+.argType {
+  color: var(--cb-grade-grand_slam);
+}
+
+.returnType {
+  color: var(--cb-success);
+  font-weight: 600;
+}
+
+.value,
+.expected {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.expected {
+  color: var(--cb-success);
+}
+
+.preview {
+  min-height: 240px;
+  padding: var(--mantine-spacing-sm);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+}
+
+.stats {
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+}
+
+.stat {
+  padding: var(--mantine-spacing-xs) 0;
+
+  & + & {
+    border-left: 1px solid var(--cb-border);
+  }
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 72px;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+}
+
+.barTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--cb-sunken);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  transition: width 500ms ease-out;
+}
+
+.place {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+  color: var(--cb-text-muted);
+
+  &[data-place] {
+    line-height: 22px;
+    border-radius: 50%;
+    color: var(--cb-medal-text);
+  }
+
+  &[data-place='1'] {
+    background: var(--cb-medal-1);
+  }
+
+  &[data-place='2'] {
+    background: var(--cb-medal-2);
+  }
+
+  &[data-place='3'] {
+    background: var(--cb-medal-3);
+  }
+}
+
+.detailRow {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+  min-height: 28px;
+}
+
+.detailValue {
+  min-width: 0;
+}

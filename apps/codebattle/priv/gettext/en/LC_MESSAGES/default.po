@@ -3162,3 +3162,576 @@ msgstr "Seen %{when}"
 
 msgid "Seen recently"
 msgstr "Seen recently"
+
+msgid "%{percent}% won"
+msgstr "%{percent}% won"
+
+msgid "Activity period"
+msgstr "Activity period"
+
+msgid "Back to lobby"
+msgstr "Back to lobby"
+
+msgid "Couldn't load activity."
+msgstr "Couldn't load activity."
+
+msgid "Couldn't load this profile."
+msgstr "Couldn't load this profile."
+
+msgid "Failed to load games"
+msgstr "Failed to load games"
+
+msgid "Less"
+msgstr "Less"
+
+msgid "Load more"
+msgstr "Load more"
+
+msgid "More"
+msgstr "More"
+
+msgid "No games on %{date}"
+msgstr "No games on %{date}"
+
+msgid "No rivals yet."
+msgstr "No rivals yet."
+
+msgid "No wins yet."
+msgstr "No wins yet."
+
+msgid "Something went wrong. Try again."
+msgstr "Something went wrong. Try again."
+
+msgid "There is no player with this id."
+msgstr "There is no player with this id."
+
+msgid "W/L/T"
+msgstr "W/L/T"
+
+msgid "%{count} tasks"
+msgstr "%{count} tasks"
+
+msgid "Activate"
+msgstr "Activate"
+
+msgid "All"
+msgstr "All"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Delete task \"%{name}\"?"
+msgstr "Delete task \"%{name}\"?"
+
+msgid "Delete task pack?"
+msgstr "Delete task pack?"
+
+msgid "Delete this clan?"
+msgstr "Delete this clan?"
+
+msgid "Disable"
+msgstr "Disable"
+
+msgid "No clans found"
+msgstr "No clans found"
+
+msgid "No members yet."
+msgstr "No members yet."
+
+msgid "No task packs yet."
+msgstr "No task packs yet."
+
+msgid "Ordered sets of tasks for tournaments."
+msgstr "Ordered sets of tasks for tournaments."
+
+msgid "Search by name, tag or id"
+msgstr "Search by name, tag or id"
+
+msgid "Search clans"
+msgstr "Search clans"
+
+msgid "Show more (%{count} left)"
+msgstr "Show more (%{count} left)"
+
+msgid "Task not found for id = %{id}"
+msgstr "Task not found for id = %{id}"
+
+msgid "Total clans: %{count}"
+msgstr "Total clans: %{count}"
+
+msgid "Unnamed clan"
+msgstr "Unnamed clan"
+
+msgid "moderation"
+msgstr "moderation"
+
+msgid "Based on %{count} winning games."
+msgstr "Based on %{count} winning games."
+
+msgid "Couldn't save the task. Try again."
+msgstr "Couldn't save the task. Try again."
+
+msgid "No Russian description yet."
+msgstr "No Russian description yet."
+
+msgid "No description yet."
+msgstr "No description yet."
+
+msgid "Opens a game against a bot in a new tab."
+msgstr "Opens a game against a bot in a new tab."
+
+msgid "Preview"
+msgstr "Preview"
+
+msgid "Write"
+msgstr "Write"
+
+msgid "median"
+msgstr "median"
+
+msgid "Edit task pack"
+msgstr "Edit task pack"
+
+msgid "Back to pack"
+msgstr "Back to pack"
+
+msgid "Unique name, up to %{count} characters"
+msgstr "Unique name, up to %{count} characters"
+
+msgid "Hidden packs are visible only to you and admins"
+msgstr "Hidden packs are visible only to you and admins"
+
+msgid "Order matters: tournaments play the tasks in this order."
+msgstr "Order matters: tournaments play the tasks in this order."
+
+msgid "List"
+msgstr "List"
+
+msgid "IDs"
+msgstr "IDs"
+
+msgid "Only integers separated by commas"
+msgstr "Only integers separated by commas"
+
+msgid "Add a task: search by name, tag or id"
+msgstr "Add a task: search by name, tag or id"
+
+msgid "No tasks yet. Add some above."
+msgstr "No tasks yet. Add some above."
+
+msgid "Move up"
+msgstr "Move up"
+
+msgid "Move down"
+msgstr "Move down"
+
+msgid "3–16 Latin letters, digits, - or _"
+msgstr "3–16 Latin letters, digits, - or _"
+
+msgid "8-bit console chiptune"
+msgstr "8-bit console chiptune"
+
+msgid "Active %{ago}"
+msgstr "Active %{ago}"
+
+msgid "Active now"
+msgstr "Active now"
+
+msgid "Active recently"
+msgstr "Active recently"
+
+msgid "At least 8 characters, any symbols"
+msgstr "At least 8 characters, any symbols"
+
+msgid "CSS tasks"
+msgstr "CSS tasks"
+
+msgid "Calm and simple"
+msgstr "Calm and simple"
+
+msgid "Changing it signs you out on other devices and revokes your API tokens."
+msgstr "Changing it signs you out on other devices and revokes your API tokens."
+
+msgid "Connected"
+msgstr "Connected"
+
+msgid "Couldn't save your settings. Try again."
+msgstr "Couldn't save your settings. Try again."
+
+msgid "Counter-Strike radio"
+msgstr "Counter-Strike radio"
+
+msgid "Danger zone"
+msgstr "Danger zone"
+
+msgid "Dark"
+msgstr "Dark"
+
+msgid "Every device is signed out and every API token revoked"
+msgstr "Every device is signed out and every API token revoked"
+
+msgid "Expires %{date}"
+msgstr "Expires %{date}"
+
+msgid "Failed tests"
+msgstr "Failed tests"
+
+msgid "Field can't be empty"
+msgstr "Field can't be empty"
+
+msgid "Games and tournament results stay, without your name"
+msgstr "Games and tournament results stay, without your name"
+
+msgid "Invalid email"
+msgstr "Invalid email"
+
+msgid "Is too long"
+msgstr "Is too long"
+
+msgid "Last used %{ago}"
+msgstr "Last used %{ago}"
+
+msgid "Latin letters, digits, - and _; starts with a letter"
+msgstr "Latin letters, digits, - and _; starts with a letter"
+
+msgid "Leave empty to leave your clan."
+msgstr "Leave empty to leave your clan."
+
+msgid "Light"
+msgstr "Light"
+
+msgid "New token"
+msgstr "New token"
+
+msgid "Not connected"
+msgstr "Not connected"
+
+msgid "Password and email you sign in with."
+msgstr "Password and email you sign in with."
+
+msgid "Password changed. Other devices were signed out."
+msgstr "Password changed. Other devices were signed out."
+
+msgid "Passwords must match"
+msgstr "Passwords must match"
+
+msgid "Preferences"
+msgstr "Preferences"
+
+msgid "Profile updated"
+msgstr "Profile updated"
+
+msgid "Public profile"
+msgstr "Public profile"
+
+msgid "Revoke token \"%{name}\"? Apps using it stop working."
+msgstr "Revoke token \"%{name}\"? Apps using it stop working."
+
+msgid "Round start"
+msgstr "Round start"
+
+msgid "SQL tasks"
+msgstr "SQL tasks"
+
+msgid "Saved"
+msgstr "Saved"
+
+msgid "Saved in this browser."
+msgstr "Saved in this browser."
+
+msgid "Scopes"
+msgstr "Scopes"
+
+msgid "Security"
+msgstr "Security"
+
+msgid "Should be 16 character(s) or less"
+msgstr "Should be 16 character(s) or less"
+
+msgid "Should be at least 3 characters"
+msgstr "Should be at least 3 characters"
+
+msgid "Should be at least 8 characters"
+msgstr "Should be at least 8 characters"
+
+msgid "Sign out on all other devices?"
+msgstr "Sign out on all other devices?"
+
+msgid "Sign out other devices"
+msgstr "Sign out other devices"
+
+msgid "Sign-in & security"
+msgstr "Sign-in & security"
+
+msgid "Some devices could not be signed out. Try again."
+msgstr "Some devices could not be signed out. Try again."
+
+msgid "System"
+msgstr "System"
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "This is your only way to sign in. Set a password or link another account first."
+msgstr "This is your only way to sign in. Set a password or link another account first."
+
+msgid "Time is over"
+msgstr "Time is over"
+
+msgid "Token \"%{name}\" created"
+msgstr "Token \"%{name}\" created"
+
+msgid "Try it:"
+msgstr "Try it:"
+
+msgid "Unlink"
+msgstr "Unlink"
+
+msgid "Unlink %{provider}?"
+msgstr "Unlink %{provider}?"
+
+msgid "Verification email sent to %{email}. Confirm the new address to finish the change."
+msgstr "Verification email sent to %{email}. Confirm the new address to finish the change."
+
+msgid "You sign in with a linked account, so there is no password to change here."
+msgstr "You sign in with a linked account, so there is no password to change here."
+
+msgid "Your name is anonymized; avatar, email and linked accounts are removed"
+msgstr "Your name is anonymized; avatar, email and linked accounts are removed"
+
+msgid "Your tokens"
+msgstr "Your tokens"
+
+msgid "signed in %{date}"
+msgstr "signed in %{date}"
+
+msgid "#%{place} of %{count}"
+msgstr "#%{place} of %{count}"
+
+msgid "%{count} days left"
+msgstr "%{count} days left"
+
+msgid "%{hours}h %{minutes}m"
+msgstr "%{hours}h %{minutes}m"
+
+msgid "%{minutes}m"
+msgstr "%{minutes}m"
+
+msgid "%{percent}% played"
+msgstr "%{percent}% played"
+
+msgid "%{points} pts · %{players} players"
+msgstr "%{points} pts · %{players} players"
+
+msgid "Best / avg place"
+msgstr "Best / avg place"
+
+msgid "Codebattle League champions, season by season."
+msgstr "Codebattle League champions, season by season."
+
+msgid "Find me · #%{place}"
+msgstr "Find me · #%{place}"
+
+msgid "Four seasons a year. Points reset every season; champions stay forever."
+msgstr "Four seasons a year. Points reset every season; champions stay forever."
+
+msgid "Median player"
+msgstr "Median player"
+
+msgid "Newer"
+msgstr "Newer"
+
+msgid "No clans yet"
+msgstr "No clans yet"
+
+msgid "No seasons yet"
+msgstr "No seasons yet"
+
+msgid "Older"
+msgstr "Older"
+
+msgid "Points awarded"
+msgstr "Points awarded"
+
+msgid "Points per tournament"
+msgstr "Points per tournament"
+
+msgid "Points per week"
+msgstr "Points per week"
+
+msgid "Points: %{count}"
+msgstr "Points: %{count}"
+
+msgid "Rows per page"
+msgstr "Rows per page"
+
+msgid "Season at a glance"
+msgstr "Season at a glance"
+
+msgid "Season progress"
+msgstr "Season progress"
+
+msgid "Starts soon"
+msgstr "Starts soon"
+
+msgid "Time in battles"
+msgstr "Time in battles"
+
+msgid "Top %{count} at a glance"
+msgstr "Top %{count} at a glance"
+
+msgid "Top %{count} of %{total} players"
+msgstr "Top %{count} of %{total} players"
+
+msgid "Top clans"
+msgstr "Top clans"
+
+msgid "Weapons of choice"
+msgstr "Weapons of choice"
+
+msgid "Week of %{date}"
+msgstr "Week of %{date}"
+
+msgid "vs %{value}"
+msgstr "vs %{value}"
+
+msgid "%{count} tournaments"
+msgstr "%{count} tournaments"
+
+msgid "%{index} of %{count}"
+msgstr "%{index} of %{count}"
+
+msgid "%{points} points"
+msgstr "%{points} points"
+
+msgid "All Tournaments"
+msgstr "All Tournaments"
+
+msgid "Codebattle League tournaments, your own tournaments and past results."
+msgstr "Codebattle League tournaments, your own tournaments and past results."
+
+msgid "Codebattle League · %{grade}"
+msgstr "Codebattle League · %{grade}"
+
+msgid "Couldn't load the schedule."
+msgstr "Couldn't load the schedule."
+
+msgid "Every other finisher gets 2 points."
+msgstr "Every other finisher gets 2 points."
+
+msgid "League rules"
+msgstr "League rules"
+
+msgid "Nothing matches your filters"
+msgstr "Nothing matches your filters"
+
+msgid "Opens when registration starts"
+msgstr "Opens when registration starts"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Registration"
+msgstr "Registration"
+
+msgid "Season points by place"
+msgstr "Season points by place"
+
+msgid "Starts in"
+msgstr "Starts in"
+
+msgid "Tournament or winner"
+msgstr "Tournament or winner"
+
+msgid "Tournament schedule"
+msgstr "Tournament schedule"
+
+msgid "Create clan"
+msgstr "Create clan"
+
+msgid "Edit clan"
+msgstr "Edit clan"
+
+msgid "Full name"
+msgstr "Full name"
+
+msgid "Short and unique, shown next to players"
+msgstr "Short and unique, shown next to players"
+
+msgid "Optional, e.g. a company or school"
+msgstr "Optional, e.g. a company or school"
+
+msgid "Leave %{clan} and join this clan"
+msgstr "Leave %{clan} and join this clan"
+
+msgid "Join this clan"
+msgstr "Join this clan"
+
+msgid "Clan created"
+msgstr "Clan created"
+
+msgid "Clan updated"
+msgstr "Clan updated"
+
+msgid "Only the clan creator or an admin can edit it"
+msgstr "Only the clan creator or an admin can edit it"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "An error occurred while creating the tournament"
+msgstr "An error occurred while creating the tournament"
+
+msgid "Created by you"
+msgstr "Created by you"
+
+msgid "Invalid JSON"
+msgstr "Invalid JSON"
+
+msgid "Network error. Please try again."
+msgstr "Network error. Please try again."
+
+msgid "No task packs"
+msgstr "No task packs"
+
+msgid "Please fix the highlighted fields: %{fields}"
+msgstr "Please fix the highlighted fields: %{fields}"
+
+msgid "Random name"
+msgstr "Random name"
+
+msgid "Summary"
+msgstr "Summary"
+
+msgid "Use last settings"
+msgstr "Use last settings"
+
+msgid "User IDs separated by commas. You are always a moderator."
+msgstr "User IDs separated by commas. You are always a moderator."
+
+msgid "in 1 hour"
+msgstr "in 1 hour"
+
+msgid "in 30 min"
+msgstr "in 30 min"
+
+msgid "in 5 min"
+msgstr "in 5 min"
+
+msgid "now"
+msgstr "now"
+
+msgid "Edit %{name}"
+msgstr "Edit %{name}"
+
+msgid "Failed to update tournament"
+msgstr "Failed to update tournament"
+
+msgid "Tournament updated successfully"
+msgstr "Tournament updated successfully"
+
+msgid "by"
+msgstr "by"
+
+msgid "Back to tournament"
+msgstr "Back to tournament"

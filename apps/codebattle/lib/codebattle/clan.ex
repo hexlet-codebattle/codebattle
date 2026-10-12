@@ -118,6 +118,49 @@ defmodule Codebattle.Clan do
     |> Repo.update()
   end
 
+  @doc "Creator and admins may rename a clan."
+  @spec can_edit?(t(), User.t()) :: boolean()
+  def can_edit?(%__MODULE__{creator_id: creator_id}, %User{id: user_id} = user) do
+    User.admin?(user) or (not is_nil(creator_id) and creator_id == user_id)
+  end
+
+  @doc """
+  Renames a clan (name / long name only). Members keep the clan name on their
+  user row, so it is updated with the clan in one transaction.
+  """
+  @spec rename(t(), map()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  def rename(clan, attrs) do
+    changeset = changeset(clan, Map.take(attrs, ["name", "long_name"]))
+
+    Repo.transaction(fn ->
+      case Repo.update(changeset) do
+        {:ok, updated} -> set_members_clan(updated, from(u in User, where: u.clan_id == ^updated.id))
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  @doc "Creates a clan owned by `user`; with `join?` the user moves into it."
+  @spec create_by(User.t(), map(), boolean()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  def create_by(user, attrs, join?) do
+    attrs = attrs |> Map.take(["name", "long_name"]) |> Map.put("creator_id", user.id)
+
+    members = if join?, do: from(u in User, where: u.id == ^user.id), else: from(u in User, where: false)
+
+    Repo.transaction(fn ->
+      case create(attrs) do
+        {:ok, clan} -> set_members_clan(clan, members)
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  # Users keep the clan name next to clan_id; keep both in step.
+  defp set_members_clan(clan, users_query) do
+    Repo.update_all(users_query, set: [clan: clan.name, clan_id: clan.id])
+    clan
+  end
+
   @spec delete(t()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
   def delete(clan), do: Repo.delete(clan)
 

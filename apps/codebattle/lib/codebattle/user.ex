@@ -19,6 +19,8 @@ defmodule Codebattle.User do
 
   @subscription_types ~w(banned free premium moderator admin)a
   @valid_locales ~w(en ru)
+  @style_langs ~w(css less sass stylus)
+  @db_types ~w(postgresql mysql mongodb)
   @derive {Jason.Encoder,
            only: [
              :avatar_url,
@@ -147,7 +149,7 @@ defmodule Codebattle.User do
 
   def settings_changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:name, :lang, :locale])
+    |> cast(params, [:name, :lang, :style_lang, :db_type, :locale])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_required([:name])
@@ -161,6 +163,8 @@ defmodule Codebattle.User do
       message: "must start with a Latin letter and contain only Latin letters, digits, - and _"
     )
     |> validate_inclusion(:locale, @valid_locales)
+    |> validate_inclusion(:style_lang, @style_langs)
+    |> validate_inclusion(:db_type, @db_types)
     |> assign_clan(params, user.id)
   end
 

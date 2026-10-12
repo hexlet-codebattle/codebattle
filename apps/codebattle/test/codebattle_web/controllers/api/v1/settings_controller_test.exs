@@ -70,8 +70,8 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           "tournament_level" => 8,
           "type" => "cs"
         },
-        "db_type" => "postgresql",
-        "style_lang" => "css",
+        "db_type" => "mysql",
+        "style_lang" => "sass",
         "lang" => "ruby"
       }
 

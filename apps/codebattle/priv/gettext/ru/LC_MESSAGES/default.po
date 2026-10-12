@@ -4388,3 +4388,570 @@ msgstr "Был(а) %{when}"
 
 msgid "Seen recently"
 msgstr "Был(а) недавно"
+
+msgid "%{percent}% won"
+msgstr "%{percent}% побед"
+
+msgid "Activity period"
+msgstr "Период активности"
+
+msgid "Back to lobby"
+msgstr "В лобби"
+
+msgid "Couldn't load activity."
+msgstr "Не удалось загрузить активность."
+
+msgid "Couldn't load this profile."
+msgstr "Не удалось загрузить профиль."
+
+msgid "Failed to load games"
+msgstr "Не удалось загрузить игры"
+
+msgid "Less"
+msgstr "Меньше"
+
+msgid "Load more"
+msgstr "Показать ещё"
+
+msgid "More"
+msgstr "Больше"
+
+msgid "No games on %{date}"
+msgstr "%{date}: игр не было"
+
+msgid "No rivals yet."
+msgstr "Соперников пока нет."
+
+msgid "No wins yet."
+msgstr "Побед пока нет."
+
+msgid "Something went wrong. Try again."
+msgstr "Что-то пошло не так. Попробуй ещё раз."
+
+msgid "There is no player with this id."
+msgstr "Игрока с таким id нет."
+
+msgid "W/L/T"
+msgstr "П/П/Т"
+
+msgid "%{count} tasks"
+msgstr "Задач: %{count}"
+
+msgid "Activate"
+msgstr "Включить"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Delete task \"%{name}\"?"
+msgstr "Удалить задачу «%{name}»?"
+
+msgid "Delete task pack?"
+msgstr "Удалить набор задач?"
+
+msgid "Delete this clan?"
+msgstr "Удалить этот клан?"
+
+msgid "Disable"
+msgstr "Отключить"
+
+msgid "No clans found"
+msgstr "Кланы не найдены"
+
+msgid "No members yet."
+msgstr "Участников пока нет."
+
+msgid "No task packs yet."
+msgstr "Наборов задач пока нет."
+
+msgid "Ordered sets of tasks for tournaments."
+msgstr "Упорядоченные наборы задач для турниров."
+
+msgid "Search by name, tag or id"
+msgstr "Поиск по названию, тегу или id"
+
+msgid "Search clans"
+msgstr "Поиск кланов"
+
+msgid "Show more (%{count} left)"
+msgstr "Показать ещё (осталось %{count})"
+
+msgid "Task not found for id = %{id}"
+msgstr "Задача с id = %{id} не найдена"
+
+msgid "Total clans: %{count}"
+msgstr "Всего кланов: %{count}"
+
+msgid "Unnamed clan"
+msgstr "Клан без названия"
+
+msgid "moderation"
+msgstr "на модерации"
+
+msgid "Based on %{count} winning games."
+msgstr "По %{count} выигранным играм."
+
+msgid "Couldn't save the task. Try again."
+msgstr "Не удалось сохранить задачу. Попробуй ещё раз."
+
+msgid "No Russian description yet."
+msgstr "Русского описания пока нет."
+
+msgid "No description yet."
+msgstr "Описания пока нет."
+
+msgid "Opens a game against a bot in a new tab."
+msgstr "Откроет игру с ботом в новой вкладке."
+
+msgid "Preview"
+msgstr "Превью"
+
+msgid "Write"
+msgstr "Текст"
+
+msgid "median"
+msgstr "медиана"
+
+msgid "Edit task pack"
+msgstr "Редактирование набора задач"
+
+msgid "Back to pack"
+msgstr "К набору"
+
+msgid "Unique name, up to %{count} characters"
+msgstr "Уникальное имя, до %{count} символов"
+
+msgid "Hidden packs are visible only to you and admins"
+msgstr "Скрытые наборы видны только вам и админам"
+
+msgid "Order matters: tournaments play the tasks in this order."
+msgstr "Порядок важен: в турнирах задачи идут в этом порядке."
+
+msgid "List"
+msgstr "Список"
+
+msgid "IDs"
+msgstr "ID"
+
+msgid "Only integers separated by commas"
+msgstr "Только целые числа через запятую"
+
+msgid "Add a task: search by name, tag or id"
+msgstr "Добавить задачу: поиск по имени, тегу или id"
+
+msgid "No tasks yet. Add some above."
+msgstr "Задач пока нет. Добавьте их выше."
+
+msgid "Move up"
+msgstr "Выше"
+
+msgid "Move down"
+msgstr "Ниже"
+
+msgid "3–16 Latin letters, digits, - or _"
+msgstr "3–16 латинских букв, цифр, - или _"
+
+msgid "8-bit console chiptune"
+msgstr "8-битная приставка"
+
+msgid "Active %{ago}"
+msgstr "Активность %{ago}"
+
+msgid "Active now"
+msgstr "Активно сейчас"
+
+msgid "Active recently"
+msgstr "Активно недавно"
+
+msgid "At least 8 characters, any symbols"
+msgstr "Минимум 8 символов, любые"
+
+msgid "CSS tasks"
+msgstr "CSS-задачи"
+
+msgid "Calm and simple"
+msgstr "Спокойно и просто"
+
+msgid "Changing it signs you out on other devices and revokes your API tokens."
+msgstr "После смены пароля другие устройства выйдут из аккаунта, а API-токены будут отозваны."
+
+msgid "Connected"
+msgstr "Подключён"
+
+msgid "Couldn't save your settings. Try again."
+msgstr "Не удалось сохранить настройки. Попробуйте ещё раз."
+
+msgid "Counter-Strike radio"
+msgstr "Рация из Counter-Strike"
+
+msgid "Danger zone"
+msgstr "Опасная зона"
+
+msgid "Dark"
+msgstr "Тёмная"
+
+msgid "Every device is signed out and every API token revoked"
+msgstr "Все устройства выйдут из аккаунта, все API-токены будут отозваны"
+
+msgid "Expires %{date}"
+msgstr "Истекает %{date}"
+
+msgid "Failed tests"
+msgstr "Тесты не прошли"
+
+msgid "Field can't be empty"
+msgstr "Поле не может быть пустым"
+
+msgid "Games and tournament results stay, without your name"
+msgstr "Игры и результаты турниров останутся, но без вашего имени"
+
+msgid "Invalid email"
+msgstr "Некорректный email"
+
+msgid "Is too long"
+msgstr "Слишком длинный"
+
+msgid "Last used %{ago}"
+msgstr "Использовался %{ago}"
+
+msgid "Latin letters, digits, - and _; starts with a letter"
+msgstr "Латинские буквы, цифры, - и _; начинается с буквы"
+
+msgid "Leave empty to leave your clan."
+msgstr "Оставьте пустым, чтобы выйти из клана."
+
+msgid "Light"
+msgstr "Светлая"
+
+msgid "New token"
+msgstr "Новый токен"
+
+msgid "Not connected"
+msgstr "Не подключён"
+
+msgid "Password and email you sign in with."
+msgstr "Пароль и email для входа."
+
+msgid "Password changed. Other devices were signed out."
+msgstr "Пароль изменён. Другие устройства вышли из аккаунта."
+
+msgid "Passwords must match"
+msgstr "Пароли должны совпадать"
+
+msgid "Preferences"
+msgstr "Предпочтения"
+
+msgid "Profile updated"
+msgstr "Профиль обновлён"
+
+msgid "Public profile"
+msgstr "Публичный профиль"
+
+msgid "Revoke token \"%{name}\"? Apps using it stop working."
+msgstr "Отозвать токен «%{name}»? Приложения с ним перестанут работать."
+
+msgid "Round start"
+msgstr "Начало раунда"
+
+msgid "SQL tasks"
+msgstr "SQL-задачи"
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Saved in this browser."
+msgstr "Сохраняется в этом браузере."
+
+msgid "Scopes"
+msgstr "Права"
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "Should be 16 character(s) or less"
+msgstr "Не длиннее 16 символов"
+
+msgid "Should be at least 3 characters"
+msgstr "Минимум 3 символа"
+
+msgid "Should be at least 8 characters"
+msgstr "Минимум 8 символов"
+
+msgid "Sign out on all other devices?"
+msgstr "Выйти на всех других устройствах?"
+
+msgid "Sign out other devices"
+msgstr "Выйти на других устройствах"
+
+msgid "Sign-in & security"
+msgstr "Вход и безопасность"
+
+msgid "Some devices could not be signed out. Try again."
+msgstr "Не удалось выйти на некоторых устройствах. Попробуйте ещё раз."
+
+msgid "System"
+msgstr "Системная"
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "This is your only way to sign in. Set a password or link another account first."
+msgstr "Это ваш единственный способ входа. Сначала задайте пароль или привяжите другой аккаунт."
+
+msgid "Time is over"
+msgstr "Время вышло"
+
+msgid "Token \"%{name}\" created"
+msgstr "Токен «%{name}» создан"
+
+msgid "Try it:"
+msgstr "Послушать:"
+
+msgid "Unlink"
+msgstr "Отвязать"
+
+msgid "Unlink %{provider}?"
+msgstr "Отвязать %{provider}?"
+
+msgid "Verification email sent to %{email}. Confirm the new address to finish the change."
+msgstr "Письмо отправлено на %{email}. Подтвердите новый адрес, чтобы завершить смену."
+
+msgid "You sign in with a linked account, so there is no password to change here."
+msgstr "Вы входите через привязанный аккаунт, поэтому пароля для смены нет."
+
+msgid "Your name is anonymized; avatar, email and linked accounts are removed"
+msgstr "Имя будет обезличено; аватар, email и привязанные аккаунты удалены"
+
+msgid "Your tokens"
+msgstr "Ваши токены"
+
+msgid "signed in %{date}"
+msgstr "вход %{date}"
+
+msgid "#%{place} of %{count}"
+msgstr "#%{place} из %{count}"
+
+msgid "%{count} days left"
+msgstr "осталось дней: %{count}"
+
+msgid "%{hours}h %{minutes}m"
+msgstr "%{hours} ч %{minutes} мин"
+
+msgid "%{minutes}m"
+msgstr "%{minutes} мин"
+
+msgid "%{percent}% played"
+msgstr "прошло %{percent}%"
+
+msgid "%{points} pts · %{players} players"
+msgstr "%{points} очк. · игроков: %{players}"
+
+msgid "Best / avg place"
+msgstr "Лучшее / среднее место"
+
+msgid "Codebattle League champions, season by season."
+msgstr "Чемпионы Codebattle League, сезон за сезоном."
+
+msgid "Find me · #%{place}"
+msgstr "Найти меня · #%{place}"
+
+msgid "Four seasons a year. Points reset every season; champions stay forever."
+msgstr "Четыре сезона в год. Очки обнуляются каждый сезон, чемпионы остаются навсегда."
+
+msgid "Median player"
+msgstr "Медианный игрок"
+
+msgid "Newer"
+msgstr "Новее"
+
+msgid "No clans yet"
+msgstr "Кланов пока нет"
+
+msgid "No seasons yet"
+msgstr "Сезонов пока нет"
+
+msgid "Older"
+msgstr "Старше"
+
+msgid "Points awarded"
+msgstr "Выдано очков"
+
+msgid "Points per tournament"
+msgstr "Очков за турнир"
+
+msgid "Points per week"
+msgstr "Очки по неделям"
+
+msgid "Points: %{count}"
+msgstr "Очки: %{count}"
+
+msgid "Rows per page"
+msgstr "Строк на странице"
+
+msgid "Season at a glance"
+msgstr "Сезон в цифрах"
+
+msgid "Season progress"
+msgstr "Прогресс сезона"
+
+msgid "Starts soon"
+msgstr "Скоро начнётся"
+
+msgid "Time in battles"
+msgstr "Время в битвах"
+
+msgid "Top %{count} at a glance"
+msgstr "Топ-%{count} в цифрах"
+
+msgid "Top %{count} of %{total} players"
+msgstr "Топ-%{count} из %{total} игроков"
+
+msgid "Top clans"
+msgstr "Лучшие кланы"
+
+msgid "Weapons of choice"
+msgstr "Любимое оружие"
+
+msgid "Week of %{date}"
+msgstr "Неделя с %{date}"
+
+msgid "vs %{value}"
+msgstr "против %{value}"
+
+msgid "%{count} tournaments"
+msgstr "Турниров: %{count}"
+
+msgid "%{index} of %{count}"
+msgstr "%{index} из %{count}"
+
+msgid "%{points} points"
+msgstr "%{points} очков"
+
+msgid "All Tournaments"
+msgstr "Все турниры"
+
+msgid "Codebattle League tournaments, your own tournaments and past results."
+msgstr "Турниры Codebattle League, ваши турниры и прошедшие результаты."
+
+msgid "Codebattle League · %{grade}"
+msgstr "Codebattle League · %{grade}"
+
+msgid "Couldn't load the schedule."
+msgstr "Не удалось загрузить расписание."
+
+msgid "Every other finisher gets 2 points."
+msgstr "Остальные участники, дошедшие до конца, получают 2 очка."
+
+msgid "League rules"
+msgstr "Правила лиги"
+
+msgid "Nothing matches your filters"
+msgstr "Ничего не найдено"
+
+msgid "Opens when registration starts"
+msgstr "Откроется, когда начнётся регистрация"
+
+msgid "Previous"
+msgstr "Предыдущий"
+
+msgid "Registration"
+msgstr "Регистрация"
+
+msgid "Season points by place"
+msgstr "Очки сезона за места"
+
+msgid "Starts in"
+msgstr "Начало через"
+
+msgid "Tournament or winner"
+msgstr "Турнир или победитель"
+
+msgid "Tournament schedule"
+msgstr "Расписание турниров"
+
+msgid "Create clan"
+msgstr "Создать клан"
+
+msgid "Edit clan"
+msgstr "Редактировать клан"
+
+msgid "Full name"
+msgstr "Полное название"
+
+msgid "Short and unique, shown next to players"
+msgstr "Коротко и уникально, показывается рядом с игроками"
+
+msgid "Optional, e.g. a company or school"
+msgstr "Необязательно, например компания или школа"
+
+msgid "Leave %{clan} and join this clan"
+msgstr "Выйти из %{clan} и вступить в этот клан"
+
+msgid "Join this clan"
+msgstr "Вступить в этот клан"
+
+msgid "Clan created"
+msgstr "Клан создан"
+
+msgid "Clan updated"
+msgstr "Клан обновлён"
+
+msgid "Only the clan creator or an admin can edit it"
+msgstr "Редактировать клан может только его создатель или админ"
+
+msgid "An error occurred while creating the tournament"
+msgstr "Не удалось создать турнир"
+
+msgid "Created by you"
+msgstr "Созданные вами"
+
+msgid "Invalid JSON"
+msgstr "Некорректный JSON"
+
+msgid "Network error. Please try again."
+msgstr "Ошибка сети. Попробуйте ещё раз."
+
+msgid "No task packs"
+msgstr "Нет наборов задач"
+
+msgid "Please fix the highlighted fields: %{fields}"
+msgstr "Исправьте отмеченные поля: %{fields}"
+
+msgid "Random name"
+msgstr "Случайное название"
+
+msgid "Summary"
+msgstr "Итого"
+
+msgid "Use last settings"
+msgstr "Как в прошлый раз"
+
+msgid "User IDs separated by commas. You are always a moderator."
+msgstr "ID пользователей через запятую. Вы модератор всегда."
+
+msgid "in 1 hour"
+msgstr "через час"
+
+msgid "in 30 min"
+msgstr "через 30 мин"
+
+msgid "in 5 min"
+msgstr "через 5 мин"
+
+msgid "now"
+msgstr "сейчас"
+
+msgid "Edit %{name}"
+msgstr "Редактирование: %{name}"
+
+msgid "Failed to update tournament"
+msgstr "Не удалось обновить турнир"
+
+msgid "Tournament updated successfully"
+msgstr "Турнир обновлён"
+
+msgid "by"
+msgstr "автор"

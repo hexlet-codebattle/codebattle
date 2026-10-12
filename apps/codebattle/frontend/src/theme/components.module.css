@@ -58,14 +58,16 @@
   font-family: var(--mantine-font-family-headings);
   font-weight: 500;
 
-  &:where(:hover) {
+  /* Real selectors (not :where) so they beat Mantine's own tab background. */
+  &:hover {
     color: var(--cb-text-strong);
     background: var(--cb-tab-hover);
   }
 
-  &:where([data-active]) {
-    color: var(--mantine-color-white);
-    background: var(--mantine-color-slate-5);
+  &[data-active],
+  &[data-active]:hover {
+    color: var(--cb-tab-active-text);
+    background: var(--cb-tab-active);
   }
 }
 

@@ -14,7 +14,9 @@ import {
   IconUser,
   IconUsersGroup,
 } from '@tabler/icons-react';
-import type { ReactNode } from 'react';
+import { usePage } from '@inertiajs/react';
+import { notifications } from '@mantine/notifications';
+import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
@@ -25,11 +27,13 @@ import { CreateGameModal } from '@/features/lobby/components/CreateGameModal';
 import { DeployBanner } from '@/features/main/DeployBanner';
 import { useMainChannel } from '@/features/main/useMainChannel';
 import { type PresenceState, usePresenceStore } from '@/features/presence/store';
+import { useSyncSoundMute } from '@/features/settings/useSoundMute';
 import { UserAvatar } from '@/shared/UserAvatar';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import classes from './AppLayout.module.css';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
+import { SoundToggle } from './SoundToggle';
 
 const REPO_URL = 'https://github.com/hexlet-codebattle/codebattle';
 
@@ -152,7 +156,7 @@ function UserMenu() {
             <Menu.Item component="a" href="/hall_of_fame" leftSection={<IconMedal size={16} />}>
               {t('Hall of Fame')}
             </Menu.Item>
-            <Menu.Item component="a" href="/schedule" leftSection={<IconTrophy size={16} />}>
+            <Menu.Item component="a" href="/tournaments" leftSection={<IconTrophy size={16} />}>
               {t('Tournaments')}
             </Menu.Item>
             <Menu.Item component="a" href="/tasks" leftSection={<IconChecklist size={16} />}>
@@ -203,6 +207,8 @@ interface AppLayoutProps {
   children: ReactNode;
   /** What the user is doing on this page, reported to everyone's online list. */
   presence?: PresenceState;
+  /** Data-heavy pages (wide tables) use more of the screen. */
+  wide?: boolean;
 }
 
 /** App-wide "invite to a battle" dialog (opened from hover cards, chat, ?opponent_id=). */
@@ -211,15 +217,32 @@ function InviteDialog() {
   return <CreateGameModal opened={opened} onClose={close} initialOpponent={opponent} />;
 }
 
-export function AppLayout({ children, presence = 'online' }: AppLayoutProps) {
+const FLASH_COLORS: Record<string, string> = { info: 'blue', success: 'green', danger: 'red', error: 'red', warning: 'yellow' };
+
+/** Phoenix flash (Inertia shares it as `flash`) → toasts, once per page visit. */
+function FlashToasts() {
+  const { flash } = usePage<{ flash?: Record<string, string> }>().props;
+
+  useEffect(() => {
+    Object.entries(flash ?? {}).forEach(([kind, message]) => {
+      if (message) notifications.show({ color: FLASH_COLORS[kind] ?? 'gray', message });
+    });
+  }, [flash]);
+
+  return null;
+}
+
+export function AppLayout({ children, presence = 'online', wide = false }: AppLayoutProps) {
   const { current_user: user, branding } = useSharedProps();
   useMainChannel(presence);
   useInvitesChannel(!user.is_guest);
+  useSyncSoundMute();
 
   // Mirrors the legacy header: brand on the left; GitHub, online count, theme and the user menu on the right.
   return (
     <AppShell header={{ height: 56 }}>
       <DeployBanner />
+      <FlashToasts />
       <AppShell.Header className={classes.header}>
         <Container size="xl" h="100%">
           <Group h="100%" justify="space-between" wrap="nowrap">
@@ -232,6 +255,7 @@ export function AppLayout({ children, presence = 'online' }: AppLayoutProps) {
                   <InvitesMenu />
                 </>
               )}
+              <SoundToggle />
               <ColorSchemeToggle />
               <UserMenu />
             </Group>
@@ -240,7 +264,7 @@ export function AppLayout({ children, presence = 'online' }: AppLayoutProps) {
       </AppShell.Header>
 
       <AppShell.Main>
-        <Container size="xl" py="lg">
+        <Container size={wide ? 1680 : 'xl'} py="lg">
           {children}
         </Container>
       </AppShell.Main>
