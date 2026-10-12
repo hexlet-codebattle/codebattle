@@ -374,18 +374,19 @@ defmodule Codebattle.Tournament.SwissTest do
   end
 
   defp build_live_tournament(attrs) do
-    tournament_id = System.unique_integer([:positive, :monotonic])
-
-    tournament =
-      :tournament
-      |> insert(
-        id: tournament_id,
+    # A sequence id, not a made-up one: see the ladder test's build_live_tournament/1.
+    %{id: tournament_id} =
+      inserted =
+      insert(:tournament,
         type: "swiss",
         ranking_type: "by_user",
         state: "active",
         rounds_limit: 3,
         use_infinite_break: true
       )
+
+    tournament =
+      inserted
       |> Map.merge(%{
         current_round_position: 0,
         module: Swiss,
@@ -398,6 +399,11 @@ defmodule Codebattle.Tournament.SwissTest do
       |> Map.merge(attrs)
 
     on_exit(fn ->
+      # Driving Server callbacks directly may write the tournament info cache.
+      if :ets.whereis(:tournament_info_cache) != :undefined do
+        :ets.delete(:tournament_info_cache, tournament_id)
+      end
+
       Enum.each(
         [
           tournament.players_table,

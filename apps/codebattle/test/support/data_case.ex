@@ -47,7 +47,19 @@ defmodule Codebattle.DataCase do
       |> Enum.each(fn {id, _pid, _type, _modules} ->
         Supervisor.terminate_child(supervisor, id)
         Supervisor.delete_child(supervisor, id)
+        forget_tournament_info(supervisor, id)
       end)
     end
   end
+
+  # A tournament server that starts and finds its id in the info cache assumes it crashed
+  # and restores itself in the background. Stopping servers between tests must not leave
+  # such entries behind for a later tournament that gets the same id.
+  defp forget_tournament_info(Codebattle.Tournament.GlobalSupervisor, id) do
+    if :ets.whereis(:tournament_info_cache) != :undefined do
+      :ets.delete(:tournament_info_cache, String.to_integer(id))
+    end
+  end
+
+  defp forget_tournament_info(_supervisor, _id), do: :ok
 end

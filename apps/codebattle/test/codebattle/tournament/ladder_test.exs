@@ -722,12 +722,12 @@ defmodule Codebattle.Tournament.LadderTest do
   end
 
   defp build_live_tournament(attrs) do
-    tournament_id = System.unique_integer([:positive, :monotonic])
-
-    tournament =
-      :tournament
-      |> insert(
-        id: tournament_id,
+    # The id comes from the database sequence like any other tournament's: a made-up id can
+    # collide with a tournament a later test creates, and a cache entry left under it makes
+    # that tournament's server believe it crashed and restore itself mid-test.
+    %{id: tournament_id} =
+      inserted =
+      insert(:tournament,
         type: "ladder",
         ranking_type: "by_user",
         score_strategy: "static_base_score",
@@ -735,6 +735,9 @@ defmodule Codebattle.Tournament.LadderTest do
         state: "active",
         rounds_limit: 3
       )
+
+    tournament =
+      inserted
       |> Map.merge(%{
         current_round_position: 0,
         module: Ladder,
@@ -747,6 +750,11 @@ defmodule Codebattle.Tournament.LadderTest do
       |> Map.merge(attrs)
 
     on_exit(fn ->
+      # Driving Server callbacks directly writes the tournament info cache.
+      if :ets.whereis(:tournament_info_cache) != :undefined do
+        :ets.delete(:tournament_info_cache, tournament_id)
+      end
+
       Enum.each(
         [
           tournament.players_table,
