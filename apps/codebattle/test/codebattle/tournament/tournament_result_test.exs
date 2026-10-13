@@ -956,65 +956,12 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                }
              ] = TournamentResult.get_top_user_by_task_ranking(tournament, task1.id)
 
-      assert [%{start: 100, end: 100, wins_count: 0}] ==
-               TournamentResult.get_task_duration_distribution(tournament, task1.id)
-
-      assert [
-               %{end: 11, start: 10, wins_count: 1},
-               %{end: 12, start: 11, wins_count: 0},
-               %{end: 13, start: 12, wins_count: 1},
-               %{end: 13, start: 13, wins_count: 0},
-               %{start: 13, end: 14, wins_count: 0},
-               %{start: 14, end: 15, wins_count: 1},
-               %{start: 15, end: 15, wins_count: 0},
-               %{start: 15, end: 16, wins_count: 0},
-               %{start: 16, end: 17, wins_count: 1},
-               %{start: 17, end: 17, wins_count: 0},
-               %{start: 17, end: 18, wins_count: 0},
-               %{start: 18, end: 19, wins_count: 1},
-               %{start: 19, end: 19, wins_count: 0},
-               %{start: 19, end: 20, wins_count: 0},
-               %{start: 20, end: 21, wins_count: 1},
-               %{start: 21, end: 21, wins_count: 0}
-             ] == TournamentResult.get_task_duration_distribution(tournament, task2.id)
-
-      assert [
-               %{end: 111, start: 100, wins_count: 1},
-               %{end: 122, start: 111, wins_count: 1},
-               %{end: 133, start: 122, wins_count: 0},
-               %{end: 143, start: 133, wins_count: 1},
-               %{end: 154, start: 143, wins_count: 0},
-               %{end: 165, start: 154, wins_count: 1},
-               %{end: 175, start: 165, wins_count: 0},
-               %{end: 186, start: 175, wins_count: 1},
-               %{end: 197, start: 186, wins_count: 0},
-               %{end: 207, start: 197, wins_count: 1},
-               %{end: 218, start: 207, wins_count: 0},
-               %{start: 218, end: 229, wins_count: 1},
-               %{start: 229, end: 239, wins_count: 0},
-               %{start: 239, end: 250, wins_count: 1},
-               %{start: 250, end: 261, wins_count: 1},
-               %{start: 261, end: 271, wins_count: 0}
-             ] == TournamentResult.get_task_duration_distribution(tournament, task3.id)
-
-      assert [
-               %{end: 174, start: 100, wins_count: 1},
-               %{end: 247, start: 174, wins_count: 1},
-               %{end: 320, start: 247, wins_count: 0},
-               %{end: 394, start: 320, wins_count: 0},
-               %{end: 467, start: 394, wins_count: 1},
-               %{end: 540, start: 467, wins_count: 0},
-               %{end: 614, start: 540, wins_count: 1},
-               %{end: 687, start: 614, wins_count: 0},
-               %{end: 760, start: 687, wins_count: 0},
-               %{end: 834, start: 760, wins_count: 1},
-               %{start: 834, end: 907, wins_count: 0},
-               %{start: 907, end: 980, wins_count: 0},
-               %{start: 980, end: 1054, wins_count: 1},
-               %{start: 1054, end: 1127, wins_count: 0},
-               %{start: 1127, end: 1200, wins_count: 0},
-               %{start: 1200, end: 1274, wins_count: 1}
-             ] == TournamentResult.get_task_duration_distribution(tournament, task4.id)
+      # Solve-time charts run from 0 to the task's time to solve (180s by default), stretched
+      # when a solve took longer; every winning solve lands in exactly one bucket.
+      assert_duration_distribution(TournamentResult.get_task_duration_distribution(tournament, task1.id), 180, 1)
+      assert_duration_distribution(TournamentResult.get_task_duration_distribution(tournament, task2.id), 180, 6)
+      assert_duration_distribution(TournamentResult.get_task_duration_distribution(tournament, task3.id), 260, 9)
+      assert_duration_distribution(TournamentResult.get_task_duration_distribution(tournament, task4.id), 1200, 7)
 
       assert [
                %{
@@ -1424,5 +1371,17 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       unsupported = %{type: "individual", ranking_type: "by_user"}
       assert TournamentUserResult.upsert_results(unsupported) == unsupported
     end
+  end
+
+  defp assert_duration_distribution(buckets, scale_max, solves) do
+    assert hd(buckets).start == 0
+    assert List.last(buckets).end == scale_max
+    assert length(buckets) <= 20
+
+    buckets
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.each(fn [left, right] -> assert left.end == right.start end)
+
+    assert buckets |> Enum.map(& &1.wins_count) |> Enum.sum() == solves
   end
 end

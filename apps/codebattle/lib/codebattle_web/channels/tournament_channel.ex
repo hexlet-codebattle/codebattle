@@ -191,7 +191,7 @@ defmodule CodebattleWeb.TournamentChannel do
     task =
       task_id
       |> Codebattle.Task.get()
-      |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
+      |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples, :time_to_solve_sec, :base_score])
 
     {:reply, {:ok, task}, socket}
   end

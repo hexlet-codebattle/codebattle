@@ -7,8 +7,10 @@ import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
 import { formatSeconds } from '@/features/tasks/shared';
 import { LangIcon } from '@/shared/LangIcon';
+import { useSharedProps } from '@/shared/useSharedProps';
 import { Markdown } from '@/shared/Markdown';
 
+import { useTournamentStore } from '../store';
 import type { Tournament } from '../types';
 import type { TournamentApi } from '../useTournament';
 
@@ -315,6 +317,8 @@ interface TaskInfo {
   name: string;
   description_en: string | null;
   description_ru: string | null;
+  time_to_solve_sec: number | null;
+  base_score: number | null;
 }
 
 interface TopTaskUser {
@@ -335,6 +339,56 @@ interface DurationBucket {
   wins_count: number;
 }
 
+/**
+ * Winners' solve times on a fixed 0 … time-to-solve scale (the server's buckets), with
+ * quarter ticks and the viewer's own solve marked.
+ */
+function DurationChart({ buckets, myDuration }: { buckets: DurationBucket[]; myDuration: number | null }) {
+  const { t } = useTranslation();
+  const scale = buckets[buckets.length - 1].end || 1;
+  const maxWins = Math.max(1, ...buckets.map((bucket) => bucket.wins_count));
+  const mine = myDuration != null ? Math.min(100, (myDuration / scale) * 100) : null;
+  const inBucket = (bucket: DurationBucket, index: number) =>
+    myDuration != null && myDuration >= bucket.start && (myDuration < bucket.end || index === buckets.length - 1);
+
+  return (
+    <div className={classes.durationChart}>
+      <div className={classes.histogram}>
+        {buckets.map((bucket, index) => (
+          <Tooltip
+            key={bucket.start}
+            label={t('%{from}–%{to}: %{count} solved', {
+              from: formatSeconds(bucket.start),
+              to: formatSeconds(bucket.end),
+              count: bucket.wins_count,
+            })}
+          >
+            <div className={classes.histogramCol}>
+              <div
+                className={classes.histogramBar}
+                data-mine={inBucket(bucket, index) || undefined}
+                style={{ height: bucket.wins_count ? `${(bucket.wins_count / maxWins) * 100}%` : undefined }}
+              />
+            </div>
+          </Tooltip>
+        ))}
+        {mine != null && (
+          <div className={classes.myMarker} style={{ left: `${mine}%` }}>
+            <span className={classes.myLabel}>{t('You %{time}', { time: formatSeconds(myDuration!) })}</span>
+          </div>
+        )}
+      </div>
+      <div className={classes.axis}>
+        {[0, 0.25, 0.5, 0.75, 1].map((share) => (
+          <span key={share} style={{ left: `${share * 100}%` }} data-edge={share === 0 ? 'start' : share === 1 ? 'end' : undefined}>
+            {formatSeconds(Math.round(scale * share))}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** One task: how fast winners solved it and who was fastest (legacy TaskRankingAdvancedPanel). */
 export function TaskAdvancedPanel({
   tournament,
@@ -350,6 +404,8 @@ export function TaskAdvancedPanel({
   onSelectUser?: (id: number) => void;
 }) {
   const { t } = useTranslation();
+  const { current_user: me } = useSharedProps();
+  const matches = useTournamentStore((state) => state.matches);
   const [task, setTask] = useState<TaskInfo | null>(null);
   const [showDescription, setShowDescription] = useState(false);
   const top = usePanelResults<TopTaskUser>(api, tournament.state, { type: 'top_user_by_task_ranking', task_id: taskId });
@@ -364,7 +420,16 @@ export function TaskAdvancedPanel({
   }, [api, taskId]);
 
   const buckets = distribution.rows ?? [];
-  const maxWins = Math.max(1, ...buckets.map((bucket) => bucket.wins_count));
+  // The viewer's own winning solve on this task, if any (top list, else their matches).
+  const myDuration =
+    top.rows?.find((row) => row.user_id === me.id)?.duration_sec ??
+    Object.values(matches).find(
+      (match) =>
+        match.task_id === taskId &&
+        match.duration_sec != null &&
+        (match.player_results?.[me.id]?.result_percent ?? 0) >= 100,
+    )?.duration_sec ??
+    null;
 
   return (
     <Stack gap="md">
@@ -377,6 +442,16 @@ export function TaskAdvancedPanel({
           {task && (
             <Badge size="xs" variant="light" color={LEVEL_COLORS[task.level] ?? 'gray'}>
               {levelLabel(task.level)}
+            </Badge>
+          )}
+          {task?.base_score != null && (
+            <Badge size="xs" variant="default" tt="none">
+              {t('Base score %{score}', { score: task.base_score })}
+            </Badge>
+          )}
+          {task?.time_to_solve_sec != null && (
+            <Badge size="xs" variant="default" tt="none">
+              {t('Time limit %{time}', { time: formatSeconds(task.time_to_solve_sec) })}
             </Badge>
           )}
         </Group>
@@ -392,25 +467,7 @@ export function TaskAdvancedPanel({
         ) : buckets.length === 0 ? (
           <PanelMessage>{t('No results yet')}</PanelMessage>
         ) : (
-          <>
-            <div className={classes.histogram}>
-              {buckets.map((bucket) => (
-                <Tooltip key={bucket.start} label={`${formatSeconds(bucket.start)}–${formatSeconds(bucket.end)}: ${bucket.wins_count}`}>
-                  <div className={classes.histogramCol}>
-                    <div className={classes.histogramBar} style={{ height: `${(bucket.wins_count / maxWins) * 100}%` }} />
-                  </div>
-                </Tooltip>
-              ))}
-            </div>
-            <Group justify="space-between" mt={4}>
-              <Text size="xs" c="dimmed" ff="monospace">
-                {formatSeconds(buckets[0].start)}
-              </Text>
-              <Text size="xs" c="dimmed" ff="monospace">
-                {formatSeconds(buckets[buckets.length - 1].end)}
-              </Text>
-            </Group>
-          </>
+          <DurationChart buckets={buckets} myDuration={myDuration} />
         )}
       </Paper>
 

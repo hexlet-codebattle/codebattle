@@ -5240,3 +5240,15 @@ msgstr "из %{count}"
 
 msgid "LIVE"
 msgstr "LIVE"
+
+msgid "Base score %{score}"
+msgstr "Базовые очки %{score}"
+
+msgid "Time limit %{time}"
+msgstr "Лимит %{time}"
+
+msgid "%{from}–%{to}: %{count} solved"
+msgstr "%{from}–%{to}: решили %{count}"
+
+msgid "You %{time}"
+msgstr "Вы %{time}"

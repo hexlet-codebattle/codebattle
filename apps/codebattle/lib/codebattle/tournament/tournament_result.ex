@@ -803,55 +803,53 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> map_repo_result()
   end
 
+  @doc """
+  How long the winners took on a task: their solve times (seconds) in equal-width buckets
+  on a fixed scale from 0 to the task's time to solve (stretched if a solve took longer),
+  so charts of different tasks and tournaments read the same. At most 20 buckets, never
+  narrower than a second; the scale's end belongs to the last bucket. No solves, no rows.
+  """
   def get_task_duration_distribution(tournament, task_id) do
     """
-    WITH DurationStats AS (
-    SELECT
-        MIN(duration_sec) AS min_duration,
-        MAX(duration_sec) AS max_duration
-    FROM
-        tournament_results
-    WHERE
-        tournament_id = $1
+    WITH solves AS (
+      SELECT duration_sec
+      FROM tournament_results
+      WHERE tournament_id = $1
         AND task_id = $2
         AND result_percent = 100.0
         AND score > 0
+        AND duration_sec IS NOT NULL
     ),
-    IntervalParams AS (
-    SELECT
-        min_duration,
-        max_duration,
-        15 AS num_intervals,
-        (max_duration - min_duration) / 15.0 AS interval_step
-    FROM
-        DurationStats
+    params AS (
+      SELECT scale_max, LEAST(20, scale_max) AS buckets
+      FROM (
+        SELECT GREATEST(
+          COALESCE((SELECT time_to_solve_sec FROM tasks WHERE id = $2), 0),
+          COALESCE(MAX(duration_sec), 0),
+          1
+        ) AS scale_max
+        FROM solves
+      ) scale
+      WHERE EXISTS (SELECT 1 FROM solves)
     ),
-    Intervals AS (
-    SELECT
-        min_duration + (interval_step * generate_series) AS interval_start,
-        min_duration + (interval_step * (generate_series + 1)) AS interval_end
-    FROM
-        IntervalParams,
-        generate_series(0, 15)
+    intervals AS (
+      SELECT
+        idx,
+        buckets,
+        scale_max * idx::numeric / buckets AS interval_start,
+        scale_max * (idx + 1)::numeric / buckets AS interval_end
+      FROM params, generate_series(0, buckets - 1) AS idx
     )
     SELECT
-      CEIL(interval_start)::int AS start,
-      CEIL(interval_end)::int AS end,
-      COUNT(tr.duration_sec) AS wins_count
-    FROM
-      Intervals
-    LEFT JOIN
-      tournament_results tr
-    ON
-      tr.duration_sec >= interval_start
-      AND tr.duration_sec < interval_end
-      AND tr.task_id = $2
-      AND tr.result_percent = 100.0
-      AND tr.tournament_id = $1
-    GROUP BY
-      interval_start, interval_end
-    ORDER BY
-      interval_start
+      ROUND(interval_start)::int AS start,
+      ROUND(interval_end)::int AS end,
+      COUNT(solves.duration_sec)::int AS wins_count
+    FROM intervals
+    LEFT JOIN solves
+      ON solves.duration_sec >= interval_start
+      AND (solves.duration_sec < interval_end OR (idx = buckets - 1 AND solves.duration_sec <= interval_end))
+    GROUP BY idx, interval_start, interval_end
+    ORDER BY idx
     """
     |> Repo.query!([tournament.id, task_id])
     |> map_repo_result()

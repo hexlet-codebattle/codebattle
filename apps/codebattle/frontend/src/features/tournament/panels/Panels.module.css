@@ -40,13 +40,65 @@
   font-weight: 600;
 }
 
-/* Winners' solve-time histogram (16 buckets). */
+/* Winners' solve-time histogram on a 0 … time-to-solve scale. */
+.durationChart {
+  padding-top: 18px;
+}
+
 .histogram {
+  position: relative;
   display: flex;
   align-items: flex-end;
-  gap: 3px;
+  gap: 2px;
   height: 140px;
   border-bottom: 1px solid var(--cb-border);
+}
+
+/* The viewer's solve: a line across the chart with its time on top. */
+.myMarker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed var(--cb-success);
+  pointer-events: none;
+}
+
+.myLabel {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  transform: translate(-50%, -4px);
+  padding: 0 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--cb-success);
+}
+
+.axis {
+  position: relative;
+  height: 16px;
+  margin-top: 4px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 10px;
+  color: var(--cb-text-muted);
+
+  & > span {
+    position: absolute;
+    transform: translateX(-50%);
+
+    &[data-edge='start'] {
+      transform: none;
+    }
+
+    &[data-edge='end'] {
+      transform: translateX(-100%);
+    }
+  }
 }
 
 .histogramCol {
@@ -56,16 +108,20 @@
   align-items: flex-end;
 
   &:hover .histogramBar {
-    background: var(--cb-success);
+    background: var(--mantine-color-blue-5);
   }
 }
 
 .histogramBar {
   width: 100%;
-  min-height: 2px;
+  min-height: 0;
   border-radius: 3px 3px 0 0;
   background: color-mix(in srgb, var(--mantine-color-blue-4) 70%, transparent);
   transition: background 120ms ease;
+
+  &[data-mine] {
+    background: var(--cb-success);
+  }
 }
 
 /* Panel tabs: a single scrolling row. */

@@ -4023,3 +4023,15 @@ msgstr "of %{count}"
 
 msgid "LIVE"
 msgstr "LIVE"
+
+msgid "Base score %{score}"
+msgstr "Base score %{score}"
+
+msgid "Time limit %{time}"
+msgstr "Time limit %{time}"
+
+msgid "%{from}–%{to}: %{count} solved"
+msgstr "%{from}–%{to}: %{count} solved"
+
+msgid "You %{time}"
+msgstr "You %{time}"
