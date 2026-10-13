@@ -8,6 +8,7 @@ import { useFollowStore } from '@/features/main/store';
 import { usePresenceStore } from '@/features/presence/store';
 import { PRESENCE_LABELS } from '@/features/users/achievements';
 import { getLocale } from '@/i18n';
+import { parseServerDate } from '@/shared/date';
 import { formatAgo } from '@/shared/formatAgo';
 import { LangIcon } from '@/shared/LangIcon';
 import { UserAvatar } from '@/shared/UserAvatar';
@@ -72,7 +73,7 @@ export function ProfileHeader({ profile }: { profile: ProfileStats }) {
             </Text>
           </Group>
           <Text size="xs" c="dimmed">
-            {t('joined at %{date}', { date: joinedFormat().format(new Date(user.inserted_at)) })}
+            {t('joined at %{date}', { date: joinedFormat().format(parseServerDate(user.inserted_at)) })}
           </Text>
           {user.github_name && (
             <Anchor

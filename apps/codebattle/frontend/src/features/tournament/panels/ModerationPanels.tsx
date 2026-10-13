@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { UserCard } from '@/features/users/UserCard';
 import { getLocale } from '@/i18n';
+import { parseServerDate } from '@/shared/date';
 import { LangIcon } from '@/shared/LangIcon';
 
 import { useTournamentStore } from '../store';
@@ -18,7 +19,7 @@ const REPORT_STATES = ['pending', 'processed', 'confirmed', 'denied'];
 
 const dateTime = (value: string) =>
   new Intl.DateTimeFormat(getLocale(), { dateStyle: 'short', timeStyle: 'medium', hour12: false }).format(
-    new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(value) ? value : `${value}Z`),
+    parseServerDate(value),
   );
 
 function PlayerName({ id, players }: { id: number; players: Record<number, Player> }) {

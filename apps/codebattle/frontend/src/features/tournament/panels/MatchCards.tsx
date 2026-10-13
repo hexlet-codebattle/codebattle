@@ -8,6 +8,7 @@ import type { GameLevel } from '@/features/lobby/types';
 import { formatSeconds } from '@/features/tasks/shared';
 import { UserCard } from '@/features/users/UserCard';
 import { getLocale } from '@/i18n';
+import { parseServerDate } from '@/shared/date';
 import { LangIcon } from '@/shared/LangIcon';
 
 import { useTournamentStore } from '../store';
@@ -21,7 +22,7 @@ import classes from './MatchList.module.css';
 const time = (value: string | null) =>
   value
     ? new Intl.DateTimeFormat(getLocale(), { hour: '2-digit', minute: '2-digit', hour12: false }).format(
-        new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(value) ? value : `${value}Z`),
+        parseServerDate(value),
       )
     : null;
 

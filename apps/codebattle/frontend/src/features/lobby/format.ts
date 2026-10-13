@@ -1,4 +1,5 @@
 import { getLocale, t } from '@/i18n';
+import { parseServerDate } from '@/shared/date';
 
 import type { GameLevel, LobbyGame, LobbyPlayer, TournamentGrade } from './types';
 
@@ -47,8 +48,8 @@ export function tournamentTitle(name: string, grade: TournamentGrade) {
     : name;
 }
 
-// Server datetimes are UTC; NaiveDateTime values come without a zone suffix.
-export const parseUtc = (value: string) => new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(value) ? value : `${value}Z`);
+// Server datetimes are UTC (NaiveDateTime values come without a zone suffix); bare dates are local days.
+export const parseUtc = parseServerDate;
 
 // Formatters follow the app locale (not the browser's), in the viewer's timezone.
 const formatters = new Map<string, Intl.DateTimeFormat>();

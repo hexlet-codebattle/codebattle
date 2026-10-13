@@ -5252,3 +5252,6 @@ msgstr "%{from}–%{to}: решили %{count}"
 
 msgid "You %{time}"
 msgstr "Вы %{time}"
+
+msgid "Reload page"
+msgstr "Перезагрузить страницу"

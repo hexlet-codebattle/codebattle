@@ -22,6 +22,7 @@ import { getLocale } from '@/i18n';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import { gradeLabel, tournamentTitle } from '@/features/lobby/format';
 import { formatSeconds } from '@/features/tasks/shared';
+import { parseServerDate } from '@/shared/date';
 import { LangIcon } from '@/shared/LangIcon';
 import { UserAvatar } from '@/shared/UserAvatar';
 
@@ -212,7 +213,7 @@ function GradeTable({ stats }: { stats: PlayerStats['grade_stats'] }) {
 }
 
 const shortDate = (value: string) =>
-  new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(value) ? value : `${value}Z`).toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' });
+  parseServerDate(value).toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' });
 
 function TournamentsTable({ tournaments }: { tournaments: PlayerStats['recent_tournaments'] }) {
   const { t } = useTranslation();

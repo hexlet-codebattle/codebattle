@@ -21,4 +21,4 @@ export interface ClanMember {
 }
 
 /** Server NaiveDateTimes come without a zone; they are UTC. */
-export const utc = (value: string) => (/[zZ]|[+-]\d\d:?\d\d$/.test(value) ? value : `${value}Z`);
+export { toIso as utc } from '@/shared/date';

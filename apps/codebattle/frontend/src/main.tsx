@@ -4,6 +4,7 @@ import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { initI18n } from '@/i18n';
+import { ErrorBoundary } from '@/shared/ErrorBoundary';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
 type PageModule = { default: ComponentType };
@@ -40,7 +41,9 @@ void createInertiaApp({
     createRoot(el).render(
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <App {...props} />
+          <ErrorBoundary>
+            <App {...props} />
+          </ErrorBoundary>
         </QueryClientProvider>
       </ThemeProvider>,
     );
