@@ -20,6 +20,7 @@
     "i18next": "^26.4.3",
     "katex": "^0.19.0",
     "phoenix": "^1.8.15",
+    "qrcode.react": "^4.2.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-i18next": "^17.0.16",

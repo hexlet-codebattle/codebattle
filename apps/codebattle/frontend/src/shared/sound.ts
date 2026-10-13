@@ -94,10 +94,15 @@ function storedMute() {
 interface SoundState {
   muted: boolean;
   setMuted: (muted: boolean) => void;
+  /** The account's sound settings (theme and levels), seeded from the shared props. */
+  settings: Pick<SoundSettings, 'type' | 'level' | 'tournament_level'>;
+  setSettings: (settings: Partial<SoundState['settings']>) => void;
 }
 
 export const useSoundStore = create<SoundState>((set) => ({
   muted: storedMute(),
+  settings: { type: 'dendy', level: 7, tournament_level: 7 },
+  setSettings: (settings) => set((state) => ({ settings: { ...state.settings, ...settings } })),
   setMuted: (muted) => {
     try {
       localStorage.setItem(MUTE_KEY, String(muted));
@@ -110,3 +115,29 @@ export const useSoundStore = create<SoundState>((set) => ({
 }));
 
 Howler.mute(useSoundStore.getState().muted);
+
+// Tournament cues (legacy config/tournamentSounds.ts), played at the tournament level.
+const TOURNAMENT_SOUNDS = {
+  started: '/assets/audio/tournament/tournament_start.wav',
+  roundStarted: '/assets/audio/tournament/round_start.wav',
+  roundFinished: '/assets/audio/tournament/round_finish.wav',
+  finished: '/assets/audio/tournament/tournament_finish.wav',
+} as const;
+
+export type TournamentSound = keyof typeof TOURNAMENT_SOUNDS;
+
+const tournamentPlayers = new Map<TournamentSound, Howl>();
+
+/** Plays a tournament cue unless sound is muted or the theme is silent. */
+export function playTournamentSound(sound: TournamentSound) {
+  const { muted, settings } = useSoundStore.getState();
+  if (muted || settings.type === 'silent') return;
+
+  let howl = tournamentPlayers.get(sound);
+  if (!howl) {
+    howl = new Howl({ src: [TOURNAMENT_SOUNDS[sound]] });
+    tournamentPlayers.set(sound, howl);
+  }
+  const id = howl.play();
+  howl.volume(Math.max(0, Math.min(settings.tournament_level ?? settings.level, 10)) / 10, id);
+}

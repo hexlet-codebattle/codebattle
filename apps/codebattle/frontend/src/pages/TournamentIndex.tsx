@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { Button, Group, Stack, Tabs, Text } from '@mantine/core';
+import { Box, Button, Group, ScrollArea, Stack, Tabs, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconBook2,
@@ -42,6 +42,19 @@ function tabFromHash(isAdmin: boolean): Tab {
   return hash;
 }
 
+function TabLabel({ long, short }: { long: string; short: string }) {
+  return (
+    <>
+      <Box component="span" visibleFrom="sm">
+        {long}
+      </Box>
+      <Box component="span" hiddenFrom="sm">
+        {short}
+      </Box>
+    </>
+  );
+}
+
 export default function TournamentIndex() {
   const { t } = useTranslation();
   const { current_user: me, last_tournament: lastTournament, task_pack_names: taskPackNames = [] } =
@@ -78,25 +91,28 @@ export default function TournamentIndex() {
       <Tabs value={tab} onChange={select} keepMounted={false}>
         <Stack gap="md">
           <Group justify="space-between" gap="md">
-            <Tabs.List>
-              <Tabs.Tab value="contest" leftSection={<IconCalendarEvent size={16} />}>
-                {t('Calendar')}
-              </Tabs.Tab>
-              <Tabs.Tab value="list" leftSection={<IconHistory size={16} />}>
-                {t('History')}
-              </Tabs.Tab>
-              <Tabs.Tab value="my" leftSection={<IconUser size={16} />}>
-                {t('My Tournaments')}
-              </Tabs.Tab>
-              {isAdmin && (
-                <Tabs.Tab value="all" leftSection={<IconListDetails size={16} />}>
-                  {t('All Tournaments')}
+            {/* One row on phones: scrolls sideways with short labels instead of wrapping. */}
+            <ScrollArea type="never" className={classes.tabsScroll}>
+              <Tabs.List className={classes.tabsList}>
+                <Tabs.Tab value="contest" leftSection={<IconCalendarEvent size={16} />}>
+                  {t('Calendar')}
                 </Tabs.Tab>
-              )}
-              <Tabs.Tab value="create" leftSection={<IconPlus size={16} />}>
-                {t('Create tournament')}
-              </Tabs.Tab>
-            </Tabs.List>
+                <Tabs.Tab value="list" leftSection={<IconHistory size={16} />}>
+                  {t('History')}
+                </Tabs.Tab>
+                <Tabs.Tab value="my" leftSection={<IconUser size={16} />}>
+                  <TabLabel long={t('My Tournaments')} short={t('Mine')} />
+                </Tabs.Tab>
+                {isAdmin && (
+                  <Tabs.Tab value="all" leftSection={<IconListDetails size={16} />}>
+                    <TabLabel long={t('All Tournaments')} short={t('All')} />
+                  </Tabs.Tab>
+                )}
+                <Tabs.Tab value="create" leftSection={<IconPlus size={16} />}>
+                  <TabLabel long={t('Create tournament')} short={t('Create')} />
+                </Tabs.Tab>
+              </Tabs.List>
+            </ScrollArea>
             {tab !== 'create' && (
               <div className={classes.legend}>
                 {LEAGUE_GRADES.map(({ grade }) => (

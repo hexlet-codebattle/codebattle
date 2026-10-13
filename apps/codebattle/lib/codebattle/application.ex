@@ -20,6 +20,7 @@ defmodule Codebattle.Application do
         {ChromicPDF, chromic_pdf_opts()},
         Supervisor.child_spec({Cachex, name: :season_cache}, id: :season_cache),
         Supervisor.child_spec({Cachex, name: :github_stats_cache}, id: :github_stats_cache),
+        Supervisor.child_spec({Cachex, name: :tournament_stats_cache}, id: :tournament_stats_cache),
         Supervisor.child_spec(
           {Cachex, name: :password_attempts_cache},
           id: :password_attempts_cache

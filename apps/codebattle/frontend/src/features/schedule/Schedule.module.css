@@ -3,6 +3,38 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px 14px;
+
+  /* The calendar chips carry the grade colours; phones don't need the key. */
+  @media (max-width: $mantine-breakpoint-sm) {
+    display: none;
+  }
+}
+
+.tabsScroll {
+  /* Lets the row shrink inside the header group and scroll instead of overflowing. */
+  min-width: 0;
+  max-width: 100%;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    /* Full-bleed strip so the last tab can scroll fully into view. */
+    width: 100%;
+  }
+}
+
+/* Nested under .tabsScroll to outrank Mantine's own wrapping list styles. */
+.tabsScroll .tabsList {
+  flex-wrap: nowrap;
+
+  & > button {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    & > button {
+      padding-inline: 12px;
+    }
+  }
 }
 
 /* Month grid: weekday header + 6 weeks of day cells. */

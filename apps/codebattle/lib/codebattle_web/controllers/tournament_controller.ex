@@ -136,6 +136,7 @@ defmodule CodebattleWeb.TournamentController do
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
+    |> CodebattleWeb.NewFrontend.maybe_put_layout()
     |> render_inertia("TournamentRoom", %{
       "tournament_id" => tournament.id,
       "event_id" => tournament.event_id,
@@ -143,9 +144,7 @@ defmodule CodebattleWeb.TournamentController do
     })
   end
 
-  # Shaped to match TournamentForm's field names so the "Use my last tournament's
-  # settings" button can prefill the form. `starts_at` is intentionally omitted
-  # (it must be a future time the organizer picks anew).
+  # The edit form's values: the same settings plus identity and the current start time.
   defp edit_tournament_json(tournament) do
     creator = tournament.creator_id && User.get(tournament.creator_id)
 
@@ -159,6 +158,9 @@ defmodule CodebattleWeb.TournamentController do
     })
   end
 
+  # Shaped to match TournamentForm's field names so the "Use my last tournament's
+  # settings" button can prefill the form. `starts_at` is intentionally omitted
+  # (it must be a future time the organizer picks anew).
   defp last_tournament_json(nil), do: nil
 
   defp last_tournament_json(tournament) do

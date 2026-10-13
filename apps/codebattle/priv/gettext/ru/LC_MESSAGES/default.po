@@ -4955,3 +4955,288 @@ msgstr "Турнир обновлён"
 
 msgid "by"
 msgstr "автор"
+
+msgid "Mine"
+msgstr "Мои"
+
+msgid "%{count} rounds"
+msgstr "Раундов: %{count}"
+
+msgid "About"
+msgstr "О турнире"
+
+msgid "Banned"
+msgstr "Забанен"
+
+msgid "Break: the next round starts soon."
+msgstr "Перерыв: следующий раунд скоро начнётся."
+
+msgid "Cancel the tournament? This cannot be undone."
+msgstr "Отменить турнир? Это нельзя отменить."
+
+msgid "Chat"
+msgstr "Чат"
+
+msgid "Couldn't load the ranking."
+msgstr "Не удалось загрузить рейтинг."
+
+msgid "Couldn't load the results."
+msgstr "Не удалось загрузить результаты."
+
+msgid "Final round ends in"
+msgstr "Финальный раунд закончится через"
+
+msgid "Find me"
+msgstr "Найти меня"
+
+msgid "Finish the tournament now? Running games are stopped."
+msgstr "Завершить турнир сейчас? Текущие игры остановятся."
+
+msgid "Finishing the round…"
+msgstr "Раунд завершается…"
+
+msgid "In the pool, waiting for an opponent…"
+msgstr "В пуле, ждём соперника…"
+
+msgid "Invite link"
+msgstr "Ссылка-приглашение"
+
+msgid "It may be private: open it with the invite link from the organizer."
+msgstr "Возможно, он приватный: откройте его по ссылке от организатора."
+
+msgid "Join now and get notified when it starts."
+msgstr "Присоединяйтесь сейчас — мы сообщим о старте."
+
+msgid "Kick"
+msgstr "Исключить"
+
+msgid "Kick %{name} from the tournament?"
+msgstr "Исключить %{name} из турнира?"
+
+msgid "Make the tournament public?"
+msgstr "Сделать турнир публичным?"
+
+msgid "Manage tournament"
+msgstr "Управление турниром"
+
+msgid "My matches"
+msgstr "Мои матчи"
+
+msgid "Next matchmaking in"
+msgstr "Следующий подбор через"
+
+msgid "Next round in"
+msgstr "Следующий раунд через"
+
+msgid "No matches in this round yet."
+msgstr "В этом раунде пока нет матчей."
+
+msgid "No matches yet. They show up here when a round starts."
+msgstr "Матчей пока нет. Они появятся здесь, когда начнётся раунд."
+
+msgid "No players yet."
+msgstr "Игроков пока нет."
+
+msgid "Nobody has joined yet. Be the first!"
+msgstr "Пока никто не присоединился. Будьте первым!"
+
+msgid "Open now"
+msgstr "Открыть сейчас"
+
+msgid "Pairing players…"
+msgstr "Подбираем пары…"
+
+msgid "Private: joins by invite link"
+msgstr "Приватный: вход по ссылке-приглашению"
+
+msgid "Reconnecting…"
+msgstr "Переподключение…"
+
+msgid "Restart from scratch? All results of this tournament are lost."
+msgstr "Начать заново? Все результаты турнира будут потеряны."
+
+msgid "Results"
+msgstr "Результаты"
+
+msgid "Results coming soon"
+msgstr "Результаты скоро"
+
+msgid "Round ends in"
+msgstr "Раунд закончится через"
+
+msgid "Sign in to join the tournament."
+msgstr "Войдите, чтобы участвовать в турнире."
+
+msgid "Start the next round now?"
+msgstr "Начать следующий раунд сейчас?"
+
+msgid "Start the tournament for %{count} players?"
+msgstr "Начать турнир для %{count} игроков?"
+
+msgid "Stay here"
+msgstr "Остаться"
+
+msgid "The game opens automatically."
+msgstr "Игра откроется автоматически."
+
+msgid "The tournament is full."
+msgstr "Мест больше нет."
+
+msgid "The tournament is running, you can still jump in."
+msgstr "Турнир уже идёт, но ещё можно присоединиться."
+
+msgid "The tournament process isn't running. Restart it to continue."
+msgstr "Процесс турнира не запущен. Перезапустите его, чтобы продолжить."
+
+msgid "Too many players to list here."
+msgstr "Игроков слишком много для списка."
+
+msgid "Tournament not found"
+msgstr "Турнир не найден"
+
+msgid "Waiting for players"
+msgstr "Ждём игроков"
+
+msgid "Waiting for your next match."
+msgstr "Ждём ваш следующий матч."
+
+msgid "You played in this tournament."
+msgstr "Вы участвовали в этом турнире."
+
+msgid "You're in. The game opens here when the tournament starts."
+msgstr "Вы участвуете. Игра откроется здесь, когда турнир начнётся."
+
+msgid "Your next match is ready"
+msgstr "Ваш следующий матч готов"
+
+msgid "Raw JSON"
+msgstr "JSON"
+
+msgid "Hide JSON"
+msgstr "Скрыть JSON"
+
+msgid "Clan / Player"
+msgstr "Клан / игрок"
+
+msgid "Duration: %{seconds}s"
+msgstr "Длительность: %{seconds} с"
+
+msgid "Fastest"
+msgstr "Быстрее всех"
+
+msgid "Game #%{id}"
+msgstr "Игра #%{id}"
+
+msgid "Join the tournament to see your matches here."
+msgstr "Присоединитесь к турниру, чтобы видеть здесь свои матчи."
+
+msgid "No reports"
+msgstr "Жалоб нет"
+
+msgid "Panel"
+msgstr "Панель"
+
+msgid "Reason"
+msgstr "Причина"
+
+msgid "Score per player"
+msgstr "Очков на игрока"
+
+msgid "Slowest"
+msgstr "Медленнее всех"
+
+msgid "Solutions"
+msgstr "Решений"
+
+msgid "Statistics appear once the tournament starts."
+msgstr "Статистика появится, когда турнир начнётся."
+
+msgid "Task #%{id}"
+msgstr "Задача #%{id}"
+
+msgid "The leaderboard is published when the tournament ends. Live standings are in the ranking."
+msgstr "Итоговая таблица появится после окончания турнира. Текущее положение — в рейтинге."
+
+msgid "Total players: %{count}"
+msgstr "Всего игроков: %{count}"
+
+msgid "Total score"
+msgstr "Всего очков"
+
+msgid "Total: %{count}"
+msgstr "Всего: %{count}"
+
+msgid "You were marked for a fair play violation and are excluded from the results."
+msgstr "Вы отмечены за нарушение честной игры и исключены из результатов."
+
+msgid "cheater"
+msgstr "читер"
+
+msgid "confirmed"
+msgstr "подтверждена"
+
+msgid "copypaste"
+msgstr "копипаст"
+
+msgid "denied"
+msgstr "отклонена"
+
+msgid "pending"
+msgstr "на рассмотрении"
+
+msgid "player"
+msgstr "игрок"
+
+msgid "processed"
+msgstr "обработана"
+
+msgid "wrong_solution"
+msgstr "неверное решение"
+
+msgid "The tournament didn't respond. Try again in a moment."
+msgstr "Турнир не ответил. Попробуйте ещё раз чуть позже."
+
+msgid "The tournament isn't running right now. Joining reopens when an organizer restarts it."
+msgstr "Турнир сейчас не запущен. Присоединиться можно будет, когда организатор его перезапустит."
+
+msgid "Leave the tournament? You will be removed from the ranking and get no new matches."
+msgstr "Покинуть турнир? Вы исчезнете из рейтинга и больше не получите матчей."
+
+msgid "+%{count} other"
+msgstr "+%{count} прочих"
+
+msgid "in progress"
+msgstr "идёт"
+
+msgid "Moderation"
+msgstr "Модерация"
+
+msgid "Clans chart"
+msgstr "Кланы на графике"
+
+msgid "You : Opponent"
+msgstr "Вы : соперник"
+
+msgid "Wins / losses"
+msgstr "Победы / поражения"
+
+msgid "+%{count} no winner"
+msgstr "+%{count} без победителя"
+
+msgid "Task base score"
+msgstr "Базовые очки задачи"
+
+msgid "Tests passed"
+msgstr "Пройдено тестов"
+
+msgid "Your points : opponent's points"
+msgstr "Ваши очки : очки соперника"
+
+msgid "solved %{solved} of %{players}"
+msgstr "решили %{solved} из %{players}"
+
+msgid "of %{count}"
+msgstr "из %{count}"
+
+msgid "LIVE"
+msgstr "LIVE"

@@ -1,0 +1,306 @@
+/* Port of the legacy .cb-round-clock: ring countdown, eyebrow/title/hint, round counter,
+   a segmented round track and the ladder schedule footer. Accent follows the phase. */
+.clock {
+  --accent: var(--mantine-color-slate-4);
+  --accent-soft: color-mix(in srgb, var(--mantine-color-slate-4) 18%, transparent);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--cb-radius);
+  border: 1px solid var(--cb-border);
+  border-left: 3px solid var(--accent);
+  background:
+    linear-gradient(135deg, var(--accent-soft), transparent 65%),
+    var(--cb-panel);
+  box-shadow: var(--cb-shadow-panel);
+  color: var(--cb-text);
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+
+  &[data-phase='break'] {
+    --accent: var(--mantine-color-yellow-5);
+    --accent-soft: color-mix(in srgb, var(--mantine-color-yellow-5) 18%, transparent);
+  }
+
+  &[data-phase='final'] {
+    --accent: var(--mantine-color-orange-5);
+    --accent-soft: color-mix(in srgb, var(--mantine-color-orange-5) 18%, transparent);
+  }
+
+  &[data-phase='pairing'] {
+    --accent: var(--cb-success);
+    --accent-soft: color-mix(in srgb, var(--cb-success) 20%, transparent);
+  }
+
+  &[data-phase='finishing'] {
+    --accent: var(--mantine-color-slate-3);
+    --accent-soft: color-mix(in srgb, var(--mantine-color-slate-3) 16%, transparent);
+  }
+
+  &[data-urgent] {
+    --accent: var(--cb-danger);
+    --accent-soft: color-mix(in srgb, var(--cb-danger) 20%, transparent);
+  }
+
+  &[data-compact] {
+    gap: 0.45rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  /* Inside the tournament hero: no card chrome of its own. */
+  &[data-embedded] {
+    box-shadow: none;
+    background:
+      linear-gradient(135deg, var(--accent-soft), transparent 70%),
+      var(--cb-sunken);
+  }
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.ring {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+
+  & svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  [data-compact] & {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.ringTrack,
+.ringValue {
+  fill: none;
+  stroke-width: 5;
+}
+
+.ringTrack {
+  stroke: var(--cb-border);
+}
+
+.ringValue {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition:
+    stroke-dashoffset 0.25s linear,
+    stroke 0.3s ease;
+}
+
+.ringSpin {
+  transform-origin: 32px 32px;
+  animation: spin 1.1s linear infinite;
+}
+
+.ringLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cb-text-strong);
+  font-variant-numeric: tabular-nums;
+
+  [data-compact] & {
+    font-size: 0.7rem;
+  }
+
+  [data-urgent] & {
+    animation: pulse 1s ease-in-out infinite;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--cb-text-strong);
+  line-height: 1.3;
+
+  [data-compact] & {
+    font-size: 0.88rem;
+  }
+}
+
+.hint {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--cb-text-muted);
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: var(--cb-text);
+
+  & svg {
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+    color: var(--accent);
+  }
+}
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  line-height: 1.1;
+}
+
+.counterValue {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--cb-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.counterLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+/* Segmented round track: done | current | next (fills with the countdown) | upcoming */
+.track {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+}
+
+.segment {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 2px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--cb-border);
+
+  &[data-done] {
+    background: color-mix(in srgb, var(--cb-success) 75%, transparent);
+  }
+
+  &[data-current] {
+    background: var(--accent-soft);
+
+    & .fill {
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+  }
+
+  &[data-next] {
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px var(--accent-soft);
+  }
+
+  &[data-marked] {
+    overflow: visible;
+    box-shadow:
+      0 0 0 1px var(--cb-panel),
+      0 0 0 3px var(--cb-text-strong);
+  }
+
+  /* Before the start every round is planned, tinted with the accent. */
+  [data-preview] & {
+    background: var(--accent-soft);
+  }
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.25s linear;
+}
+
+.schedule {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  margin-top: -0.35rem;
+  font-size: 0.75rem;
+  color: var(--cb-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Solve counts ("5/8") under each round segment. */
+.trackWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.trackLabels {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+}
+
+.trackLabel {
+  flex: 1 1 0;
+  min-width: 2px;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--cb-text-muted);
+
+  &[data-current] {
+    color: var(--accent);
+    font-weight: 700;
+  }
+}

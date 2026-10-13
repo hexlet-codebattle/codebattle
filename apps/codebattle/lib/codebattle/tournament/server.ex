@@ -340,6 +340,35 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament_info, state}
   end
 
+  # Ladder: "Finish round" from the admin panel stops the games still playing and then
+  # follows the ladder's own drain path instead of the swiss round-finish machinery: a
+  # break of `break_duration_seconds` (whose end is published as `next_round_at`, so the
+  # clients' countdown is right) after which the break-over tick opens the next round —
+  # or, with no break or no rounds left, the tick runs right away.
+  def handle_call({:fire_event, :finish_round, _params}, _from, %{tournament: %{type: "ladder"} = tournament} = state) do
+    cond do
+      state.frozen ->
+        {:reply, {:error, :handoff_in_progress}, state}
+
+      tournament.state != "active" or in_break?(tournament) or finished?(tournament) ->
+        {:reply, tournament, state}
+
+      true ->
+        drained = tournament.module.finish_all_playing_matches(tournament)
+        update_tournament_info_cache(drained)
+        state = %{state | tournament: drained}
+
+        {:noreply, new_state} =
+          if drained.module.finish_tournament?(drained) or (drained.break_duration_seconds || 0) == 0 do
+            run_ladder_tick_now(state)
+          else
+            start_ladder_break(state)
+          end
+
+        {:reply, new_state.tournament, new_state}
+    end
+  end
+
   def handle_call({:fire_event, :finish_round, _params}, _from, %{tournament: tournament} = state) do
     cond do
       state.frozen ->
@@ -401,6 +430,7 @@ defmodule Codebattle.Tournament.Server do
         event_type
         |> maybe_arm_matchmaking_tick(%{state | tournament: new_tournament})
         |> maybe_schedule_round_finish_after(event_type)
+        |> maybe_close_empty_round(event_type)
 
       # TODO: rethink broadcasting during applying event, maybe put inside tournament module
       broadcast_tournament_event_by_type(event_type, params, new_tournament)
@@ -836,7 +866,7 @@ defmodule Codebattle.Tournament.Server do
       new_tournament = tournament.module.start_round_force(tournament)
       update_tournament_info_cache(new_tournament)
 
-      {:noreply, %{state | tournament: new_tournament, break_timer_expired: false}}
+      {:noreply, close_empty_round(%{state | tournament: new_tournament, break_timer_expired: false})}
     else
       # Computation still running — mark break as expired, wait for {:round_finish_completed}
       {:noreply, %{state | break_timer_expired: true}}
@@ -862,7 +892,7 @@ defmodule Codebattle.Tournament.Server do
         if finished?(new_tournament), do: new_tournament, else: tournament.module.start_round_force(new_tournament)
 
       update_tournament_info_cache(new_tournament)
-      {:noreply, %{state | tournament: new_tournament, break_timer_expired: false}}
+      {:noreply, close_empty_round(%{state | tournament: new_tournament, break_timer_expired: false})}
     else
       # Break still running — wait for {:stop_round_break} to start next round
       new_tournament = Map.put(new_tournament, :round_state, "break")
@@ -1025,6 +1055,28 @@ defmodule Codebattle.Tournament.Server do
   end
 
   defp maybe_schedule_round_finish_after(state, _event_type), do: state
+
+  # Swiss rounds have no timer of their own: a round closes when its last game does. A round
+  # that has no games at all (everyone joined after it was paired) would therefore never
+  # close, so close it now — the break follows and the next round pairs the waiting players.
+  defp maybe_close_empty_round(state, event_type) when event_type in [:start, :join], do: close_empty_round(state)
+  defp maybe_close_empty_round(state, _event_type), do: state
+
+  defp close_empty_round(%{tournament: tournament} = state) do
+    if empty_round_with_waiting_players?(tournament) do
+      {:noreply, new_state} = schedule_round_finish(state)
+      new_state
+    else
+      state
+    end
+  end
+
+  defp empty_round_with_waiting_players?(tournament) do
+    tournament.type != "ladder" and tournament.state == "active" and not in_break?(tournament) and
+      tournament.round_state != "round_finishing" and
+      get_round_matches(tournament, tournament.current_round_position) == [] and
+      tournament |> get_players() |> Enum.any?(&(not &1.is_bot and &1.state != "banned"))
+  end
 
   defp should_schedule_round_finish?(%{round_state: "round_finishing"}), do: false
 

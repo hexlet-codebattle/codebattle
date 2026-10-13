@@ -3735,3 +3735,291 @@ msgstr "by"
 
 msgid "Back to tournament"
 msgstr "Back to tournament"
+
+msgid "Mine"
+msgstr "Mine"
+
+msgid "%{count} rounds"
+msgstr "%{count} rounds"
+
+msgid "About"
+msgstr "About"
+
+msgid "Banned"
+msgstr "Banned"
+
+msgid "Break: the next round starts soon."
+msgstr "Break: the next round starts soon."
+
+msgid "Cancel the tournament? This cannot be undone."
+msgstr "Cancel the tournament? This cannot be undone."
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Couldn't load the ranking."
+msgstr "Couldn't load the ranking."
+
+msgid "Couldn't load the results."
+msgstr "Couldn't load the results."
+
+msgid "Final round ends in"
+msgstr "Final round ends in"
+
+msgid "Find me"
+msgstr "Find me"
+
+msgid "Finish the tournament now? Running games are stopped."
+msgstr "Finish the tournament now? Running games are stopped."
+
+msgid "Finishing the round…"
+msgstr "Finishing the round…"
+
+msgid "In the pool, waiting for an opponent…"
+msgstr "In the pool, waiting for an opponent…"
+
+msgid "Invite link"
+msgstr "Invite link"
+
+msgid "It may be private: open it with the invite link from the organizer."
+msgstr "It may be private: open it with the invite link from the organizer."
+
+msgid "Join now and get notified when it starts."
+msgstr "Join now and get notified when it starts."
+
+msgid "Kick"
+msgstr "Kick"
+
+msgid "Kick %{name} from the tournament?"
+msgstr "Kick %{name} from the tournament?"
+
+msgid "Make the tournament public?"
+msgstr "Make the tournament public?"
+
+msgid "Manage tournament"
+msgstr "Manage tournament"
+
+msgid "My matches"
+msgstr "My matches"
+
+msgid "Next matchmaking in"
+msgstr "Next matchmaking in"
+
+msgid "Next round in"
+msgstr "Next round in"
+
+msgid "No matches in this round yet."
+msgstr "No matches in this round yet."
+
+msgid "No matches yet. They show up here when a round starts."
+msgstr "No matches yet. They show up here when a round starts."
+
+msgid "No players yet."
+msgstr "No players yet."
+
+msgid "Nobody has joined yet. Be the first!"
+msgstr "Nobody has joined yet. Be the first!"
+
+msgid "Open now"
+msgstr "Open now"
+
+msgid "Pairing players…"
+msgstr "Pairing players…"
+
+msgid "Private: joins by invite link"
+msgstr "Private: joins by invite link"
+
+msgid "Reconnecting…"
+msgstr "Reconnecting…"
+
+msgid "Restart from scratch? All results of this tournament are lost."
+msgstr "Restart from scratch? All results of this tournament are lost."
+
+msgid "Results"
+msgstr "Results"
+
+msgid "Results coming soon"
+msgstr "Results coming soon"
+
+msgid "Round ends in"
+msgstr "Round ends in"
+
+msgid "Sign in to join the tournament."
+msgstr "Sign in to join the tournament."
+
+msgid "Start the next round now?"
+msgstr "Start the next round now?"
+
+msgid "Start the tournament for %{count} players?"
+msgstr "Start the tournament for %{count} players?"
+
+msgid "Stay here"
+msgstr "Stay here"
+
+msgid "The game opens automatically."
+msgstr "The game opens automatically."
+
+msgid "The tournament is full."
+msgstr "The tournament is full."
+
+msgid "The tournament is running, you can still jump in."
+msgstr "The tournament is running, you can still jump in."
+
+msgid "The tournament process isn't running. Restart it to continue."
+msgstr "The tournament process isn't running. Restart it to continue."
+
+msgid "Too many players to list here."
+msgstr "Too many players to list here."
+
+msgid "Tournament not found"
+msgstr "Tournament not found"
+
+msgid "Waiting for players"
+msgstr "Waiting for players"
+
+msgid "Waiting for your next match."
+msgstr "Waiting for your next match."
+
+msgid "You played in this tournament."
+msgstr "You played in this tournament."
+
+msgid "You're in. The game opens here when the tournament starts."
+msgstr "You're in. The game opens here when the tournament starts."
+
+msgid "Your next match is ready"
+msgstr "Your next match is ready"
+
+msgid "Raw JSON"
+msgstr "Raw JSON"
+
+msgid "Hide JSON"
+msgstr "Hide JSON"
+
+msgid "Clan / Player"
+msgstr "Clan / Player"
+
+msgid "Duration: %{seconds}s"
+msgstr "Duration: %{seconds}s"
+
+msgid "Fastest"
+msgstr "Fastest"
+
+msgid "Game #%{id}"
+msgstr "Game #%{id}"
+
+msgid "Join the tournament to see your matches here."
+msgstr "Join the tournament to see your matches here."
+
+msgid "No reports"
+msgstr "No reports"
+
+msgid "Panel"
+msgstr "Panel"
+
+msgid "Reason"
+msgstr "Reason"
+
+msgid "Score per player"
+msgstr "Score per player"
+
+msgid "Slowest"
+msgstr "Slowest"
+
+msgid "Solutions"
+msgstr "Solutions"
+
+msgid "Statistics appear once the tournament starts."
+msgstr "Statistics appear once the tournament starts."
+
+msgid "Task #%{id}"
+msgstr "Task #%{id}"
+
+msgid "The leaderboard is published when the tournament ends. Live standings are in the ranking."
+msgstr "The leaderboard is published when the tournament ends. Live standings are in the ranking."
+
+msgid "Total players: %{count}"
+msgstr "Total players: %{count}"
+
+msgid "Total score"
+msgstr "Total score"
+
+msgid "Total: %{count}"
+msgstr "Total: %{count}"
+
+msgid "You were marked for a fair play violation and are excluded from the results."
+msgstr "You were marked for a fair play violation and are excluded from the results."
+
+msgid "cheater"
+msgstr "cheater"
+
+msgid "confirmed"
+msgstr "confirmed"
+
+msgid "copypaste"
+msgstr "copypaste"
+
+msgid "denied"
+msgstr "denied"
+
+msgid "pending"
+msgstr "pending"
+
+msgid "player"
+msgstr "player"
+
+msgid "processed"
+msgstr "processed"
+
+msgid "wrong_solution"
+msgstr "wrong_solution"
+
+msgid "The tournament didn't respond. Try again in a moment."
+msgstr "The tournament didn't respond. Try again in a moment."
+
+msgid "The tournament isn't running right now. Joining reopens when an organizer restarts it."
+msgstr "The tournament isn't running right now. Joining reopens when an organizer restarts it."
+
+msgid "Leave the tournament? You will be removed from the ranking and get no new matches."
+msgstr "Leave the tournament? You will be removed from the ranking and get no new matches."
+
+msgid "+%{count} other"
+msgstr "+%{count} other"
+
+msgid "in progress"
+msgstr "in progress"
+
+msgid "Moderation"
+msgstr "Moderation"
+
+msgid "Clans chart"
+msgstr "Clans chart"
+
+msgid "You : Opponent"
+msgstr "You : Opponent"
+
+msgid "Wins / losses"
+msgstr "Wins / losses"
+
+msgid "+%{count} no winner"
+msgstr "+%{count} no winner"
+
+msgid "Task base score"
+msgstr "Task base score"
+
+msgid "Tests passed"
+msgstr "Tests passed"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Your points : opponent's points"
+msgstr "Your points : opponent's points"
+
+msgid "solved %{solved} of %{players}"
+msgstr "solved %{solved} of %{players}"
+
+msgid "of %{count}"
+msgstr "of %{count}"
+
+msgid "LIVE"
+msgstr "LIVE"

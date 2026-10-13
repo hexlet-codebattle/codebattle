@@ -11,7 +11,7 @@ import {
 import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { hasSound, playSound, type SoundEffect, type SoundSettings, type SoundTheme, stopSounds } from '@/shared/sound';
+import { hasSound, playSound, useSoundStore, type SoundEffect, type SoundSettings, type SoundTheme, stopSounds } from '@/shared/sound';
 
 import { type AccountUser, type SettingsResponse, updateSettings } from './api';
 import { SaveStatus, Section, useSaveState } from './Section';
@@ -94,6 +94,7 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
 
   const save = async (fields: Partial<SoundSettings>) => {
     setSound((current) => ({ ...current, ...fields }));
+    useSoundStore.getState().setSettings(fields);
     try {
       onSaved(await track(updateSettings({ sound_settings: fields })));
     } catch {

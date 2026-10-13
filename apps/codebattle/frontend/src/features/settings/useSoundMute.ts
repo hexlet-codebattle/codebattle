@@ -2,7 +2,7 @@ import { notifications } from '@mantine/notifications';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSoundStore } from '@/shared/sound';
+import { type SoundSettings, useSoundStore } from '@/shared/sound';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { updateSettings } from './api';
@@ -34,9 +34,21 @@ export function useSoundMute() {
 /** Seeds the switch from the account on every page load (call once, in the layout). */
 export function useSyncSoundMute() {
   const { current_user: user } = useSharedProps();
-  const serverMuted = user.is_guest ? undefined : user.sound_settings?.muted;
+  const sound = user.sound_settings;
+  const serverMuted = user.is_guest ? undefined : sound?.muted;
 
   useEffect(() => {
     if (serverMuted !== undefined) useSoundStore.getState().setMuted(serverMuted);
   }, [serverMuted]);
+
+  // Theme and levels for the sounds pages play (tournament cues, game events).
+  useEffect(() => {
+    if (sound) {
+      useSoundStore.getState().setSettings({
+        type: sound.type as SoundSettings['type'],
+        level: sound.level,
+        tournament_level: sound.tournament_level,
+      });
+    }
+  }, [sound?.type, sound?.level, sound?.tournament_level]); // eslint-disable-line react-hooks/exhaustive-deps
 }

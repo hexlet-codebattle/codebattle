@@ -259,6 +259,17 @@ defmodule CodebattleWeb.NewFrontendTest do
       assert name == user.name
     end
 
+    test "tournament room renders in the new layout", %{flagged: conn, user: user} do
+      tournament = insert(:tournament, creator_id: user.id, type: "swiss")
+
+      conn = get(conn, Routes.tournament_path(conn, :show, tournament.id))
+
+      assert inertia_component(conn) == "TournamentRoom"
+      assert html_response(conn, 200) =~ "data-mantine-color-scheme"
+      assert %{"tournament_id" => id} = inertia_props(conn)
+      assert id == tournament.id
+    end
+
     test "unflagged users keep the server templates", %{conn: conn} do
       user = insert(:user)
       html = conn |> log_in_user(user.id) |> get("/clans") |> html_response(200)

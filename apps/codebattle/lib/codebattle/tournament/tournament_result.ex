@@ -764,6 +764,45 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> map_repo_result()
   end
 
+  @round_solves_ttl to_timeout(second: 10)
+
+  @doc """
+  Per round: how many players (bots excluded) solved the round's task — 100% of the
+  tests — out of those who played it. Read from the games, so it moves as games finish,
+  for swiss and ladder alike. Every viewer of a live tournament polls this, so it is
+  cached per tournament for a few seconds.
+  """
+  @spec get_round_solves(map()) :: [%{round_position: integer(), solved: integer(), players: integer()}]
+  def get_round_solves(%{id: tournament_id}) do
+    case Cachex.fetch(:tournament_stats_cache, {:round_solves, tournament_id}, fn _key ->
+           {:commit, query_round_solves(tournament_id), expire: @round_solves_ttl}
+         end) do
+      {status, rows} when status in [:ok, :commit] -> rows
+      # The cache isn't running (e.g. a node started before it existed): query directly.
+      {:error, _reason} -> query_round_solves(tournament_id)
+    end
+  end
+
+  defp query_round_solves(tournament_id) do
+    """
+    SELECT
+      COALESCE(g.round_position, 0) AS round_position,
+      COUNT(DISTINCT p.player_info->>'id') FILTER (
+        WHERE g.state IN ('game_over', 'timeout')
+          AND COALESCE((p.player_info->>'result_percent')::numeric, 0) >= 100
+      )::integer AS solved,
+      COUNT(DISTINCT p.player_info->>'id')::integer AS players
+    FROM games g
+    CROSS JOIN LATERAL jsonb_array_elements(g.players) AS p(player_info)
+    WHERE g.tournament_id = $1
+      AND COALESCE((p.player_info->>'is_bot')::boolean, false) = false
+    GROUP BY COALESCE(g.round_position, 0)
+    ORDER BY round_position
+    """
+    |> Repo.query!([tournament_id])
+    |> map_repo_result()
+  end
+
   def get_task_duration_distribution(tournament, task_id) do
     """
     WITH DurationStats AS (

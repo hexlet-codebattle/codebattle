@@ -1,0 +1,97 @@
+/* Tournament hero: a soft wash of the grade colour, the viewer's action on the right,
+   the moderator toolbar as its footer. */
+.hero {
+  --grade: var(--mantine-color-slate-4);
+
+  border: 1px solid var(--cb-border);
+  border-top: 3px solid var(--grade);
+  border-radius: var(--cb-radius);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--grade) 14%, transparent), transparent 55%),
+    var(--cb-panel);
+  box-shadow: var(--cb-shadow-panel);
+}
+
+/* identity | clock (grows) | action; wraps on narrow screens, the clock taking its own line. */
+.heroMain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mantine-spacing-md) var(--mantine-spacing-lg);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Identity and action stay narrow; the clock takes the rest of the row. */
+/* Facts in two columns: players · rounds / level · start. */
+.heroFacts {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: start;
+  gap: 2px 14px;
+  font-size: var(--mantine-font-size-xs);
+  color: var(--cb-text-muted);
+  min-width: 0;
+}
+
+.heroIdentity {
+  flex: 0 1 230px;
+  min-width: 190px;
+  max-width: 250px;
+}
+
+.heroClock {
+  flex: 10 1 520px;
+  min-width: 0;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-basis: auto;
+  }
+}
+
+.heroIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--grade) 16%, var(--cb-panel));
+  border: 1px solid color-mix(in srgb, var(--grade) 35%, var(--cb-border));
+}
+
+.gradeBadge {
+  color: var(--grade);
+  background: color-mix(in srgb, var(--grade) 14%, transparent);
+}
+
+.heroAction {
+  flex: 0 1 auto;
+  max-width: 200px;
+  margin-left: auto;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    max-width: none;
+  }
+}
+
+.heroFooter {
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-lg);
+  border-top: 1px solid var(--cb-border);
+  background: color-mix(in srgb, var(--cb-sunken) 60%, transparent);
+  border-radius: 0 0 var(--cb-radius) var(--cb-radius);
+}
+
+.playerAction {
+  @media (max-width: $mantine-breakpoint-sm) {
+    align-items: stretch;
+
+    & > * {
+      text-align: left !important;
+    }
+  }
+}

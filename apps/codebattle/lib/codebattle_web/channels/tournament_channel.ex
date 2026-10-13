@@ -233,6 +233,9 @@ defmodule CodebattleWeb.TournamentChannel do
         %{"type" => "tasks_ranking"} ->
           TournamentResult.get_tasks_ranking(tournament)
 
+        %{"type" => "round_solves"} ->
+          TournamentResult.get_round_solves(tournament)
+
         %{"type" => "task_duration_distribution", "task_id" => task_id} ->
           with_task_id(task_id, &TournamentResult.get_task_duration_distribution(tournament, &1))
 

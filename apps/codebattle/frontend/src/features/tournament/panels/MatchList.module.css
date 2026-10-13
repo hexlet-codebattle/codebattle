@@ -1,0 +1,320 @@
+/*
+ * Scoreboard rows: outcome | me (toward the score) | score | opponent | timing | action.
+ * The score column has a fixed width with the colon at its centre, so every row's
+ * score lines up; the two sides share the remaining width equally.
+ */
+.list {
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 32px minmax(90px, 0.8fr) minmax(0, 1fr) 104px minmax(0, 1fr) 92px 124px;
+  grid-template-areas: 'badge task me score opp meta action';
+  align-items: center;
+  column-gap: 12px;
+  padding: 7px 12px;
+  transition: background 120ms ease;
+
+  & + & {
+    border-top: 1px solid var(--cb-border);
+  }
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+
+  &[data-outcome='live'] {
+    background: color-mix(in srgb, var(--mantine-color-blue-5) 8%, transparent);
+  }
+
+  /* Narrow panels: timing goes under the score, the action stays on the right. */
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: 28px minmax(0, 1fr) 84px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'badge me score opp action'
+      'badge task task meta action';
+    row-gap: 4px;
+  }
+}
+
+.badge {
+  grid-area: badge;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.chip {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--cb-text-muted);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+
+  &[data-outcome='won'] {
+    color: #fff;
+    background: var(--cb-success);
+    border-color: var(--cb-success);
+  }
+
+  &[data-outcome='lost'] {
+    color: #fff;
+    background: var(--cb-danger);
+    border-color: var(--cb-danger);
+  }
+
+  &[data-outcome='live'] {
+    color: var(--mantine-color-blue-5);
+    border-color: var(--mantine-color-blue-5);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+}
+
+/* The round's task: level badge over the (linked) name. */
+.task {
+  grid-area: task;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+
+.levelBadge {
+  flex: none;
+}
+
+.taskName {
+  max-width: 100%;
+}
+
+/* Opponent's place and Elo, next to their name. */
+.context {
+  flex: none;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--cb-text-muted);
+}
+
+.round {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cb-text-muted);
+}
+
+/* A player: name line, then tests (and the ladder formula). Mirrored for "me". */
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+
+  &[data-side='me'] {
+    grid-area: me;
+    align-items: flex-end;
+    text-align: right;
+
+    & .who,
+    & .sub {
+      flex-direction: row-reverse;
+    }
+  }
+
+  &[data-side='opponent'] {
+    grid-area: opp;
+    align-items: flex-start;
+  }
+}
+
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Second line wraps inside its column instead of spilling into the next one. */
+.sub {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 11px;
+  color: var(--cb-text-muted);
+}
+
+/* Fixed widths so the % and the multiplier chips line up across rows. */
+.testsValue {
+  flex: none;
+  width: 4ch;
+  text-align: left;
+  font-family: var(--mantine-font-family-monospace);
+  font-variant-numeric: tabular-nums;
+
+  &[data-full] {
+    color: var(--cb-success);
+    font-weight: 700;
+  }
+
+  [data-side='me'] & {
+    text-align: right;
+  }
+}
+
+/* Ladder multiplier: ⚡ speed bonus / ↓ loss / ⏱ timeout; the full maths on hover. */
+.factorChip {
+  flex: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  gap: 2px;
+  padding: 0 6px;
+  height: 16px;
+  border-radius: 999px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: help;
+  color: var(--cb-text-muted);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+
+  &[data-kind='speed'] {
+    color: var(--cb-success);
+    background: color-mix(in srgb, var(--cb-success) 12%, transparent);
+    border-color: color-mix(in srgb, var(--cb-success) 30%, transparent);
+  }
+
+  &[data-kind='loss'] {
+    color: var(--cb-danger);
+    background: color-mix(in srgb, var(--cb-danger) 10%, transparent);
+    border-color: color-mix(in srgb, var(--cb-danger) 25%, transparent);
+  }
+}
+
+/* Fixed centre column: mine right-aligned, colon centred, theirs left-aligned. */
+.score {
+  grid-area: score;
+  display: flex;
+  justify-content: center;
+}
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 10px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  font-family: var(--mantine-font-family-monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.mine,
+.theirs {
+  font-size: var(--mantine-font-size-md);
+  font-weight: 700;
+  color: var(--cb-text-muted);
+
+  &[data-win] {
+    color: var(--cb-text-strong);
+    font-weight: 800;
+  }
+}
+
+.mine {
+  text-align: right;
+}
+
+.theirs {
+  text-align: left;
+}
+
+.colon {
+  text-align: center;
+  color: var(--cb-text-muted);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 700;
+}
+
+.livePill {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: var(--mantine-color-blue-6);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* Timing: duration over the time range, right-aligned. */
+.meta {
+  grid-area: meta;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--cb-text-muted);
+  white-space: nowrap;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+}
+
+.duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--cb-text);
+}
+
+.action {
+  grid-area: action;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Tooltip breakdown: label … value. */
+.breakdownLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.breakdownValue {
+  font-family: var(--mantine-font-family-monospace);
+  font-variant-numeric: tabular-nums;
+
+  &[data-strong] {
+    font-weight: 800;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}

@@ -1,0 +1,180 @@
+.groupRow {
+  background: var(--cb-sunken);
+
+  &[data-muted] {
+    opacity: 0.6;
+  }
+}
+
+.childRow[data-muted] {
+  opacity: 0.6;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.grid {
+  stroke: var(--cb-border);
+  stroke-width: 1;
+}
+
+.axisLabel {
+  fill: var(--cb-text-muted);
+  font-size: 11px;
+  font-family: var(--mantine-font-family-monospace);
+}
+
+.axisTitle {
+  fill: var(--cb-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Winners' solve-time histogram (16 buckets). */
+.histogram {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 140px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.histogramCol {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+
+  &:hover .histogramBar {
+    background: var(--cb-success);
+  }
+}
+
+.histogramBar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: color-mix(in srgb, var(--mantine-color-blue-4) 70%, transparent);
+  transition: background 120ms ease;
+}
+
+/* Panel tabs: a single scrolling row. */
+.tabsRow.tabsRow {
+  flex-wrap: nowrap;
+
+  & > button {
+    flex: none;
+    white-space: nowrap;
+  }
+}
+
+/* Player panel: four stat tiles. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+}
+
+.tileIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--cb-sunken);
+  color: var(--cb-text-muted);
+}
+
+.tileBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Place: gold / silver / bronze chip for the top three. */
+.placeChip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 7px;
+  font-family: var(--cb-font-display);
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--cb-text-strong);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+
+  &[data-place] {
+    color: var(--cb-medal-text);
+    border-color: transparent;
+  }
+
+  &[data-place='1'] {
+    background: var(--cb-medal-1);
+  }
+
+  &[data-place='2'] {
+    background: var(--cb-medal-2);
+  }
+
+  &[data-place='3'] {
+    background: var(--cb-medal-3);
+  }
+}
+
+/* Wins / losses / no winner as one thin bar. */
+.recordBar {
+  display: flex;
+  gap: 2px;
+  height: 4px;
+  width: 100%;
+  max-width: 140px;
+  border-radius: 999px;
+  overflow: hidden;
+
+  & > span {
+    flex-basis: 0;
+    min-width: 0;
+  }
+
+  & > [data-kind='win'] {
+    background: var(--cb-success);
+  }
+
+  & > [data-kind='loss'] {
+    background: var(--cb-danger);
+  }
+
+  & > [data-kind='other'] {
+    background: var(--mantine-color-slate-3);
+  }
+}

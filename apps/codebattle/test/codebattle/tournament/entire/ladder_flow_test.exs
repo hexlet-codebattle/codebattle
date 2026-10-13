@@ -647,6 +647,57 @@ defmodule Codebattle.Tournament.Entire.LadderFlowTest do
     assert length(get_matches(tournament, "playing")) == 2
   end
 
+  test "the admin finish_round stops the games, takes the configured break, then opens the next round" do
+    tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 70)
+    insert(:task_pack, name: "ladder-finish-round", task_ids: Enum.map(tasks, & &1.id))
+
+    creator = insert(:user)
+    users = insert_list(4, :user)
+
+    {:ok, tournament} =
+      TournamentContext.create(%{
+        "starts_at" => "2026-01-01T12:00",
+        "name" => "Ladder finish round",
+        "description" => "ladder finish round",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "task_pack_name" => "ladder-finish-round",
+        "creator" => creator,
+        "task_provider" => "task_pack",
+        "task_strategy" => "sequential",
+        "type" => "ladder",
+        "state" => "waiting_participants",
+        "round_timeout_seconds" => 300,
+        "break_duration_seconds" => 1,
+        "rounds_limit" => "3",
+        "players_limit" => 4
+      })
+
+    Server.handle_event(tournament.id, :join, %{users: users})
+    Server.handle_event(tournament.id, :start, %{user: creator})
+
+    tournament = TournamentContext.get(tournament.id)
+    assert length(get_matches(tournament, "playing")) == 2
+
+    Server.handle_event(tournament.id, :finish_round, %{})
+
+    # The running games are stopped and the break lasts break_duration_seconds — its end is
+    # what clients count down to, not the next 300s matchmaking tick.
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "on"
+    assert tournament.current_round_position == 0
+    assert get_matches(tournament, "playing") == []
+    assert_in_delta DateTime.diff(tournament.next_round_at, DateTime.utc_now(), :millisecond), 1_000, 1_000
+
+    # When the break is over the ladder opens the next round with fresh pairs.
+    Process.sleep(1_600)
+
+    tournament = TournamentContext.get(tournament.id)
+    assert tournament.break_state == "off"
+    assert tournament.current_round_position == 1
+    assert length(get_matches(tournament, "playing")) == 2
+  end
+
   test "ladder tick timeout comes from task base_score while game timeout comes from time_to_solve_sec" do
     tasks = insert_list(3, :task, level: "easy", base_score: 90, time_to_solve_sec: 70)
     insert(:task_pack, name: "ladder-fast", task_ids: Enum.map(tasks, & &1.id))
