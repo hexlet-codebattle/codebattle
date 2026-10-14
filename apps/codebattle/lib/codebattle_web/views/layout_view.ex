@@ -3,7 +3,7 @@ defmodule CodebattleWeb.LayoutView do
 
   import Inertia.HTML
 
-  @google_fonts_href "https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;800&family=Montserrat:wght@400;700&display=swap"
+  @google_fonts_href "https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;800&family=Montserrat:wght@400;700&family=Inter:wght@400..700&display=swap"
 
   @doc """
   Non-render-blocking Google Fonts loading for the document head.

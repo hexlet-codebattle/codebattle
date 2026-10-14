@@ -6188,3 +6188,9 @@ msgstr "Один из игроков уже в другой игре."
 
 msgid "Could not start a rematch. Try again."
 msgstr "Не удалось начать реванш. Попробуйте ещё раз."
+
+msgid "Hide the tests"
+msgstr "Скрыть тесты"
+
+msgid "Show the tests"
+msgstr "Показать тесты"

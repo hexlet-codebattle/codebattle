@@ -9,6 +9,8 @@ import {
   IconMaximize,
   IconMinimize,
   IconRefresh,
+  IconFileDescription,
+  IconFlask,
   IconLayoutNavbarCollapse,
   IconLayoutNavbarExpand,
   IconMessages,
@@ -18,8 +20,6 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
-import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
-import type { GameLevel } from '@/features/lobby/types';
 import { UserMenu } from '@/layout/AppLayout';
 import { ColorSchemeToggle } from '@/layout/ColorSchemeToggle';
 import { SoundToggle } from '@/layout/SoundToggle';
@@ -31,6 +31,7 @@ import type { GameApi } from '../useGame';
 import classes from '../GameRoom.module.css';
 
 import { GameTimer } from './GameTimer';
+import { type BriefTab, TestsScore } from './TaskBrief';
 
 /** Rematch offer / answer for casual games. */
 function Rematch({ game, api, me }: { game: Game; api: GameApi; me: number }) {
@@ -148,8 +149,11 @@ interface TopBarProps {
   api: GameApi | null;
   left: GamePlayer | undefined;
   right: GamePlayer | undefined;
-  /** The task / tournament strip under the bar. */
-  brief: { open: boolean; toggle: () => void };
+  /**
+   * The strip under the bar and what it shows. Task / Tests buttons: a click shows that pane,
+   * or hides the strip when the pane is already shown.
+   */
+  strip: { open: boolean; tab: BriefTab; testsOf: number | null; onTask: () => void; onTests: () => void; onToggle: () => void };
   /** The chat drawer, when the game has a chat. */
   chat?: { unread: number; open: () => void } | null;
   /** A finished game replayed from its record: always shown as over. */
@@ -160,7 +164,7 @@ interface TopBarProps {
   liveHref?: string | null;
 }
 
-export function TopBar({ game, api, left, right, brief, chat = null, history = false, historyHref = null, liveHref = null }: TopBarProps) {
+export function TopBar({ game, api, left, right, strip, chat = null, history = false, historyHref = null, liveHref = null }: TopBarProps) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const { toggle, fullscreen } = useFullscreenDocument();
@@ -192,26 +196,54 @@ export function TopBar({ game, api, left, right, brief, chat = null, history = f
           </Text>
         </Button>
         {task && (
-          <Tooltip label={brief.open ? t('Hide the task') : t('Show the task')}>
-            <Button
-              size="compact-sm"
-              variant="subtle"
-              color="gray"
-              onClick={brief.toggle}
-              aria-pressed={brief.open}
-              rightSection={brief.open ? <IconLayoutNavbarCollapse size={15} /> : <IconLayoutNavbarExpand size={15} />}
-              className={classes.taskToggle}
-            >
-              <Group gap={8} wrap="nowrap" miw={0}>
-                <Badge size="sm" variant="light" color={LEVEL_COLORS[task.level as GameLevel] ?? 'gray'}>
-                  {levelLabel(task.level as GameLevel)}
-                </Badge>
-                <Text span size="sm" fw={700} c="bright" truncate>
-                  {task.name}
+          <Button.Group>
+            <Tooltip label={strip.open && strip.tab === 'task' ? t('Hide the task') : t('Show the task')}>
+              <Button
+                size="compact-sm"
+                variant={strip.open && strip.tab === 'task' ? 'light' : 'default'}
+                color={strip.open && strip.tab === 'task' ? 'green' : 'gray'}
+                leftSection={<IconFileDescription size={15} />}
+                onClick={strip.onTask}
+                aria-pressed={strip.open && strip.tab === 'task'}
+                className={classes.stripToggle}
+              >
+                <Text span size="xs" fw={700} visibleFrom="sm">
+                  {t('Task')}
                 </Text>
-              </Group>
-            </Button>
-          </Tooltip>
+              </Button>
+            </Tooltip>
+            {strip.testsOf != null && (
+              <Tooltip label={strip.open && strip.tab === 'tests' ? t('Hide the tests') : t('Show the tests')}>
+                <Button
+                  size="compact-sm"
+                  variant={strip.open && strip.tab === 'tests' ? 'light' : 'default'}
+                  color={strip.open && strip.tab === 'tests' ? 'green' : 'gray'}
+                  leftSection={<IconFlask size={15} />}
+                  rightSection={<TestsScore playerId={strip.testsOf} />}
+                  onClick={strip.onTests}
+                  aria-pressed={strip.open && strip.tab === 'tests'}
+                  className={classes.stripToggle}
+                >
+                  <Text span size="xs" fw={700} visibleFrom="sm">
+                    {t('Tests')}
+                  </Text>
+                </Button>
+              </Tooltip>
+            )}
+            <Tooltip label={strip.open ? t('Hide the task') : t('Show the task')}>
+              <Button
+                size="compact-sm"
+                variant="default"
+                color="gray"
+                onClick={strip.onToggle}
+                aria-label={strip.open ? t('Hide the task') : t('Show the task')}
+                aria-pressed={strip.open}
+                px={6}
+              >
+                {strip.open ? <IconLayoutNavbarCollapse size={15} /> : <IconLayoutNavbarExpand size={15} />}
+              </Button>
+            </Tooltip>
+          </Button.Group>
         )}
       </Group>
 

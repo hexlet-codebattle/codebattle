@@ -37,6 +37,8 @@ interface TaskPanelProps {
   hideExamples?: boolean;
   /** Leave out the "send a PR" footer of GitHub tasks (the broadcast). */
   hideContribution?: boolean;
+  /** The level and task name above the description (the game strip; the top bar has no name). */
+  withTitle?: boolean;
 }
 
 export function TaskPanel({
@@ -46,6 +48,7 @@ export function TaskPanel({
   onLangChange,
   hideExamples = false,
   hideContribution = false,
+  withTitle = false,
 }: TaskPanelProps) {
   const { t, i18n } = useTranslation();
   const [preview, { open, close }] = useDisclosure(false);
@@ -55,33 +58,49 @@ export function TaskPanel({
   const lang = controlledLang ?? ownLang;
   const setLang = onLangChange ?? setOwnLang;
   const description = (lang === 'ru' ? task.description_ru : task.description_en) ?? '';
-  const examples = !hideExamples && task.examples?.trim() ? `\n\n**${lang === 'ru' ? 'Примеры' : 'Examples'}:**\n${codeBlock(task.examples)}` : '';
+  // No "Examples:" heading: the code block right under the description speaks for itself.
+  const examples = !hideExamples && task.examples?.trim() ? `\n\n${codeBlock(task.examples)}` : '';
 
   return (
     <div className={classes.task}>
-      {((hasRu && hasEn) || withPreview) && (
+      {/* Floats top-right so the description wraps around it instead of losing a line to it. */}
+      {((hasRu && hasEn) || withPreview || withTitle) && (
         <div className={classes.taskCorner}>
-          {hasRu && hasEn && (
-            <SegmentedControl
-              size="xs"
-              value={lang}
-              onChange={(value) => setLang(value as DescriptionLang)}
-              data={[
-                { value: 'en', label: 'EN' },
-                { value: 'ru', label: 'RU' },
-              ]}
-            />
+          {withTitle && (
+            <Group gap={8} wrap="nowrap" className={classes.taskTitle}>
+              <Badge size="sm" variant="light" color={LEVEL_COLORS[task.level as GameLevel] ?? 'gray'}>
+                {levelLabel(task.level as GameLevel)}
+              </Badge>
+              <Text span size="sm" fw={700} c="bright" ff="monospace" truncate>
+                {task.name}
+              </Text>
+            </Group>
           )}
-          {withPreview && (
-            <Button
-              size="compact-xs"
-              variant="default"
-              leftSection={<IconWindowMaximize size={13} />}
-              onClick={open}
-              aria-label={t('Open the task in a window')}
-            >
-              {t('Preview')}
-            </Button>
+          {((hasRu && hasEn) || withPreview) && (
+            <Group gap={6} wrap="nowrap">
+              {hasRu && hasEn && (
+                <SegmentedControl
+                  size="xs"
+                  value={lang}
+                  onChange={(value) => setLang(value as DescriptionLang)}
+                  data={[
+                    { value: 'en', label: 'EN' },
+                    { value: 'ru', label: 'RU' },
+                  ]}
+                />
+              )}
+              {withPreview && (
+                <Button
+                  size="compact-xs"
+                  variant="default"
+                  leftSection={<IconWindowMaximize size={13} />}
+                  onClick={open}
+                  aria-label={t('Open the task in a window')}
+                >
+                  {t('Preview')}
+                </Button>
+              )}
+            </Group>
           )}
         </div>
       )}

@@ -144,10 +144,10 @@
   }
 }
 
-/* Task | Tests: tabs on top, the body scrolls. */
+/* The task or the tests (switched in the top bar); the body scrolls. */
 .briefMain {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   min-height: 0;
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius);
@@ -155,41 +155,9 @@
   overflow: hidden;
 }
 
-.rail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 0;
-  border-right: 1px solid var(--cb-border);
-  background: var(--cb-sunken);
-}
-
-.railButton {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  width: 38px;
-  padding: 6px 0;
-  border-radius: 6px;
-  color: var(--cb-text-muted);
-
-  &:hover {
-    color: var(--cb-text-strong);
-    background: var(--cb-hover);
-  }
-
-  &[data-active] {
-    color: var(--cb-text-strong);
-    background: var(--cb-panel);
-    box-shadow: inset 2px 0 0 var(--cb-success);
-  }
-}
-
-.railScore {
+.testsScore {
   font-family: var(--mantine-font-family-monospace);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1;
   color: var(--cb-danger);
@@ -412,13 +380,17 @@
   margin: 0 0 6px 12px;
 }
 
-/* The task name in the top bar doubles as the strip toggle. */
-.taskToggle {
-  min-width: 0;
-  max-width: 100%;
+/* Level and name, first line of the corner; a long name truncates instead of widening it. */
+.taskTitle {
+  max-width: 36ch;
+}
 
-  & :global(.mantine-Button-label) {
-    min-width: 0;
+/* Task / Tests in the top bar: each shows its pane in the strip, or hides the strip when already shown. */
+.stripToggle {
+  flex: none;
+
+  & :global(.mantine-Button-section) {
+    margin-inline-end: 6px;
   }
 }
 
@@ -427,12 +399,22 @@
   font-size: var(--task-font-size, var(--mantine-font-size-md));
   /* Full-contrast text: Markdown reads --cb-text, which is a muted grey on the dark panel. */
   --cb-text: var(--cb-text-strong);
+  /* Inter reads better than Arial at this size; a touch heavier so light-on-dark text isn't thin. */
+  font-family: Inter, Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.005em;
 
-  /* The strip spans the whole screen: keep prose lines short enough to read. */
-  & p,
-  & li,
-  & blockquote {
-    max-width: 90ch;
+  :global([data-mantine-color-scheme='dark']) & {
+    font-weight: 600;
+  }
+
+  & strong,
+  & b,
+  & h1,
+  & h2,
+  & h3,
+  & h4 {
+    font-weight: 700;
   }
 
   /* Examples: a compact block as wide as its longest line, not the whole strip. */

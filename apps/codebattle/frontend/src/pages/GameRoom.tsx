@@ -70,17 +70,27 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
     setBrief(true);
     setTab('tests');
   }, [setBrief]);
+  // Top-bar Task / Tests: show that pane, or hide the strip when it is the one already shown.
+  const togglePane = (pane: BriefTab) => {
+    if (brief && tab === pane) {
+      setBrief(false);
+    } else {
+      setBrief(true);
+      setTab(pane);
+    }
+  };
 
-  // A run of the left seat (mine when I play) starts: show its tests. Only the start counts;
-  // the game reloading on join (with the last results) must not take the page off the task.
+  // A run of the left seat (mine when I play) starts: switch the open task strip to its tests.
+  // A hidden strip stays hidden. Only the start counts; the game reloading on join (with the
+  // last results) must not take the page off the task.
   const leftId = left?.id ?? null;
   const leftChecking = useGameStore((state) => (leftId == null ? false : Boolean(state.checking[leftId])));
   const wasChecking = useRef(leftChecking);
   useEffect(() => {
     const started = leftChecking && !wasChecking.current;
     wasChecking.current = leftChecking;
-    if (started && !history) showTests();
-  }, [leftChecking, history, showTests]);
+    if (started && !history && brief) setTab('tests');
+  }, [leftChecking, history, brief]);
 
   // The tab: the tournament for tournament games (players switch between them), else the task.
   const { tournament_name: tournamentName } = useSharedProps<{ tournament_name?: string | null }>();
@@ -97,7 +107,7 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
         left={left}
         right={right}
         history={history}
-        brief={{ open: brief, toggle: () => setBrief(!brief) }}
+        strip={{ open: brief, tab, testsOf: leftId, onTask: () => togglePane('task'), onTests: () => togglePane('tests'), onToggle: () => setBrief(!brief) }}
         chat={chat ? { unread, open: () => setChatOpen(true) } : null}
         // Everyone once the game is over; admins also during play, to check for cheating.
         historyHref={!history && (isGameOver(game.state) || canManage) ? `/games/${game.id}?history=1` : null}
@@ -105,7 +115,7 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
       />
 
       <div className={classes.body}>
-        {brief && <TaskBrief tab={tab} onTab={setTab} testsOf={leftId} opponentId={right?.id ?? null} aside={aside} />}
+        {brief && <TaskBrief tab={tab} testsOf={leftId} opponentId={right?.id ?? null} aside={aside} />}
 
         <main className={classes.editors} data-single={!right || undefined}>
           {left && <EditorPane player={left} editable={editable} api={api} allowClipboard={allowClipboard} onShowTests={showTests} withSettings />}

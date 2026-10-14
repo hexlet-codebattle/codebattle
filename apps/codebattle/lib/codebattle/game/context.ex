@@ -210,7 +210,7 @@ defmodule Codebattle.Game.Context do
     Engine.bulk_create_games(games_params)
   end
 
-  @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
+  @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom() | String.t()}
   def join_game(id, user) do
     Engine.join_game(get_game!(id), user)
   end

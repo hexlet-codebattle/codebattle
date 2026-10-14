@@ -1,5 +1,5 @@
-import { Loader, Tooltip, UnstyledButton } from '@mantine/core';
-import { IconFileDescription, IconFlask } from '@tabler/icons-react';
+import { Loader } from '@mantine/core';
+import { IconFlask } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,26 +11,16 @@ import { TaskPanel } from './TaskPanel';
 
 export type BriefTab = 'task' | 'tests';
 
-/** "5/8" (or a spinner) under the Tests icon. */
-function TestsScore({ playerId }: { playerId: number }) {
+/** "5/8" (or a spinner) on the Tests button. */
+export function TestsScore({ playerId }: { playerId: number }) {
   const output = useGameStore((state) => state.outputs[playerId]);
   const checking = useGameStore((state) => Boolean(state.checking[playerId]));
   if (checking) return <Loader size={10} />;
   if (!output || output.asserts_count == null || !['ok', 'failure'].includes(output.status)) return null;
   return (
-    <span className={classes.railScore} data-ok={output.status === 'ok' || undefined}>
+    <span className={classes.testsScore} data-ok={output.status === 'ok' || undefined}>
       {output.success_count}/{output.asserts_count}
     </span>
-  );
-}
-
-function RailButton({ active, label, onClick, children }: { active: boolean; label: string; onClick: () => void; children: ReactNode }) {
-  return (
-    <Tooltip label={label} position="right">
-      <UnstyledButton className={classes.railButton} data-active={active || undefined} onClick={onClick} aria-label={label} aria-pressed={active}>
-        {children}
-      </UnstyledButton>
-    </Tooltip>
   );
 }
 
@@ -79,8 +69,8 @@ function TestsBody({ playerId, opponentId }: { playerId: number; opponentId: num
 }
 
 interface TaskBriefProps {
+  /** Picked with the Task / Tests buttons in the top bar. */
   tab: BriefTab;
-  onTab: (tab: BriefTab) => void;
   /** Whose tests the Tests tab shows (the left seat: me when I play). */
   testsOf: number | null;
   /** The other seat: their pass/fail summary sits under mine. */
@@ -89,28 +79,15 @@ interface TaskBriefProps {
   aside?: ReactNode;
 }
 
-/** The strip under the top bar: Task | Tests, and (tournament games) the round and standings beside it. */
-export function TaskBrief({ tab, onTab, testsOf, opponentId = null, aside }: TaskBriefProps) {
-  const { t } = useTranslation();
+/** The strip under the top bar: the task or the tests, and (tournament games) the round and standings beside it. */
+export function TaskBrief({ tab, testsOf, opponentId = null, aside }: TaskBriefProps) {
   const task = useGameStore((state) => state.game?.task);
 
   return (
     <section className={classes.brief} data-aside={aside ? true : undefined}>
       <div className={classes.briefMain}>
-        {/* Task / Tests as a slim rail on the left: the description keeps the full height. */}
-        <nav className={classes.rail}>
-          <RailButton active={tab === 'task'} label={t('Task')} onClick={() => onTab('task')}>
-            <IconFileDescription size={17} />
-          </RailButton>
-          {testsOf != null && (
-            <RailButton active={tab === 'tests'} label={t('Tests')} onClick={() => onTab('tests')}>
-              <IconFlask size={17} />
-              <TestsScore playerId={testsOf} />
-            </RailButton>
-          )}
-        </nav>
         <div className={classes.briefBody}>
-          {tab === 'tests' && testsOf != null ? <TestsBody playerId={testsOf} opponentId={opponentId} /> : task ? <TaskPanel task={task} withPreview /> : null}
+          {tab === 'tests' && testsOf != null ? <TestsBody playerId={testsOf} opponentId={opponentId} /> : task ? <TaskPanel task={task} withPreview withTitle /> : null}
         </div>
       </div>
       {aside && <div className={classes.briefAside}>{aside}</div>}
