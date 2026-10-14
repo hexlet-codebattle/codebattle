@@ -1,0 +1,142 @@
+/* One card per player, the left edge in the player's chart colour. */
+.card {
+  border-left: 4px solid var(--player-color);
+}
+
+.section {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+  margin-bottom: 4px;
+}
+
+/* Key–value stat lists. */
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--mantine-spacing-sm);
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--cb-border);
+  font-size: var(--mantine-font-size-xs);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.statLabel {
+  color: var(--cb-text-muted);
+  min-width: 0;
+}
+
+.statValue {
+  flex: none;
+  text-align: right;
+  font-family: var(--mantine-font-family-monospace);
+  color: var(--cb-text-strong);
+  white-space: nowrap;
+}
+
+.hint {
+  margin-left: 6px;
+  font-family: var(--mantine-font-family-default);
+  color: var(--cb-text-muted);
+
+  &[data-warn] {
+    color: var(--mantine-color-orange-5);
+    font-weight: 600;
+  }
+}
+
+.panel {
+  padding: 8px 12px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+  min-width: 0;
+}
+
+.signals {
+  margin: 0;
+  padding-left: 18px;
+  font-size: var(--mantine-font-size-xs);
+
+  & > li + li {
+    margin-top: 2px;
+  }
+}
+
+.codeBox {
+  height: 360px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  overflow: hidden;
+  background: var(--cb-editor);
+}
+
+/* Per-batch charts (inline SVG). */
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.grid {
+  stroke: var(--cb-border);
+  stroke-width: 1;
+}
+
+.baseline {
+  stroke: var(--cb-text-muted);
+  stroke-width: 1;
+}
+
+.axisLabel {
+  fill: var(--cb-text-muted);
+  font-size: 10px;
+  font-family: var(--mantine-font-family-monospace);
+}
+
+.bar {
+  fill: var(--player-color);
+
+  &[data-negative] {
+    fill: color-mix(in srgb, var(--player-color) 45%, transparent);
+  }
+}
+
+.hit {
+  fill: transparent;
+
+  &:hover {
+    fill: var(--cb-hover);
+  }
+}
+
+.hit:hover + .bar,
+.bar:hover {
+  filter: brightness(1.15);
+}
+
+.line {
+  fill: none;
+  stroke: var(--player-color);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.dot {
+  fill: var(--player-color);
+  stroke: var(--cb-panel);
+  stroke-width: 2;
+}
+
+.risk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

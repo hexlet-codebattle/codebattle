@@ -15,13 +15,19 @@ defmodule CodebattleWeb.GroupTournamentController do
 
     if has_access?(current_user, group_tournament) do
       conn
-      |> put_view(CodebattleWeb.GroupTournamentView)
       |> put_meta_tags(%{
         title: group_tournament.name,
         description: group_tournament.description,
         url: Routes.group_tournament_url(conn, :show, group_tournament.id)
       })
-      |> render("show.html", group_tournament: group_tournament)
+      |> CodebattleWeb.Frontend.put_layout()
+      |> render_inertia("GroupTournament", %{
+        "group_tournament_id" => group_tournament.id,
+        "name" => group_tournament.name,
+        "description" => group_tournament.description,
+        "task_description" => group_tournament.task_description,
+        "meta" => group_tournament.meta || %{}
+      })
     else
       conn
       |> put_status(:not_found)
@@ -70,11 +76,9 @@ defmodule CodebattleWeb.GroupTournamentController do
     current_user = conn.assigns.current_user
     group_tournament = GroupTournamentContext.get_group_tournament!(id)
 
+    # The player page is the only group-tournament page here; moderation lives in the admin app.
     if can_moderate?(group_tournament, current_user) do
-      conn
-      |> put_view(CodebattleWeb.GroupTournamentView)
-      |> put_meta_tags(%{title: "Admin #{group_tournament.name}"})
-      |> render("admin.html", group_tournament: group_tournament)
+      redirect(conn, to: "/admin/group_tournaments/#{group_tournament.id}")
     else
       conn
       |> put_status(:not_found)

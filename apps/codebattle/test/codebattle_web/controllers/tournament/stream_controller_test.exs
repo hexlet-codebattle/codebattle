@@ -26,7 +26,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
   end
 
   describe "GET /tournaments/:id/stream (public moderator stream)" do
-    test "renders threejs stream for moderator", %{conn: conn} do
+    test "renders the stream page for moderator", %{conn: conn} do
       creator = insert(:user)
       tournament = create_tournament(creator)
 
@@ -37,7 +37,7 @@ defmodule CodebattleWeb.Tournament.StreamControllerTest do
 
       assert conn.status == 200
       assert html_response(conn, 200)
-      assert inertia_component(conn) == "TournamentThreejsStream"
+      assert inertia_component(conn) == "TournamentStream"
     end
 
     test "returns 404 for non-moderator", %{conn: conn} do

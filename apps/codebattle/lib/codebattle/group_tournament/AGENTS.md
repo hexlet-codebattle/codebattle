@@ -224,12 +224,11 @@ ETS-backed cache owned by the live tournament server. Rebuilt from
   `Context.serialize_run/1` and `serialize_run_details/2`.
 - Real-time updates flow via `Codebattle.PubSub.broadcast(
   "group_tournament:run_updated", payload)` from `GroupTask.Context`. The
-  channel forwards as-is; the frontend `Channel.js` middleware
-  `camelizeKeys` the payload before dispatch, so `duration_ms` →
-  `durationMs` in Redux.
-- UI: `apps/codebattle/assets/js/widgets/pages/groupTournament/`. The Run
-  tab is `EvolutionPanel.jsx`; tabs container is `MainPanel.jsx`;
-  leaderboard is `Leaderboard.jsx`.
+  channel forwards as-is (snake_case); the frontend reads the payload raw.
+- UI: `apps/codebattle/frontend/src/pages/GroupTournament.tsx` with
+  `features/groupTournament/` (`useGroupTournament.ts` holds the channel
+  state; tabs in `MainPanel.tsx`, the run iframe in `RunViewer.tsx`,
+  `Leaderboard.tsx`).
 
 ## Quick comparison: ranked vs individual
 

@@ -762,7 +762,7 @@ defmodule Codebattle.Tournament.Base do
 
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
         task_id = get_task_id_by_params(round_params)
-        task = get_task(tournament, task_id)
+        task = get_task(tournament, task_id) || (task_id && Codebattle.Task.get!(task_id))
 
         player_pairs
         |> Enum.with_index(matches_count(tournament))

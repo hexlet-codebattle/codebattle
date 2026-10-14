@@ -2,6 +2,7 @@ defmodule CodebattleWeb.SessionController do
   use CodebattleWeb, :controller
 
   alias Codebattle.User
+  alias CodebattleWeb.AuthPage
   alias CodebattleWeb.UserAuth
 
   plug(:put_view, CodebattleWeb.SessionView)
@@ -11,31 +12,33 @@ defmodule CodebattleWeb.SessionController do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
     if FunWithFlags.enabled?(:use_only_external_oauth) do
-      render(conn, "external_signup.html", layout: {CodebattleWeb.LayoutView, :external})
+      render(conn, "external_signup.html")
     else
       redirect(conn, to: "/session/new")
     end
   end
 
   def new(%{assigns: %{current_user: %{is_guest: false}}} = conn, params) do
-    redirect(conn, to: Map.get(params, "next", "/"))
+    redirect(conn, to: AuthPage.safe_next(params["next"]))
   end
 
   def new(conn, _params) do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
+    # The external / local-password pages embed admin-provided HTML (with scripts), so they
+    # stay server-rendered on the bare app layout; the rest is the Auth page.
     cond do
       FunWithFlags.enabled?(:use_only_external_oauth) ->
-        render(conn, "external_oauth.html", layout: {CodebattleWeb.LayoutView, :external})
+        render(conn, "external_oauth.html")
 
       FunWithFlags.enabled?(:use_only_token_auth) ->
-        render(conn, "token_only.html")
+        AuthPage.render(conn, "token_only")
 
       FunWithFlags.enabled?(:use_local_password_auth) ->
-        render(conn, "local_password.html", layout: {CodebattleWeb.LayoutView, :empty})
+        render(conn, "local_password.html")
 
       true ->
-        render(conn, "index.html")
+        AuthPage.render(conn, "sign_in")
     end
   end
 
@@ -55,7 +58,7 @@ defmodule CodebattleWeb.SessionController do
     end
   end
 
-  def create(conn, _params), do: render(conn, "index.html")
+  def create(conn, _params), do: redirect(conn, to: "/session/new")
 
   def delete(conn, _params) do
     conn
@@ -65,6 +68,6 @@ defmodule CodebattleWeb.SessionController do
   end
 
   def remind_password(conn, _params) do
-    render(conn, "index.html")
+    AuthPage.render(conn, "reset_password")
   end
 end

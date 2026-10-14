@@ -62,15 +62,7 @@ defmodule CodebattleWeb.GameChannel do
         Tournament.Helpers.get_player(tournament, user_id)
       end
 
-    ranking =
-      tournament
-      |> Tournament.Ranking.get_first(5)
-      |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
-      |> Enum.filter(& &1)
-      |> Enum.uniq_by(& &1.id)
-      |> then(fn ranking ->
-        %{entries: ranking}
-      end)
+    ranking = ranking_around(tournament, current_player)
 
     in_main_draw =
       match?(%{draw_index: draw_index, max_draw_index: draw_index}, current_player)
@@ -116,6 +108,18 @@ defmodule CodebattleWeb.GameChannel do
        follow_id: follow_id
      )
      |> assign_editor_summary_rate_limit()}
+  end
+
+  # The top five plus the viewer's own row (when they play in this tournament).
+  defp ranking_around(tournament, current_player) do
+    entries =
+      tournament
+      |> Tournament.Ranking.get_first(5)
+      |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
+      |> Enum.filter(& &1)
+      |> Enum.uniq_by(& &1.id)
+
+    %{entries: entries}
   end
 
   defp maybe_fetch_head_to_head(game_id) do
@@ -298,6 +302,24 @@ defmodule CodebattleWeb.GameChannel do
     head_to_head = Context.fetch_head_to_head_by_game_id(game_id)
 
     {:reply, {:ok, %{head_to_head: head_to_head}}, socket}
+  end
+
+  # Fresh standings for the game page's tournament sidebar.
+  def handle_in("tournament:ranking", _, %{assigns: %{tournament_id: tournament_id}} = socket)
+      when not is_nil(tournament_id) do
+    case Tournament.Context.get_info(tournament_id) do
+      %{} = tournament ->
+        current_player = Tournament.Helpers.get_player(tournament, socket.assigns.current_user.id)
+
+        {:reply, {:ok, %{ranking: ranking_around(tournament, current_player), current_player: current_player}}, socket}
+
+      _ ->
+        {:reply, {:error, %{reason: :tournament_not_found}}, socket}
+    end
+  end
+
+  def handle_in("tournament:ranking", _, socket) do
+    {:reply, {:error, %{reason: :not_a_tournament_game}}, socket}
   end
 
   def handle_in("rematch:send_offer", _, socket) do
@@ -569,6 +591,12 @@ defmodule CodebattleWeb.GameChannel do
       push(socket, "game:timeout", payload)
     end
 
+    {:noreply, socket}
+  end
+
+  # An opponent joined a waiting game: its creator's page switches to the battle.
+  def handle_info(%{event: "game:updated", payload: %{game: game}}, socket) do
+    push(socket, "game:updated", %{state: game.state})
     {:noreply, socket}
   end
 

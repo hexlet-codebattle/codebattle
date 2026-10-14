@@ -1,0 +1,421 @@
+/*
+ * Broadcast screen (stream page / OBS): full window, windows placed in screen fractions,
+ * design-system tokens (light/dark). Kiosk widgets can go transparent for OBS.
+ */
+.screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--mantine-color-violet-5) 7%, transparent), transparent 45%),
+    radial-gradient(circle at 85% 100%, color-mix(in srgb, var(--cb-success) 7%, transparent), transparent 45%),
+    var(--mantine-color-body);
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+}
+
+/* Edit mode: a faint grid to place windows by. */
+.screen[data-edit] .stage {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--cb-border) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--cb-border) 45%, transparent) 1px, transparent 1px);
+  background-size: 5% 5%;
+}
+
+/* ---------- window ---------- */
+
+.window {
+  position: absolute;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+  box-shadow: var(--cb-shadow-panel);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  /* Typing / checking / result: the frame takes the colour and glows. */
+  &[data-glow] {
+    border-color: color-mix(in srgb, var(--glow) calc(40% + var(--glow-strength) * 0.6), var(--cb-border));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--glow) var(--glow-strength), transparent),
+      0 0 28px color-mix(in srgb, var(--glow) calc(var(--glow-strength) * 0.6), transparent);
+  }
+
+  &[data-edit] {
+    outline: 1px dashed var(--cb-success);
+    outline-offset: -1px;
+  }
+}
+
+.windowBody {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Over the window in edit mode: takes the pointer for moving. */
+.editOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  cursor: move;
+  touch-action: none;
+  background: color-mix(in srgb, var(--cb-success) 6%, transparent);
+}
+
+.editBar {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  cursor: default;
+  color: var(--cb-text-strong);
+  background: color-mix(in srgb, var(--cb-panel) 92%, transparent);
+  border: 1px solid var(--cb-border);
+  box-shadow: var(--cb-shadow-panel);
+}
+
+.resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 22px;
+  height: 22px;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: linear-gradient(135deg, transparent 50%, var(--cb-success) 50%);
+}
+
+/* ---------- toolbar ---------- */
+
+/* Fullscreen: hovering the top-right corner brings the hidden toolbar back. */
+.toolbarZone {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 999;
+  width: 380px;
+  height: 64px;
+}
+
+.toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cb-panel) 92%, transparent);
+  border: 1px solid var(--cb-border);
+  box-shadow: var(--cb-shadow-panel);
+  backdrop-filter: blur(6px);
+  transition:
+    opacity 250ms ease,
+    transform 250ms ease;
+
+  &[data-hidden] {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+  }
+}
+
+.logo {
+  display: inline-flex;
+  flex: none;
+  color: var(--cb-text-strong);
+
+  & svg {
+    width: auto;
+    height: 20px;
+  }
+}
+
+.editHint {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 1000;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: var(--cb-text-strong);
+  background: color-mix(in srgb, var(--cb-panel) 92%, transparent);
+  border: 1px solid var(--cb-border);
+}
+
+/* ---------- bodies ---------- */
+
+.scroll {
+  height: 100%;
+  padding: 10px 14px;
+  overflow: hidden auto;
+}
+
+.editorBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cup {
+  position: absolute;
+  z-index: 10;
+  height: 160px;
+  width: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--cb-success) 70%, transparent));
+  animation: cupBounce 1.8s ease-in-out infinite;
+}
+
+/* Timer: label, big digits, and the bar that fills as time runs out. */
+.timer {
+  --tone: var(--cb-success);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  padding: 10px 14px;
+  container-type: size;
+
+  &[data-phase='warn'] {
+    --tone: var(--mantine-color-yellow-6);
+  }
+
+  &[data-phase='urgent'] {
+    --tone: var(--cb-danger);
+
+    & .timerDigits {
+      animation: pulse 1s ease-in-out infinite;
+    }
+  }
+
+  &[data-phase='over'] {
+    --tone: var(--cb-text-muted);
+  }
+}
+
+.timerLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(11px, 7cqh, 28px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+/* Digits scale with the window (container units). */
+.timerDigits {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: min(22cqw, 40cqh);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--tone);
+}
+
+.timerTrack {
+  width: 100%;
+  height: clamp(6px, 4cqh, 14px);
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+
+  & span {
+    display: block;
+    height: 100%;
+    background: var(--tone);
+    transition: width 500ms linear;
+  }
+}
+
+/* Tests: a big N/100 bar for viewers, then the verdict and squares. */
+.tests {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 10px 12px;
+  overflow: hidden;
+  container-type: size;
+
+  &[data-kiosk] {
+    padding: 0;
+  }
+}
+
+.bar {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: clamp(32px, 22cqh, 72px);
+  overflow: hidden;
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+
+  &[data-checking] {
+    border-color: var(--mantine-color-blue-5);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  [data-kiosk] & {
+    flex: 1;
+    height: auto;
+    background: transparent;
+    border: 0;
+  }
+}
+
+/* Neutral slate while partial, success at 100%, danger on errors. */
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--mantine-color-slate-5);
+  transition:
+    width 250ms ease,
+    background 250ms ease;
+
+  [data-mantine-color-scheme='light'] & {
+    background: var(--mantine-color-slate-2);
+  }
+
+  &[data-full] {
+    background: var(--cb-success);
+  }
+
+  &[data-error] {
+    background: var(--cb-danger);
+  }
+}
+
+.barValue {
+  position: relative;
+  z-index: 1;
+  padding-right: 14px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: clamp(16px, 14cqh, 48px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--cb-text-strong);
+
+  [data-kiosk] & {
+    font-size: min(14vw, 70vh);
+    padding-right: min(3vw, 4vh);
+  }
+}
+
+/* Under the bar: verdict + squares | the first failed test (stacked when narrow). */
+.testsMore {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 10px;
+  overflow: auto;
+
+  @container (min-width: 560px) {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+}
+
+.testsSummary,
+.testsFailed {
+  min-width: 0;
+}
+
+.testsError {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 8px 10px;
+  max-height: 160px;
+  overflow: auto;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--cb-text);
+  background: var(--cb-sunken);
+  border: 1px solid color-mix(in srgb, var(--cb-danger) 35%, var(--cb-border));
+}
+
+.waiting {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--mantine-color-body);
+  color: var(--cb-text-muted);
+}
+
+.kiosk {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--mantine-color-body);
+
+  &[data-transparent] {
+    background: transparent;
+  }
+}
+
+/* The players' remote cursor and selection (sent by the game page). */
+:global(.cb-stream-remote-cursor) {
+  border-left: 2px solid var(--mantine-color-orange-6);
+}
+
+:global(.cb-stream-remote-selection) {
+  background-color: color-mix(in srgb, var(--mantine-color-orange-6) 30%, transparent);
+}
+
+/* OBS composites the kiosk over the capture: no page background, no Monaco outlines. */
+:global(html.cb-stream-transparent),
+:global(html.cb-stream-transparent body) {
+  background: transparent !important;
+}
+
+:global(html.cb-stream-transparent .monaco-editor),
+:global(html.cb-stream-transparent .monaco-editor .overflow-guard) {
+  outline: none !important;
+  border: none !important;
+}
+
+@keyframes cupBounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg) scale(1);
+  }
+
+  50% {
+    transform: translateY(-14px) rotate(8deg) scale(1.06);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}

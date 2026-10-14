@@ -29,6 +29,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   {"type":"error","time":0.1406,"value":"ErrorMessage","output":"Output"}
   """
 
+  # Asserts come in the task's order (the failing one is the task's third).
   @failure_expected %V2{
     success_count: 2,
     version: 2,
@@ -36,14 +37,6 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     status: "failure",
     output_error: "pre_output",
     asserts: [
-      %AssertResult{
-        arguments: "[1, 3]",
-        expected: "4",
-        output: "Output",
-        result: "\"ErrorMessage\"",
-        execution_time: 0.1406,
-        status: "failure"
-      },
       %AssertResult{
         status: "success",
         execution_time: 0.0076,
@@ -59,6 +52,14 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         expected: "2",
         arguments: "[2, 2]",
         output: "fdsa"
+      },
+      %AssertResult{
+        arguments: "[1, 3]",
+        expected: "4",
+        output: "Output",
+        result: "\"ErrorMessage\"",
+        execution_time: 0.1406,
+        status: "failure"
       }
     ]
   }

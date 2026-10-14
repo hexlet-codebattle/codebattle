@@ -25,12 +25,6 @@ defmodule Codebattle.RootControllerTest do
              "season_tournaments" => _,
              "task_tags" => _
            } = inertia_props(conn)
-
-    html = html_response(conn, 200)
-    assert html =~ ~s(id="lobby-loading-shell")
-    assert html =~ ~s(aria-live="polite")
-    refute html =~ "Preparing your arena"
-    refute html =~ "cb-lobby-loading-hero"
   end
 
   test "authorized page", %{conn: conn} do

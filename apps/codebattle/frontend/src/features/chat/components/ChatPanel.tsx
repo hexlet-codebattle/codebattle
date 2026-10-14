@@ -106,7 +106,8 @@ interface ChatPanelProps {
   activeRoomId: number | null;
   onRoomChange: (userId: number | null) => void;
   onDirectMessage: (user: ChatUserRef) => void;
-  height?: number;
+  /** Pixels, or "fill" to take the rest of a flex parent's height. */
+  height?: number | 'fill';
 }
 
 export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, onDirectMessage, height = 360 }: ChatPanelProps) {
@@ -133,7 +134,7 @@ export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, o
   };
 
   return (
-    <div className={classes.panel}>
+    <div className={classes.panel} data-fill={height === 'fill' || undefined}>
       <Group gap={4} px="sm" py={6} className={classes.rooms} wrap="nowrap">
         <ScrollArea type="never" flex={1}>
           <Group gap={4} wrap="nowrap">
@@ -177,7 +178,8 @@ export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, o
       </Group>
 
       <ScrollArea
-        h={height}
+        h={height === 'fill' ? undefined : height}
+        className={classes.scroll}
         viewportRef={viewport}
         onScrollPositionChange={({ y }) => {
           const element = viewport.current;

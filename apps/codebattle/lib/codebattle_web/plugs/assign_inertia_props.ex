@@ -23,6 +23,7 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
           conn.request_path
         ),
       "locale" => Gettext.get_locale(CodebattleWeb.Gettext),
+      "branding" => present_branding(current_user),
       "user_token" =>
         Phoenix.Token.sign(
           conn,
@@ -31,20 +32,10 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
         )
     }
 
-    # Only the new frontend reads branding. Computing it costs a GitHub stars
-    # lookup (synchronous on a cold cache), so legacy users don't pay for it.
-    props =
-      if CodebattleWeb.NewFrontend.enabled?(conn),
-        do: Map.put(props, "branding", present_branding(current_user)),
-        else: props
-
-    conn
-    |> then(fn conn -> Enum.reduce(props, conn, fn {key, value}, conn -> assign_prop(conn, key, value) end) end)
-    |> Plug.Conn.assign(:frontend_shared_props, props)
-    |> Plug.Conn.assign(:ticker_text, nil)
+    Enum.reduce(props, conn, fn {key, value}, conn -> assign_prop(conn, key, value) end)
   end
 
-  # Header branding for the new frontend (the legacy layout reads these in HEEx itself).
+  # Header branding (logo title, collab logos, GitHub stars, feature toggles).
   defp present_branding(current_user) do
     %{
       logo_title: Application.get_env(:codebattle, :logo_title),

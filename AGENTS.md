@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 This is an Elixir umbrella app with multiple sub-apps under `apps/`.
-- `apps/codebattle/`: Phoenix app with Elixir code in `apps/codebattle/lib/`, tests in `apps/codebattle/test/`, and frontend assets in `apps/codebattle/assets/`.
+- `apps/codebattle/`: Phoenix app with Elixir code in `apps/codebattle/lib/`, tests in `apps/codebattle/test/`, the React frontend in `apps/codebattle/frontend/` (Inertia pages in `frontend/src/pages/`), and static files (images, audio, fonts) in `apps/codebattle/static/` served at `/assets/*`.
 - `apps/runner/`: task runner service and language images under `apps/runner/images/`.
 - `config/`, `priv/`, and top-level `mix.exs` provide shared configuration and releases.
 
@@ -52,13 +52,13 @@ inside the dev container:
 Common targets:
 - `make format` / `make lint`: format or check Elixir formatting.
 - `make credo`: run Credo static analysis.
-- `make lint-js`: OXC (`oxlint`) for frontend assets.
+- `make lint-js`: OXC (`oxlint`) for the frontend.
 - `make server`: start Phoenix (`iex -S mix phx.server`).
 - `make test`: ExUnit + coveralls JSON.
 - `make test-code-checkers`: image executor tests with `CODEBATTLE_EXECUTOR=local`.
 
-For frontend-only tasks, use `make test-fe`, `make check-js`, or
-`make dev-exec CMD='pnpm --dir apps/codebattle <command>'` so pnpm remains in
+For frontend-only tasks, use `make test-fe` (typecheck + build), `make check-js`, or
+`make dev-exec CMD='pnpm --dir apps/codebattle/frontend <command>'` so pnpm remains in
 the development container.
 
 ## Coding Style & Naming Conventions
@@ -71,8 +71,8 @@ the development container.
 - Use `make test` as the canonical final repository test command; do not substitute a direct `mix test` run.
 - Run `mix credo --strict` and `mix dialyzer` as part of the final repository verification.
 - ExUnit tests live in `apps/*/test/`; coverage uses ExCoveralls with a 60% threshold.
-- Frontend tests use Vitest in `apps/codebattle/`.
-- Name tests after the module/component under test (e.g., `user_stats_test.exs`, `UserStats.test.jsx`).
+- The frontend has no unit-test runner; `make test-fe` typechecks and builds it.
+- Name tests after the module under test (e.g., `user_stats_test.exs`).
 
 ## Commit & Pull Request Guidelines
 - Recent commits use short, imperative summaries (e.g., "Fix editor", "Update logo").

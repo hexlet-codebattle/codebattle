@@ -35,9 +35,8 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
 
       assert user.sound_settings == %User.SoundSettings{
                level: 0,
-               muted: false,
-               tournament_level: 7,
-               type: "silent"
+               muted: true,
+               tournament_level: 7
              }
 
       assert user.subscription_type == :premium

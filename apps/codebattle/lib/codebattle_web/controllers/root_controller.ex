@@ -5,8 +5,8 @@ defmodule CodebattleWeb.RootController do
   alias Codebattle.SeasonResult
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
+  alias CodebattleWeb.Frontend
   alias CodebattleWeb.LayoutView
-  alias CodebattleWeb.NewFrontend
 
   plug(:put_view, CodebattleWeb.RootView)
   plug(:put_layout, html: {LayoutView, :app})
@@ -33,59 +33,59 @@ defmodule CodebattleWeb.RootController do
 
       # redirect user to event page if we are in event mode
       !is_guest? && is_event? ->
-        conn
-        |> put_view(CodebattleWeb.PublicEventView)
-        |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", event_slug))
+        CodebattleWeb.PublicEventController.show(conn, Map.put(params, "slug", event_slug))
 
-      # render guests landing page for normal mode
       is_guest? ->
-        current_season = Season.get_current_season()
+        render_landing(conn)
 
-        current_season_leaderboard =
-          if current_season do
-            SeasonResult.get_top_users(current_season.id, 5)
-          else
-            []
-          end
-
-        conn
-        |> assign(:current_season, current_season)
-        |> assign(:current_season_leaderboard, current_season_leaderboard)
-        |> render("landing.html", layout: {LayoutView, "landing.html"})
-
-      # by default render index page with lobby view
       true ->
-        %{live_tournaments: live_tournaments, season_tournaments: season_tournaments} =
-          LobbyView.render_tournament_params(current_user)
-
-        conn
-        |> assign(:show_lobby_loading_shell, true)
-        |> NewFrontend.maybe_put_layout()
-        |> render_inertia(
-          "Lobby",
-          %{
-            "task_tags" => ["strings", "math", "hash-maps", "collections", "rest"],
-            "active_games" => LobbyView.render_active_games(current_user),
-            "live_tournaments" => live_tournaments,
-            "season_tournaments" => season_tournaments,
-            "completed_games" => [],
-            "leaderboard_users" => [],
-            "opponent" => opponent(params)
-          }
-        )
+        render_lobby(conn, current_user, params)
     end
   end
 
+  # Guests outside event mode: what Codebattle is, with the current season's top five.
+  defp render_landing(conn) do
+    current_season = Season.get_current_season()
+    leaderboard = if current_season, do: SeasonResult.get_top_users(current_season.id, 5), else: []
+
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("Landing", %{
+      "season" => current_season && %{name: current_season.name, year: current_season.year},
+      "leaderboard" =>
+        Enum.map(leaderboard, &Map.take(&1, [:place, :user_id, :user_name, :avatar_url, :user_lang, :total_points])),
+      "dev_sign_in" => Application.get_env(:codebattle, :dev_sign_in, false) == true,
+      "version" => LayoutView.app_short_version()
+    })
+  end
+
+  defp render_lobby(conn, current_user, params) do
+    %{live_tournaments: live_tournaments, season_tournaments: season_tournaments} =
+      LobbyView.render_tournament_params(current_user)
+
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("Lobby", %{
+      "task_tags" => ["strings", "math", "hash-maps", "collections", "rest"],
+      "active_games" => LobbyView.render_active_games(current_user),
+      "live_tournaments" => live_tournaments,
+      "season_tournaments" => season_tournaments,
+      "completed_games" => [],
+      "leaderboard_users" => [],
+      "opponent" => opponent(params)
+    })
+  end
+
   def maintenance(conn, _) do
-    render(conn, "maintenance.html", layout: {LayoutView, "empty.html"})
+    render(conn, "maintenance.html")
   end
 
   def waiting(conn, _) do
-    render(conn, "waiting.html", layout: {LayoutView, "landing.html"})
+    render(conn, "waiting.html")
   end
 
   def authorized(conn, _) do
-    render(conn, "authorized.html", layout: {LayoutView, "landing.html"})
+    render(conn, "authorized.html")
   end
 
   def feedback(conn, _) do

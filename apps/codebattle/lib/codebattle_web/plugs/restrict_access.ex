@@ -9,13 +9,15 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
 
   @allowed_test_game_paths [
     ~r{^\/games\/\d+\/?$},
-    ~r{^\/games\/\d+\/threejs\/?$},
+    ~r{^\/games\/\d+\/stream\/?$},
     ~r{^\/games\/training\/?$}
   ]
 
   @allowed_session_paths [
     ~r{^\/session\/new\/?$},
     ~r{^\/session\/?$},
+    # The sign-in form posts here; it must work wherever /session/new does.
+    ~r{^\/api\/v1\/session\/?$},
     ~r{^\/session\/external\/signup\/?$},
     ~r{^\/auth\/token\/?$},
     ~r{^\/auth\/(?:github|discord|external)\/?$},

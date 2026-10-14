@@ -1,79 +1,44 @@
 import { Howl, Howler } from 'howler';
 import { create } from 'zustand';
 
-// Sound themes served by Phoenix from priv/static/assets/audio (same sprites as
-// the legacy frontend). Offsets are [startMs, durationMs] in each sprite file.
+// Served by Phoenix from priv/static/assets/audio. The game set is synthesized in the
+// tournament cues' voice by scripts/generate_game_sounds.py.
+const GAME_SOUNDS = {
+  check: '/assets/audio/game/check.wav',
+  win: '/assets/audio/game/win.wav',
+  failure: '/assets/audio/game/failure.wav',
+  give_up: '/assets/audio/game/give_up.wav',
+  round_created: '/assets/audio/game/round_created.wav',
+  time_is_over: '/assets/audio/game/time_is_over.wav',
+  message: '/assets/audio/game/message.wav',
+} as const;
 
-export type SoundTheme = 'dendy' | 'cs' | 'standard';
-export type SoundEffect = 'check' | 'failure' | 'give_up' | 'round_created' | 'time_is_over' | 'win';
+export type SoundEffect = keyof typeof GAME_SOUNDS;
 
 /** Codebattle.User.SoundSettings — levels are 0..10. */
 export interface SoundSettings {
-  type: SoundTheme | 'silent';
   level: number;
   tournament_level: number;
   muted: boolean;
 }
 
-const SPRITES: Record<SoundTheme, { src: string; sprite: Partial<Record<SoundEffect, [number, number]>> }> = {
-  dendy: {
-    src: '/assets/audio/audioSprites/dendySpritesAudio.wav',
-    sprite: {
-      check: [0, 40321],
-      failure: [42000, 4122],
-      give_up: [48000, 1950],
-      round_created: [51000, 9156],
-      time_is_over: [62000, 2531],
-      win: [66000, 2902],
-    },
-  },
-  cs: {
-    src: '/assets/audio/audioSprites/csSpritesAudio.wav',
-    sprite: {
-      check: [0, 1501],
-      failure: [3000, 1983],
-      give_up: [6000, 1332],
-      round_created: [9000, 1509],
-      time_is_over: [12000, 1983],
-      win: [15000, 4261],
-    },
-  },
-  standard: {
-    src: '/assets/audio/audioSprites/standardSpritesAudio.wav',
-    sprite: {
-      check: [0, 11000],
-      give_up: [12000, 487],
-      round_created: [14000, 335],
-      time_is_over: [16000, 1069],
-      win: [19000, 3553],
-    },
-  },
-};
+const howls = new Map<string, Howl>();
 
-const players = new Map<SoundTheme, Howl>();
-
-const player = (theme: SoundTheme) => {
-  let howl = players.get(theme);
+function play(src: string, level: number) {
+  let howl = howls.get(src);
   if (!howl) {
-    const { src, sprite } = SPRITES[theme];
-    howl = new Howl({ src: [src], sprite: sprite as Record<string, [number, number]> });
-    players.set(theme, howl);
+    howl = new Howl({ src: [src] });
+    howls.set(src, howl);
   }
-
-  return howl;
-};
-
-/** Plays one effect at `level` (0..10), cutting off whatever is playing. Ignores mute: callers decide. */
-export function playSound(theme: SoundTheme, effect: SoundEffect, level: number) {
-  Howler.stop();
-  // Not every theme has every effect (Standard has no "failure").
-  if (!SPRITES[theme].sprite[effect]) return;
-  const howl = player(theme);
-  const id = howl.play(effect);
+  const id = howl.play();
   howl.volume(Math.max(0, Math.min(level, 10)) / 10, id);
 }
 
-export const hasSound = (theme: SoundTheme, effect: SoundEffect) => Boolean(SPRITES[theme].sprite[effect]);
+/** Plays one effect at `level` (0..10), cutting off whatever is playing. Ignores mute: callers decide. */
+export function playSound(effect: SoundEffect, level: number) {
+  Howler.stop();
+  play(GAME_SOUNDS[effect], level);
+}
 
 export function stopSounds() {
   Howler.stop();
@@ -94,14 +59,14 @@ function storedMute() {
 interface SoundState {
   muted: boolean;
   setMuted: (muted: boolean) => void;
-  /** The account's sound settings (theme and levels), seeded from the shared props. */
-  settings: Pick<SoundSettings, 'type' | 'level' | 'tournament_level'>;
+  /** The account's sound levels, seeded from the shared props. */
+  settings: Pick<SoundSettings, 'level' | 'tournament_level'>;
   setSettings: (settings: Partial<SoundState['settings']>) => void;
 }
 
 export const useSoundStore = create<SoundState>((set) => ({
   muted: storedMute(),
-  settings: { type: 'dendy', level: 7, tournament_level: 7 },
+  settings: { level: 7, tournament_level: 7 },
   setSettings: (settings) => set((state) => ({ settings: { ...state.settings, ...settings } })),
   setMuted: (muted) => {
     try {
@@ -126,18 +91,15 @@ const TOURNAMENT_SOUNDS = {
 
 export type TournamentSound = keyof typeof TOURNAMENT_SOUNDS;
 
-const tournamentPlayers = new Map<TournamentSound, Howl>();
+/** Plays a tournament cue at the tournament level (or `level`, for previews) unless sound is muted. */
+export function playTournamentSound(sound: TournamentSound, level = useSoundStore.getState().settings.tournament_level) {
+  if (useSoundStore.getState().muted) return;
+  play(TOURNAMENT_SOUNDS[sound], level);
+}
 
-/** Plays a tournament cue unless sound is muted or the theme is silent. */
-export function playTournamentSound(sound: TournamentSound) {
+/** Plays a game effect at the account's game level, unless muted. */
+export function playGameSound(effect: SoundEffect) {
   const { muted, settings } = useSoundStore.getState();
-  if (muted || settings.type === 'silent') return;
-
-  let howl = tournamentPlayers.get(sound);
-  if (!howl) {
-    howl = new Howl({ src: [TOURNAMENT_SOUNDS[sound]] });
-    tournamentPlayers.set(sound, howl);
-  }
-  const id = howl.play();
-  howl.volume(Math.max(0, Math.min(settings.tournament_level ?? settings.level, 10)) / 10, id);
+  if (muted) return;
+  playSound(effect, settings.level);
 }

@@ -5,6 +5,7 @@ defmodule CodebattleWeb.AuthController do
   alias Codebattle.Auth.Discord
   alias Codebattle.Auth.External
   alias Codebattle.Auth.Github
+  alias CodebattleWeb.AuthPage
   alias CodebattleWeb.UserAuth
 
   require Logger
@@ -30,8 +31,9 @@ defmodule CodebattleWeb.AuthController do
 
   def request(conn, params) do
     provider_name = params["provider"]
-    # TODO: add next from request prams to callback
     redirect_uri = Routes.auth_url(conn, :callback, provider_name)
+    # Where to land after the provider sends the user back (see callback/2).
+    conn = put_session(conn, :oauth_next, AuthPage.safe_next(params["next"]))
 
     case_result =
       case provider_name do
@@ -53,12 +55,8 @@ defmodule CodebattleWeb.AuthController do
   def callback(conn, %{"code" => code} = params) do
     provider_name = params["provider"]
 
-    next_path =
-      case params["next"] do
-        "" -> "/"
-        nil -> "/"
-        next -> next
-      end
+    # Read before log_in_user renews the session.
+    next_path = AuthPage.safe_next(get_session(conn, :oauth_next) || params["next"])
 
     case_result =
       case provider_name do

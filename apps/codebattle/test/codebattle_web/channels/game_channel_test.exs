@@ -104,6 +104,46 @@ defmodule CodebattleWeb.GameChannelTest do
       assert response.tournament.tournament_id == tournament.id
     end
 
+    test "tournament:ranking returns fresh standings for a tournament game", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1
+    } do
+      tournament = insert(:tournament, players: %{}, matches: %{}, players_count: 0)
+
+      {:ok, game} =
+        Game.Context.create_game(%{
+          state: "playing",
+          players: [user1, user2],
+          level: "easy",
+          tournament_id: tournament.id
+        })
+
+      {:ok, _response, socket} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+
+      ref = push(socket, "tournament:ranking", %{})
+      assert_reply(ref, :ok, %{ranking: %{entries: entries}, current_player: nil})
+      assert is_list(entries)
+    end
+
+    test "tournament:ranking is refused for a casual game", %{user1: user1, user2: user2, socket1: socket1} do
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+      {:ok, _response, socket} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+
+      ref = push(socket, "tournament:ranking", %{})
+      assert_reply(ref, :error, %{reason: :not_a_tournament_game})
+    end
+
+    test "tells the waiting creator when an opponent joins", %{user1: user1, user2: user2, socket1: socket1} do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
+
+      {:ok, _response, _socket} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+      {:ok, _game} = Game.Context.join_game(game.id, user2)
+
+      assert_push("game:updated", %{state: "playing"})
+    end
+
     test "pushes head to head after join", %{user1: user1, socket1: socket1} do
       {:ok, game} =
         Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})

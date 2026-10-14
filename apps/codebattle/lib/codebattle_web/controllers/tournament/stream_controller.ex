@@ -6,6 +6,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.TournamentResult
   alias CodebattleWeb.Api.GameView
+  alias CodebattleWeb.Frontend
   alias CodebattleWeb.TournamentAdminChannel
 
   def show(conn, params) do
@@ -16,11 +17,9 @@ defmodule CodebattleWeb.Tournament.StreamController do
       {game_id, game_params} = fetch_active_game(tournament)
 
       conn
-      |> put_view(CodebattleWeb.TournamentView)
-      |> put_layout(html: {CodebattleWeb.LayoutView, :empty})
-      |> assign(:body_class, "cb-stream-transparent-page")
       |> put_meta_tags(%{title: "Stream Tournament"})
-      |> render_inertia("TournamentThreejsStream", %{
+      |> Frontend.put_layout()
+      |> render_inertia("TournamentStream", %{
         "tournament_id" => tournament_id,
         "game_id" => game_id,
         "game" => game_params

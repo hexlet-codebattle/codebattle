@@ -3,11 +3,10 @@ defmodule CodebattleWeb.TaskController do
 
   alias Codebattle.Task
   alias Codebattle.Task.Stats
-  alias CodebattleWeb.NewFrontend
-  alias CodebattleWeb.NewFrontend.Present
+  alias CodebattleWeb.Frontend
+  alias CodebattleWeb.Frontend.Present
 
   plug(CodebattleWeb.Plugs.RequireAuth)
-  plug(:put_view, CodebattleWeb.TaskView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
@@ -23,13 +22,9 @@ defmodule CodebattleWeb.TaskController do
         url: Routes.task_path(conn, :index)
       })
 
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("TaskIndex", %{"tasks" => Present.tasks(tasks)})
-    else
-      render(conn, "index.html", %{tasks: tasks})
-    end
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("TaskIndex", %{"tasks" => Present.tasks(tasks)})
   end
 
   def show(conn, %{"id" => id}) do
@@ -37,13 +32,6 @@ defmodule CodebattleWeb.TaskController do
 
     if Task.can_see_task?(task, conn.assigns.current_user) do
       task_stats = Stats.get_stats(task.id)
-
-      props = %{
-        "page_title" => task.name,
-        "task" => task,
-        "task_stats" => task_stats,
-        "can_edit_task" => Task.can_access_task?(task, conn.assigns.current_user)
-      }
 
       conn =
         conn
@@ -54,22 +42,19 @@ defmodule CodebattleWeb.TaskController do
         })
         |> assign(:page_title, task.name)
 
-      if NewFrontend.enabled?(conn) do
-        # Task JSON has no timestamps/creator name; the new page shows them.
-        [meta] = Present.tasks([task])
+      # Task JSON has no timestamps/creator name; the page shows them.
+      [meta] = Present.tasks([task])
 
-        conn
-        |> NewFrontend.maybe_put_layout()
-        |> render_inertia(
-          "TaskPreview",
-          Map.merge(props, %{
-            "task_meta" => Map.take(meta, [:creator, :inserted_at, :updated_at]),
-            "can_delete_task" => Task.can_delete_task?(task, conn.assigns.current_user)
-          })
-        )
-      else
-        render_inertia(conn, "TaskPreview", props)
-      end
+      conn
+      |> Frontend.put_layout()
+      |> render_inertia("TaskPreview", %{
+        "page_title" => task.name,
+        "task" => task,
+        "task_stats" => task_stats,
+        "can_edit_task" => Task.can_access_task?(task, conn.assigns.current_user),
+        "task_meta" => Map.take(meta, [:creator, :inserted_at, :updated_at]),
+        "can_delete_task" => Task.can_delete_task?(task, conn.assigns.current_user)
+      })
     else
       conn
       |> put_status(:not_found)

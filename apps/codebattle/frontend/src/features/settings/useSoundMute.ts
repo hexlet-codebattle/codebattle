@@ -2,7 +2,7 @@ import { notifications } from '@mantine/notifications';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { type SoundSettings, useSoundStore } from '@/shared/sound';
+import { useSoundStore } from '@/shared/sound';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { updateSettings } from './api';
@@ -41,14 +41,8 @@ export function useSyncSoundMute() {
     if (serverMuted !== undefined) useSoundStore.getState().setMuted(serverMuted);
   }, [serverMuted]);
 
-  // Theme and levels for the sounds pages play (tournament cues, game events).
+  // Levels for the sounds pages play (tournament cues, game events).
   useEffect(() => {
-    if (sound) {
-      useSoundStore.getState().setSettings({
-        type: sound.type as SoundSettings['type'],
-        level: sound.level,
-        tournament_level: sound.tournament_level,
-      });
-    }
-  }, [sound?.type, sound?.level, sound?.tournament_level]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (sound) useSoundStore.getState().setSettings({ level: sound.level, tournament_level: sound.tournament_level });
+  }, [sound?.level, sound?.tournament_level]); // eslint-disable-line react-hooks/exhaustive-deps
 }

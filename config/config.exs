@@ -124,7 +124,8 @@ config :fun_with_flags, :persistence,
 
 config :inertia,
   endpoint: CodebattleWeb.Endpoint,
-  static_paths: ["/assets/app.js"],
+  # The asset version: changes with every frontend build, so stale tabs reload after a deploy.
+  static_paths: ["/assets/v2/manifest.json"],
   camelize_props: false,
   history: [encrypt: true],
   ssr: false

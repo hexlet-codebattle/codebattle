@@ -3,6 +3,7 @@ defmodule CodebattleWeb.Tournament.PlayerController do
 
   alias Codebattle.Tournament
   alias Codebattle.User
+  alias CodebattleWeb.Frontend
   alias Runner.Languages
 
   def show(conn, params) do
@@ -11,16 +12,16 @@ defmodule CodebattleWeb.Tournament.PlayerController do
     tournament = Tournament.Context.get!(params["id"])
 
     conn
-    |> put_view(CodebattleWeb.TournamentView)
     |> put_meta_tags(%{
       title: "#{user.name} Live",
       description: "#{String.slice(tournament.name, 0, 100)}",
       url: Routes.tournament_player_url(conn, :show, tournament.id, params["player_id"])
     })
-    |> put_layout(html: {CodebattleWeb.LayoutView, :empty})
+    |> Frontend.put_layout()
     |> render_inertia("TournamentPlayer", %{
       "tournament_id" => String.to_integer(params["id"]),
       "player_id" => String.to_integer(params["player_id"]),
+      "player_name" => user.name,
       "cancel_redirect_to_new_game" => true,
       "langs" => Languages.get_langs()
     })

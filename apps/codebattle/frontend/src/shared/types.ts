@@ -14,7 +14,7 @@ export interface CurrentUser {
   rank: number | null;
   points: number | null;
   /** Codebattle.User.SoundSettings; guests get the defaults. */
-  sound_settings?: { type: string; level: number; tournament_level: number; muted: boolean };
+  sound_settings?: { level: number; tournament_level: number; muted: boolean };
 }
 
 export interface Season {

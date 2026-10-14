@@ -77,3 +77,15 @@
   border-top: 1px solid var(--cb-border);
 }
 
+
+/* height="fill": the messages take whatever the parent leaves. */
+.panel[data-fill] {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+
+  & .scroll {
+    flex: 1;
+    min-height: 0;
+  }
+}

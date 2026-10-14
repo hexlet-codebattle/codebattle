@@ -104,7 +104,7 @@
   background: var(--cb-sunken);
 }
 
-/* Selectable tiles: languages and sound themes. */
+/* Selectable tiles: languages. */
 .tiles {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
@@ -155,24 +155,6 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.soundThemes {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--mantine-spacing-sm);
-
-  @media (max-width: $mantine-breakpoint-xs) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.soundTheme {
-  composes: tile;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
 }
 
 .volume {

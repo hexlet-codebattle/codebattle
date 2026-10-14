@@ -168,10 +168,8 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   defp calculate_result_metrics(%{check_result: %{status: "error"}} = token), do: token
 
   defp calculate_result_metrics(token) do
-    success_asserts = Enum.filter(token.check_result.asserts, fn x -> x.status == "success" end)
-    failure_asserts = Enum.filter(token.check_result.asserts, fn x -> x.status == "failure" end)
-
-    success_count = Enum.count(success_asserts)
+    # Asserts keep the task's order, so "Test 3" is the task's third test.
+    success_count = Enum.count(token.check_result.asserts, &(&1.status == "success"))
     asserts_count = Enum.count(token.task.asserts)
 
     status =
@@ -183,8 +181,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
       token
       | check_result: %{
           token.check_result
-          | asserts: failure_asserts ++ success_asserts,
-            success_count: success_count,
+          | success_count: success_count,
             asserts_count: asserts_count,
             status: status
         }

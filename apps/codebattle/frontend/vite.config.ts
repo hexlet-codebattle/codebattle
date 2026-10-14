@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react';
 import gettextParser from 'gettext-parser';
 import { defineConfig, type Plugin } from 'vite';
 
-// The legacy frontend (../assets) owns CODEBATTLE_VITE_PORT; this one runs beside it.
-// Keep in sync with compose.yml and CodebattleWeb.NewFrontend.
+// The frontend dev server (Phoenix runs it as a watcher, see config/dev.exs).
+// Keep in sync with compose.yml and CodebattleWeb.Frontend.
 const port = Number(process.env.CODEBATTLE_FRONTEND_PORT) || 8081;
 
 // Turns a gettext .po file into `{ msgid: msgstr }` for i18next. Untranslated
@@ -46,7 +46,19 @@ export default defineConfig(({ command }) => {
   return {
     plugins: [poLoader(), react()],
     resolve: {
-      alias: { '@': path.resolve(__dirname, 'src') },
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+        // monaco-vim deep-imports Monaco internals that its exports map hides.
+        'monaco-editor/esm/vs': path.resolve(__dirname, 'node_modules/monaco-editor/esm/vs'),
+      },
+    },
+    // Pre-bundle Monaco's workers so the dev server serves them as single modules.
+    optimizeDeps: {
+      include: [
+        'monaco-editor/esm/vs/editor/editor.worker',
+        'monaco-editor/esm/vs/language/css/css.worker',
+        'monaco-editor/esm/vs/language/typescript/ts.worker',
+      ],
     },
     // Production files are copied to priv/static/assets/v2 (see Containerfile.codebattle),
     // which nginx and phx.digest already serve under /assets.
@@ -69,7 +81,11 @@ export default defineConfig(({ command }) => {
       manifest: 'manifest.json',
       rollupOptions: {
         // index.html (theme showcase) is dev-only: open http://localhost:8081/.
-        input: { main: path.resolve(__dirname, 'src/main.tsx') },
+        input: {
+          main: path.resolve(__dirname, 'src/main.tsx'),
+          // Admin pages: LiveView socket + legacy admin styles (layout/admin.html.heex).
+          admin: path.resolve(__dirname, 'src/admin/main.ts'),
+        },
       },
     },
   };

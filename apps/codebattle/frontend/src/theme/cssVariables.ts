@@ -76,7 +76,8 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--cb-hover': 'rgba(20, 20, 40, 0.04)',
     '--cb-stripe': 'rgba(20, 20, 40, 0.02)',
     '--cb-shadow-panel': '0 6px 16px rgba(20, 20, 40, 0.08)',
-    '--cb-editor': '#fffffe',
+    // The Codebattle editor theme's background (features/game/editor/themes.ts).
+    '--cb-editor': '#ffffff',
     '--cb-selection': 'rgba(58, 63, 80, 0.18)',
 
     '--mantine-color-body': '#f7f8fb',
@@ -113,7 +114,7 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--cb-hover': 'rgba(255, 255, 255, 0.04)',
     '--cb-stripe': 'rgba(255, 255, 255, 0.02)',
     '--cb-shadow-panel': '0 8px 18px rgba(0, 0, 0, 0.25)',
-    '--cb-editor': '#1e1e1e',
+    '--cb-editor': 'var(--mantine-color-dark-8)',
     '--cb-selection': 'rgba(164, 178, 214, 0.3)',
 
     // Mantine defaults pick shades too dark/blue for this palette.

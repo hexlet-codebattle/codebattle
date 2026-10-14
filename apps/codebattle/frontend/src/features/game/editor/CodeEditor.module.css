@@ -1,0 +1,32 @@
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--cb-editor);
+}
+
+.editor {
+  flex: 1;
+  min-height: 0;
+}
+
+/* monaco-vim writes "-- INSERT --" and the command line here. */
+.vimStatus {
+  flex: none;
+  min-height: 22px;
+  padding: 2px 10px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 12px;
+  color: var(--cb-text-muted);
+  border-top: 1px solid var(--cb-border);
+
+  & input {
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--cb-text-strong);
+    font: inherit;
+  }
+}

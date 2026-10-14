@@ -1,40 +1,73 @@
 import { Button, Group, SimpleGrid, Slider, Stack, Switch, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import {
-  IconDeviceGamepad2,
-  IconPlayerPlay,
-  IconTarget,
-  IconVolume,
-  IconVolume2,
-  IconVolumeOff,
-} from '@tabler/icons-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { IconPlayerPlay, IconVolume, IconVolume2, IconVolumeOff } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { hasSound, playSound, useSoundStore, type SoundEffect, type SoundSettings, type SoundTheme, stopSounds } from '@/shared/sound';
+import {
+  playSound,
+  playTournamentSound,
+  type SoundEffect,
+  type SoundSettings,
+  stopSounds,
+  type TournamentSound,
+  useSoundStore,
+} from '@/shared/sound';
 
 import { type AccountUser, type SettingsResponse, updateSettings } from './api';
 import { SaveStatus, Section, useSaveState } from './Section';
 import { useSoundMute } from './useSoundMute';
 import classes from './Settings.module.css';
 
-const THEMES: { value: SoundTheme; label: string; hint: string; icon: ReactNode }[] = [
-  { value: 'dendy', label: 'Dendy', hint: '8-bit console chiptune', icon: <IconDeviceGamepad2 size={20} /> },
-  { value: 'cs', label: 'CS', hint: 'Counter-Strike radio', icon: <IconTarget size={20} /> },
-  { value: 'standard', label: 'Standard', hint: 'Calm and simple', icon: <IconVolume size={20} /> },
+// Every cue the app plays, in the order a game / tournament hits them.
+const GAME_SAMPLES: { effect: SoundEffect; label: string }[] = [
+  { effect: 'round_created', label: 'Game started' },
+  { effect: 'check', label: 'Run tests' },
+  { effect: 'failure', label: 'Failed tests' },
+  { effect: 'win', label: 'Win' },
+  { effect: 'give_up', label: 'Gave up' },
+  { effect: 'time_is_over', label: 'Time is over' },
+  { effect: 'message', label: 'New message' },
 ];
 
-const SAMPLES: { effect: SoundEffect; label: string }[] = [
-  { effect: 'win', label: 'Win' },
-  { effect: 'failure', label: 'Failed tests' },
-  { effect: 'round_created', label: 'Round start' },
-  { effect: 'time_is_over', label: 'Time is over' },
+const TOURNAMENT_SAMPLES: { cue: TournamentSound; label: string }[] = [
+  { cue: 'started', label: 'Tournament start' },
+  { cue: 'roundStarted', label: 'Round start' },
+  { cue: 'roundFinished', label: 'Round end' },
+  { cue: 'finished', label: 'Tournament end' },
 ];
+
+interface SampleRowProps {
+  label: string;
+  samples: { key: string; label: string; play: () => void }[];
+  disabled: boolean;
+}
+
+function SampleRow({ label, samples, disabled }: SampleRowProps) {
+  const { t } = useTranslation();
+
+  return (
+    <Group gap={6}>
+      <Text size="xs" c="dimmed" w={88}>
+        {label}
+      </Text>
+      {samples.map((sample) => (
+        <Button
+          key={sample.key}
+          size="compact-xs"
+          variant="default"
+          leftSection={<IconPlayerPlay size={12} />}
+          disabled={disabled}
+          onClick={sample.play}
+        >
+          {t(sample.label)}
+        </Button>
+      ))}
+    </Group>
+  );
+}
 
 const MARKS = [0, 5, 10].map((value) => ({ value, label: String(value) }));
-
-// "silent" is a legacy type; the switch below replaces it.
-const themeOf = (settings: SoundSettings): SoundTheme => (settings.type === 'silent' ? 'dendy' : settings.type);
 
 interface VolumeProps {
   label: string;
@@ -86,7 +119,6 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
   const { t } = useTranslation();
   const { state, track } = useSaveState();
   const [sound, setSound] = useState<SoundSettings>(account.sound_settings);
-  const theme = themeOf(sound);
   // Shared with the header switch.
   const { muted, toggle } = useSoundMute();
 
@@ -109,7 +141,7 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
       label={t('Sound')}
       icon={<IconVolume size={18} />}
       title={t('Sound settings')}
-      description={t('Choose how game and tournament notifications sound.')}
+      description={t('Set the volume of game and tournament sounds.')}
       aside={
         <Group gap="md" wrap="nowrap">
           <SaveStatus state={state} />
@@ -125,40 +157,6 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
       }
     >
       <Stack gap="lg" style={{ opacity: muted ? 0.55 : 1, transition: 'opacity 150ms' }}>
-        <Stack gap="xs">
-          <Text className={classes.subhead}>{t('Sound theme')}</Text>
-          <div className={classes.soundThemes} role="radiogroup" aria-label={t('Sound theme')}>
-            {THEMES.map(({ value, label, hint, icon }) => {
-              const active = value === theme;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  className={classes.soundTheme}
-                  data-active={active || undefined}
-                  disabled={muted}
-                  onClick={() => {
-                    playSound(value, 'win', sound.level);
-                    if (!active) void save({ type: value });
-                  }}
-                >
-                  <Group gap={8} wrap="nowrap">
-                    {icon}
-                    <Text fw={700} inherit>
-                      {t(label)}
-                    </Text>
-                  </Group>
-                  <Text size="xs" style={{ opacity: 0.75 }} inherit={false}>
-                    {t(hint)}
-                  </Text>
-                </button>
-              );
-            })}
-          </div>
-        </Stack>
-
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
           <Volume
             label={t('Game sound level')}
@@ -166,7 +164,7 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
             disabled={muted}
             onChange={(level) => setSound((current) => ({ ...current, level }))}
             onChangeEnd={(level) => {
-              playSound(theme, 'win', level);
+              playSound('win', level);
               void save({ level });
             }}
           />
@@ -176,29 +174,39 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
             disabled={muted}
             onChange={(tournament_level) => setSound((current) => ({ ...current, tournament_level }))}
             onChangeEnd={(tournament_level) => {
-              playSound(theme, 'round_created', tournament_level);
+              stopSounds();
+              playTournamentSound('roundStarted', tournament_level);
               void save({ tournament_level });
             }}
           />
         </SimpleGrid>
 
-        <Group gap={6}>
-          <Text size="xs" c="dimmed" mr={4}>
+        <Stack gap={8}>
+          <Text size="xs" c="dimmed">
             {t('Try it:')}
           </Text>
-          {SAMPLES.map(({ effect, label }) => (
-            <Button
-              key={effect}
-              size="compact-xs"
-              variant="default"
-              leftSection={<IconPlayerPlay size={12} />}
-              disabled={muted || !hasSound(theme, effect)}
-              onClick={() => playSound(theme, effect, sound.level)}
-            >
-              {t(label)}
-            </Button>
-          ))}
-        </Group>
+          <SampleRow
+            label={t('Game')}
+            disabled={muted}
+            samples={GAME_SAMPLES.map(({ effect, label }) => ({
+              key: effect,
+              label,
+              play: () => playSound(effect, sound.level),
+            }))}
+          />
+          <SampleRow
+            label={t('Tournament')}
+            disabled={muted}
+            samples={TOURNAMENT_SAMPLES.map(({ cue, label }) => ({
+              key: cue,
+              label,
+              play: () => {
+                stopSounds();
+                playTournamentSound(cue, sound.tournament_level);
+              },
+            }))}
+          />
+        </Stack>
       </Stack>
     </Section>
   );

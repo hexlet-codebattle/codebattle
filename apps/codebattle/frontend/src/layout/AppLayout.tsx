@@ -6,6 +6,7 @@ import {
   IconChecklist,
   IconChevronDown,
   IconLogout,
+  IconMessageReport,
   IconMedal,
   IconSchool,
   IconSettings,
@@ -16,13 +17,14 @@ import {
 } from '@tabler/icons-react';
 import { usePage } from '@inertiajs/react';
 import { notifications } from '@mantine/notifications';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
 import { useInviteDialog } from '@/features/invites/dialog';
 import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
+import { FeedbackModal } from '@/features/feedback/FeedbackModal';
 import { CreateGameModal } from '@/features/lobby/components/CreateGameModal';
 import { DeployBanner } from '@/features/main/DeployBanner';
 import { useMainChannel } from '@/features/main/useMainChannel';
@@ -112,17 +114,19 @@ function OnlineCount() {
   );
 }
 
-function UserMenu() {
+/** The signed-in user (name, avatar, menu) or Sign in / Sign up; `compact` for the game's top bar. */
+export function UserMenu({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation();
   const { current_user: user, branding } = useSharedProps();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   if (user.is_guest) {
     return (
       <Group gap="xs">
-        <Button component="a" href="/session/new" variant="outline" color="green" size="sm">
+        <Button component="a" href="/session/new" variant="outline" color="green" size={compact ? 'compact-sm' : 'sm'}>
           {t('Sign in')}
         </Button>
-        <Button component="a" href="/users/new" variant="filled" color="green" size="sm">
+        <Button component="a" href="/users/new" variant="filled" color="green" size={compact ? 'compact-sm' : 'sm'}>
           {t('Sign up')}
         </Button>
       </Group>
@@ -132,74 +136,80 @@ function UserMenu() {
   const external = { target: '_blank', rel: 'noreferrer' } as const;
 
   return (
-    <Menu position="bottom-end" width={230}>
-      <Menu.Target>
-        <UnstyledButton className={classes.userButton}>
-          <Group gap="sm" wrap="nowrap">
-            <Text size="sm" fw={700} c="bright" visibleFrom="xs">
-              {user.name}
-            </Text>
-            <UserAvatar user={user} size={28} />
-            <IconChevronDown size={14} />
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-      <Menu.Dropdown>
-        {!branding.hide_user_dropdown && (
-          <>
-            <Menu.Item component="a" href={`/users/${user.id}`} leftSection={<IconUser size={16} />}>
-              {t('My Profile')}
+    <>
+      <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <Menu position="bottom-end" width={230}>
+        <Menu.Target>
+          <UnstyledButton className={classes.userButton}>
+            <Group gap="sm" wrap="nowrap">
+              <Text size="sm" fw={700} c="bright" visibleFrom={compact ? 'md' : 'xs'}>
+                {user.name}
+              </Text>
+              <UserAvatar user={user} size={compact ? 24 : 28} />
+              <IconChevronDown size={14} />
+            </Group>
+          </UnstyledButton>
+        </Menu.Target>
+        <Menu.Dropdown>
+          {!branding.hide_user_dropdown && (
+            <>
+              <Menu.Item component="a" href={`/users/${user.id}`} leftSection={<IconUser size={16} />}>
+                {t('My Profile')}
+              </Menu.Item>
+              <Menu.Item component="a" href="/settings" leftSection={<IconSettings size={16} />}>
+                {t('Settings')}
+              </Menu.Item>
+              <Menu.Item component="a" href="/hall_of_fame" leftSection={<IconMedal size={16} />}>
+                {t('Hall of Fame')}
+              </Menu.Item>
+              <Menu.Item component="a" href="/tournaments" leftSection={<IconTrophy size={16} />}>
+                {t('Tournaments')}
+              </Menu.Item>
+              <Menu.Item component="a" href="/tasks" leftSection={<IconChecklist size={16} />}>
+                {t('Tasks')}
+              </Menu.Item>
+              <Menu.Item component="a" href="/clans" leftSection={<IconUsersGroup size={16} />}>
+                {t('Clans')}
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item component="a" href={REPO_URL} {...external} leftSection={<IconBrandGithub size={16} />}>
+                {t('SourceCode')}
+              </Menu.Item>
+              <Menu.Item component="a" href="https://hexlet.io" {...external} leftSection={<IconSchool size={16} />}>
+                {t('Hexlet')}
+              </Menu.Item>
+              <Menu.Item
+                component="a"
+                href="https://discord.gg/dTpFXrYU3v"
+                {...external}
+                leftSection={<IconBrandDiscord size={16} />}
+              >
+                {t('Join Discord')}
+              </Menu.Item>
+              <Menu.Item
+                component="a"
+                href="https://t.me/hexletcommunity/5"
+                {...external}
+                leftSection={<IconBrandTelegram size={16} />}
+              >
+                {t('Tg#codebattle')}
+              </Menu.Item>
+              <Menu.Item onClick={() => setFeedbackOpen(true)} leftSection={<IconMessageReport size={16} />}>
+                {t('Send feedback')}
+              </Menu.Item>
+              <Menu.Divider />
+            </>
+          )}
+          <form method="post" action="/session">
+            <input type="hidden" name="_method" value="delete" />
+            <input type="hidden" name="_csrf_token" value={csrfToken()} />
+            <Menu.Item component="button" type="submit" color="red" leftSection={<IconLogout size={16} />}>
+              {t('Sign Out')}
             </Menu.Item>
-            <Menu.Item component="a" href="/settings" leftSection={<IconSettings size={16} />}>
-              {t('Settings')}
-            </Menu.Item>
-            <Menu.Item component="a" href="/hall_of_fame" leftSection={<IconMedal size={16} />}>
-              {t('Hall of Fame')}
-            </Menu.Item>
-            <Menu.Item component="a" href="/tournaments" leftSection={<IconTrophy size={16} />}>
-              {t('Tournaments')}
-            </Menu.Item>
-            <Menu.Item component="a" href="/tasks" leftSection={<IconChecklist size={16} />}>
-              {t('Tasks')}
-            </Menu.Item>
-            <Menu.Item component="a" href="/clans" leftSection={<IconUsersGroup size={16} />}>
-              {t('Clans')}
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item component="a" href={REPO_URL} {...external} leftSection={<IconBrandGithub size={16} />}>
-              {t('SourceCode')}
-            </Menu.Item>
-            <Menu.Item component="a" href="https://hexlet.io" {...external} leftSection={<IconSchool size={16} />}>
-              {t('Hexlet')}
-            </Menu.Item>
-            <Menu.Item
-              component="a"
-              href="https://discord.gg/dTpFXrYU3v"
-              {...external}
-              leftSection={<IconBrandDiscord size={16} />}
-            >
-              {t('Join Discord')}
-            </Menu.Item>
-            <Menu.Item
-              component="a"
-              href="https://t.me/hexletcommunity/5"
-              {...external}
-              leftSection={<IconBrandTelegram size={16} />}
-            >
-              {t('Tg#codebattle')}
-            </Menu.Item>
-            <Menu.Divider />
-          </>
-        )}
-        <form method="post" action="/session">
-          <input type="hidden" name="_method" value="delete" />
-          <input type="hidden" name="_csrf_token" value={csrfToken()} />
-          <Menu.Item component="button" type="submit" color="red" leftSection={<IconLogout size={16} />}>
-            {t('Sign Out')}
-          </Menu.Item>
-        </form>
-      </Menu.Dropdown>
-    </Menu>
+          </form>
+        </Menu.Dropdown>
+      </Menu>
+    </>
   );
 }
 

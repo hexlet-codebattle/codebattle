@@ -124,7 +124,7 @@ and update `.devcontainer/devcontainer.json`'s `runServices` list to match.
 #### Port already in use
 
 The dev container publishes Phoenix on `127.0.0.1:4000` and Vite on
-`127.0.0.1:8080`. If another project holds one of them, `docker compose up`
+`127.0.0.1:8081`. If another project holds one of them, `docker compose up`
 fails with `failed to bind host port ... address already in use` and the
 container never starts.
 
@@ -134,10 +134,10 @@ container to free ports in `.env`:
 
 ```
 CODEBATTLE_PORT=4010
-CODEBATTLE_VITE_PORT=8090
+CODEBATTLE_FRONTEND_PORT=8091
 ```
 
-Both variables are read by Compose and by `vite.config.js`, so the container
+Both variables are read by Compose and by `apps/codebattle/frontend/vite.config.ts`, so the container
 and the dev server stay in sync.
 
 #### macOS

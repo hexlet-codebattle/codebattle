@@ -69,8 +69,6 @@ install-mix:
 	$(DEV) mix deps.get --check-locked
 
 install-pnpm:
-	$(DEV) pnpm --dir apps/codebattle install --frozen-lockfile
-	$(DEV) pnpm --dir apps/codebattle run build:mem
 	$(DEV) pnpm --dir apps/codebattle/frontend install --frozen-lockfile
 
 server:
@@ -85,8 +83,7 @@ compile:
 test:
 	$(DEV) mix coveralls.json --exclude image_executor --max-failures 1
 
-test-fe:
-	$(DEV) pnpm --dir apps/codebattle test
+test-fe: check-frontend
 
 test-code-checkers:
 	$(DEV) env CODEBATTLE_EXECUTOR=local mix test apps/codebattle/test/images --max-failures 10
@@ -101,13 +98,13 @@ credo:
 	$(DEV) mix credo --strict
 
 lint-js:
-	$(DEV) pnpm --dir apps/codebattle run lint
+	$(DEV) pnpm --dir apps/codebattle/frontend run lint
 
 lint-js-fix:
-	$(DEV) pnpm --dir apps/codebattle run lint-fix
+	$(DEV) pnpm --dir apps/codebattle/frontend exec oxlint --fix
 
 check-js:
-	$(DEV) pnpm --dir apps/codebattle run check
+	$(DEV) pnpm --dir apps/codebattle/frontend run check
 
 check-frontend:
 	$(DEV) pnpm --dir apps/codebattle/frontend run typecheck
@@ -147,7 +144,7 @@ clean:
 		exit 2; \
 	fi
 	$(DEV_COMPOSE) down --volumes --remove-orphans
-	rm -rf _build deps .elixir_ls priv/static node_modules apps/codebattle/node_modules
+	rm -rf _build deps .elixir_ls priv/static node_modules apps/codebattle/frontend/node_modules apps/codebattle/frontend/dist
 
 ARS_ARGS ?=
 ARS_GOCACHE ?= /workspace/tmp/ars-go-build
@@ -196,20 +193,20 @@ ansible-vault-edit-production:
 	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
 
 build-local:
-	DOCKER_BUILDKIT=1 docker build --target assets-image \
+	DOCKER_BUILDKIT=1 docker build --target frontend-image \
 				--file Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
-				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image .
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image \
+				--tag ghcr.io/hexlet-codebattle/codebattle:frontend-image .
 	DOCKER_BUILDKIT=1 docker build --target compile-image \
 				--file Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image .
 	DOCKER_BUILDKIT=1 docker build --target nginx-assets \
 				--file Containerfile.codebattle \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:latest \
 				--tag ghcr.io/hexlet-codebattle/nginx-assets:latest .
@@ -230,32 +227,32 @@ build-local:
 				--tag ghcr.io/hexlet-codebattle/runner:latest .
 
 build-codebattle:
-	docker pull ghcr.io/hexlet-codebattle/codebattle:assets-image  || true
+	docker pull ghcr.io/hexlet-codebattle/codebattle:frontend-image  || true
 	docker pull ghcr.io/hexlet-codebattle/codebattle:compile-image || true
 	docker pull ghcr.io/hexlet-codebattle/codebattle:latest        || true
-	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target assets-image \
+	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target frontend-image \
 				--file Containerfile.codebattle \
-				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache \
-				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache,mode=max) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:frontend-cache \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:frontend-cache,mode=max) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
-				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image .
+				--tag ghcr.io/hexlet-codebattle/codebattle:frontend-image .
 	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target compile-image \
 				--file Containerfile.codebattle \
-				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache \
+				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:frontend-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache \
 				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache,mode=max) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image .
 	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target nginx-assets \
 				--file Containerfile.codebattle \
-				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache \
+				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:frontend-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/nginx-assets:buildcache \
 				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/nginx-assets:buildcache,mode=max) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:latest \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -273,24 +270,24 @@ build-codebattle:
 
 build-arm:
 	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
-				--target assets-image \
+				--target frontend-image \
 				--file Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image-arm \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
-				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image-arm .
+				--tag ghcr.io/hexlet-codebattle/codebattle:frontend-image-arm .
 	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
 				--target compile-image \
 				--file Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image-arm \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image-arm \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image-arm .
 	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
 				--target nginx-assets \
 				--file Containerfile.codebattle \
-				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:frontend-image-arm \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image-arm \
 				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:arm \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -305,13 +302,13 @@ build-arm:
 				--tag ghcr.io/hexlet-codebattle/codebattle:arm .
 
 push-codeabttle-arm:
-	docker push ghcr.io/hexlet-codebattle/codebattle:assets-image-arm
+	docker push ghcr.io/hexlet-codebattle/codebattle:frontend-image-arm
 	docker push ghcr.io/hexlet-codebattle/codebattle:compile-image-arm
 	docker push ghcr.io/hexlet-codebattle/codebattle:arm
 	docker push ghcr.io/hexlet-codebattle/nginx-assets:arm
 
 push-codebattle:
-	docker push ghcr.io/hexlet-codebattle/codebattle:assets-image
+	docker push ghcr.io/hexlet-codebattle/codebattle:frontend-image
 	docker push ghcr.io/hexlet-codebattle/codebattle:compile-image
 	docker push ghcr.io/hexlet-codebattle/codebattle:latest
 	docker push ghcr.io/hexlet-codebattle/nginx-assets:latest

@@ -1,0 +1,867 @@
+/*
+ * Full-screen battle: a 44px top bar, then sidebar | editors filling the viewport.
+ * Below md everything stacks and the page scrolls (my editor first, chat last).
+ */
+.room {
+  display: grid;
+  grid-template-rows: 44px minmax(0, 1fr);
+  height: 100dvh;
+  background: var(--mantine-color-body);
+
+  @media (max-width: $mantine-breakpoint-md) {
+    height: auto;
+    min-height: 100dvh;
+  }
+}
+
+/* ---------- top bar ---------- */
+
+.topBar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  background: var(--cb-panel);
+  border-bottom: 1px solid var(--cb-border);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    & .topCenter {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      padding-bottom: 6px;
+    }
+  }
+}
+
+.topLeft {
+  min-width: 0;
+}
+
+.topCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.topRight {
+  min-width: 0;
+}
+
+/* Same as the site header: the logo's currentColor parts in the strong text colour. */
+.logo {
+  display: inline-flex;
+  flex: none;
+  color: var(--cb-text-strong);
+
+  & svg {
+    width: auto;
+    height: 22px;
+  }
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-md);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--cb-text-strong);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+
+  &[data-urgent] {
+    color: var(--cb-danger);
+    border-color: color-mix(in srgb, var(--cb-danger) 50%, transparent);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  &[data-over] {
+    font-size: var(--mantine-font-size-sm);
+    font-weight: 700;
+    color: var(--cb-text-muted);
+  }
+}
+
+.h2h {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-sm);
+  color: var(--cb-text-muted);
+  cursor: help;
+
+  & b {
+    padding: 0 3px;
+    font-weight: 700;
+  }
+
+  & b[data-lead] {
+    color: var(--cb-text-strong);
+    font-weight: 800;
+  }
+}
+
+.outcome {
+  min-width: 0;
+}
+
+/* ---------- body ---------- */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  min-height: 0;
+}
+
+/* Task (scrolls inside) | tournament round and standings. Capped so the editors keep the room. */
+.brief {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  height: clamp(200px, 34dvh, 380px);
+  min-height: 0;
+
+  &[data-aside] {
+    grid-template-columns: minmax(0, 1fr) clamp(320px, 26vw, 440px);
+  }
+
+  @media (max-width: $mantine-breakpoint-md) {
+    height: auto;
+
+    &[data-aside] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+/* Task | Tests: tabs on top, the body scrolls. */
+.briefMain {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  min-height: 0;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+  overflow: hidden;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-right: 1px solid var(--cb-border);
+  background: var(--cb-sunken);
+}
+
+.railButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 38px;
+  padding: 6px 0;
+  border-radius: 6px;
+  color: var(--cb-text-muted);
+
+  &:hover {
+    color: var(--cb-text-strong);
+    background: var(--cb-hover);
+  }
+
+  &[data-active] {
+    color: var(--cb-text-strong);
+    background: var(--cb-panel);
+    box-shadow: inset 2px 0 0 var(--cb-success);
+  }
+}
+
+.railScore {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--cb-danger);
+
+  &[data-ok] {
+    color: var(--cb-success);
+  }
+}
+
+.briefBody {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 14px;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    max-height: 45dvh;
+  }
+}
+
+.testsEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  min-height: 60px;
+  font-size: var(--mantine-font-size-sm);
+  color: var(--cb-text-muted);
+}
+
+.briefAside {
+  display: flex;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.editors {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: 6px;
+  min-height: 0;
+
+  &[data-single] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (max-width: $mantine-breakpoint-md) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+}
+
+/* ---------- editor pane ---------- */
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  /* Fills the room under the task strip, down to the floor. */
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    height: 70dvh;
+  }
+
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  overflow: hidden;
+  background: var(--cb-editor);
+
+  &[data-mine] {
+    border-color: color-mix(in srgb, var(--cb-success) 45%, var(--cb-border));
+  }
+
+  /* Framed by its host (broadcast window). */
+  &[data-embedded] {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+.paneBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 38px;
+  padding: 3px 6px 3px 10px;
+  background: var(--cb-panel);
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.paneActions {
+  flex: none;
+}
+
+.playerChip {
+  flex: 1;
+}
+
+.langButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--cb-border);
+  background: var(--cb-sunken);
+  color: var(--cb-text);
+
+  &:hover:not(:disabled) {
+    background: var(--cb-hover);
+  }
+
+  &:disabled {
+    cursor: default;
+    background: transparent;
+    border-color: transparent;
+  }
+}
+
+/* ---------- sidebar ---------- */
+
+/* Two rows: the round clock, then the standings (scroll inside when long). */
+.tournamentBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+}
+
+.standings {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.standingsTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rankList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rankRow {
+  display: grid;
+  grid-template-columns: 24px 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border-radius: 5px;
+
+  &[data-me] {
+    background: color-mix(in srgb, var(--cb-success) 14%, transparent);
+    color: var(--cb-text-strong);
+  }
+}
+
+.rankPlace {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cb-text-muted);
+  text-align: right;
+}
+
+.rankName {
+  min-width: 0;
+}
+
+.rankScore {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rankGap {
+  text-align: center;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--cb-text-muted);
+}
+
+/* ---------- task ---------- */
+
+.task {
+  position: relative;
+}
+
+/* EN/RU and Preview, stacked in the description's top-right corner. */
+.taskCorner {
+  float: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 0 0 6px 12px;
+}
+
+/* The task name in the top bar doubles as the strip toggle. */
+.taskToggle {
+  min-width: 0;
+  max-width: 100%;
+
+  & :global(.mantine-Button-label) {
+    min-width: 0;
+  }
+}
+
+/* The broadcast scales the task with --task-font-size. */
+.description {
+  font-size: var(--task-font-size, var(--mantine-font-size-sm));
+}
+
+/* ---------- output ---------- */
+
+.out {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.outSplit {
+  display: grid;
+  /* Verdict and squares in a narrow column (~15%), the chosen test gets the rest. */
+  grid-template-columns: clamp(170px, 15%, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Status line: icon, verdict, score on the right. */
+.outHead {
+  --tone: var(--cb-text-muted);
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tone);
+
+  & > :global(.mantine-Text-root) {
+    color: var(--cb-text-strong);
+  }
+
+  &[data-tone='ok'] {
+    --tone: var(--cb-success);
+  }
+
+  &[data-tone='fail'],
+  &[data-tone='error'] {
+    --tone: var(--cb-danger);
+  }
+}
+
+.outScore {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+}
+
+/* One numbered square per test. */
+.testStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.testCell {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 3px;
+  border-radius: 4px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cb-danger);
+  background: color-mix(in srgb, var(--cb-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cb-danger) 30%, transparent);
+  transition:
+    transform 80ms ease,
+    box-shadow 80ms ease;
+
+  &[data-passed] {
+    color: var(--cb-success);
+    background: color-mix(in srgb, var(--cb-success) 12%, transparent);
+    border-color: color-mix(in srgb, var(--cb-success) 30%, transparent);
+  }
+
+  &:hover:not([data-static]) {
+    transform: translateY(-1px);
+  }
+
+  &[data-static] {
+    cursor: default;
+  }
+
+  &[data-active] {
+    color: #fff;
+    background: var(--cb-danger);
+    border-color: var(--cb-danger);
+  }
+
+  &[data-active][data-passed] {
+    background: var(--cb-success);
+    border-color: var(--cb-success);
+  }
+}
+
+/* The chosen test: label column + monospace values. */
+.testDetail {
+  flex: none;
+  border: 1px solid var(--cb-border);
+  border-radius: 6px;
+  background: var(--cb-sunken);
+  overflow: hidden;
+  scroll-margin: 4px;
+  transition: border-color 150ms ease;
+
+  &[data-active] {
+    border-color: var(--cb-text-muted);
+    box-shadow: inset 3px 0 0 var(--cb-danger);
+  }
+}
+
+/* The failed tests, one card each; the strip body scrolls them. */
+.testList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Verdict and squares stay in view while the list scrolls. */
+.outPinned {
+  position: sticky;
+  top: 0;
+}
+
+.testDetailHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.testValues {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0;
+  padding: 8px 10px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 12px;
+
+  & dt {
+    color: var(--cb-text-muted);
+  }
+
+  & dd {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--cb-text-strong);
+  }
+
+  & dd[data-wrong] {
+    color: var(--cb-danger);
+    font-weight: 700;
+  }
+
+  & dd[data-right] {
+    color: var(--cb-success);
+    font-weight: 700;
+  }
+
+  & pre {
+    margin: 0;
+    max-height: 160px;
+    overflow: auto;
+    white-space: pre-wrap;
+    font: inherit;
+    color: var(--cb-text);
+  }
+}
+
+.outputError {
+  margin: 0;
+  padding: 8px 10px;
+  max-height: 320px;
+  overflow: auto;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--cb-text);
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+}
+
+/* ---------- misc ---------- */
+
+.waiting {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 16px;
+}
+
+.offline {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 4px 14px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--cb-danger);
+  box-shadow: var(--cb-shadow-panel);
+  z-index: 300;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---------- history ---------- */
+
+.replayBar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-wrap: wrap;
+  }
+}
+
+.replayTime {
+  flex: none;
+  min-width: 96px;
+  font-variant-numeric: tabular-nums;
+}
+
+.replaySlider {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* ---------- countdown ---------- */
+
+/* The timer as a capsule that fills up as the time runs out. */
+.timerBar {
+  --timer-color: var(--cb-success);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(150px, 16vw, 220px);
+  height: 28px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--cb-sunken);
+  border: 1px solid color-mix(in srgb, var(--timer-color) 45%, var(--cb-border));
+
+  &[data-phase='warn'] {
+    --timer-color: var(--mantine-color-yellow-6);
+  }
+
+  &[data-phase='urgent'] {
+    --timer-color: var(--cb-danger);
+
+    & .timerLabel {
+      animation: pulse 1s ease-in-out infinite;
+    }
+  }
+}
+
+.timerFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--timer-color) 32%, transparent);
+  border-right: 2px solid var(--timer-color);
+  transition:
+    width 500ms linear,
+    background 400ms ease;
+}
+
+.timerLabel {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-md);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--cb-text-strong);
+}
+
+/* The way back (tournament / lobby): labelled, next to the logo. */
+.backButton {
+  flex: none;
+}
+
+/* ---------- chat drawer ---------- */
+
+.chatDrawer {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatDrawerBody {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+}
+
+
+/* ---------- tests pill (editor header) ---------- */
+
+.testsPill {
+  --tone: var(--cb-text-muted);
+
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tone) 30%, transparent);
+
+  &[data-tone='ok'] {
+    --tone: var(--cb-success);
+  }
+
+  &[data-tone='fail'] {
+    --tone: var(--cb-danger);
+  }
+
+  &[data-tone='none'] {
+    background: transparent;
+    border-style: dashed;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--tone) 18%, transparent);
+  }
+}
+
+.testsPillText {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.testsPillBar {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--tone) 20%, transparent);
+
+  & span {
+    display: block;
+    height: 100%;
+    background: var(--tone);
+    transition: width 300ms ease;
+  }
+}
+
+/* The opponent's run, under mine in the Tests tab's left column. */
+.opponentTests {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--cb-border);
+}
+
+.opponentTestsLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+.opponentTestsEmpty {
+  font-size: var(--mantine-font-size-xs);
+  color: var(--cb-text-muted);
+}
+
+/* Editor settings popover: never taller than the screen. */
+.settings {
+  max-height: calc(100dvh - 120px);
+  overflow-y: auto;
+}
+
+/* A theme swatch: its background with three coloured "code lines". */
+.swatch {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid var(--cb-border);
+  transition: transform 80ms ease;
+
+  & span {
+    display: block;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &[data-active] {
+    outline: 2px solid var(--cb-success);
+    outline-offset: 1px;
+  }
+}

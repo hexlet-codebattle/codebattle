@@ -9,7 +9,7 @@ Open-source competitive programming platform where users solve coding tasks head
 ## Tech Stack
 
 - **Backend:** Elixir 1.20.4 / OTP 29.0.3, Phoenix ~1.8 with LiveView
-- **Frontend:** React + Redux Toolkit, Vite, Monaco Editor
+- **Frontend:** React + Mantine 9 (CSS Modules), Zustand + TanStack Query, Inertia, Vite, Monaco Editor
 - **Database:** PostgreSQL
 - **Code Execution:** Docker/Podman containers per language (runner service)
 - **Package Manager:** pnpm (not npm) for frontend
@@ -20,7 +20,7 @@ Elixir umbrella project with two apps under `apps/`:
 - `codebattle` — Main Phoenix web app (backend + frontend assets)
 - `runner` — HTTP service that executes user code in isolated containers; language images in `apps/runner/images/`
 
-Frontend source lives in `apps/codebattle/assets/js/` with React widgets, Redux slices, and XState machines.
+Frontend source lives in `apps/codebattle/frontend/src/`: Inertia pages in `pages/`, features in `features/`, theme in `theme/`. Static files (images, audio, fonts) live in `apps/codebattle/static/` and are served at `/assets/*`; i18n strings are keyed by English text in `apps/codebattle/priv/gettext/*/LC_MESSAGES/default.po`.
 
 See `AGENTS.md` for detailed module organization and core domain contexts.
 
@@ -37,14 +37,11 @@ make dev-exec CMD='mix help'    # Run an arbitrary command in the dev container
 ### Testing
 ```bash
 make test                       # ExUnit + coverage (excludes image_executor)
-make test-fe                    # Vitest frontend tests
+make test-fe                    # Frontend typecheck + build
 make test-code-checkers         # Image executor tests (CODEBATTLE_EXECUTOR=local)
 
 # Single Elixir test file:
 make dev-exec CMD='mix test apps/codebattle/test/codebattle/game/context_test.exs'
-
-# Single frontend test:
-make dev-exec CMD='pnpm --dir apps/codebattle test UserStats.test.jsx'
 ```
 
 ### Linting & Formatting
@@ -53,7 +50,7 @@ make format                     # mix format
 make lint                       # mix format --check-formatted
 make credo                      # Credo static analysis
 make dialyzer                   # Type checking
-make lint-js                    # OXLint + stylelint
+make lint-js                    # OXLint (frontend)
 make lint-js-fix                # Auto-fix JS lint issues
 ```
 
@@ -72,9 +69,9 @@ Do not mount host Docker sockets or credential directories into the app service.
 ## Code Style
 
 - Elixir: enforced by `mix format` and Credo (120-char line limit)
-- JavaScript: OXLint (`.oxlintrc.json`), Prettier, Stylelint
+- TypeScript: OXLint (`apps/codebattle/frontend/.oxlintrc.json`), `tsc --noEmit`
 - Coverage threshold: 60% minimum (ExCoveralls)
 
 ## CI Pipeline
 
-GitHub Actions (`.github/workflows/master.yml`): runs ExUnit, Credo, Dialyzer, format check, frontend lint + tests, then builds and pushes container images to `ghcr.io/hexlet-codebattle/`.
+GitHub Actions (`.github/workflows/master.yml`): runs ExUnit, Credo, Dialyzer, format check, frontend lint + typecheck + build, then builds and pushes container images to `ghcr.io/hexlet-codebattle/`.

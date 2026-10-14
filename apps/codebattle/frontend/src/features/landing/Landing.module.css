@@ -1,0 +1,93 @@
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  padding: 32px 0 48px;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.heroText {
+  min-width: 0;
+}
+
+.heroTitle {
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.05;
+}
+
+.eyebrow {
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cb-success);
+}
+
+.leaderboard {
+  background: var(--cb-panel-gradient);
+}
+
+.leaderRow {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--cb-sunken);
+}
+
+.place {
+  width: 24px;
+  font-family: var(--mantine-font-family-monospace);
+  font-weight: 800;
+  text-align: center;
+  color: var(--cb-text-muted);
+}
+
+.section {
+  padding: 40px 0;
+  border-top: 1px solid var(--cb-border);
+}
+
+.feature {
+  height: 100%;
+}
+
+.languages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+
+  /* One monochrome style for every logo (the D one is the only coloured SVG); colour on hover. */
+  & img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: grayscale(1) contrast(0.9);
+    opacity: 0.8;
+    transition:
+      filter 150ms ease,
+      opacity 150ms ease,
+      transform 150ms ease;
+  }
+
+  & img:hover {
+    filter: none;
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  border-radius: var(--cb-radius);
+  text-align: center;
+  background: var(--cb-panel-gradient);
+  border: 1px solid var(--cb-border);
+}

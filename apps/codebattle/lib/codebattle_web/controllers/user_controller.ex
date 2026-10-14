@@ -3,18 +3,17 @@ defmodule CodebattleWeb.UserController do
 
   alias Codebattle.UserApiToken
   alias CodebattleWeb.Api.V1.SettingsController
-  alias CodebattleWeb.NewFrontend
+  alias CodebattleWeb.AuthPage
+  alias CodebattleWeb.Frontend
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:edit, :show])
-  plug(:put_view, CodebattleWeb.UserView)
-  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
+
+  def new(%{assigns: %{current_user: %{is_guest: false}}} = conn, params) do
+    redirect(conn, to: AuthPage.safe_next(params["next"]))
+  end
 
   def new(conn, _params) do
-    if FunWithFlags.enabled?(:use_only_token_auth) do
-      render(conn, "token_only.html")
-    else
-      render(conn, "new.html")
-    end
+    AuthPage.render(conn, if(FunWithFlags.enabled?(:use_only_token_auth), do: "token_only", else: "sign_up"))
   end
 
   def show(conn, %{"id" => user_name}) do
@@ -23,15 +22,10 @@ defmodule CodebattleWeb.UserController do
         url: Routes.user_path(conn, :show, user_name)
       })
 
-    # The new frontend renders the profile as an Inertia page and loads the
-    # stats itself from the API (same endpoints as the legacy widget).
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("UserProfile", %{"user_id" => user_name})
-    else
-      render(conn, "show.html")
-    end
+    # The profile page loads the stats itself from the API.
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("UserProfile", %{"user_id" => user_name})
   end
 
   def edit(conn, _params) do
@@ -42,17 +36,13 @@ defmodule CodebattleWeb.UserController do
 
     # Account fields (email, sound, linked accounts) and sessions come from the
     # shared props on /settings; tokens are listed here to skip a request.
-    if NewFrontend.enabled?(conn) do
-      user = conn.assigns.current_user
+    user = conn.assigns.current_user
 
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("Settings", %{
-        "api_tokens" => Enum.map(UserApiToken.list_active(user.id), &SettingsController.present_api_token/1),
-        "api_token_scopes" => SettingsController.available_scopes(user)
-      })
-    else
-      render(conn, "edit.html")
-    end
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("Settings", %{
+      "api_tokens" => Enum.map(UserApiToken.list_active(user.id), &SettingsController.present_api_token/1),
+      "api_token_scopes" => SettingsController.available_scopes(user)
+    })
   end
 end

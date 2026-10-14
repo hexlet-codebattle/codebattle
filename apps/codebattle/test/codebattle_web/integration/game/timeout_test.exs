@@ -52,9 +52,7 @@ defmodule CodebattleWeb.Integration.Game.TimeoutTest do
     game_topic = "game:" <> to_string(game_id)
     subscribe_and_join(socket1, GameChannel, game_topic)
 
-    conn2
-    |> get(game_path(conn2, :show, game_id))
-    |> follow_button("Join")
+    post(conn2, game_path(conn2, :join, game_id))
 
     Context.trigger_timeout(game_id)
 

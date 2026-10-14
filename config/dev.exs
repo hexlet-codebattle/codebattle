@@ -43,8 +43,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   check_origin: false,
   cache_static_lookup: false,
   watchers: [
-    pnpm: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")],
-    # New Mantine frontend (CodebattleWeb.NewFrontend), dev server on CODEBATTLE_FRONTEND_PORT.
+    # The frontend (CodebattleWeb.Frontend): Vite dev server on CODEBATTLE_FRONTEND_PORT.
     pnpm: ["dev", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle/frontend")]
   ]
 
@@ -52,7 +51,7 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, CodebattleWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+      ~r{apps/codebattle/static/.*(png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/codebattle_web/views/.*(ex)$},
       ~r{lib/codebattle_web/templates/.*(eex)$},

@@ -71,7 +71,7 @@ command -v lsof >/dev/null 2>&1 || exit 0
 status=0
 
 phoenix_port=$(read_setting CODEBATTLE_PORT 4000)
-vite_port=$(read_setting CODEBATTLE_VITE_PORT 8080)
+vite_port=$(read_setting CODEBATTLE_FRONTEND_PORT 8081)
 
 if lsof -nP -iTCP:"$phoenix_port" -sTCP:LISTEN >/dev/null 2>&1; then
   report_conflict Phoenix "$phoenix_port" CODEBATTLE_PORT
@@ -79,7 +79,7 @@ if lsof -nP -iTCP:"$phoenix_port" -sTCP:LISTEN >/dev/null 2>&1; then
 fi
 
 if lsof -nP -iTCP:"$vite_port" -sTCP:LISTEN >/dev/null 2>&1; then
-  report_conflict Vite "$vite_port" CODEBATTLE_VITE_PORT
+  report_conflict Vite "$vite_port" CODEBATTLE_FRONTEND_PORT
   status=1
 fi
 

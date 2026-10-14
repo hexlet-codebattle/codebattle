@@ -1,0 +1,34 @@
+<%!-- Styles of the self-contained server pages (layout app.html, banned.html). --%>
+<style>
+  :root { color-scheme: dark; --bg: #1c1c1c; --panel: #2a2a35; --border: #4c4c5a; --text: #dddddd; --muted: #999999; --strong: #ffffff; --success: #46a077; --danger: #dc3545; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.5; }
+  a { color: var(--strong); }
+  .bare { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px 16px; text-align: center; }
+  .bare-card { width: 100%; max-width: 420px; padding: 24px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); text-align: left; }
+  .bare-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .bare-field label { font-size: 14px; font-weight: 700; color: var(--strong); }
+  .bare-field input { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: #1c1c24; color: var(--strong); font-size: 15px; }
+  .bare-field input:focus { outline: 2px solid var(--success); outline-offset: 0; }
+  .bare-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border: 1px solid var(--border); border-radius: 8px; background: #3a3f50; color: var(--strong); font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .bare-btn:hover { background: #4c5369; }
+  .bare-btn--primary { width: 100%; background: var(--success); border-color: var(--success); }
+  .bare-btn--primary:hover { background: #398862; }
+  .bare-flash { width: 100%; max-width: 420px; padding: 10px 14px; border-radius: 8px; border: 1px solid; text-align: left; }
+  .bare-flash--danger { color: #f9a3a3; border-color: rgba(220, 53, 69, 0.5); background: rgba(220, 53, 69, 0.12); }
+  .bare-flash--info, .bare-flash--success { color: #a3d8bf; border-color: rgba(70, 160, 119, 0.5); background: rgba(70, 160, 119, 0.12); }
+  .bare-custom { max-width: 720px; }
+  /* External identity provider pages (config :codebattle, :external). */
+  @font-face { font-family: 'External'; src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype'); font-weight: 900; font-display: swap; }
+  .ext { position: relative; overflow: hidden; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: #353754; }
+  .ext-cup { position: absolute; top: 60%; left: 50%; z-index: 0; pointer-events: none; width: 90vmax; height: 90vmax; background-image: var(--cup-background-url); background-repeat: no-repeat; background-position: center; background-size: cover; transform: translate(-50%, -50%) rotate(17.47deg); }
+  .ext-card { position: relative; z-index: 2; width: 100%; max-width: 480px; padding: 2rem; border-radius: 24px; background: #0a0b13; box-shadow: 0 0 32px rgba(0, 0, 0, 0.4); color: #fff; text-align: center; }
+  .ext-name { margin-bottom: 1rem; color: #ffc107; font-family: 'External', sans-serif; font-size: 32px; font-weight: 700; text-transform: uppercase; }
+  .ext-slogan { margin: 0 0 1rem; color: #7642e8; font-family: 'External', sans-serif; font-size: clamp(40px, 9vw, 70px); font-weight: 800; line-height: 1.05; }
+  .ext-description { margin-bottom: 1.5rem; font-size: 17px; line-height: 1.4; color: #f8f9fa; }
+  .ext-btn { display: inline-block; padding: 12px 24px; border: none; border-radius: 999px; background: #fffb47; color: #000; font-size: 24px; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .ext-btn:hover { background: #e6e02b; }
+  .ext-btn--gray { margin-top: 1rem; background: #6c757d; color: #fff; font-size: 16px; }
+  .ext-btn--gray:hover { background: #343a40; }
+</style>

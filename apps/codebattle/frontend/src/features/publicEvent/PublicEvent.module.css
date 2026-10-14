@@ -1,0 +1,51 @@
+.ticker {
+  margin-bottom: var(--mantine-spacing-md);
+  padding: 6px var(--mantine-spacing-md);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+  color: var(--cb-text-strong);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+.trophy {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.profile {
+  color: var(--cb-text-muted);
+  font-size: var(--mantine-font-size-sm);
+
+  strong {
+    color: var(--cb-text-strong);
+  }
+}
+
+.table {
+  th:not(:first-child),
+  td:not(:first-child) {
+    text-align: center;
+  }
+}
+
+.num {
+  font-family: var(--mantine-font-family-monospace);
+  white-space: nowrap;
+}
+
+.secondary {
+  color: var(--cb-text-muted);
+  font-size: var(--mantine-font-size-xs);
+}
+
+.passed {
+  color: var(--cb-success);
+}
+
+.notPassed {
+  color: var(--cb-danger);
+}

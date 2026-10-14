@@ -9,10 +9,7 @@ import { ThemeProvider } from '@/theme/ThemeProvider';
 
 type PageModule = { default: ComponentType };
 
-// Page names match the legacy app (render_inertia("Lobby", ...)), so controllers
-// don't change; CodebattleWeb.NewFrontend only swaps the layout that loads this bundle.
-// Links to pages not ported yet are plain <a> tags (full page load into the old UI);
-// use Inertia's <Link> only between pages that exist here.
+// Controllers render pages by name (render_inertia("Lobby", ...)) → ./pages/Lobby.tsx.
 const pages = import.meta.glob<PageModule>('./pages/*.tsx');
 
 const queryClient = new QueryClient({
@@ -27,7 +24,7 @@ void createInertiaApp({
     const load = pages[`./pages/${name}.tsx`];
 
     if (!load) {
-      throw new Error(`Page "${name}" is not ported to the new frontend`);
+      throw new Error(`Page "${name}" does not exist (frontend/src/pages)`);
     }
 
     return (await load()).default;

@@ -177,8 +177,9 @@ defmodule Codebattle.Game.Engine do
     |> Enum.map(fn {game, params} ->
       game = fill_virtual_fields(game)
       game = mark_as_live(game)
-      game = Map.put(game, :task, params.task)
-      game = Map.put(game, :locked, params[:locked])
+      # The row may have fallen back to a task by level; the live game must carry that same task.
+      game = Map.put(game, :task, params[:task] || (game.task_id && Codebattle.Task.get(game.task_id)))
+      game = Map.put(game, :locked, params[:locked] || false)
       game = Map.put(game, :award, params[:award])
       {:ok, _} = Game.GlobalSupervisor.start_game(game)
       :ok = maybe_fire_playing_game_side_effects(game)

@@ -3,16 +3,13 @@ defmodule CodebattleWeb.ClanController do
 
   alias Codebattle.Clan
   alias Codebattle.User
-  alias CodebattleWeb.NewFrontend
-  alias CodebattleWeb.NewFrontend.Present
+  alias CodebattleWeb.Frontend
+  alias CodebattleWeb.Frontend.Present
 
   @valid_sorts ~w(name players_count created_at)
   @valid_orders ~w(asc desc)
 
   plug(CodebattleWeb.Plugs.RequireAuth)
-
-  plug(:put_view, CodebattleWeb.ClanView)
-  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, params) do
     sort = normalize_param(params["sort"], @valid_sorts, "name")
@@ -26,17 +23,13 @@ defmodule CodebattleWeb.ClanController do
         url: Routes.clan_path(conn, :index)
       })
 
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("ClanIndex", %{
-        "clans" => Enum.map(clans, &Present.clan/1),
-        "sort" => sort,
-        "order" => order
-      })
-    else
-      render(conn, "index.html", %{clans: clans, order: order, sort: sort, total_clans: length(clans)})
-    end
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("ClanIndex", %{
+      "clans" => Enum.map(clans, &Present.clan/1),
+      "sort" => sort,
+      "order" => order
+    })
   end
 
   def show(conn, %{"id" => id}) do
@@ -50,17 +43,13 @@ defmodule CodebattleWeb.ClanController do
         url: Routes.clan_path(conn, :show, clan)
       })
 
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("ClanShow", %{
-        "clan" => Present.clan(clan),
-        "members" => Enum.map(clan.users, &Present.clan_member/1),
-        "can_edit" => Clan.can_edit?(clan, conn.assigns.current_user)
-      })
-    else
-      render(conn, "show.html", %{clan: clan})
-    end
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("ClanShow", %{
+      "clan" => Present.clan(clan),
+      "members" => Enum.map(clan.users, &Present.clan_member/1),
+      "can_edit" => Clan.can_edit?(clan, conn.assigns.current_user)
+    })
   end
 
   def create(conn, %{"clan" => params}) do

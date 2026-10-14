@@ -31,7 +31,7 @@ defmodule CodebattleWeb.TournamentController do
       url: Routes.tournament_url(conn, :index)
     })
     |> assign(:page_title, "Tournaments")
-    |> CodebattleWeb.NewFrontend.maybe_put_layout()
+    |> CodebattleWeb.Frontend.put_layout()
     |> render_inertia("TournamentIndex", %{
       "page_title" => "Tournaments",
       "last_tournament" => last_tournament,
@@ -73,7 +73,7 @@ defmodule CodebattleWeb.TournamentController do
         description: "Edit tournament settings"
       })
       |> assign(:page_title, "Edit #{tournament.name}")
-      |> CodebattleWeb.NewFrontend.maybe_put_layout()
+      |> CodebattleWeb.Frontend.put_layout()
       |> render_inertia("TournamentEdit", %{
         "page_title" => "Edit #{tournament.name}",
         "tournament_id" => tournament.id,
@@ -129,14 +129,13 @@ defmodule CodebattleWeb.TournamentController do
 
   defp render_tournament(conn, tournament, params) do
     conn
-    |> put_view(CodebattleWeb.TournamentView)
     |> put_meta_tags(%{
       title: tournament.name,
       description: tournament.description,
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
-    |> CodebattleWeb.NewFrontend.maybe_put_layout()
+    |> CodebattleWeb.Frontend.put_layout()
     |> render_inertia("TournamentRoom", %{
       "tournament_id" => tournament.id,
       "event_id" => tournament.event_id,

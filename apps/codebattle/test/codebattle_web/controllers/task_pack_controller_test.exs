@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.TaskPackControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  import Inertia.Testing
+
   test ".index", %{conn: conn} do
     user = insert(:user)
     insert_list(3, :task_pack)
@@ -66,7 +68,9 @@ defmodule CodebattleWeb.TaskPackControllerTest do
       |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :new))
 
-    assert html_response(conn, 200) =~ "Create your own task pack"
+    assert html_response(conn, 200)
+    assert inertia_component(conn) == "TaskPackForm"
+    assert %{"task_pack" => nil} = inertia_props(conn)
   end
 
   test ".edit", %{conn: conn} do
@@ -78,7 +82,9 @@ defmodule CodebattleWeb.TaskPackControllerTest do
       |> log_in_user(user.id)
       |> get(Routes.task_pack_path(conn, :edit, task_pack))
 
-    assert html_response(conn, 200) =~ "Edit task pack"
+    assert inertia_component(conn) == "TaskPackForm"
+    assert %{"task_pack" => %{id: id}} = inertia_props(conn)
+    assert id == task_pack.id
   end
 
   test ".create", %{conn: conn} do
@@ -127,17 +133,16 @@ defmodule CodebattleWeb.TaskPackControllerTest do
       ],
       fn {task_ids, error} ->
         response =
-          conn
-          |> post(Routes.task_pack_path(conn, :create),
+          post(conn, Routes.task_pack_path(conn, :create),
             task_pack: %{
               "name" => "pack_#{System.unique_integer([:positive])}",
               "task_ids" => task_ids,
               "visibility" => "public"
             }
           )
-          |> html_response(200)
 
-        assert response =~ error
+        assert redirected_to(response) == Routes.task_pack_path(conn, :new)
+        assert inspect(inertia_errors(response)) =~ error
       end
     )
   end
@@ -197,9 +202,9 @@ defmodule CodebattleWeb.TaskPackControllerTest do
           "visibility" => "public"
         }
       )
-      |> html_response(200)
 
-    assert response =~ "Please provide only integers with comma separated values"
+    assert redirected_to(response) == Routes.task_pack_path(conn, :edit, task_pack.id)
+    assert inspect(inertia_errors(response)) =~ "Please provide only integers with comma separated values"
     assert Codebattle.TaskPack.get!(task_pack.id).task_ids == [1, 2]
   end
 

@@ -1,28 +1,10 @@
-FROM node:24.15-alpine AS assets-image
-ENV MIX_ENV=prod
-
-WORKDIR /tmp/codebattle
-
-# Install the same pnpm version declared in apps/codebattle/package.json.
-RUN npm install --global pnpm@11.11.0
-
-COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml apps/codebattle/pnpm-workspace.yaml ./
-COPY apps/codebattle/patches ./patches
-RUN pnpm install --frozen-lockfile
-
-COPY apps/codebattle/postcss.config.js apps/codebattle/vite.config.js ./
-COPY apps/codebattle/assets ./assets
-COPY apps/codebattle/priv/gettext ./priv/gettext
-
-RUN pnpm run build
-
-# New Mantine frontend (apps/codebattle/frontend): a separate package and build.
+# The frontend (apps/codebattle/frontend): its own package and Vite build.
 FROM node:24.15-alpine AS frontend-image
 
 # Mirrors the repo layout: the app imports translations from ../priv/gettext.
 WORKDIR /tmp/codebattle/frontend
 
-RUN npm install --global pnpm@11.11.0
+RUN npm install --global pnpm@11.18.0
 
 COPY apps/codebattle/frontend/package.json apps/codebattle/frontend/pnpm-lock.yaml apps/codebattle/frontend/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
@@ -51,8 +33,12 @@ RUN mix do deps.get --only prod, deps.compile
 COPY ./apps/codebattle/ ./apps/codebattle/
 COPY ./apps/runner/ ./apps/runner/
 
-COPY --from=assets-image /tmp/codebattle/priv/static ./apps/codebattle/priv/static
-# Served at /assets/v2 by nginx and Phoenix (see CodebattleWeb.NewFrontend).
+# Static files (images, audio, fonts, favicons) at /assets/*; the PWA worker and its
+# offline page at the root.
+RUN mkdir -p apps/codebattle/priv/static/assets \
+  && cp -R apps/codebattle/static/. apps/codebattle/priv/static/assets/ \
+  && mv apps/codebattle/priv/static/assets/offline.html apps/codebattle/priv/static/assets/service-worker.js apps/codebattle/priv/static/
+# Served at /assets/v2 by nginx and Phoenix (see CodebattleWeb.Frontend).
 COPY --from=frontend-image /tmp/codebattle/frontend/dist ./apps/codebattle/priv/static/assets/v2
 
 # phx.digest writes digested copies plus .gz for its gzippable extensions.

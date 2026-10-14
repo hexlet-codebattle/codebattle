@@ -12,7 +12,7 @@ import type { TournamentApi } from '../useTournament';
 import { RankingPanel } from './RankingPanel';
 
 /** Messages that arrived while the chat tab wasn't open. */
-function useUnread(chat: ChatApi, chatOpen: boolean) {
+export function useUnread(chat: ChatApi, chatOpen: boolean) {
   const [seen, setSeen] = useState<number | null>(null);
   const total = chat.messages.length;
 

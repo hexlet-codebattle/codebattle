@@ -298,11 +298,8 @@ msgstr "Управляйте публичным профилем и настро
 msgid "Sound settings"
 msgstr "Настройки звука"
 
-msgid "Choose how game and tournament notifications sound."
-msgstr "Настройте звуки игры и уведомлений турниров."
-
-msgid "Sound theme"
-msgstr "Тема звуков"
+msgid "Set the volume of game and tournament sounds."
+msgstr "Громкость звуков в играх и турнирах."
 
 msgid "Game sound level"
 msgstr "Громкость в игре"
@@ -2062,15 +2059,6 @@ msgstr "Язык интерфейса"
 
 msgid "Select sound type"
 msgstr "Выберите набор звуков"
-
-msgid "Dendy"
-msgstr "Dendy"
-
-msgid "CS"
-msgstr "CS"
-
-msgid "Standard"
-msgstr "Стандартный"
 
 msgid "Silent"
 msgstr "Без звука"
@@ -4554,9 +4542,6 @@ msgstr "Ниже"
 msgid "3–16 Latin letters, digits, - or _"
 msgstr "3–16 латинских букв, цифр, - или _"
 
-msgid "8-bit console chiptune"
-msgstr "8-битная приставка"
-
 msgid "Active %{ago}"
 msgstr "Активность %{ago}"
 
@@ -4572,9 +4557,6 @@ msgstr "Минимум 8 символов, любые"
 msgid "CSS tasks"
 msgstr "CSS-задачи"
 
-msgid "Calm and simple"
-msgstr "Спокойно и просто"
-
 msgid "Changing it signs you out on other devices and revokes your API tokens."
 msgstr "После смены пароля другие устройства выйдут из аккаунта, а API-токены будут отозваны."
 
@@ -4583,9 +4565,6 @@ msgstr "Подключён"
 
 msgid "Couldn't save your settings. Try again."
 msgstr "Не удалось сохранить настройки. Попробуйте ещё раз."
-
-msgid "Counter-Strike radio"
-msgstr "Рация из Counter-Strike"
 
 msgid "Danger zone"
 msgstr "Опасная зона"
@@ -5255,3 +5234,849 @@ msgstr "Вы %{time}"
 
 msgid "Reload page"
 msgstr "Перезагрузить страницу"
+
+msgid "All tests passed"
+msgstr "Все тесты пройдены"
+
+msgid "Bigger"
+msgstr "Крупнее"
+
+msgid "Checking your solution…"
+msgstr "Проверяем решение…"
+
+msgid "Checking…"
+msgstr "Проверка…"
+
+msgid "Connection lost, reconnecting…"
+msgstr "Соединение потеряно, переподключаемся…"
+
+msgid "Ctrl/Cmd + Enter"
+msgstr "Ctrl/Cmd + Enter"
+
+msgid "Exit full screen"
+msgstr "Выйти из полноэкранного режима"
+
+msgid "Font size"
+msgstr "Размер шрифта"
+
+msgid "Full screen"
+msgstr "Во весь экран"
+
+msgid "Give up?"
+msgstr "Сдаться?"
+
+msgid "Hide the side panel"
+msgstr "Скрыть боковую панель"
+
+msgid "Received"
+msgstr "Получено"
+
+msgid "Rematch declined"
+msgstr "Реванш отклонён"
+
+msgid "Rematch offered, waiting…"
+msgstr "Реванш предложен, ждём ответа…"
+
+msgid "Reset code"
+msgstr "Сбросить код"
+
+msgid "Reset the code?"
+msgstr "Сбросить код?"
+
+msgid "Run tests"
+msgstr "Запустить тесты"
+
+msgid "Run your code to see the test results here"
+msgstr "Запустите код, чтобы увидеть здесь результаты тестов"
+
+msgid "Send this link to a friend; the game starts as soon as they join."
+msgstr "Отправьте ссылку другу: игра начнётся, как только он подключится."
+
+msgid "Show the side panel"
+msgstr "Показать боковую панель"
+
+msgid "Side panel"
+msgstr "Боковая панель"
+
+msgid "Smaller"
+msgstr "Мельче"
+
+msgid "Test %{number}"
+msgstr "Тест %{number}"
+
+msgid "Tests passed: %{percent}%"
+msgstr "Пройдено тестов: %{percent}%"
+
+msgid "The game ends and your opponent wins."
+msgstr "Игра закончится, и победит соперник."
+
+msgid "Time left"
+msgstr "Осталось времени"
+
+msgid "Vim mode"
+msgstr "Режим Vim"
+
+msgid "Vim mode off"
+msgstr "Режим Vim выключен"
+
+msgid "Vim mode on"
+msgstr "Режим Vim включён"
+
+msgid "Wins against each other"
+msgstr "Победы друг над другом"
+
+msgid "You gave up"
+msgstr "Вы сдались"
+
+msgid "You lost"
+msgstr "Вы проиграли"
+
+msgid "You won!"
+msgstr "Вы победили!"
+
+msgid "Your code in this language is replaced with the starting template."
+msgstr "Код на этом языке заменится начальным шаблоном."
+
+msgid "%{name} is looking for an opponent"
+msgstr "%{name} ищет соперника"
+
+msgid "Enter the pass code to start playing."
+msgstr "Введите код доступа, чтобы начать игру."
+
+msgid "Join game"
+msgstr "Присоединиться"
+
+msgid "Pass code"
+msgstr "Код доступа"
+
+msgid "Play"
+msgstr "Воспроизвести"
+
+msgid "Replay position"
+msgstr "Позиция повтора"
+
+msgid "Speed"
+msgstr "Скорость"
+
+msgid "The replay of this game is not available"
+msgstr "Повтор этой игры недоступен"
+
+msgid "This game is locked"
+msgstr "Игра закрыта"
+
+msgid "To the end"
+msgstr "В конец"
+
+msgid "To the start"
+msgstr "В начало"
+
+msgid "Unlock"
+msgstr "Открыть"
+
+msgid "Wrong pass code"
+msgstr "Неверный код доступа"
+
+msgid "No runs yet"
+msgstr "Ещё не запускал тесты"
+
+msgid "Hide the task"
+msgstr "Скрыть условие"
+
+msgid "Show the task"
+msgstr "Показать условие"
+
+msgid "%{failed} of %{total} tests failed"
+msgstr "Не прошли %{failed} из %{total} тестов"
+
+msgid "Memory limit exceeded"
+msgstr "Превышен лимит памяти"
+
+msgid "Time limit exceeded"
+msgstr "Превышен лимит времени"
+
+msgid "failed"
+msgstr "не пройден"
+
+msgid "passed"
+msgstr "пройден"
+
+msgid "Show test results"
+msgstr "Показать результаты тестов"
+
+msgid "Open the task in a window"
+msgstr "Открыть условие в окне"
+
+msgid "A sharper theme for bright rooms and projectors"
+msgstr "Более чёткая тема для ярких комнат и проекторов"
+
+msgid "A small map of the code on the right"
+msgstr "Маленькая карта кода справа"
+
+msgid "Colored brackets"
+msgstr "Цветные скобки"
+
+msgid "Dots for spaces, arrows for tabs"
+msgstr "Точки вместо пробелов, стрелки вместо табов"
+
+msgid "High contrast"
+msgstr "Высокий контраст"
+
+msgid "Line numbers"
+msgstr "Номера строк"
+
+msgid "Long lines wrap instead of scrolling sideways"
+msgstr "Длинные строки переносятся вместо прокрутки вбок"
+
+msgid "Matching pairs share a color"
+msgstr "Парные скобки одного цвета"
+
+msgid "Minimap"
+msgstr "Миникарта"
+
+msgid "Relative"
+msgstr "Относительные"
+
+msgid "Show whitespace"
+msgstr "Показывать пробелы"
+
+msgid "Smooth cursor"
+msgstr "Плавный курсор"
+
+msgid "Sticky scroll"
+msgstr "Липкая прокрутка"
+
+msgid "The current function stays at the top"
+msgstr "Текущая функция остаётся вверху"
+
+msgid "The cursor glides and fades instead of jumping"
+msgstr "Курсор плавно движется и мерцает, а не прыгает"
+
+msgid "Word wrap"
+msgstr "Перенос строк"
+
+msgid "Color theme"
+msgstr "Цветовая тема"
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "Back to game"
+msgstr "Вернуться в игру"
+
+msgid "Open history"
+msgstr "Открыть историю"
+
+msgid "Whitespace"
+msgstr "Пробелы"
+
+msgid "Waiting for the next match..."
+msgstr "Ждём следующий матч..."
+
+msgid "Waiting..."
+msgstr "Ожидание..."
+
+msgid "Drag windows to move, the corner to resize. Hidden ones come back from Widgets."
+msgstr "Перетаскивайте окна, угол — чтобы изменить размер. Скрытые возвращаются через «Виджеты»."
+
+msgid "Hide"
+msgstr "Скрыть"
+
+msgid "Left editor"
+msgstr "Левый редактор"
+
+msgid "Right"
+msgstr "Правый"
+
+msgid "Right editor"
+msgstr "Правый редактор"
+
+msgid "Widgets"
+msgstr "Виджеты"
+
+msgid "Game started"
+msgstr "Игра началась"
+
+msgid "New message"
+msgstr "Новое сообщение"
+
+msgid "Tournament start"
+msgstr "Начало турнира"
+
+msgid "Round end"
+msgstr "Конец раунда"
+
+msgid "Tournament end"
+msgstr "Конец турнира"
+
+msgid "Show controls"
+msgstr "Показать панель"
+
+msgid "Hide controls"
+msgstr "Скрыть панель"
+
+msgid "Decrease"
+msgstr "Уменьшить"
+
+msgid "Increase"
+msgstr "Увеличить"
+
+msgid "Game is loading"
+msgstr "Игра загружается"
+
+msgid "Tournament is finished"
+msgstr "Турнир завершён"
+
+msgid "Tournament is waiting to start"
+msgstr "Турнир ожидает начала"
+
+msgid "Tournament is canceled"
+msgstr "Турнир отменён"
+
+msgid "Waiting for the player's next game"
+msgstr "Ожидание следующей игры игрока"
+
+msgid "Could not connect to the tournament, retrying…"
+msgstr "Не удалось подключиться к турниру, повторяем…"
+
+msgid "Connection details"
+msgstr "Детали подключения"
+
+msgid "User ID"
+msgstr "ID пользователя"
+
+msgid "Path"
+msgstr "Путь"
+
+msgid "Connected at"
+msgstr "Подключён в"
+
+msgid "Ref"
+msgstr "Ref"
+
+msgid "Add to redirect list"
+msgstr "Добавить в список перенаправления"
+
+msgid "Fetched %{count} player IDs"
+msgstr "Загружено ID игроков: %{count}"
+
+msgid "Redirect sent"
+msgstr "Перенаправление отправлено"
+
+msgid "Redirect failed"
+msgstr "Не удалось перенаправить"
+
+msgid "Redirect users"
+msgstr "Перенаправить пользователей"
+
+msgid "Fetch player IDs"
+msgstr "Загрузить ID игроков"
+
+msgid "All (%{count})"
+msgstr "Все (%{count})"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "User IDs (comma or space separated)"
+msgstr "ID пользователей (через запятую или пробел)"
+
+msgid "Redirect (%{count})"
+msgstr "Перенаправить (%{count})"
+
+msgid "3–16 Latin letters, digits, - and _"
+msgstr "3–16 латинских букв, цифр, - и _"
+
+msgid "At least 8 characters"
+msgstr "Не менее 8 символов"
+
+msgid "Confirm password"
+msgstr "Подтвердите пароль"
+
+msgid "Enter the email of your account and we will send you a link to set a new password."
+msgstr "Введите email вашего аккаунта, и мы пришлём ссылку для установки нового пароля."
+
+msgid "Reset password"
+msgstr "Сбросить пароль"
+
+msgid "or"
+msgstr "или"
+
+msgid "Email required"
+msgstr "Укажите email"
+
+msgid "Should begin and end with a Latin letter or number"
+msgstr "Должен начинаться и заканчиваться латинской буквой или цифрой"
+
+msgid "Can't contain special symbols"
+msgstr "Не может содержать специальные символы"
+
+msgid "Nickname required"
+msgstr "Укажите никнейм"
+
+msgid "Should be from 3 to 16 characters"
+msgstr "Должен содержать от 3 до 16 символов"
+
+msgid "Nickname must start with a Latin letter and contain only Latin letters, digits, - and _"
+msgstr "Никнейм должен начинаться с латинской буквы и содержать только латинские буквы, цифры, - и _"
+
+msgid "Password required"
+msgstr "Укажите пароль"
+
+msgid "Should be at most 128 characters"
+msgstr "Не более 128 символов"
+
+msgid "Something went wrong, please try again later"
+msgstr "Что-то пошло не так, попробуйте позже"
+
+msgid "Could not update the playbook"
+msgstr "Не удалось обновить запись игры"
+
+msgid "Playbook status"
+msgstr "Статус записи игры"
+
+msgid "Approve"
+msgstr "Одобрить"
+
+msgid "Reject"
+msgstr "Отклонить"
+
+msgid "Report sent, thank you"
+msgstr "Жалоба отправлена, спасибо"
+
+msgid "Could not send the report"
+msgstr "Не удалось отправить жалобу"
+
+msgid "Player released"
+msgstr "Игрок разблокирован"
+
+msgid "Player banned"
+msgstr "Игрок заблокирован"
+
+msgid "Could not change the ban"
+msgstr "Не удалось изменить блокировку"
+
+msgid "Player actions"
+msgstr "Действия с игроком"
+
+msgid "Reported"
+msgstr "Жалоба отправлена"
+
+msgid "User #%{id}"
+msgstr "Пользователь #%{id}"
+
+msgid "Risk score: 1+ low, 5+ suspicious, 10+ likely bot"
+msgstr "Оценка риска: от 1 — низкий, от 5 — подозрительно, от 10 — вероятно, бот"
+
+msgid "Risk score"
+msgstr "Оценка риска"
+
+msgid "No analysis for this player."
+msgstr "Для этого игрока нет анализа."
+
+msgid "No telemetry batches recorded."
+msgstr "Телеметрия не записана."
+
+msgid "Either the player never typed, or their solution was injected via WebSocket without using the editor."
+msgstr "Игрок либо ничего не набирал, либо решение было отправлено через WebSocket в обход редактора."
+
+msgid "Signals"
+msgstr "Сигналы"
+
+msgid "Final solution analysis"
+msgstr "Анализ итогового решения"
+
+msgid "Total chars / lines"
+msgstr "Всего символов / строк"
+
+msgid "Code lines / comment lines"
+msgstr "Строк кода / комментариев"
+
+msgid "Comment-to-code ratio"
+msgstr "Доля комментариев к коду"
+
+msgid "Long comment lines (>40 chars)"
+msgstr "Длинные комментарии (>40 символов)"
+
+msgid "GPT-style phrase hits"
+msgstr "Фразы в стиле GPT"
+
+msgid "Typed vs final"
+msgstr "Набрано и итог"
+
+msgid "Final solution length"
+msgstr "Длина итогового решения"
+
+msgid "Language template length"
+msgstr "Длина шаблона языка"
+
+msgid "excluded from coverage"
+msgstr "не учитывается в покрытии"
+
+msgid "Effective added length"
+msgstr "Фактически добавлено"
+
+msgid "Total chars typed"
+msgstr "Всего набрано символов"
+
+msgid "Typed coverage"
+msgstr "Покрытие набором"
+
+msgid "low → likely injected/pasted"
+msgstr "мало → вероятно, вставлено"
+
+msgid "Keystrokes"
+msgstr "Нажатия клавиш"
+
+msgid "Batches"
+msgstr "Пакеты"
+
+msgid "Total events"
+msgstr "Всего событий"
+
+msgid "Key events"
+msgstr "События клавиш"
+
+msgid "Printable keys"
+msgstr "Печатные клавиши"
+
+msgid "Chars inserted / deleted"
+msgstr "Вставлено / удалено символов"
+
+msgid "%{rate} ins/s"
+msgstr "%{rate} вст./с"
+
+msgid "Net Δ text"
+msgstr "Чистое Δ текста"
+
+msgid "Backspace / Delete"
+msgstr "Backspace / Delete"
+
+msgid "Arrow keys"
+msgstr "Стрелки"
+
+msgid "Undo / Redo"
+msgstr "Отмена / Повтор"
+
+msgid "Copy / Cut / Paste shortcuts"
+msgstr "Копировать / Вырезать / Вставить"
+
+msgid "Paste blocked"
+msgstr "Вставка заблокирована"
+
+msgid "Timing and edits"
+msgstr "Тайминг и правки"
+
+msgid "Session length"
+msgstr "Длительность сессии"
+
+msgid "Avg key delta"
+msgstr "Средний интервал между клавишами"
+
+msgid "Min / Max key delta"
+msgstr "Мин. / макс. интервал между клавишами"
+
+msgid "Idle pauses >2s"
+msgstr "Паузы >2 с"
+
+msgid "Multi-char inserts / deletes"
+msgstr "Многосимвольные вставки / удаления"
+
+msgid "Multi-line inserts"
+msgstr "Многострочные вставки"
+
+msgid "Largest single insert / delete"
+msgstr "Наибольшая вставка / удаление"
+
+msgid "≥8 → likely paste"
+msgstr "≥8 → вероятно, вставка"
+
+msgid "Large inserts (≥50)"
+msgstr "Крупные вставки (≥50)"
+
+msgid "Content changes / printable keys"
+msgstr "Изменения текста / печатные клавиши"
+
+msgid "more changes than keys → programmatic"
+msgstr "изменений больше, чем нажатий → программно"
+
+msgid "Events per batch"
+msgstr "События по пакетам"
+
+msgid "Net Δ chars per batch"
+msgstr "Чистое Δ символов по пакетам"
+
+msgid "Avg key delta (ms) per batch"
+msgstr "Средний интервал между клавишами (мс) по пакетам"
+
+msgid "Final submitted code (%{count} chars)"
+msgstr "Итоговый код (%{count} симв.)"
+
+msgid "Could not start the tournament, try again"
+msgstr "Не удалось запустить турнир, попробуйте ещё раз"
+
+msgid "Waiting for start"
+msgstr "Ожидание старта"
+
+msgid "Admin panel"
+msgstr "Панель администратора"
+
+msgid "Choose a language"
+msgstr "Выберите язык"
+
+msgid "Solutions are submitted on the external platform"
+msgstr "Решения отправляются на внешней платформе"
+
+msgid "The server did not respond, try again"
+msgstr "Сервер не ответил, попробуйте ещё раз"
+
+msgid "Could not submit the solution"
+msgstr "Не удалось отправить решение"
+
+msgid "Swap sides"
+msgstr "Поменять местами"
+
+msgid "Time limit"
+msgstr "Лимит времени"
+
+msgid "Mode"
+msgstr "Режим"
+
+msgid "Stage"
+msgstr "Этап"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Live connections"
+msgstr "Активные подключения"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Connections"
+msgstr "Подключения"
+
+msgid "No active connections"
+msgstr "Нет активных подключений"
+
+msgid "Add all to redirect list"
+msgstr "Добавить всех в список перенаправления"
+
+msgid "Contact support for help logging in."
+msgstr "Обратитесь в поддержку, если не получается войти."
+
+msgid "Don't have an account?"
+msgstr "Нет аккаунта?"
+
+msgid "Already have an account?"
+msgstr "Уже есть аккаунт?"
+
+msgid "Game #%{id}: bot/human signal review"
+msgstr "Игра #%{id}: проверка на бота"
+
+msgid "Higher risk score / more signals → more bot-like. Always confirm by playing back the editor history. Reports are computed once and cached; Re-analyze forces a fresh run."
+msgstr "Чем выше риск и больше сигналов, тем больше похоже на бота. Всегда проверяйте по записи истории редактора. Отчёты считаются один раз и кэшируются; «Пересчитать» запускает анализ заново."
+
+msgid "Re-analyze"
+msgstr "Пересчитать"
+
+msgid "No players found for this game."
+msgstr "В этой игре нет игроков."
+
+msgid "Could not connect to the tournament"
+msgstr "Не удалось подключиться к турниру"
+
+msgid "Tournaments. Seasons. Code-first competition."
+msgstr "Турниры. Сезоны. Соревнования в коде."
+
+msgid "Play in the best coding arena"
+msgstr "Играйте на лучшей арене для программистов"
+
+msgid "Codebattle powers head-to-head battles, team brackets, and seasonal leaderboards. Set formats, invite players, and watch the rankings move in real time."
+msgstr "Codebattle — это дуэли один на один, командные сетки и сезонные рейтинги. Выбирайте формат, приглашайте игроков и следите за рейтингом в реальном времени."
+
+msgid "No registration required"
+msgstr "Регистрация не нужна"
+
+msgid "Live ladders"
+msgstr "Живые рейтинги"
+
+msgid "Team seasons"
+msgstr "Командные сезоны"
+
+msgid "Bots + training"
+msgstr "Боты и тренировки"
+
+msgid "Season standings will appear here soon."
+msgstr "Скоро здесь появится таблица сезона."
+
+msgid "Top 5 players • current season"
+msgstr "Топ-5 игроков • текущий сезон"
+
+msgid "Seasons and formats"
+msgstr "Сезоны и форматы"
+
+msgid "Four seasons a year. One Grand Slam to crown the best."
+msgstr "Четыре сезона в год. Один Grand Slam, чтобы определить лучшего."
+
+msgid "Join a competitive ladder that resets each season so every coder gets a fresh climb. Swiss rounds keep every match fair, while lifetime Elo tracks your true skill across seasons. Top finishers earn prizes and exclusive merch."
+msgstr "Рейтинг обнуляется каждый сезон, и каждый может начать восхождение заново. Швейцарская система делает каждый матч честным, а Elo за всё время отражает ваш реальный уровень. Лучшие получают призы и эксклюзивный мерч."
+
+msgid "Season ladder"
+msgstr "Сезонный рейтинг"
+
+msgid "Earn season points, climb the live leaderboard, and lock your place in the finale."
+msgstr "Набирайте очки сезона, поднимайтесь в рейтинге и обеспечьте себе место в финале."
+
+msgid "Season points"
+msgstr "Очки сезона"
+
+msgid "Finals on 21st"
+msgstr "Финалы 21-го числа"
+
+msgid "Swiss tournaments"
+msgstr "Швейцарские турниры"
+
+msgid "Face opponents with similar scores, solve the same task, and rise with every win."
+msgstr "Соревнуйтесь с соперниками своего уровня, решайте одну задачу и поднимайтесь с каждой победой."
+
+msgid "Swiss pairing"
+msgstr "Швейцарская жеребьёвка"
+
+msgid "Live standings"
+msgstr "Таблица в реальном времени"
+
+msgid "No repeat pairs"
+msgstr "Без повторных пар"
+
+msgid "Grades & schedule"
+msgstr "Грейды и расписание"
+
+msgid "Start at rookie, fight up the grades, and aim for the Grand Slam spotlight."
+msgstr "Начните с rookie, поднимайтесь по грейдам и стремитесь к Grand Slam."
+
+msgid "Rookie → Grand Slam"
+msgstr "Rookie → Grand Slam"
+
+msgid "Grand Slam finale"
+msgstr "Финал Grand Slam"
+
+msgid "Points by place"
+msgstr "Очки за место"
+
+msgid "How it works"
+msgstr "Как это работает"
+
+msgid "Join, battle, climb, repeat"
+msgstr "Вступай, сражайся, поднимайся, повторяй"
+
+msgid "A clear loop that keeps the competition fair and the season exciting."
+msgstr "Понятный цикл, который делает соревнование честным, а сезон — захватывающим."
+
+msgid "Join a season"
+msgstr "Вступите в сезон"
+
+msgid "Seasons reset points so everyone gets a fresh shot at the top."
+msgstr "Каждый сезон очки обнуляются, и у всех появляется шанс на вершину."
+
+msgid "Battle in Swiss rounds"
+msgstr "Сражайтесь в швейцарских раундах"
+
+msgid "Face opponents with similar scores on the same task each round."
+msgstr "В каждом раунде — соперник с похожим счётом и общая задача."
+
+msgid "Earn season points"
+msgstr "Набирайте очки сезона"
+
+msgid "Climb the live leaderboard and secure your place in the finale."
+msgstr "Поднимайтесь в рейтинге и обеспечьте себе место в финале."
+
+msgid "Win the Grand Slam"
+msgstr "Выиграйте Grand Slam"
+
+msgid "Champions take the spotlight, prizes, and exclusive merch."
+msgstr "Чемпионов ждут слава, призы и эксклюзивный мерч."
+
+msgid "Private tournaments"
+msgstr "Приватные турниры"
+
+msgid "Build your own tournaments for friends or teams"
+msgstr "Создавайте свои турниры для друзей или команд"
+
+msgid "Host custom events for meetups, work team-building, or just fun sessions. We’ve run tournaments for 1,000+ players."
+msgstr "Проводите свои события для митапов, тимбилдингов или просто ради удовольствия. Мы проводили турниры на 1000+ игроков."
+
+msgid "Friends & communities"
+msgstr "Друзья и сообщества"
+
+msgid "Create private rooms, invite friends, and enjoy real-time battles together."
+msgstr "Создавайте приватные комнаты, приглашайте друзей и сражайтесь вместе в реальном времени."
+
+msgid "Invite links"
+msgstr "Ссылки-приглашения"
+
+msgid "Instant rematch"
+msgstr "Мгновенный реванш"
+
+msgid "Team-building"
+msgstr "Тимбилдинг"
+
+msgid "Run company tournaments and energize your team with friendly competition."
+msgstr "Проводите корпоративные турниры и заряжайте команду дружеским соперничеством."
+
+msgid "Team brackets"
+msgstr "Командные сетки"
+
+msgid "Flexible schedule"
+msgstr "Гибкое расписание"
+
+msgid "Highlights"
+msgstr "Лучшие моменты"
+
+msgid "Large-scale events"
+msgstr "Масштабные события"
+
+msgid "Trusted for tournaments at scale with thousands of players."
+msgstr "Нам доверяют турниры с тысячами игроков."
+
+msgid "1,000+ players"
+msgstr "1000+ игроков"
+
+msgid "Stable rounds"
+msgstr "Стабильные раунды"
+
+msgid "Fast judge"
+msgstr "Быстрая проверка"
+
+msgid "Battle in your language"
+msgstr "Сражайтесь на своём языке"
+
+msgid "Pick your stack and jump into any tournament format."
+msgstr "Выберите свой стек и участвуйте в турнире любого формата."
+
+msgid "Community"
+msgstr "Сообщество"
+
+msgid "Built by competitive coders"
+msgstr "Создано спортивными программистами"
+
+msgid "Codebattle is open and community-driven. Join contributors and help shape upcoming seasons."
+msgstr "Codebattle — открытый проект, который развивает сообщество. Присоединяйтесь к контрибьюторам и помогайте формировать новые сезоны."
+
+msgid "Ready to enter the arena?"
+msgstr "Готовы выйти на арену?"
+
+msgid "Spin up a quick match or start planning your next season."
+msgstr "Начните быструю игру или планируйте следующий сезон."
+
+msgid "Version"
+msgstr "Версия"
+
+msgid "No stages yet."
+msgstr "Этапов пока нет."
+
+msgid "Feedback sent, thank you"
+msgstr "Отзыв отправлен, спасибо"
+
+msgid "Could not send the feedback"
+msgstr "Не удалось отправить отзыв"

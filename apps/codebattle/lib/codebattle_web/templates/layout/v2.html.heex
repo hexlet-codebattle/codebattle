@@ -5,13 +5,19 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     {google_fonts_head()}
     <link
-      href="/assets/images/favicons/favicon-32x32.png"
+      href="/assets/images/favicons/favicon-32x32.png?v=codebattle-logo"
       rel="icon"
       sizes="32x32"
       type="image/png"
     />
-    <link href="/assets/images/favicons/favicon.ico" rel="shortcut icon" />
-    <link href="/assets/images/favicons/manifest.json" rel="manifest" />
+    <link href="/assets/images/favicons/favicon.ico?v=codebattle-logo" rel="shortcut icon" />
+    <link
+      href="/assets/images/favicons/favicon.svg?v=codebattle-logo"
+      rel="icon"
+      sizes="any"
+      type="image/svg+xml"
+    />
+    <link href="/assets/images/favicons/manifest.json?v=codebattle-logo" rel="manifest" />
     {render_tags_all(assigns[:meta_tags] || %{})}
     <meta name="csrf-token" content={csrf_token_value()} />
     <script>
@@ -29,20 +35,20 @@
     </.inertia_title>
     <%= if CodebattleWeb.Vite.dev?() do %>
       <script type="module">
-        import { injectIntoGlobalHook } from "<%= CodebattleWeb.NewFrontend.dev_server_url() %>/@react-refresh";
+        import { injectIntoGlobalHook } from "<%= CodebattleWeb.Frontend.dev_server_url() %>/@react-refresh";
         injectIntoGlobalHook(window);
         window.$RefreshReg$ = () => {};
         window.$RefreshSig$ = () => (type) => type;
       </script>
-      <script type="module" src={"#{CodebattleWeb.NewFrontend.dev_server_url()}/@vite/client"}>
+      <script type="module" src={"#{CodebattleWeb.Frontend.dev_server_url()}/@vite/client"}>
       </script>
       <script
         type="module"
-        src={"#{CodebattleWeb.NewFrontend.dev_server_url()}/#{CodebattleWeb.NewFrontend.entry_path()}"}
+        src={"#{CodebattleWeb.Frontend.dev_server_url()}/#{CodebattleWeb.Frontend.entry_path()}"}
       >
       </script>
     <% else %>
-      <% assets = CodebattleWeb.NewFrontend.assets() %>
+      <% assets = CodebattleWeb.Frontend.assets() %>
       <%= for href <- assets.css do %>
         <link rel="stylesheet" href={href} />
       <% end %>

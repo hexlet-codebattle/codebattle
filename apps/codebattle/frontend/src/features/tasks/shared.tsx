@@ -5,7 +5,7 @@ import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
 import { UserCard } from '@/features/users/UserCard';
 
-/** TaskController's lean task JSON (CodebattleWeb.NewFrontend.Present.task/1). */
+/** TaskController's lean task JSON (CodebattleWeb.Frontend.Present.task/1). */
 export interface TaskRow {
   id: number;
   name: string;

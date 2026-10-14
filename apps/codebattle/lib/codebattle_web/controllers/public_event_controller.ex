@@ -9,7 +9,6 @@ defmodule CodebattleWeb.PublicEventController do
   require Logger
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:show, :stage])
-  plug(:put_view, CodebattleWeb.PublicEventView)
 
   def show(conn, %{"slug" => slug}) do
     if event_allowed?(conn.assigns.current_user) do
@@ -19,9 +18,7 @@ defmodule CodebattleWeb.PublicEventController do
 
       conn
       |> put_meta_tags(public_event_meta_tags(conn, event))
-      |> assign(:ticker_text, event.ticker_text)
-      |> assign(:show_header, true)
-      |> put_layout(html: {CodebattleWeb.LayoutView, :external})
+      |> CodebattleWeb.Frontend.put_layout()
       |> render_inertia("PublicEvent", %{
         "external_platform_login_url" => Application.get_env(:codebattle, :external_platform_login_url),
         "external_platform_name" => Application.get_env(:codebattle, :external_platform_name),

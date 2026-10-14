@@ -48,6 +48,22 @@ export function PlayerRow({ tournament, api }: { tournament: Tournament; api: To
     return () => window.clearTimeout(timer);
   }, [busy, t]);
 
+  // Event stages link here with ?auto_join=1: join once the channel is up, then drop the flag.
+  const canAutoJoin =
+    !me.is_guest &&
+    !joined &&
+    tournament.is_live &&
+    (tournament.state === 'waiting_participants' || tournament.state === 'active') &&
+    api.status === 'joined';
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (!canAutoJoin || url.searchParams.get('auto_join') !== '1') return;
+    url.searchParams.delete('auto_join');
+    window.history.replaceState(window.history.state, '', url);
+    setBusy(true);
+    api.cast('tournament:join');
+  }, [canAutoJoin, api]);
+
   if (me.is_guest) {
     return (
       <Text size="sm" c="dimmed">

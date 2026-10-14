@@ -2,6 +2,8 @@
    a segmented round track and the ladder schedule footer. Accent follows the phase. */
 .clock {
   --accent: var(--mantine-color-slate-4);
+
+  container-type: inline-size;
   --accent-soft: color-mix(in srgb, var(--mantine-color-slate-4) 18%, transparent);
 
   display: flex;
@@ -302,5 +304,61 @@
   &[data-current] {
     color: var(--accent);
     font-weight: 700;
+  }
+}
+
+/* Narrow clock (phones, side panels): ring + eyebrow/title + counter on top,
+   the hint and the viewer's note below at full width instead of a squeezed column. */
+@container (max-width: 26rem) {
+  .main {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.1rem 0.75rem;
+    align-items: center;
+  }
+
+  .text {
+    display: contents;
+  }
+
+  .ring {
+    grid-row: 1 / span 2;
+  }
+
+  .eyebrow {
+    grid-area: 1 / 2;
+    align-self: end;
+  }
+
+  .title {
+    grid-area: 2 / 2;
+    align-self: start;
+  }
+
+  .counter {
+    grid-area: 1 / 3 / span 2;
+  }
+
+  .text > :not(.eyebrow, .title) {
+    grid-column: 1 / -1;
+  }
+
+  .hint {
+    margin-top: 0.35rem;
+  }
+
+  .clock:not([data-compact]) .ring {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Per-round labels don't fit under thin segments: keep the counting round's only. */
+  .trackLabel {
+    visibility: hidden;
+
+    &[data-current] {
+      visibility: visible;
+      overflow: visible;
+    }
   }
 }

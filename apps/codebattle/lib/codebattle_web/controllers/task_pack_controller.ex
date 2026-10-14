@@ -3,10 +3,9 @@ defmodule CodebattleWeb.TaskPackController do
 
   alias Codebattle.TaskPack
   alias Codebattle.User
-  alias CodebattleWeb.NewFrontend
-  alias CodebattleWeb.NewFrontend.Present
+  alias CodebattleWeb.Frontend
+  alias CodebattleWeb.Frontend.Present
 
-  plug(:put_view, CodebattleWeb.TaskPackView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   plug(CodebattleWeb.Plugs.RequireAuth)
@@ -21,13 +20,9 @@ defmodule CodebattleWeb.TaskPackController do
         url: Routes.task_pack_path(conn, :index)
       })
 
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("TaskPackIndex", %{"task_packs" => Present.task_packs(task_packs)})
-    else
-      render(conn, "index.html", %{task_packs: task_packs})
-    end
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("TaskPackIndex", %{"task_packs" => Present.task_packs(task_packs)})
   end
 
   def new(conn, _params) do
@@ -37,7 +32,7 @@ defmodule CodebattleWeb.TaskPackController do
       description: "Create your own task pack",
       url: Routes.task_pack_path(conn, :new)
     })
-    |> render_form(nil, fn conn -> render(conn, "new.html", changeset: TaskPack.changeset(%TaskPack{})) end)
+    |> render_form(nil)
   end
 
   def show(conn, %{"id" => id}) do
@@ -60,21 +55,13 @@ defmodule CodebattleWeb.TaskPackController do
 
         tasks = TaskPack.get_tasks(task_pack)
 
-        if NewFrontend.enabled?(conn) do
-          conn
-          |> NewFrontend.maybe_put_layout()
-          |> render_inertia("TaskPackShow", %{
-            "task_pack" => Present.task_pack(task_pack),
-            "tasks" => Present.tasks(tasks),
-            "can_edit" => TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user)
-          })
-        else
-          render(conn, "show.html", %{
-            task_pack: task_pack,
-            tasks: tasks,
-            current_user: conn.assigns.current_user
-          })
-        end
+        conn
+        |> Frontend.put_layout()
+        |> render_inertia("TaskPackShow", %{
+          "task_pack" => Present.task_pack(task_pack),
+          "tasks" => Present.tasks(tasks),
+          "can_edit" => TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user)
+        })
 
       true ->
         conn
@@ -92,9 +79,7 @@ defmodule CodebattleWeb.TaskPackController do
         |> redirect(to: Routes.task_pack_path(conn, :show, task))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render_form_errors(conn, changeset, Routes.task_pack_path(conn, :new), fn conn ->
-          render(conn, "new.html", changeset: changeset)
-        end)
+        render_form_errors(conn, changeset, Routes.task_pack_path(conn, :new))
     end
   end
 
@@ -121,9 +106,7 @@ defmodule CodebattleWeb.TaskPackController do
         |> redirect(to: Routes.task_pack_path(conn, :index))
 
       TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user) ->
-        render_form(conn, task_pack, fn conn ->
-          render(conn, "edit.html", task_pack: task_pack, changeset: TaskPack.changeset(task_pack))
-        end)
+        render_form(conn, task_pack)
 
       true ->
         conn
@@ -184,7 +167,6 @@ defmodule CodebattleWeb.TaskPackController do
     end
   end
 
-  # New frontend: one Inertia page for both new (task_pack = nil) and edit.
   defp save_task_pack(conn, task_pack, task_pack_params) do
     case Codebattle.TaskPackForm.update(task_pack, task_pack_params, conn.assigns.current_user) do
       {:ok, task_pack} ->
@@ -193,33 +175,24 @@ defmodule CodebattleWeb.TaskPackController do
         |> redirect(to: Routes.task_pack_path(conn, :edit, task_pack.id))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render_form_errors(conn, changeset, Routes.task_pack_path(conn, :edit, task_pack.id), fn conn ->
-          render(conn, "edit.html", task_pack: task_pack, changeset: changeset)
-        end)
+        render_form_errors(conn, changeset, Routes.task_pack_path(conn, :edit, task_pack.id))
     end
   end
 
   # Inertia convention: errors travel with a redirect back to the form.
-  defp render_form_errors(conn, changeset, form_path, legacy) do
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> assign_errors(changeset)
-      |> redirect(to: form_path)
-    else
-      legacy.(conn)
-    end
+  defp render_form_errors(conn, changeset, form_path) do
+    conn
+    |> assign_errors(changeset)
+    |> redirect(to: form_path)
   end
 
-  defp render_form(conn, task_pack, legacy) do
-    if NewFrontend.enabled?(conn) do
-      conn
-      |> NewFrontend.maybe_put_layout()
-      |> render_inertia("TaskPackForm", %{
-        "task_pack" => task_pack && Present.task_pack(task_pack),
-        "visibility_types" => TaskPack.visibility_types()
-      })
-    else
-      legacy.(conn)
-    end
+  # One Inertia page for both new (task_pack = nil) and edit.
+  defp render_form(conn, task_pack) do
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("TaskPackForm", %{
+      "task_pack" => task_pack && Present.task_pack(task_pack),
+      "visibility_types" => TaskPack.visibility_types()
+    })
   end
 end

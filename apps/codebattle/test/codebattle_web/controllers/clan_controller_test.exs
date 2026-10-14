@@ -1,39 +1,26 @@
 defmodule CodebattleWeb.ClanControllerTest do
   use CodebattleWeb.ConnCase
 
+  import Inertia.Testing
+
   alias Codebattle.Clan
 
   defp signed_conn(conn, user) do
     log_in_user(conn, user.id)
   end
 
-  defp position(html, value) do
-    {index, _length} = :binary.match(html, value)
-    index
-  end
-
-  test "index renders clan totals, player counts, created date, and no long name", %{conn: conn} do
+  test "index sends clans with player counts and creators", %{conn: conn} do
     user = insert(:user)
     creator = insert(:user, name: "Clan Creator")
     clan = insert(:clan, name: "alpha", long_name: "Alpha Long Name", creator_id: creator.id)
     insert(:user, clan_id: clan.id, clan: clan.name)
     insert(:user, clan_id: clan.id, clan: clan.name)
 
-    html =
-      conn
-      |> signed_conn(user)
-      |> get(Routes.clan_path(conn, :index))
-      |> html_response(200)
+    conn = conn |> signed_conn(user) |> get(Routes.clan_path(conn, :index))
 
-    assert html =~ "Total clans:"
-    assert html =~ "alpha"
-    assert html =~ "Clan Creator"
-    assert html =~ "Players"
-    assert html =~ "Created at"
-    assert html =~ ~s(sort=players_count)
-    assert html =~ ~s(<td class="align-middle text text-white cb-border-color">2</td>)
-    refute html =~ "Alpha Long Name"
-    refute html =~ "Delete"
+    assert inertia_component(conn) == "ClanIndex"
+    assert %{"clans" => clans, "sort" => "name", "order" => "asc"} = inertia_props(conn)
+    assert %{users_count: 2, creator: %{name: "Clan Creator"}} = Enum.find(clans, &(&1.id == clan.id))
   end
 
   test "index orders clans by players count", %{conn: conn} do
@@ -42,41 +29,23 @@ defmodule CodebattleWeb.ClanControllerTest do
     bravo = insert(:clan, name: "bravo")
     insert(:user, clan_id: bravo.id, clan: bravo.name)
 
-    html =
+    conn =
       conn
       |> signed_conn(user)
       |> get(Routes.clan_path(conn, :index, sort: "players_count", order: "desc"))
-      |> html_response(200)
 
-    assert position(html, "bravo") < position(html, "alpha")
+    names = Enum.map(inertia_props(conn)["clans"], & &1.name)
+    assert Enum.find_index(names, &(&1 == "bravo")) < Enum.find_index(names, &(&1 == "alpha"))
   end
 
-  test "index shows delete action for admin", %{conn: conn} do
-    admin = insert(:admin)
-    insert(:clan, name: "delete-visible")
-
-    html =
-      conn
-      |> signed_conn(admin)
-      |> get(Routes.clan_path(conn, :index))
-      |> html_response(200)
-
-    assert html =~ "delete-visible"
-    assert html =~ "Delete"
-  end
-
-  test "show renders a clan without a creator", %{conn: conn} do
+  test "show sends a clan without a creator", %{conn: conn} do
     user = insert(:user)
     clan = insert(:clan, name: "creatorless", creator_id: nil)
 
-    html =
-      conn
-      |> signed_conn(user)
-      |> get(Routes.clan_path(conn, :show, clan))
-      |> html_response(200)
+    conn = conn |> signed_conn(user) |> get(Routes.clan_path(conn, :show, clan))
 
-    assert html =~ "creatorless"
-    assert html =~ ~s(<span class="cb-text">–</span>)
+    assert inertia_component(conn) == "ClanShow"
+    assert %{"clan" => %{name: "creatorless", creator: nil}, "members" => [], "can_edit" => false} = inertia_props(conn)
   end
 
   test "admin deletes clan from public list", %{conn: conn} do

@@ -1,31 +1,7 @@
 defmodule CodebattleWeb.GithubStarsHelpers do
   @moduledoc false
 
-  use Phoenix.Component
-
   alias Codebattle.GithubStarsCache
-
-  attr(:class, :string, default: nil)
-
-  def github_stars_badge(assigns) do
-    ~H"""
-    <span class={["github-stars-badge", @class]}>
-      <span class="github-stars-badge__main">
-        <img
-          alt=""
-          aria-hidden="true"
-          class="github-stars-badge__icon"
-          decoding="async"
-          height="16"
-          src={CodebattleWeb.Vite.static_asset_path("images/landing/github.svg")}
-          width="16"
-        />
-        <span class="github-stars-badge__label">Stars</span>
-      </span>
-      <span class="github-stars-badge__count">{github_stars_count_text()}</span>
-    </span>
-    """
-  end
 
   def github_stars_count_text, do: format_count(GithubStarsCache.get_stars_count())
 

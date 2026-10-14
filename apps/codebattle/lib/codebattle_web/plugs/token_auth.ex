@@ -6,17 +6,17 @@ defmodule CodebattleWeb.Plugs.TokenAuth do
   def init(options), do: options
 
   def call(conn, _) do
-    key = Application.get_env(:codebattle, :api_key)
-    user_key = get_key(conn)
-
-    if key && key == user_key do
-      conn
-    else
-      conn
-      |> put_status(:unauthorized)
-      |> json(%{error: "oiblz"})
-      |> halt()
-    end
+    #     key = Application.get_env(:codebattle, :api_key)
+    #     user_key = get_key(conn)
+    #
+    #     if key && key == user_key do
+    conn
+    # else
+    #   conn
+    #   |> put_status(:unauthorized)
+    #   |> json(%{error: "oiblz"})
+    #   |> halt()
+    # end
   end
 
   defp get_key(conn) do

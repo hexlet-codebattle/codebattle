@@ -1,0 +1,202 @@
+/* Hero: player · score · player, the leader's side marked with the gold medal tone. */
+.hero {
+  padding: var(--mantine-spacing-md) var(--mantine-spacing-lg);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel-gradient);
+  box-shadow: var(--cb-shadow-panel);
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+.duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    gap: var(--mantine-spacing-xs);
+  }
+}
+
+.side {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  min-width: 0;
+
+  &[data-align='end'] {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    &,
+    &[data-align='end'] {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+}
+
+.avatarRing {
+  flex: none;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--cb-border);
+
+  &[data-leading] {
+    border-color: var(--cb-medal-1);
+  }
+}
+
+.sideBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.role {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+
+  &[data-leading] {
+    color: var(--cb-medal-1);
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+  color: var(--cb-text-muted);
+
+  [data-align='end'] & {
+    justify-content: flex-end;
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    &,
+    [data-align='end'] & {
+      justify-content: center;
+    }
+  }
+
+  & > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--cb-font-display);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--cb-text-muted);
+
+  & > [data-side] {
+    color: var(--cb-text-strong);
+  }
+
+  & > [data-side][data-leading] {
+    color: var(--cb-medal-1);
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    font-size: 28px;
+  }
+}
+
+.scoreSep {
+  font-size: 0.6em;
+}
+
+/* Wins · draws · wins as one thin bar under the duel. */
+.shareBar {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--cb-sunken);
+
+  & > span {
+    flex-basis: 0;
+    min-width: 0;
+    background: var(--cb-medal-2);
+  }
+
+  & > [data-leading] {
+    background: var(--cb-medal-1);
+  }
+
+  & > [data-kind='draw'] {
+    background: var(--cb-border);
+  }
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--mantine-spacing-xs);
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-sunken);
+  font-size: var(--mantine-font-size-xs);
+  color: var(--cb-text-muted);
+
+  & > b {
+    font-family: var(--mantine-font-family-monospace);
+    font-size: var(--mantine-font-size-sm);
+    color: var(--cb-text-strong);
+  }
+}
+
+/* Games: each row tinted by the first player's result. */
+.row {
+  &[data-kind='won'] td:first-child {
+    box-shadow: inset 3px 0 0 var(--cb-success);
+  }
+
+  &[data-kind='lost'] td:first-child {
+    box-shadow: inset 3px 0 0 var(--cb-danger);
+  }
+
+  &[data-kind='draw'] td:first-child {
+    box-shadow: inset 3px 0 0 var(--cb-border);
+  }
+}
+
+.playerHead {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 160px;
+  white-space: nowrap;
+}

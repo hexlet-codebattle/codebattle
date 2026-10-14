@@ -3,7 +3,7 @@ defmodule CodebattleWeb.HallOfFameController do
 
   alias Codebattle.Season
   alias Codebattle.SeasonResult
-  alias CodebattleWeb.NewFrontend
+  alias CodebattleWeb.Frontend
 
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
@@ -36,7 +36,7 @@ defmodule CodebattleWeb.HallOfFameController do
       description: "Hall of Fame for Codebattle League"
     })
     |> assign(:page_title, "Codebattle Hall of Fame")
-    |> NewFrontend.maybe_put_layout()
+    |> Frontend.put_layout()
     |> render_inertia("HallOfFame", %{
       "page_title" => "Codebattle Hall of Fame",
       "current_season" => current_season,

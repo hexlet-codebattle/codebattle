@@ -1,27 +1,16 @@
-<div class="container-fluid auth-container d-flex align-items-center justify-content-center vh-100">
-  <div class="cup" />
+<% external = Application.get_env(:codebattle, :external, []) %>
+<div class="ext">
+  <div class="ext-cup"></div>
   <div id="externalBackGround" class="rotating-background"></div>
-  <div class="auth-card text-center p-4">
-    <div class="battle-title mb-3">
-      {Application.get_env(:codebattle, :external)[:app_name]}
-    </div>
-
-    <h1 class="main-title text-purple mb-3">
-      {raw(Application.get_env(:codebattle, :external)[:app_slogan])}
-    </h1>
-
-    <div class="login-description text-light mb-4">
-      {Application.get_env(:codebattle, :external)[:app_signup_description]}
-    </div>
-
-    <%= link to: Application.get_env(:codebattle, :free_users_redirect_url), class: "btn btn-yellow mb-4" do %>
-      {Application.get_env(:codebattle, :external)[:app_signup_button]}
-    <% end %>
-
+  <div class="ext-card">
+    <div class="ext-name">{external[:app_name]}</div>
+    <h1 class="ext-slogan">{raw(external[:app_slogan])}</h1>
+    <div class="ext-description">{external[:app_signup_description]}</div>
+    <a class="ext-btn" href={Application.get_env(:codebattle, :free_users_redirect_url)}>
+      {external[:app_signup_button]}
+    </a>
     <%= form_for @conn, Routes.session_path(@conn, :delete), [as: :session, method: :delete], fn _f -> %>
-      <button type="submit" class="btn btn-gray">
-        {Application.get_env(:codebattle, :external)[:app_relogin_button]}
-      </button>
+      <button type="submit" class="ext-btn ext-btn--gray">{external[:app_relogin_button]}</button>
     <% end %>
   </div>
 </div>

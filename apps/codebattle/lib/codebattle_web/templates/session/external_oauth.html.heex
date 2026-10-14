@@ -1,27 +1,16 @@
-<div class="container-fluid auth-container d-flex align-items-center justify-content-center vh-100">
-  <div class="cup" />
+<% external = Application.get_env(:codebattle, :external, []) %>
+<div class="ext">
+  <div class="ext-cup"></div>
   <div id="externalBackGround" class="rotating-background"></div>
-  <div class="auth-card text-center p-4">
-    <div class="battle-title mb-3">
-      {Application.get_env(:codebattle, :external)[:app_name]}
-    </div>
-
-    <h1 class="main-title text-purple mb-3">
-      {raw(Application.get_env(:codebattle, :external)[:app_slogan])}
-    </h1>
-
-    <div class="login-description text-light mb-4">
-      {Application.get_env(:codebattle, :external)[:app_login_description]}
-    </div>
-
-    <button class="btn btn-yellow" id="externalLoginBtn">
-      {Application.get_env(:codebattle, :external)[:app_login_button]}
-    </button>
+  <div class="ext-card">
+    <div class="ext-name">{external[:app_name]}</div>
+    <h1 class="ext-slogan">{raw(external[:app_slogan])}</h1>
+    <div class="ext-description">{external[:app_login_description]}</div>
+    <%!-- The login itself is wired by the admin-provided external_oauth_body. --%>
+    <button class="ext-btn" id="externalLoginBtn">{external[:app_login_button]}</button>
   </div>
 </div>
 
 <%= if body = Codebattle.Customization.get("external_oauth_body") do %>
-  <div class="mb-3">
-    {raw(body)}
-  </div>
+  <div>{raw(body)}</div>
 <% end %>

@@ -12,12 +12,11 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.User
   alias Codebattle.UserGameReport
   alias CodebattleWeb.Api.GameView
-  alias Runner.Languages
+  alias CodebattleWeb.Frontend
 
   require Logger
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete, :create_by_task])
-  plug(:put_view, CodebattleWeb.GameView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   action_fallback(CodebattleWeb.FallbackController)
@@ -40,7 +39,8 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  def threejs(conn, %{"id" => id}) do
+  # The broadcast screen of a game.
+  def stream(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
     case Context.fetch_game(id) do
@@ -52,7 +52,8 @@ defmodule CodebattleWeb.GameController do
 
           conn
           |> put_game_meta_tags(game)
-          |> render_inertia("GameThreejs", %{
+          |> Frontend.put_layout()
+          |> render_inertia("GameStream", %{
             "game" => game_params,
             "game_id" => game.id,
             "players" => present_users(Helpers.get_players(game))
@@ -95,7 +96,9 @@ defmodule CodebattleWeb.GameController do
     analyses_by_user = Map.new(analyses, &{&1.user_id, &1})
     players = Helpers.get_players(game)
 
-    render_inertia(conn, "GameMl", %{
+    conn
+    |> Frontend.put_layout()
+    |> render_inertia("GameMl", %{
       "game_id" => game.id,
       "players" => Enum.map(players, &serialize_ml_player(&1, analyses_by_user)),
       "batches" => Enum.map(batches, &serialize_batch/1)
@@ -229,64 +232,75 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
+  # One full-screen page for every game: live (any state, also
+  # for spectators of a waiting game, who get a Join screen) and finished (history).
+  # `?history=1` replays a live game from its in-memory playbook: once it is over for
+  # everyone, and while it is still played for admins/moderators (checking for cheaters).
+  defp show_game(%Game{is_live: true} = game, user, conn) do
+    if conn.params["history"] == "1" and live_history_allowed?(game, user) do
+      render_history(conn, game, user, has_playbook: true, live: true)
+    else
+      conn
+      |> put_game_meta_tags(game)
+      |> Frontend.put_layout()
+      |> render_inertia("GameRoom", live_game_props(game, user))
+    end
+  end
+
   defp show_game(game, user, conn) do
-    case game do
-      %Game{is_live: true} = game ->
-        head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+    render_history(conn, game, user, has_playbook: !is_nil(Playbook.Context.exists?(game.id)), live: false)
+  end
 
-        game_params =
-          game
-          |> GameView.render_game(head_to_head)
-          |> maybe_put_tournament_player_restrictions(game, user)
+  defp live_history_allowed?(game, user), do: game.state in ["game_over", "timeout"] or User.admin_or_moderator?(user)
 
-        page_props = %{
-          "reports" => maybe_get_reports(conn.assigns.current_user, game.id),
-          "editor_summary_enabled" => !FunWithFlags.enabled?(:editor_summary_disabled),
-          "can_manage_game" => User.admin_or_moderator?(user),
-          "game" => game_params,
-          "game_id" => game.id,
-          "tournament_id" => Helpers.get_tournament_id(game),
-          "players" => present_users(Helpers.get_players(game))
-        }
+  defp render_history(conn, game, user, opts) do
+    game = ensure_task_loaded(game)
+    head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
 
-        is_player = Helpers.player?(game, user.id)
+    conn
+    |> put_game_meta_tags(game)
+    |> Frontend.put_layout()
+    |> render_inertia("GameRoom", %{
+      "is_record" => true,
+      "has_playbook" => opts[:has_playbook],
+      # The game still runs: the page offers the way back to it.
+      "is_live" => opts[:live],
+      "can_manage_game" => User.admin_or_moderator?(user),
+      "game_id" => game.id,
+      "game" => game |> GameView.render_game(head_to_head) |> Map.put(:mode, "history"),
+      "tournament_id" => game.tournament_id,
+      "tournament_name" => tournament_name(game),
+      "players" => present_users(Helpers.get_players(game))
+    })
+  end
 
-        case {game.state, is_player} do
-          {"waiting_opponent", false} ->
-            conn
-            |> put_game_meta_tags(game)
-            |> render("join.html", %{game: game, user: user})
+  defp live_game_props(game, user) do
+    # Games started without their task in memory (an older tournament bug) still show it.
+    game = ensure_task_loaded(game)
+    head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
 
-          _ ->
-            conn
-            |> put_game_meta_tags(game)
-            |> render_inertia("GameRoom", page_props)
-        end
+    %{
+      "reports" => maybe_get_reports(user, game.id),
+      "editor_summary_enabled" => !FunWithFlags.enabled?(:editor_summary_disabled),
+      "can_manage_game" => User.admin_or_moderator?(user),
+      "game" =>
+        game
+        |> GameView.render_game(head_to_head)
+        |> maybe_put_tournament_player_restrictions(game, user),
+      "game_id" => game.id,
+      "tournament_id" => Helpers.get_tournament_id(game),
+      "tournament_name" => tournament_name(game),
+      "players" => present_users(Helpers.get_players(game))
+    }
+  end
 
-      game ->
-        if Playbook.Context.exists?(game.id) && can_access_game?(game, user) do
-          head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+  # Tournament games title the browser tab with the tournament.
+  defp tournament_name(%{tournament_id: nil}), do: nil
 
-          game_params =
-            game
-            |> GameView.render_game(head_to_head)
-            |> Map.put(:mode, "history")
-
-          conn
-          |> put_game_meta_tags(game)
-          |> render_inertia("GameRoom", %{
-            "is_record" => true,
-            "game_id" => game.id,
-            "game" => game_params,
-            "tournament_id" => game.tournament_id,
-            "langs" => Languages.get_langs(),
-            "players" => present_users(game.users)
-          })
-        else
-          conn
-          |> put_game_meta_tags(game)
-          |> render("game_result.html", %{game: game, user: user})
-        end
+  defp tournament_name(%{tournament_id: tournament_id}) do
+    case Tournament.Context.get_info(tournament_id) do
+      %{name: name} -> name
+      _ -> nil
     end
   end
 

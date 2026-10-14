@@ -44,8 +44,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
                "sound_settings" => %{
                  "level" => 7,
                  "muted" => false,
-                 "tournament_level" => 7,
-                 "type" => "dendy"
+                 "tournament_level" => 7
                },
                "db_type" => "mongodb",
                "style_lang" => "less",
@@ -67,8 +66,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         "sound_settings" => %{
           "level" => 3,
           "muted" => true,
-          "tournament_level" => 8,
-          "type" => "cs"
+          "tournament_level" => 8
         },
         "db_type" => "mysql",
         "style_lang" => "sass",
@@ -93,7 +91,6 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert updated.sound_settings.level == 3
       assert updated.sound_settings.muted
       assert updated.sound_settings.tournament_level == 8
-      assert updated.sound_settings.type == "cs"
       assert updated.clan == "Bca"
       assert updated.clan_id == clan.id
       assert updated.name == "evgen"
@@ -102,7 +99,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
     end
 
     test "updates only the mute preference", %{conn: conn} do
-      user = insert(:user, sound_settings: %User.SoundSettings{level: 3, type: "cs"})
+      user = insert(:user, sound_settings: %User.SoundSettings{level: 3})
 
       conn =
         conn
@@ -118,7 +115,6 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       updated = Repo.get!(User, user.id)
       assert updated.sound_settings.muted
       assert updated.sound_settings.level == 3
-      assert updated.sound_settings.type == "cs"
     end
 
     test "update with empty name doesn't work", %{conn: conn} do

@@ -1,4 +1,4 @@
-// CodebattleWeb.NewFrontend.Present.clan/1 and clan_member/1.
+// CodebattleWeb.Frontend.Present.clan/1 and clan_member/1.
 
 export interface Clan {
   id: number;

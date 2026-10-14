@@ -15,11 +15,11 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert conn.status == 200
 
-    response = html_response(conn, 200)
-    assert response =~ "time_to_solve"
-    assert response =~ "base_static_score"
-    assert response =~ Integer.to_string(task.time_to_solve_sec)
-    assert response =~ Integer.to_string(task.base_score)
+    assert inertia_component(conn) == "TaskIndex"
+    assert %{"tasks" => tasks} = inertia_props(conn)
+    row = Enum.find(tasks, &(&1.id == task.id))
+    assert row.time_to_solve_sec == 125
+    assert row.base_score == 275
   end
 
   test ".show", %{conn: conn} do

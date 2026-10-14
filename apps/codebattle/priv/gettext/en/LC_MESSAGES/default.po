@@ -248,11 +248,8 @@ msgstr "Manage your public identity and coding preferences."
 msgid "Sound settings"
 msgstr "Sound settings"
 
-msgid "Choose how game and tournament notifications sound."
-msgstr "Choose how game and tournament notifications sound."
-
-msgid "Sound theme"
-msgstr "Sound theme"
+msgid "Set the volume of game and tournament sounds."
+msgstr "Set the volume of game and tournament sounds."
 
 msgid "Game sound level"
 msgstr "Game sound level"
@@ -1383,15 +1380,6 @@ msgstr "Locale"
 
 msgid "Select sound type"
 msgstr "Select sound type"
-
-msgid "Dendy"
-msgstr "Dendy"
-
-msgid "CS"
-msgstr "CS"
-
-msgid "Standard"
-msgstr "Standard"
 
 msgid "Silent"
 msgstr "Silent"
@@ -3328,9 +3316,6 @@ msgstr "Move down"
 msgid "3–16 Latin letters, digits, - or _"
 msgstr "3–16 Latin letters, digits, - or _"
 
-msgid "8-bit console chiptune"
-msgstr "8-bit console chiptune"
-
 msgid "Active %{ago}"
 msgstr "Active %{ago}"
 
@@ -3346,9 +3331,6 @@ msgstr "At least 8 characters, any symbols"
 msgid "CSS tasks"
 msgstr "CSS tasks"
 
-msgid "Calm and simple"
-msgstr "Calm and simple"
-
 msgid "Changing it signs you out on other devices and revokes your API tokens."
 msgstr "Changing it signs you out on other devices and revokes your API tokens."
 
@@ -3357,9 +3339,6 @@ msgstr "Connected"
 
 msgid "Couldn't save your settings. Try again."
 msgstr "Couldn't save your settings. Try again."
-
-msgid "Counter-Strike radio"
-msgstr "Counter-Strike radio"
 
 msgid "Danger zone"
 msgstr "Danger zone"
@@ -4035,3 +4014,849 @@ msgstr "%{from}–%{to}: %{count} solved"
 
 msgid "You %{time}"
 msgstr "You %{time}"
+
+msgid "All tests passed"
+msgstr ""
+
+msgid "Bigger"
+msgstr ""
+
+msgid "Checking your solution…"
+msgstr ""
+
+msgid "Checking…"
+msgstr ""
+
+msgid "Connection lost, reconnecting…"
+msgstr ""
+
+msgid "Ctrl/Cmd + Enter"
+msgstr ""
+
+msgid "Exit full screen"
+msgstr ""
+
+msgid "Font size"
+msgstr ""
+
+msgid "Full screen"
+msgstr ""
+
+msgid "Give up?"
+msgstr ""
+
+msgid "Hide the side panel"
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+msgid "Rematch declined"
+msgstr ""
+
+msgid "Rematch offered, waiting…"
+msgstr ""
+
+msgid "Reset code"
+msgstr ""
+
+msgid "Reset the code?"
+msgstr ""
+
+msgid "Run tests"
+msgstr ""
+
+msgid "Run your code to see the test results here"
+msgstr ""
+
+msgid "Send this link to a friend; the game starts as soon as they join."
+msgstr ""
+
+msgid "Show the side panel"
+msgstr ""
+
+msgid "Side panel"
+msgstr ""
+
+msgid "Smaller"
+msgstr ""
+
+msgid "Test %{number}"
+msgstr ""
+
+msgid "Tests passed: %{percent}%"
+msgstr ""
+
+msgid "The game ends and your opponent wins."
+msgstr ""
+
+msgid "Time left"
+msgstr ""
+
+msgid "Vim mode"
+msgstr ""
+
+msgid "Vim mode off"
+msgstr ""
+
+msgid "Vim mode on"
+msgstr ""
+
+msgid "Wins against each other"
+msgstr ""
+
+msgid "You gave up"
+msgstr ""
+
+msgid "You lost"
+msgstr ""
+
+msgid "You won!"
+msgstr ""
+
+msgid "Your code in this language is replaced with the starting template."
+msgstr ""
+
+msgid "%{name} is looking for an opponent"
+msgstr ""
+
+msgid "Enter the pass code to start playing."
+msgstr ""
+
+msgid "Join game"
+msgstr ""
+
+msgid "Pass code"
+msgstr ""
+
+msgid "Play"
+msgstr ""
+
+msgid "Replay position"
+msgstr ""
+
+msgid "Speed"
+msgstr ""
+
+msgid "The replay of this game is not available"
+msgstr ""
+
+msgid "This game is locked"
+msgstr ""
+
+msgid "To the end"
+msgstr ""
+
+msgid "To the start"
+msgstr ""
+
+msgid "Unlock"
+msgstr ""
+
+msgid "Wrong pass code"
+msgstr ""
+
+msgid "No runs yet"
+msgstr ""
+
+msgid "Hide the task"
+msgstr ""
+
+msgid "Show the task"
+msgstr ""
+
+msgid "%{failed} of %{total} tests failed"
+msgstr ""
+
+msgid "Memory limit exceeded"
+msgstr ""
+
+msgid "Time limit exceeded"
+msgstr ""
+
+msgid "failed"
+msgstr ""
+
+msgid "passed"
+msgstr ""
+
+msgid "Show test results"
+msgstr ""
+
+msgid "Open the task in a window"
+msgstr ""
+
+msgid "A sharper theme for bright rooms and projectors"
+msgstr ""
+
+msgid "A small map of the code on the right"
+msgstr ""
+
+msgid "Colored brackets"
+msgstr ""
+
+msgid "Dots for spaces, arrows for tabs"
+msgstr ""
+
+msgid "High contrast"
+msgstr ""
+
+msgid "Line numbers"
+msgstr ""
+
+msgid "Long lines wrap instead of scrolling sideways"
+msgstr ""
+
+msgid "Matching pairs share a color"
+msgstr ""
+
+msgid "Minimap"
+msgstr ""
+
+msgid "Relative"
+msgstr ""
+
+msgid "Show whitespace"
+msgstr ""
+
+msgid "Smooth cursor"
+msgstr ""
+
+msgid "Sticky scroll"
+msgstr ""
+
+msgid "The current function stays at the top"
+msgstr ""
+
+msgid "The cursor glides and fades instead of jumping"
+msgstr ""
+
+msgid "Word wrap"
+msgstr ""
+
+msgid "Color theme"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "Back to game"
+msgstr ""
+
+msgid "Open history"
+msgstr ""
+
+msgid "Whitespace"
+msgstr ""
+
+msgid "Waiting for the next match..."
+msgstr ""
+
+msgid "Waiting..."
+msgstr ""
+
+msgid "Drag windows to move, the corner to resize. Hidden ones come back from Widgets."
+msgstr ""
+
+msgid "Hide"
+msgstr ""
+
+msgid "Left editor"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+msgid "Right editor"
+msgstr ""
+
+msgid "Widgets"
+msgstr ""
+
+msgid "Game started"
+msgstr "Game started"
+
+msgid "New message"
+msgstr "New message"
+
+msgid "Tournament start"
+msgstr "Tournament start"
+
+msgid "Round end"
+msgstr "Round end"
+
+msgid "Tournament end"
+msgstr "Tournament end"
+
+msgid "Show controls"
+msgstr ""
+
+msgid "Hide controls"
+msgstr ""
+
+msgid "Decrease"
+msgstr ""
+
+msgid "Increase"
+msgstr ""
+
+msgid "Game is loading"
+msgstr ""
+
+msgid "Tournament is finished"
+msgstr ""
+
+msgid "Tournament is waiting to start"
+msgstr ""
+
+msgid "Tournament is canceled"
+msgstr ""
+
+msgid "Waiting for the player's next game"
+msgstr ""
+
+msgid "Could not connect to the tournament, retrying…"
+msgstr ""
+
+msgid "Connection details"
+msgstr ""
+
+msgid "User ID"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Connected at"
+msgstr ""
+
+msgid "Ref"
+msgstr ""
+
+msgid "Add to redirect list"
+msgstr ""
+
+msgid "Fetched %{count} player IDs"
+msgstr ""
+
+msgid "Redirect sent"
+msgstr ""
+
+msgid "Redirect failed"
+msgstr ""
+
+msgid "Redirect users"
+msgstr ""
+
+msgid "Fetch player IDs"
+msgstr ""
+
+msgid "All (%{count})"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "User IDs (comma or space separated)"
+msgstr ""
+
+msgid "Redirect (%{count})"
+msgstr ""
+
+msgid "3–16 Latin letters, digits, - and _"
+msgstr ""
+
+msgid "At least 8 characters"
+msgstr ""
+
+msgid "Confirm password"
+msgstr ""
+
+msgid "Enter the email of your account and we will send you a link to set a new password."
+msgstr ""
+
+msgid "Reset password"
+msgstr ""
+
+msgid "or"
+msgstr ""
+
+msgid "Email required"
+msgstr ""
+
+msgid "Should begin and end with a Latin letter or number"
+msgstr ""
+
+msgid "Can't contain special symbols"
+msgstr ""
+
+msgid "Nickname required"
+msgstr ""
+
+msgid "Should be from 3 to 16 characters"
+msgstr ""
+
+msgid "Nickname must start with a Latin letter and contain only Latin letters, digits, - and _"
+msgstr ""
+
+msgid "Password required"
+msgstr ""
+
+msgid "Should be at most 128 characters"
+msgstr ""
+
+msgid "Something went wrong, please try again later"
+msgstr ""
+
+msgid "Could not update the playbook"
+msgstr ""
+
+msgid "Playbook status"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "Report sent, thank you"
+msgstr ""
+
+msgid "Could not send the report"
+msgstr ""
+
+msgid "Player released"
+msgstr ""
+
+msgid "Player banned"
+msgstr ""
+
+msgid "Could not change the ban"
+msgstr ""
+
+msgid "Player actions"
+msgstr ""
+
+msgid "Reported"
+msgstr ""
+
+msgid "User #%{id}"
+msgstr ""
+
+msgid "Risk score: 1+ low, 5+ suspicious, 10+ likely bot"
+msgstr ""
+
+msgid "Risk score"
+msgstr ""
+
+msgid "No analysis for this player."
+msgstr ""
+
+msgid "No telemetry batches recorded."
+msgstr ""
+
+msgid "Either the player never typed, or their solution was injected via WebSocket without using the editor."
+msgstr ""
+
+msgid "Signals"
+msgstr ""
+
+msgid "Final solution analysis"
+msgstr ""
+
+msgid "Total chars / lines"
+msgstr ""
+
+msgid "Code lines / comment lines"
+msgstr ""
+
+msgid "Comment-to-code ratio"
+msgstr ""
+
+msgid "Long comment lines (>40 chars)"
+msgstr ""
+
+msgid "GPT-style phrase hits"
+msgstr ""
+
+msgid "Typed vs final"
+msgstr ""
+
+msgid "Final solution length"
+msgstr ""
+
+msgid "Language template length"
+msgstr ""
+
+msgid "excluded from coverage"
+msgstr ""
+
+msgid "Effective added length"
+msgstr ""
+
+msgid "Total chars typed"
+msgstr ""
+
+msgid "Typed coverage"
+msgstr ""
+
+msgid "low → likely injected/pasted"
+msgstr ""
+
+msgid "Keystrokes"
+msgstr ""
+
+msgid "Batches"
+msgstr ""
+
+msgid "Total events"
+msgstr ""
+
+msgid "Key events"
+msgstr ""
+
+msgid "Printable keys"
+msgstr ""
+
+msgid "Chars inserted / deleted"
+msgstr ""
+
+msgid "%{rate} ins/s"
+msgstr ""
+
+msgid "Net Δ text"
+msgstr ""
+
+msgid "Backspace / Delete"
+msgstr ""
+
+msgid "Arrow keys"
+msgstr ""
+
+msgid "Undo / Redo"
+msgstr ""
+
+msgid "Copy / Cut / Paste shortcuts"
+msgstr ""
+
+msgid "Paste blocked"
+msgstr ""
+
+msgid "Timing and edits"
+msgstr ""
+
+msgid "Session length"
+msgstr ""
+
+msgid "Avg key delta"
+msgstr ""
+
+msgid "Min / Max key delta"
+msgstr ""
+
+msgid "Idle pauses >2s"
+msgstr ""
+
+msgid "Multi-char inserts / deletes"
+msgstr ""
+
+msgid "Multi-line inserts"
+msgstr ""
+
+msgid "Largest single insert / delete"
+msgstr ""
+
+msgid "≥8 → likely paste"
+msgstr ""
+
+msgid "Large inserts (≥50)"
+msgstr ""
+
+msgid "Content changes / printable keys"
+msgstr ""
+
+msgid "more changes than keys → programmatic"
+msgstr ""
+
+msgid "Events per batch"
+msgstr ""
+
+msgid "Net Δ chars per batch"
+msgstr ""
+
+msgid "Avg key delta (ms) per batch"
+msgstr ""
+
+msgid "Final submitted code (%{count} chars)"
+msgstr ""
+
+msgid "Could not start the tournament, try again"
+msgstr ""
+
+msgid "Waiting for start"
+msgstr ""
+
+msgid "Admin panel"
+msgstr ""
+
+msgid "Choose a language"
+msgstr ""
+
+msgid "Solutions are submitted on the external platform"
+msgstr ""
+
+msgid "The server did not respond, try again"
+msgstr ""
+
+msgid "Could not submit the solution"
+msgstr ""
+
+msgid "Swap sides"
+msgstr ""
+
+msgid "Time limit"
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Stage"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Live connections"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Connections"
+msgstr ""
+
+msgid "No active connections"
+msgstr ""
+
+msgid "Add all to redirect list"
+msgstr ""
+
+msgid "Contact support for help logging in."
+msgstr ""
+
+msgid "Don't have an account?"
+msgstr ""
+
+msgid "Already have an account?"
+msgstr ""
+
+msgid "Game #%{id}: bot/human signal review"
+msgstr ""
+
+msgid "Higher risk score / more signals → more bot-like. Always confirm by playing back the editor history. Reports are computed once and cached; Re-analyze forces a fresh run."
+msgstr ""
+
+msgid "Re-analyze"
+msgstr ""
+
+msgid "No players found for this game."
+msgstr ""
+
+msgid "Could not connect to the tournament"
+msgstr ""
+
+msgid "Tournaments. Seasons. Code-first competition."
+msgstr ""
+
+msgid "Play in the best coding arena"
+msgstr ""
+
+msgid "Codebattle powers head-to-head battles, team brackets, and seasonal leaderboards. Set formats, invite players, and watch the rankings move in real time."
+msgstr ""
+
+msgid "No registration required"
+msgstr ""
+
+msgid "Live ladders"
+msgstr ""
+
+msgid "Team seasons"
+msgstr ""
+
+msgid "Bots + training"
+msgstr ""
+
+msgid "Season standings will appear here soon."
+msgstr ""
+
+msgid "Top 5 players • current season"
+msgstr ""
+
+msgid "Seasons and formats"
+msgstr ""
+
+msgid "Four seasons a year. One Grand Slam to crown the best."
+msgstr ""
+
+msgid "Join a competitive ladder that resets each season so every coder gets a fresh climb. Swiss rounds keep every match fair, while lifetime Elo tracks your true skill across seasons. Top finishers earn prizes and exclusive merch."
+msgstr ""
+
+msgid "Season ladder"
+msgstr ""
+
+msgid "Earn season points, climb the live leaderboard, and lock your place in the finale."
+msgstr ""
+
+msgid "Season points"
+msgstr ""
+
+msgid "Finals on 21st"
+msgstr ""
+
+msgid "Swiss tournaments"
+msgstr ""
+
+msgid "Face opponents with similar scores, solve the same task, and rise with every win."
+msgstr ""
+
+msgid "Swiss pairing"
+msgstr ""
+
+msgid "Live standings"
+msgstr ""
+
+msgid "No repeat pairs"
+msgstr ""
+
+msgid "Grades & schedule"
+msgstr ""
+
+msgid "Start at rookie, fight up the grades, and aim for the Grand Slam spotlight."
+msgstr ""
+
+msgid "Rookie → Grand Slam"
+msgstr ""
+
+msgid "Grand Slam finale"
+msgstr ""
+
+msgid "Points by place"
+msgstr ""
+
+msgid "How it works"
+msgstr ""
+
+msgid "Join, battle, climb, repeat"
+msgstr ""
+
+msgid "A clear loop that keeps the competition fair and the season exciting."
+msgstr ""
+
+msgid "Join a season"
+msgstr ""
+
+msgid "Seasons reset points so everyone gets a fresh shot at the top."
+msgstr ""
+
+msgid "Battle in Swiss rounds"
+msgstr ""
+
+msgid "Face opponents with similar scores on the same task each round."
+msgstr ""
+
+msgid "Earn season points"
+msgstr ""
+
+msgid "Climb the live leaderboard and secure your place in the finale."
+msgstr ""
+
+msgid "Win the Grand Slam"
+msgstr ""
+
+msgid "Champions take the spotlight, prizes, and exclusive merch."
+msgstr ""
+
+msgid "Private tournaments"
+msgstr ""
+
+msgid "Build your own tournaments for friends or teams"
+msgstr ""
+
+msgid "Host custom events for meetups, work team-building, or just fun sessions. We’ve run tournaments for 1,000+ players."
+msgstr ""
+
+msgid "Friends & communities"
+msgstr ""
+
+msgid "Create private rooms, invite friends, and enjoy real-time battles together."
+msgstr ""
+
+msgid "Invite links"
+msgstr ""
+
+msgid "Instant rematch"
+msgstr ""
+
+msgid "Team-building"
+msgstr ""
+
+msgid "Run company tournaments and energize your team with friendly competition."
+msgstr ""
+
+msgid "Team brackets"
+msgstr ""
+
+msgid "Flexible schedule"
+msgstr ""
+
+msgid "Highlights"
+msgstr ""
+
+msgid "Large-scale events"
+msgstr ""
+
+msgid "Trusted for tournaments at scale with thousands of players."
+msgstr ""
+
+msgid "1,000+ players"
+msgstr ""
+
+msgid "Stable rounds"
+msgstr ""
+
+msgid "Fast judge"
+msgstr ""
+
+msgid "Battle in your language"
+msgstr ""
+
+msgid "Pick your stack and jump into any tournament format."
+msgstr ""
+
+msgid "Community"
+msgstr ""
+
+msgid "Built by competitive coders"
+msgstr ""
+
+msgid "Codebattle is open and community-driven. Join contributors and help shape upcoming seasons."
+msgstr ""
+
+msgid "Ready to enter the arena?"
+msgstr ""
+
+msgid "Spin up a quick match or start planning your next season."
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "No stages yet."
+msgstr ""
+
+msgid "Feedback sent, thank you"
+msgstr ""
+
+msgid "Could not send the feedback"
+msgstr ""

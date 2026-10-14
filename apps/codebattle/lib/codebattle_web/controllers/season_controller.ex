@@ -3,7 +3,7 @@ defmodule CodebattleWeb.SeasonController do
 
   alias Codebattle.Season
   alias Codebattle.SeasonResult
-  alias CodebattleWeb.NewFrontend
+  alias CodebattleWeb.Frontend
 
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
@@ -32,7 +32,7 @@ defmodule CodebattleWeb.SeasonController do
       description: "Browse all Codebattle seasons and their results"
     })
     |> assign(:page_title, "Codebattle Seasons")
-    |> NewFrontend.maybe_put_layout()
+    |> Frontend.put_layout()
     |> render_inertia("Seasons", %{
       "page_title" => "Codebattle Seasons",
       "seasons" => seasons_with_top3
@@ -51,7 +51,7 @@ defmodule CodebattleWeb.SeasonController do
       description: "Results for #{season.name} #{season.year} season"
     })
     |> assign(:page_title, page_title)
-    |> NewFrontend.maybe_put_layout()
+    |> Frontend.put_layout()
     |> render_inertia("SeasonShow", %{
       "page_title" => page_title,
       "season" => season,

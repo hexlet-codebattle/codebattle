@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "jsx-a11y",
+    "typescript"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "react/set-state-in-effect": "warn",
+    "react/refs": "warn",
+    "react/purity": "warn",
+    "react/use-memo": "warn"
+  },
+  "env": {
+    "builtin": true,
+    "browser": true
+  },
+  "ignorePatterns": [
+    "dist",
+    "src/admin/legacy-admin.css"
+  ]
+}

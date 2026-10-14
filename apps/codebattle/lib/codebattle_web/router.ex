@@ -58,10 +58,6 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  pipeline :empty_layout do
-    plug(:put_layout, html: {CodebattleWeb.LayoutView, :empty})
-  end
-
   pipeline :public_api do
     plug(:accepts, ["json"])
   end
@@ -430,8 +426,6 @@ defmodule CodebattleWeb.Router do
     # Use the default browser stack
     pipe_through(:browser)
 
-    get("/cssbattle/builder", CssBattleBuilderController, :index)
-
     get("/robots.txt", RootController, :robots)
     get("/sitemap.xml", RootController, :sitemap)
     get("/feedback/rss.xml", RootController, :feedback)
@@ -469,7 +463,6 @@ defmodule CodebattleWeb.Router do
 
     resources("/users", UserController, only: [:new, :show])
     get("/settings", UserController, :edit, as: :user_setting)
-    resources("/feedback", FeedbackController, only: [:index])
 
     resources("/task_packs", TaskPackController) do
       patch("/activate", TaskPackController, :activate, as: :activate)
@@ -485,7 +478,7 @@ defmodule CodebattleWeb.Router do
       get("/image", Game.ImageController, :show, as: :image)
     end
 
-    get("/games/:id/threejs", GameController, :threejs)
+    get("/games/:id/stream", GameController, :stream)
     get("/games/:id/ml", GameController, :ml)
 
     scope "/games" do
@@ -512,6 +505,7 @@ defmodule CodebattleWeb.Router do
         else
           conn
           |> put_resp_content_type("text/html")
+          |> put_layout(html: {CodebattleWeb.LayoutView, :app})
           |> put_view(CodebattleWeb.ErrorView)
           |> render("404.html")
           |> halt()
@@ -521,6 +515,7 @@ defmodule CodebattleWeb.Router do
         # Default to HTML for browser requests if no Accept header
         conn
         |> put_resp_content_type("text/html")
+        |> put_layout(html: {CodebattleWeb.LayoutView, :app})
         |> put_view(CodebattleWeb.ErrorView)
         |> render("404.html")
         |> halt()
@@ -539,6 +534,7 @@ defmodule CodebattleWeb.Router do
         else
           conn
           |> put_resp_content_type("text/html")
+          |> put_layout(html: {CodebattleWeb.LayoutView, :app})
           |> put_view(CodebattleWeb.ErrorView)
           |> render("404.html")
           |> halt()
@@ -548,6 +544,7 @@ defmodule CodebattleWeb.Router do
         # Default to HTML for browser requests if no Accept header
         conn
         |> put_resp_content_type("text/html")
+        |> put_layout(html: {CodebattleWeb.LayoutView, :app})
         |> put_view(CodebattleWeb.ErrorView)
         |> render("404.html")
         |> halt()

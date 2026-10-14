@@ -47,56 +47,24 @@ defmodule CodebattleWeb.Endpoint do
     only: ~w(assets css fonts images js favicon.ico robots.txt offline.html service-worker.js)
   )
 
-  # Serve static files (images, fonts, audio) from assets/static in development
-  # Served at both /assets/* and /assets/static/* to support both:
-  # - Template usage: /assets/images/logo.svg
-  # - JS imports in dev: /assets/static/images/logo.svg (Vite returns this in dev)
+  # Development serves the static files (images, audio, fonts, favicons) straight from
+  # apps/codebattle/static, at the same /assets/* paths production copies them to
+  # (priv/static/assets, see Containerfile.codebattle). The app bundle itself comes
+  # from the frontend's Vite dev server (CodebattleWeb.Frontend).
   if Mix.env() == :dev do
-    # Serve node_modules in dev so Monaco ESM runtime paths can be fetched from
-    # the same origin as Phoenix (avoids cross-origin Worker restrictions).
-    plug(
-      Plug.Static,
-      at: "/node_modules",
-      from: Path.expand("../../node_modules", __DIR__),
-      gzip: false
-    )
-
-    # Serve local Monaco worker entry files in dev from Phoenix origin.
-    plug(
-      Plug.Static,
-      at: "/assets/js/monaco-workers",
-      from: Path.expand("../../assets/js/monaco-workers", __DIR__),
-      gzip: false
-    )
-
-    plug(
-      Plug.Static,
-      at: "/assets/static",
-      from: Path.expand("../../assets/static", __DIR__),
-      gzip: false
-    )
-
     plug(
       Plug.Static,
       at: "/assets",
-      from: Path.expand("../../assets/static", __DIR__),
-      gzip: false
-    )
-
-    # Serve fonts and codicon.ttf at root level for KaTeX and Monaco in dev
-    plug(
-      Plug.Static,
-      at: "/fonts",
-      from: Path.expand("../../assets/static/fonts", __DIR__),
+      from: Path.expand("../../static", __DIR__),
       gzip: false
     )
 
     plug(
       Plug.Static,
       at: "/",
-      from: Path.expand("../../assets/static", __DIR__),
+      from: Path.expand("../../static", __DIR__),
       gzip: false,
-      only: ~w(codicon.ttf offline.html service-worker.js)
+      only: ~w(offline.html service-worker.js)
     )
   end
 
