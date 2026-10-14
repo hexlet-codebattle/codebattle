@@ -298,6 +298,25 @@ defmodule Codebattle.Game.ContextTest do
       assert :ok = Game.Context.terminate_game(game.id)
     end
 
+    test "sets a ban idempotently in a live game and in a stored one" do
+      user1 = insert(:user)
+      user2 = insert(:user)
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+      banned? = fn -> Enum.find(Game.Context.get_game!(game.id).players, &(&1.id == user2.id)).is_banned end
+
+      assert :ok = Game.Context.set_player_banned(game.id, user2.id, true)
+      assert :ok = Game.Context.set_player_banned(game.id, user2.id, true)
+      assert banned?.()
+
+      # Once the process is gone the stored record is updated (a finished game page reads it).
+      :ok = Game.Context.terminate_game(game.id)
+      assert :ok = Game.Context.set_player_banned(game.id, user2.id, true)
+      assert banned?.()
+      assert :ok = Game.Context.set_player_banned(game.id, user2.id, false)
+      refute banned?.()
+      assert {:error, :not_a_player} = Game.Context.set_player_banned(game.id, insert(:user).id, true)
+    end
+
     test "unlocks a tournament game with a one-time password" do
       creator = insert(:user)
       user1 = insert(:user)

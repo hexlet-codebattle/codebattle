@@ -533,10 +533,10 @@ defmodule Codebattle.Game.Engine do
   end
 
   def toggle_ban_player(%Game{} = game, player_id) do
-    {:ok, {_old_game_state, new_game}} =
-      fire_transition(game.id, :toggle_ban_player, %{id: player_id})
-
-    {:ok, new_game}
+    case fire_transition(game.id, :toggle_ban_player, %{id: player_id}) do
+      {:ok, {_old_game_state, new_game}} -> {:ok, new_game}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def trigger_timeout(%Game{state: "game_over"} = game) do

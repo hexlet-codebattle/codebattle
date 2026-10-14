@@ -1,5 +1,6 @@
-import { ActionIcon, Badge, Button, Combobox, Group, Kbd, Menu, Modal, Text, Tooltip, UnstyledButton, useCombobox } from '@mantine/core';
+import { ActionIcon, Alert, Badge, Button, Combobox, Group, Kbd, Menu, Modal, Text, Tooltip, UnstyledButton, useCombobox } from '@mantine/core';
 import {
+  IconBan,
   IconChevronDown,
   IconDotsVertical,
   IconFlag,
@@ -177,6 +178,9 @@ export function EditorPane({
   const over = useGameStore((state) => isGameOver(state.game?.state));
   const isTournament = useGameStore((state) => state.game?.tournament_id != null);
   const checking = useGameStore((state) => Boolean(state.checking[player.id]));
+  // A ban arrives over the channel (user:banned): my editor locks, Run is off, until a release.
+  const banned = useGameStore((state) => Boolean((state.players[player.id] ?? player).is_banned));
+  const canType = editable && !banned;
   const { vim, fontSize, update } = useEditorPrefs();
   // Drafts per language, so switching back restores what I wrote.
   const drafts = useRef<Record<string, string>>({});
@@ -191,7 +195,7 @@ export function EditorPane({
   // Fallback anchor when the game has no start time yet; fixed at mount so offsets stay stable.
   const [mountedAtMs] = useState(() => Date.now());
   const telemetry = useEditorTelemetry({
-    enabled: Boolean(summaryEnabled && editable && api && gameState === 'playing'),
+    enabled: Boolean(summaryEnabled && canType && api && gameState === 'playing'),
     lang,
     startedAtMs: startsAt ? parseServerDate(startsAt).getTime() : mountedAtMs,
     send: (summary, summaryLang) => api?.sendEditorSummary(summary, summaryLang),
@@ -225,7 +229,7 @@ export function EditorPane({
         <PlayerChip player={player} onShowTests={onShowTests} />
         {!editable && <PlayerActions player={player} />}
         <Group gap={6} wrap="nowrap" className={classes.paneActions}>
-          <LangPicker langs={langs} value={lang} onChange={switchLang} disabled={!editable} />
+          <LangPicker langs={langs} value={lang} onChange={switchLang} disabled={!canType} />
           {withSettings && <EditorSettings />}
           {editable && (
             <>
@@ -266,7 +270,15 @@ export function EditorPane({
                   </Group>
                 }
               >
-                <Button size="compact-sm" color="green" variant="filled" loading={checking} leftSection={<IconPlayerPlayFilled size={13} />} onClick={api?.check}>
+                <Button
+                  size="compact-sm"
+                  color="green"
+                  variant="filled"
+                  loading={checking}
+                  disabled={banned}
+                  leftSection={<IconPlayerPlayFilled size={13} />}
+                  onClick={api?.check}
+                >
                   {t('Run')}
                 </Button>
               </Tooltip>
@@ -274,20 +286,25 @@ export function EditorPane({
           )}
         </Group>
       </header>
+      {editable && banned && (
+        <Alert color="red" variant="light" radius={0} py={8} icon={<IconBan size={16} />} title={t('You are banned in this tournament')}>
+          {t('Your editor is locked and solutions can no longer be submitted. If you think this is a mistake, contact the organizers.')}
+        </Alert>
+      )}
       <CodeEditor
         value={text}
         lang={lang}
-        readOnly={!editable}
+        readOnly={!canType}
         fontSize={fontSizeOverride ?? fontSize}
         theme={theme}
         onEditorMount={onEditorMount}
-        onTelemetry={editable ? telemetry : undefined}
-        onCursor={editable ? api?.cursorReport : undefined}
-        vim={vim && editable}
+        onTelemetry={canType ? telemetry : undefined}
+        onCursor={canType ? api?.cursorReport : undefined}
+        vim={vim && canType}
         // Moderators may copy anyone's code, but my own editor only takes pastes from itself.
         allowClipboard={allowClipboard && !editable}
-        onChange={editable ? api?.changeText : undefined}
-        onRun={editable ? api?.check : undefined}
+        onChange={canType ? api?.changeText : undefined}
+        onRun={canType ? api?.check : undefined}
       />
       <Modal opened={confirm != null} onClose={() => setConfirm(null)} title={confirm ? confirmCopy[confirm].title : null} centered size="sm">
         <Text size="sm">{confirm ? confirmCopy[confirm].text : null}</Text>

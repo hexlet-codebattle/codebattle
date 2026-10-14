@@ -1,4 +1,4 @@
-import { ActionIcon, Menu, Tooltip } from '@mantine/core';
+import { Badge, Button, Group, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconBan, IconFlag, IconLockOpen } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -12,8 +12,8 @@ import type { GamePlayer } from '../types';
 
 /**
  * Actions on a player from their editor header (legacy GameReportButton /
- * GameBanPlayerButton): the opponent and admins can report them; admins can ban or
- * release them in a tournament game.
+ * GameBanPlayerButton), as labelled buttons rather than a menu: the opponent and admins
+ * can report them; admins can ban or release them in a tournament game.
  */
 export function PlayerActions({ player }: { player: GamePlayer }) {
   const { t } = useTranslation();
@@ -35,36 +35,53 @@ export function PlayerActions({ player }: { player: GamePlayer }) {
       })
       .catch(() => notifications.show({ color: 'red', message: t('Could not send the report') }));
 
-  const toggleBan = () =>
-    push('user:ban', { user_id: player.id, tournament_id: game.tournament_id })
-      .then(() => notifications.show({ message: player.is_banned ? t('Player released') : t('Player banned') }))
+  // Asks for the wanted state (not a toggle), so a stale button can't flip it the wrong way;
+  // the reply carries the result, which this page applies at once (the channel echo may lag).
+  const toggleBan = () => {
+    const banned = !player.is_banned;
+    return push<{ banned: boolean | null }>('user:ban', { user_id: player.id, tournament_id: game.tournament_id, game_id: game.id, banned })
+      .then((reply) => {
+        const now = reply?.banned ?? banned;
+        const players = useGameStore.getState().players;
+        const current = players[player.id];
+        if (current) useGameStore.getState().setPlayers(Object.values({ ...players, [player.id]: { ...current, is_banned: now } }));
+        notifications.show({ message: now ? t('Player banned') : t('Player released') });
+      })
       .catch(() => notifications.show({ color: 'red', message: t('Could not change the ban') }));
+  };
 
   return (
-    <Menu position="bottom-end" width={200}>
-      <Menu.Target>
-        <Tooltip label={t('Player actions')}>
-          <ActionIcon variant="subtle" color="gray" size="sm" aria-label={t('Player actions')}>
-            <IconFlag size={14} />
-          </ActionIcon>
-        </Tooltip>
-      </Menu.Target>
-      <Menu.Dropdown>
-        {canReport && (
-          <Menu.Item leftSection={<IconFlag size={14} />} disabled={reported} onClick={() => void report()}>
-            {reported ? t('Reported') : t('Report on player')}
-          </Menu.Item>
-        )}
-        {canBan && (
-          <Menu.Item
-            color={player.is_banned ? undefined : 'red'}
-            leftSection={player.is_banned ? <IconLockOpen size={14} /> : <IconBan size={14} />}
-            onClick={() => void toggleBan()}
+    <Group gap={6} wrap="nowrap">
+      {canReport && (
+        <Tooltip label={t('Report this player for cheating')} disabled={reported}>
+          <Button
+            size="compact-xs"
+            variant="default"
+            leftSection={<IconFlag size={13} />}
+            disabled={reported}
+            onClick={() => void report()}
           >
-            {player.is_banned ? t('Release') : t('Ban player')}
-          </Menu.Item>
-        )}
-      </Menu.Dropdown>
-    </Menu>
+            {reported ? t('Reported') : t('Report')}
+          </Button>
+        </Tooltip>
+      )}
+      {canBan &&
+        (player.is_banned ? (
+          <Group gap={4} wrap="nowrap">
+            <Tooltip label={t('Banned in this tournament')}>
+              <Badge size="sm" color="red" variant="filled" leftSection={<IconBan size={12} />}>
+                {t('Banned')}
+              </Badge>
+            </Tooltip>
+            <Button size="compact-xs" variant="subtle" color="gray" leftSection={<IconLockOpen size={13} />} onClick={() => void toggleBan()}>
+              {t('Release')}
+            </Button>
+          </Group>
+        ) : (
+          <Button size="compact-xs" variant="light" color="red" leftSection={<IconBan size={13} />} onClick={() => void toggleBan()}>
+            {t('Ban')}
+          </Button>
+        ))}
+    </Group>
   );
 }

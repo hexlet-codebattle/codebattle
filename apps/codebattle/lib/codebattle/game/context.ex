@@ -333,6 +333,38 @@ defmodule Codebattle.Game.Context do
     end
   end
 
+  @doc """
+  Sets a player's in-game ban to `banned?` (idempotent, unlike `toggle_ban_player/2`): through the
+  game process while it lives, otherwise in the stored record, so a finished game page shows it too.
+  """
+  @spec set_player_banned(game_id(), pos_integer(), boolean()) :: :ok | {:error, atom}
+  def set_player_banned(game_id, player_id, banned?) do
+    game = get_game!(game_id)
+
+    case Enum.find(game.players, &(&1.id == player_id)) do
+      nil -> {:error, :not_a_player}
+      %{is_banned: ^banned?} -> :ok
+      _player when game.is_live -> with {:ok, _game} <- Engine.toggle_ban_player(game, player_id), do: :ok
+      _player -> store_player_banned(game, player_id, banned?)
+    end
+  rescue
+    Ecto.NoResultsError -> {:error, :not_found}
+  end
+
+  defp store_player_banned(game, player_id, banned?) do
+    players = Enum.map(game.players, &if(&1.id == player_id, do: %{&1 | is_banned: banned?}, else: &1))
+
+    Game
+    |> Repo.get!(game.id)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_embed(:players, players)
+    |> Repo.update()
+    |> case do
+      {:ok, _game} -> :ok
+      {:error, _changeset} -> {:error, :not_saved}
+    end
+  end
+
   @spec unlock_game(game_id, String.t()) :: :ok | {:error, term()}
   def unlock_game(game_id, pass_code) do
     case get_game!(game_id) do

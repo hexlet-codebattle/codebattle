@@ -6194,3 +6194,15 @@ msgstr "Скрыть тесты"
 
 msgid "Show the tests"
 msgstr "Показать тесты"
+
+msgid "Report this player for cheating"
+msgstr "Пожаловаться на нечестную игру"
+
+msgid "Banned in this tournament"
+msgstr "Забанен в этом турнире"
+
+msgid "You are banned in this tournament"
+msgstr "Вы забанены в этом турнире"
+
+msgid "Your editor is locked and solutions can no longer be submitted. If you think this is a mistake, contact the organizers."
+msgstr "Редактор заблокирован, отправлять решения больше нельзя. Если считаете, что это ошибка, свяжитесь с организаторами."

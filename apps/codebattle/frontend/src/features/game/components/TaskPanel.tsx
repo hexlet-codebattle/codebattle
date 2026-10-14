@@ -26,6 +26,26 @@ const taskSourceUrl = (task: GameTask) =>
 /** The task description (EN/RU when both exist) and its examples; the name and level live in the top bar. */
 type DescriptionLang = 'en' | 'ru';
 
+// The EN/RU pick outlives the game: the next task (e.g. the next tournament round) opens in it.
+const LANG_KEY = 'cb.taskDescriptionLang';
+
+function storedLang(): DescriptionLang | null {
+  try {
+    const value = window.localStorage.getItem(LANG_KEY);
+    return value === 'en' || value === 'ru' ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeLang(lang: DescriptionLang) {
+  try {
+    window.localStorage.setItem(LANG_KEY, lang);
+  } catch {
+    // Storage blocked (private mode): the pick lasts for this page only.
+  }
+}
+
 interface TaskPanelProps {
   task: GameTask;
   /** A Preview button opening the task in a modal (which shares this panel's language). */
@@ -54,9 +74,14 @@ export function TaskPanel({
   const [preview, { open, close }] = useDisclosure(false);
   const hasRu = Boolean(task.description_ru?.trim());
   const hasEn = Boolean(task.description_en?.trim());
-  const [ownLang, setOwnLang] = useState<DescriptionLang>((i18n.language === 'ru' && hasRu) || !hasEn ? 'ru' : 'en');
-  const lang = controlledLang ?? ownLang;
-  const setLang = onLangChange ?? setOwnLang;
+  const [ownLang, setOwnLang] = useState<DescriptionLang>(() => storedLang() ?? (i18n.language === 'ru' ? 'ru' : 'en'));
+  const wanted = controlledLang ?? ownLang;
+  // A task without the wanted language shows the one it has (the pick itself is kept).
+  const lang: DescriptionLang = wanted === 'ru' ? (hasRu || !hasEn ? 'ru' : 'en') : hasEn || !hasRu ? 'en' : 'ru';
+  const setLang = (next: DescriptionLang) => {
+    storeLang(next);
+    (onLangChange ?? setOwnLang)(next);
+  };
   const description = (lang === 'ru' ? task.description_ru : task.description_en) ?? '';
   // No "Examples:" heading: the code block right under the description speaks for itself.
   const examples = !hideExamples && task.examples?.trim() ? `\n\n${codeBlock(task.examples)}` : '';

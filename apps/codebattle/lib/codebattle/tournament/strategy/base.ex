@@ -232,9 +232,7 @@ defmodule Codebattle.Tournament.Base do
         new_tournament |> request_persist() |> tap(&broadcast_tournament_update/1)
       end
 
-      def toggle_ban_player(tournament, %{user_id: user_id}) do
-        toggle_cheater_player(tournament, %{user_id: user_id})
-      end
+      def toggle_ban_player(tournament, params), do: toggle_cheater_player(tournament, params)
 
       # A kicked or banned player must not hold the round up. If nobody else in their live
       # match is still playing for real (only a bot or other excluded players are left), the
@@ -275,24 +273,51 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def toggle_cheater_player(tournament, %{user_id: user_id}) do
-        player = Tournament.Players.get_player(tournament, user_id)
+      # Bans or releases a player. Params: `user_id`; optional `banned` (the wanted state; without
+      # it the state flips) and `game_id` (the game the admin acts from). The in-game ban is set,
+      # not flipped, in that game and the player's latest match game, whatever their state: a ban
+      # usually ends the match as a timeout, so on release the game is no longer "playing".
+      def toggle_cheater_player(tournament, %{user_id: user_id} = params) do
+        case Tournament.Players.get_player(tournament, user_id) do
+          nil ->
+            tournament
 
-        if player do
-          game_id = get_active_game_id(tournament, user_id)
+          player ->
+            banned? = Map.get(params, :banned, player.state != "banned")
+            game_ids = ban_game_ids(tournament, user_id, Map.get(params, :game_id))
 
-          if game_id do
-            Game.Context.toggle_ban_player(game_id, %{player_id: user_id})
-          end
+            Enum.each(game_ids, &Game.Context.set_player_banned(&1, user_id, banned?))
 
-          if player.state == "banned" do
-            unban_player(tournament, player, [game_id])
-          else
-            ban_player(tournament, player, [game_id])
-          end
-        else
-          tournament
+            case {banned?, player.state == "banned"} do
+              {true, false} -> ban_player(tournament, player, game_ids)
+              {false, true} -> unban_player(tournament, player, game_ids)
+              _already -> tournament
+            end
         end
+      end
+
+      defp ban_game_id(id) when is_integer(id), do: id
+
+      defp ban_game_id(id) when is_binary(id) do
+        case Integer.parse(id) do
+          {int, ""} -> int
+          _ -> nil
+        end
+      end
+
+      defp ban_game_id(_id), do: nil
+
+      defp ban_game_ids(tournament, user_id, game_id) do
+        latest_game_id =
+          case get_player_latest_match(tournament, user_id) do
+            %{game_id: id} -> id
+            _ -> nil
+          end
+
+        [game_id, latest_game_id]
+        |> Enum.map(&ban_game_id/1)
+        |> Enum.reject(&is_nil/1)
+        |> Enum.uniq()
       end
 
       def recalculate_results(tournament, params \\ %{})

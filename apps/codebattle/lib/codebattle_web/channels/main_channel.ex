@@ -67,10 +67,23 @@ defmodule CodebattleWeb.MainChannel do
     end
   end
 
-  def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id}, socket) do
+  # Optional "banned" sets that state (a stale button can't flip it the wrong way); without it the
+  # ban toggles. "game_id" is the game the admin acts from, so its page learns the new state.
+  def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id} = params, socket) do
     if User.admin_or_moderator?(socket.assigns.current_user) do
-      Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
-      {:reply, {:ok, %{}}, socket}
+      event_params =
+        %{user_id: user_id}
+        |> maybe_put(:banned, params["banned"], &is_boolean/1)
+        |> maybe_put(:game_id, params["game_id"], &(not is_nil(&1)))
+
+      case Tournament.Context.handle_event(tournament_id, :toggle_ban_player, event_params) do
+        %Tournament{} = tournament ->
+          {:reply, {:ok, %{banned: player_banned?(tournament, user_id)}}, socket}
+
+        # The tournament process is gone (e.g. long finished): nothing was changed.
+        _error ->
+          {:reply, {:error, %{reason: "tournament_not_running"}}, socket}
+      end
     else
       {:reply, {:error, :no_permission}, socket}
     end
@@ -243,4 +256,15 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def presence_link(_path), do: nil
+
+  defp player_banned?(tournament, user_id) do
+    case Tournament.Helpers.get_player(tournament, user_id) do
+      %{state: state} -> state == "banned"
+      _ -> nil
+    end
+  end
+
+  defp maybe_put(map, key, value, valid?) do
+    if valid?.(value), do: Map.put(map, key, value), else: map
+  end
 end
