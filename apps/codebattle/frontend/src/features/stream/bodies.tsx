@@ -23,7 +23,7 @@ export function StreamTask({ fontSize }: { fontSize: number }) {
   if (!task) return null;
   return (
     <div className={classes.scroll} style={{ '--task-font-size': `${fontSize}px` } as CSSProperties}>
-      <TaskPanel task={task} hideExamples />
+      <TaskPanel task={task} hideExamples hideContribution />
     </div>
   );
 }

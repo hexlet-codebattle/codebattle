@@ -99,11 +99,12 @@ defmodule Codebattle.Game.Fsm do
   def transition(:timeout, %{state: "game_over"} = game, _params), do: {:ok, game}
   def transition(:timeout, %{state: "timeout"} = game, _params), do: {:ok, game}
 
-  def transition(:rematch_reject, %{state: "game_over"} = game, _params) do
+  # A rematch can follow a solved game or one that ran out of time.
+  def transition(:rematch_reject, %{state: s} = game, _params) when s in ["game_over", "timeout"] do
     {:ok, %{game | rematch_state: "rejected"}}
   end
 
-  def transition(:rematch_send_offer, %{state: "game_over"} = game, params) do
+  def transition(:rematch_send_offer, %{state: s} = game, params) when s in ["game_over", "timeout"] do
     new_rematch_data = handle_rematch_offer(game, params)
     {:ok, Map.merge(game, new_rematch_data)}
   end

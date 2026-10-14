@@ -72,4 +72,13 @@ defmodule Codebattle.Game.FsmTest do
     assert {:ok, unchanged} = Fsm.transition(:rematch_send_offer, rejected, %{player_id: 1})
     assert unchanged.rematch_state == "rejected"
   end
+
+  test "accepts a rematch after a timed-out game" do
+    timed_out = game(%{state: "timeout", rematch_state: "none"})
+    assert {:ok, offered} = Fsm.transition(:rematch_send_offer, timed_out, %{player_id: 1})
+    assert offered.rematch_state == "in_approval"
+    assert {:ok, accepted} = Fsm.transition(:rematch_send_offer, offered, %{player_id: 2})
+    assert accepted.rematch_state == "accepted"
+    assert {:ok, %{rematch_state: "rejected"}} = Fsm.transition(:rematch_reject, timed_out, %{})
+  end
 end

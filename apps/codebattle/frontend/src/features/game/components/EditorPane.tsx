@@ -78,9 +78,23 @@ function PlayerChip({ player, onShowTests }: { player: GamePlayer; onShowTests?:
 /** A compact language picker: icon + name, searchable list. */
 function LangPicker({ langs, value, onChange, disabled }: { langs: GameLang[]; value: string; onChange: (slug: string) => void; disabled?: boolean }) {
   const { t } = useTranslation();
-  const combobox = useCombobox({ onDropdownClose: () => combobox.resetSelectedOption() });
+  const [search, setSearch] = useState('');
+  const combobox = useCombobox({
+    onDropdownOpen: () => combobox.focusSearchInput(),
+    onDropdownClose: () => {
+      combobox.resetSelectedOption();
+      setSearch('');
+    },
+  });
   const current = langs.find((lang) => lang.slug === value);
   const sorted = [...langs].sort((a, b) => a.name.localeCompare(b.name));
+  // Typing narrows the list by display name or slug ("js", "c#", "go"); Enter picks the first match.
+  const query = search.trim().toLowerCase();
+  const filtered = query
+    ? sorted.filter((lang) =>
+        [langName(lang.slug), lang.name, lang.slug].some((label) => label?.toLowerCase().includes(query)),
+      )
+    : sorted;
 
   return (
     <Combobox store={combobox} onOptionSubmit={(slug) => { onChange(slug); combobox.closeDropdown(); }} width={220} position="bottom-start">
@@ -99,8 +113,18 @@ function LangPicker({ langs, value, onChange, disabled }: { langs: GameLang[]; v
         </UnstyledButton>
       </Combobox.Target>
       <Combobox.Dropdown>
+        <Combobox.Search
+          value={search}
+          onChange={(event) => {
+            setSearch(event.currentTarget.value);
+            combobox.updateSelectedOptionIndex();
+            requestAnimationFrame(() => combobox.selectFirstOption());
+          }}
+          placeholder={t('Search language')}
+        />
         <Combobox.Options mah={360} style={{ overflowY: 'auto' }}>
-          {sorted.map((lang) => (
+          {filtered.length === 0 && <Combobox.Empty>{t('Nothing found')}</Combobox.Empty>}
+          {filtered.map((lang) => (
             <Combobox.Option key={lang.slug} value={lang.slug} active={lang.slug === value}>
               <Group gap={8} wrap="nowrap">
                 <LangIcon lang={lang.slug} size={15} withTooltip={false} />

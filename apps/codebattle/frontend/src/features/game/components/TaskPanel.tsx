@@ -1,6 +1,6 @@
-import { Badge, Button, Group, Modal, SegmentedControl, Text } from '@mantine/core';
+import { Anchor, Badge, Button, Group, Modal, SegmentedControl, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconWindowMaximize } from '@tabler/icons-react';
+import { IconBrandGithub, IconWindowMaximize } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,8 +13,12 @@ import classes from '../GameRoom.module.css';
 
 const codeBlock = (examples: string) => {
   const trimmed = examples.trim();
-  return trimmed.startsWith('```') && trimmed.endsWith('```') ? examples : `\`\`\`\n${examples}\n\`\`\``;
+  return trimmed.startsWith('```') && trimmed.endsWith('```') ? trimmed : `\`\`\`\n${trimmed}\n\`\`\``;
 };
+
+// Same path scheme as the hexlet-codebattle/tasks repo (and the legacy page).
+const taskSourceUrl = (task: GameTask) =>
+  `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags?.[0]}/${task.name}.toml`;
 
 /** The task description (EN/RU when both exist) and its examples; the name and level live in the top bar. */
 type DescriptionLang = 'en' | 'ru';
@@ -28,9 +32,18 @@ interface TaskPanelProps {
   onLangChange?: (lang: DescriptionLang) => void;
   /** Leave the examples out (shown in a pane of their own on the broadcast). */
   hideExamples?: boolean;
+  /** Leave out the "send a PR" footer of GitHub tasks (the broadcast). */
+  hideContribution?: boolean;
 }
 
-export function TaskPanel({ task, withPreview = false, lang: controlledLang, onLangChange, hideExamples = false }: TaskPanelProps) {
+export function TaskPanel({
+  task,
+  withPreview = false,
+  lang: controlledLang,
+  onLangChange,
+  hideExamples = false,
+  hideContribution = false,
+}: TaskPanelProps) {
   const { t, i18n } = useTranslation();
   const [preview, { open, close }] = useDisclosure(false);
   const hasRu = Boolean(task.description_ru?.trim());
@@ -72,6 +85,15 @@ export function TaskPanel({ task, withPreview = false, lang: controlledLang, onL
       <div className={classes.description}>
         <Markdown>{`${description}${examples}`}</Markdown>
       </div>
+      {task.origin === 'github' && task.tags?.length && !hideContribution ? (
+        <Text size="xs" c="dimmed" fs="italic" mt="sm" className={classes.contribution}>
+          {t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
+          <Anchor href={taskSourceUrl(task)} target="_blank" rel="noopener noreferrer" size="xs" inherit>
+            <IconBrandGithub size={13} className={classes.contributionIcon} />
+            hexlet-codebattle/tasks
+          </Anchor>
+        </Text>
+      ) : null}
       {withPreview && (
         <Modal
           opened={preview}
@@ -88,7 +110,7 @@ export function TaskPanel({ task, withPreview = false, lang: controlledLang, onL
             </Group>
           }
         >
-          <TaskPanel task={task} lang={lang} onLangChange={setLang} />
+          <TaskPanel task={task} lang={lang} onLangChange={setLang} hideContribution={hideContribution} />
         </Modal>
       )}
     </div>

@@ -1,6 +1,8 @@
+import { notifications } from '@mantine/notifications';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useChannel } from '@/api/useChannel';
+import { t } from '@/i18n';
 import { useTournamentStore } from '@/features/tournament/store';
 import { playGameSound, playTournamentSound } from '@/shared/sound';
 import { useSharedProps } from '@/shared/useSharedProps';
@@ -30,6 +32,16 @@ function syncClockOffset(info: Partial<GameTournamentInfo>) {
 const goToGame = (gameId: number) => window.location.replace(`/games/${gameId}`);
 
 type Handler = (payload: never) => void;
+
+// Success has no reply (the outcome is broadcast as rematch:*), so a push timeout means nothing.
+const rematchFailed = (error: { reason?: string } | Error) => {
+  if (error instanceof Error) return;
+  const messages: Record<string, string> = {
+    game_is_dead: t('This game is closed, a rematch is no longer possible. Start a new game from the lobby.'),
+    already_in_a_game: t('One of the players is already in another game.'),
+  };
+  notifications.show({ color: 'red', message: messages[error?.reason ?? ''] ?? t('Could not start a rematch. Try again.') });
+};
 
 /** The host's extra handlers run after the built-in ones for the same event (never instead). */
 function withExtra(extra: Record<string, Handler>, builtIn: Record<string, Handler>) {
@@ -289,9 +301,9 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       sendEditorSummary,
       cursorReport,
       giveUp: () => cast('give_up'),
-      sendRematch: () => push('rematch:send_offer').catch(() => undefined),
-      acceptRematch: () => push('rematch:accept_offer').catch(() => undefined),
-      rejectRematch: () => push('rematch:reject_offer').catch(() => undefined),
+      sendRematch: () => push('rematch:send_offer').catch(rematchFailed),
+      acceptRematch: () => push('rematch:accept_offer').catch(rematchFailed),
+      rejectRematch: () => push('rematch:reject_offer').catch(rematchFailed),
       /** Resolves true when the pass code unlocks the game. */
       enterPassCode: (passCode: string) =>
         push<{ result: boolean }>('enter_pass_code', { pass_code: passCode })

@@ -311,6 +311,9 @@ defmodule Codebattle.Game.Context do
     with %{is_live: true} = game <- get_game!(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user)
+    else
+      %{is_live: false} -> {:error, :game_is_dead}
+      {:error, reason} -> {:error, reason}
     end
   end
 

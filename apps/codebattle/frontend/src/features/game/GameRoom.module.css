@@ -422,7 +422,30 @@
 
 /* The broadcast scales the task with --task-font-size. */
 .description {
-  font-size: var(--task-font-size, var(--mantine-font-size-sm));
+  font-size: var(--task-font-size, var(--mantine-font-size-md));
+  /* Full-contrast text: Markdown reads --cb-text, which is a muted grey on the dark panel. */
+  --cb-text: var(--cb-text-strong);
+
+  /* The strip spans the whole screen: keep prose lines short enough to read. */
+  & p,
+  & li,
+  & blockquote {
+    max-width: 90ch;
+  }
+
+  & pre {
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+}
+
+.contribution {
+  clear: both;
+}
+
+.contributionIcon {
+  margin: 0 3px 0 4px;
+  vertical-align: -2px;
 }
 
 /* ---------- output ---------- */

@@ -6173,3 +6173,18 @@ msgstr "Вы уже участвуете в другой игре. Заверш�
 
 msgid "Pasting from outside the editor is disabled in battles"
 msgstr "В битвах нельзя вставлять текст не из своего редактора"
+
+msgid "Search language"
+msgstr "Поиск языка"
+
+msgid "Nothing found"
+msgstr "Ничего не найдено"
+
+msgid "This game is closed, a rematch is no longer possible. Start a new game from the lobby."
+msgstr "Эта игра уже закрыта, реванш невозможен. Начните новую игру из лобби."
+
+msgid "One of the players is already in another game."
+msgstr "Один из игроков уже в другой игре."
+
+msgid "Could not start a rematch. Try again."
+msgstr "Не удалось начать реванш. Попробуйте ещё раз."

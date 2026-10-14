@@ -183,6 +183,24 @@ defmodule Codebattle.Game.ContextTest do
       assert Enum.any?(game.players, & &1.is_bot)
     end
 
+    test "two humans rematch after the game timed out" do
+      user1 = insert(:user)
+      user2 = insert(:user)
+      insert(:task, level: "easy")
+
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+      {:ok, _timed_out} = Game.Context.trigger_timeout(game.id)
+
+      assert {:rematch_status_updated, %{rematch_state: "in_approval"}} =
+               Game.Context.rematch_send_offer(game.id, user1)
+
+      assert {:rematch_accepted, new_game} = Game.Context.rematch_send_offer(game.id, user2)
+      on_exit(fn -> GlobalSupervisor.terminate_game(new_game.id) end)
+
+      assert new_game.state == "playing"
+      assert Enum.sort(Enum.map(new_game.players, & &1.id)) == Enum.sort([user1.id, user2.id])
+    end
+
     test "rejects live-only operations for a persisted dead game" do
       user = insert(:user)
       game = insert(:game, state: "game_over", tournament_id: nil)
@@ -197,6 +215,7 @@ defmodule Codebattle.Game.ContextTest do
 
       assert {:error, :game_is_dead} = Game.Context.give_up(game.id, user)
       assert {:error, :game_is_dead} = Game.Context.rematch_reject(game.id)
+      assert {:error, :game_is_dead} = Game.Context.rematch_send_offer(game.id, user)
       assert {:error, :game_is_dead} = Game.Context.toggle_ban_player(game.id, %{player_id: user.id})
       assert {:error, :no_tournament} = Game.Context.unlock_game(game.id, "secret")
     end

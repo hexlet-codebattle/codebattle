@@ -393,26 +393,24 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def rematch_send_offer(%{is_bot: true} = game, _user) do
-    {:ok, new_game} = create_rematch_game(game)
-    Game.GlobalSupervisor.terminate_game(game.id)
-
-    {:rematch_accepted, new_game}
-  end
+  def rematch_send_offer(%{is_bot: true} = game, _user), do: start_rematch(game)
 
   def rematch_send_offer(game, user) do
-    {:ok, {_old_game_state, game}} =
-      fire_transition(game.id, :rematch_send_offer, %{player_id: user.id})
+    case fire_transition(game.id, :rematch_send_offer, %{player_id: user.id}) do
+      {:ok, {_old_game_state, %{rematch_state: "accepted"} = game}} -> start_rematch(game)
+      {:ok, {_old_game_state, game}} -> {:rematch_status_updated, game}
+      {:error, reason} -> {:error, reason}
+    end
+  end
 
-    case get_rematch_state(game) do
-      "accepted" ->
-        {:ok, new_game} = create_rematch_game(game)
+  defp start_rematch(game) do
+    case create_rematch_game(game) do
+      {:ok, new_game} ->
         Game.GlobalSupervisor.terminate_game(game.id)
-
         {:rematch_accepted, new_game}
 
-      _ ->
-        {:rematch_status_updated, game}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

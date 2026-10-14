@@ -67,6 +67,8 @@ export interface GameTask {
   base_score?: number | null;
   time_to_solve_sec?: number | null;
   tags?: string[];
+  /** "github" for tasks from hexlet-codebattle/tasks (they get a "send a PR" link). */
+  origin?: string;
 }
 
 /** Codebattle.Game.Query.build_head_to_head/2: all-time wins between the two players. */
