@@ -2,17 +2,20 @@ defmodule CodebattleWeb.Game.ImageController do
   use CodebattleWeb, :controller
   use Gettext, backend: CodebattleWeb.Gettext
 
+  import CodebattleWeb.OgImage, only: [esc: 1, chip: 1, chip: 2, avatar: 1, level_color: 1, level_label: 1]
+
   alias Codebattle.Game.Context
   alias CodebattleWeb.HtmlImage
+  alias CodebattleWeb.OgImage
 
   plug(:put_layout, html: false)
 
   def show(conn, %{"game_id" => id}) do
     case Context.fetch_game(id) do
       {:ok, game} ->
-        cache_key = "g_#{id}_#{game.state}"
-        html = prepare_image_html(game)
-        HtmlImage.render_image(conn, cache_key, html)
+        locale = Gettext.get_locale(CodebattleWeb.Gettext)
+        cache_key = "g_#{id}_#{game.state}_#{length(game.players)}_#{locale}"
+        HtmlImage.render_image(conn, cache_key, prepare_image_html(game))
 
       {:error, _reason} ->
         send_resp(conn, :ok, "")
@@ -20,192 +23,130 @@ defmodule CodebattleWeb.Game.ImageController do
   end
 
   defp prepare_image_html(game) do
+    {left, right} = sides(game)
+
+    body = """
+    <div class="arena">
+      #{left}
+      <div class="vs display">VS</div>
+      #{right}
+    </div>
     """
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          /* Force the entire card to be 800×500 */
-          html, body {
-            margin: 0;
-            padding: 0;
-            width: 780px;
-            height: 441px;
-            overflow: hidden; /* No scrolling; everything must fit */
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(to right, #222, #444);
-            color: #fff;
-            position: relative; /* So absolute footer can pin to bottom */
-          }
 
-          /* The main "battle" area takes up all space above the footer */
-          .main {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 40px; /* Leaves room for the pinned footer */
-            display: grid;
-            grid-template-columns: 1fr auto 1fr; /* player1 | logo | player2 */
-            align-items: center;
-          }
-
-          /* Player columns fill available vertical space */
-          .player {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-          }
-
-          .player img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-
-          /* Overlay the player info at the bottom of each avatar */
-          .player-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            background: rgba(0,0,0,0.5);
-            padding: 5px;
-            font-size: 1rem;
-          }
-
-          /* Center logo gets scaled as well, so keep it within its column */
-          .center-logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-          }
-
-          .center-logo img {
-            max-width: 200px;
-            max-height: 200px;
-          }
-
-          /* Pinned footer always visible at the bottom */
-          .footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 40px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.2);
-            font-size: 14px;
-            line-height: 40px; /* Vertically center the text */
-          }
-
-          .heart-icon {
-            fill: #ff5252;
-            vertical-align: middle;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="main">
-          #{render_game_preview(game)}
-        </div>
-
-        <div class="footer">
-          Made with
-          <svg class="heart-icon" width="14" height="14" viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                     2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                     C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42
-                     22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>
-          by Codebattle
-        </div>
-      </body>
-    </html>
-    """
+    OgImage.page(body, chips(game), css())
   end
 
-  defp render_game_preview(%{players: [player]} = game) do
-    level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
-    state = Gettext.gettext(CodebattleWeb.Gettext, "Game state: #{game.state}")
+  defp sides(%{players: [player1, player2 | _]} = game), do: {player(player1, game), player(player2, game)}
+  defp sides(%{players: [player]} = game), do: {player(player, game), empty_seat(game)}
+  defp sides(game), do: {empty_seat(game), empty_seat(game)}
+
+  defp player(player, game) do
+    status =
+      cond do
+        game.state == "game_over" and player.result == "won" -> "winner"
+        game.state == "game_over" -> "loser"
+        true -> ""
+      end
+
+    rating = if is_integer(player.rating), do: "#{player.rating} · ", else: ""
 
     """
-    <!-- Player 1 -->
-    <div class="player">
-      #{render_player(player)}
-    </div>
-
-    <!-- Center Logo -->
-    <div class="center-logo">
-      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
-    </div>
-
-    <!-- Game info -->
-    <center>
-    <h3>#{"Game info"}</h3>
-    <p>#{state}</p>
-    <p>#{level}</p>
-    </center>
-    """
-  end
-
-  defp render_game_preview(%{players: []} = game) do
-    level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
-    state = Gettext.gettext(CodebattleWeb.Gettext, "Game state: #{game.state}")
-
-    """
-    <!-- Center Logo -->
-    <div class="center-logo">
-      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
-    </div>
-
-    <!-- Game info -->
-    <center>
-    <h3>#{"Game info"}</h3>
-    <p>#{state}</p>
-    <p>#{level}</p>
-    </center>
-
-    <div class="center-logo">
-      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
+    <div class="side #{status}">
+      #{if status == "winner", do: ~s(<div class="badge display">#{gettext("Winner")}</div>), else: ""}
+      #{avatar(player)}
+      <div class="name display ellipsis">#{esc(player.name)}</div>
+      <div class="meta mono">#{rating}#{esc(player.lang)}</div>
     </div>
     """
   end
 
-  defp render_game_preview(%{players: [player1, player2 | _]}) do
+  defp empty_seat(%{state: "waiting_opponent"}) do
     """
-    <!-- Player 1 -->
-    <div class="player">
-      #{render_player(player1)}
-    </div>
-
-    <!-- Center Logo -->
-    <div class="center-logo">
-      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
-    </div>
-
-    <!-- Player 2 -->
-    <div class="player">
-      #{render_player(player2)}
+    <div class="side seat">
+      <div class="avatar avatar-empty display">?</div>
+      <div class="name display">#{gettext("You?")}</div>
+      <div class="meta mono">#{gettext("Free seat")}</div>
     </div>
     """
   end
 
-  defp render_player(player) do
-    result = Gettext.gettext(CodebattleWeb.Gettext, "#{player.result}")
-
+  defp empty_seat(_game) do
     """
-    <img src="#{player.avatar_url || HtmlImage.logo_url()}" alt="Player Avatar">
-    <div class="player-info">
-      @#{player.name}
-      #{if player.rating && player.rating != "N/A", do: "(#{player.rating})", else: ""}
-      #{player.lang}
-      #{if player.result != "undefined", do: "- #{result}"}
+    <div class="side seat">
+      <div class="avatar avatar-empty display">?</div>
     </div>
+    """
+  end
+
+  defp chips(game) do
+    Enum.reject(
+      [
+        state_chip(game),
+        level_chip(game.level),
+        game.timeout_seconds && chip("⏱ " <> gettext("%{count} min", count: div(game.timeout_seconds, 60))),
+        game.tournament_id && chip("🏆 " <> gettext("Tournament")),
+        game.state == "waiting_opponent" && chip(gettext("Join the battle") <> " →", class: "cta push")
+      ],
+      &(&1 in [nil, false])
+    )
+  end
+
+  defp level_chip(level) when level in [nil, ""], do: nil
+  defp level_chip(level), do: chip(level_label(level), dot: level_color(level))
+
+  defp state_chip(%{state: "waiting_opponent"}), do: chip(gettext("Waiting for an opponent"), dot: "#fcc419")
+  defp state_chip(%{state: "playing"}), do: chip("LIVE", dot: "#ff5252", class: "live")
+  defp state_chip(%{state: "game_over"}), do: chip(gettext("Finished"), dot: "#51cf66")
+  defp state_chip(%{state: "timeout"}), do: chip(gettext("Time is up"), dot: "#868e96")
+  defp state_chip(%{state: "canceled"}), do: chip(gettext("Canceled"), dot: "#868e96")
+  defp state_chip(_game), do: nil
+
+  defp css do
+    """
+    .arena {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 200px 1fr;
+      align-items: center;
+    }
+    .side { display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0; position: relative; }
+    .name { max-width: 440px; font-size: 50px; line-height: 1.1; margin-top: 8px; }
+    .meta { font-size: 26px; color: rgba(241, 243, 245, 0.6); }
+    .vs {
+      text-align: center;
+      font-size: 112px;
+      transform: skewX(-10deg);
+      background: linear-gradient(180deg, #ff6b6b, #db0000);
+      -webkit-background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 30px rgba(219, 0, 0, 0.55));
+    }
+    .winner .avatar { border-color: #fcc419; box-shadow: 0 0 60px rgba(252, 196, 25, 0.45); }
+    .badge {
+      position: absolute;
+      top: -22px;
+      z-index: 1;
+      padding: 6px 18px;
+      border-radius: 14px;
+      background: #fcc419;
+      color: #1c1c1c;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .loser { opacity: 0.55; }
+    .loser .avatar { filter: grayscale(1); }
+    .avatar-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px dashed rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 110px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    .seat .name { color: rgba(241, 243, 245, 0.8); }
+    .push { margin-left: auto; }
     """
   end
 end

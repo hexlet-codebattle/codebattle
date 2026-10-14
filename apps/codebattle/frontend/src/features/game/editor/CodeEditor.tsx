@@ -3,9 +3,10 @@ import './monaco';
 import MonacoEditor, { type OnMount } from '@monaco-editor/react';
 import { Loader, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import { initVimMode, type VimAdapterInstance } from 'monaco-vim';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { insertSpaces, monaco, monacoLanguage, tabSize } from './monaco';
+import { insertSpaces, monacoLanguage, tabSize } from './monaco';
+import { guardForeignEditor, guardOwnEditor } from './pasteGuard';
 import { useEditorPrefs } from './prefs';
 import { contentMetrics, type TelemetryEvent } from './telemetry';
 import { resolveTheme } from './themes';
@@ -14,55 +15,6 @@ import classes from './CodeEditor.module.css';
 type CodeEditorInstance = Parameters<OnMount>[0];
 
 const EDITOR_PADDING_TOP = 8;
-
-// The in-editor clipboard (legacy useEditor): copy/cut keep text here, paste only accepts
-// it back, so code from outside the game can't be pasted in. Shared by both editors.
-const clipboard = { text: '', armed: false };
-
-/** Blocks outside paste, drop and the context menu; Ctrl/Cmd+C/X/V use the in-editor clipboard. */
-function guardClipboard(editor: CodeEditorInstance, onBlocked: (type: 'paste_blocked' | 'drop_blocked') => void) {
-  const selectionText = () => {
-    const selection = editor.getSelection();
-    const model = editor.getModel();
-    return selection && model ? model.getValueInRange(selection) : '';
-  };
-
-  editor.onKeyDown((event) => {
-    const mod = event.ctrlKey || event.metaKey;
-    if (!mod) return;
-    const { code } = event.browserEvent;
-
-    if (code === 'KeyC' || code === 'KeyX') {
-      event.preventDefault();
-      clipboard.text = selectionText();
-      clipboard.armed = true;
-      if (code === 'KeyX' && !editor.getOption(monaco.editor.EditorOption.readOnly)) {
-        const selection = editor.getSelection();
-        if (selection) editor.executeEdits('cb-cut', [{ range: selection, text: '', forceMoveMarkers: true }]);
-      }
-    }
-
-    if (code === 'KeyV') {
-      event.preventDefault();
-      event.stopPropagation();
-      const selection = editor.getSelection();
-      if (clipboard.armed && selection) {
-        editor.executeEdits('cb-paste', [{ range: selection, text: clipboard.text, forceMoveMarkers: true }]);
-      }
-    }
-  });
-
-  editor.onContextMenu((event) => event.event.preventDefault());
-
-  const node = editor.getDomNode();
-  const block = (event: Event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    onBlocked(event.type === 'drop' ? 'drop_blocked' : 'paste_blocked');
-  };
-  node?.addEventListener('paste', block, true);
-  node?.addEventListener('drop', block, true);
-}
 
 /** What the editor reports for bot detection (offset and language are added by the receiver). */
 export type EditorTelemetry = Omit<TelemetryEvent, 'offset_ms' | 'lang_slug'>;
@@ -80,7 +32,10 @@ interface CodeEditorProps {
   readOnly?: boolean;
   fontSize?: number;
   vim?: boolean;
-  /** Admins may paste freely; everyone else gets the in-editor clipboard only. */
+  /**
+   * Skips the clipboard guard: an editable editor otherwise only takes pastes of text copied
+   * from itself, a read-only one can't be copied from.
+   */
   allowClipboard?: boolean;
   onChange?: (value: string) => void;
   /** Ctrl/Cmd+Enter. */
@@ -114,6 +69,7 @@ export function CodeEditor({
   const prefs = useEditorPrefs();
   const theme = themeOverride ?? resolveTheme(prefs.theme, scheme);
   const editorRef = useRef<CodeEditorInstance | null>(null);
+  const [mounted, setMounted] = useState<CodeEditorInstance | null>(null);
   const vimRef = useRef<VimAdapterInstance | null>(null);
   const statusRef = useRef<HTMLDivElement>(null);
   const runRef = useRef(onRun);
@@ -122,6 +78,8 @@ export function CodeEditor({
   telemetryRef.current = onTelemetry;
   const cursorRef = useRef(onCursor);
   cursorRef.current = onCursor;
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
   const handleMount: OnMount = (editor, instance) => {
     editorRef.current = editor;
@@ -133,7 +91,9 @@ export function CodeEditor({
       run: () => runRef.current?.(),
     });
     const telemetry = (event: EditorTelemetry) => telemetryRef.current?.({ text_length: editor.getModel()?.getValueLength(), ...event });
-    if (!allowClipboard) guardClipboard(editor, (type) => telemetry({ type }));
+    setMounted(editor);
+    // The text may have moved on while Monaco was loading.
+    if (editor.getValue() !== valueRef.current) editor.setValue(valueRef.current);
 
     editor.onKeyDown(({ browserEvent }) =>
       telemetry({
@@ -166,6 +126,15 @@ export function CodeEditor({
     if (vim && !readOnly) vimRef.current = initVimMode(editor, statusRef.current);
   };
 
+  // Telemetry for blocked pastes goes through the same channel as the keys and edits.
+  useEffect(() => {
+    if (!mounted || allowClipboard) return undefined;
+    if (readOnly) return guardForeignEditor(mounted);
+    return guardOwnEditor(mounted, (type) =>
+      telemetryRef.current?.({ text_length: mounted.getModel()?.getValueLength(), type }),
+    );
+  }, [mounted, readOnly, allowClipboard]);
+
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -176,13 +145,37 @@ export function CodeEditor({
     }
   }, [vim, readOnly]);
 
-  useEffect(() => () => vimRef.current?.dispose(), []);
+  useEffect(
+    () => () => {
+      vimRef.current?.dispose();
+      vimRef.current = null;
+    },
+    [],
+  );
+
+  // The editor isn't controlled through @monaco-editor/react's `value`: it syncs in a passive
+  // effect, which can run after the next keystroke with the previous render's text and then
+  // replaces the whole model (lost or repeated characters, the cursor jumping, re-highlighting).
+  // A layout effect runs in the same commit, so `value` is either my own latest edit (already
+  // in the model) or an outside change: language switch, reset, the opponent's code.
+  useLayoutEffect(() => {
+    const editor = editorRef.current;
+    const model = editor?.getModel();
+    if (!editor || !model || model.getValue() === value) return;
+    if (readOnly) {
+      editor.setValue(value);
+      return;
+    }
+    editor.pushUndoStop();
+    editor.executeEdits('cb-sync', [{ range: model.getFullModelRange(), text: value, forceMoveMarkers: true }]);
+    editor.pushUndoStop();
+  }, [value, readOnly]);
 
   return (
     <div className={classes.root}>
       <div className={classes.editor}>
         <MonacoEditor
-          value={value}
+          defaultValue={value}
           language={monacoLanguage(lang)}
           theme={theme}
           loading={<Loader size="sm" />}
@@ -220,6 +213,7 @@ export function CodeEditor({
             overviewRulerBorder: false,
             hideCursorInOverviewRuler: true,
             contextmenu: allowClipboard,
+            dropIntoEditor: { enabled: allowClipboard },
             lineNumbersMinChars: 3,
           }}
         />

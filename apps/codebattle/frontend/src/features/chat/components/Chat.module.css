@@ -61,6 +61,58 @@
   white-space: pre-wrap;
 }
 
+/* A shared game/tournament link: one compact clickable pill inside the message line. */
+.invite {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  max-width: 100%;
+  margin: 2px 0;
+  padding: 3px 4px 3px 10px;
+  vertical-align: middle;
+  border: 1px solid var(--cb-border);
+  border-radius: 999px;
+  background: var(--cb-sunken);
+  color: var(--cb-text-strong);
+  text-decoration: none;
+  white-space: normal;
+  transition: border-color 120ms ease, background 120ms ease;
+
+  &:hover {
+    border-color: var(--mantine-color-green-filled);
+    background: var(--cb-hover);
+  }
+}
+
+.inviteIcon {
+  flex-shrink: 0;
+  color: var(--cb-text-muted);
+}
+
+.inviteTitle {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+}
+
+.inviteAction {
+  padding: 1px 10px;
+  border-radius: 999px;
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+  color: var(--mantine-color-white);
+  background: var(--mantine-color-gray-filled);
+
+  &[data-color='green'] {
+    background: var(--mantine-color-green-filled);
+  }
+
+  &[data-color='blue'] {
+    background: var(--mantine-color-blue-filled);
+  }
+}
+
 .delete {
   opacity: 0;
   align-self: center;

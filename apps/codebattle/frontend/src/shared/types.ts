@@ -41,7 +41,14 @@ export interface Branding {
   hide_user_dropdown: boolean;
 }
 
+/** The game the signed-in user plays or waits in (AssignInertiaProps.present_active_game/1). */
+export interface ActiveGameRef {
+  id: number;
+  state: 'waiting_opponent' | 'playing';
+}
+
 export interface SharedProps {
+  active_game: ActiveGameRef | null;
   branding: Branding;
   current_user: CurrentUser;
   current_season: Season | null;

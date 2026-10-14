@@ -1,7 +1,7 @@
 # Codebattle Public API v1
 
 A small, me-centric HTTP API for bots, CLIs, editors and devices: see your live game and history,
-start games against Codebot or a friend, run your own tournaments.
+start games against Codebot or a friend, join open games from the lobby, run your own tournaments.
 
 - **Base URL:** `https://codebattle.hexlet.io/public_api/v1`
 - **Format:** JSON in, JSON out (`Content-Type: application/json` on requests with a body)
@@ -316,6 +316,23 @@ Polling `GET /me/active_game` every 5–10 seconds fits comfortably in the limit
 `game.started` store `game.ends_at - server_time` as the remaining time and count down locally;
 `game.finished` or `game.canceled` stops the countdown. (Without a stream, poll
 `GET /me/active_game`.)
+
+**Join an open game from the lobby.** List the games waiting for an opponent, pick one and join
+it (needs `games:write`):
+
+```bash
+curl -s "https://codebattle.hexlet.io/public_api/v1/games/live?state=waiting_opponent" \
+  -H "Authorization: Bearer $CODEBATTLE_TOKEN" | jq '.games[] | {id, level, timeout_seconds, players}'
+
+curl -s -X POST https://codebattle.hexlet.io/public_api/v1/games/12345/join \
+  -H "Authorization: Bearer $CODEBATTLE_TOKEN"
+```
+
+The game starts at once: open its `url`. The task of an open game is hidden until someone joins.
+You can play one game at a time; if you are in another one, the join answers `422` with
+`details.reason` `already_in_a_game` and `details.active_game_id`: finish that game, or cancel it
+with `POST /games/{id}/cancel` while it still waits for an opponent. To wait for someone to join
+your own game instead, create one with `{"opponent": "link"}` and share its `join_url`.
 
 **Bot that runs a private tournament.** `POST /tournaments` with `name`, `description`,
 `starts_at`, `level`, send players the returned `invite_url`, then `POST /tournaments/{id}/start`

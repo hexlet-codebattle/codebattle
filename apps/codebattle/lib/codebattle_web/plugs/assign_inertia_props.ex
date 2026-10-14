@@ -3,7 +3,10 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
 
   import Inertia.Controller
 
+  alias Codebattle.Game
   alias Codebattle.UserSession
+
+  @active_game_states ["waiting_opponent", "playing"]
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
@@ -22,6 +25,7 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
           conn.assigns.current_user_session,
           conn.request_path
         ),
+      "active_game" => present_active_game(current_user),
       "locale" => Gettext.get_locale(CodebattleWeb.Gettext),
       "branding" => present_branding(current_user),
       "user_token" =>
@@ -47,6 +51,18 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
       hide_invites: FunWithFlags.enabled?(:hide_invites),
       hide_user_dropdown: FunWithFlags.enabled?(:hide_user_dropdown)
     }
+  end
+
+  # The header links to the game the user plays or waits in (any page, any game type).
+  defp present_active_game(%{is_guest: true}), do: nil
+
+  defp present_active_game(user) do
+    with game_id when not is_nil(game_id) <- Game.Context.get_active_game_id(user.id, @active_game_states),
+         {:ok, %{state: state} = game} when state in @active_game_states <- Game.Context.fetch_game(game_id) do
+      %{id: game.id, state: state}
+    else
+      _ -> nil
+    end
   end
 
   defp present_season(nil), do: nil

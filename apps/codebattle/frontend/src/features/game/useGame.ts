@@ -77,7 +77,10 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       // The server answers {error} for a game it can't find; hosts show a message.
       store().set({ joinError: reply.error ?? null });
       if (!reply.game) return;
+      // A rejoin (reconnect) brings the server's copy of my code, which lags behind my typing.
+      const mine = store().game?.id === reply.game.id ? store().editors[me.id] : undefined;
       store().load(reply.game);
+      if (mine) store().setEditor(me.id, mine);
       if (reply.tournament) {
         store().setTournament(reply.tournament);
         syncClockOffset(reply.tournament);

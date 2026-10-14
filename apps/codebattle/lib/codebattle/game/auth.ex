@@ -15,20 +15,23 @@ defmodule Codebattle.Game.Auth do
   def player_can_play_game?(%{is_guest: true}), do: {:error, :not_authorized}
 
   def player_can_play_game?(player) do
-    is_player =
-      Enum.any?(Game.Context.get_active_games(), fn game ->
-        case Game.Helpers.get_player(game, player.id) do
-          %{is_bot: true} -> false
-          nil -> false
-          _player -> true
-        end
-      end)
-
-    if is_player do
+    if active_game_id(player.id) do
       {:error, :already_in_a_game}
     else
       :ok
     end
+  end
+
+  @doc "The live game (waiting or playing) that blocks this human player from starting another one."
+  @spec active_game_id(integer()) :: integer() | nil
+  def active_game_id(player_id) do
+    Enum.find_value(Game.Context.get_active_games(), fn game ->
+      case Game.Helpers.get_player(game, player_id) do
+        %{is_bot: true} -> nil
+        nil -> nil
+        _player -> game.id
+      end
+    end)
   end
 
   def player_can_cancel_game?(game, player) do

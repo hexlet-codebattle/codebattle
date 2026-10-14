@@ -2,8 +2,14 @@ defmodule CodebattleWeb.Tournament.ImageController do
   use CodebattleWeb, :controller
   use Gettext, backend: CodebattleWeb.Gettext
 
+  import CodebattleWeb.OgImage, only: [esc: 1, chip: 1, chip: 2, avatar: 1, level_color: 1, level_label: 1]
+
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Helpers
   alias CodebattleWeb.HtmlImage
+  alias CodebattleWeb.OgImage
+
+  @shown_players 5
 
   def show(conn, %{"id" => id}) do
     case Tournament.Context.get(id) do
@@ -11,104 +17,118 @@ defmodule CodebattleWeb.Tournament.ImageController do
         send_resp(conn, :ok, "")
 
       tournament ->
-        cache_key = "t_#{id}_#{tournament.state}"
-        html = prepare_image_html(tournament)
-        HtmlImage.render_image(conn, cache_key, html)
+        players_count = Helpers.players_count(tournament)
+        locale = Gettext.get_locale(CodebattleWeb.Gettext)
+        cache_key = "t_#{id}_#{tournament.state}_#{players_count}_#{locale}"
+        HtmlImage.render_image(conn, cache_key, prepare_image_html(tournament, players_count))
     end
   end
 
-  defp prepare_image_html(tournament) do
+  defp prepare_image_html(tournament, players_count) do
+    body = """
+    <div class="info">
+      <div class="kicker mono">#{type_label(tournament.type)}</div>
+      <div class="title display">#{esc(tournament.name)}</div>
+      #{starts_line(tournament)}
+    </div>
+    <div class="crowd">
+      <div class="count display">#{players_count}</div>
+      <div class="count-label mono">#{gettext("Players")}</div>
+      #{faces(tournament)}
+    </div>
     """
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #f5f7fa;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-          }
-          p {
-            margin: 5px;
-            padding: 5px;
-          }
-          .card {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-          }
-          .header {
-            background: #000;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #fff;
-            text-align: center;
-          }
-          .header img {
-            width: 100px;
-            margin-top: 20px;
-            height: auto;
-          }
-          .content {
-            flex: 1;
-            padding: 10px;
-            color: #333;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-          }
-          .footer {
-            text-align: center;
-            font-size: 12px;
-            color: #fff;
-            padding: 8px;
-            background: #000;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="card">
-          <div class="header">
-            <img src="#{HtmlImage.logo_url()}" alt="Logo">
-            <h1>#{tournament.name}</h1>
-          </div>
-          <div class="content">
-            #{render_content(tournament)}
-          </div>
-          <div class="footer">
-            <p>
-              Made with
-              <svg width="14" height="14" viewBox="0 0 24 24" style="fill:#ff5252; vertical-align:middle;">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42
-                         4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81
-                         14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4
-                         6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-              by Codebattle
-            </p>
-          </div>
-        </div>
-      </body>
-    </html>
-    """
+
+    OgImage.page(body, chips(tournament), css())
   end
 
-  defp render_content(tournament) do
-    type = Gettext.gettext(CodebattleWeb.Gettext, to_string(tournament.type))
-    state = Gettext.gettext(CodebattleWeb.Gettext, "Tournament #{tournament.state}")
+  defp type_label("ladder"), do: gettext("Ladder tournament")
+  defp type_label(_type), do: gettext("Swiss tournament")
 
+  defp starts_line(%{state: state, starts_at: %DateTime{} = starts_at})
+       when state in ["upcoming", "waiting_participants"] do
+    ~s(<div class="when mono">#{gettext("Starts")} #{Calendar.strftime(starts_at, "%d %b %Y · %H:%M")} UTC</div>)
+  end
+
+  defp starts_line(_tournament), do: ""
+
+  # The podium once there are winners, otherwise the first few players.
+  defp faces(tournament) do
+    players =
+      case tournament.winner_ids do
+        [_ | _] = ids -> tournament |> Helpers.get_players(Enum.take(ids, 3)) |> Enum.reject(&is_nil/1)
+        _ -> tournament |> Helpers.get_players() |> Enum.reject(&Map.get(&1, :is_bot)) |> Enum.take(@shown_players)
+      end
+
+    if players == [] do
+      ""
+    else
+      ~s(<div class="faces">#{Enum.map_join(players, "", &avatar/1)}</div>)
+    end
+  end
+
+  defp chips(tournament) do
+    Enum.reject(
+      [
+        state_chip(tournament.state),
+        tournament.task_provider == "level" && level_chip(tournament.level),
+        tournament.grade not in [nil, "open"] && chip(grade_label(tournament.grade)),
+        tournament.state in ["upcoming", "waiting_participants"] && chip(gettext("Join") <> " →", class: "cta push")
+      ],
+      &(&1 in [nil, false])
+    )
+  end
+
+  defp grade_label(grade),
+    do: Gettext.gettext(CodebattleWeb.Gettext, grade |> String.replace("_", " ") |> String.capitalize())
+
+  defp level_chip(level) when level in [nil, ""], do: nil
+  defp level_chip(level), do: chip(level_label(level), dot: level_color(level))
+
+  defp state_chip("upcoming"), do: chip(gettext("Upcoming"), dot: "#4dabf7")
+  defp state_chip("waiting_participants"), do: chip(gettext("Registration is open"), dot: "#fcc419")
+  defp state_chip("active"), do: chip("LIVE", dot: "#ff5252", class: "live")
+  defp state_chip("finished"), do: chip(gettext("Finished"), dot: "#51cf66")
+  defp state_chip(state) when state in ["timeout", "canceled"], do: chip(gettext("Canceled"), dot: "#868e96")
+  defp state_chip(_state), do: nil
+
+  defp css do
     """
-    <p>#{gettext("Type: %{type}", type: type)}</p>
-    <p>#{state}</p>
-    <p>#{gettext("Starts At")}: #{tournament.starts_at} UTC</p>
+    main { gap: 56px; }
+    .info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+    .kicker { font-size: 24px; font-weight: 700; color: #ff6b6b; letter-spacing: 0.12em; text-transform: uppercase; }
+    .title {
+      font-size: 76px;
+      line-height: 1.05;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+    }
+    .when { font-size: 26px; color: rgba(241, 243, 245, 0.7); }
+    .crowd {
+      width: 330px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 30px 0 36px;
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .count { font-size: 104px; line-height: 1; }
+    .count-label { font-size: 24px; color: rgba(241, 243, 245, 0.6); letter-spacing: 0.1em; text-transform: uppercase; }
+    .faces { display: flex; margin-top: 26px; padding-left: 18px; }
+    .faces .avatar {
+      width: 72px;
+      height: 72px;
+      margin-left: -18px;
+      border-radius: 50%;
+      border: 3px solid #0b0d12;
+      font-size: 34px;
+    }
+    .push { margin-left: auto; }
     """
   end
 end

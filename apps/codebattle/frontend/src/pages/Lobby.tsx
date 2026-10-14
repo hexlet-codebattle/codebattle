@@ -72,8 +72,8 @@ export default function Lobby() {
   const createGame = async (params: CreateGameParams) => {
     const { game_id: gameId } = await push<{ game_id: number }>('game:create', { ...params });
 
-    // Bot games start right away; human games wait in the list until someone joins.
-    if (params.opponent_type === 'bot') window.location.assign(gameUrl(gameId));
+    // Bot games start right away; random-player games open their waiting room until someone joins.
+    window.location.assign(gameUrl(gameId));
   };
 
   return (

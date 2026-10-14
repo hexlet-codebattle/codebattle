@@ -1898,12 +1898,27 @@
     "/games/live": {
       "get": {
         "summary": "Live games",
-        "description": "What the lobby shows: games being played and games waiting for an opponent (usually a few Codebot games are waiting), newest first. Tournament games and other people's link games are not listed. Join a waiting one with `POST /games/{id}/join`. Changes often; poll every 10–30 seconds.",
+        "description": "What the lobby shows: games being played and games waiting for an opponent (usually a few Codebot games are waiting), newest first. Tournament games and other people's link games are not listed. Pass `state=waiting_opponent` for just the games you can join, then join one with `POST /games/{id}/join`; their task stays hidden until someone joins. Changes often; poll every 10–30 seconds.",
         "security": [
           {
             "bearerAuth": [
               "read"
             ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "description": "Only games in this state: `waiting_opponent` (open to join) or `playing`.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "waiting_opponent",
+                "playing"
+              ]
+            },
+            "example": "waiting_opponent"
           }
         ],
         "responses": {
@@ -1934,6 +1949,9 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -2056,7 +2074,7 @@
     "/games/{id}/join": {
       "post": {
         "summary": "Join a game that waits for an opponent",
-        "description": "Joins a game from `GET /games/live` in state `waiting_opponent`, or a `link` game whose id someone shared with you. The game starts at once; open its `url`. Fails with 422 if the game already started or you are in another game.",
+        "description": "Joins a game from `GET /games/live?state=waiting_opponent`, or a `link` game whose id someone shared with you. The game starts at once; open its `url`. A failed join answers 422 `validation_failed` with `details.reason`: `not_waiting_opponent` (the game already started), `already_in_a_game` (you play another game: `details.active_game_id`; finish it or `POST /games/{id}/cancel` it if it still waits) or `already_joined` (you are already a player of this game).",
         "security": [
           {
             "bearerAuth": [

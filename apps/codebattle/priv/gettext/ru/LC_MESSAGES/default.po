@@ -6083,3 +6083,93 @@ msgstr "Отзыв отправлен, спасибо"
 
 msgid "Could not send the feedback"
 msgstr "Не удалось отправить отзыв"
+
+msgid "Back to the game"
+msgstr "Вернуться в игру"
+
+msgid "Who wants to battle?"
+msgstr "Кто готов к битве?"
+
+msgid "Invite posted to the lobby chat"
+msgstr "Приглашение отправлено в чат лобби"
+
+msgid "Could not post to the lobby chat. Try again."
+msgstr "Не удалось отправить в чат лобби. Попробуйте ещё раз."
+
+msgid "Share in the lobby chat"
+msgstr "Поделиться в чате лобби"
+
+msgid "Shared in the lobby chat"
+msgstr "Отправлено в чат лобби"
+
+msgid "You?"
+msgstr "Ты?"
+
+msgid "Free seat"
+msgstr "Свободное место"
+
+msgid "Join the battle"
+msgstr "Вступить в бой"
+
+msgid "Time is up"
+msgstr "Время вышло"
+
+msgid "Ladder tournament"
+msgstr "Турнир-лестница"
+
+msgid "Swiss tournament"
+msgstr "Швейцарский турнир"
+
+msgid "Grand slam"
+msgstr "Большой шлем"
+
+msgid "%{first} vs %{second}: live"
+msgstr "%{first} против %{second}: прямо сейчас"
+
+msgid "%{winner} beat %{loser}"
+msgstr "%{winner} победил(а) %{loser}"
+
+msgid "Coding battle"
+msgstr "Битва программистов"
+
+msgid "%{first} vs %{second}"
+msgstr "%{first} против %{second}"
+
+msgid "%{name} (%{player}) is waiting for an opponent. Take the free seat and solve the task first!"
+msgstr "%{name} (%{player}) ждёт соперника. Занимай свободное место и реши задачу первым!"
+
+msgid "%{first} (%{first_meta}) and %{second} (%{second_meta}) are solving the same task right now. Watch live!"
+msgstr "%{first} (%{first_meta}) и %{second} (%{second_meta}) прямо сейчас решают одну задачу. Смотри в прямом эфире!"
+
+msgid "The battle is over. Think you can solve it faster? Play on Codebattle."
+msgstr "Битва окончена. Думаешь, решишь быстрее? Играй на Codebattle."
+
+msgid "%{name} solved the task first in %{lang}. Think you can do better? Play on Codebattle."
+msgstr "%{name} первым решил(а) задачу на %{lang}. Думаешь, сможешь лучше? Играй на Codebattle."
+
+msgid "Time ran out before anyone solved the task. Think you can? Play on Codebattle."
+msgstr "Время вышло, задачу никто не решил. Думаешь, у тебя получится? Играй на Codebattle."
+
+msgid "A head-to-head coding battle on Codebattle."
+msgstr "Битва программистов один на один на Codebattle."
+
+msgid "Starts %{date} UTC. Join and battle for the top!"
+msgstr "Старт %{date} UTC. Присоединяйся и борись за топ!"
+
+msgid "Live now: watch the battles."
+msgstr "Идёт прямо сейчас: смотри битвы."
+
+msgid "Finished: see the results."
+msgstr "Завершён: смотри результаты."
+
+msgid "This game has already started. You can watch it."
+msgstr "Игра уже началась. Можно посмотреть за ней."
+
+msgid "You are already in this game."
+msgstr "Вы уже в этой игре."
+
+msgid "You are already in another game. Finish or cancel it before joining a new one."
+msgstr "Вы уже участвуете в другой игре. Завершите или отмените её, прежде чем присоединяться к новой."
+
+msgid "Pasting from outside the editor is disabled in battles"
+msgstr "В битвах нельзя вставлять текст не из своего редактора"

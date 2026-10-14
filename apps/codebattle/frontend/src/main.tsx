@@ -1,10 +1,11 @@
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, router } from '@inertiajs/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { initI18n } from '@/i18n';
 import { ErrorBoundary } from '@/shared/ErrorBoundary';
+import { showFlash } from '@/shared/flash';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
 type PageModule = { default: ComponentType };
@@ -15,6 +16,10 @@ const pages = import.meta.glob<PageModule>('./pages/*.tsx');
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false } },
 });
+
+// Phoenix flash travels on the page object (Inertia 3); the router fires `flash` for the initial
+// page and after every visit, so toasts work on every page, with or without AppLayout.
+router.on('flash', (event) => showFlash(event.detail.flash as Record<string, unknown>));
 
 void createInertiaApp({
   progress: { color: 'var(--mantine-color-green-6)', showSpinner: false },

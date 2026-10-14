@@ -11,13 +11,12 @@ import {
   IconSchool,
   IconSettings,
   IconStarFilled,
+  IconSwords,
   IconTrophy,
   IconUser,
   IconUsersGroup,
 } from '@tabler/icons-react';
-import { usePage } from '@inertiajs/react';
-import { notifications } from '@mantine/notifications';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
@@ -111,6 +110,36 @@ function OnlineCount() {
         {t('%{count} Online', { count })}
       </Text>
     </Group>
+  );
+}
+
+/** Quick way back into the game the user plays or waits in; hidden on that game's page. */
+function ActiveGameLink() {
+  const { t } = useTranslation();
+  const { active_game: game } = useSharedProps();
+
+  if (!game || window.location.pathname.replace(/\/$/, '') === `/games/${game.id}`) return null;
+
+  const playing = game.state === 'playing';
+  const label = playing ? t('Back to the game') : t('Waiting for an opponent');
+
+  return (
+    <Button
+      component="a"
+      href={`/games/${game.id}`}
+      radius="xl"
+      size="compact-sm"
+      variant="light"
+      color={playing ? 'red' : 'green'}
+      title={label}
+      aria-label={label}
+      leftSection={<span className={classes.activeGameDot} />}
+      rightSection={<IconSwords size={16} />}
+    >
+      <Text span fw={700} size="xs" visibleFrom="sm">
+        {label}
+      </Text>
+    </Button>
   );
 }
 
@@ -227,21 +256,6 @@ function InviteDialog() {
   return <CreateGameModal opened={opened} onClose={close} initialOpponent={opponent} />;
 }
 
-const FLASH_COLORS: Record<string, string> = { info: 'blue', success: 'green', danger: 'red', error: 'red', warning: 'yellow' };
-
-/** Phoenix flash (Inertia shares it as `flash`) → toasts, once per page visit. */
-function FlashToasts() {
-  const { flash } = usePage<{ flash?: Record<string, string> }>().props;
-
-  useEffect(() => {
-    Object.entries(flash ?? {}).forEach(([kind, message]) => {
-      if (message) notifications.show({ color: FLASH_COLORS[kind] ?? 'gray', message });
-    });
-  }, [flash]);
-
-  return null;
-}
-
 export function AppLayout({ children, presence = 'online', wide = false }: AppLayoutProps) {
   const { current_user: user, branding } = useSharedProps();
   useMainChannel(presence);
@@ -252,12 +266,12 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
   return (
     <AppShell header={{ height: 56 }}>
       <DeployBanner />
-      <FlashToasts />
       <AppShell.Header className={classes.header}>
         <Container size="xl" h="100%">
           <Group h="100%" justify="space-between" wrap="nowrap">
             <Brand />
             <Group gap="sm" wrap="nowrap">
+              {!user.is_guest && <ActiveGameLink />}
               {!user.is_guest && !branding.hide_invites && (
                 <>
                   <GithubStars />

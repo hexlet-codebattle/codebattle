@@ -155,6 +155,39 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
       assert conn |> api(other_token) |> post("/public_api/v1/games/999999999/join") |> json_response(404)
       assert conn |> api(token(old_user())) |> post("/public_api/v1/games/#{hidden.id}/join") |> json_response(403)
     end
+
+    test "lists only open games and names the game that blocks a join", %{conn: conn} do
+      insert(:task, level: "easy")
+      {:ok, waiting} = Game.Context.create_game(%{players: [insert(:user)], level: "easy"})
+      on_exit(fn -> Game.Context.terminate_game(waiting.id) end)
+
+      user = old_user()
+      {:ok, own} = Game.Context.create_game(%{players: [user], level: "easy"})
+      on_exit(fn -> Game.Context.terminate_game(own.id) end)
+      token = token(user, ["read", "games:write"])
+      waiting_id = waiting.id
+      own_id = own.id
+
+      assert %{"games" => open} =
+               conn |> api(token) |> get("/public_api/v1/games/live?state=waiting_opponent") |> json_response(200)
+
+      assert Enum.all?(open, &(&1["state"] == "waiting_opponent"))
+      assert Enum.any?(open, &(&1["id"] == waiting_id))
+
+      assert %{"games" => playing} =
+               conn |> api(token) |> get("/public_api/v1/games/live?state=playing") |> json_response(200)
+
+      refute Enum.any?(playing, &(&1["id"] == waiting_id))
+
+      assert %{"error" => %{"code" => "validation_failed", "details" => %{"state" => _}}} =
+               conn |> api(token) |> get("/public_api/v1/games/live?state=finished") |> json_response(422)
+
+      assert %{"error" => %{"details" => %{"reason" => "already_in_a_game", "active_game_id" => ^own_id}}} =
+               conn |> api(token) |> post("/public_api/v1/games/#{waiting_id}/join") |> json_response(422)
+
+      assert %{"error" => %{"details" => %{"reason" => "already_joined", "active_game_id" => ^own_id}}} =
+               conn |> api(token) |> post("/public_api/v1/games/#{own_id}/join") |> json_response(422)
+    end
   end
 
   describe "tasks" do

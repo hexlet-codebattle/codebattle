@@ -130,8 +130,8 @@ defmodule CodebattleWeb.TournamentController do
   defp render_tournament(conn, tournament, params) do
     conn
     |> put_meta_tags(%{
-      title: tournament.name,
-      description: tournament.description,
+      title: "🏆 #{tournament.name} · Codebattle",
+      description: tournament_meta_description(tournament),
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
@@ -185,4 +185,30 @@ defmodule CodebattleWeb.TournamentController do
       meta: tournament.meta
     }
   end
+
+  # "Swiss tournament · Elementary · 42 players. Starts 14 Oct 2026, 18:00 UTC. <description>"
+  defp tournament_meta_description(tournament) do
+    type = if tournament.type == "ladder", do: gettext("Ladder tournament"), else: gettext("Swiss tournament")
+
+    level =
+      tournament.task_provider == "level" && tournament.level &&
+        Gettext.gettext(CodebattleWeb.Gettext, String.capitalize(tournament.level))
+
+    players = gettext("Players") <> ": #{Helpers.players_count(tournament)}"
+
+    summary = Enum.join(Enum.filter([type, level, players], &is_binary/1), " · ")
+
+    [summary <> ".", tournament_meta_call(tournament), tournament.description]
+    |> Enum.filter(&(is_binary(&1) and String.trim(&1) != ""))
+    |> Enum.join(" ")
+  end
+
+  defp tournament_meta_call(%{state: state, starts_at: %DateTime{} = starts_at})
+       when state in ["upcoming", "waiting_participants"] do
+    gettext("Starts %{date} UTC. Join and battle for the top!", date: Calendar.strftime(starts_at, "%d %b %Y, %H:%M"))
+  end
+
+  defp tournament_meta_call(%{state: "active"}), do: gettext("Live now: watch the battles.")
+  defp tournament_meta_call(%{state: "finished"}), do: gettext("Finished: see the results.")
+  defp tournament_meta_call(_tournament), do: nil
 end

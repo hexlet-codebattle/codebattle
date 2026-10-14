@@ -9,6 +9,7 @@ import type { ChatMessage, ChatUserRef } from '../types';
 import { type ChatApi, MAX_MESSAGE_LENGTH, roomMessages } from '../useChat';
 
 import classes from './Chat.module.css';
+import { MessageText } from './MessageText';
 import { UserCard } from '@/features/users/UserCard';
 import { LangIcon } from '@/shared/LangIcon';
 import { usePresenceStore } from '@/features/presence/store';
@@ -72,9 +73,7 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
                 )}{' '}
               </>
             )}
-            <Text span size="sm" className={classes.text}>
-              {message.text}
-            </Text>
+            <MessageText text={message.text} />
           </>
         ) : (
           <Text span size="sm" c="dimmed" fs="italic">

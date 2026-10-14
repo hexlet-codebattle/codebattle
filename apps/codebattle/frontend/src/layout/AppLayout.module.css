@@ -53,3 +53,28 @@
     background: var(--cb-hover);
   }
 }
+
+.activeGameDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: activeGamePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes activeGamePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activeGameDot {
+    animation: none;
+  }
+}

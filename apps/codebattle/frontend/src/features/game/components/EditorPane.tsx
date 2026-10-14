@@ -258,7 +258,8 @@ export function EditorPane({
         onTelemetry={editable ? telemetry : undefined}
         onCursor={editable ? api?.cursorReport : undefined}
         vim={vim && editable}
-        allowClipboard={allowClipboard}
+        // Moderators may copy anyone's code, but my own editor only takes pastes from itself.
+        allowClipboard={allowClipboard && !editable}
         onChange={editable ? api?.changeText : undefined}
         onRun={editable ? api?.check : undefined}
       />

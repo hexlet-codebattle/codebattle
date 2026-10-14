@@ -25,6 +25,9 @@ export interface SoundSettings {
 const howls = new Map<string, Howl>();
 
 function play(src: string, level: number) {
+  // The AudioContext only comes to life here, on the first sound (not at import): browsers
+  // warn about (and suspend) a context created before any user gesture.
+  Howler.mute(useSoundStore.getState().muted);
   let howl = howls.get(src);
   if (!howl) {
     howl = new Howl({ src: [src] });
@@ -74,12 +77,11 @@ export const useSoundStore = create<SoundState>((set) => ({
     } catch {
       // storage disabled: the in-memory flag still applies to this page
     }
-    Howler.mute(muted);
+    // Before the first sound there's no AudioContext yet; play() applies the flag then.
+    if (Howler.ctx) Howler.mute(muted);
     set({ muted });
   },
 }));
-
-Howler.mute(useSoundStore.getState().muted);
 
 // Tournament cues (legacy config/tournamentSounds.ts), played at the tournament level.
 const TOURNAMENT_SOUNDS = {

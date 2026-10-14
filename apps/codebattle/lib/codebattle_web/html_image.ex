@@ -41,16 +41,18 @@ defmodule CodebattleWeb.HtmlImage do
   Returns the logo URL based on configuration.
   """
   def logo_url do
-    if logo = Application.get_env(:codebattle, :collab_logo) do
-      logo
-    else
-      endpoint_config = Application.get_env(:codebattle, CodebattleWeb.Endpoint, [])
-      url_config = Keyword.get(endpoint_config, :url, [])
-      scheme = Keyword.get(url_config, :scheme, "https")
-      host = Keyword.get(url_config, :host, "codebattle.hexlet.io")
-      logo_path = CodebattleWeb.Vite.static_asset_path("images/logo.svg")
-      "#{scheme}://#{host}#{logo_path}"
-    end
+    Application.get_env(:codebattle, :collab_logo) || asset_url("images/logo.svg")
+  end
+
+  @doc """
+  Absolute URL of a static asset (`apps/codebattle/static/<path>`), reachable by headless Chrome.
+  """
+  def asset_url(path) do
+    endpoint_config = Application.get_env(:codebattle, CodebattleWeb.Endpoint, [])
+    url_config = Keyword.get(endpoint_config, :url, [])
+    scheme = Keyword.get(url_config, :scheme, "https")
+    host = Keyword.get(url_config, :host, "codebattle.hexlet.io")
+    "#{scheme}://#{host}#{CodebattleWeb.Vite.static_asset_path(path)}"
   end
 
   defp fake_html_to_image? do
@@ -71,7 +73,13 @@ defmodule CodebattleWeb.HtmlImage do
 
   defp capture_png(html_content) do
     {:html, html_content}
-    |> ChromicPDF.capture_screenshot(capture_screenshot: %{format: "png"})
+    # full_page sizes the viewport to the document (the cards are a fixed 1200×630);
+    # waiting for document.fonts keeps the web fonts from rendering as fallbacks.
+    |> ChromicPDF.capture_screenshot(
+      capture_screenshot: %{format: "png"},
+      full_page: true,
+      evaluate: %{expression: "document.fonts.ready.then(() => true)"}
+    )
     |> then(fn {:ok, image} -> Base.decode64!(image) end)
   end
 

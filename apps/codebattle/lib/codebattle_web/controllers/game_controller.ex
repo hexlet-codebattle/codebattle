@@ -158,10 +158,48 @@ defmodule CodebattleWeb.GameController do
     }
   end
 
+  # A form post from the waiting room or the lobby. When joining is not possible the user lands
+  # where the reason makes sense (the game itself, or the game that blocks them) with a toast,
+  # instead of the lobby with no explanation.
   def join(conn, %{"id" => id}) do
-    case Context.join_game(id, conn.assigns.current_user) do
-      {:ok, _game} -> redirect(conn, to: Routes.game_path(conn, :show, id))
-      {:error, reason} -> {:error, reason}
+    user = conn.assigns.current_user
+
+    with {:ok, game} <- Context.fetch_game(id),
+         :ok <- check_joinable(game),
+         {:ok, _game} <- Context.join_game(game.id, user) do
+      redirect(conn, to: Routes.game_path(conn, :show, game.id))
+    else
+      {:error, :not_found} ->
+        render_game_not_found(conn)
+
+      {:error, :not_waiting_opponent} ->
+        conn
+        |> put_flash(:warning, gettext("This game has already started. You can watch it."))
+        |> redirect(to: Routes.game_path(conn, :show, id))
+
+      {:error, :already_in_a_game} ->
+        redirect_to_blocking_game(conn, id, Game.Auth.active_game_id(user.id))
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp check_joinable(%{state: "waiting_opponent"}), do: :ok
+  defp check_joinable(_game), do: {:error, :not_waiting_opponent}
+
+  defp redirect_to_blocking_game(conn, id, active_id) do
+    if active_id && to_string(active_id) == to_string(id) do
+      conn
+      |> put_flash(:info, gettext("You are already in this game."))
+      |> redirect(to: Routes.game_path(conn, :show, id))
+    else
+      conn
+      |> put_flash(
+        :warning,
+        gettext("You are already in another game. Finish or cancel it before joining a new one.")
+      )
+      |> redirect(to: if(active_id, do: Routes.game_path(conn, :show, active_id), else: Routes.root_path(conn, :index)))
     end
   end
 
@@ -370,6 +408,7 @@ defmodule CodebattleWeb.GameController do
 
   defp put_game_meta_tags(conn, game) do
     put_meta_tags(conn, %{
+      title: game_meta_title(game) <> " · Codebattle",
       description: game_meta_description(game),
       url: Routes.game_url(conn, :show, game.id, level: Helpers.get_level(game)),
       image: Routes.game_image_url(conn, :show, game.id),
@@ -412,27 +451,77 @@ defmodule CodebattleWeb.GameController do
     )
   end
 
-  defp game_meta_description(%{state: "waiting_opponent", players: [player]} = game) do
-    level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
+  defp game_meta_title(%{state: "waiting_opponent", players: [player | _]}),
+    do: "⚔️ " <> gettext("%{name} is looking for an opponent", name: player.name)
 
-    gettext("Play with") <>
-      ": " <>
-      "@#{player.name}-#{player.lang}" <>
-      ". " <>
-      gettext("Waiting for an opponent") <> ". " <> level
+  defp game_meta_title(%{state: "playing", players: [player1, player2 | _]}),
+    do: "🔴 " <> gettext("%{first} vs %{second}: live", first: player1.name, second: player2.name)
+
+  defp game_meta_title(%{state: "game_over", players: [_, _ | _] = players} = game) do
+    case Enum.split_with(players, &(&1.result == "won")) do
+      {[winner | _], [loser | _]} ->
+        "🏆 " <> gettext("%{winner} beat %{loser}", winner: winner.name, loser: loser.name)
+
+      _ ->
+        versus_title(game)
+    end
   end
 
-  defp game_meta_description(%{players: [player1, player2]} = game) do
-    level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
-    state = Gettext.gettext(CodebattleWeb.Gettext, "Game state: #{game.state}")
+  defp game_meta_title(%{players: [_, _ | _]} = game), do: versus_title(game)
+  defp game_meta_title(_game), do: gettext("Coding battle")
 
-    gettext("Game between") <>
-      ": " <>
-      "@#{player1.name}-#{player1.lang}" <>
-      " VS " <>
-      "@#{player2.name}-#{player2.lang}" <>
-      ". " <> level <> ". " <> state
+  defp versus_title(%{players: [player1, player2 | _]}),
+    do: gettext("%{first} vs %{second}", first: player1.name, second: player2.name)
+
+  defp game_meta_description(%{state: "waiting_opponent", players: [player | _]} = game) do
+    gettext("%{name} (%{player}) is waiting for an opponent. Take the free seat and solve the task first!",
+      name: player.name,
+      player: player_meta(player)
+    ) <> game_meta_details(game)
   end
 
-  defp game_meta_description(_game), do: "Unknown game"
+  defp game_meta_description(%{state: "playing", players: [player1, player2 | _]} = game) do
+    gettext("%{first} (%{first_meta}) and %{second} (%{second_meta}) are solving the same task right now. Watch live!",
+      first: player1.name,
+      first_meta: player_meta(player1),
+      second: player2.name,
+      second_meta: player_meta(player2)
+    ) <> game_meta_details(game)
+  end
+
+  defp game_meta_description(%{state: "game_over", players: players} = game) do
+    case Enum.find(players, &(&1.result == "won")) do
+      nil ->
+        gettext("The battle is over. Think you can solve it faster? Play on Codebattle.") <> game_meta_details(game)
+
+      winner ->
+        gettext("%{name} solved the task first in %{lang}. Think you can do better? Play on Codebattle.",
+          name: winner.name,
+          lang: winner.lang
+        ) <> game_meta_details(game)
+    end
+  end
+
+  defp game_meta_description(%{state: "timeout"} = game) do
+    gettext("Time ran out before anyone solved the task. Think you can? Play on Codebattle.") <>
+      game_meta_details(game)
+  end
+
+  defp game_meta_description(game) do
+    gettext("A head-to-head coding battle on Codebattle.") <> game_meta_details(game)
+  end
+
+  defp player_meta(%{rating: rating, lang: lang}) when is_integer(rating), do: "#{rating} · #{lang}"
+  defp player_meta(%{lang: lang}), do: lang
+
+  # " Elementary · 8 min"
+  defp game_meta_details(game) do
+    level = if game.level, do: Gettext.gettext(CodebattleWeb.Gettext, String.capitalize(game.level))
+    minutes = if game.timeout_seconds, do: gettext("%{count} min", count: div(game.timeout_seconds, 60))
+
+    case Enum.reject([level, minutes], &is_nil/1) do
+      [] -> ""
+      parts -> " " <> Enum.join(parts, " · ")
+    end
+  end
 end

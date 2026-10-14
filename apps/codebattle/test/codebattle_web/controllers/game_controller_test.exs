@@ -226,6 +226,41 @@ defmodule CodebattleWeb.GameControllerTest do
       assert updated.state == "playing"
       assert [%{id: ^user1_id}, %{id: ^user2_id}] = updated.players
     end
+
+    test "a player of another game is sent to that game with the reason", %{conn: conn} do
+      task = insert(:task, level: "elementary")
+      [host, user] = insert_list(2, :user)
+
+      {:ok, game} = Game.Context.create_game(%{state: "waiting_opponent", players: [host], task: task})
+      {:ok, own} = Game.Context.create_game(%{state: "waiting_opponent", players: [user], task: task})
+      on_exit(fn -> Enum.each([game.id, own.id], &Game.Context.terminate_game/1) end)
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> post(Routes.game_path(conn, :join, game.id))
+
+      assert redirected_to(conn) == Routes.game_path(conn, :show, own.id)
+      assert Phoenix.Flash.get(conn.assigns.flash, :warning) =~ "already in another game"
+      assert Game.Context.get_game!(game.id).state == "waiting_opponent"
+    end
+
+    test "a started game is opened for watching", %{conn: conn} do
+      task = insert(:task, level: "elementary")
+      [host, guest, user] = insert_list(3, :user)
+
+      {:ok, game} = Game.Context.create_game(%{state: "waiting_opponent", players: [host], task: task})
+      on_exit(fn -> Game.Context.terminate_game(game.id) end)
+      {:ok, _game} = Game.Context.join_game(game.id, guest)
+
+      conn =
+        conn
+        |> log_in_user(user.id)
+        |> post(Routes.game_path(conn, :join, game.id))
+
+      assert redirected_to(conn) == Routes.game_path(conn, :show, game.id)
+      assert Phoenix.Flash.get(conn.assigns.flash, :warning) =~ "already started"
+    end
   end
 
   describe "POST /games/training" do

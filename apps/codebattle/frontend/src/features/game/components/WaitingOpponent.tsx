@@ -1,6 +1,11 @@
 import { Button, Card, CopyButton, Group, Loader, Stack, Text, TextInput, Title } from '@mantine/core';
-import { IconCheck, IconCopy, IconSwords } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { IconCheck, IconCopy, IconMessageShare, IconSwords } from '@tabler/icons-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { shareableGameUrl } from '@/features/chat/linkify';
+import { shareToLobbyChat, wasShared } from '@/features/chat/shareToLobby';
 
 import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
@@ -18,10 +23,26 @@ import classes from '../GameRoom.module.css';
  */
 export function WaitingOpponent({ game }: { game: Game }) {
   const { t } = useTranslation();
-  const { current_user: me } = useSharedProps();
+  const { current_user: me, user_token: token } = useSharedProps();
   const creator = game.players[0];
   const isCreator = game.players.some((player) => player.id === me.id);
-  const link = `${window.location.origin}/games/${game.id}`;
+  const link = shareableGameUrl(game.id);
+  const [sharing, setSharing] = useState(false);
+  const [shared, setShared] = useState(() => wasShared(game.id));
+
+  // Once per game and session, so the lobby chat doesn't fill with the same invite.
+  const share = async () => {
+    setSharing(true);
+    try {
+      await shareToLobbyChat(token, game.id, `${t('Who wants to battle?')} ${link}`);
+      setShared(true);
+      notifications.show({ color: 'green', message: t('Invite posted to the lobby chat') });
+    } catch {
+      notifications.show({ color: 'red', message: t('Could not post to the lobby chat. Try again.') });
+    } finally {
+      setSharing(false);
+    }
+  };
 
   return (
     <div className={classes.waiting}>
@@ -74,6 +95,17 @@ export function WaitingOpponent({ game }: { game: Game }) {
                   </CopyButton>
                 }
               />
+              <Button
+                fullWidth
+                variant="light"
+                color="green"
+                leftSection={shared ? <IconCheck size={16} /> : <IconMessageShare size={16} />}
+                loading={sharing}
+                disabled={shared}
+                onClick={share}
+              >
+                {shared ? t('Shared in the lobby chat') : t('Share in the lobby chat')}
+              </Button>
               <Group gap="xs">
                 <Button component="a" href="/" variant="default">
                   {t('Back to lobby')}
