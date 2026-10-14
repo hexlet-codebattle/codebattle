@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import { useLatest } from '@/shared/useLatest';
+
 import type { EditorTelemetry } from './CodeEditor';
 import { addEvent, EVENT_LIMIT, finalize, WINDOW_MS } from './telemetry';
 
@@ -12,8 +14,7 @@ type Send = (summary: NonNullable<ReturnType<typeof finalize>>, lang: string) =>
 export function useEditorTelemetry({ enabled, lang, startedAtMs, send }: { enabled: boolean; lang: string; startedAtMs: number; send: Send }) {
   const windowRef = useRef<ReturnType<typeof addEvent> | null>(null);
   const timer = useRef<number | null>(null);
-  const sendRef = useRef(send);
-  sendRef.current = send;
+  const sendRef = useLatest(send);
 
   const flush = useCallback(() => {
     if (timer.current != null) {
@@ -23,7 +24,7 @@ export function useEditorTelemetry({ enabled, lang, startedAtMs, send }: { enabl
     const summary = finalize(windowRef.current);
     windowRef.current = null;
     if (summary) sendRef.current(summary, summary.lang_slug);
-  }, []);
+  }, [sendRef]);
 
   // Stopped (game over, editor locked) or gone: send what we have.
   useEffect(() => {

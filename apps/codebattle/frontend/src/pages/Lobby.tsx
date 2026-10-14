@@ -36,11 +36,7 @@ export default function Lobby() {
   const user = props.current_user;
 
   // Render server data immediately; the channel join reply then replaces it.
-  const seeded = useRef(false);
-  if (!seeded.current) {
-    useLobbyStore.getState().reset(props);
-    seeded.current = true;
-  }
+  useState(() => useLobbyStore.getState().reset(props));
 
   const { status, push, cast } = useLobbyChannel();
   const online = status === 'joined';

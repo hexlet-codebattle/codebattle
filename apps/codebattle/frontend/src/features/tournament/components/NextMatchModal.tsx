@@ -1,5 +1,5 @@
 import { Button, Group, Modal, RingProgress, Stack, Text } from '@mantine/core';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSharedProps } from '@/shared/useSharedProps';
@@ -14,39 +14,37 @@ const COUNTDOWN_S = 15;
  * the game, like the legacy MatchConfirmationModal. "Stay here" skips that game.
  */
 export function NextMatchModal() {
-  const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const round = useTournamentStore((state) => state.tournament?.current_round_position);
   const match = useMyLiveMatch(me.id);
-  const dismissed = useRef(new Set<number>());
+  const [dismissed, setDismissed] = useState<ReadonlySet<number>>(() => new Set());
+
+  if (!match || match.round_position !== round || dismissed.has(match.game_id)) return null;
+
+  const { game_id: gameId } = match;
+  // Keyed by game: every new match starts its own countdown.
+  return <Countdown key={gameId} gameId={gameId} onStay={() => setDismissed((current) => new Set(current).add(gameId))} />;
+}
+
+function Countdown({ gameId, onStay }: { gameId: number; onStay: () => void }) {
+  const { t } = useTranslation();
   const [left, setLeft] = useState(COUNTDOWN_S);
 
-  const show = match != null && match.round_position === round && !dismissed.current.has(match.game_id);
-
   useEffect(() => {
-    if (!show || !match) return undefined;
-    setLeft(COUNTDOWN_S);
     const started = Date.now();
     const timer = window.setInterval(() => {
       const remaining = COUNTDOWN_S - Math.floor((Date.now() - started) / 1000);
       setLeft(remaining);
       if (remaining <= 0) {
         window.clearInterval(timer);
-        window.location.replace(`/games/${match.game_id}`);
+        window.location.replace(`/games/${gameId}`);
       }
     }, 250);
     return () => window.clearInterval(timer);
-  }, [show, match]);
-
-  if (!show || !match) return null;
-
-  const stay = () => {
-    dismissed.current.add(match.game_id);
-    setLeft(COUNTDOWN_S + 1);
-  };
+  }, [gameId]);
 
   return (
-    <Modal opened onClose={stay} centered withCloseButton={false} size="sm">
+    <Modal opened onClose={onStay} centered withCloseButton={false} size="sm">
       <Stack align="center" gap="md" py="sm">
         <RingProgress
           size={110}
@@ -66,10 +64,10 @@ export function NextMatchModal() {
           {t('The game opens automatically.')}
         </Text>
         <Group gap="xs">
-          <Button variant="default" onClick={stay}>
+          <Button variant="default" onClick={onStay}>
             {t('Stay here')}
           </Button>
-          <Button variant="filled" color="green" onClick={() => window.location.replace(`/games/${match.game_id}`)}>
+          <Button variant="filled" color="green" onClick={() => window.location.replace(`/games/${gameId}`)}>
             {t('Open now')}
           </Button>
         </Group>

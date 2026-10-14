@@ -188,10 +188,12 @@ export function EditorPane({
   const { editor_summary_enabled: summaryEnabled } = useSharedProps<{ editor_summary_enabled?: boolean }>();
   const gameState = useGameStore((state) => state.game?.state);
   const startsAt = useGameStore((state) => state.game?.starts_at);
+  // Fallback anchor when the game has no start time yet; fixed at mount so offsets stay stable.
+  const [mountedAtMs] = useState(() => Date.now());
   const telemetry = useEditorTelemetry({
     enabled: Boolean(summaryEnabled && editable && api && gameState === 'playing'),
     lang,
-    startedAtMs: startsAt ? parseServerDate(startsAt).getTime() : Date.now(),
+    startedAtMs: startsAt ? parseServerDate(startsAt).getTime() : mountedAtMs,
     send: (summary, summaryLang) => api?.sendEditorSummary(summary, summaryLang),
   });
   const template = (slug: string) => langs.find((item) => item.slug === slug)?.solution_template ?? '';

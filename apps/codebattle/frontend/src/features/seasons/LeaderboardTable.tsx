@@ -18,6 +18,7 @@ import { formatSeconds } from '@/features/tasks/shared';
 import { UserCard } from '@/features/users/UserCard';
 import { LangIcon, langName } from '@/shared/LangIcon';
 import { SortTh, useSort } from '@/shared/sortable';
+import { usePage } from '@/shared/usePage';
 import { UserAvatar } from '@/shared/UserAvatar';
 import { useSharedProps } from '@/shared/useSharedProps';
 
@@ -78,7 +79,6 @@ export function LeaderboardTable({ results, onInsights, title, caption }: Leader
   const [clan, setClan] = useState<string | null>(null);
   const [lang, setLang] = useState<string | null>(null);
   const [pageSize, setPageSize] = useState('50');
-  const [page, setPage] = useState(1);
   const [flashId, setFlashId] = useState<number | null>(null);
 
   const clans = useMemo(
@@ -101,15 +101,14 @@ export function LeaderboardTable({ results, onInsights, title, caption }: Leader
   }, [results, query, clan, lang]);
 
   const { sorted, sort, toggle } = useSort<SeasonResult, Column>(filtered, ACCESSORS, { key: 'place', dir: 'asc' });
+  // Back to page 1 whenever the filter or order changes.
+  const [page, setPage] = usePage(JSON.stringify([query, clan, lang, sort, pageSize]));
 
   const size = Number(pageSize);
   const pages = Math.max(1, Math.ceil(sorted.length / size));
   const shown = sorted.slice((page - 1) * size, page * size);
   const filtering = Boolean(query || clan || lang);
   const mine = results.find((row) => row.user_id === me.id);
-
-  // Back to page 1 whenever the filter or order changes.
-  useEffect(() => setPage(1), [query, clan, lang, sort, pageSize]);
 
   const reset = () => {
     setQuery('');

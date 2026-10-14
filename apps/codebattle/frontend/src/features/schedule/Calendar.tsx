@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import { gradeLabel, tournamentTitle } from '@/features/lobby/format';
 import { getLocale } from '@/i18n';
+import { useNow } from '@/shared/useNow';
 
 import {
   addDays,
@@ -63,11 +64,13 @@ function EventChip({ event, onSelect }: { event: ScheduleEvent; onSelect: (event
 
 function DayCell({
   day,
+  today,
   events,
   outside,
   onSelect,
 }: {
   day: Date;
+  today: Date;
   events: ScheduleEvent[];
   outside: boolean;
   onSelect: (event: ScheduleEvent) => void;
@@ -81,7 +84,7 @@ function DayCell({
       className={classes.day}
       data-outside={outside || undefined}
       data-weekend={weekend || undefined}
-      data-today={sameDay(day, new Date()) || undefined}
+      data-today={sameDay(day, today) || undefined}
     >
       <span className={classes.dayNumber}>{day.getDate()}</span>
       {events.slice(0, hidden > 0 ? MAX_IN_CELL - 1 : MAX_IN_CELL).map((event) => (
@@ -110,7 +113,7 @@ function DayCell({
   );
 }
 
-function Agenda({ days, onSelect }: { days: [Date, ScheduleEvent[]][]; onSelect: (event: ScheduleEvent) => void }) {
+function Agenda({ days, today, onSelect }: { days: [Date, ScheduleEvent[]][]; today: Date; onSelect: (event: ScheduleEvent) => void }) {
   const { t } = useTranslation();
   const format = new Intl.DateTimeFormat(getLocale(), { weekday: 'short', month: 'short', day: 'numeric' });
 
@@ -126,8 +129,8 @@ function Agenda({ days, onSelect }: { days: [Date, ScheduleEvent[]][]; onSelect:
     <div>
       {days.map(([day, events]) => (
         <div key={dayKey(day)} className={classes.agendaDay}>
-          <Text fw={700} c={sameDay(day, new Date()) ? 'green' : 'bright'} pt={6}>
-            {sameDay(day, new Date()) ? t('Today') : format.format(day)}
+          <Text fw={700} c={sameDay(day, today) ? 'green' : 'bright'} pt={6}>
+            {sameDay(day, today) ? t('Today') : format.format(day)}
           </Text>
           <Stack gap={2}>
             {events.map((event) => {
@@ -179,7 +182,9 @@ function Agenda({ days, onSelect }: { days: [Date, ScheduleEvent[]][]; onSelect:
 export function Calendar({ scope }: { scope: ScheduleScope }) {
   const { t } = useTranslation();
   const locale = getLocale();
-  const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const today = new Date(useNow(60_000));
+  const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const [month, setMonth] = useState(thisMonth);
   const [view, setView] = useState<View>('month');
   const [selected, setSelected] = useState<ScheduleEvent | null>(null);
 
@@ -212,7 +217,7 @@ export function Calendar({ scope }: { scope: ScheduleScope }) {
   const shift = (delta: number) => setMonth((current) => new Date(current.getFullYear(), current.getMonth() + delta, 1));
   const title = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(month);
   const weekdays = days.slice(0, 7).map((day) => new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(day));
-  const isCurrentMonth = sameDay(month, new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const isCurrentMonth = sameDay(month, thisMonth);
 
   return (
     <Card padding="md">
@@ -228,7 +233,7 @@ export function Calendar({ scope }: { scope: ScheduleScope }) {
             size="xs"
             variant="default"
             disabled={isCurrentMonth}
-            onClick={() => setMonth(new Date(new Date().getFullYear(), new Date().getMonth(), 1))}
+            onClick={() => setMonth(thisMonth)}
           >
             {t('Today')}
           </Button>
@@ -284,6 +289,7 @@ export function Calendar({ scope }: { scope: ScheduleScope }) {
             <DayCell
               key={dayKey(day)}
               day={day}
+              today={today}
               outside={day.getMonth() !== month.getMonth()}
               events={byDay.get(dayKey(day)) ?? []}
               onSelect={setSelected}
@@ -295,7 +301,7 @@ export function Calendar({ scope }: { scope: ScheduleScope }) {
           <Loader size="sm" />
         </Center>
       ) : (
-        <Agenda days={agendaDays} onSelect={setSelected} />
+        <Agenda days={agendaDays} today={today} onSelect={setSelected} />
       )}
 
       <EventModal events={events} selected={selected} onSelect={setSelected} />

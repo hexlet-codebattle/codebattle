@@ -78,10 +78,10 @@ console:
 	$(DEV) iex -S mix
 
 compile:
-	$(DEV) mix compile
+	$(DEV) mix compile --warnings-as-errors
 
 test:
-	$(DEV) mix coveralls.json --exclude image_executor --max-failures 1
+	$(DEV) mix coveralls.json --exclude image_executor --max-failures 1 --warnings-as-errors
 
 test-fe: check-frontend
 

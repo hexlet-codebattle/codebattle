@@ -1,6 +1,6 @@
 import { Button, Group, Modal, Text } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface NextStageGroupTournamentModalProps {
@@ -19,8 +19,12 @@ export function NextStageGroupTournamentModal({
 }: NextStageGroupTournamentModalProps) {
   const { t } = useTranslation();
   const [opened, setOpened] = useState(!!groupTournamentId);
-
-  useEffect(() => setOpened(!!groupTournamentId), [groupTournamentId]);
+  // A new next stage opens it again.
+  const [shownId, setShownId] = useState(groupTournamentId);
+  if (shownId !== groupTournamentId) {
+    setShownId(groupTournamentId);
+    setOpened(!!groupTournamentId);
+  }
 
   if (!groupTournamentId) return null;
 

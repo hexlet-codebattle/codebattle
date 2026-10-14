@@ -26,17 +26,18 @@ export function ReplayBar({ steps, index, onIndex, extra = null }: ReplayBarProp
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState('2');
   const last = steps.length - 1;
+  // Playback stops by itself at the last record.
+  const active = playing && index < last;
 
   useEffect(() => {
-    if (!playing) return undefined;
-    if (index >= last) {
-      setPlaying(false);
-      return undefined;
-    }
+    if (!active) return undefined;
     const gap = Math.min(steps[index + 1].at - steps[index].at, MAX_GAP_MS);
-    const timer = window.setTimeout(() => onIndex(index + 1), Math.max(gap, 16) / Number(speed));
+    const timer = window.setTimeout(() => {
+      onIndex(index + 1);
+      if (index + 1 >= last) setPlaying(false);
+    }, Math.max(gap, 16) / Number(speed));
     return () => window.clearTimeout(timer);
-  }, [playing, index, last, steps, speed, onIndex]);
+  }, [active, index, last, steps, speed, onIndex]);
 
   const marks = useMemo(
     () => steps.flatMap((step, value) => (step.event.type === 'check_complete' || step.event.type === 'give_up' ? [{ value }] : [])),
@@ -44,8 +45,8 @@ export function ReplayBar({ steps, index, onIndex, extra = null }: ReplayBarProp
   );
 
   const toggle = () => {
-    if (!playing && index >= last) onIndex(0);
-    setPlaying(!playing);
+    if (!active && index >= last) onIndex(0);
+    setPlaying(!active);
   };
 
   return (
@@ -55,8 +56,8 @@ export function ReplayBar({ steps, index, onIndex, extra = null }: ReplayBarProp
           <IconPlayerSkipBackFilled size={15} />
         </ActionIcon>
       </Tooltip>
-      <ActionIcon variant="filled" color="green" size="lg" radius="xl" onClick={toggle} aria-label={playing ? t('Pause') : t('Play')}>
-        {playing ? <IconPlayerPauseFilled size={16} /> : <IconPlayerPlayFilled size={16} />}
+      <ActionIcon variant="filled" color="green" size="lg" radius="xl" onClick={toggle} aria-label={active ? t('Pause') : t('Play')}>
+        {active ? <IconPlayerPauseFilled size={16} /> : <IconPlayerPlayFilled size={16} />}
       </ActionIcon>
       <Tooltip label={t('To the end')}>
         <ActionIcon variant="subtle" color="gray" onClick={() => onIndex(last)} aria-label={t('To the end')}>

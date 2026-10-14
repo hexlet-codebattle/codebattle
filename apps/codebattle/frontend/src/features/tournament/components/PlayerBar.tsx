@@ -36,7 +36,12 @@ export function PlayerRow({ tournament, api }: { tournament: Tournament; api: To
   const [busy, setBusy] = useState(false);
   const joined = Boolean(player);
 
-  useEffect(() => setBusy(false), [joined]);
+  // player:joined / left arrived: the request is done.
+  const [wasJoined, setWasJoined] = useState(joined);
+  if (wasJoined !== joined) {
+    setWasJoined(joined);
+    setBusy(false);
+  }
   // No player:joined / left within 5 s: the server dropped it (e.g. the tournament is full
   // or its process isn't running) — say so instead of spinning forever.
   useEffect(() => {
@@ -49,20 +54,27 @@ export function PlayerRow({ tournament, api }: { tournament: Tournament; api: To
   }, [busy, t]);
 
   // Event stages link here with ?auto_join=1: join once the channel is up, then drop the flag.
+  const [autoJoin, setAutoJoin] = useState<'wait' | 'send' | 'done'>(() =>
+    new URL(window.location.href).searchParams.get('auto_join') === '1' ? 'wait' : 'done',
+  );
   const canAutoJoin =
     !me.is_guest &&
     !joined &&
     tournament.is_live &&
     (tournament.state === 'waiting_participants' || tournament.state === 'active') &&
     api.status === 'joined';
+  if (autoJoin === 'wait' && canAutoJoin) {
+    setAutoJoin('send');
+    setBusy(true);
+  }
   useEffect(() => {
     const url = new URL(window.location.href);
-    if (!canAutoJoin || url.searchParams.get('auto_join') !== '1') return;
+    // The dropped flag also keeps a re-run (a new api object) from joining twice.
+    if (autoJoin !== 'send' || url.searchParams.get('auto_join') !== '1') return;
     url.searchParams.delete('auto_join');
     window.history.replaceState(window.history.state, '', url);
-    setBusy(true);
     api.cast('tournament:join');
-  }, [canAutoJoin, api]);
+  }, [autoJoin, api]);
 
   if (me.is_guest) {
     return (

@@ -1,4 +1,4 @@
-import { ActionIcon, Anchor, Badge, Button, Group, Popover, SimpleGrid, Skeleton, Stack, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Anchor, Button, Group, Popover, SimpleGrid, Skeleton, Stack, Text, Tooltip } from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 import {
   IconBan,

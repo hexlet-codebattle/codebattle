@@ -79,7 +79,7 @@ export function Heatmap({ userId }: { userId: string }) {
     return { weeks, total, months };
   }, [data, formats]);
 
-  const currentYear = new Date().getUTCFullYear();
+  const [currentYear] = useState(() => new Date().getUTCFullYear());
   const yearOptions = [
     { value: '', label: t('Last 365 days') },
     ...Array.from({ length: currentYear - FIRST_YEAR + 1 }, (_, i) => String(currentYear - i)).map((value) => ({

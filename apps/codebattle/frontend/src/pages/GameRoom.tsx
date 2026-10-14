@@ -180,12 +180,9 @@ function HistoryRoom({ props }: { props: PageProps }) {
   const game = useGameStore((state) => state.game) ?? props.game;
   const playbook = usePlaybook(props.game_id, Boolean(props.has_playbook));
   const steps = playbook.data?.steps;
-  const [index, setIndex] = useState<number | null>(null);
-
+  const [chosen, setChosen] = useState<number | null>(null);
   // Open on the final position; play rewinds to the start.
-  useEffect(() => {
-    if (steps && index == null) setIndex(steps.length - 1);
-  }, [steps, index]);
+  const index = chosen ?? (steps ? steps.length - 1 : null);
 
   // Show the chosen step in the editors and the output tab.
   useEffect(() => {
@@ -199,7 +196,7 @@ function HistoryRoom({ props }: { props: PageProps }) {
     });
   }, [steps, index]);
 
-  const onIndex = useCallback((value: number) => setIndex(value), []);
+  const onIndex = useCallback((value: number) => setChosen(value), []);
 
   const footer = props.has_playbook ? (
     steps && index != null ? (

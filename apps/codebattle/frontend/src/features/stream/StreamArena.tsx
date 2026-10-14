@@ -1,8 +1,8 @@
 import type { OnMount } from '@monaco-editor/react';
-import { ActionIcon, Badge, Button, Checkbox, Group, Menu, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Badge, Button, Checkbox, Menu, Text, Tooltip } from '@mantine/core';
 import { useFullscreenDocument } from '@mantine/hooks';
 import { IconArrowBackUp, IconCheck, IconLayoutGrid, IconMaximize, IconMinimize, IconPencil, IconRestore } from '@tabler/icons-react';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
@@ -46,24 +46,39 @@ function Cup({ params }: { params: StreamParams }) {
   );
 }
 
-/** Remote cursors / selections / scroll of the players (sent by the game page). */
-function cursorEvents(
-  draw: { current: (userId: number, from: number, to: number | null) => void },
-  editors: { current: Record<number, CodeEditorInstance> },
-) {
-  return {
-    'editor:cursor_position': ({ user_id: userId, offset }: { user_id?: number; offset?: number }) => {
-      if (userId != null && typeof offset === 'number') draw.current(userId, offset, null);
-    },
-    'editor:cursor_selection': ({ user_id: userId, start_offset: from, end_offset: to }: { user_id?: number; start_offset?: number; end_offset?: number }) => {
-      if (userId != null && typeof from === 'number' && typeof to === 'number') draw.current(userId, from, to);
-    },
-    'editor:scroll_position': ({ user_id: userId, scroll_top: top, scroll_left: left }: { user_id?: number; scroll_top?: number; scroll_left?: number }) => {
-      const editor = userId != null ? editors.current[userId] : undefined;
-      if (typeof top === 'number') editor?.setScrollTop(top);
-      if (typeof left === 'number') editor?.setScrollLeft(left);
-    },
-  };
+/** Remote cursors / selections / scroll of the players (sent by the game page), drawn into their editors. */
+function useCursorEvents(editors: RefObject<Record<number, CodeEditorInstance>>, monacoRef: RefObject<Monaco | null>) {
+  const decorations = useRef<Record<number, { cursor: string[]; selection: string[] }>>({});
+
+  return useMemo(() => {
+    const draw = (userId: number, from: number, to: number | null) => {
+      const editor = editors.current[userId];
+      const model = editor?.getModel();
+      const monaco = monacoRef.current;
+      if (!editor || !model || !monaco) return;
+      const start = model.getPositionAt(from);
+      const end = to == null ? start : model.getPositionAt(to);
+      const range = new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column);
+      const store = (decorations.current[userId] ??= { cursor: [], selection: [] });
+      if (to == null) store.cursor = editor.deltaDecorations(store.cursor, [{ range, options: { className: 'cb-stream-remote-cursor' } }]);
+      else store.selection = editor.deltaDecorations(store.selection, [{ range, options: { className: 'cb-stream-remote-selection' } }]);
+      editor.revealRangeInCenterIfOutsideViewport(range);
+    };
+
+    return {
+      'editor:cursor_position': ({ user_id: userId, offset }: { user_id?: number; offset?: number }) => {
+        if (userId != null && typeof offset === 'number') draw(userId, offset, null);
+      },
+      'editor:cursor_selection': ({ user_id: userId, start_offset: from, end_offset: to }: { user_id?: number; start_offset?: number; end_offset?: number }) => {
+        if (userId != null && typeof from === 'number' && typeof to === 'number') draw(userId, from, to);
+      },
+      'editor:scroll_position': ({ user_id: userId, scroll_top: top, scroll_left: left }: { user_id?: number; scroll_top?: number; scroll_left?: number }) => {
+        const editor = userId != null ? editors.current[userId] : undefined;
+        if (typeof top === 'number') editor?.setScrollTop(top);
+        if (typeof left === 'number') editor?.setScrollLeft(left);
+      },
+    };
+  }, [editors, monacoRef]);
 }
 
 /** The toolbar shows on mouse movement and fades after a few idle seconds (never while editing). */
@@ -102,21 +117,8 @@ export function StreamArena({ gameId, initialGame, params, backHref }: StreamAre
   });
   const editors = useRef<Record<number, CodeEditorInstance>>({});
   const monacoRef = useRef<Monaco | null>(null);
-  const decorations = useRef<Record<number, { cursor: string[]; selection: string[] }>>({});
-  const drawCursor = useRef((userId: number, from: number, to: number | null) => {
-    const editor = editors.current[userId];
-    const model = editor?.getModel();
-    const monaco = monacoRef.current;
-    if (!editor || !model || !monaco) return;
-    const start = model.getPositionAt(from);
-    const end = to == null ? start : model.getPositionAt(to);
-    const range = new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column);
-    const store = (decorations.current[userId] ??= { cursor: [], selection: [] });
-    if (to == null) store.cursor = editor.deltaDecorations(store.cursor, [{ range, options: { className: 'cb-stream-remote-cursor' } }]);
-    else store.selection = editor.deltaDecorations(store.selection, [{ range, options: { className: 'cb-stream-remote-selection' } }]);
-    editor.revealRangeInCenterIfOutsideViewport(range);
-  });
-  useGame(gameId, { embedded: true, extraEvents: cursorEvents(drawCursor, editors) });
+  const cursorEvents = useCursorEvents(editors, monacoRef);
+  useGame(gameId, { embedded: true, extraEvents: cursorEvents });
 
   const game = useGameStore((state) => state.game);
   const tournament = useGameStore((state) => state.tournament);

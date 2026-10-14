@@ -82,7 +82,6 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
     if (!embedded) goToGame(nextGameId);
   };
 
-  const refreshRanking = useRef<() => void>(() => undefined);
 
   const { status, push, cast } = useChannel(`game:${gameId}`, {
     onJoin: (reply: JoinReply) => {
@@ -121,7 +120,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
 
         // Every all-green run gets the victory sound, not just the one that won the game.
         if (payload.user_id === me.id) sound(payload.check_result?.status === 'ok' ? 'win' : 'failure');
-        if (payload.solution_status && !wasOver) refreshRanking.current();
+        if (payload.solution_status && !wasOver) refreshRanking();
         if (payload.solution_status) void loadHeadToHead();
       },
       'user:give_up': ({ players, state, msg }: { players: GamePlayer[]; state: string; msg: string }) => {
@@ -129,7 +128,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
         store().patchGame({ state });
         store().setMessage(msg);
         sound('give_up');
-        refreshRanking.current();
+        refreshRanking();
         void loadHeadToHead();
       },
       'game:timeout': ({ game_state: state }: { game_state?: string }) => {
@@ -170,12 +169,12 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
         store().mergeTournament(tournament);
         syncClockOffset(tournament);
         tournamentSound('roundFinished');
-        refreshRanking.current();
+        refreshRanking();
       },
       'tournament:finished': ({ tournament }: { tournament: Partial<GameTournamentInfo> }) => {
         store().mergeTournament(tournament);
         tournamentSound('finished');
-        refreshRanking.current();
+        refreshRanking();
       },
     }),
   });
@@ -188,7 +187,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
     [push, store],
   );
 
-  refreshRanking.current = () => {
+  const refreshRanking = useCallback(() => {
     if (!store().tournament) return;
     push<{ ranking: { entries: TournamentRankingEntry[] }; current_player: TournamentPlayer | null }>('tournament:ranking')
       .then(({ ranking, current_player: currentPlayer }) => {
@@ -196,15 +195,15 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
         store().set({ currentPlayer });
       })
       .catch(() => undefined);
-  };
+  }, [push, store]);
 
   // Standings move while this game runs (other games finish); refresh them now and then.
   const isTournament = useGameStore((state) => state.tournament != null);
   useEffect(() => {
     if (embedded || !isTournament || status !== 'joined') return undefined;
-    const timer = window.setInterval(() => refreshRanking.current(), 30_000);
+    const timer = window.setInterval(refreshRanking, 30_000);
     return () => window.clearInterval(timer);
-  }, [embedded, isTournament, status]);
+  }, [embedded, isTournament, status, refreshRanking]);
 
   // My editor: local state at once, the channel at most every EDITOR_SYNC_MS.
   const pending = useRef<{ text: string; lang: string } | null>(null);
@@ -245,7 +244,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       flush();
     }
     store().setChecking(me.id, true);
-    sound('check');
+    if (!embedded) playGameSound('check');
     // Success has no reply (the result comes as user:check_complete), so a push timeout means nothing.
     push('check_result', { editor_text: editor.text, lang_slug: editor.lang }).catch((error: { reason?: string } | Error) => {
       if (error instanceof Error) return;
@@ -253,7 +252,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       if (error?.reason === 'game_is_dead' || error?.reason === 'game_timeout') store().setOutput(me.id, { status: 'game_is_dead' });
       store().setChecking(me.id, false);
     });
-  }, [flush, me.id, push, store]);
+  }, [embedded, flush, me.id, push, store]);
 
   useEffect(
     () => () => {
@@ -313,7 +312,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
           })
           .catch(() => false),
     }),
-    [status, changeText, changeLang, check, cast, push, sendEditorSummary, cursorReport],
+    [status, changeText, changeLang, check, cast, push, store, sendEditorSummary, cursorReport],
   );
 }
 

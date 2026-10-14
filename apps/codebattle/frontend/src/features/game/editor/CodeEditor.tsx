@@ -5,6 +5,8 @@ import { Loader, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import { initVimMode, type VimAdapterInstance } from 'monaco-vim';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import { useLatest } from '@/shared/useLatest';
+
 import { insertSpaces, monacoLanguage, tabSize } from './monaco';
 import { guardForeignEditor, guardOwnEditor } from './pasteGuard';
 import { useEditorPrefs } from './prefs';
@@ -72,14 +74,10 @@ export function CodeEditor({
   const [mounted, setMounted] = useState<CodeEditorInstance | null>(null);
   const vimRef = useRef<VimAdapterInstance | null>(null);
   const statusRef = useRef<HTMLDivElement>(null);
-  const runRef = useRef(onRun);
-  runRef.current = onRun;
-  const telemetryRef = useRef(onTelemetry);
-  telemetryRef.current = onTelemetry;
-  const cursorRef = useRef(onCursor);
-  cursorRef.current = onCursor;
-  const valueRef = useRef(value);
-  valueRef.current = value;
+  const runRef = useLatest(onRun);
+  const telemetryRef = useLatest(onTelemetry);
+  const cursorRef = useLatest(onCursor);
+  const valueRef = useLatest(value);
 
   const handleMount: OnMount = (editor, instance) => {
     editorRef.current = editor;
@@ -133,7 +131,7 @@ export function CodeEditor({
     return guardOwnEditor(mounted, (type) =>
       telemetryRef.current?.({ text_length: mounted.getModel()?.getValueLength(), type }),
     );
-  }, [mounted, readOnly, allowClipboard]);
+  }, [mounted, readOnly, allowClipboard, telemetryRef]);
 
   useEffect(() => {
     const editor = editorRef.current;

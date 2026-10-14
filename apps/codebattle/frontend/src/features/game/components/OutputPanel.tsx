@@ -130,7 +130,11 @@ export function OutputPanel({ output, checking, summaryOnly = false, leftExtra =
   const [selected, setSelected] = useState(Math.max(firstFailed, 0));
 
   // A new run: jump to its first failing test.
-  useEffect(() => setSelected(Math.max(firstFailed, 0)), [output, firstFailed]);
+  const [shownOutput, setShownOutput] = useState(output);
+  if (shownOutput !== output) {
+    setShownOutput(output);
+    setSelected(Math.max(firstFailed, 0));
+  }
 
   if (checking) return withExtra(<Head tone="muted" title={summaryOnly ? t('Checking…') : t('Checking your solution…')} />);
   if (!output) return withExtra(null);

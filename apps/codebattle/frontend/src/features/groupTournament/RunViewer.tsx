@@ -2,6 +2,8 @@ import { Loader, Modal, Stack, Text } from '@mantine/core';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useLatest } from '@/shared/useLatest';
+
 import type { Run } from './types';
 import classes from './GroupTournament.module.css';
 
@@ -18,8 +20,7 @@ interface RunIframeProps {
  */
 function RunIframe({ run, userId, onPlace, fill = false }: RunIframeProps) {
   const ref = useRef<HTMLIFrameElement>(null);
-  const onPlaceRef = useRef(onPlace);
-  onPlaceRef.current = onPlace;
+  const onPlaceRef = useLatest(onPlace);
 
   useEffect(() => {
     const iframe = ref.current;
@@ -40,7 +41,7 @@ function RunIframe({ run, userId, onPlace, fill = false }: RunIframeProps) {
     };
     window.addEventListener('message', handle);
     return () => window.removeEventListener('message', handle);
-  }, []);
+  }, [onPlaceRef]);
 
   return (
     <iframe

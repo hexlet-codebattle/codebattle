@@ -31,12 +31,13 @@ import {
   IconRocket,
   IconUsers,
 } from '@tabler/icons-react';
-import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
+import { type FormEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatStartsIn, levelLabel, LEVELS, parseUtc } from '@/features/lobby/format';
 import { t as translate } from '@/i18n';
 import { Markdown } from '@/shared/Markdown';
+import { useNow } from '@/shared/useNow';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import {
@@ -205,7 +206,8 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
   const [descriptionTab, setDescriptionTab] = useState<string | null>('write');
-  const timezone = useMemo(browserTimezone, []);
+  const now = useNow(30_000);
+  const [timezone] = useState(browserTimezone);
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) => {
     setValues((current) => {
@@ -222,7 +224,7 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
   const isLadder = values.type === 'ladder';
   const roundTimeoutActive = isLadder || ['per_round_fixed', 'per_round_with_rematch'].includes(values.timeout_mode);
   const tournamentTimeoutActive = !isLadder && values.timeout_mode === 'per_tournament';
-  const startsIn = new Date(values.starts_at).getTime() - Date.now();
+  const startsIn = new Date(values.starts_at).getTime() - now;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();

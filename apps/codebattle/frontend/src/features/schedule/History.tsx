@@ -1,7 +1,7 @@
 import { Anchor, Card, Center, Chip, Group, Loader, Pagination, Stack, Table, Text, TextInput } from '@mantine/core';
 import { IconSearch, IconUsers } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
@@ -9,6 +9,7 @@ import { gradeLabel, parseUtc, tournamentTitle } from '@/features/lobby/format';
 import type { TournamentGrade } from '@/features/lobby/types';
 import { UserCard } from '@/features/users/UserCard';
 import { getLocale } from '@/i18n';
+import { usePage } from '@/shared/usePage';
 import { UserAvatar } from '@/shared/UserAvatar';
 
 import { fetchHistory, type HistoryTournament } from './api';
@@ -31,7 +32,7 @@ export function History() {
   const { t } = useTranslation();
   const [grades, setGrades] = useState<string[]>([]);
   const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = usePage(JSON.stringify([grades, query]));
 
   const { data, isPending, isError } = useQuery({ queryKey: ['schedule-history'], queryFn: fetchHistory, staleTime: 60_000 });
 
@@ -45,8 +46,6 @@ export function History() {
           tournament.winner?.name.toLowerCase().includes(needle)),
     );
   }, [data, grades, query]);
-
-  useEffect(() => setPage(1), [grades, query]);
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();

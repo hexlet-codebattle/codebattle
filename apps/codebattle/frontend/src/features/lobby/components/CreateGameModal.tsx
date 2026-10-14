@@ -2,7 +2,7 @@ import { Alert, Button, Chip, Group, Modal, SegmentedControl, Select, Slider, St
 import { notifications } from '@mantine/notifications';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { createInvite, inviteErrorText } from '@/features/invites/actions';
@@ -99,12 +99,15 @@ export function CreateGameModal({
   const { data: tasks = [], isPending } = useQuery({ queryKey: ['tasks'], queryFn: fetchTasks, enabled: opened });
 
   // Each opening starts from the requested opponent (or the default mode).
-  useEffect(() => {
-    if (!opened) return;
-    setFriend(initialOpponent);
-    setOpponent(initialOpponent || inviteOnly ? 'friend' : 'other_user');
-    setError(null);
-  }, [opened, initialOpponent, inviteOnly]);
+  const [openedWith, setOpenedWith] = useState({ opened, initialOpponent, inviteOnly });
+  if (openedWith.opened !== opened || openedWith.initialOpponent !== initialOpponent || openedWith.inviteOnly !== inviteOnly) {
+    setOpenedWith({ opened, initialOpponent, inviteOnly });
+    if (opened) {
+      setFriend(initialOpponent);
+      setOpponent(initialOpponent || inviteOnly ? 'friend' : 'other_user');
+      setError(null);
+    }
+  }
 
   const levelTasks = useMemo(() => tasks.filter((task) => task.level === level), [tasks, level]);
   const matchingTasks = useMemo(

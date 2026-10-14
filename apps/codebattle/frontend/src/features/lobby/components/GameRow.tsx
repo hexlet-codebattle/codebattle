@@ -121,7 +121,6 @@ function GameActions({ game, userId, online, onCancel }: GameRowProps) {
 }
 
 export function GameRow(props: GameRowProps) {
-  const { t } = useTranslation();
   const [first, second] = props.game.players;
   const { game } = props;
 

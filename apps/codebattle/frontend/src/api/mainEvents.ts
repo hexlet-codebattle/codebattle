@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+
+import { useLatest } from '@/shared/useLatest';
 
 // The "main" channel is joined once per page (AppLayout, for presence). Pages
 // that need its other pushes subscribe here instead of joining it again —
@@ -17,8 +19,7 @@ export function emitMainEvent(event: MainEvent, payload: unknown) {
 }
 
 export function useMainEvent(event: MainEvent, handler: Listener) {
-  const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  const handlerRef = useLatest(handler);
 
   useEffect(() => {
     const listener: Listener = (payload) => handlerRef.current(payload);
@@ -29,5 +30,5 @@ export function useMainEvent(event: MainEvent, handler: Listener) {
     return () => {
       set.delete(listener);
     };
-  }, [event]);
+  }, [event, handlerRef]);
 }

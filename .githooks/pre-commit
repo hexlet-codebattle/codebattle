@@ -33,6 +33,8 @@ if [ "${#ELIXIR_STAGED_FILES[@]}" -gt 0 ]; then
   ./bin/dev mix format "${ELIXIR_STAGED_FILES[@]}"
   git add -- "${ELIXIR_STAGED_FILES[@]}"
   ./bin/dev mix credo --strict
+  # The test build, so this never races a running dev server over _build/dev.
+  ./bin/dev env MIX_ENV=test mix compile --warnings-as-errors
 fi
 
 if [ "${#JS_STAGED_FILES[@]}" -gt 0 ]; then
@@ -41,6 +43,8 @@ if [ "${#JS_STAGED_FILES[@]}" -gt 0 ]; then
     JS_APP_FILES+=("${file#${APP_PREFIX}}")
   done
 
+  # Apply the safe fixes, stage them, then fail on anything left (warnings included).
   ./bin/dev pnpm --dir "$APP_DIR" exec oxlint --fix "${JS_APP_FILES[@]}" || true
   git add -- "${JS_STAGED_FILES[@]}"
+  ./bin/dev pnpm --dir "$APP_DIR" exec oxlint --deny-warnings "${JS_APP_FILES[@]}"
 fi

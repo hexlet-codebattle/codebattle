@@ -1,6 +1,6 @@
 import { Badge, Card, Group, Tabs, Text } from '@mantine/core';
 import { IconListNumbers, IconMessages } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel } from '@/features/chat/components/ChatPanel';
@@ -17,12 +17,7 @@ export function useUnread(chat: ChatApi, chatOpen: boolean) {
   const total = chat.messages.length;
 
   // The history from the join counts as read; afterwards, opening the tab reads everything.
-  useEffect(() => {
-    if (chat.online && seen == null) setSeen(total);
-  }, [chat.online, seen, total]);
-  useEffect(() => {
-    if (chatOpen) setSeen(total);
-  }, [chatOpen, total]);
+  if ((chat.online && seen == null) || (chatOpen && seen !== total)) setSeen(total);
 
   return seen == null ? 0 : Math.max(0, total - seen);
 }

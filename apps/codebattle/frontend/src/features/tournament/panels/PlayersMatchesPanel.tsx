@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LangIcon } from '@/shared/LangIcon';
+import { usePage } from '@/shared/usePage';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { useTournamentStore } from '../store';
@@ -59,7 +60,7 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
   const players = useTournamentStore((state) => state.players);
   const searched = searchedUserId != null ? players[searchedUserId] : undefined;
   const [query, setQuery] = useState(searched?.name ?? '');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = usePage(query);
   const [opened, setOpened] = useState<string | null>(searchedUserId != null ? String(searchedUserId) : null);
   const hideResults = (!tournament.show_results && !api.moderator) || (!players[me.id] && !api.moderator);
 
@@ -84,8 +85,6 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
       .sort((a, b) => (b.score ?? 0) - (a.score ?? 0) || a.name.localeCompare(b.name));
     return list;
   }, [players, query]);
-
-  useEffect(() => setPage(1), [query]);
 
   const pages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const shown = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

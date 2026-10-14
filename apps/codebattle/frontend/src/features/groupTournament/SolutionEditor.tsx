@@ -1,6 +1,6 @@
 import { Alert, Button, Group, Modal, Select, Text } from '@mantine/core';
 import { IconSend } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CodeEditor } from '@/features/game/editor/CodeEditor';
@@ -43,10 +43,12 @@ export function SolutionEditor({ opened, onClose, code, lang, langs, onSubmit, o
   const [error, setError] = useState<string | null>(null);
 
   // A different run picked (or my new run loaded): start from its code.
-  useEffect(() => setDraft(code), [code]);
-  useEffect(() => {
-    if (lang) setSelectedLang(lang);
-  }, [lang]);
+  const [source, setSource] = useState({ code, lang });
+  if (source.code !== code || source.lang !== lang) {
+    setSource({ code, lang });
+    if (source.code !== code) setDraft(code);
+    if (lang && source.lang !== lang) setSelectedLang(lang);
+  }
 
   const submit = async () => {
     if (submitting || !draft.trim() || !selectedLang) return;

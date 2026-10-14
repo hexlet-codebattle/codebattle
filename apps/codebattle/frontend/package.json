@@ -8,8 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "lint": "oxlint",
-    "check": "tsc --noEmit && oxlint"
+    "lint": "oxlint --deny-warnings",
+    "check": "tsc --noEmit && oxlint --deny-warnings"
   },
   "dependencies": {
     "@inertiajs/react": "3.9.1",

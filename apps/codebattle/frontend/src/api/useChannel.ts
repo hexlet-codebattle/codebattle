@@ -1,6 +1,7 @@
 import type { Channel } from 'phoenix';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useLatest } from '@/shared/useLatest';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { getSocket } from './socket';
@@ -25,8 +26,7 @@ export function useChannel(topic: string | null, { params, onJoin, events = {} }
   const { user_token: token } = useSharedProps();
   const [status, setStatus] = useState<ChannelStatus>('joining');
   const channelRef = useRef<Channel | null>(null);
-  const handlersRef = useRef({ onJoin, events });
-  handlersRef.current = { onJoin, events };
+  const handlersRef = useLatest({ onJoin, events });
 
   const eventNames = Object.keys(events).sort().join(',');
 

@@ -28,6 +28,8 @@ interface LandingProps {
 
 const LANGUAGES = ['clojure', 'cpp', 'c-sharp', 'dart', 'elixir', 'go', 'java', 'js', 'kotlin', 'php', 'python', 'ruby', 'rust', 'swift', 'ts', 'dlang', 'zig'];
 
+const YEAR = new Date().getFullYear();
+
 function TryBattle({ size = 'lg' }: { size?: 'md' | 'lg' }) {
   const { t } = useTranslation();
   return (
@@ -207,7 +209,7 @@ export default function Landing() {
         </section>
 
         <Group justify="center" gap="lg" py="xl" c="dimmed" fz="sm">
-          <span>© Hexlet ltd, {new Date().getFullYear()}</span>
+          <span>© Hexlet ltd, {YEAR}</span>
           <Anchor href="https://t.me/hexletcommunity/5" target="_blank" c="dimmed" size="sm">
             {t('Support')}: Tg#codebattle
           </Anchor>

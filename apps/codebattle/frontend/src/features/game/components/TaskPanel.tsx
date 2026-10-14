@@ -11,9 +11,12 @@ import { Markdown } from '@/shared/Markdown';
 import type { GameTask } from '../types';
 import classes from '../GameRoom.module.css';
 
+// Examples come fenced or bare; re-fence the trimmed body so stray blank lines don't pad the block.
 const codeBlock = (examples: string) => {
   const trimmed = examples.trim();
-  return trimmed.startsWith('```') && trimmed.endsWith('```') ? trimmed : `\`\`\`\n${trimmed}\n\`\`\``;
+  const fenced = trimmed.match(/^```([^\n]*)\n([\s\S]*?)\n?```$/);
+  const [info, body] = fenced ? [fenced[1].trim(), fenced[2]] : ['', trimmed];
+  return `\`\`\`${info}\n${body.replace(/^\s*\n|\s+$/g, '')}\n\`\`\``;
 };
 
 // Same path scheme as the hexlet-codebattle/tasks repo (and the legacy page).

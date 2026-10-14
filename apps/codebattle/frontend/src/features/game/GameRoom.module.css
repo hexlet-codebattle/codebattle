@@ -398,6 +398,8 @@
 
 .task {
   position: relative;
+  /* The task text is not for copying (as on the legacy page); the editor stays selectable. */
+  user-select: none;
 }
 
 /* EN/RU and Preview, stacked in the description's top-right corner. */
@@ -433,9 +435,13 @@
     max-width: 90ch;
   }
 
+  /* Examples: a compact block as wide as its longest line, not the whole strip. */
   & pre {
-    font-size: 0.9em;
-    line-height: 1.6;
+    width: fit-content;
+    max-width: 100%;
+    padding: 6px 12px;
+    font-size: 0.85em;
+    line-height: 1.45;
   }
 }
 

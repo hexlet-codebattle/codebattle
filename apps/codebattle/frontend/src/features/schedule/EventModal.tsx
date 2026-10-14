@@ -1,12 +1,13 @@
 import { ActionIcon, Badge, Button, Group, Modal, SimpleGrid, Stack, Text, Tooltip } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight, IconExternalLink } from '@tabler/icons-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import { LEAGUE_GRADES } from '@/features/lobby/components/LeagueBanner';
 import { formatCountdown, formatStartsIn, gradeLabel, tournamentTitle } from '@/features/lobby/format';
 import { getLocale } from '@/i18n';
+import { useNow } from '@/shared/useNow';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import type { ScheduleEvent } from './api';
@@ -33,13 +34,8 @@ export function StateBadge({ state }: { state: string }) {
 /** "in 2 days" → live countdown in the last 24h → "Live" / "Finished". */
 function StartsIn({ event }: { event: ScheduleEvent }) {
   const { t } = useTranslation();
-  const [now, setNow] = useState(Date.now());
+  const now = useNow(1000);
   const ms = event.start.getTime() - now;
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
 
   if (event.tournament.state === 'finished') return <Text fw={700}>{t('Finished')}</Text>;
   if (event.tournament.state === 'active' || ms <= 0) return <Text fw={700} c="green">{t('Live')}</Text>;
