@@ -253,6 +253,42 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  @spec get_task_by_name_for_user(User.t(), String.t()) :: t() | nil
+  def get_task_by_name_for_user(user, name) do
+    __MODULE__
+    |> filter_visibility(user)
+    |> where([t], t.name == ^name)
+    |> Repo.one()
+  end
+
+  @doc """
+  Tasks the user may play, narrowed by `:level`, `:tags` (any of them) and `:name`
+  (case-insensitive substring), ordered by level and name.
+  """
+  @spec search_for_user(User.t(), keyword()) :: list(t())
+  def search_for_user(user, filters) do
+    query = filter_visibility(__MODULE__, user)
+
+    filters
+    |> Enum.reduce(query, fn
+      {:level, level}, query when is_binary(level) ->
+        where(query, [t], t.level == ^level)
+
+      {:tags, [_ | _] = tags}, query ->
+        where(query, [t], fragment("? && ?", t.tags, ^tags))
+
+      {:name, name}, query when is_binary(name) and name != "" ->
+        where(query, [t], ilike(t.name, ^"%#{escape_like(name)}%"))
+
+      _filter, query ->
+        query
+    end)
+    |> Repo.all()
+    |> Enum.sort_by(&{@level_order[&1.level], &1.name})
+  end
+
+  defp escape_like(value), do: String.replace(value, ["\\", "%", "_"], &("\\" <> &1))
+
   @spec uniq?(String.t()) :: boolean()
   def uniq?(task_name) do
     result =

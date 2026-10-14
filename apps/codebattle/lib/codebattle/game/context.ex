@@ -470,20 +470,22 @@ defmodule Codebattle.Game.Context do
 
   def terminate_game(id), do: id |> get_game!() |> terminate_game()
 
-  @spec get_active_game_id(integer() | String.t()) :: nil | integer()
-  def get_active_game_id(nil), do: nil
+  @spec get_active_game_id(integer() | String.t() | nil, [String.t()]) :: nil | integer()
+  def get_active_game_id(user_id, states \\ ["playing"])
 
-  def get_active_game_id(user_id) when is_binary(user_id) do
-    get_active_game_id(String.to_integer(user_id))
+  def get_active_game_id(nil, _states), do: nil
+
+  def get_active_game_id(user_id, states) when is_binary(user_id) do
+    get_active_game_id(String.to_integer(user_id), states)
   end
 
   # A DB row can stay "playing" after its process is gone (deploy restart, tournament
   # restart / terminate_tournament_games, crashes), so the newest "playing" row is not
   # necessarily the live game. Such a stale row would shadow a live game with a lower id,
   # e.g. a bot game that waited in the lobby for hours before the user joined it.
-  def get_active_game_id(user_id) do
+  def get_active_game_id(user_id, states) do
     from(g in Game,
-      where: g.state == "playing",
+      where: g.state in ^states,
       where: fragment("? @> ARRAY[?]::integer[]", g.player_ids, ^user_id),
       order_by: [desc: g.id],
       limit: @active_game_candidates_limit,

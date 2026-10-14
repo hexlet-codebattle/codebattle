@@ -17,6 +17,8 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
     "recipient_id" => {:integer, range: {1, 2_147_483_647}},
     "recipient_name" => {:string, length: {1, 100}},
     "level" => {{:enum, ~w(elementary easy medium hard)}, []},
+    "task_id" => {:integer, range: {1, 2_147_483_647}},
+    "task_name" => {:string, length: {1, 255}},
     "timeout_seconds" => {:integer, range: {60, 3600}}
   }
 
@@ -55,8 +57,15 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
     user = conn.assigns.current_user
 
     with {:ok, body} <- Params.validate(Map.delete(params, "format"), @create_spec),
-         {:ok, recipient_id} <- recipient_id(body) do
-      params = %{recipient_id: recipient_id, level: body["level"], timeout_seconds: body["timeout_seconds"]}
+         {:ok, recipient_id} <- recipient_id(body),
+         {:ok, task} <- fetch_task(user, body),
+         :ok <- check_task_level(body["level"], task) do
+      params = %{
+        recipient_id: recipient_id,
+        level: body["level"],
+        timeout_seconds: body["timeout_seconds"],
+        task_id: task && task.id
+      }
 
       case Invite.Actions.create(user, params) do
         {:ok, invite} ->
@@ -148,6 +157,7 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
   defp message(:recipient_not_found), do: "no such user"
   defp message(:already_invited), do: "There is already a pending invite between you two"
   defp message(:invite_is_not_pending), do: "The invite is not pending anymore"
+  defp message(:task_not_found), do: "no such task"
   defp message(:already_in_a_game), do: "One of the players is already in a game; the invite was dropped"
   defp message(reason), do: to_string(reason)
 end

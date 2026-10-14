@@ -11,9 +11,13 @@ defmodule CodebattleWeb.PublicApi.V1.Snapshot do
 
   @unfinished_states ~w(upcoming waiting_participants active)
 
+  @active_states ~w(waiting_opponent playing)
+
+  @doc "The user's live game: being played, or created by them and waiting for an opponent."
   def active_game(user) do
-    with game_id when not is_nil(game_id) <- Game.Context.get_active_game_id(user.id),
-         {:ok, %{is_live: true, state: "playing"} = game} <- Game.Context.fetch_game(game_id) do
+    with game_id when not is_nil(game_id) <- Game.Context.get_active_game_id(user.id, @active_states),
+         {:ok, %{is_live: true, state: state} = game} when state in @active_states <-
+           Game.Context.fetch_game(game_id) do
       JSON.game(game, user.id)
     else
       _ -> nil

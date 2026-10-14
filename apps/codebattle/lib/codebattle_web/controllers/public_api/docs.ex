@@ -21,11 +21,12 @@ defmodule CodebattleWeb.PublicApi.Docs do
   @groups [
     {"me", "Me"},
     {"tournaments", "Tournaments"},
+    {"tasks", "Tasks"},
     {"games", "Games"},
     {"invites", "Invites"},
     {"users", "Users"}
   ]
-  @objects ~w(Me Game GamePlayer Tournament RankingEntry Invite OnlineUser Error)
+  @objects ~w(Player Game GamePlayer Task Tournament RankingEntry Invite OnlineUser Error)
   @sample_time "2026-10-10T19:03:18Z"
 
   @spec markdown() :: String.t()
@@ -198,13 +199,37 @@ defmodule CodebattleWeb.PublicApi.Docs do
 
     sections =
       Enum.map_join(@objects, "\n\n", fn name ->
-        "### #{name}\n\n" <> field_table(spec, schemas[name], false)
+        "### #{name}\n\n" <> extends(schemas[name]) <> field_table(spec, schemas[name], false)
       end)
 
     "## Objects\n\nFields of the objects the endpoints return. Nullable fields may be `null`.\n\n" <> sections
   end
 
+  defp extends(%{"allOf" => parts}) do
+    parents = for %{"$ref" => _} = ref <- parts, do: "`#{type_of(ref)}`"
+    "Every field of #{Enum.join(parents, ", ")}, plus its own.\n\n"
+  end
+
+  defp extends(_schema), do: ""
+
+  # An `allOf` schema (an object extending another) reads as one object with the fields of all
+  # its parts; later parts override earlier ones. Its own `example` and `description` stay.
+  defp flatten(spec, %{"allOf" => parts} = schema) do
+    parts
+    |> Enum.map(&flatten(spec, resolve(spec, &1)))
+    |> Enum.reduce(%{"type" => "object", "properties" => %{order: []}}, fn part, acc ->
+      props = part["properties"] || %{order: []}
+      order = acc["properties"].order ++ (props.order -- acc["properties"].order)
+      merged = acc["properties"] |> Map.merge(props) |> Map.put(:order, order)
+      %{acc | "properties" => merged}
+    end)
+    |> Map.merge(Map.take(schema, ["example", "description"]))
+  end
+
+  defp flatten(_spec, schema), do: schema
+
   defp field_table(spec, schema, input?) do
+    schema = flatten(spec, resolve(spec, schema))
     required = schema["required"] || []
 
     rows =
@@ -236,6 +261,7 @@ defmodule CodebattleWeb.PublicApi.Docs do
   defp type_of(%{"$ref" => ref}), do: ref |> String.split("/") |> List.last()
 
   defp type_of(%{"type" => "array", "items" => items}), do: "array of #{type_of(items)}"
+  defp type_of(%{"allOf" => [base | _]}), do: type_of(base)
 
   defp type_of(%{"oneOf" => variants}) do
     base = variants |> Enum.reject(&(&1["type"] == "null")) |> Enum.map_join(" \\| ", &type_of/1)
@@ -261,6 +287,7 @@ defmodule CodebattleWeb.PublicApi.Docs do
   defp example(spec, %{"$ref" => _} = ref, mode), do: example(spec, resolve(spec, ref), mode)
   defp example(spec, %{"oneOf" => variants}, mode), do: example(spec, Enum.find(variants, &(&1["type"] != "null")), mode)
   defp example(_spec, %{"example" => value}, _mode), do: denormalize(value)
+  defp example(spec, %{"allOf" => _} = schema, mode), do: example(spec, flatten(spec, schema), mode)
 
   defp example(spec, %{"properties" => props} = schema, mode) do
     required = schema["required"] || []

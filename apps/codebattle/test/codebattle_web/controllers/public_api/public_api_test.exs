@@ -2,6 +2,7 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
   use CodebattleWeb.ConnCase, async: false
 
   alias Codebattle.Game
+  alias Codebattle.Invite.Actions
   alias Codebattle.Tournament
   alias Codebattle.UserApiToken
 
@@ -98,6 +99,169 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
     end
   end
 
+  describe "live games" do
+    test "a link game waiting for an opponent is the active game", %{conn: conn} do
+      insert(:task, level: "easy")
+      token = token(old_user(), ["read", "games:write"])
+
+      assert %{"game" => %{"id" => game_id, "state" => "waiting_opponent", "join_url" => join_url, "players" => [player]}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/games", %{level: "easy", opponent: "link"})
+               |> json_response(201)
+
+      on_exit(fn -> Game.Context.terminate_game(game_id) end)
+
+      assert join_url =~ "/games/#{game_id}"
+      assert %{"result" => nil, "is_bot" => false} = player
+
+      assert %{"game" => %{"id" => ^game_id, "state" => "waiting_opponent", "task" => %{"name" => _}}} =
+               conn |> api(token) |> get("/public_api/v1/me/active_game") |> json_response(200)
+    end
+
+    test "lists lobby games and joins one that waits for an opponent", %{conn: conn} do
+      insert(:task, level: "easy")
+      host = insert(:user)
+      {:ok, waiting} = Game.Context.create_game(%{players: [host], level: "easy"})
+      on_exit(fn -> Game.Context.terminate_game(waiting.id) end)
+
+      {:ok, hidden} = Game.Context.create_game(%{players: [insert(:user)], level: "easy", visibility_type: "hidden"})
+      on_exit(fn -> Game.Context.terminate_game(hidden.id) end)
+
+      user = old_user()
+      token = token(user, ["read", "games:write"])
+
+      assert %{"games" => games, "server_time" => _} =
+               conn |> api(token) |> get("/public_api/v1/games/live") |> json_response(200)
+
+      assert [%{"state" => "waiting_opponent", "task" => nil, "players" => [%{"name" => name}]}] =
+               Enum.filter(games, &(&1["id"] == waiting.id))
+
+      assert name == host.name
+      refute Enum.any?(games, &(&1["id"] == hidden.id))
+
+      assert %{"game" => %{"id" => game_id, "state" => "playing", "task" => %{"id" => _}, "players" => players}} =
+               conn |> api(token) |> post("/public_api/v1/games/#{waiting.id}/join") |> json_response(200)
+
+      assert game_id == waiting.id
+      assert Enum.map(players, & &1["id"]) == [host.id, user.id]
+      assert Enum.all?(players, &is_nil(&1["result"]))
+
+      other_token = token(old_user(), ["read", "games:write"])
+
+      assert %{"error" => %{"message" => "The game is not waiting for an opponent"}} =
+               conn |> api(other_token) |> post("/public_api/v1/games/#{waiting.id}/join") |> json_response(422)
+
+      assert conn |> api(other_token) |> post("/public_api/v1/games/999999999/join") |> json_response(404)
+      assert conn |> api(token(old_user())) |> post("/public_api/v1/games/#{hidden.id}/join") |> json_response(403)
+    end
+  end
+
+  describe "tasks" do
+    test "lists only tasks the user may play, narrowed by level, tags and name", %{conn: conn} do
+      user = old_user()
+      token = token(user)
+      other = insert(:user)
+
+      public = insert(:task, name: "minimal_time_partition", level: "medium", tags: ["math"])
+      insert(:task, name: "string_reverse", level: "medium", tags: ["strings"])
+      insert(:task, name: "easy_sum", level: "easy")
+      own_hidden = insert(:task, name: "my_draft", level: "medium", visibility: "hidden", creator_id: user.id)
+      insert(:task, name: "someone_elses", level: "medium", visibility: "hidden", creator_id: other.id)
+      insert(:task, name: "disabled_one", level: "medium", state: "disabled")
+
+      names = fn query ->
+        conn
+        |> api(token)
+        |> get("/public_api/v1/tasks", query)
+        |> json_response(200)
+        |> Map.fetch!("tasks")
+        |> Enum.map(& &1["name"])
+      end
+
+      assert names.(%{level: "medium"}) == ["minimal_time_partition", "my_draft", "string_reverse"]
+      assert names.(%{level: "medium", tags: "math,collections"}) == ["minimal_time_partition"]
+      assert names.(%{name: "PARTITION"}) == ["minimal_time_partition"]
+      assert names.(%{name: "%"}) == []
+
+      assert %{"tasks" => [task]} =
+               conn |> api(token) |> get("/public_api/v1/tasks", %{name: "my_draft"}) |> json_response(200)
+
+      assert %{"id" => id, "visibility" => "hidden", "level" => "medium", "url" => _} = task
+      assert id == own_hidden.id
+      assert public.id in Enum.map(json_response(get(api(conn, token), "/public_api/v1/tasks"), 200)["tasks"], & &1["id"])
+
+      assert %{"error" => %{"details" => %{"level" => _}}} =
+               conn |> api(token) |> get("/public_api/v1/tasks", %{level: "insane"}) |> json_response(422)
+    end
+
+    test "creates a game on a task by name or id, only if the user may play it", %{conn: conn} do
+      user = old_user()
+      token = token(user, ["read", "games:write"])
+      task = insert(:task, name: "minimal_time_partition", level: "medium")
+      hidden = insert(:task, level: "medium", visibility: "hidden", creator_id: insert(:user).id)
+
+      assert %{"error" => %{"details" => %{"task_id" => "no such task"}}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/games", %{task_id: hidden.id, opponent: "bot"})
+               |> json_response(422)
+
+      assert %{"error" => %{"details" => %{"task_name" => "no such task"}}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/games", %{task_name: hidden.name, opponent: "bot"})
+               |> json_response(422)
+
+      assert %{"error" => %{"details" => %{"level" => "does not match the task level (medium)"}}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/games", %{task_id: task.id, level: "easy", opponent: "bot"})
+               |> json_response(422)
+
+      assert %{"error" => %{"details" => %{"level" => _}}} =
+               conn |> api(token) |> post("/public_api/v1/games", %{opponent: "bot"}) |> json_response(422)
+
+      assert %{"game" => %{"id" => game_id}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/games", %{task_name: "minimal_time_partition", opponent: "bot"})
+               |> json_response(201)
+
+      on_exit(fn -> Game.Context.terminate_game(game_id) end)
+
+      assert %{"game" => %{"task" => %{"id" => task_id, "level" => "medium"}}} =
+               conn |> api(token) |> get("/public_api/v1/me/active_game") |> json_response(200)
+
+      assert task_id == task.id
+    end
+
+    test "invites carry a task the creator may play", %{conn: conn} do
+      creator = old_user()
+      recipient = old_user()
+      token = token(creator, ["read", "games:write"])
+      task = insert(:task, level: "hard")
+      hidden = insert(:task, level: "hard", visibility: "hidden", creator_id: recipient.id)
+
+      assert %{"error" => %{"details" => %{"task_id" => "no such task"}}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/invites", %{recipient_id: recipient.id, task_id: hidden.id})
+               |> json_response(422)
+
+      assert {:error, :task_not_found} =
+               Actions.create(creator, %{recipient_id: recipient.id, task_id: hidden.id})
+
+      assert %{"invite" => %{"task_id" => task_id, "level" => "hard"}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/invites", %{recipient_id: recipient.id, task_id: task.id})
+               |> json_response(201)
+
+      assert task_id == task.id
+    end
+  end
+
   describe "invites" do
     test "invite by name, see it on both sides, accept into a game", %{conn: conn} do
       insert(:task, level: "easy")
@@ -175,7 +339,7 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
 
       Task.start(fn ->
         Process.sleep(200)
-        Codebattle.Invite.Actions.create(creator, %{recipient_id: recipient.id})
+        Actions.create(creator, %{recipient_id: recipient.id})
       end)
 
       started = System.monotonic_time(:millisecond)

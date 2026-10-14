@@ -6,25 +6,46 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
   alias Codebattle.ApiAuditEvent
   alias Codebattle.Bot
   alias Codebattle.Game
+  alias CodebattleWeb.Api.LobbyView
   alias CodebattleWeb.PublicApi.V1.ErrorJSON
   alias CodebattleWeb.PublicApi.V1.JSON
   alias CodebattleWeb.PublicApi.V1.Params
 
   @create_spec %{
-    "level" => {{:enum, ~w(elementary easy medium hard)}, required: true},
+    "level" => {{:enum, ~w(elementary easy medium hard)}, []},
+    "task_id" => {:integer, range: {1, 2_147_483_647}},
+    "task_name" => {:string, length: {1, 255}},
     "opponent" => {{:enum, ~w(bot link)}, required: true},
     "timeout_seconds" => {:integer, range: {60, 3600}}
   }
 
-  plug(:require_scope, "games:write")
+  plug(:require_scope, "read" when action in [:live])
+  plug(:require_scope, "games:write" when action in [:create, :join, :cancel])
+
+  # What the lobby shows: live non-tournament games you may see, newest first. Games waiting
+  # for an opponent (often Codebot's) can be joined with `POST /games/{id}/join`.
+  def live(conn, _params) do
+    user = conn.assigns.current_user
+
+    games =
+      user
+      |> LobbyView.render_active_games()
+      |> Enum.sort_by(& &1.id, :desc)
+      |> Enum.map(&JSON.game(&1, user.id))
+
+    conn |> no_store() |> json(%{games: games, server_time: JSON.server_time()})
+  end
 
   def create(conn, params) do
     user = conn.assigns.current_user
 
     with {:ok, body} <- Params.validate(Map.delete(params, "format"), @create_spec),
+         {:ok, task} <- fetch_task(user, body),
+         :ok <- check_level(body["level"], task),
          :ok <- check_quota(user) do
       game_params = %{
         level: body["level"],
+        task: task,
         timeout_seconds: Map.get(body, "timeout_seconds", 600),
         players: players(body["opponent"], user),
         visibility_type: if(body["opponent"] == "link", do: "hidden", else: "public")
@@ -37,12 +58,10 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
           conn
           |> put_status(:created)
           |> json(%{
-            game: %{
-              id: game.id,
-              url: JSON.url("/games/#{game.id}"),
-              join_url: if(body["opponent"] == "link", do: JSON.url("/games/#{game.id}")),
-              state: game.state
-            }
+            game:
+              game
+              |> JSON.game(user.id)
+              |> Map.put(:join_url, if(body["opponent"] == "link", do: JSON.url("/games/#{game.id}")))
           })
 
         {:error, reason} ->
@@ -51,6 +70,33 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
     else
       {:error, errors} -> validation_failed(conn, errors)
       {:quota, message} -> quota_exceeded(conn, message)
+    end
+  end
+
+  # Joins a game that waits for an opponent: a lobby game from `GET /games/live`, or a
+  # `link` game someone shared. Tournament games are joined by the tournament itself.
+  def join(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, id} <- parse_id(id),
+         {:ok, %{is_live: true, tournament_id: nil} = game} <- Game.Context.fetch_game(id),
+         :ok <- if(game.state == "waiting_opponent", do: :ok, else: {:error, :not_waiting_opponent}),
+         {:ok, _game} <- Game.Context.join_game(id, user),
+         {:ok, game} <- Game.Context.fetch_game(id) do
+      ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "game.join", "game", id)
+      json(conn, %{game: JSON.game(game, user.id)})
+    else
+      {:error, :not_waiting_opponent} ->
+        ErrorJSON.send_error(conn, 422, "validation_failed", "The game is not waiting for an opponent")
+
+      {:error, :already_in_a_game} ->
+        ErrorJSON.send_error(conn, 422, "validation_failed", "You are already in a game; finish or cancel it first")
+
+      {:error, reason} when is_atom(reason) and reason != :not_found ->
+        ErrorJSON.send_error(conn, 422, "validation_failed", to_string(reason))
+
+      _ ->
+        ErrorJSON.not_found(conn)
     end
   end
 
@@ -71,6 +117,9 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
         ErrorJSON.not_found(conn)
     end
   end
+
+  defp check_level(nil, nil), do: {:error, %{"level" => "is required unless task_id or task_name is given"}}
+  defp check_level(level, task), do: check_task_level(level, task)
 
   defp players("bot", user), do: [user, Bot.Context.build()]
   defp players("link", user), do: [user]

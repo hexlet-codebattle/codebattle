@@ -19,47 +19,7 @@
       }
     },
     "schemas": {
-      "Error": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "required": [
-              "code",
-              "message"
-            ],
-            "properties": {
-              "code": {
-                "type": "string",
-                "enum": [
-                  "unauthorized",
-                  "invalid_token",
-                  "insufficient_scope",
-                  "not_found",
-                  "unsupported_media_type",
-                  "validation_failed",
-                  "quota_exceeded",
-                  "rate_limited",
-                  "api_disabled"
-                ]
-              },
-              "message": {
-                "type": "string"
-              },
-              "details": {
-                "type": "object"
-              }
-            }
-          }
-        },
-        "example": {
-          "error": {
-            "code": "not_found",
-            "message": "Not found"
-          }
-        }
-      },
-      "Me": {
+      "Player": {
         "type": "object",
         "properties": {
           "id": {
@@ -75,19 +35,24 @@
             ]
           },
           "rating": {
-            "type": "integer"
-          },
-          "rank": {
             "type": [
               "integer",
               "null"
             ]
           },
+          "rank": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Place in the global rating"
+          },
           "lang": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Preferred programming language"
           }
         },
         "example": {
@@ -97,57 +62,60 @@
           "rating": 1461,
           "rank": 12,
           "lang": "dlang"
-        }
+        },
+        "description": "A person: you (`GET /me`), an online user, a game player, an invite's creator or recipient. Those objects extend it."
       },
       "GamePlayer": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Player"
           },
-          "name": {
-            "type": "string"
-          },
-          "avatar_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "rating": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "lang": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "is_bot": {
-            "type": [
-              "boolean",
-              "null"
-            ]
-          },
-          "result": {
-            "type": "string"
-          },
-          "result_percent": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Hidden for opponents while the game is live"
+          {
+            "type": "object",
+            "properties": {
+              "lang": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Language of the player's editor in this game"
+              },
+              "is_bot": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "result": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "won",
+                  "lost",
+                  "gave_up",
+                  "timeout",
+                  null
+                ],
+                "description": "`null` until the player's game is decided"
+              },
+              "result_percent": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Hidden for opponents while the game is live"
+              }
+            }
           }
-        },
+        ],
         "example": {
           "id": 42,
           "name": "ada",
           "avatar_url": null,
           "rating": 1461,
+          "rank": 12,
           "lang": "python",
           "is_bot": false,
           "result": "won",
@@ -212,21 +180,15 @@
             ]
           },
           "task": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "properties": {
-              "id": {
-                "type": "integer"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Task"
               },
-              "name": {
-                "type": "string"
-              },
-              "level": {
-                "type": "string"
+              {
+                "type": "null"
               }
-            }
+            ],
+            "description": "`null` while the game waits for an opponent, unless it is your game"
           },
           "players": {
             "type": "array",
@@ -249,7 +211,12 @@
           "task": {
             "id": 1201,
             "name": "pair_with_maximum_product",
-            "level": "easy"
+            "level": "easy",
+            "tags": [
+              "collections"
+            ],
+            "visibility": "public",
+            "url": "https://codebattle.hexlet.io/tasks/1201"
           },
           "players": [
             {
@@ -257,6 +224,7 @@
               "name": "ada",
               "avatar_url": null,
               "rating": 1461,
+              "rank": 12,
               "lang": "python",
               "is_bot": false,
               "result": "won",
@@ -267,12 +235,62 @@
               "name": "Codebot",
               "avatar_url": null,
               "rating": 1200,
+              "rank": null,
               "lang": "js",
               "is_bot": true,
               "result": "lost",
               "result_percent": 40.0
             }
           ]
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "description": "Unique, e.g. `minimal_time_partition`; usable as `task_name`"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "elementary",
+              "easy",
+              "medium",
+              "hard"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "hidden"
+            ],
+            "description": "`hidden` tasks are listed only for their creator"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 42,
+          "name": "minimal_time_partition",
+          "level": "medium",
+          "tags": [
+            "math",
+            "collections"
+          ],
+          "visibility": "public",
+          "url": "https://codebattle.hexlet.io/tasks/42"
         }
       },
       "Tournament": {
@@ -561,56 +579,31 @@
             ]
           },
           "creator": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "properties": {
-              "id": {
-                "type": "integer"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Player"
               },
-              "name": {
-                "type": "string"
-              },
-              "avatar_url": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "rating": {
-                "type": [
-                  "integer",
-                  "null"
-                ]
+              {
+                "type": "null"
               }
-            }
+            ]
           },
           "recipient": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Player"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "task_id": {
             "type": [
-              "object",
+              "integer",
               "null"
             ],
-            "properties": {
-              "id": {
-                "type": "integer"
-              },
-              "name": {
-                "type": "string"
-              },
-              "avatar_url": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "rating": {
-                "type": [
-                  "integer",
-                  "null"
-                ]
-              }
-            }
+            "description": "Task chosen by the creator, if any"
           },
           "game_id": {
             "type": [
@@ -648,64 +641,42 @@
             "avatar_url": null,
             "rating": 1461
           },
+          "task_id": null,
           "game_id": null,
           "game_url": null,
           "created_at": "2026-10-10T19:01:00Z"
         }
       },
       "OnlineUser": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Player"
           },
-          "name": {
-            "type": "string"
-          },
-          "avatar_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "rating": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "rank": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "lang": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "online",
-              "lobby",
-              "task",
-              "tournament",
-              "watching",
-              "playing"
-            ],
-            "description": "The busiest of the user's open tabs"
-          },
-          "url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Game or tournament the user is on, if any"
+          {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "online",
+                  "lobby",
+                  "task",
+                  "tournament",
+                  "watching",
+                  "playing"
+                ],
+                "description": "The busiest of the user's open tabs"
+              },
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Game or tournament the user is on, if any"
+              }
+            }
           }
-        },
+        ],
         "example": {
           "id": 77,
           "name": "grace",
@@ -715,6 +686,46 @@
           "lang": "dlang",
           "state": "playing",
           "url": "https://codebattle.hexlet.io/games/324274"
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "unauthorized",
+                  "invalid_token",
+                  "insufficient_scope",
+                  "not_found",
+                  "unsupported_media_type",
+                  "validation_failed",
+                  "quota_exceeded",
+                  "rate_limited",
+                  "api_disabled"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "example": {
+          "error": {
+            "code": "not_found",
+            "message": "Not found"
+          }
         }
       }
     },
@@ -801,7 +812,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "#/components/schemas/Me"
+                      "$ref": "#/components/schemas/Player"
                     }
                   }
                 }
@@ -873,7 +884,12 @@
                     "task": {
                       "id": 1201,
                       "name": "pair_with_maximum_product",
-                      "level": "easy"
+                      "level": "easy",
+                      "tags": [
+                        "collections"
+                      ],
+                      "visibility": "public",
+                      "url": "https://codebattle.hexlet.io/tasks/1201"
                     },
                     "players": [
                       {
@@ -881,9 +897,10 @@
                         "name": "ada",
                         "avatar_url": null,
                         "rating": 1461,
+                        "rank": 12,
                         "lang": "python",
                         "is_bot": false,
-                        "result": "undefined",
+                        "result": null,
                         "result_percent": 60.0
                       },
                       {
@@ -891,9 +908,10 @@
                         "name": "Codebot",
                         "avatar_url": null,
                         "rating": 1200,
+                        "rank": null,
                         "lang": "js",
                         "is_bot": true,
-                        "result": "undefined"
+                        "result": null
                       }
                     ]
                   },
@@ -915,7 +933,7 @@
             "$ref": "#/components/responses/TooManyRequests"
           }
         },
-        "description": "The game you are playing right now, or `null`. Poll it (every few seconds is fine) to notice a game started from the web or by a tournament. Compute the remaining time as `ends_at - server_time`, not against your own clock."
+        "description": "Your live game, or `null`: the one you are playing, or one you created that still waits for an opponent (`state: waiting_opponent`). Poll it (every few seconds is fine) to notice a game started from the web or by a tournament. Compute the remaining time as `ends_at - server_time`, not against your own clock."
       }
     },
     "/me/games": {
@@ -1797,6 +1815,132 @@
         "description": "Cancels your tournament and finishes its games."
       }
     },
+    "/tasks": {
+      "get": {
+        "summary": "Tasks you can play",
+        "description": "Public active tasks plus your own, ordered by level and name. Use an `id` or `name` from here in `POST /games` or `POST /invites`.",
+        "security": [
+          {
+            "bearerAuth": [
+              "read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "level",
+            "in": "query",
+            "description": "Only tasks of this level.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "elementary",
+                "easy",
+                "medium",
+                "hard"
+              ]
+            },
+            "example": "medium"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Comma-separated; tasks having any of these tags.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "strings,math"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Case-insensitive substring of the task name.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "partition"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tasks": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Task"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/games/live": {
+      "get": {
+        "summary": "Live games",
+        "description": "What the lobby shows: games being played and games waiting for an opponent (usually a few Codebot games are waiting), newest first. Tournament games and other people's link games are not listed. Join a waiting one with `POST /games/{id}/join`. Changes often; poll every 10–30 seconds.",
+        "security": [
+          {
+            "bearerAuth": [
+              "read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Game"
+                      }
+                    },
+                    "server_time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
     "/games": {
       "post": {
         "summary": "Create a game: against a bot, or waiting for an opponent who joins by link",
@@ -1816,33 +1960,24 @@
                   "type": "object",
                   "properties": {
                     "game": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Game"
                         },
-                        "url": {
-                          "type": "string"
-                        },
-                        "join_url": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "state": {
-                          "type": "string"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "join_url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "For `opponent: link`: the page to send your opponent"
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
-                  }
-                },
-                "example": {
-                  "game": {
-                    "id": 324280,
-                    "url": "https://codebattle.hexlet.io/games/324280",
-                    "join_url": null,
-                    "state": "playing"
                   }
                 }
               }
@@ -1874,10 +2009,6 @@
               "schema": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "level",
-                  "opponent"
-                ],
                 "properties": {
                   "level": {
                     "type": "string",
@@ -1886,7 +2017,17 @@
                       "easy",
                       "medium",
                       "hard"
-                    ]
+                    ],
+                    "description": "Required unless `task_id` or `task_name` is given; with a task it must equal the task's level."
+                  },
+                  "task_id": {
+                    "type": "integer",
+                    "description": "Play this task (from `GET /tasks`). Pass this or `task_name`; without both a random task of `level` is picked.",
+                    "example": 42
+                  },
+                  "task_name": {
+                    "type": "string",
+                    "description": "Exact task name, e.g. `minimal_time_partition`"
                   },
                   "opponent": {
                     "type": "string",
@@ -1901,12 +2042,70 @@
                     "maximum": 3600,
                     "default": 600
                   }
-                }
+                },
+                "required": [
+                  "opponent"
+                ]
               }
             }
           }
         },
-        "description": "`opponent: bot` starts the game immediately against Codebot. `opponent: link` creates a hidden game waiting for an opponent; send them `join_url`. You can have only one active game at a time. Quota: 5 games per minute, 30 per day."
+        "description": "`opponent: bot` starts the game immediately against Codebot. `opponent: link` creates a hidden game waiting for an opponent; send them `join_url`. Pick the task with `task_id` or `task_name` (see `GET /tasks`), or let the server pick a random one of `level`. Only tasks you may play are accepted: public ones and your own; any other answers 422 `no such task`. You can have only one active game at a time. Quota: 5 games per minute, 30 per day."
+      }
+    },
+    "/games/{id}/join": {
+      "post": {
+        "summary": "Join a game that waits for an opponent",
+        "description": "Joins a game from `GET /games/live` in state `waiting_opponent`, or a `link` game whose id someone shared with you. The game starts at once; open its `url`. Fails with 422 if the game already started or you are in another game.",
+        "security": [
+          {
+            "bearerAuth": [
+              "games:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Joined",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "game": {
+                      "$ref": "#/components/schemas/Game"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
       }
     },
     "/games/{id}/cancel": {
@@ -2012,6 +2211,15 @@
                       "hard"
                     ],
                     "example": "easy"
+                  },
+                  "task_id": {
+                    "type": "integer",
+                    "description": "Play this task (from `GET /tasks`). Pass this or `task_name`; without both a random task of `level` is picked.",
+                    "example": 42
+                  },
+                  "task_name": {
+                    "type": "string",
+                    "description": "Exact task name, e.g. `minimal_time_partition`"
                   },
                   "timeout_seconds": {
                     "type": "integer",

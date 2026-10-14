@@ -92,7 +92,7 @@ defmodule Codebattle.PubSub.UserEvents do
     |> Enum.uniq()
   end
 
-  defp player_card(player), do: %{id: player.id, name: player.name, rating: Map.get(player, :rating)}
+  defp player_card(player), do: Map.take(player, [:id, :name, :avatar_url, :rating, :lang])
 
   defp message(user_id, event, payload), do: %Message{topic: topic(user_id), event: event, payload: payload}
 end

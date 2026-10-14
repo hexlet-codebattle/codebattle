@@ -109,7 +109,7 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
 
     data =
       case payload do
-        %{player: player} -> Map.put(data, :player, player)
+        %{player: player} -> Map.put(data, :player, JSON.player(player))
         %{player_id: player_id} -> Map.put(data, :player_id, player_id)
         _ -> data
       end

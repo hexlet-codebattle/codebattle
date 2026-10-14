@@ -27,15 +27,8 @@ defmodule Codebattle.Invite.Actions do
         {:error, :already_invited}
 
       true ->
-        game_params = %{
-          level: params[:level] || "elementary",
-          type: "public",
-          timeout_seconds: params[:timeout_seconds] || @default_timeout_seconds
-        }
-
-        attrs = %{creator_id: creator.id, recipient_id: recipient_id, game_params: game_params, task_id: params[:task_id]}
-
-        with {:ok, invite} <- Invite.create_invite(attrs) do
+        with {:ok, task} <- fetch_task(creator, params[:task_id]),
+             {:ok, invite} <- Invite.create_invite(invite_attrs(creator, recipient_id, task, params)) do
           broadcast(invite, "invites:created", payload(invite, creator.id))
           {:ok, invite}
         end
@@ -116,5 +109,25 @@ defmodule Codebattle.Invite.Actions do
     end
 
     :ok
+  end
+
+  defp invite_attrs(creator, recipient_id, task, params) do
+    game_params = %{
+      level: if(task, do: task.level, else: params[:level] || "elementary"),
+      type: "public",
+      timeout_seconds: params[:timeout_seconds] || @default_timeout_seconds
+    }
+
+    %{creator_id: creator.id, recipient_id: recipient_id, game_params: game_params, task_id: task && task.id}
+  end
+
+  # The creator picks the task, so it must be one they may play (public, or their own).
+  defp fetch_task(_creator, nil), do: {:ok, nil}
+
+  defp fetch_task(creator, task_id) do
+    case Codebattle.Task.get_task_by_id_for_user(creator, task_id) do
+      nil -> {:error, :task_not_found}
+      task -> {:ok, task}
+    end
   end
 end

@@ -14,6 +14,7 @@ const REASONS: Record<string, string> = {
   not_found: 'Invite not found.',
   invite_is_not_pending: 'This invite is no longer active.',
   already_in_a_game: 'One of you is already in a game.',
+  task_not_found: 'This task is not available.',
   draining: 'The server is restarting. Try again in a moment.',
 };
 

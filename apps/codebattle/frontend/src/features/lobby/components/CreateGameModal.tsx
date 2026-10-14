@@ -56,14 +56,14 @@ function taskTagGroups(task: Task, popular: string[]) {
   return task.tags.length === 0 || task.tags.some((tag) => !named.includes(tag)) ? [...groups, REST_TAG] : groups;
 }
 
-function taskLabel(task: Task, locale: string) {
+// First line of the description: a hint under the task name in the picker.
+function taskSummary(task: Task, locale: string) {
   const description = (locale === 'ru' ? task.description_ru : task.description_en) ?? task.description_en ?? '';
-  const firstLine = description
+
+  return description
     .split('\n')
     .map((line) => line.replaceAll('#', '').trim())
     .find(Boolean);
-
-  return firstLine || task.name;
 }
 
 const errorMessage = (error: unknown) => {
@@ -119,7 +119,8 @@ export function CreateGameModal({
     () => taskTags.filter((tag) => levelTasks.some((task) => taskTagGroups(task, taskTags).includes(tag))),
     [levelTasks, taskTags],
   );
-  const selectedTask = levelTasks.find((task) => String(task.id) === taskId);
+  const tasksById = useMemo(() => new Map(levelTasks.map((task) => [String(task.id), task])), [levelTasks]);
+  const selectedTask = taskId ? tasksById.get(taskId) : undefined;
 
   const changeLevel = (value: string) => {
     setLevel(value as GameLevel);
@@ -234,7 +235,23 @@ export function CreateGameModal({
             placeholder={isPending ? t('Loading tasks…') : t('random task (%{total} available)', { total: matchingTasks.length })}
             value={taskId}
             onChange={setTaskId}
-            data={matchingTasks.map((task) => ({ value: String(task.id), label: taskLabel(task, locale) }))}
+            // Searched by the task name (`minimal_time_partition`), the id players share.
+            data={matchingTasks.map((task) => ({ value: String(task.id), label: task.name }))}
+            renderOption={({ option }) => {
+              const task = tasksById.get(option.value);
+              const summary = task && taskSummary(task, locale);
+
+              return (
+                <Stack gap={0}>
+                  <Text size="sm">{option.label}</Text>
+                  {summary && summary !== option.label && (
+                    <Text size="xs" c="dimmed" lineClamp={1}>
+                      {summary}
+                    </Text>
+                  )}
+                </Stack>
+              );
+            }}
             nothingFoundMessage={t('No tasks match')}
           />
         </Stack>

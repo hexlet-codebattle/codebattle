@@ -341,7 +341,11 @@ defmodule CodebattleWeb.Router do
     post("/tournaments/:id/start", TournamentController, :start)
     post("/tournaments/:id/cancel", TournamentController, :cancel)
 
+    get("/tasks", TaskController, :index)
+
+    get("/games/live", GameController, :live)
     post("/games", GameController, :create)
+    post("/games/:id/join", GameController, :join)
     post("/games/:id/cancel", GameController, :cancel)
 
     get("/me/invites", InviteController, :index)

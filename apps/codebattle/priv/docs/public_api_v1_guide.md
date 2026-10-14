@@ -179,7 +179,7 @@ At most 2 streams per user can be open at the same time; a third request gets `4
 
 | Event | When | Payload (`data`) |
 |-------|------|--------|
-| `hello` | Right after connecting | `user` (Me), `active_game` (Game or `null`), `invites` (Invite[]), `tournaments` (unfinished Tournament[] you play in or run) |
+| `hello` | Right after connecting | `user` (Player), `active_game` (Game or `null`), `invites` (Invite[]), `tournaments` (unfinished Tournament[] you play in or run) |
 | `invite.created` | Someone invited you, or you sent an invite | `invite` |
 | `invite.accepted` | An invite between you and someone was accepted | `invite` with `game_id`, `game_url` |
 | `invite.canceled` | Declined by the recipient or withdrawn by the creator | `invite` |
@@ -190,7 +190,7 @@ At most 2 streams per user can be open at the same time; a third request gets `4
 | `game.canceled` | Your game was canceled before it finished | `game` |
 | `tournament.joined` | You joined a tournament | `tournament` |
 | `tournament.left` | You left a tournament | `tournament` |
-| `tournament.player_joined` | Someone joined a tournament you created or moderate | `tournament`, `player` (`id`, `name`, `rating`) |
+| `tournament.player_joined` | Someone joined a tournament you created or moderate | `tournament`, `player` (Player) |
 | `tournament.player_left` | Someone left a tournament you created or moderate | `tournament`, `player_id` |
 | `tournament.started` | A tournament you play in or run started | `tournament` |
 | `tournament.round_started` | A new round began; your game arrives as `game.started` | `tournament` |
@@ -342,6 +342,12 @@ a second at about two requests a minute. Accept it with `POST /invites/{id}/acce
 show `invite_url` as a QR code (the tournament page has a "Show QR" button too), wait for
 `tournament.player_joined` on the [event stream](#event-stream), then
 `POST /tournaments/{id}/start` and open the game from the `game.started` event.
+
+**A game on a chosen task.** List the tasks of a level with `GET /tasks?level=medium` (add
+`tags=strings,math` or `name=partition` to narrow it), then pass the `id` or the exact `name`:
+`POST /games` with `{"task_name": "minimal_time_partition", "opponent": "bot"}`. The level comes
+from the task. Invites take the same `task_id` / `task_name`. You only see and can pick public
+tasks and your own.
 
 **Export your history.** Walk `GET /me/games` with `cursor` until `next_cursor` is `null`, or ask for
 one period with `from` / `to`.

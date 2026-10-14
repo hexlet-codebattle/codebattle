@@ -4323,6 +4323,9 @@ msgstr "Не в сети"
 msgid "One of you is already in a game."
 msgstr "Кто-то из вас уже в игре."
 
+msgid "This task is not available."
+msgstr "Эта задача недоступна."
+
 msgid "Polyglot"
 msgstr "Полиглот"
 

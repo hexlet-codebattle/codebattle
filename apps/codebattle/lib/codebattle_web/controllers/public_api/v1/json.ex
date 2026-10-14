@@ -4,20 +4,28 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
   listed here leave the server (no emails, codes, check results, access tokens of others).
   """
 
+  alias Codebattle.Game
   alias Codebattle.Tournament.Helpers
 
   @base_url Application.compile_env(:codebattle, :public_api_base_url, "https://codebattle.hexlet.io")
 
-  def me(user) do
+  def me(user), do: player(user)
+
+  @doc "The common card of a person (Player in the spec); other user objects extend it."
+  def player(user) do
     %{
       id: user.id,
       name: user.name,
-      avatar_url: user.avatar_url,
-      rating: user.rating,
-      rank: user.rank,
-      lang: user.lang
+      avatar_url: Map.get(user, :avatar_url),
+      rating: Map.get(user, :rating),
+      rank: rank(Map.get(user, :rank)),
+      lang: Map.get(user, :lang)
     }
   end
+
+  # Game players carry rank -1 when it's unknown.
+  defp rank(rank) when is_integer(rank) and rank > 0, do: rank
+  defp rank(_rank), do: nil
 
   def game(game, viewer_id) do
     %{
@@ -31,21 +39,16 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
       ends_at: ends_at(game.starts_at, game.timeout_seconds),
       finishes_at: time(Map.get(game, :finishes_at)),
       tournament_id: game.tournament_id,
-      task: task(game),
+      task: game_task(game, viewer_id),
       players: Enum.map(game.players || [], &game_player(&1, game, viewer_id))
     }
   end
 
   defp game_player(player, game, viewer_id) do
-    base = %{
-      id: player.id,
-      name: player.name,
-      avatar_url: player.avatar_url,
-      rating: player.rating,
-      lang: player.editor_lang,
-      is_bot: player.is_bot,
-      result: player.result
-    }
+    base =
+      player
+      |> player()
+      |> Map.merge(%{lang: player.editor_lang, is_bot: player.is_bot, result: result(player.result)})
 
     # opponent's progress stays hidden while the game is live
     if game.state == "playing" and player.id != viewer_id do
@@ -55,8 +58,27 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
     end
   end
 
-  defp task(%{task: %{id: id} = task}), do: %{id: id, name: task.name, level: task.level}
-  defp task(_game), do: nil
+  # "undefined" is the internal "no result yet"
+  defp result("undefined"), do: nil
+  defp result(result), do: result
+
+  # A game waiting for an opponent keeps its task secret from those who may still join it.
+  defp game_task(%{task: %{id: _} = task} = game, viewer_id) do
+    if game.state != "waiting_opponent" or Game.Helpers.player?(game, viewer_id), do: task(task)
+  end
+
+  defp game_task(_game, _viewer_id), do: nil
+
+  def task(task) do
+    %{
+      id: task.id,
+      name: task.name,
+      level: task.level,
+      tags: Map.get(task, :tags) || [],
+      visibility: Map.get(task, :visibility),
+      url: url("/tasks/#{task.id}")
+    }
+  end
 
   def tournament(tournament, viewer) do
     card = %{
@@ -115,6 +137,7 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
       timeout_seconds: invite.game_params && invite.game_params.timeout_seconds,
       creator: user_card(invite.creator),
       recipient: user_card(invite.recipient),
+      task_id: invite.task_id,
       game_id: invite.game_id,
       game_url: invite.game_id && url("/games/#{invite.game_id}"),
       created_at: time(invite.inserted_at)
@@ -123,11 +146,11 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
 
   def online_user(user, state, link) do
     user
-    |> user_card()
-    |> Map.merge(%{rank: user.rank, lang: user.lang, state: state, url: link && url(link)})
+    |> player()
+    |> Map.merge(%{state: state, url: link && url(link)})
   end
 
-  defp user_card(%{id: id} = user), do: %{id: id, name: user.name, avatar_url: user.avatar_url, rating: user.rating}
+  defp user_card(%{id: _} = user), do: player(user)
   defp user_card(_user), do: nil
 
   def ranking_entry(entry) do
