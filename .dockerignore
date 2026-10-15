@@ -8,7 +8,7 @@
 # Node/Frontend
 **/node_modules
 **/priv/static
-apps/codebattle/frontend/dist
+frontend/dist
 
 # Testing
 **/test

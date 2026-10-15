@@ -26,13 +26,3 @@ config :codebattle, load_dot_env_file: false
 config :codebattle, ws_port: 4000
 
 config :logger, level: :info
-
-config :runner, RunnerWeb.Endpoint,
-  http: [port: System.get_env("4001")],
-  url: [scheme: "http", host: "codebattle.hexlet.io", port: 80],
-  server: true,
-  root: ".",
-  version: Mix.Project.config()[:version],
-  check_origin: false
-
-config :runner, load_dot_env_file: false

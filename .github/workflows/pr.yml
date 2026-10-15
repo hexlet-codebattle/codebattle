@@ -107,29 +107,29 @@ jobs:
         with:
           node-version: '24'
           cache: 'pnpm'
-          cache-dependency-path: ./apps/codebattle/frontend/pnpm-lock.yaml
+          cache-dependency-path: ./frontend/pnpm-lock.yaml
 
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: ./apps/codebattle/frontend
+        working-directory: ./frontend
 
       # TODO: uncomment when pnpm fixes audit for new npm bulk advisory endpoint
       # https://github.com/pnpm/pnpm/issues/11265
       # - name: Frontend deps audit
       #   run: pnpm audit --audit-level high
-      #   working-directory: ./apps/codebattle/frontend
+      #   working-directory: ./frontend
 
       - name: Frontend lint
         run: pnpm run lint
-        working-directory: ./apps/codebattle/frontend
+        working-directory: ./frontend
 
       - name: Frontend typecheck
         run: pnpm run typecheck
-        working-directory: ./apps/codebattle/frontend
+        working-directory: ./frontend
 
       - name: Frontend build
         run: pnpm run build
-        working-directory: ./apps/codebattle/frontend
+        working-directory: ./frontend
       # --- end pnpm block ---
 
       - name: Setup db
@@ -146,5 +146,5 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./apps/codebattle/cover/excoveralls.json
+          file: ./cover/excoveralls.json
           fail_ci_if_error: false

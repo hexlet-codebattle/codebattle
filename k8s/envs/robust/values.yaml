@@ -14,10 +14,6 @@ codebattle:
     type: NodePort
   nodeSelector: {}
 
-# Not used in robust mode
-runner:
-  enabled: false
-
 zigRunners:
   strategy: robust
   avoidCodebattleNode: true

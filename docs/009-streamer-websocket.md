@@ -17,7 +17,7 @@
 - При успешном подключении в assigns сокета пишется
   `streamer?: true` и `tournament_id: <integer>`.
 
-Реализация: `apps/codebattle/lib/codebattle_web/channels/streamer_socket.ex`.
+Реализация: `lib/codebattle_web/channels/streamer_socket.ex`.
 
 ## Канал
 
@@ -26,7 +26,7 @@
   ответ `{:error, %{reason: "unauthorized"}}`.
 - Если турнира с таким id нет — `{:error, %{reason: "not_found"}}`.
 
-Реализация: `apps/codebattle/lib/codebattle_web/channels/tournament_streamer_channel.ex`.
+Реализация: `lib/codebattle_web/channels/tournament_streamer_channel.ex`.
 
 ### Что приходит при джойне
 
@@ -185,10 +185,10 @@
 
 ## Файлы
 
-- Сокет: `apps/codebattle/lib/codebattle_web/channels/streamer_socket.ex`
-- Канал: `apps/codebattle/lib/codebattle_web/channels/tournament_streamer_channel.ex`
-- Регистрация: `apps/codebattle/lib/codebattle_web/endpoint.ex`
+- Сокет: `lib/codebattle_web/channels/streamer_socket.ex`
+- Канал: `lib/codebattle_web/channels/tournament_streamer_channel.ex`
+- Регистрация: `lib/codebattle_web/endpoint.ex`
   (`socket("/ws-streamer", CodebattleWeb.StreamerSocket, ...)`)
 - Тесты:
-  - `apps/codebattle/test/codebattle_web/channels/streamer_socket_test.exs`
-  - `apps/codebattle/test/codebattle_web/channels/tournament_streamer_channel_test.exs`
+  - `test/codebattle_web/channels/streamer_socket_test.exs`
+  - `test/codebattle_web/channels/tournament_streamer_channel_test.exs`

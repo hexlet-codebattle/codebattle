@@ -2,6 +2,7 @@ BUILDX_OUTPUT ?= --load
 DEV := ./bin/dev
 DEV_COMPOSE := docker compose --project-name codebattle-devcontainer --project-directory . --file compose.yml --profile '*'
 
+.PHONY: test test-fe test-code-checkers compile format lint credo lint-js lint-js-fix check-js check-frontend dialyzer release
 .PHONY: dev-up dev-build dev-rebuild dev-stop dev-down dev-logs dev-shell dev-exec dev-runner-pull
 
 dev-up:
@@ -69,7 +70,7 @@ install-mix:
 	$(DEV) mix deps.get --check-locked
 
 install-pnpm:
-	$(DEV) pnpm --dir apps/codebattle/frontend install --frozen-lockfile
+	$(DEV) pnpm --dir frontend install --frozen-lockfile
 
 server:
 	$(DEV) iex -S mix phx.server
@@ -86,7 +87,7 @@ test:
 test-fe: check-frontend
 
 test-code-checkers:
-	$(DEV) env CODEBATTLE_EXECUTOR=local mix test apps/codebattle/test/images --max-failures 10
+	$(DEV) env CODEBATTLE_EXECUTOR=local mix test test/images --max-failures 10
 
 format:
 	$(DEV) mix format
@@ -98,17 +99,17 @@ credo:
 	$(DEV) mix credo --strict
 
 lint-js:
-	$(DEV) pnpm --dir apps/codebattle/frontend run lint
+	$(DEV) pnpm --dir frontend run lint
 
 lint-js-fix:
-	$(DEV) pnpm --dir apps/codebattle/frontend exec oxlint --fix
+	$(DEV) pnpm --dir frontend exec oxlint --fix
 
 check-js:
-	$(DEV) pnpm --dir apps/codebattle/frontend run check
+	$(DEV) pnpm --dir frontend run check
 
 check-frontend:
-	$(DEV) pnpm --dir apps/codebattle/frontend run typecheck
-	$(DEV) pnpm --dir apps/codebattle/frontend run build
+	$(DEV) pnpm --dir frontend run typecheck
+	$(DEV) pnpm --dir frontend run build
 
 dialyzer:
 	$(DEV) mix dialyzer
@@ -122,7 +123,7 @@ db-migrate:
 	$(DEV) mix ecto.migrate
 
 db-recreate:
-	$(DEV) mix cmd --app codebattle mix ecto.reset
+	$(DEV) mix ecto.reset
 
 outdated:
 	$(DEV) mix hex.outdated
@@ -135,16 +136,13 @@ start:
 	bin/codebattle eval "Codebattle.Utils.Release.migrate"
 	bin/codebattle start
 
-runner-start:
-	bin/runner start
-
 clean:
 	@if [ "$${CODEBATTLE_DEVCONTAINER:-}" = "1" ]; then \
 		echo "Run 'make clean' from the host so Docker volumes can be removed."; \
 		exit 2; \
 	fi
 	$(DEV_COMPOSE) down --volumes --remove-orphans
-	rm -rf _build deps .elixir_ls priv/static node_modules apps/codebattle/frontend/node_modules apps/codebattle/frontend/dist
+	rm -rf _build deps .elixir_ls priv/static node_modules frontend/node_modules frontend/dist
 
 ARS_ARGS ?=
 ARS_GOCACHE ?= /workspace/tmp/ars-go-build
@@ -216,15 +214,6 @@ build-local:
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:latest \
 				--tag ghcr.io/hexlet-codebattle/codebattle:latest .
-	DOCKER_BUILDKIT=1 docker build --target compile-image \
-				--file Containerfile.runner \
-				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
-				--tag ghcr.io/hexlet-codebattle/runner:compile-image .
-	DOCKER_BUILDKIT=1 docker build --target runtime-image \
-				--file Containerfile.runner \
-				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
-				--cache-from ghcr.io/hexlet-codebattle/runner:latest \
-				--tag ghcr.io/hexlet-codebattle/runner:latest .
 
 build-codebattle:
 	docker pull ghcr.io/hexlet-codebattle/codebattle:frontend-image  || true
@@ -312,31 +301,6 @@ push-codebattle:
 	docker push ghcr.io/hexlet-codebattle/codebattle:compile-image
 	docker push ghcr.io/hexlet-codebattle/codebattle:latest
 	docker push ghcr.io/hexlet-codebattle/nginx-assets:latest
-
-build-runner:
-	docker pull ghcr.io/hexlet-codebattle/runner:compile-image || true
-	docker pull ghcr.io/hexlet-codebattle/runner:latest        || true
-	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target compile-image \
-				--file Containerfile.runner \
-				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache \
-				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache,mode=max) \
-				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
-				--build-arg BUILDKIT_INLINE_CACHE=1 \
-				--tag ghcr.io/hexlet-codebattle/runner:compile-image .
-	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target runtime-image \
-				--file Containerfile.runner \
-				--build-arg GIT_HASH=$(GIT_HASH) \
-				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache \
-				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/runner:runtime-cache \
-				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/runner:runtime-cache,mode=max) \
-				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
-				--cache-from ghcr.io/hexlet-codebattle/runner:latest \
-				--build-arg BUILDKIT_INLINE_CACHE=1 \
-				--tag ghcr.io/hexlet-codebattle/runner:latest .
-
-push-runner:
-	docker push ghcr.io/hexlet-codebattle/runner:compile-image
-	docker push ghcr.io/hexlet-codebattle/runner:latest
 
 
 runner-ruby:

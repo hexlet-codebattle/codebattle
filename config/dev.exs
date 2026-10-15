@@ -2,8 +2,6 @@ import Config
 
 alias Codebattle.CodeCheck.Executor.Local
 
-root_dir = File.cwd!()
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -11,7 +9,11 @@ root_dir = File.cwd!()
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 
-default_executor = if System.get_env("CODEBATTLE_DEVCONTAINER") == "1", do: "zig", else: "local"
+checker_executor =
+  case System.get_env("CODEBATTLE_EXECUTOR", "zig") do
+    "zig" -> Codebattle.CodeCheck.Executor.RemoteZig
+    "local" -> Local
+  end
 
 config :codebattle, ChromicPDF, on_demand: true
 
@@ -44,14 +46,14 @@ config :codebattle, CodebattleWeb.Endpoint,
   cache_static_lookup: false,
   watchers: [
     # The frontend (CodebattleWeb.Frontend): Vite dev server on CODEBATTLE_FRONTEND_PORT.
-    pnpm: ["dev", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle/frontend")]
+    pnpm: ["dev", cd: ".." |> Path.expand(__DIR__) |> Path.join("frontend")]
   ]
 
 # Watch static and templates for browser reloading.
 config :codebattle, CodebattleWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r{apps/codebattle/static/.*(png|jpeg|jpg|gif|svg)$},
+      ~r{static/.*(png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/codebattle_web/views/.*(ex)$},
       ~r{lib/codebattle_web/templates/.*(eex)$},
@@ -63,16 +65,10 @@ config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY", "x-key")
 config :codebattle, :external_platform_adapter, Codebattle.ExternalPlatform.Fake
 config :codebattle, :tournament_run_upcoming, false
 config :codebattle, :zig_runner_url_template, System.get_env("CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE")
-
-config :codebattle,
-  checker_executor:
-    if(System.get_env("CODEBATTLE_EXECUTOR", default_executor) == "zig",
-      do: Codebattle.CodeCheck.Executor.RemoteZig,
-      else: Local
-    )
+config :codebattle, checker_executor: checker_executor
 
 if System.get_env("CODEBATTLE_DEVCONTAINER") == "1" do
-  config :runner,
+  config :codebattle,
     white_list_lang_slugs:
       "CODEBATTLE_DEV_RUNNER_LANGS"
       |> System.get_env("js,python")
@@ -88,9 +84,3 @@ config :logger, :console, format: "[$level] $message\n", level: :debug
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
-
-config :runner, RunnerWeb.Endpoint,
-  http: [port: System.get_env("CODEBATTLE_RUNNER_PORT", "4001")],
-  debug_errors: true,
-  code_reloader: true,
-  check_origin: false

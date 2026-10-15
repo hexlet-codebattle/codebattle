@@ -34,13 +34,10 @@ tournament_rematch_timeout_ms =
   "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
 
 checker_executor =
-  case System.get_env("CODEBATTLE_EXECUTOR") do
+  case System.get_env("CODEBATTLE_EXECUTOR", "zig") do
     "zig" -> Codebattle.CodeCheck.Executor.RemoteZig
-    _ -> Codebattle.CodeCheck.Executor.RemoteContainerRun
+    "local" -> Codebattle.CodeCheck.Executor.Local
   end
-
-runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
-runner_host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
 
 db_ssl_enabled =
   System.get_env(
@@ -194,6 +191,7 @@ config :codebattle, :oauth,
   external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
 config :codebattle, :tournament_run_upcoming, true
+config :codebattle, :zig_runner_url_template, System.get_env("CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE")
 config :codebattle, app_version: System.get_env("APP_VERSION", "")
 config :codebattle, checker_executor: checker_executor
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
@@ -212,6 +210,13 @@ config :codebattle,
   sentry_fe_dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
 
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
+
+config :codebattle,
+  white_list_lang_slugs:
+    "CODEBATTLE_WHITE_LIST_LANG_SLUGS"
+    |> System.get_env("")
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
 
 config :phoenix_meta_tags,
   title: opengraph_title,
@@ -232,28 +237,6 @@ config :phoenix_meta_tags,
   twitter: %{
     card: "summary_large_image"
   }
-
-config :runner, RunnerWeb.Endpoint,
-  http: [:inet6, port: runner_port],
-  url: [host: runner_host, port: 81],
-  secret_key_base: secret_key_base,
-  server: true
-
-config :runner, :runner_url, "http://runner.default.svc"
-config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"
-config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
-
-config :runner,
-  max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
-
-config :runner, pull_images: System.get_env("RUNNER_PULL_IMAGES", "") == "true"
-
-config :runner,
-  white_list_lang_slugs:
-    "RUNNER_WHITE_LIST_LANG_SLUGS"
-    |> System.get_env("")
-    |> String.split(",")
-    |> Enum.filter(&(&1 != ""))
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),

@@ -1,4 +1,4 @@
-# The frontend (apps/codebattle/frontend): its own package and Vite build.
+# The frontend: its own package and Vite build.
 FROM node:24.15-alpine AS frontend-image
 
 # Mirrors the repo layout: the app imports translations from ../priv/gettext.
@@ -6,11 +6,11 @@ WORKDIR /tmp/codebattle/frontend
 
 RUN npm install --global pnpm@11.18.0
 
-COPY apps/codebattle/frontend/package.json apps/codebattle/frontend/pnpm-lock.yaml apps/codebattle/frontend/pnpm-workspace.yaml ./
+COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
-COPY apps/codebattle/priv/gettext ../priv/gettext
-COPY apps/codebattle/frontend ./
+COPY priv/gettext ../priv/gettext
+COPY frontend ./
 RUN pnpm run build
 
 FROM elixir:1.20.4-otp-29-alpine AS compile-image
@@ -25,27 +25,26 @@ RUN apk update && apk add --no-cache build-base git ca-certificates make curl br
 COPY mix.exs .
 COPY mix.lock .
 COPY config ./config
-COPY apps/runner/mix.exs apps/runner/mix.exs
-COPY apps/codebattle/mix.exs apps/codebattle/mix.exs
 
 RUN mix do deps.get --only prod, deps.compile
 
-COPY ./apps/codebattle/ ./apps/codebattle/
-COPY ./apps/runner/ ./apps/runner/
+COPY lib ./lib
+COPY priv ./priv
+COPY static ./static
 
 # Static files (images, audio, fonts, favicons) at /assets/*; the PWA worker and its
 # offline page at the root.
-RUN mkdir -p apps/codebattle/priv/static/assets \
-  && cp -R apps/codebattle/static/. apps/codebattle/priv/static/assets/ \
-  && mv apps/codebattle/priv/static/assets/offline.html apps/codebattle/priv/static/assets/service-worker.js apps/codebattle/priv/static/
+RUN mkdir -p priv/static/assets \
+  && cp -R static/. priv/static/assets/ \
+  && mv priv/static/assets/offline.html priv/static/assets/service-worker.js priv/static/
 # Served at /assets/v2 by nginx and Phoenix (see CodebattleWeb.Frontend).
-COPY --from=frontend-image /tmp/codebattle/frontend/dist ./apps/codebattle/priv/static/assets/v2
+COPY --from=frontend-image /tmp/codebattle/frontend/dist ./priv/static/assets/v2
 
 # phx.digest writes digested copies plus .gz for its gzippable extensions.
 # Add .br for every compressible file (and .gz where digest skipped it) so
 # nginx can serve precompressed variants via brotli_static/gzip_static.
 RUN mix phx.digest \
-  && find apps/codebattle/priv/static/assets -type f \( \
+  && find priv/static/assets -type f \( \
     -name "*.js" -o -name "*.mjs" -o -name "*.css" -o -name "*.html" -o \
     -name "*.json" -o -name "*.map" -o -name "*.svg" -o -name "*.txt" -o \
     -name "*.xml" -o -name "*.csv" -o -name "*.ico" -o -name "*.ttf" -o \

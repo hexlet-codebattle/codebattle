@@ -87,6 +87,10 @@ Runner image build and publish targets still execute through the host container
 engine because they orchestrate other containers. Treat those targets as
 privileged operations and use them only with trusted code.
 
+Codebattle is a single Phoenix app: `lib/`, `test/`, `priv/`, `frontend/`, and
+`static/` live at the repository root. Shared language and checker code lives in
+`lib/codebattle/runner/`; language image sources live in `images/`.
+
 Solution checks use the Zig HTTP runner in separate language containers on the
 Compose network. `make dev-up` starts JavaScript and Python runners by default;
 `make server` starts Phoenix and Vite. The runner services are privileged to
@@ -107,6 +111,17 @@ runner containers may remain running until `make dev-down`.
 
 If language images are already cached locally, refresh them with
 `make dev-runner-pull` on the host, then `make dev-up` and restart the server.
+
+To exercise the Zig runners through the game channels:
+
+```bash
+make dev-exec CMD='CODEBATTLE_EXECUTOR=zig mix test test/images/js_test.exs test/images/python_test.exs'
+```
+
+`CODEBATTLE_EXECUTOR=local` selects direct Docker execution where Docker is
+available to the app. The standard dev container uses Zig services. Production
+also defaults to Zig; `CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE` overrides the Kubernetes
+URL pattern, and `CODEBATTLE_WHITE_LIST_LANG_SLUGS` limits the language picker.
 
 Editor devcontainer startup also starts the default JS and Python services.
 For a custom list, run `make dev-up` from the host before opening the container
@@ -137,7 +152,7 @@ CODEBATTLE_PORT=4010
 CODEBATTLE_FRONTEND_PORT=8091
 ```
 
-Both variables are read by Compose and by `apps/codebattle/frontend/vite.config.ts`, so the container
+Both variables are read by Compose and by `frontend/vite.config.ts`, so the container
 and the dev server stay in sync.
 
 #### macOS

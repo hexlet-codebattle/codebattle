@@ -36,7 +36,7 @@ RUN apk add --no-cache \
       /workspace/_build \
       /workspace/deps \
       /workspace/priv/plts \
-      /workspace/apps/codebattle/frontend/node_modules \
+      /workspace/frontend/node_modules \
       "/home/${USERNAME}/.cache" \
       "/home/${USERNAME}/.local/share/pnpm" \
   && chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}" /workspace
@@ -59,7 +59,7 @@ ENV APP_VERSION=dev \
     NODE_OPTIONS=--max-old-space-size=4096 \
     PATH=/usr/local/go/bin:/home/codebattle/.mix/escripts:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Match the package manager declared in apps/codebattle/frontend/package.json.
+# Match the package manager declared in frontend/package.json.
 RUN mkdir -p "${COREPACK_HOME}" \
   && corepack enable pnpm \
   && corepack prepare pnpm@11.18.0 --activate \

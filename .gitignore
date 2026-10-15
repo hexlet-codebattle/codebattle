@@ -19,6 +19,7 @@ erl_crash.dump
 
 # Static artifacts
 node_modules
+**/dist/
 
 # Runner bin for lang-specific-runners
 runner_bin

@@ -1,0 +1,30 @@
+defmodule Mix.Tasks.Images.Pull do
+  @shortdoc "Pull images from github container registry"
+
+  @moduledoc false
+
+  use Mix.Task
+
+  alias Codebattle.Runner.Languages
+
+  def run([slug]) do
+    {:ok, _started} = Application.ensure_all_started(:porcelain)
+    slug |> Languages.meta() |> pull()
+  end
+
+  def run(_) do
+    {:ok, _started} = Application.ensure_all_started(:porcelain)
+    Languages.meta() |> Map.values() |> Enum.each(&pull/1)
+  end
+
+  defp pull(%{slug: "ts"}), do: :noop
+
+  defp pull(meta) do
+    IO.puts("Start pulling image for #{meta.slug}")
+
+    cmd = "podman pull #{meta.image}"
+    result = Porcelain.shell(cmd, err: :string)
+
+    IO.puts(result.out)
+  end
+end

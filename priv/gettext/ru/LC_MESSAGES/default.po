@@ -1,0 +1,6229 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: ru\n"
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "Welcome to %{name}!"
+msgstr "Добро пожаловать в %{name}!"
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "%{name}: game for programmers."
+msgstr "%{name}: игра для программистов."
+
+#, fuzzy
+#: lib/codebattle_web/templates/page/index.html.slim:6
+#: lib/codebattle_web/templates/game/index.html.slim:11
+msgid "Create a game"
+msgstr "Создать игру"
+
+#: lib/codebattle_web/templates/user/index.html.slim:1
+msgid "List of games"
+msgstr "Список игр"
+
+#: lib/codebattle_web/templates/page/index.html.slim:16
+msgid "Lobby chat"
+msgstr "Общий чат"
+
+#: lib/codebattle_web/templates/page/index.html.slim:18
+msgid "Type a message..."
+msgstr "Введите сообщение..."
+
+#: lib/codebattle_web/templates/page/index.html.slim:25
+msgid "Online users"
+msgstr "Пользователи в сети"
+
+#: lib/codebattle_web/templates/layout/app.html.slim:26
+msgid "Logout"
+msgstr "Выход"
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Enter your name"
+msgstr "Введите ваше имя"
+
+msgid "Enter your password"
+msgstr "Введите ваш пароль"
+
+
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Sign in with %{name}"
+msgstr "Войти через %{name}"
+
+msgid "Sign in"
+msgstr "Войти"
+
+#: lib/codebattle_web/templates/game/index.html.slim:1
+msgid "Listing games"
+msgstr "Список игр"
+
+#: lib/codebattle_web/templates/user/index.html.slim:1
+msgid "Total: "
+msgstr "Общее количество: "
+
+#: lib/codebattle_web/templates/game/index.html.slim:2
+msgid "Users rating: "
+msgstr "Рейтинг пользователей: "
+
+#: lib/codebattle_web/templates/game/index.html.slim:17
+msgid "id: %{id}, state: %{state}, players: %{players}  "
+msgstr "id: %{id}, состояние: %{state}, игроки: %{players}  "
+
+#: lib/codebattle_web/templates/game/index.html.slim:19
+msgid "Join"
+msgstr "Присоединиться"
+
+#: lib/codebattle_web/templates/game/index.html.slim:21
+msgid "Show"
+msgstr "Открыть"
+
+msgid "Continue"
+msgstr "Продолжить"
+
+#: lib/codebattle_web/templates/game/index.html.slim:25
+msgid "Main page"
+msgstr "Главная страница"
+
+#: lib/codebattle_web/templates/game/show.html.slim:1
+msgid "Game: %{id}"
+msgstr "Игра: %{id}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:2
+msgid "State: %{state}"
+msgstr "Состояние: %{state}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:4
+msgid "The winner is: %{name}"
+msgstr "Победитель: %{name}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:5
+msgid "Players"
+msgstr "Игроки"
+
+#: lib/codebattle_web/templates/game/show.html.slim:13
+msgid "Check result"
+msgstr "Проверить результат"
+
+
+
+#: lib/codebattle_web/templates/game/show.html.slim:15
+msgid "Waiting for an opponent"
+msgstr "Ожидание соперника"
+
+msgid "You are following ID: %{followId}"
+msgstr "Вы подписаны на ID: %{followId}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:21
+msgid "Back to the list of games"
+msgstr "Вернуться к списку игр"
+
+#: lib/codebattle_web/templates/game/show.html.slim:31
+msgid "Game chat"
+msgstr "Игровой чат"
+
+#: lib/codebattle_web/templates/user/index.html.slim:12
+msgid "%{index}) name: %{name}, rating: %{rating}"
+msgstr "%{index}) имя: %{name}, рейтинг: %{rating}"
+
+#: lib/codebattle_web/controllers/session_controller.ex:6
+msgid "You have been logged out!"
+msgstr "Вы успешно вышли из системы!"
+
+#: lib/codebattle_web/controllers/session_controller.ex:29
+msgid "Welcome to Codebattle!"
+msgstr "Добро пожаловать в Codebattle!"
+
+#: lib/codebattle_web/controllers/session_controller.ex:24
+msgid "Invalid name or password"
+msgstr "Неверное имя пользователя или пароль"
+
+#: lib/codebattle_web/controllers/auth_controller.ex:15
+msgid "Failed to authenticate."
+msgstr "Ошибка аутентификации."
+
+#: lib/codebattle_web/controllers/fallback_controller.ex
+#: lib/codebattle_web/channels/lobby_channel.ex
+msgid "You are already in a game. Finish or cancel your current game before joining another one."
+msgstr "Вы уже в игре. Завершите или отмените текущую игру, прежде чем присоединиться к другой."
+
+#: lib/codebattle_web/controllers/auth_controller.ex:30
+msgid "Successfully authenticated"
+msgstr "Успешная аутентификация."
+
+#: lib/codebattle_web/controllers/game_controller.ex:41
+msgid "Game not found"
+msgstr "Игра не найдена"
+
+#: lib/codebattle_web/controllers/game_controller.ex:27
+msgid "Game has been created"
+msgstr "Игра успешно создана"
+
+#: lib/codebattle_web/controllers/game_controller.ex:53
+msgid "Yay, you won the game!"
+msgstr "Ура, Вы победили!"
+
+#: lib/codebattle_web/channels/game_channel.ex:116
+msgid "You lost the game"
+msgstr "Вы проиграли игру."
+
+#: lib/codebattle_web/views/error_view.ex:8
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: lib/codebattle_web/views/error_view.ex:13
+msgid "Internal server error"
+msgstr "Внутренняя ошибка сервера"
+
+#: lib/codebattle_web/plugs/require_auth.ex:12
+msgid "You must be logged in to access that page"
+msgstr "Для просмотра этой страницы Вам нужно войти"
+
+#: assets/js/socket.js:49
+msgid "joined to"
+msgstr "Вошёл в"
+
+#: assets/js/socket.js:49
+msgid "left"
+msgstr "Покинул"
+
+#: assets/js/socket.js:52
+msgid "channel"
+msgstr "канал"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_over.html.slim:1
+msgid "Game over"
+msgstr "Игра окончена"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_result.html.slim:1
+msgid "Game status"
+msgstr "Статус игры"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/join.html.slim:1
+msgid "Join the game"
+msgstr "Вы подключились к игре"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Sign Out"
+msgstr "Выйти"
+
+msgid "Sign up"
+msgstr "Регистрация"
+
+#, elixir-format
+#: lib/codebattle_web/controllers/auth_controller.ex:23
+#: lib/codebattle_web/controllers/dev_login_controller.ex:15
+msgid "Successfully authenticated."
+msgstr "Успешная аутентификация."
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Users rating"
+msgstr "Рейтинг пользователей"
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:28
+msgid "You are in a different game"
+msgstr "Вы уже участвуете в другой игре"
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:250
+msgid "%{name} gave up!"
+msgstr "%{name} сдаётся!"
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:162
+msgid "won the game!"
+msgstr "Вы победили в игре!"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Hexlet"
+msgstr "Хекслет"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "My Profile"
+msgstr "Мой Профиль"
+
+#, elixir-format
+msgid "Tasks"
+msgstr "Задачи"
+
+#, elixir-format
+msgid "Tournaments"
+msgstr "Турниры"
+
+msgid "Tournament"
+msgstr "Турнир"
+
+#, elixir-format
+msgid "Join Discord"
+msgstr "Чат Discord"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Sound"
+msgstr "Звук"
+
+msgid "Master sound"
+msgstr "Общий звук"
+
+msgid "Profile"
+msgstr "Профиль"
+
+msgid "Manage your public identity and coding preferences."
+msgstr "Управляйте публичным профилем и настройками программирования."
+
+msgid "Sound settings"
+msgstr "Настройки звука"
+
+msgid "Set the volume of game and tournament sounds."
+msgstr "Громкость звуков в играх и турнирах."
+
+msgid "Game sound level"
+msgstr "Громкость в игре"
+
+msgid "Tournament sound level"
+msgstr "Громкость турниров"
+
+msgid "Save changes"
+msgstr "Сохранить изменения"
+
+msgid "Update profile"
+msgstr "Обновить профиль"
+
+msgid "Manage your public identity."
+msgstr "Управляйте своей публичной информацией."
+
+msgid "Coding preferences"
+msgstr "Настройки программирования"
+
+msgid "Weapon and locale changes are saved automatically."
+msgstr "Изменения языка программирования и локали сохраняются автоматически."
+
+msgid "Manage your account, preferences, and active sessions."
+msgstr "Управляйте аккаунтом, настройками и активными сессиями."
+
+msgid "Connected accounts"
+msgstr "Связанные аккаунты"
+
+msgid "Manage the services you use to sign in."
+msgstr "Управляйте сервисами, используемыми для входа."
+
+msgid "Review and remove signed-in sessions."
+msgstr "Просматривайте и завершайте активные сессии."
+
+msgid "On"
+msgstr "Вкл"
+
+msgid "Off"
+msgstr "Выкл"
+
+msgid "Mute sound"
+msgstr "Выключить звук"
+
+msgid "Turn sound on"
+msgstr "Включить звук"
+
+msgid "New private message"
+msgstr "Новое личное сообщение"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Tg#codebattle"
+msgstr "Чат телеграмм"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "SourceCode"
+msgstr "Исходный Код"
+
+# JSX
+msgid "Pause"
+msgstr "Приостановить"
+
+msgid "Unpause"
+msgstr "Возобновить"
+
+msgid "Unfollow"
+msgstr "Прекратить"
+
+msgid "Task: "
+msgstr "Задача: "
+
+msgid "Won:"
+msgstr "Побед:"
+
+msgid "Lost:"
+msgstr "Поражений:"
+
+msgid "GaveUp:"
+msgstr "Сдался:"
+
+msgid "Task"
+msgstr "Задача"
+
+msgid "Editor"
+msgstr "Редактор"
+
+msgid "Solution"
+msgstr "Решение"
+
+msgid "Submit solution"
+msgstr "Отправить решение"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Sending..."
+msgstr "Отправка..."
+
+msgid "Copy"
+msgstr "Копировать"
+
+msgid "Copied!"
+msgstr "Скопировано!"
+
+msgid "Download"
+msgstr "Скачать"
+
+msgid "Output"
+msgstr "Тесты"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Run"
+msgstr "Запустить"
+
+msgid "Charging..."
+msgstr "Заряжается..."
+
+msgid "Running..."
+msgstr "Запускается..."
+
+msgid "Show guide"
+msgstr "Гайд"
+
+msgid "Reset solution"
+msgstr "Сбросить решение"
+
+msgid "Check solution"
+msgstr "Проверить решение"
+
+msgid "Expand"
+msgstr "Развернуть описание"
+
+msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgstr "Нашли ошибку? Вам есть что добавить к описанию? Мы будем рады вашим Pull Requests: "
+
+msgid "Run your code!"
+msgstr "Запустите Ваш код!"
+
+msgid "Solution cannot be executed"
+msgstr "Решение не может быть выполнено"
+
+msgid "Tests failed"
+msgstr "Тесты не пройдены"
+
+msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr "Прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
+
+msgid "Yay! All tests passed!"
+msgstr "Поздравляю! Все тесты пройдены!"
+
+msgid "Success Test Message"
+msgstr "Поздравляю! Тесты пройдены!"
+
+msgid "Failure Test Message"
+msgstr "О нет, тесты не пройдены!"
+
+msgid "Win Game Message"
+msgstr "Поздравляю! Вы победили!"
+
+msgid "Win Training Message"
+msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
+
+msgid "Time is up. There are no winners in the game"
+msgstr "Время вышло. Никто не выиграл эту битву"
+
+msgid "Lose Game Message"
+msgstr "К сожалению, Ваш оппонент выиграл эту битву"
+
+msgid "Opponent tests"
+msgstr "Тесты оппонета"
+
+msgid "Give up"
+msgstr "Сдаться"
+
+msgid "Сheck"
+msgstr "Отправить решение"
+
+msgid "Сheck status:"
+msgstr "Статус проверки:"
+
+msgid "execution time: %{time} ms"
+msgstr "время выполнения: %{time} ms"
+
+msgid "Receive:"
+msgstr "Получено:"
+
+msgid "Expected:"
+msgstr "Ожидалось:"
+
+msgid "Arguments:"
+msgstr "Аргументы:"
+
+#, fuzzy
+msgid "Oops"
+msgstr "Упс!"
+
+msgid "Sort by:"
+msgstr "Сортировать по:"
+
+msgid "Rank"
+msgstr "Ранг"
+
+msgid "Rating"
+msgstr "Рейтинг"
+
+msgid "Games played"
+msgstr "Сыгранные игры"
+
+msgid "Joined"
+msgstr "Дата регистрации"
+
+msgid "Codebattle Intro"
+msgstr "Прочтите описание простой задачи и решите её быстрее вашего оппонента в реальном времени. Регистрируйтесь и играйте с ботами, друзьями и другими игроками. Так же, Вы можете сражаться в турнирах."
+
+msgid "Codebattle Intro Title"
+msgstr "Добро пожаловать в Codebattle. Продемонстрируй свои умения!"
+
+msgid "Start simple battle"
+msgstr "Начать простое сражение"
+
+msgid "Start battle"
+msgstr "Начать битву"
+
+msgid "Try again"
+msgstr "Начать заново"
+
+msgid "Back to Home"
+msgstr "На главную"
+
+msgid "Open History"
+msgstr "Смотреть историю"
+
+msgid "%{name} (bot)"
+msgstr "%{name} (бот)"
+
+msgid "%{name} (you)"
+msgstr "%{name} (вы)"
+
+msgid "Fight"
+msgstr "Сражаться"
+
+#, elixir-format
+#: lib/codebattle_web/support/notifications.ex:13
+msgid "Oh no, the time is out! Both players lost ;("
+msgstr "О нет, время вышло! Оба игрока проиграли ;("
+
+msgid "Timeout - no timeout"
+msgstr "Таймер - нет таймера"
+
+msgid "Timeout 60 seconds"
+msgstr "Таймер на 60 секунд"
+
+msgid "Timeout 120 seconds"
+msgstr "Таймер на 120 секунд"
+
+msgid "Timeout 300 seconds"
+msgstr "Таймер на 300 секунд"
+
+msgid "Timeout 600 seconds"
+msgstr "Таймер на 600 секунд"
+
+msgid "Timeout 1200 seconds"
+msgstr "Таймер на 1200 секунд"
+
+msgid "Timeout 3600 seconds"
+msgstr "Таймер на 3600 секунд"
+
+msgid "Top-3"
+msgstr "Топ-3"
+
+msgid "Total number of teams %{count}"
+msgstr "Общее количество команд %{count}"
+
+msgid "Place"
+msgstr "Место"
+
+msgid "Player"
+msgstr "Участник"
+
+msgid "Join this tournament to take part in the matches."
+msgstr "Присоединитесь к турниру, чтобы участвовать в матчах."
+
+msgid "You are registered for this tournament. You can leave before it starts."
+msgstr "Вы зарегистрированы на этот турнир. До его начала вы можете покинуть его."
+
+msgid "Score"
+msgstr "Балл"
+
+msgid "Score: %{score}"
+msgstr "Балл: %{score}"
+
+msgid "best try"
+msgstr "лучший"
+
+msgid "Matches"
+msgstr "Матчи"
+
+msgid "No winner"
+msgstr "Нет победителя"
+
+msgid "Avg Result"
+msgstr "Средний результат"
+
+msgid "Match duration"
+msgstr "Длительность матча"
+
+msgid "Match start time"
+msgstr "Время начала матча"
+
+msgid "Total Time"
+msgstr "Общее время"
+
+msgid "Win rate"
+msgstr "Винрейт"
+
+msgid "Average result"
+msgstr "Средний результат"
+
+msgid "Current round"
+msgstr "Текущий тур"
+
+msgid "User"
+msgstr "Участник"
+
+msgid "Duration (sec)"
+msgstr "Время (сек)"
+
+msgid "Clan"
+msgstr "Клан"
+
+msgid "Page"
+msgstr "Страница"
+
+msgid "of"
+msgstr "из"
+
+msgid "Count of solutions"
+msgstr "Количество успешных решений"
+
+msgid "Total time for solving task"
+msgstr "Общее время решения задачи"
+
+msgid "Task duration distribution"
+msgstr "Распределение по времени решения задачи (Количество решений/сек)"
+
+msgid "Show task description"
+msgstr "Показать описание задачи"
+
+msgid "%{percent}% (sec)"
+msgstr "%{percent}% (сек)"
+
+msgid "Fastest time to solve task (sec)"
+msgstr "Самое быстрое решение (сек)"
+
+msgid "Slowest time to solve task (sec)"
+msgstr "Самое медленное решение (сек)"
+
+msgid "Event rating"
+msgstr "Таблица Участников"
+
+msgid "Clans rating"
+msgstr "Рейтинг ВУЗов"
+
+msgid "Players rating"
+msgstr "Рейтинг участников"
+
+msgid "Clan players rating"
+msgstr "Рейтинг участников ВУЗа"
+
+msgid "Clan players_count/registrations"
+msgstr "Участники/Регистрации"
+
+msgid "Clan players count"
+msgstr "Количество участников"
+
+msgid "Event stages"
+msgstr "Как устроен турнир"
+
+msgid "Stage %{name}"
+msgstr "Тур %{name}"
+
+msgid "Stage: "
+msgstr "Тур: "
+
+msgid "Games: "
+msgstr "Игры: "
+
+msgid "Stats: "
+msgstr "Статистика: "
+
+msgid "Games"
+msgstr "Игры"
+
+msgid "closed"
+msgstr "закрыт"
+
+msgid "active"
+msgstr "активно"
+
+msgid "soon"
+msgstr "скоро"
+
+msgid "Login"
+msgstr "Логин"
+
+msgid "Tournament description"
+msgstr "Описание тура"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Leave"
+msgstr "Выйти"
+
+msgid "Teams"
+msgstr "Команды"
+
+msgid "Search opponent"
+msgstr "Поиск соперника"
+
+msgid "Back to tournament"
+msgstr "Назад в турнир"
+
+msgid "Back to tournaments"
+msgstr "На главную"
+
+msgid "Back to event"
+msgstr "Вернуться в ЛК"
+
+msgid "Star us on GitHub"
+msgstr "Поддержать нас на GitHub"
+
+msgid "Star us"
+msgstr "Поддержать нас"
+
+msgid "Restart searching"
+msgstr "Вернуться к поиску"
+
+msgid "Stop searching"
+msgstr "Приостановить"
+
+msgid "Go to active game"
+msgstr "К активной игре"
+
+msgid "arena_task_stats"
+msgid_plural "%{count} tasks left"
+msgstr[0] "Осталась %{count} задача"
+msgstr[1] "Осталось %{count} задачи"
+msgstr[2] "Осталось %{count} задач"
+
+msgid "Searching opponent"
+msgstr "Поиск соперника"
+
+msgid "Congrats! All tasks are solved"
+msgstr "Задачи закончились, поздравляем!"
+
+msgid "The tournament will start: %{duration}"
+msgstr "Тур начнется через: %{duration}"
+
+msgid "The tournament will start soon"
+msgstr "Тур скоро начнется"
+
+msgid "The tournament is canceled"
+msgstr "Игры тура отменены"
+
+msgid "The tournament is finished"
+msgstr "Игры тура завершились"
+
+msgid "Your opponent is waiting: %{name}"
+msgstr "Ваш следующий оппонент: %{name}"
+
+msgid "Next match will be opened. Show now?"
+msgstr "Баттл начался! Открыть сейчас?"
+
+msgid "review"
+msgstr "общее"
+
+msgid "matches"
+msgstr "история"
+
+msgid "Opponent"
+msgstr "Соперник"
+
+msgid "Opponent clan"
+msgstr "ВУЗ соперника"
+
+msgid "Status"
+msgstr "Статус задачи"
+
+msgid "Open match"
+msgstr "Перейти к задаче"
+
+msgid "You banned"
+msgstr "Вы забанены"
+
+msgid "Active match"
+msgstr "Есть активная задача"
+
+msgid "Waiting"
+msgstr "Ожидание"
+
+msgid "Wait round starts"
+msgstr "Ожидайте начала матча"
+
+msgid "Waiting Participants"
+msgstr "Ожидаем участников"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "In progress"
+msgstr "Идет игра"
+
+msgid "Round break"
+msgstr "Перерыв"
+
+msgid "Canceled"
+msgstr "Отменен"
+
+msgid "Finished"
+msgstr "Завершен"
+
+msgid "Loading"
+msgstr "Загружается"
+
+msgid "Round ends in "
+msgstr "Раунд завершится через "
+
+msgid "Next round will start in "
+msgstr "Следующий раунд начнется через "
+
+msgid "Next round will start soon"
+msgstr "Следующий раунд скоро начнется"
+
+msgid "Draw"
+msgstr "Ничья"
+
+msgid "You lose"
+msgstr "Последняя задача проиграна"
+
+msgid "You win"
+msgstr "Последняя задача выиграна"
+
+msgid "Your place in tournament"
+msgstr "Твое место в турнире"
+
+msgid "Your place"
+msgstr "Твое место"
+
+msgid "Your score"
+msgstr "Твой балл"
+
+msgid "Your clan place"
+msgstr "Место твоего ВУЗа"
+
+msgid "Your clan score"
+msgstr "Балл твоего ВУЗа"
+
+msgid "Statistics"
+msgstr "Статистика"
+
+msgid "Wins"
+msgstr "Побед"
+
+msgid "Wins count"
+msgstr "Количество побед"
+
+msgid "Score/Total"
+msgstr "Балл"
+
+msgid "Loses"
+msgstr "Поражений"
+
+msgid "Timeout"
+msgstr "Нет победителя"
+
+msgid "Show match"
+msgstr "Показать игру"
+
+msgid "Show match history"
+msgstr "Показать историю игры"
+
+msgid "Continue match"
+msgstr "Продолжить игру"
+
+msgid "History"
+msgstr "История"
+
+msgid "stored"
+msgstr "Сохранена"
+
+msgid "game_over"
+msgstr "Игра завершена"
+
+msgid "Loading..."
+msgstr "Загрузка..."
+
+msgid "Join the round"
+msgstr "Перейти в раунд"
+
+msgid "Timeout in: %{time}"
+msgstr "Завершится через: %{time}"
+
+msgid "Woohoo, you're Champion!!!!!"
+msgstr "Баттл официально затащен!"
+
+msgid "Loading next game"
+msgstr "Ожидайте следующую игру"
+
+msgid "Round is over, wait for the next round"
+msgstr "Задача решена, дождись следующую"
+
+msgid "If you read this you've lost the game"
+msgstr "Ты заслуживаешь победы, продолжай!"
+
+msgid "I'll be back"
+msgstr "Айл би бэк"
+
+msgid "GG"
+msgstr "Чемпион"
+
+msgid "STDOUT"
+msgstr "ВЫВОД"
+
+msgid "Next game"
+msgstr "Следующая задача"
+
+msgid "Award"
+msgstr "Награда"
+
+msgid "Total entries: %{totalEntries}"
+msgstr "Общее количество: %{totalEntries}"
+
+msgid "We could not verify your solution"
+msgstr "Мы не смогли проверить ваше решение"
+
+msgid "Please try to fix your code and submit it again"
+msgstr "Пожалуйста, исправьте ваш код и отправьте его снова"
+
+msgid "Note that your code may contain an infinite loop or complex calculations"
+msgstr "Обратите внимание, что ваш код может содержать бесконечный цикл или сложные вычисления"
+
+msgid "Rating Panel"
+msgstr "Рейтинг участников"
+
+msgid "Reports Panel"
+msgstr "Отчеты"
+
+msgid "Player Panel"
+msgstr "Панель участника"
+
+msgid "Top users by clan ranking"
+msgstr "Лучшие игроки в рейтинге ВУЗов"
+
+msgid "Tasks ranking"
+msgstr "Рейтинг задач"
+
+msgid "Clans bubble distribution"
+msgstr "График распределения лучших ВУЗов"
+
+msgid "Duration distribution and top users by task"
+msgstr "Статистика по задаче"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Tournament is paused"
+msgstr "Игра этапа завершены"
+
+msgid "Connection lost, please reload the page"
+msgstr "Связь с сервером потеряна, перезагрузите страницу"
+
+msgid "Show full tournament table"
+msgstr "Показать полную турнирную таблицу"
+
+msgid "Type: %{type}"
+msgstr "Тип: %{type}"
+
+msgid "swiss"
+msgstr "Швейцарская система"
+
+msgid "individual"
+msgstr "Олимпийская система"
+
+
+msgid "Tournament waiting_participants"
+msgstr "Турнир скоро начнется"
+
+msgid "Tournament canceled"
+msgstr "Турнир отменен"
+
+msgid "Tournament active"
+msgstr "Турнир активен"
+
+msgid "Tournament finished"
+msgstr "Турнир завершен"
+
+msgid "Starts At"
+msgstr "Начало"
+
+msgid "Game playing"
+msgstr "Игра продолжается"
+
+msgid "Game waiting_opponent"
+msgstr "Ожидание соперника"
+
+msgid "Game state: timeout"
+msgstr "Статус: время истекло"
+
+msgid "Game state: canceled"
+msgstr "Статус: игра отменена"
+
+msgid "Game state: game_over"
+msgstr "Статус: игра окончена"
+
+msgid "Game state: initial"
+msgstr "Статус: игра создается"
+
+msgid "Game state: builder"
+msgstr "Статус: игра готовится к запуску"
+
+msgid "Game state: waiting_opponent"
+msgstr "Статус: ожидание соперника"
+
+msgid "Game state: playing"
+msgstr "Статус: игра идет"
+
+msgid "Level: elementary"
+msgstr "Уровень: элементарный"
+
+msgid "Level: easy"
+msgstr "Уровень: легкий"
+
+msgid "Level: medium"
+msgstr "Уровень: средний"
+
+msgid "Level: hard"
+msgstr "Уровень: сложный"
+
+msgid "Timeout: %{sec} seconds"
+msgstr "Время на задачу: %{sec} секунд"
+
+msgid "undefined"
+msgstr "не определено"
+
+msgid "won"
+msgstr "победа"
+
+msgid "lost"
+msgstr "поражение"
+
+msgid "gave_up"
+msgstr "сдался"
+
+msgid "timeout"
+msgstr "время вышло"
+
+msgid "Game between"
+msgstr "Игра между"
+
+msgid "Game level"
+msgstr "Уровень сложности"
+
+msgid "Play with"
+msgstr "Играть с"
+
+msgid "Try simple battle"
+msgstr "Попробовать простую игру"
+
+msgid "You don't have access to this game"
+msgstr "У вас нет доступа к этой игре"
+
+msgid "Total players"
+msgstr "Всего игроков"
+
+msgid "No players yet"
+msgstr "Игроков пока нет"
+
+msgid "Task Description"
+msgstr "Описание задачи"
+
+msgid "Win"
+msgstr "Победа"
+
+msgid "Lost"
+msgstr "Поражение"
+
+# Participant Dashboard Translations
+msgid "Participant Dashboard"
+msgstr "Личный кабинет участника"
+
+msgid "Category"
+msgstr "Категория"
+
+msgid "Overall Standing"
+msgstr "Место в общем зачёте"
+
+msgid "Category Standing"
+msgstr "Место в категории"
+
+msgid "Qualification"
+msgstr "Квалификация"
+
+msgid "Semifinal Entrance"
+msgstr "Выход в полуфинал"
+
+msgid "Semifinal"
+msgstr "Полуфинал"
+
+msgid "Final Entrance"
+msgstr "Выход в финал"
+
+msgid "Final"
+msgstr "Итог"
+
+msgid "Failed"
+msgstr "Не прошёл"
+
+msgid "Go to"
+msgstr "Перейти"
+
+msgid "Report"
+msgstr "Сообщить о нарушении"
+
+msgid "Ban"
+msgstr "Забанить"
+
+msgid "Place in total"
+msgstr "Место в общем зачете"
+
+msgid "Place in category"
+msgstr "Место в категории"
+
+msgid "Time spent"
+msgstr "Время на этап"
+
+msgid "You already passed this stage"
+msgstr "Вы уже прошли этот этап"
+
+msgid "Stage confirmation"
+msgstr "Подтверждение этапа"
+
+msgid "Passed"
+msgstr "Прошёл"
+
+msgid "Not passed"
+msgstr "Не прошёл"
+
+msgid "Ranking"
+msgstr "Рейтинг"
+
+msgid "Sended"
+msgstr "Отправлено"
+
+msgid "Wait revealing results"
+msgstr "Ожидайте результатов соревнования"
+
+msgid "Leaderboard"
+msgstr "Рейтинг"
+
+msgid "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support."
+msgstr "Ваш доступ к турниру временно ограничен из-за проверки на нарушение правил честной игры. Сейчас вы не можете получать новые матчи. Если вы считаете, что это ошибка, пожалуйста, свяжитесь с поддержкой турнира."
+
+msgid "Cheaters Panel"
+msgstr "Панель читеров"
+
+msgid "Cheaters"
+msgstr "Читеры"
+
+msgid "No cheaters marked yet"
+msgstr "Пока нет отмеченных читеров"
+
+msgid "All reports"
+msgstr "Все жалобы"
+
+msgid "No reports yet"
+msgstr "Жалоб пока нет"
+
+msgid "Unban"
+msgstr "Разбанить"
+
+msgid "Grand Slam"
+msgstr "Гранд-слэм"
+
+msgid "Masters"
+msgstr "Мастерс"
+
+msgid "Elite"
+msgstr "Элита"
+
+msgid "Pro"
+msgstr "Про"
+
+msgid "Challenger"
+msgstr "Челленджер"
+
+msgid "Rookie"
+msgstr "Новичок"
+
+msgid "Sort by %{label}"
+msgstr "Сортировать по %{label}"
+
+msgid "of %{count} players"
+msgstr "из %{count} игроков"
+
+msgid "Leaderboard pagination"
+msgstr "Пагинация таблицы лидеров"
+
+msgid "Search player"
+msgstr "Поиск игрока"
+
+msgid "Search by name..."
+msgstr "Поиск по имени..."
+
+msgid "Filter by clan"
+msgstr "Фильтр по клану"
+
+msgid "All Clans"
+msgstr "Все кланы"
+
+msgid "Filter by language"
+msgstr "Фильтр по языку"
+
+msgid "All Languages"
+msgstr "Все языки"
+
+msgid "Clear Filters"
+msgstr "Сбросить фильтры"
+
+msgid "View player insights"
+msgstr "Посмотреть статистику игрока"
+
+msgid "Stats"
+msgstr "Статистика"
+
+msgid "No results yet"
+msgstr "Пока нет результатов"
+
+msgid "No players match your filters"
+msgstr "Нет игроков, соответствующих фильтрам"
+
+msgid "Avg Place"
+msgstr "Среднее место"
+
+msgid "Insights"
+msgstr "Статистика"
+
+msgid "Top 3"
+msgstr "Топ 3"
+
+msgid "Previous Seasons Champions"
+msgstr "Чемпионы прошлых сезонов"
+
+msgid "View All Seasons"
+msgstr "Все сезоны"
+
+msgid "Full Results"
+msgstr "Полные результаты"
+
+msgid "Hall of Fame"
+msgstr "Зал славы"
+
+msgid "Starts"
+msgstr "Начало"
+
+msgid "Ends"
+msgstr "Конец"
+
+msgid "Current Season Leaderboard"
+msgstr "Таблица лидеров текущего сезона"
+
+msgid "%{count} players"
+msgstr "%{count} игроков"
+
+msgid "points"
+msgstr "очков"
+
+msgid "Season"
+msgstr "Сезон"
+
+msgid "View Results"
+msgstr "Посмотреть результаты"
+
+msgid "Competition archive"
+msgstr "Архив соревнований"
+
+msgid "Seasons"
+msgstr "Сезоны"
+
+msgid "Browse finished seasons and open the full leaderboard for each one."
+msgstr "Просматривайте завершённые сезоны и открывайте полную таблицу лидеров для каждого."
+
+msgid "No seasons found"
+msgstr "Сезоны не найдены"
+
+msgid "Champions"
+msgstr "Чемпионы"
+
+msgid "Season not found"
+msgstr "Сезон не найден"
+
+msgid "Upcoming"
+msgstr "Скоро"
+
+msgid "Completed"
+msgstr "Завершён"
+
+msgid "All Seasons"
+msgstr "Все сезоны"
+
+msgid "Full Leaderboard"
+msgstr "Полная таблица лидеров"
+
+msgid "n/a"
+msgstr "н/д"
+
+msgid "Playing"
+msgstr "Идёт"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgid "Pending"
+msgstr "Ожидание"
+
+msgid "Won"
+msgstr "Победа"
+
+msgid "Over"
+msgstr "Ничья"
+
+msgid "%{count} pts"
+msgstr "%{count} очк."
+
+msgid "Leading"
+msgstr "Лидирует"
+
+msgid "Contender"
+msgstr "Соперник"
+
+msgid "%{count} wins"
+msgstr "%{count} побед"
+
+msgid "Game"
+msgstr "Игра"
+
+msgid "Open game"
+msgstr "Открыть игру"
+
+msgid "Duration: %{duration}"
+msgstr "Длительность: %{duration}"
+
+msgid "Finished %{date}"
+msgstr "Завершено %{date}"
+
+msgid "Still in progress"
+msgstr "Ещё идёт"
+
+msgid "H2H Arena"
+msgstr "H2H арена"
+
+msgid "Direct duel history with profile links, live status, and every shared game."
+msgstr "История личных дуэлей со ссылками на профили, текущим статусом и всеми общими играми."
+
+msgid "Total games"
+msgstr "Всего игр"
+
+msgid "Draws"
+msgstr "Ничьи"
+
+msgid "All games"
+msgstr "Все игры"
+
+msgid "%{count} records"
+msgstr "%{count} записей"
+
+msgid "No games found for this pair."
+msgstr "Для этой пары игр не найдено."
+
+msgid "Total games: %{count}"
+msgstr "Всего игр: %{count}"
+
+msgid "Total tournament wins: %{count}"
+msgstr "Всего побед в турнирах: %{count}"
+
+msgid "Total tournament wins"
+msgstr "Всего побед в турнирах"
+
+msgid "Failed to load tournaments"
+msgstr "Не удалось загрузить турниры"
+
+msgid "No tournaments played yet"
+msgstr "Пока нет сыгранных турниров"
+
+msgid "Grade"
+msgstr "Уровень"
+
+msgid "Time"
+msgstr "Время"
+
+msgid "Lang"
+msgstr "Язык"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Total tournaments: %{count}"
+msgstr "Всего турниров: %{count}"
+
+msgid "Last 365 days"
+msgstr "Последние 365 дней"
+
+msgid "%{count} games in %{year}"
+msgstr "%{count} игр в %{year}"
+
+msgid "%{count} games in the last 365 days"
+msgstr "%{count} игр за последние 365 дней"
+
+msgid "%{count} games on %{date}"
+msgstr "%{count} игр %{date}"
+
+msgid "No games"
+msgstr "Нет игр"
+
+msgid "User avatar"
+msgstr "Аватар пользователя"
+
+msgid "No clan"
+msgstr "Без клана"
+
+msgid "joined at %{date}"
+msgstr "зарегистрирован %{date}"
+
+msgid "Github account"
+msgstr "Аккаунт Github"
+
+msgid "Place: #%{place}"
+msgstr "Место: #%{place}"
+
+msgid "Place: pending"
+msgstr "Место: cкоро"
+
+msgid "Test run"
+msgstr "Тестовый запуск"
+
+msgid "Running…"
+msgstr "Выполняется…"
+
+msgid "Running your solution…"
+msgstr "Запускаем твоё решение…"
+
+msgid "Running solutions…"
+msgstr "Идет запуск решений…"
+
+msgid "We're executing your code in the runner. This may take a few seconds."
+msgstr "Выполняем код в раннере. Это может занять несколько секунд."
+
+msgid "Loading run result…"
+msgstr "Загружаем результат запуска…"
+
+msgid "Fetching the executed run output."
+msgstr "Получаем вывод запуска."
+
+msgid "Completed games"
+msgstr "Завершённые игры"
+
+msgid "(Elo Rating)"
+msgstr "(рейтинг Elo)"
+
+msgid "Rivals"
+msgstr "Соперники"
+
+msgid "Clan: %{clan}"
+msgstr "Клан: %{clan}"
+
+msgid "W/L/T: %{wins}/%{losses}/%{timeouts}"
+msgstr "П/П/Т: %{wins}/%{losses}/%{timeouts}"
+
+msgid "Languages"
+msgstr "Языки"
+
+msgid "Activity"
+msgstr "Активность"
+
+msgid "Total entries: %{count}"
+msgstr "Всего записей: %{count}"
+
+msgid "Username contains..."
+msgstr "Имя пользователя содержит..."
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Users per page"
+msgstr "Пользователей на странице"
+
+msgid "With bots"
+msgstr "С ботами"
+
+msgid "Season %{name} %{year}: %{start} - %{end}"
+msgstr "Сезон %{name} %{year}: %{start} - %{end}"
+
+msgid "Closest Opponents"
+msgstr "Ближайшие соперники"
+
+msgid "Avatar Logo"
+msgstr "Аватар"
+
+msgid "Live Tournaments"
+msgstr "Идущие турниры"
+
+msgid "Upcoming Tournaments"
+msgstr "Предстоящие турниры"
+
+msgid "Competition not started yet"
+msgstr "Соревнование ещё не началось"
+
+msgid "add clan"
+msgstr "добавить клан"
+
+msgid "Codebattle League"
+msgstr "Лига Codebattle"
+
+msgid "Challenge the best! Participate in the Competition tournaments, defeat your rivals to earn points, and claim the first place in the programmer ranking."
+msgstr "Бросьте вызов сильнейшим! Участвуйте в турнирах Competition, побеждайте соперников, набирайте очки и занимайте первое место в рейтинге программистов."
+
+msgid "See Rules & Details"
+msgstr "Правила и детали"
+
+msgid "Seasons, Grades, Points — Overview"
+msgstr "Сезоны, уровни и очки"
+
+msgid "Season 0: Sep 21 – Dec 21"
+msgstr "Сезон 0: 21 сен - 21 дек"
+
+msgid "Season 1: Dec 21 – Mar 21"
+msgstr "Сезон 1: 21 дек - 21 мар"
+
+msgid "Season 2: Mar 21 – Jun 21"
+msgstr "Сезон 2: 21 мар - 21 июн"
+
+msgid "Season 3: Jun 21 – Sep 21"
+msgstr "Сезон 3: 21 июн - 21 сен"
+
+msgid "On the season end date (the 21st), we run a Grand Slam at 16:00 UTC."
+msgstr "В день окончания сезона, 21-го числа, проводится Grand Slam в 16:00 UTC."
+
+msgid "Season Points reset each season. Elo never resets (lifetime)."
+msgstr "Сезонные очки сбрасываются каждый сезон. Elo не сбрасывается никогда."
+
+msgid "Grades"
+msgstr "Уровни"
+
+msgid "open, rookie, challenger, pro, elite, masters, grand_slam — determine prestige, task pools, points, schedules, and limits."
+msgstr "open, rookie, challenger, pro, elite, masters, grand_slam определяют престиж, набор задач, очки, расписание и лимиты."
+
+msgid "Tournament Scheduling & Preemption"
+msgstr "Расписание турниров и приоритеты"
+
+msgid "Daily/Hourly (UTC)"
+msgstr "Ежедневно/ежечасно (UTC)"
+
+msgid "Rookie: every 4 hours — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (no 16:00 slot)."
+msgstr "Rookie: каждые 4 часа — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (без слота 16:00)."
+
+msgid "Challenger: daily 16:00 UTC; preempted by higher grades that day/week."
+msgstr "Challenger: ежедневно в 16:00 UTC; может быть вытеснен более высоким уровнем в этот день или неделю."
+
+msgid "Weekly 16:00 UTC priority"
+msgstr "Недельный приоритет на 16:00 UTC"
+
+msgid "grand_slam > masters > elite > pro."
+msgstr "grand_slam > masters > elite > pro."
+
+msgid "In any week, exactly one of these runs at 16:00. Grand Slam week -> only GS at 16:00. Masters week -> no pro/elite. Otherwise pro (Tue) and elite (Wed) alternate as backbone."
+msgstr "В любую неделю в 16:00 запускается только один из них. В неделю Grand Slam идет только GS в 16:00. В неделю Masters нет pro/elite. Иначе pro (вт) и elite (ср) чередуются."
+
+msgid "Player Limits & Rounds per Grade"
+msgstr "Лимиты игроков и раунды по уровню"
+
+msgid "Players limit"
+msgstr "Лимит игроков"
+
+msgid "rookie: 8"
+msgstr "rookie: 8"
+
+msgid "challenger: 16"
+msgstr "challenger: 16"
+
+msgid "pro: 32"
+msgstr "pro: 32"
+
+msgid "elite: 64"
+msgstr "elite: 64"
+
+msgid "masters: 128"
+msgstr "masters: 128"
+
+msgid "grand_slam: 256"
+msgstr "grand_slam: 256"
+
+msgid "Rounds per grade"
+msgstr "Раунды по уровню"
+
+msgid "rookie: 4"
+msgstr "rookie: 4"
+
+msgid "challenger: 6"
+msgstr "challenger: 6"
+
+msgid "pro: 8"
+msgstr "pro: 8"
+
+msgid "elite: 10"
+msgstr "elite: 10"
+
+msgid "masters: 12"
+msgstr "masters: 12"
+
+msgid "grand_slam: 14"
+msgstr "grand_slam: 14"
+
+msgid "For each finished tournament (grade != open), award Season Points by final place using the tables below. All remaining participants (outside prize slots) receive 2 points each. Prize points do not stack with participation points."
+msgstr "За каждый завершённый турнир (grade != open) начисляются сезонные очки по итоговому месту по таблицам ниже. Все остальные участники получают по 2 очка. Призовые очки не суммируются с очками за участие."
+
+msgid "rookie: [8, 4, 2] - top-3"
+msgstr "rookie: [8, 4, 2] - топ-3"
+
+msgid "challenger: [16, 8, 4, 2] - top-6"
+msgstr "challenger: [16, 8, 4, 2] - топ-6"
+
+msgid "pro: [128, 64, 32, 16, 8, 4, 2] - top-7"
+msgstr "pro: [128, 64, 32, 16, 8, 4, 2] - топ-7"
+
+msgid "elite: [256, 128, 64, 32, 16, 8, 4, 2] - top-8"
+msgstr "elite: [256, 128, 64, 32, 16, 8, 4, 2] - топ-8"
+
+msgid "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-10"
+msgstr "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - топ-10"
+
+msgid "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-11"
+msgstr "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - топ-11"
+
+msgid "Season Leaderboard Tie-Breakers"
+msgstr "Тай-брейки сезонного рейтинга"
+
+msgid "Total Season Points (desc)"
+msgstr "Сумма сезонных очков (по убыванию)"
+
+msgid "Tournament wins in season (desc)"
+msgstr "Победы в турнирах за сезон (по убыванию)"
+
+msgid "Tournament participations in season (desc)"
+msgstr "Участия в турнирах за сезон (по убыванию)"
+
+msgid "Maintain a HoF for Season Champions and Grand Slam Champions (participants page optional later)."
+msgstr "Поддерживается зал славы для чемпионов сезонов и чемпионов Grand Slam."
+
+msgid "Codebattle - Overview & Key Concepts"
+msgstr "Codebattle - обзор и ключевые понятия"
+
+msgid "Competitive Programming Game"
+msgstr "Игра по спортивному программированию"
+
+msgid "Codebattle (codebattle.hexlet.io) is a real-time coding duel platform. Two players solve the same task in parallel; whoever solves it first wins the match."
+msgstr "Codebattle (codebattle.hexlet.io) — это платформа для кодинг-дуэлей в реальном времени. Два игрока параллельно решают одну задачу; кто решит первым, тот и побеждает."
+
+msgid "Swiss Tournaments"
+msgstr "Швейцарские турниры"
+
+msgid "Multiple rounds; in each round, players are paired vs players with similar cumulative score; no repeat pairings (unless unavoidable on round 1 bootstrap or via bot fill-ins)."
+msgstr "Несколько раундов; в каждом раунде игроки попадают против соперников с близким суммарным счётом; повторные пары не допускаются, если только это не неизбежно."
+
+msgid "17 supported - clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+msgstr "Поддерживаются 17 языков: clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+
+msgid "Create a CSS Game"
+msgstr "Создать CSS-игру"
+
+msgid "Create a SQL Game"
+msgstr "Создать SQL-игру"
+
+msgid "Join a battle"
+msgstr "Присоединиться к битве"
+
+msgid "Continue battle"
+msgstr "Продолжить битву"
+
+msgid "Create a battle"
+msgstr "Создать битву"
+
+msgid "Join a game"
+msgstr "Присоединиться к игре"
+
+msgid "Online players: %{count}"
+msgstr "Игроков онлайн: %{count}"
+
+msgid "Send message"
+msgstr "Отправить сообщение"
+
+msgid "Send fight invite"
+msgstr "Отправить приглашение в бой"
+
+msgid "fight"
+msgstr "бой"
+
+msgid "Be nice in chat!"
+msgstr "Будь вежлив в чате!"
+
+msgid "Message length cannot exceed %{count} characters."
+msgstr "Длина сообщения не может превышать %{count} символов."
+
+msgid "Open emoji picker"
+msgstr "Открыть выбор эмодзи"
+
+msgid "Clean banned"
+msgstr "Очистить бан"
+
+msgid "Joined channel: %{name}"
+msgstr "Подключён к каналу: %{name}"
+
+msgid "%{count} Online"
+msgstr "Онлайн: %{count}"
+
+msgid "Watching"
+msgstr "Смотрят"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "Edit task"
+msgstr "Редактируют задачу"
+
+msgid "General"
+msgstr "Общий"
+
+msgid "Notification"
+msgstr "Уведомления"
+
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+msgid "You successfully authorized to the platform. Open your tournament link to start."
+msgstr "Вы успешно авторизовались на платформе. Откройте ссылку на ваш турнир, чтобы начать."
+
+msgid "Tournament process is dead. Click Restart to make it live again so users can join."
+msgstr "Процесс турнира остановлен. Нажмите Restart, чтобы снова запустить его и дать пользователям возможность присоединиться."
+
+msgid "Tests percent"
+msgstr "Процент тестов"
+
+msgid "Started - Finished"
+msgstr "Начало - Конец"
+
+msgid "Invitation Required"
+msgstr "Требуется приглашение"
+
+msgid "You need to accept an invitation to participate in this tournament."
+msgstr "Для участия в этом турнире необходимо принять приглашение."
+
+msgid "Accept Invite"
+msgstr "Принять приглашение"
+
+msgid "Check Status"
+msgstr "Проверить статус"
+
+msgid "Preparing your invite..."
+msgstr "Подготавливаем приглашение..."
+
+msgid "Invite failed. Please try again."
+msgstr "Не удалось отправить приглашение. Попробуйте ещё раз."
+
+msgid "Retry"
+msgstr "Повторить"
+
+msgid "Could not retrieve your external platform credentials. Please contact support."
+msgstr "Не удалось получить учётные данные внешней платформы. Пожалуйста, обратитесь в поддержку."
+
+msgid "Group Tournament"
+msgstr "Групповой турнир"
+
+msgid "Support"
+msgstr "Тех поддержка"
+
+msgid "Execution History"
+msgstr "История запусков"
+
+msgid "Add Solution +"
+msgstr "Добавить решение +"
+
+msgid "Run Viewer"
+msgstr "Просмотр запуска"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "No description provided for this tournament."
+msgstr "Описание для этого турнира не задано."
+
+msgid "Pick a run from the left panel to see its output."
+msgstr "Выбери запуск в левой панели, чтобы увидеть результат."
+
+msgid "No viewer HTML for this run."
+msgstr "Нет HTML для просмотра этого запуска."
+
+msgid "Tournament Overview"
+msgstr "Обзор турнира"
+
+msgid "No additional setup is required for this tournament."
+msgstr "Для этого турнира дополнительная настройка не требуется."
+
+msgid "Execution Logs"
+msgstr "Логи выполнения"
+
+msgid "No logs yet"
+msgstr "Логов пока нет"
+
+msgid "... and %{count} more"
+msgstr "... и ещё %{count}"
+
+msgid "External Setup"
+msgstr "Внешняя настройка"
+
+msgid "Run Viewer Fullscreen"
+msgstr "Просмотр запуска — полный экран"
+
+msgid "Close Fullscreen"
+msgstr "Закрыть полный экран"
+
+msgid "Fullscreen"
+msgstr "Полный экран"
+
+msgid "Your next step is the AI-round group tournament. Click the button below to continue."
+msgstr "Теперь переходи к задаче с ИИ-ассистентом на платформе %{external_platform_name}."
+
+msgid "Go to AI-round group tournament"
+msgstr "Перейти к задаче"
+
+msgid "Later"
+msgstr "Позже"
+
+msgid "Stage finished"
+msgstr "Этап завершён"
+
+msgid "%{name} stage finished"
+msgstr "Этап «%{name}» завершён"
+
+msgid "First qualification round finished"
+msgstr "Полуфинал еще не окончен"
+
+msgid "Accepted"
+msgstr "Принято"
+
+msgid "Slice"
+msgstr "Группа"
+
+msgid "Round"
+msgstr "Раунд"
+
+msgid "Total"
+msgstr "Итог"
+
+msgid "Left"
+msgstr "Вышел"
+
+msgid "Seed"
+msgstr "Отбор"
+
+msgid "%{count} slices"
+msgstr "%{count} групп"
+
+msgid "%{visible} / %{total} slices"
+msgstr "%{visible} / %{total} групп"
+
+msgid "Show all"
+msgstr "Показать все"
+
+msgid "Show less"
+msgstr "Свернуть"
+
+msgid "No round data yet"
+msgstr "Данных раунда пока нет"
+
+msgid "You"
+msgstr "Вы"
+
+msgid "Add solution"
+msgstr "Добавить решение"
+
+msgid "Time: %{duration}"
+msgstr "Время: %{duration}"
+
+msgid "Group %{n}"
+msgstr "Группа %{n}"
+
+msgid "Qualification run"
+msgstr "Отборочный"
+
+msgid "Group run"
+msgstr "Раунд"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Time Limit"
+msgstr "Лимит времени"
+
+msgid "Round %{n}"
+msgstr "Раунд %{n}"
+
+msgid "Results run"
+msgstr "Результат запуска"
+
+msgid "Group assignment soon"
+msgstr "Скоро распределим в группы"
+
+msgid "Group contest soon"
+msgstr "Скоро баттл в группах"
+
+msgid "Return to game"
+msgstr "Вернуться к игре"
+
+msgid "%{count} min"
+msgstr "%{count} мин"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Base"
+msgstr "База"
+
+msgid "First page"
+msgstr "Первая страница"
+
+msgid "Format"
+msgstr "Формат"
+
+msgid "Kick player"
+msgstr "Исключить игрока"
+
+msgid "Kick %{name} from tournament?"
+msgstr "Исключить %{name} из турнира?"
+
+msgid "Last page"
+msgstr "Последняя страница"
+
+msgid "Level"
+msgstr "Уровень"
+
+msgid "Loss factor"
+msgstr "Коэффициент поражения"
+
+msgid "Match time"
+msgstr "Время матча"
+
+msgid "Next"
+msgstr "Далее"
+
+msgid "Next page"
+msgstr "Следующая страница"
+
+msgid "No matches yet"
+msgstr "Матчей пока нет"
+
+msgid "Players & Matches"
+msgstr "Игроки и матчи"
+
+msgid "Previous page"
+msgstr "Предыдущая страница"
+
+msgid "Record"
+msgstr "Рекорд"
+
+msgid "Registration is open"
+msgstr "Регистрация открыта"
+
+msgid "Rounds"
+msgstr "Раунды"
+
+msgid "Row spacer"
+msgstr "Разделитель строк"
+
+msgid "Show game history"
+msgstr "Показать историю игры"
+
+msgid "Speed bonus"
+msgstr "Бонус за скорость"
+
+msgid "Tests"
+msgstr "Тесты"
+
+msgid "The tournament continues for top 8 players."
+msgstr "Турнир продолжается для 8 лучших игроков."
+
+msgid "This tournament is live — join now to jump into the next round."
+msgstr "Турнир идёт прямо сейчас — присоединяйтесь, чтобы сыграть в следующем раунде."
+
+msgid "Timeout factor"
+msgstr "Коэффициент таймаута"
+
+msgid "Top user by task ranking"
+msgstr "Лучшие игроки по задачам"
+
+msgid "Tournament in progress"
+msgstr "Турнир идёт"
+
+msgid "You're in — get ready to battle!"
+msgstr "Вы в игре — готовьтесь к бою!"
+
+msgid "Your games will appear here as soon as the round starts. Hang tight!"
+msgstr "Ваши игры появятся здесь, как только начнётся раунд. Немного подождите!"
+
+msgid "pts"
+msgstr "очк."
+
+msgid "task duration distribution"
+msgstr "распределение времени решения задачи"
+
+msgid "Please, be nice in chat"
+msgstr "Пожалуйста, будьте вежливы в чате"
+
+msgid "Write message..."
+msgstr "Напишите сообщение..."
+
+msgid "Chat message"
+msgstr "Сообщение в чат"
+
+msgid "Your weapon"
+msgstr "Ваш язык"
+
+msgid "No access yet"
+msgstr "Пока недоступно"
+
+msgid "Your name"
+msgstr "Ваше имя"
+
+msgid "Your clan"
+msgstr "Ваш клан"
+
+msgid "clan list"
+msgstr "список кланов"
+
+msgid "Enter your clan"
+msgstr "Введите название клана"
+
+msgid "Locale"
+msgstr "Язык интерфейса"
+
+msgid "Select sound type"
+msgstr "Выберите набор звуков"
+
+msgid "Silent"
+msgstr "Без звука"
+
+msgid "Select sound level"
+msgstr "Громкость игры"
+
+msgid "Select tournament sound level"
+msgstr "Громкость турнира"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Socials"
+msgstr "Социальные сети"
+
+msgid "Unlink %{provider}"
+msgstr "Отвязать %{provider}"
+
+msgid "Link %{provider}"
+msgstr "Привязать %{provider}"
+
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "Old password"
+msgstr "Текущий пароль"
+
+msgid "Enter old password"
+msgstr "Введите текущий пароль"
+
+msgid "New password"
+msgstr "Новый пароль"
+
+msgid "Enter new password"
+msgstr "Введите новый пароль"
+
+msgid "Confirm new password"
+msgstr "Подтвердите новый пароль"
+
+msgid "Active devices"
+msgstr "Активные устройства"
+
+msgid "No active devices"
+msgstr "Нет активных устройств"
+
+msgid "Unknown device"
+msgstr "Неизвестное устройство"
+
+msgid "Current device"
+msgstr "Текущее устройство"
+
+msgid "Remove device %{device}"
+msgstr "Удалить устройство %{device}"
+
+msgid "Sign out"
+msgstr "Выйти"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Opponent found!"
+msgstr "Соперник найден!"
+
+#. Tournament create form (added for the create-tournament UX overhaul)
+
+msgid "Create tournament"
+msgstr "Создать турнир"
+
+msgid "My tournaments"
+msgstr "Мои турниры"
+
+msgid "You haven't created any tournaments yet"
+msgstr "Вы ещё не создали ни одного турнира"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "State"
+msgstr "Состояние"
+
+msgid "Starts at"
+msgstr "Начало"
+
+msgid "Edit"
+msgstr "Изменить"
+
+msgid "Create a New Tournament"
+msgstr "Создание нового турнира"
+
+msgid "Use my last tournament's settings"
+msgstr "Взять настройки из прошлого турнира"
+
+msgid "Reset to defaults"
+msgstr "Сбросить к значениям по умолчанию"
+
+msgid "Basic Information"
+msgstr "Основная информация"
+
+msgid "Schedule & Access"
+msgstr "Расписание и доступ"
+
+msgid "Tournament Features"
+msgstr "Возможности турнира"
+
+msgid "Task Configuration"
+msgstr "Настройка задач"
+
+msgid "Tournament Settings"
+msgstr "Настройки турнира"
+
+msgid "Timeout Configuration"
+msgstr "Настройка таймаутов"
+
+msgid "Advanced Settings"
+msgstr "Расширенные настройки"
+
+msgid "Tournament Name"
+msgstr "Название турнира"
+
+msgid "Moderator IDs"
+msgstr "ID модераторов"
+
+msgid "Access Type"
+msgstr "Тип доступа"
+
+msgid "Use Chat"
+msgstr "Использовать чат"
+
+msgid "Use Clan"
+msgstr "Использовать кланы"
+
+msgid "Exclude Banned Players"
+msgstr "Исключить забаненных игроков"
+
+msgid "Task Provider"
+msgstr "Источник задач"
+
+msgid "Task Strategy"
+msgstr "Стратегия выдачи задач"
+
+msgid "Task Pack"
+msgstr "Набор задач"
+
+msgid "Tags (comma separated)"
+msgstr "Теги (через запятую)"
+
+msgid "Tournament Type"
+msgstr "Тип турнира"
+
+msgid "Players Limit"
+msgstr "Лимит игроков"
+
+msgid "Ranking Type"
+msgstr "Тип рейтинга"
+
+msgid "Score Strategy"
+msgstr "Стратегия подсчёта очков"
+
+msgid "Rounds Limit"
+msgstr "Количество раундов"
+
+msgid "Break Duration (seconds)"
+msgstr "Длительность перерыва (сек)"
+
+msgid "Timeout Mode"
+msgstr "Режим таймаута"
+
+msgid "Matching interval (sec)"
+msgstr "Интервал подбора (сек)"
+
+msgid "Round Timeout (seconds)"
+msgstr "Таймаут раунда (сек)"
+
+msgid "Tournament Timeout (seconds)"
+msgstr "Таймаут турнира (сек)"
+
+msgid "Meta JSON"
+msgstr "Meta JSON"
+
+msgid "Tags"
+msgstr "Теги"
+
+msgid "Random"
+msgstr "Случайно"
+
+msgid "Sequential"
+msgstr "Последовательно"
+
+msgid "Public"
+msgstr "Открытый"
+
+msgid "Token (Private)"
+msgstr "По токену (приватный)"
+
+msgid "Elementary"
+msgstr "Начальный"
+
+msgid "Easy"
+msgstr "Лёгкий"
+
+msgid "Medium"
+msgstr "Средний"
+
+msgid "Hard"
+msgstr "Сложный"
+
+msgid "By User"
+msgstr "По игрокам"
+
+msgid "By Clan"
+msgstr "По кланам"
+
+msgid "75 Percentile"
+msgstr "75-й перцентиль"
+
+msgid "Static Base Score"
+msgstr "Фиксированные базовые очки"
+
+msgid "Win/Loss"
+msgstr "Победа/Поражение"
+
+msgid "Per task timeout"
+msgstr "Таймаут на задачу"
+
+msgid "Per round (fixed)"
+msgstr "На раунд (фиксированный)"
+
+msgid "Per round (with rematch)"
+msgstr "На раунд (с переигровками)"
+
+msgid "Per tournament timeout"
+msgstr "Таймаут на весь турнир"
+
+msgid "Swiss"
+msgstr "Швейцарская система"
+
+msgid "Ladder"
+msgstr "Ладдер"
+
+msgid "Ladder (continuous matchmaking)"
+msgstr "Лестница (непрерывный подбор)"
+
+msgid "Select a task pack"
+msgstr "Выберите набор задач"
+
+msgid "Shown to players in the lobby and on the tournament page."
+msgstr "Отображается игрокам в лобби и на странице турнира."
+
+msgid "Markdown is supported. Shown on the tournament page."
+msgstr "Поддерживается Markdown. Отображается на странице турнира."
+
+msgid "Enter user IDs separated by commas or spaces. You are always a moderator and do not need to be listed here."
+msgstr "Укажите ID пользователей через запятую или пробел. Вы всегда являетесь модератором, добавлять себя не нужно."
+
+msgid "The tournament starts automatically at this time."
+msgstr "Турнир начнётся автоматически в это время."
+
+msgid "Maximum number of players who can join."
+msgstr "Максимальное число игроков, которые могут вступить."
+
+msgid "Ladder always uses a static base score per task."
+msgstr "В режиме «Лестница» всегда используются фиксированные базовые очки за задачу."
+
+msgid "For Ladder, this is the number of matching rounds."
+msgstr "Для «Лестницы» это количество раундов подбора."
+
+msgid "Number of rounds to play."
+msgstr "Количество раундов в турнире."
+
+msgid "Pause between rounds, in seconds."
+msgstr "Пауза между раундами, в секундах."
+
+msgid "How often the pool is matched, in seconds."
+msgstr "Как часто выполняется подбор из пула, в секундах."
+
+msgid "Time limit for each round, in seconds."
+msgstr "Ограничение времени на раунд, в секундах."
+
+msgid "Total time for the whole tournament, in seconds."
+msgstr "Общее время на весь турнир, в секундах."
+
+msgid "Advanced JSON configuration. Leave as {} if unsure."
+msgstr "Расширенная конфигурация в JSON. Оставьте {}, если не уверены."
+
+msgid "Players are paired each round against opponents with a similar score. Runs for a fixed number of rounds — good for balanced, bracket-style events."
+msgstr "Каждый раунд игроки соревнуются с соперниками с близким счётом. Проходит фиксированное число раундов — подходит для сбалансированных турниров."
+
+msgid "Continuous pool matchmaking. \"Rounds Limit\" is the number of matching rounds; \"Round Timeout\" is the matching interval. Timeout and score are fixed (per-task, static base score)."
+msgstr "Непрерывный подбор соперников из пула. «Количество раундов» — число раундов подбора, «Таймаут раунда» — интервал подбора. Таймаут и подсчёт очков фиксированы (на задачу, базовые очки)."
+
+msgid "Tasks are picked automatically from the chosen difficulty level."
+msgstr "Задачи выбираются автоматически из выбранного уровня сложности."
+
+msgid "Tasks come from a fixed task pack, played in the pack's order."
+msgstr "Задачи берутся из выбранного набора и идут в порядке набора."
+
+msgid "Tasks are picked by the given tags and difficulty level."
+msgstr "Задачи выбираются по указанным тегам и уровню сложности."
+
+msgid "Each player gets tasks in a random order."
+msgstr "Каждый игрок получает задачи в случайном порядке."
+
+msgid "All players get tasks in the same fixed order."
+msgstr "Все игроки получают задачи в одном фиксированном порядке."
+
+msgid "Score is based on the 75th percentile of solve times — faster solutions score higher."
+msgstr "Очки считаются по 75-му перцентилю времени решения — быстрые решения приносят больше очков."
+
+msgid "Each task gives a fixed base score regardless of the player's solve time."
+msgstr "Каждая задача даёт фиксированные базовые очки независимо от времени решения."
+
+msgid "Only the match result counts — a win or a loss, with no partial score."
+msgstr "Учитывается только результат матча — победа или поражение, без частичных очков."
+
+msgid "Players are ranked individually."
+msgstr "Игроки ранжируются индивидуально."
+
+msgid "Players are grouped and ranked by their clan."
+msgstr "Игроки группируются и ранжируются по кланам."
+
+msgid "Anyone can find and join this tournament."
+msgstr "Любой может найти турнир и вступить в него."
+
+msgid "Only players who have the invite link can join."
+msgstr "Вступить могут только игроки, у которых есть ссылка-приглашение."
+
+msgid "Each game uses the task's own time limit. Different tasks may have different timeouts."
+msgstr "Каждая игра использует собственный лимит времени задачи. У разных задач таймауты могут отличаться."
+
+msgid "All games in a round share a fixed timeout. One task per round."
+msgstr "Все игры раунда используют общий фиксированный таймаут. Одна задача на раунд."
+
+msgid "Each round has a fixed timeout. Players play multiple tasks (rematches) within the round until time runs out."
+msgstr "У каждого раунда фиксированный таймаут. Игроки решают несколько задач (переигровки) в раунде, пока не истечёт время."
+
+msgid "One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires."
+msgstr "Один общий таймаут на весь турнир. Игры используют оставшееся время турнира. Турнир завершается автоматически по истечении времени."
+
+msgid "Submitting..."
+msgstr "Отправка..."
+
+msgid "Create Tournament"
+msgstr "Создать турнир"
+
+msgid "Update Tournament"
+msgstr "Обновить турнир"
+
+msgid "Approximate start time shown to players. The creator or a moderator starts the tournament manually."
+msgstr "Примерное время начала, которое видят игроки. Создатель или модератор запускает турнир вручную."
+
+msgid "Moderators can start and cancel the tournament, kick or ban players, and manage rounds. Enter user IDs separated by commas or spaces. You are always a moderator and do not need to be listed here."
+msgstr "Модераторы могут запускать и отменять турнир, кикать и банить игроков, управлять раундами. Укажите ID пользователей через запятую или пробел. Вы всегда являетесь модератором, добавлять себя не нужно."
+
+msgid "Options"
+msgstr "Опции"
+
+msgid "- ✅ Solve each task correctly to earn points\n- ⚡ Faster solutions rank higher\n- 🤝 Be respectful to other players\n\nGood luck and have fun! 🚀"
+msgstr "- ✅ Решайте задачи правильно, чтобы получать очки\n- ⚡ Чем быстрее решение, тем выше место\n- 🤝 Уважайте других игроков\n\nУдачи и хорошей игры! 🚀"
+
+msgid "Code Rumble"
+msgstr "Кодовая заварушка"
+
+msgid "Byte Brawl"
+msgstr "Байтовая драка"
+
+msgid "Algo Arena Showdown"
+msgstr "Схватка на арене алгоритмов"
+
+msgid "The Great Bug Hunt"
+msgstr "Великая охота на баги"
+
+msgid "Syntax Smackdown"
+msgstr "Синтаксическая рубка"
+
+msgid "Midnight Code Clash"
+msgstr "Полночная битва кода"
+
+msgid "Turbo Loop Rumble"
+msgstr "Турбо-заруба циклов"
+
+msgid "Hack & Slash"
+msgstr "Хак и руби"
+
+msgid "Recursion Rampage"
+msgstr "Рекурсивный раж"
+
+msgid "Stack Overflow Showdown"
+msgstr "Дуэль переполнения стека"
+
+# Interface localization
+
+msgid "View Hall of Fame"
+msgstr "Посмотреть зал славы"
+
+msgid "Contests History"
+msgstr "История соревнований"
+
+msgid "My Tournaments"
+msgstr "Мои турниры"
+
+msgid "Create a Tournament"
+msgstr "Создать турнир"
+
+msgid "Achievements"
+msgstr "Достижения"
+
+msgid "Calendar"
+msgstr "Календарь"
+
+msgid "Task packs"
+msgstr "Наборы задач"
+
+msgid "Task Packs"
+msgstr "Наборы задач"
+
+msgid "Create new task pack"
+msgstr "Создать новый набор задач"
+
+msgid "Clans"
+msgstr "Кланы"
+
+msgid "Total clans:"
+msgstr "Всего кланов:"
+
+msgid "Creator"
+msgstr "Создатель"
+
+msgid "Created at"
+msgstr "Дата создания"
+
+msgid "Game Type"
+msgstr "Тип игры"
+
+msgid "Time control"
+msgstr "Контроль времени"
+
+msgid "Choose task by name or tags"
+msgstr "Выберите задачу по названию или тегам"
+
+msgid "With other user"
+msgstr "С другим пользователем"
+
+msgid "With a friend"
+msgstr "С другом"
+
+msgid "With a bot"
+msgstr "С ботом"
+
+msgid "Create battle"
+msgstr "Создать битву"
+
+msgid "Feedback"
+msgstr "Обратная связь"
+
+msgid "Send feedback"
+msgstr "Отправить отзыв"
+
+msgid "Message"
+msgstr "Сообщение"
+
+msgid "Bug"
+msgstr "Ошибка"
+
+msgid "Suggestion"
+msgstr "Предложение"
+
+msgid "Question"
+msgstr "Вопрос"
+
+msgid "Opponent has left"
+msgstr "Соперник покинул игру"
+
+msgid "Are you sure you want to give up?"
+msgstr "Вы уверены, что хотите сдаться?"
+
+msgid "Rematch"
+msgstr "Реванш"
+
+msgid "Rematch?"
+msgstr "Реванш?"
+
+msgid "Accept"
+msgstr "Принять"
+
+msgid "Decline"
+msgstr "Отклонить"
+
+msgid "Rejected Offer"
+msgstr "Предложение отклонено"
+
+msgid "Wait For An Answer..."
+msgstr "Ожидание ответа..."
+
+msgid "Opponent Left The Game"
+msgstr "Соперник покинул игру"
+
+msgid "There are no active games right now."
+msgstr "Сейчас нет активных игр."
+
+msgid "Ranking Points"
+msgstr "Рейтинговые очки"
+
+msgid "Waiting Players"
+msgstr "Ожидание игроков"
+
+msgid "Change email"
+msgstr "Изменить адрес электронной почты"
+
+msgid "Current email"
+msgstr "Текущий адрес электронной почты"
+
+msgid "New email"
+msgstr "Новый адрес электронной почты"
+
+msgid "Enter new email"
+msgstr "Введите новый адрес электронной почты"
+
+msgid "Current password"
+msgstr "Текущий пароль"
+
+msgid "Enter current password"
+msgstr "Введите текущий пароль"
+
+msgid "Send verification email"
+msgstr "Отправить письмо для подтверждения"
+
+msgid "Verification email sent. Confirm the new address to finish the change."
+msgstr "Письмо отправлено. Подтвердите новый адрес, чтобы завершить изменение."
+
+msgid "Points"
+msgstr "Очки"
+
+msgid "Best Streak"
+msgstr "Лучшая серия"
+
+msgid "Best win streak"
+msgstr "Лучшая серия побед"
+
+msgid "No Invites"
+msgstr "Нет приглашений"
+
+msgid "Today"
+msgstr "Сегодня"
+
+msgid "Month"
+msgstr "Месяц"
+
+msgid "Week"
+msgstr "Неделя"
+
+msgid "Day"
+msgstr "День"
+
+msgid "Agenda"
+msgstr "Расписание"
+
+msgid "Event"
+msgstr "Событие"
+
+msgid "There are no tournaments in this range."
+msgstr "В этом диапазоне нет турниров."
+
+msgid "+%{count} more"
+msgstr "+ ещё %{count}"
+
+msgid "Season Points Distribution"
+msgstr "Распределение очков сезона"
+
+msgid "Duration"
+msgstr "Длительность"
+
+msgid "Winner"
+msgstr "Победитель"
+
+msgid "starts in"
+msgstr "начнётся через"
+
+msgid "Starts in:"
+msgstr "Начнётся через:"
+
+msgid "at"
+msgstr "в"
+
+msgid "Tournament chat"
+msgstr "Чат турнира"
+
+msgid "Tournament: %{name}"
+msgstr "Турнир: %{name}"
+
+msgid "Open Tournament"
+msgstr "Открыть турнир"
+
+msgid "Start Date: %{date}"
+msgstr "Дата начала: %{date}"
+
+msgid "Time: %{start} - %{end}"
+msgstr "Время: %{start} - %{end}"
+
+msgid "First Place Points: %{points} Ranking Points"
+msgstr "Очки за первое место: %{points}"
+
+msgid "Tournament Highlights:"
+msgstr "Главное о турнире:"
+
+msgid "Prizes: Codebattle T-shirt merch for a top-tier of League"
+msgstr "Призы: футболка Codebattle для победителя лиги"
+
+msgid "Challenges: %{count} unique algorithm problems"
+msgstr "Задачи: %{count} уникальных алгоритмических задач"
+
+msgid "Impact: Advancing in the Codebattle programmer rankings"
+msgstr "Результат: продвижение в рейтинге программистов Codebattle"
+
+msgid "View League Ranking Points System"
+msgstr "Система рейтинговых очков лиги"
+
+msgid "Tournament Description:"
+msgstr "Описание турнира:"
+
+msgid "%{grade} Tournament #%{number}"
+msgstr "Турнир «%{grade}» №%{number}"
+
+msgid "..."
+msgstr "..."
+
+msgid "%{state}"
+msgstr "%{state}"
+
+msgid "30 minutes to solve"
+msgstr "30 минут на решение"
+
+msgid "Accept invitation"
+msgstr "Принять приглашение"
+
+msgid "Ban player"
+msgstr "Заблокировать игрока"
+
+msgid "Before you begin:"
+msgstr "Перед началом:"
+
+msgid "Break"
+msgstr "Перерыв"
+
+msgid "Choose opponent"
+msgstr "Выберите соперника"
+
+msgid "Confirmed"
+msgstr "Подтверждено"
+
+msgid "Create invite"
+msgstr "Создать приглашение"
+
+msgid "Denied"
+msgstr "Отклонено"
+
+msgid "Done"
+msgstr "Готово"
+
+msgid "Done editing"
+msgstr "Завершить редактирование"
+
+msgid "Duration distribution"
+msgstr "Распределение длительности"
+
+msgid "Edit Layout"
+msgstr "Настроить расположение"
+
+msgid "Examples"
+msgstr "Примеры"
+
+msgid "Feedback not sent."
+msgstr "Не удалось отправить обратную связь."
+
+msgid "Feedback sent successfully."
+msgstr "Обратная связь успешно отправлена."
+
+msgid "Find tournament details at"
+msgstr "Подробности о турнире:"
+
+msgid "Fuzzy search"
+msgstr "Нечёткий поиск"
+
+msgid "Gave up"
+msgstr "Сдался"
+
+msgid "GaveUp"
+msgstr "Сдался"
+
+msgid "Give Up"
+msgstr "Сдаться"
+
+msgid "Go to task"
+msgstr "Перейти к задаче"
+
+msgid "Have not an account?"
+msgstr "Нет аккаунта?"
+
+msgid "If you have an account"
+msgstr "Если у вас есть аккаунт"
+
+msgid "Inserted At"
+msgstr "Дата создания"
+
+msgid "Join our External Platform organization to receive the task"
+msgstr "Вступите в организацию на внешней платформе, чтобы получить задачу"
+
+msgid "Link"
+msgstr "Ссылка"
+
+msgid "Loading participant data..."
+msgstr "Загрузка данных участника..."
+
+msgid "Matches letters in order"
+msgstr "Буквы совпадают по порядку"
+
+msgid "Matrix Broadcast Arena"
+msgstr "Арена матричной трансляции"
+
+msgid "No finished tournaments yet"
+msgstr "Завершённых турниров пока нет"
+
+msgid "No leaderboard data available"
+msgstr "Данные рейтинга недоступны"
+
+msgid "Offender"
+msgstr "Нарушитель"
+
+msgid "Once all steps are complete, you can start solving"
+msgstr "После выполнения всех шагов можно приступать к решению"
+
+msgid "Player not found"
+msgstr "Игрок не найден"
+
+msgid "Please wait for someone to join or send an invite using the link below"
+msgstr "Подождите подключения соперника или отправьте ему приглашение по ссылке ниже"
+
+msgid "Processed"
+msgstr "Обработано"
+
+msgid "random task (%{total} available)"
+msgstr "случайная задача (доступно: %{total})"
+
+msgid "Release"
+msgstr "Разблокировать"
+
+msgid "Report on player"
+msgstr "Пожаловаться на игрока"
+
+msgid "Reporter"
+msgstr "Автор жалобы"
+
+msgid "Reports"
+msgstr "Жалобы"
+
+msgid "Reset"
+msgstr "Сбросить"
+
+msgid "Reset layout"
+msgstr "Сбросить расположение"
+
+msgid "Select"
+msgstr "Выбрать"
+
+msgid "Sending"
+msgstr "Отправка..."
+
+msgid "Settings changed successfully"
+msgstr "Настройки успешно изменены"
+
+msgid "Show the in-tournament chat to participants."
+msgstr "Показывать участникам чат турнира."
+
+msgid "Sign In"
+msgstr "Войти"
+
+msgid "Sign in with Discord"
+msgstr "Войти через Discord"
+
+msgid "Sign in with Github"
+msgstr "Войти через GitHub"
+
+msgid "Sign Up"
+msgstr "Зарегистрироваться"
+
+msgid "Sign up with Discord"
+msgstr "Зарегистрироваться через Discord"
+
+msgid "Sign up with Github"
+msgstr "Зарегистрироваться через GitHub"
+
+msgid "Something went wrong"
+msgstr "Что-то пошло не так"
+
+msgid "Start new game"
+msgstr "Начать новую игру"
+
+msgid "Task is solved in External Plaform"
+msgstr "Задача решается на внешней платформе"
+
+msgid "Test failed"
+msgstr "Тест не пройден"
+
+msgid "This game has not been started"
+msgstr "Эта игра не была запущена"
+
+msgid "This users have contributed to this task:"
+msgstr "Вклад в эту задачу внесли:"
+
+msgid "Time is Over"
+msgstr "Время вышло"
+
+msgid "Timer"
+msgstr "Таймер"
+
+msgid "Top users by task"
+msgstr "Лучшие игроки по задаче"
+
+msgid "tournament"
+msgstr "турнир"
+
+msgid "Tournament will start soon"
+msgstr "Турнир скоро начнётся"
+
+msgid "Type a player name"
+msgstr "Введите имя игрока"
+
+msgid "We sent a verification email. Please confirm your email before signing in."
+msgstr "Мы отправили письмо для подтверждения. Подтвердите адрес перед входом."
+
+msgid "You are following %{followName}"
+msgstr "Вы следите за %{followName}"
+
+msgid "Please verify your email before signing in. A new verification email was sent."
+msgstr "Подтвердите адрес электронной почты перед входом. Мы отправили новое письмо для подтверждения."
+
+msgid "We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:"
+msgstr "Не удалось получить результаты проверки. Проверьте подключение к сети и убедитесь, что в решении нет ошибок :prod_is_down:"
+
+msgid "Access"
+msgstr "Доступ"
+
+msgid "Access token"
+msgstr "Токен доступа"
+
+msgid "Add tag"
+msgstr "Добавить тег"
+
+msgid "Add tag..."
+msgstr "Добавить тег..."
+
+msgid "animation"
+msgstr "анимация"
+
+msgid "Arguments"
+msgstr "Аргументы"
+
+msgid "Asserts status"
+msgstr "Статус тестов"
+
+msgid "avatar"
+msgstr "аватар"
+
+msgid "Ban %{name}"
+msgstr "Заблокировать %{name}"
+
+msgid "Cancel game"
+msgstr "Отменить игру"
+
+msgid "Chat is disabled"
+msgstr "Чат отключён"
+
+msgid "Close Record Player"
+msgstr "Закрыть проигрыватель записи"
+
+msgid "Compress editor"
+msgstr "Уменьшить редактор"
+
+msgid "Confirm"
+msgstr "Подтвердить"
+
+msgid "Copy link"
+msgstr "Копировать ссылку"
+
+msgid "Countdown before redirect to the next match"
+msgstr "Обратный отсчёт до перехода к следующему матчу"
+
+msgid "Decrease font size"
+msgstr "Уменьшить шрифт"
+
+msgid "Delete message"
+msgstr "Удалить сообщение"
+
+msgid "Edit layout"
+msgstr "Изменить расположение"
+
+msgid "Editor height"
+msgstr "Высота редактора"
+
+msgid "Editor mode"
+msgstr "Режим редактора"
+
+msgid "Editor settings"
+msgstr "Настройки редактора"
+
+msgid "Editor size controls"
+msgstr "Управление размером редактора"
+
+msgid "Execution Time"
+msgstr "Время выполнения"
+
+msgid "Expand editor"
+msgstr "Увеличить редактор"
+
+msgid "Expected"
+msgstr "Ожидаемый результат"
+
+msgid "follow user"
+msgstr "подписаться на пользователя"
+
+msgid "Game actions"
+msgstr "Действия в игре"
+
+msgid "Game award"
+msgstr "Награда за игру"
+
+msgid "Gold cup"
+msgstr "Золотой кубок"
+
+msgid "Green check"
+msgstr "Зелёная галочка"
+
+msgid "Hide header"
+msgstr "Скрыть заголовок"
+
+msgid "Increase font size"
+msgstr "Увеличить шрифт"
+
+msgid "Info"
+msgstr "Информация"
+
+msgid "Invite"
+msgstr "Пригласить"
+
+msgid "invited you"
+msgstr "приглашает вас"
+
+msgid "Invites"
+msgstr "Приглашения"
+
+msgid "Leaderboard header"
+msgstr "Заголовок рейтинга"
+
+msgid "left editor solution"
+msgstr "решение в левом редакторе"
+
+msgid "Left editor solution picture"
+msgstr "Изображение решения из левого редактора"
+
+msgid "Open H2H"
+msgstr "Открыть личные встречи"
+
+msgid "Open Record Player"
+msgstr "Открыть проигрыватель записи"
+
+msgid "Other actions"
+msgstr "Другие действия"
+
+msgid "play active game"
+msgstr "открыть активную игру"
+
+msgid "Private tournament"
+msgstr "Закрытый турнир"
+
+msgid "Programming language select"
+msgstr "Выбор языка программирования"
+
+msgid "rating"
+msgstr "рейтинг"
+
+msgid "Report actions"
+msgstr "Действия с жалобой"
+
+msgid "right editor solution"
+msgstr "решение в правом редакторе"
+
+msgid "Right editor solution picture"
+msgstr "Изображение решения из правого редактора"
+
+msgid "Scroll to bottom"
+msgstr "Прокрутить вниз"
+
+msgid "Send an invite"
+msgstr "Отправить приглашение"
+
+msgid "Show header"
+msgstr "Показать заголовок"
+
+msgid "Submit form"
+msgstr "Отправить форму"
+
+msgid "Swap game widgets"
+msgstr "Поменять игровые панели местами"
+
+msgid "target solution picture"
+msgstr "изображение целевого решения"
+
+msgid "Unknown tournament type"
+msgstr "Неизвестный тип турнира"
+
+msgid "User info"
+msgstr "Информация о пользователе"
+
+msgid "User row"
+msgstr "Строка пользователя"
+
+msgid "Versus"
+msgstr "Противостояние"
+
+msgid "Waiting opponent avatar"
+msgstr "Аватар ожидаемого соперника"
+
+msgid "White flag"
+msgstr "Белый флаг"
+
+msgid "Win icon"
+msgstr "Значок победы"
+
+msgid "Back to replay settings"
+msgstr "Назад к настройкам повтора"
+
+msgid "Check button"
+msgstr "Кнопка проверки"
+
+msgid "Choose from 0.5× to 4×"
+msgstr "Выберите скорость от 0,5× до 4×"
+
+msgid "Choose the programming language that you like best"
+msgstr "Выберите удобный вам язык программирования"
+
+msgid "Click the button to check your solution or use Ctrl+Enter/Cmd+Enter"
+msgstr "Нажмите кнопку, чтобы проверить решение, или используйте Ctrl+Enter/Cmd+Enter"
+
+msgid "Click this button to give up. You will lose the game and can try it again next time, or ask your opponent for an immediate rematch."
+msgstr "Нажмите эту кнопку, чтобы сдаться. Вы проиграете игру, но сможете попробовать снова или предложить сопернику немедленный реванш."
+
+msgid "Click this button to reset the code to the original template"
+msgstr "Нажмите эту кнопку, чтобы восстановить исходный шаблон кода"
+
+msgid "Copy replay link at current position"
+msgstr "Скопировать ссылку на текущую позицию повтора"
+
+msgid "Copy replay link"
+msgstr "Копировать ссылку на повтор"
+
+msgid "Decrease playback speed"
+msgstr "Уменьшить скорость воспроизведения"
+
+msgid "Enter pass code"
+msgstr "Введите код доступа"
+
+msgid "Example: 12345678"
+msgstr "Пример: 12345678"
+
+msgid "Full access to game history"
+msgstr "Полный доступ к истории игр"
+
+msgid "Game is Locked"
+msgstr "Игра закрыта"
+
+msgid "Game lock input for pass code"
+msgstr "Поле кода доступа к игре"
+
+msgid "Game page"
+msgstr "Страница игры"
+
+msgid "Give up button"
+msgstr "Кнопка «Сдаться»"
+
+msgid "Here you will see the test results or compilation errors after checking your solution"
+msgstr "Здесь появятся результаты тестов или ошибки компиляции после проверки решения"
+
+msgid "Increase playback speed"
+msgstr "Увеличить скорость воспроизведения"
+
+msgid "Link copied"
+msgstr "Ссылка скопирована"
+
+msgid "No pauses between solution checks"
+msgstr "Без пауз между проверками решения"
+
+msgid "Not a Premium subscriber?"
+msgstr "Ещё нет Premium-подписки?"
+
+msgid "Only for Premium subscribers"
+msgstr "Только для Premium-подписчиков"
+
+msgid "Original pauses or uniform steps"
+msgstr "Исходные паузы или равномерные шаги"
+
+msgid "Output:"
+msgstr "Вывод:"
+
+msgid "Pause replay"
+msgstr "Приостановить повтор"
+
+msgid "Playback speed"
+msgstr "Скорость воспроизведения"
+
+msgid "Playback speed presets"
+msgstr "Предустановки скорости воспроизведения"
+
+msgid "Playback time"
+msgstr "Время воспроизведения"
+
+msgid "Play replay"
+msgstr "Запустить повтор"
+
+msgid "Player gave up"
+msgstr "Игрок сдался"
+
+msgid "Player won"
+msgstr "Игрок победил"
+
+msgid "Read the task carefully, pay attention to examples"
+msgstr "Внимательно прочитайте условие и обратите внимание на примеры"
+
+msgid "Real time"
+msgstr "Реальное время"
+
+msgid "Replay settings"
+msgstr "Настройки повтора"
+
+msgid "Replay timing"
+msgstr "Режим времени повтора"
+
+msgid "Reset button"
+msgstr "Кнопка сброса"
+
+msgid "Restricted Content"
+msgstr "Ограниченный доступ"
+
+msgid "Result output"
+msgstr "Результат проверки"
+
+msgid "Set playback speed to %{speed}"
+msgstr "Установить скорость %{speed}"
+
+msgid "Share this exact replay position"
+msgstr "Поделиться этой позицией повтора"
+
+msgid "Skip guide"
+msgstr "Пропустить обучение"
+
+msgid "Sorry! This content is for Premium subscribers only."
+msgstr "Извините, этот контент доступен только Premium-подписчикам."
+
+msgid "Subscribe to Premium and you'll get:"
+msgstr "Оформите Premium-подписку и получите:"
+
+msgid "Testing your own tasks"
+msgstr "Проверку собственных задач"
+
+msgid "This is a game page. You need to solve the task first and pass all tests successfully."
+msgstr "Это страница игры. Вам нужно решить задачу и успешно пройти все тесты."
+
+msgid "Timing"
+msgstr "Режим времени"
+
+msgid "Uniform"
+msgstr "Равномерно"
+
+msgid "Want to subscribe?"
+msgstr "Хотите оформить подписку?"
+
+msgid "Working on it."
+msgstr "Уже работаем над этим."
+
+msgid "Write the solution of task in the editor"
+msgstr "Напишите решение задачи в редакторе"
+
+msgid "Forgot your password?"
+msgstr "Забыли пароль?"
+
+msgid "Hide %{field}"
+msgstr "Скрыть поле «%{field}»"
+
+msgid "Show %{field}"
+msgstr "Показать поле «%{field}»"
+
+msgid "We have sent you an email with instructions on how to reset your password"
+msgstr "Мы отправили вам письмо с инструкциями по сбросу пароля"
+
+msgid "/ Top %{percent}%"
+msgstr "/ Топ %{percent}%"
+
+msgid "Above You"
+msgstr "Выше вас"
+
+msgid "Avg"
+msgstr "Среднее"
+
+msgid "Avg Finish"
+msgstr "Среднее место"
+
+msgid "AVG Solving speed"
+msgstr "Средняя скорость решения"
+
+msgid "AVG Tests"
+msgstr "Средний процент тестов"
+
+msgid "AVG Tests:"
+msgstr "Средний процент тестов:"
+
+msgid "AVG Duration:"
+msgstr "Средняя длительность:"
+
+msgid "Base static score"
+msgstr "Базовые очки"
+
+msgid "Best"
+msgstr "Лучшее"
+
+msgid "Best Finish"
+msgstr "Лучшее место"
+
+msgid "Better than %{percent}% of players"
+msgstr "Лучше, чем %{percent}% игроков"
+
+msgid "By Grade"
+msgstr "По уровню"
+
+msgid "Created"
+msgstr "Создано"
+
+msgid "Creating game..."
+msgstr "Создание игры..."
+
+msgid "Creator ID"
+msgstr "ID автора"
+
+msgid "Details"
+msgstr "Подробности"
+
+msgid "Failed to load detailed stats"
+msgstr "Не удалось загрузить подробную статистику"
+
+msgid "Fastest Solutions"
+msgstr "Самые быстрые решения"
+
+msgid "Function Signature"
+msgstr "Сигнатура функции"
+
+msgid "Loading detailed stats..."
+msgstr "Загрузка подробной статистики..."
+
+msgid "Losses"
+msgstr "Поражения"
+
+msgid "Median"
+msgstr "Медиана"
+
+msgid "No grade stats available"
+msgstr "Нет статистики по уровням"
+
+msgid "No solve time data yet"
+msgstr "Данных о времени решения пока нет"
+
+msgid "No tournament data available"
+msgstr "Нет данных о турнирах"
+
+msgid "No tournament data by grade available"
+msgstr "Нет данных о турнирах по уровням"
+
+msgid "Not enough data for trend analysis"
+msgstr "Недостаточно данных для анализа динамики"
+
+msgid "Overview"
+msgstr "Обзор"
+
+msgid "Performance Over Time"
+msgstr "Динамика результатов"
+
+msgid "Play this task"
+msgstr "Играть с этой задачей"
+
+msgid "Player: %{name}"
+msgstr "Игрок: %{name}"
+
+msgid "Podiums"
+msgstr "Призовые места"
+
+msgid "Points by Tournament Grade"
+msgstr "Очки по уровню турнира"
+
+msgid "Points Distribution by Grade"
+msgstr "Распределение очков по уровням"
+
+msgid "Points:"
+msgstr "Очки:"
+
+msgid "Season Rank"
+msgstr "Место в сезоне"
+
+msgid "Showing basic stats only."
+msgstr "Показана только основная статистика."
+
+msgid "Show all %{count}"
+msgstr "Показать все (%{count})"
+
+msgid "Solve Time (winners)"
+msgstr "Время решения победителей"
+
+msgid "Stats vs Median (Normalized)"
+msgstr "Статистика относительно медианы"
+
+msgid "Task must be active to play"
+msgstr "Для игры задача должна быть активной"
+
+msgid "Task not found"
+msgstr "Задача не найдена"
+
+msgid "Test Cases (%{count})"
+msgstr "Тесты (%{count})"
+
+msgid "Time Played"
+msgstr "Время в игре"
+
+msgid "Time to solve"
+msgstr "Время на решение"
+
+msgid "Top %{percent}%"
+msgstr "Топ %{percent}%"
+
+msgid "Total Games"
+msgstr "Всего игр"
+
+msgid "Total Points"
+msgstr "Всего очков"
+
+msgid "Total Score"
+msgstr "Общий счёт"
+
+msgid "Total Wins"
+msgstr "Всего побед"
+
+msgid "Tournament #%{id}"
+msgstr "Турнир №%{id}"
+
+msgid "Tournament Performance by Grade"
+msgstr "Результаты турниров по уровням"
+
+msgid "Tournament Results"
+msgstr "Результаты турниров"
+
+msgid "Tournaments by Grade"
+msgstr "Турниры по уровням"
+
+msgid "Tournaments:"
+msgstr "Турниры:"
+
+msgid "Trends"
+msgstr "Динамика"
+
+msgid "Updated"
+msgstr "Обновлено"
+
+msgid "Visibility"
+msgstr "Видимость"
+
+msgid "vs Median Player"
+msgstr "Сравнение с медианным игроком"
+
+msgid "W/G"
+msgstr "Победы/игры"
+
+msgid "Weapon"
+msgstr "Язык"
+
+msgid "Weekly Performance Trend"
+msgstr "Недельная динамика результатов"
+
+msgid "Win Rate"
+msgstr "Процент побед"
+
+msgid "Win Rate %"
+msgstr "Процент побед"
+
+msgid "Win Rate Comparison"
+msgstr "Сравнение процента побед"
+
+msgid "Win Rate:"
+msgstr "Процент побед:"
+
+msgid "Winners"
+msgstr "Победители"
+
+msgid "Wins by Grade"
+msgstr "Победы по уровням"
+
+msgid "Wins:"
+msgstr "Победы:"
+
+msgid "Your Percentile"
+msgstr "Ваш процентиль"
+
+msgid "Your Ranking Percentile"
+msgstr "Ваш рейтинговый процентиль"
+
+msgid "Your Stats vs Median"
+msgstr "Ваша статистика относительно медианы"
+
+msgid "(%{count} available)"
+msgstr "(доступно: %{count})"
+
+msgid "Are you sure you want to finish this tournament?"
+msgstr "Вы уверены, что хотите завершить этот турнир?"
+
+msgid "Are you sure you want to reset this tournament?"
+msgstr "Вы уверены, что хотите сбросить этот турнир?"
+
+msgid "Are you sure you want to retry this tournament?"
+msgstr "Вы уверены, что хотите перезапустить этот турнир?"
+
+msgid "Are you sure you want to start the round?"
+msgstr "Вы уверены, что хотите начать раунд?"
+
+msgid "Are you sure you want to start the tournament?"
+msgstr "Вы уверены, что хотите начать турнир?"
+
+msgid "Bots visible"
+msgstr "Боты видны"
+
+msgid "Break duration"
+msgstr "Длительность перерыва"
+
+msgid "Chat enabled"
+msgstr "Чат включён"
+
+msgid "Choose player"
+msgstr "Выберите игрока"
+
+msgid "Choose task level for"
+msgstr "Выберите уровень задачи для"
+
+msgid "Completed tournaments"
+msgstr "Завершённые турниры"
+
+msgid "Copy Name"
+msgstr "Копировать имя"
+
+msgid "Creator: %{name}"
+msgstr "Автор: %{name}"
+
+msgid "Current round timeout"
+msgstr "Тайм-аут текущего раунда"
+
+msgid "Direct message"
+msgstr "Личное сообщение"
+
+msgid "Edit Tournament"
+msgstr "Редактировать турнир"
+
+msgid "Event ID"
+msgstr "ID события"
+
+msgid "Finish Round"
+msgstr "Завершить раунд"
+
+msgid "Finish tournament"
+msgstr "Завершить турнир"
+
+msgid "Finish Tournament"
+msgstr "Завершить турнир"
+
+msgid "Hide bots"
+msgstr "Скрыть ботов"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Level: %{level} (%{count} available)"
+msgstr "Уровень: %{level} (доступно: %{count})"
+
+msgid "Live"
+msgstr "В эфире"
+
+msgid "Live tournaments"
+msgstr "Активные турниры"
+
+msgid "Lobby"
+msgstr "Лобби"
+
+msgid "Match seconds"
+msgstr "Длительность матча в секундах"
+
+msgid "Mode:"
+msgstr "Режим:"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "No completed games"
+msgstr "Нет завершённых игр"
+
+msgid "No invites"
+msgstr "Нет приглашений"
+
+msgid "No rating"
+msgstr "Нет рейтинга"
+
+msgid "Open up"
+msgstr "Открыть доступ"
+
+msgid "Opponent: %{name}"
+msgstr "Соперник: %{name}"
+
+msgid "Origin"
+msgstr "Источник"
+
+msgid "Participants"
+msgstr "Участники"
+
+msgid "Please"
+msgstr "Пожалуйста,"
+
+msgid "Ranking type"
+msgstr "Тип рейтинга"
+
+msgid "Reset tournament"
+msgstr "Сбросить турнир"
+
+msgid "Reset tournament progress"
+msgstr "Сбросить прогресс турнира"
+
+msgid "Restart"
+msgstr "Перезапустить"
+
+msgid "Retry tournament"
+msgstr "Повторить турнир"
+
+msgid "Round %{number}"
+msgstr "Раунд %{number}"
+
+msgid "Round already started"
+msgstr "Раунд уже начался"
+
+msgid "Round task level"
+msgstr "Уровень задачи раунда"
+
+msgid "Round task pack id"
+msgstr "ID набора задач раунда"
+
+msgid "Round timeout"
+msgstr "Тайм-аут раунда"
+
+msgid "Round timeout seconds"
+msgstr "Тайм-аут раунда в секундах"
+
+msgid "Rounds limit"
+msgstr "Лимит раундов"
+
+msgid "Saving..."
+msgstr "Сохранение..."
+
+msgid "Schedule"
+msgstr "Расписание"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "sec"
+msgstr "сек"
+
+msgid "Seconds:"
+msgstr "Секунды:"
+
+msgid "Show bots"
+msgstr "Показать ботов"
+
+msgid "Show Results"
+msgstr "Показать результаты"
+
+msgid "sign in"
+msgstr "войдите"
+
+msgid "Spectator"
+msgstr "Зритель"
+
+msgid "Start"
+msgstr "Начать"
+
+msgid "Start next round"
+msgstr "Начать следующий раунд"
+
+msgid "Start round"
+msgstr "Начать раунд"
+
+msgid "Start Round"
+msgstr "Начать раунд"
+
+msgid "Start tournament confirmation"
+msgstr "Подтверждение запуска турнира"
+
+msgid "Starts at %{date}"
+msgstr "Начало: %{date}"
+
+msgid "Task level:"
+msgstr "Уровень задачи:"
+
+msgid "Task pack"
+msgstr "Набор задач"
+
+msgid "Task pack name:"
+msgstr "Название набора задач:"
+
+msgid "Task provider"
+msgstr "Источник задач"
+
+msgid "Task strategy"
+msgstr "Стратегия выбора задач"
+
+msgid "Template Task is Loading"
+msgstr "Загрузка шаблонной задачи"
+
+msgid "There are no active tournaments right now"
+msgstr "Сейчас нет активных турниров"
+
+msgid "This action is destructive. All tournament progress, matches, and results will be lost."
+msgstr "Это необратимое действие. Весь прогресс турнира, матчи и результаты будут удалены."
+
+msgid "This will clear tournament games and results, then restore the current player roster."
+msgstr "Игры и результаты турнира будут удалены, а текущий состав участников — восстановлен."
+
+msgid "This will end the tournament and finalize all results."
+msgstr "Турнир будет завершён, а все результаты зафиксированы."
+
+msgid "Timeout mode"
+msgstr "Режим тайм-аута"
+
+msgid "Timeouts"
+msgstr "Тайм-ауты"
+
+msgid "Title"
+msgstr "Название"
+
+msgid "to see the tournament details"
+msgstr "чтобы увидеть подробности турнира"
+
+msgid "Toggle stream mode"
+msgstr "Переключить режим трансляции"
+
+msgid "Top list"
+msgstr "Список лидеров"
+
+msgid "Tournament details"
+msgstr "Подробности турнира"
+
+msgid "Tournament flow"
+msgstr "Ход турнира"
+
+msgid "Tournament ID"
+msgstr "ID турнира"
+
+msgid "Tournament timeout"
+msgstr "Тайм-аут турнира"
+
+msgid "Tournaments Info"
+msgstr "Информация о турнирах"
+
+msgid "Updated at"
+msgstr "Обновлено"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "you"
+msgstr "вы"
+
+msgid "You invited "
+msgstr "Вы пригласили "
+
+msgid "You may want to create one"
+msgstr "Вы можете создать турнир"
+
+msgid "Your invites"
+msgstr "Ваши приглашения"
+
+msgid "Blank"
+msgstr "Пустая"
+
+msgid "Draft"
+msgstr "Черновик"
+
+msgid "On Moderation"
+msgstr "На модерации"
+
+msgid "Disabled"
+msgstr "Отключена"
+
+msgid "blank"
+msgstr "пустая"
+
+msgid "draft"
+msgstr "черновик"
+
+msgid "on_moderation"
+msgstr "на модерации"
+
+msgid "disabled"
+msgstr "отключена"
+
+msgid "public"
+msgstr "публичная"
+
+msgid "hidden"
+msgstr "скрытая"
+
+msgid "algorithms"
+msgstr "алгоритмы"
+
+msgid "elementary"
+msgstr "начальный"
+
+msgid "easy"
+msgstr "лёгкий"
+
+msgid "medium"
+msgstr "средний"
+
+msgid "hard"
+msgstr "сложный"
+
+msgid "Email"
+msgstr "Электронная почта"
+
+msgid "Nickname"
+msgstr "Имя пользователя"
+
+msgid "Password Confirmation"
+msgstr "Подтверждение пароля"
+
+msgid "Tournament statistics"
+msgstr "Статистика турнира"
+
+msgid "Tournament round statistics"
+msgstr "Статистика раунда турнира"
+
+msgid "Archive account"
+msgstr "Архивировать аккаунт"
+
+msgid "Archiving account..."
+msgstr "Архивация аккаунта..."
+
+msgid "Archive account permanently"
+msgstr "Архивировать аккаунт навсегда"
+
+msgid "Anonymize your profile, revoke every session, and permanently disable access to this account."
+msgstr "Обезличить профиль, завершить все сеансы и навсегда отключить доступ к этому аккаунту."
+
+msgid "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+msgstr "Это действие нельзя отменить. Вы навсегда потеряете доступ к этому аккаунту. Позже вы сможете создать новый аккаунт, но восстановить этот не получится."
+
+msgid "Type ARCHIVE to confirm"
+msgstr "Введите ARCHIVE для подтверждения"
+
+msgid "Archive permanently"
+msgstr "Архивировать навсегда"
+
+msgid "In tournament"
+msgstr "В турнире"
+
+msgid "Time for checking after the game is over"
+msgstr "Время на проверку после окончания игры вышло"
+
+msgid "Checked after the time ran out: the result does not count"
+msgstr "Проверка после окончания времени: на результат не влияет"
+
+msgid "API tokens"
+msgstr "API-токены"
+
+msgid "Personal tokens for bots, CLI and devices."
+msgstr "Персональные токены для ботов, CLI и устройств."
+
+msgid "API documentation"
+msgstr "Документация API"
+
+msgid "Copy the token now, it will not be shown again:"
+msgstr "Скопируйте токен сейчас, больше он не будет показан:"
+
+msgid "Token name"
+msgstr "Название токена"
+
+msgid "Expires in"
+msgstr "Срок действия"
+
+msgid "30 days"
+msgstr "30 дней"
+
+msgid "90 days"
+msgstr "90 дней"
+
+msgid "1 year"
+msgstr "1 год"
+
+msgid "Never (read-only tokens)"
+msgstr "Бессрочно (только для read)"
+
+msgid "Create token"
+msgstr "Создать токен"
+
+msgid "No API tokens"
+msgstr "Нет API-токенов"
+
+msgid "Last used"
+msgstr "Использован"
+
+msgid "Expires"
+msgstr "Истекает"
+
+msgid "Never expires"
+msgstr "Бессрочный"
+
+msgid "Revoke"
+msgstr "Отозвать"
+
+msgid "e.g. Gauntlet or my bot"
+msgstr "например, Gauntlet или мой бот"
+
+msgid "Available for accounts older than a week"
+msgstr "Доступно для аккаунтов старше недели"
+
+msgid "Your profile, games, tournaments and the schedule"
+msgstr "Профиль, игры, турниры и расписание"
+
+msgid "Create and cancel your games"
+msgstr "Создание и отмена своих игр"
+
+msgid "Create, edit, start and cancel private tournaments"
+msgstr "Создание, изменение, запуск и отмена приватных турниров"
+
+msgid "Never used"
+msgstr "Не использовался"
+
+msgid "QR code for the invite link"
+msgstr "QR-код ссылки-приглашения"
+
+msgid "Scan the QR code to join the game"
+msgstr "Отсканируйте QR-код, чтобы присоединиться к игре"
+
+msgid "Show QR"
+msgstr "Показать QR"
+
+msgid "Hide QR"
+msgstr "Скрыть QR"
+
+msgid "Connecting..."
+msgstr "Подключение..."
+
+msgid "Next round"
+msgstr "Следующий раунд"
+
+msgid "Round in progress"
+msgstr "Идёт раунд"
+
+msgid "Final round"
+msgstr "Финальный раунд"
+
+msgid "Pairing players"
+msgstr "Подбор пар"
+
+msgid "Wrapping up"
+msgstr "Завершение"
+
+msgid "Round %{round} starts in"
+msgstr "Раунд %{round} начнётся через"
+
+msgid "Round %{round} ends in"
+msgstr "Раунд %{round} закончится через"
+
+msgid "Final games end in"
+msgstr "Финальные игры закончатся через"
+
+msgid "Matching opponents…"
+msgstr "Подбираем соперников…"
+
+msgid "Waiting for the last games"
+msgstr "Ждём завершения последних игр"
+
+msgid "Players still in a game skip the round"
+msgstr "Кто ещё играет, пропускает этот раунд"
+
+msgid "Take a breath — new pairs are made when the break ends"
+msgstr "Передохни — новые пары составятся после перерыва"
+
+msgid "No new pairs — results are final when these games end"
+msgstr "Новых пар не будет — итоги подведём после этих игр"
+
+msgid "Round %{round} of %{total}"
+msgstr "Раунд %{round} из %{total}"
+
+msgid "Rounds: %{count}"
+msgstr "Раундов: %{count}"
+
+msgid "Round %{round} · %{time}"
+msgstr "Раунд %{round} · %{time}"
+
+msgid "Round %{round}"
+msgstr "Раунд %{round}"
+
+msgid "Rounds left: %{count}"
+msgstr "Осталось раундов: %{count}"
+
+msgid "Last round"
+msgstr "Последний раунд"
+
+msgid "Ends by %{time}"
+msgstr "Закончится не позже %{time}"
+
+msgid "Your game is live"
+msgstr "Твоя игра идёт"
+
+msgid "You have played your last round — final standings come soon"
+msgstr "Твой последний раунд сыгран — итоговая таблица скоро появится"
+
+msgid "You're in the pool — you'll get an opponent when the next round starts"
+msgstr "Ты в очереди — соперник найдётся в начале следующего раунда"
+
+msgid "Final round — no new pairs after this game"
+msgstr "Финальный раунд — после этой игры новых пар не будет"
+
+msgid "That was your last game in this tournament"
+msgstr "Это была твоя последняя игра в турнире"
+
+msgid "Round %{round} is the last one — finish before the countdown ends to play it"
+msgstr "Раунд %{round} последний — закончи игру до конца отсчёта, чтобы сыграть в нём"
+
+msgid "Finish before the countdown ends to play round %{round}"
+msgstr "Закончи игру до конца отсчёта, чтобы сыграть в раунде %{round}"
+
+msgid "You'll get a new opponent when round %{round} starts"
+msgstr "Новый соперник найдётся в начале раунда %{round}"
+
+msgid "Starts at %{time}"
+msgstr "Начало в %{time}"
+
+msgid "up to %{duration}"
+msgstr "до %{duration}"
+
+msgid "Your round"
+msgstr "Твой раунд"
+
+msgid "Game round"
+msgstr "Раунд игры"
+
+# New frontend (frontend)
+
+msgid "%{date} at %{time}"
+msgstr "%{date} в %{time}"
+
+msgid "1st place"
+msgstr "1-е место"
+
+msgid "About this tournament"
+msgstr "О турнире"
+
+msgid "Add clan"
+msgstr "Добавить клан"
+
+msgid "All-time"
+msgstr "Всё время"
+
+msgid "Ban in chat"
+msgstr "Забанить в чате"
+
+msgid "Bot"
+msgstr "Бот"
+
+msgid "Close chat with %{name}"
+msgstr "Закрыть чат с %{name}"
+
+msgid "Codebattle League rules"
+msgstr "Правила Лиги Codebattle"
+
+msgid "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+msgstr "Соревнования ещё не начались. Загляни в расписание ближайших турниров."
+
+msgid "Connection lost. Reconnecting…"
+msgstr "Соединение потеряно. Переподключаемся…"
+
+msgid "Copied"
+msgstr "Скопировано"
+
+msgid "Copy invite link"
+msgstr "Скопировать ссылку-приглашение"
+
+msgid "Copy name"
+msgstr "Скопировать имя"
+
+msgid "Could not create the game. Try again."
+msgstr "Не удалось создать игру. Попробуй ещё раз."
+
+msgid "Couldn't load the leaderboard."
+msgstr "Не удалось загрузить рейтинг."
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Custom tournament"
+msgstr "Пользовательский турнир"
+
+msgid "Editing a task"
+msgstr "Редактируют задачу"
+
+msgid "Elo"
+msgstr "Эло"
+
+msgid "Elo gained this month"
+msgstr "Эло за этот месяц"
+
+msgid "Elo gained this week"
+msgstr "Эло за эту неделю"
+
+msgid "Elo gained this year"
+msgstr "Эло за этот год"
+
+msgid "Elo rating"
+msgstr "Рейтинг Эло"
+
+msgid "Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun 21 – Sep 21. Season points reset every season; Elo rating never does. Each season ends with a Grand Slam on the 21st at 16:00 UTC."
+msgstr "Четыре сезона в году: 21 сен – 21 дек, 21 дек – 21 мар, 21 мар – 21 июн, 21 июн – 21 сен. Сезонные очки обнуляются каждый сезон, рейтинг Эло — никогда. Каждый сезон завершается Гранд-слэмом 21-го числа в 16:00 UTC."
+
+msgid "In a game"
+msgstr "В игре"
+
+msgid "Join battle"
+msgstr "Присоединиться"
+
+msgid "Loading tasks…"
+msgstr "Загружаем задачи…"
+
+msgid "Navigation"
+msgstr "Навигация"
+
+msgid "No active season"
+msgstr "Нет активного сезона"
+
+msgid "No messages yet. Say hi!"
+msgstr "Сообщений пока нет. Поздоровайся!"
+
+msgid "No results this season yet."
+msgstr "В этом сезоне пока нет результатов."
+
+msgid "No tasks match"
+msgstr "Подходящих задач нет"
+
+msgid "Nobody has played this month."
+msgstr "В этом месяце ещё никто не играл."
+
+msgid "Nobody has played this week."
+msgstr "На этой неделе ещё никто не играл."
+
+msgid "Nobody has played this year."
+msgstr "В этом году ещё никто не играл."
+
+msgid "Nobody has played yet."
+msgstr "Ещё никто не играл."
+
+msgid "Online now"
+msgstr "Сейчас онлайн"
+
+msgid "Players: %{count}"
+msgstr "Игроков: %{count}"
+
+msgid "Points halve with each place down to 2; every other finisher gets 2 points. Prize and participation points don't stack."
+msgstr "С каждым местом очки уменьшаются вдвое, до 2; все остальные участники получают по 2 очка. Призовые очки и очки за участие не суммируются."
+
+msgid "Private message to %{name}"
+msgstr "Личное сообщение для %{name}"
+
+msgid "Prize places"
+msgstr "Призовые места"
+
+msgid "Random player"
+msgstr "Случайный игрок"
+
+msgid "Registration open"
+msgstr "Регистрация открыта"
+
+msgid "Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › Pro. Open tournaments are created by players and award no points."
+msgstr "Новичок проходит каждые 4 часа, Челленджер — ежедневно в 16:00 UTC. Слот 16:00 раз в неделю занимает один турнир по приоритету: Гранд-слэм › Мастерс › Элита › Про. Открытые турниры создают сами игроки, очков за них не дают."
+
+msgid "Rules"
+msgstr "Правила"
+
+msgid "S%{name} ’%{year}"
+msgstr "С%{name} ’%{year}"
+
+msgid "Season %{name}"
+msgstr "Сезон %{name}"
+
+msgid "Season %{name}, %{year}"
+msgstr "Сезон %{name}, %{year}"
+
+msgid "Season and Grand Slam champions enter the Hall of Fame."
+msgstr "Чемпионы сезонов и Гранд-слэмов попадают в Зал славы."
+
+msgid "Season ranking"
+msgstr "Рейтинг сезона"
+
+msgid "Send private message"
+msgstr "Написать личное сообщение"
+
+msgid "Start a private conversation with %{name}."
+msgstr "Начни личную переписку с %{name}."
+
+msgid "Started at %{time}"
+msgstr "Начался в %{time}"
+
+msgid "Starting soon"
+msgstr "Скоро начнётся"
+
+msgid "Switch to dark theme"
+msgstr "Включить тёмную тему"
+
+msgid "Switch to light theme"
+msgstr "Включить светлую тему"
+
+msgid "There are no active games right now. Create one!"
+msgstr "Сейчас нет активных игр. Создай свою!"
+
+msgid "Total season points"
+msgstr "Сумма сезонных очков"
+
+msgid "Tournament wins this season"
+msgstr "Победы в турнирах за сезон"
+
+msgid "Tournaments played this season"
+msgstr "Сыгранные турниры за сезон"
+
+msgid "Tournaments: %{count}"
+msgstr "Турниров: %{count}"
+
+msgid "Waiting for opponent"
+msgstr "Ожидание соперника"
+
+msgid "Watch"
+msgstr "Смотреть"
+
+msgid "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
+msgstr "Играй в сезонных турнирах, набирай очки и борись за место в Зале славы. Победитель каждого сезона получает эксклюзивный мерч Codebattle."
+
+msgid "Wins: %{wins} / %{games}"
+msgstr "Побед: %{wins} / %{games}"
+
+msgid "Year"
+msgstr "Год"
+
+msgid "game #%{id}"
+msgstr "игра #%{id}"
+
+msgid "private"
+msgstr "лично"
+
+
+msgid "to %{name}"
+msgstr "для %{name}"
+
+msgid "top %{count}"
+msgstr "топ-%{count}"
+
+msgid "tournament #%{id}"
+msgstr "турнир #%{id}"
+
+msgid "until %{date}"
+msgstr "до %{date}"
+
+msgid "in %{time}"
+msgstr "через %{time}"
+
+msgid "Ranking Points_one"
+msgstr "очко"
+
+msgid "Ranking Points_few"
+msgstr "очка"
+
+msgid "Ranking Points_many"
+msgstr "очков"
+
+msgid "Ranking Points_other"
+msgstr "очка"
+
+msgid "%{name} accepted your invite. Starting the battle…"
+msgstr "%{name} принял(а) приглашение. Начинаем битву…"
+
+msgid "%{name} canceled the invite"
+msgstr "%{name} отменил(а) приглашение"
+
+msgid "%{name} invites you"
+msgstr "%{name} зовёт тебя"
+
+msgid "%{name} invites you to a battle"
+msgstr "%{name} вызывает тебя на битву"
+
+msgid "Anonymous"
+msgstr "Аноним"
+
+msgid "Battle invite"
+msgstr "Вызов на битву"
+
+msgid "Couldn't load this player's stats."
+msgstr "Не удалось загрузить статистику игрока."
+
+msgid "Deploy finished. Syncing latest session..."
+msgstr "Обновление завершено. Синхронизируем сессию..."
+
+msgid "Deploy handoff incomplete. Reconnecting..."
+msgstr "Обновление прошло не полностью. Переподключаемся..."
+
+msgid "Deploy in progress. Reconnecting game session..."
+msgstr "Идёт обновление. Переподключаем игровую сессию..."
+
+msgid "Follow"
+msgstr "Следить"
+
+msgid "Follow: open their games automatically"
+msgstr "Следить: автоматически открывать их игры"
+
+msgid "Highest Win"
+msgstr "Лучшая победа"
+
+msgid "Invite accepted"
+msgstr "Приглашение принято"
+
+msgid "Invite not found."
+msgstr "Приглашение не найдено."
+
+msgid "Invite sent to %{name}. Waiting for the reply…"
+msgstr "Приглашение отправлено: %{name}. Ждём ответа…"
+
+msgid "Invite to a battle"
+msgstr "Вызов на битву"
+
+msgid "Invite to battle"
+msgstr "Вызвать на битву"
+
+msgid "No invites. Hover a player to invite them to a battle."
+msgstr "Приглашений нет. Наведи на игрока, чтобы вызвать его на битву."
+
+msgid "Nobody found"
+msgstr "Никого не нашли"
+
+msgid "Not in a game"
+msgstr "Сейчас не играет"
+
+msgid "Offline"
+msgstr "Не в сети"
+
+msgid "One of you is already in a game."
+msgstr "Кто-то из вас уже в игре."
+
+msgid "This task is not available."
+msgstr "Эта задача недоступна."
+
+msgid "Polyglot"
+msgstr "Полиглот"
+
+msgid "Resume"
+msgstr "Продолжить"
+
+msgid "Searching…"
+msgstr "Ищем…"
+
+msgid "Season Wins"
+msgstr "Победы в сезонах"
+
+msgid "Send invite"
+msgstr "Отправить вызов"
+
+msgid "The server is restarting. Try again in a moment."
+msgstr "Сервер перезапускается. Попробуй через минуту."
+
+msgid "There is already a pending invite between you two."
+msgstr "Между вами уже есть активное приглашение."
+
+msgid "This invite is no longer active."
+msgstr "Это приглашение уже неактивно."
+
+msgid "This player can't be invited."
+msgstr "Этого игрока нельзя пригласить."
+
+msgid "Tournament wins"
+msgstr "Победы в турнирах"
+
+msgid "Type a name to search"
+msgstr "Введи имя для поиска"
+
+msgid "Watch the game"
+msgstr "Смотреть игру"
+
+msgid "You are following %{name}"
+msgstr "Ты следишь за %{name}"
+
+msgid "You can't invite yourself."
+msgstr "Нельзя пригласить самого себя."
+
+msgid "You invited %{name}"
+msgstr "Ты пригласил(а) %{name}"
+
+msgid "Language not set"
+msgstr "Язык не выбран"
+
+msgid "Seen %{when}"
+msgstr "Был(а) %{when}"
+
+msgid "Seen recently"
+msgstr "Был(а) недавно"
+
+msgid "%{percent}% won"
+msgstr "%{percent}% побед"
+
+msgid "Activity period"
+msgstr "Период активности"
+
+msgid "Back to lobby"
+msgstr "В лобби"
+
+msgid "Couldn't load activity."
+msgstr "Не удалось загрузить активность."
+
+msgid "Couldn't load this profile."
+msgstr "Не удалось загрузить профиль."
+
+msgid "Failed to load games"
+msgstr "Не удалось загрузить игры"
+
+msgid "Less"
+msgstr "Меньше"
+
+msgid "Load more"
+msgstr "Показать ещё"
+
+msgid "More"
+msgstr "Больше"
+
+msgid "No games on %{date}"
+msgstr "%{date}: игр не было"
+
+msgid "No rivals yet."
+msgstr "Соперников пока нет."
+
+msgid "No wins yet."
+msgstr "Побед пока нет."
+
+msgid "Something went wrong. Try again."
+msgstr "Что-то пошло не так. Попробуй ещё раз."
+
+msgid "There is no player with this id."
+msgstr "Игрока с таким id нет."
+
+msgid "W/L/T"
+msgstr "П/П/Т"
+
+msgid "%{count} tasks"
+msgstr "Задач: %{count}"
+
+msgid "Activate"
+msgstr "Включить"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Delete task \"%{name}\"?"
+msgstr "Удалить задачу «%{name}»?"
+
+msgid "Delete task pack?"
+msgstr "Удалить набор задач?"
+
+msgid "Delete this clan?"
+msgstr "Удалить этот клан?"
+
+msgid "Disable"
+msgstr "Отключить"
+
+msgid "No clans found"
+msgstr "Кланы не найдены"
+
+msgid "No members yet."
+msgstr "Участников пока нет."
+
+msgid "No task packs yet."
+msgstr "Наборов задач пока нет."
+
+msgid "Ordered sets of tasks for tournaments."
+msgstr "Упорядоченные наборы задач для турниров."
+
+msgid "Search by name, tag or id"
+msgstr "Поиск по названию, тегу или id"
+
+msgid "Search clans"
+msgstr "Поиск кланов"
+
+msgid "Show more (%{count} left)"
+msgstr "Показать ещё (осталось %{count})"
+
+msgid "Task not found for id = %{id}"
+msgstr "Задача с id = %{id} не найдена"
+
+msgid "Total clans: %{count}"
+msgstr "Всего кланов: %{count}"
+
+msgid "Unnamed clan"
+msgstr "Клан без названия"
+
+msgid "moderation"
+msgstr "на модерации"
+
+msgid "Based on %{count} winning games."
+msgstr "По %{count} выигранным играм."
+
+msgid "Couldn't save the task. Try again."
+msgstr "Не удалось сохранить задачу. Попробуй ещё раз."
+
+msgid "No Russian description yet."
+msgstr "Русского описания пока нет."
+
+msgid "No description yet."
+msgstr "Описания пока нет."
+
+msgid "Opens a game against a bot in a new tab."
+msgstr "Откроет игру с ботом в новой вкладке."
+
+msgid "Preview"
+msgstr "Превью"
+
+msgid "Write"
+msgstr "Текст"
+
+msgid "median"
+msgstr "медиана"
+
+msgid "Edit task pack"
+msgstr "Редактирование набора задач"
+
+msgid "Back to pack"
+msgstr "К набору"
+
+msgid "Unique name, up to %{count} characters"
+msgstr "Уникальное имя, до %{count} символов"
+
+msgid "Hidden packs are visible only to you and admins"
+msgstr "Скрытые наборы видны только вам и админам"
+
+msgid "Order matters: tournaments play the tasks in this order."
+msgstr "Порядок важен: в турнирах задачи идут в этом порядке."
+
+msgid "List"
+msgstr "Список"
+
+msgid "IDs"
+msgstr "ID"
+
+msgid "Only integers separated by commas"
+msgstr "Только целые числа через запятую"
+
+msgid "Add a task: search by name, tag or id"
+msgstr "Добавить задачу: поиск по имени, тегу или id"
+
+msgid "No tasks yet. Add some above."
+msgstr "Задач пока нет. Добавьте их выше."
+
+msgid "Move up"
+msgstr "Выше"
+
+msgid "Move down"
+msgstr "Ниже"
+
+msgid "3–16 Latin letters, digits, - or _"
+msgstr "3–16 латинских букв, цифр, - или _"
+
+msgid "Active %{ago}"
+msgstr "Активность %{ago}"
+
+msgid "Active now"
+msgstr "Активно сейчас"
+
+msgid "Active recently"
+msgstr "Активно недавно"
+
+msgid "At least 8 characters, any symbols"
+msgstr "Минимум 8 символов, любые"
+
+msgid "CSS tasks"
+msgstr "CSS-задачи"
+
+msgid "Changing it signs you out on other devices and revokes your API tokens."
+msgstr "После смены пароля другие устройства выйдут из аккаунта, а API-токены будут отозваны."
+
+msgid "Connected"
+msgstr "Подключён"
+
+msgid "Couldn't save your settings. Try again."
+msgstr "Не удалось сохранить настройки. Попробуйте ещё раз."
+
+msgid "Danger zone"
+msgstr "Опасная зона"
+
+msgid "Dark"
+msgstr "Тёмная"
+
+msgid "Every device is signed out and every API token revoked"
+msgstr "Все устройства выйдут из аккаунта, все API-токены будут отозваны"
+
+msgid "Expires %{date}"
+msgstr "Истекает %{date}"
+
+msgid "Failed tests"
+msgstr "Тесты не прошли"
+
+msgid "Field can't be empty"
+msgstr "Поле не может быть пустым"
+
+msgid "Games and tournament results stay, without your name"
+msgstr "Игры и результаты турниров останутся, но без вашего имени"
+
+msgid "Invalid email"
+msgstr "Некорректный email"
+
+msgid "Is too long"
+msgstr "Слишком длинный"
+
+msgid "Last used %{ago}"
+msgstr "Использовался %{ago}"
+
+msgid "Latin letters, digits, - and _; starts with a letter"
+msgstr "Латинские буквы, цифры, - и _; начинается с буквы"
+
+msgid "Leave empty to leave your clan."
+msgstr "Оставьте пустым, чтобы выйти из клана."
+
+msgid "Light"
+msgstr "Светлая"
+
+msgid "New token"
+msgstr "Новый токен"
+
+msgid "Not connected"
+msgstr "Не подключён"
+
+msgid "Password and email you sign in with."
+msgstr "Пароль и email для входа."
+
+msgid "Password changed. Other devices were signed out."
+msgstr "Пароль изменён. Другие устройства вышли из аккаунта."
+
+msgid "Passwords must match"
+msgstr "Пароли должны совпадать"
+
+msgid "Preferences"
+msgstr "Предпочтения"
+
+msgid "Profile updated"
+msgstr "Профиль обновлён"
+
+msgid "Public profile"
+msgstr "Публичный профиль"
+
+msgid "Revoke token \"%{name}\"? Apps using it stop working."
+msgstr "Отозвать токен «%{name}»? Приложения с ним перестанут работать."
+
+msgid "Round start"
+msgstr "Начало раунда"
+
+msgid "SQL tasks"
+msgstr "SQL-задачи"
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Saved in this browser."
+msgstr "Сохраняется в этом браузере."
+
+msgid "Scopes"
+msgstr "Права"
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "Should be 16 character(s) or less"
+msgstr "Не длиннее 16 символов"
+
+msgid "Should be at least 3 characters"
+msgstr "Минимум 3 символа"
+
+msgid "Should be at least 8 characters"
+msgstr "Минимум 8 символов"
+
+msgid "Sign out on all other devices?"
+msgstr "Выйти на всех других устройствах?"
+
+msgid "Sign out other devices"
+msgstr "Выйти на других устройствах"
+
+msgid "Sign-in & security"
+msgstr "Вход и безопасность"
+
+msgid "Some devices could not be signed out. Try again."
+msgstr "Не удалось выйти на некоторых устройствах. Попробуйте ещё раз."
+
+msgid "System"
+msgstr "Системная"
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "This is your only way to sign in. Set a password or link another account first."
+msgstr "Это ваш единственный способ входа. Сначала задайте пароль или привяжите другой аккаунт."
+
+msgid "Time is over"
+msgstr "Время вышло"
+
+msgid "Token \"%{name}\" created"
+msgstr "Токен «%{name}» создан"
+
+msgid "Try it:"
+msgstr "Послушать:"
+
+msgid "Unlink"
+msgstr "Отвязать"
+
+msgid "Unlink %{provider}?"
+msgstr "Отвязать %{provider}?"
+
+msgid "Verification email sent to %{email}. Confirm the new address to finish the change."
+msgstr "Письмо отправлено на %{email}. Подтвердите новый адрес, чтобы завершить смену."
+
+msgid "You sign in with a linked account, so there is no password to change here."
+msgstr "Вы входите через привязанный аккаунт, поэтому пароля для смены нет."
+
+msgid "Your name is anonymized; avatar, email and linked accounts are removed"
+msgstr "Имя будет обезличено; аватар, email и привязанные аккаунты удалены"
+
+msgid "Your tokens"
+msgstr "Ваши токены"
+
+msgid "signed in %{date}"
+msgstr "вход %{date}"
+
+msgid "#%{place} of %{count}"
+msgstr "#%{place} из %{count}"
+
+msgid "%{count} days left"
+msgstr "осталось дней: %{count}"
+
+msgid "%{hours}h %{minutes}m"
+msgstr "%{hours} ч %{minutes} мин"
+
+msgid "%{minutes}m"
+msgstr "%{minutes} мин"
+
+msgid "%{percent}% played"
+msgstr "прошло %{percent}%"
+
+msgid "%{points} pts · %{players} players"
+msgstr "%{points} очк. · игроков: %{players}"
+
+msgid "Best / avg place"
+msgstr "Лучшее / среднее место"
+
+msgid "Codebattle League champions, season by season."
+msgstr "Чемпионы Codebattle League, сезон за сезоном."
+
+msgid "Find me · #%{place}"
+msgstr "Найти меня · #%{place}"
+
+msgid "Four seasons a year. Points reset every season; champions stay forever."
+msgstr "Четыре сезона в год. Очки обнуляются каждый сезон, чемпионы остаются навсегда."
+
+msgid "Median player"
+msgstr "Медианный игрок"
+
+msgid "Newer"
+msgstr "Новее"
+
+msgid "No clans yet"
+msgstr "Кланов пока нет"
+
+msgid "No seasons yet"
+msgstr "Сезонов пока нет"
+
+msgid "Older"
+msgstr "Старше"
+
+msgid "Points awarded"
+msgstr "Выдано очков"
+
+msgid "Points per tournament"
+msgstr "Очков за турнир"
+
+msgid "Points per week"
+msgstr "Очки по неделям"
+
+msgid "Points: %{count}"
+msgstr "Очки: %{count}"
+
+msgid "Rows per page"
+msgstr "Строк на странице"
+
+msgid "Season at a glance"
+msgstr "Сезон в цифрах"
+
+msgid "Season progress"
+msgstr "Прогресс сезона"
+
+msgid "Starts soon"
+msgstr "Скоро начнётся"
+
+msgid "Time in battles"
+msgstr "Время в битвах"
+
+msgid "Top %{count} at a glance"
+msgstr "Топ-%{count} в цифрах"
+
+msgid "Top %{count} of %{total} players"
+msgstr "Топ-%{count} из %{total} игроков"
+
+msgid "Top clans"
+msgstr "Лучшие кланы"
+
+msgid "Weapons of choice"
+msgstr "Любимое оружие"
+
+msgid "Week of %{date}"
+msgstr "Неделя с %{date}"
+
+msgid "vs %{value}"
+msgstr "против %{value}"
+
+msgid "%{count} tournaments"
+msgstr "Турниров: %{count}"
+
+msgid "%{index} of %{count}"
+msgstr "%{index} из %{count}"
+
+msgid "%{points} points"
+msgstr "%{points} очков"
+
+msgid "All Tournaments"
+msgstr "Все турниры"
+
+msgid "Codebattle League tournaments, your own tournaments and past results."
+msgstr "Турниры Codebattle League, ваши турниры и прошедшие результаты."
+
+msgid "Codebattle League · %{grade}"
+msgstr "Codebattle League · %{grade}"
+
+msgid "Couldn't load the schedule."
+msgstr "Не удалось загрузить расписание."
+
+msgid "Every other finisher gets 2 points."
+msgstr "Остальные участники, дошедшие до конца, получают 2 очка."
+
+msgid "League rules"
+msgstr "Правила лиги"
+
+msgid "Nothing matches your filters"
+msgstr "Ничего не найдено"
+
+msgid "Opens when registration starts"
+msgstr "Откроется, когда начнётся регистрация"
+
+msgid "Previous"
+msgstr "Предыдущий"
+
+msgid "Registration"
+msgstr "Регистрация"
+
+msgid "Season points by place"
+msgstr "Очки сезона за места"
+
+msgid "Starts in"
+msgstr "Начало через"
+
+msgid "Tournament or winner"
+msgstr "Турнир или победитель"
+
+msgid "Tournament schedule"
+msgstr "Расписание турниров"
+
+msgid "Create clan"
+msgstr "Создать клан"
+
+msgid "Edit clan"
+msgstr "Редактировать клан"
+
+msgid "Full name"
+msgstr "Полное название"
+
+msgid "Short and unique, shown next to players"
+msgstr "Коротко и уникально, показывается рядом с игроками"
+
+msgid "Optional, e.g. a company or school"
+msgstr "Необязательно, например компания или школа"
+
+msgid "Leave %{clan} and join this clan"
+msgstr "Выйти из %{clan} и вступить в этот клан"
+
+msgid "Join this clan"
+msgstr "Вступить в этот клан"
+
+msgid "Clan created"
+msgstr "Клан создан"
+
+msgid "Clan updated"
+msgstr "Клан обновлён"
+
+msgid "Only the clan creator or an admin can edit it"
+msgstr "Редактировать клан может только его создатель или админ"
+
+msgid "An error occurred while creating the tournament"
+msgstr "Не удалось создать турнир"
+
+msgid "Created by you"
+msgstr "Созданные вами"
+
+msgid "Invalid JSON"
+msgstr "Некорректный JSON"
+
+msgid "Network error. Please try again."
+msgstr "Ошибка сети. Попробуйте ещё раз."
+
+msgid "No task packs"
+msgstr "Нет наборов задач"
+
+msgid "Please fix the highlighted fields: %{fields}"
+msgstr "Исправьте отмеченные поля: %{fields}"
+
+msgid "Random name"
+msgstr "Случайное название"
+
+msgid "Summary"
+msgstr "Итого"
+
+msgid "Use last settings"
+msgstr "Как в прошлый раз"
+
+msgid "User IDs separated by commas. You are always a moderator."
+msgstr "ID пользователей через запятую. Вы модератор всегда."
+
+msgid "in 1 hour"
+msgstr "через час"
+
+msgid "in 30 min"
+msgstr "через 30 мин"
+
+msgid "in 5 min"
+msgstr "через 5 мин"
+
+msgid "now"
+msgstr "сейчас"
+
+msgid "Edit %{name}"
+msgstr "Редактирование: %{name}"
+
+msgid "Failed to update tournament"
+msgstr "Не удалось обновить турнир"
+
+msgid "Tournament updated successfully"
+msgstr "Турнир обновлён"
+
+msgid "by"
+msgstr "автор"
+
+msgid "Mine"
+msgstr "Мои"
+
+msgid "%{count} rounds"
+msgstr "Раундов: %{count}"
+
+msgid "About"
+msgstr "О турнире"
+
+msgid "Banned"
+msgstr "Забанен"
+
+msgid "Break: the next round starts soon."
+msgstr "Перерыв: следующий раунд скоро начнётся."
+
+msgid "Cancel the tournament? This cannot be undone."
+msgstr "Отменить турнир? Это нельзя отменить."
+
+msgid "Chat"
+msgstr "Чат"
+
+msgid "Couldn't load the ranking."
+msgstr "Не удалось загрузить рейтинг."
+
+msgid "Couldn't load the results."
+msgstr "Не удалось загрузить результаты."
+
+msgid "Final round ends in"
+msgstr "Финальный раунд закончится через"
+
+msgid "Find me"
+msgstr "Найти меня"
+
+msgid "Finish the tournament now? Running games are stopped."
+msgstr "Завершить турнир сейчас? Текущие игры остановятся."
+
+msgid "Finishing the round…"
+msgstr "Раунд завершается…"
+
+msgid "In the pool, waiting for an opponent…"
+msgstr "В пуле, ждём соперника…"
+
+msgid "Invite link"
+msgstr "Ссылка-приглашение"
+
+msgid "It may be private: open it with the invite link from the organizer."
+msgstr "Возможно, он приватный: откройте его по ссылке от организатора."
+
+msgid "Join now and get notified when it starts."
+msgstr "Присоединяйтесь сейчас — мы сообщим о старте."
+
+msgid "Kick"
+msgstr "Исключить"
+
+msgid "Kick %{name} from the tournament?"
+msgstr "Исключить %{name} из турнира?"
+
+msgid "Make the tournament public?"
+msgstr "Сделать турнир публичным?"
+
+msgid "Manage tournament"
+msgstr "Управление турниром"
+
+msgid "My matches"
+msgstr "Мои матчи"
+
+msgid "Next matchmaking in"
+msgstr "Следующий подбор через"
+
+msgid "Next round in"
+msgstr "Следующий раунд через"
+
+msgid "No matches in this round yet."
+msgstr "В этом раунде пока нет матчей."
+
+msgid "No matches yet. They show up here when a round starts."
+msgstr "Матчей пока нет. Они появятся здесь, когда начнётся раунд."
+
+msgid "No players yet."
+msgstr "Игроков пока нет."
+
+msgid "Nobody has joined yet. Be the first!"
+msgstr "Пока никто не присоединился. Будьте первым!"
+
+msgid "Open now"
+msgstr "Открыть сейчас"
+
+msgid "Pairing players…"
+msgstr "Подбираем пары…"
+
+msgid "Private: joins by invite link"
+msgstr "Приватный: вход по ссылке-приглашению"
+
+msgid "Reconnecting…"
+msgstr "Переподключение…"
+
+msgid "Restart from scratch? All results of this tournament are lost."
+msgstr "Начать заново? Все результаты турнира будут потеряны."
+
+msgid "Results"
+msgstr "Результаты"
+
+msgid "Results coming soon"
+msgstr "Результаты скоро"
+
+msgid "Round ends in"
+msgstr "Раунд закончится через"
+
+msgid "Sign in to join the tournament."
+msgstr "Войдите, чтобы участвовать в турнире."
+
+msgid "Start the next round now?"
+msgstr "Начать следующий раунд сейчас?"
+
+msgid "Start the tournament for %{count} players?"
+msgstr "Начать турнир для %{count} игроков?"
+
+msgid "Stay here"
+msgstr "Остаться"
+
+msgid "The game opens automatically."
+msgstr "Игра откроется автоматически."
+
+msgid "The tournament is full."
+msgstr "Мест больше нет."
+
+msgid "The tournament is running, you can still jump in."
+msgstr "Турнир уже идёт, но ещё можно присоединиться."
+
+msgid "The tournament process isn't running. Restart it to continue."
+msgstr "Процесс турнира не запущен. Перезапустите его, чтобы продолжить."
+
+msgid "Too many players to list here."
+msgstr "Игроков слишком много для списка."
+
+msgid "Tournament not found"
+msgstr "Турнир не найден"
+
+msgid "Waiting for players"
+msgstr "Ждём игроков"
+
+msgid "Waiting for your next match."
+msgstr "Ждём ваш следующий матч."
+
+msgid "You played in this tournament."
+msgstr "Вы участвовали в этом турнире."
+
+msgid "You're in. The game opens here when the tournament starts."
+msgstr "Вы участвуете. Игра откроется здесь, когда турнир начнётся."
+
+msgid "Your next match is ready"
+msgstr "Ваш следующий матч готов"
+
+msgid "Raw JSON"
+msgstr "JSON"
+
+msgid "Hide JSON"
+msgstr "Скрыть JSON"
+
+msgid "Clan / Player"
+msgstr "Клан / игрок"
+
+msgid "Duration: %{seconds}s"
+msgstr "Длительность: %{seconds} с"
+
+msgid "Fastest"
+msgstr "Быстрее всех"
+
+msgid "Game #%{id}"
+msgstr "Игра #%{id}"
+
+msgid "Join the tournament to see your matches here."
+msgstr "Присоединитесь к турниру, чтобы видеть здесь свои матчи."
+
+msgid "No reports"
+msgstr "Жалоб нет"
+
+msgid "Panel"
+msgstr "Панель"
+
+msgid "Reason"
+msgstr "Причина"
+
+msgid "Score per player"
+msgstr "Очков на игрока"
+
+msgid "Slowest"
+msgstr "Медленнее всех"
+
+msgid "Solutions"
+msgstr "Решений"
+
+msgid "Statistics appear once the tournament starts."
+msgstr "Статистика появится, когда турнир начнётся."
+
+msgid "Task #%{id}"
+msgstr "Задача #%{id}"
+
+msgid "The leaderboard is published when the tournament ends. Live standings are in the ranking."
+msgstr "Итоговая таблица появится после окончания турнира. Текущее положение — в рейтинге."
+
+msgid "Total players: %{count}"
+msgstr "Всего игроков: %{count}"
+
+msgid "Total score"
+msgstr "Всего очков"
+
+msgid "Total: %{count}"
+msgstr "Всего: %{count}"
+
+msgid "You were marked for a fair play violation and are excluded from the results."
+msgstr "Вы отмечены за нарушение честной игры и исключены из результатов."
+
+msgid "cheater"
+msgstr "читер"
+
+msgid "confirmed"
+msgstr "подтверждена"
+
+msgid "copypaste"
+msgstr "копипаст"
+
+msgid "denied"
+msgstr "отклонена"
+
+msgid "pending"
+msgstr "на рассмотрении"
+
+msgid "player"
+msgstr "игрок"
+
+msgid "processed"
+msgstr "обработана"
+
+msgid "wrong_solution"
+msgstr "неверное решение"
+
+msgid "The tournament didn't respond. Try again in a moment."
+msgstr "Турнир не ответил. Попробуйте ещё раз чуть позже."
+
+msgid "The tournament isn't running right now. Joining reopens when an organizer restarts it."
+msgstr "Турнир сейчас не запущен. Присоединиться можно будет, когда организатор его перезапустит."
+
+msgid "Leave the tournament? You will be removed from the ranking and get no new matches."
+msgstr "Покинуть турнир? Вы исчезнете из рейтинга и больше не получите матчей."
+
+msgid "+%{count} other"
+msgstr "+%{count} прочих"
+
+msgid "in progress"
+msgstr "идёт"
+
+msgid "Moderation"
+msgstr "Модерация"
+
+msgid "Clans chart"
+msgstr "Кланы на графике"
+
+msgid "You : Opponent"
+msgstr "Вы : соперник"
+
+msgid "Wins / losses"
+msgstr "Победы / поражения"
+
+msgid "+%{count} no winner"
+msgstr "+%{count} без победителя"
+
+msgid "Task base score"
+msgstr "Базовые очки задачи"
+
+msgid "Tests passed"
+msgstr "Пройдено тестов"
+
+msgid "Your points : opponent's points"
+msgstr "Ваши очки : очки соперника"
+
+msgid "solved %{solved} of %{players}"
+msgstr "решили %{solved} из %{players}"
+
+msgid "of %{count}"
+msgstr "из %{count}"
+
+msgid "LIVE"
+msgstr "LIVE"
+
+msgid "Base score %{score}"
+msgstr "Базовые очки %{score}"
+
+msgid "Time limit %{time}"
+msgstr "Лимит %{time}"
+
+msgid "%{from}–%{to}: %{count} solved"
+msgstr "%{from}–%{to}: решили %{count}"
+
+msgid "You %{time}"
+msgstr "Вы %{time}"
+
+msgid "Reload page"
+msgstr "Перезагрузить страницу"
+
+msgid "All tests passed"
+msgstr "Все тесты пройдены"
+
+msgid "Bigger"
+msgstr "Крупнее"
+
+msgid "Checking your solution…"
+msgstr "Проверяем решение…"
+
+msgid "Checking…"
+msgstr "Проверка…"
+
+msgid "Connection lost, reconnecting…"
+msgstr "Соединение потеряно, переподключаемся…"
+
+msgid "Ctrl/Cmd + Enter"
+msgstr "Ctrl/Cmd + Enter"
+
+msgid "Exit full screen"
+msgstr "Выйти из полноэкранного режима"
+
+msgid "Font size"
+msgstr "Размер шрифта"
+
+msgid "Full screen"
+msgstr "Во весь экран"
+
+msgid "Give up?"
+msgstr "Сдаться?"
+
+msgid "Hide the side panel"
+msgstr "Скрыть боковую панель"
+
+msgid "Received"
+msgstr "Получено"
+
+msgid "Rematch declined"
+msgstr "Реванш отклонён"
+
+msgid "Rematch offered, waiting…"
+msgstr "Реванш предложен, ждём ответа…"
+
+msgid "Reset code"
+msgstr "Сбросить код"
+
+msgid "Reset the code?"
+msgstr "Сбросить код?"
+
+msgid "Run tests"
+msgstr "Запустить тесты"
+
+msgid "Run your code to see the test results here"
+msgstr "Запустите код, чтобы увидеть здесь результаты тестов"
+
+msgid "Send this link to a friend; the game starts as soon as they join."
+msgstr "Отправьте ссылку другу: игра начнётся, как только он подключится."
+
+msgid "Show the side panel"
+msgstr "Показать боковую панель"
+
+msgid "Side panel"
+msgstr "Боковая панель"
+
+msgid "Smaller"
+msgstr "Мельче"
+
+msgid "Test %{number}"
+msgstr "Тест %{number}"
+
+msgid "Tests passed: %{percent}%"
+msgstr "Пройдено тестов: %{percent}%"
+
+msgid "The game ends and your opponent wins."
+msgstr "Игра закончится, и победит соперник."
+
+msgid "Time left"
+msgstr "Осталось времени"
+
+msgid "Vim mode"
+msgstr "Режим Vim"
+
+msgid "Vim mode off"
+msgstr "Режим Vim выключен"
+
+msgid "Vim mode on"
+msgstr "Режим Vim включён"
+
+msgid "Wins against each other"
+msgstr "Победы друг над другом"
+
+msgid "You gave up"
+msgstr "Вы сдались"
+
+msgid "You lost"
+msgstr "Вы проиграли"
+
+msgid "You won!"
+msgstr "Вы победили!"
+
+msgid "Your code in this language is replaced with the starting template."
+msgstr "Код на этом языке заменится начальным шаблоном."
+
+msgid "%{name} is looking for an opponent"
+msgstr "%{name} ищет соперника"
+
+msgid "Enter the pass code to start playing."
+msgstr "Введите код доступа, чтобы начать игру."
+
+msgid "Join game"
+msgstr "Присоединиться"
+
+msgid "Pass code"
+msgstr "Код доступа"
+
+msgid "Play"
+msgstr "Воспроизвести"
+
+msgid "Replay position"
+msgstr "Позиция повтора"
+
+msgid "Speed"
+msgstr "Скорость"
+
+msgid "The replay of this game is not available"
+msgstr "Повтор этой игры недоступен"
+
+msgid "This game is locked"
+msgstr "Игра закрыта"
+
+msgid "To the end"
+msgstr "В конец"
+
+msgid "To the start"
+msgstr "В начало"
+
+msgid "Unlock"
+msgstr "Открыть"
+
+msgid "Wrong pass code"
+msgstr "Неверный код доступа"
+
+msgid "No runs yet"
+msgstr "Ещё не запускал тесты"
+
+msgid "Hide the task"
+msgstr "Скрыть условие"
+
+msgid "Show the task"
+msgstr "Показать условие"
+
+msgid "%{failed} of %{total} tests failed"
+msgstr "Не прошли %{failed} из %{total} тестов"
+
+msgid "Memory limit exceeded"
+msgstr "Превышен лимит памяти"
+
+msgid "Time limit exceeded"
+msgstr "Превышен лимит времени"
+
+msgid "failed"
+msgstr "не пройден"
+
+msgid "passed"
+msgstr "пройден"
+
+msgid "Show test results"
+msgstr "Показать результаты тестов"
+
+msgid "Open the task in a window"
+msgstr "Открыть условие в окне"
+
+msgid "A sharper theme for bright rooms and projectors"
+msgstr "Более чёткая тема для ярких комнат и проекторов"
+
+msgid "A small map of the code on the right"
+msgstr "Маленькая карта кода справа"
+
+msgid "Colored brackets"
+msgstr "Цветные скобки"
+
+msgid "Dots for spaces, arrows for tabs"
+msgstr "Точки вместо пробелов, стрелки вместо табов"
+
+msgid "High contrast"
+msgstr "Высокий контраст"
+
+msgid "Line numbers"
+msgstr "Номера строк"
+
+msgid "Long lines wrap instead of scrolling sideways"
+msgstr "Длинные строки переносятся вместо прокрутки вбок"
+
+msgid "Matching pairs share a color"
+msgstr "Парные скобки одного цвета"
+
+msgid "Minimap"
+msgstr "Миникарта"
+
+msgid "Relative"
+msgstr "Относительные"
+
+msgid "Show whitespace"
+msgstr "Показывать пробелы"
+
+msgid "Smooth cursor"
+msgstr "Плавный курсор"
+
+msgid "Sticky scroll"
+msgstr "Липкая прокрутка"
+
+msgid "The current function stays at the top"
+msgstr "Текущая функция остаётся вверху"
+
+msgid "The cursor glides and fades instead of jumping"
+msgstr "Курсор плавно движется и мерцает, а не прыгает"
+
+msgid "Word wrap"
+msgstr "Перенос строк"
+
+msgid "Color theme"
+msgstr "Цветовая тема"
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "Back to game"
+msgstr "Вернуться в игру"
+
+msgid "Open history"
+msgstr "Открыть историю"
+
+msgid "Whitespace"
+msgstr "Пробелы"
+
+msgid "Waiting for the next match..."
+msgstr "Ждём следующий матч..."
+
+msgid "Waiting..."
+msgstr "Ожидание..."
+
+msgid "Drag windows to move, the corner to resize. Hidden ones come back from Widgets."
+msgstr "Перетаскивайте окна, угол — чтобы изменить размер. Скрытые возвращаются через «Виджеты»."
+
+msgid "Hide"
+msgstr "Скрыть"
+
+msgid "Left editor"
+msgstr "Левый редактор"
+
+msgid "Right"
+msgstr "Правый"
+
+msgid "Right editor"
+msgstr "Правый редактор"
+
+msgid "Widgets"
+msgstr "Виджеты"
+
+msgid "Game started"
+msgstr "Игра началась"
+
+msgid "New message"
+msgstr "Новое сообщение"
+
+msgid "Tournament start"
+msgstr "Начало турнира"
+
+msgid "Round end"
+msgstr "Конец раунда"
+
+msgid "Tournament end"
+msgstr "Конец турнира"
+
+msgid "Show controls"
+msgstr "Показать панель"
+
+msgid "Hide controls"
+msgstr "Скрыть панель"
+
+msgid "Decrease"
+msgstr "Уменьшить"
+
+msgid "Increase"
+msgstr "Увеличить"
+
+msgid "Game is loading"
+msgstr "Игра загружается"
+
+msgid "Tournament is finished"
+msgstr "Турнир завершён"
+
+msgid "Tournament is waiting to start"
+msgstr "Турнир ожидает начала"
+
+msgid "Tournament is canceled"
+msgstr "Турнир отменён"
+
+msgid "Waiting for the player's next game"
+msgstr "Ожидание следующей игры игрока"
+
+msgid "Could not connect to the tournament, retrying…"
+msgstr "Не удалось подключиться к турниру, повторяем…"
+
+msgid "Connection details"
+msgstr "Детали подключения"
+
+msgid "User ID"
+msgstr "ID пользователя"
+
+msgid "Path"
+msgstr "Путь"
+
+msgid "Connected at"
+msgstr "Подключён в"
+
+msgid "Ref"
+msgstr "Ref"
+
+msgid "Add to redirect list"
+msgstr "Добавить в список перенаправления"
+
+msgid "Fetched %{count} player IDs"
+msgstr "Загружено ID игроков: %{count}"
+
+msgid "Redirect sent"
+msgstr "Перенаправление отправлено"
+
+msgid "Redirect failed"
+msgstr "Не удалось перенаправить"
+
+msgid "Redirect users"
+msgstr "Перенаправить пользователей"
+
+msgid "Fetch player IDs"
+msgstr "Загрузить ID игроков"
+
+msgid "All (%{count})"
+msgstr "Все (%{count})"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "User IDs (comma or space separated)"
+msgstr "ID пользователей (через запятую или пробел)"
+
+msgid "Redirect (%{count})"
+msgstr "Перенаправить (%{count})"
+
+msgid "3–16 Latin letters, digits, - and _"
+msgstr "3–16 латинских букв, цифр, - и _"
+
+msgid "At least 8 characters"
+msgstr "Не менее 8 символов"
+
+msgid "Confirm password"
+msgstr "Подтвердите пароль"
+
+msgid "Enter the email of your account and we will send you a link to set a new password."
+msgstr "Введите email вашего аккаунта, и мы пришлём ссылку для установки нового пароля."
+
+msgid "Reset password"
+msgstr "Сбросить пароль"
+
+msgid "or"
+msgstr "или"
+
+msgid "Email required"
+msgstr "Укажите email"
+
+msgid "Should begin and end with a Latin letter or number"
+msgstr "Должен начинаться и заканчиваться латинской буквой или цифрой"
+
+msgid "Can't contain special symbols"
+msgstr "Не может содержать специальные символы"
+
+msgid "Nickname required"
+msgstr "Укажите никнейм"
+
+msgid "Should be from 3 to 16 characters"
+msgstr "Должен содержать от 3 до 16 символов"
+
+msgid "Nickname must start with a Latin letter and contain only Latin letters, digits, - and _"
+msgstr "Никнейм должен начинаться с латинской буквы и содержать только латинские буквы, цифры, - и _"
+
+msgid "Password required"
+msgstr "Укажите пароль"
+
+msgid "Should be at most 128 characters"
+msgstr "Не более 128 символов"
+
+msgid "Something went wrong, please try again later"
+msgstr "Что-то пошло не так, попробуйте позже"
+
+msgid "Could not update the playbook"
+msgstr "Не удалось обновить запись игры"
+
+msgid "Playbook status"
+msgstr "Статус записи игры"
+
+msgid "Approve"
+msgstr "Одобрить"
+
+msgid "Reject"
+msgstr "Отклонить"
+
+msgid "Report sent, thank you"
+msgstr "Жалоба отправлена, спасибо"
+
+msgid "Could not send the report"
+msgstr "Не удалось отправить жалобу"
+
+msgid "Player released"
+msgstr "Игрок разблокирован"
+
+msgid "Player banned"
+msgstr "Игрок заблокирован"
+
+msgid "Could not change the ban"
+msgstr "Не удалось изменить блокировку"
+
+msgid "Player actions"
+msgstr "Действия с игроком"
+
+msgid "Reported"
+msgstr "Жалоба отправлена"
+
+msgid "User #%{id}"
+msgstr "Пользователь #%{id}"
+
+msgid "Risk score: 1+ low, 5+ suspicious, 10+ likely bot"
+msgstr "Оценка риска: от 1 — низкий, от 5 — подозрительно, от 10 — вероятно, бот"
+
+msgid "Risk score"
+msgstr "Оценка риска"
+
+msgid "No analysis for this player."
+msgstr "Для этого игрока нет анализа."
+
+msgid "No telemetry batches recorded."
+msgstr "Телеметрия не записана."
+
+msgid "Either the player never typed, or their solution was injected via WebSocket without using the editor."
+msgstr "Игрок либо ничего не набирал, либо решение было отправлено через WebSocket в обход редактора."
+
+msgid "Signals"
+msgstr "Сигналы"
+
+msgid "Final solution analysis"
+msgstr "Анализ итогового решения"
+
+msgid "Total chars / lines"
+msgstr "Всего символов / строк"
+
+msgid "Code lines / comment lines"
+msgstr "Строк кода / комментариев"
+
+msgid "Comment-to-code ratio"
+msgstr "Доля комментариев к коду"
+
+msgid "Long comment lines (>40 chars)"
+msgstr "Длинные комментарии (>40 символов)"
+
+msgid "GPT-style phrase hits"
+msgstr "Фразы в стиле GPT"
+
+msgid "Typed vs final"
+msgstr "Набрано и итог"
+
+msgid "Final solution length"
+msgstr "Длина итогового решения"
+
+msgid "Language template length"
+msgstr "Длина шаблона языка"
+
+msgid "excluded from coverage"
+msgstr "не учитывается в покрытии"
+
+msgid "Effective added length"
+msgstr "Фактически добавлено"
+
+msgid "Total chars typed"
+msgstr "Всего набрано символов"
+
+msgid "Typed coverage"
+msgstr "Покрытие набором"
+
+msgid "low → likely injected/pasted"
+msgstr "мало → вероятно, вставлено"
+
+msgid "Keystrokes"
+msgstr "Нажатия клавиш"
+
+msgid "Batches"
+msgstr "Пакеты"
+
+msgid "Total events"
+msgstr "Всего событий"
+
+msgid "Key events"
+msgstr "События клавиш"
+
+msgid "Printable keys"
+msgstr "Печатные клавиши"
+
+msgid "Chars inserted / deleted"
+msgstr "Вставлено / удалено символов"
+
+msgid "%{rate} ins/s"
+msgstr "%{rate} вст./с"
+
+msgid "Net Δ text"
+msgstr "Чистое Δ текста"
+
+msgid "Backspace / Delete"
+msgstr "Backspace / Delete"
+
+msgid "Arrow keys"
+msgstr "Стрелки"
+
+msgid "Undo / Redo"
+msgstr "Отмена / Повтор"
+
+msgid "Copy / Cut / Paste shortcuts"
+msgstr "Копировать / Вырезать / Вставить"
+
+msgid "Paste blocked"
+msgstr "Вставка заблокирована"
+
+msgid "Timing and edits"
+msgstr "Тайминг и правки"
+
+msgid "Session length"
+msgstr "Длительность сессии"
+
+msgid "Avg key delta"
+msgstr "Средний интервал между клавишами"
+
+msgid "Min / Max key delta"
+msgstr "Мин. / макс. интервал между клавишами"
+
+msgid "Idle pauses >2s"
+msgstr "Паузы >2 с"
+
+msgid "Multi-char inserts / deletes"
+msgstr "Многосимвольные вставки / удаления"
+
+msgid "Multi-line inserts"
+msgstr "Многострочные вставки"
+
+msgid "Largest single insert / delete"
+msgstr "Наибольшая вставка / удаление"
+
+msgid "≥8 → likely paste"
+msgstr "≥8 → вероятно, вставка"
+
+msgid "Large inserts (≥50)"
+msgstr "Крупные вставки (≥50)"
+
+msgid "Content changes / printable keys"
+msgstr "Изменения текста / печатные клавиши"
+
+msgid "more changes than keys → programmatic"
+msgstr "изменений больше, чем нажатий → программно"
+
+msgid "Events per batch"
+msgstr "События по пакетам"
+
+msgid "Net Δ chars per batch"
+msgstr "Чистое Δ символов по пакетам"
+
+msgid "Avg key delta (ms) per batch"
+msgstr "Средний интервал между клавишами (мс) по пакетам"
+
+msgid "Final submitted code (%{count} chars)"
+msgstr "Итоговый код (%{count} симв.)"
+
+msgid "Could not start the tournament, try again"
+msgstr "Не удалось запустить турнир, попробуйте ещё раз"
+
+msgid "Waiting for start"
+msgstr "Ожидание старта"
+
+msgid "Admin panel"
+msgstr "Панель администратора"
+
+msgid "Choose a language"
+msgstr "Выберите язык"
+
+msgid "Solutions are submitted on the external platform"
+msgstr "Решения отправляются на внешней платформе"
+
+msgid "The server did not respond, try again"
+msgstr "Сервер не ответил, попробуйте ещё раз"
+
+msgid "Could not submit the solution"
+msgstr "Не удалось отправить решение"
+
+msgid "Swap sides"
+msgstr "Поменять местами"
+
+msgid "Time limit"
+msgstr "Лимит времени"
+
+msgid "Mode"
+msgstr "Режим"
+
+msgid "Stage"
+msgstr "Этап"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Live connections"
+msgstr "Активные подключения"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Connections"
+msgstr "Подключения"
+
+msgid "No active connections"
+msgstr "Нет активных подключений"
+
+msgid "Add all to redirect list"
+msgstr "Добавить всех в список перенаправления"
+
+msgid "Contact support for help logging in."
+msgstr "Обратитесь в поддержку, если не получается войти."
+
+msgid "Don't have an account?"
+msgstr "Нет аккаунта?"
+
+msgid "Already have an account?"
+msgstr "Уже есть аккаунт?"
+
+msgid "Game #%{id}: bot/human signal review"
+msgstr "Игра #%{id}: проверка на бота"
+
+msgid "Higher risk score / more signals → more bot-like. Always confirm by playing back the editor history. Reports are computed once and cached; Re-analyze forces a fresh run."
+msgstr "Чем выше риск и больше сигналов, тем больше похоже на бота. Всегда проверяйте по записи истории редактора. Отчёты считаются один раз и кэшируются; «Пересчитать» запускает анализ заново."
+
+msgid "Re-analyze"
+msgstr "Пересчитать"
+
+msgid "No players found for this game."
+msgstr "В этой игре нет игроков."
+
+msgid "Could not connect to the tournament"
+msgstr "Не удалось подключиться к турниру"
+
+msgid "Tournaments. Seasons. Code-first competition."
+msgstr "Турниры. Сезоны. Соревнования в коде."
+
+msgid "Play in the best coding arena"
+msgstr "Играйте на лучшей арене для программистов"
+
+msgid "Codebattle powers head-to-head battles, team brackets, and seasonal leaderboards. Set formats, invite players, and watch the rankings move in real time."
+msgstr "Codebattle — это дуэли один на один, командные сетки и сезонные рейтинги. Выбирайте формат, приглашайте игроков и следите за рейтингом в реальном времени."
+
+msgid "No registration required"
+msgstr "Регистрация не нужна"
+
+msgid "Live ladders"
+msgstr "Живые рейтинги"
+
+msgid "Team seasons"
+msgstr "Командные сезоны"
+
+msgid "Bots + training"
+msgstr "Боты и тренировки"
+
+msgid "Season standings will appear here soon."
+msgstr "Скоро здесь появится таблица сезона."
+
+msgid "Top 5 players • current season"
+msgstr "Топ-5 игроков • текущий сезон"
+
+msgid "Seasons and formats"
+msgstr "Сезоны и форматы"
+
+msgid "Four seasons a year. One Grand Slam to crown the best."
+msgstr "Четыре сезона в год. Один Grand Slam, чтобы определить лучшего."
+
+msgid "Join a competitive ladder that resets each season so every coder gets a fresh climb. Swiss rounds keep every match fair, while lifetime Elo tracks your true skill across seasons. Top finishers earn prizes and exclusive merch."
+msgstr "Рейтинг обнуляется каждый сезон, и каждый может начать восхождение заново. Швейцарская система делает каждый матч честным, а Elo за всё время отражает ваш реальный уровень. Лучшие получают призы и эксклюзивный мерч."
+
+msgid "Season ladder"
+msgstr "Сезонный рейтинг"
+
+msgid "Earn season points, climb the live leaderboard, and lock your place in the finale."
+msgstr "Набирайте очки сезона, поднимайтесь в рейтинге и обеспечьте себе место в финале."
+
+msgid "Season points"
+msgstr "Очки сезона"
+
+msgid "Finals on 21st"
+msgstr "Финалы 21-го числа"
+
+msgid "Swiss tournaments"
+msgstr "Швейцарские турниры"
+
+msgid "Face opponents with similar scores, solve the same task, and rise with every win."
+msgstr "Соревнуйтесь с соперниками своего уровня, решайте одну задачу и поднимайтесь с каждой победой."
+
+msgid "Swiss pairing"
+msgstr "Швейцарская жеребьёвка"
+
+msgid "Live standings"
+msgstr "Таблица в реальном времени"
+
+msgid "No repeat pairs"
+msgstr "Без повторных пар"
+
+msgid "Grades & schedule"
+msgstr "Грейды и расписание"
+
+msgid "Start at rookie, fight up the grades, and aim for the Grand Slam spotlight."
+msgstr "Начните с rookie, поднимайтесь по грейдам и стремитесь к Grand Slam."
+
+msgid "Rookie → Grand Slam"
+msgstr "Rookie → Grand Slam"
+
+msgid "Grand Slam finale"
+msgstr "Финал Grand Slam"
+
+msgid "Points by place"
+msgstr "Очки за место"
+
+msgid "How it works"
+msgstr "Как это работает"
+
+msgid "Join, battle, climb, repeat"
+msgstr "Вступай, сражайся, поднимайся, повторяй"
+
+msgid "A clear loop that keeps the competition fair and the season exciting."
+msgstr "Понятный цикл, который делает соревнование честным, а сезон — захватывающим."
+
+msgid "Join a season"
+msgstr "Вступите в сезон"
+
+msgid "Seasons reset points so everyone gets a fresh shot at the top."
+msgstr "Каждый сезон очки обнуляются, и у всех появляется шанс на вершину."
+
+msgid "Battle in Swiss rounds"
+msgstr "Сражайтесь в швейцарских раундах"
+
+msgid "Face opponents with similar scores on the same task each round."
+msgstr "В каждом раунде — соперник с похожим счётом и общая задача."
+
+msgid "Earn season points"
+msgstr "Набирайте очки сезона"
+
+msgid "Climb the live leaderboard and secure your place in the finale."
+msgstr "Поднимайтесь в рейтинге и обеспечьте себе место в финале."
+
+msgid "Win the Grand Slam"
+msgstr "Выиграйте Grand Slam"
+
+msgid "Champions take the spotlight, prizes, and exclusive merch."
+msgstr "Чемпионов ждут слава, призы и эксклюзивный мерч."
+
+msgid "Private tournaments"
+msgstr "Приватные турниры"
+
+msgid "Build your own tournaments for friends or teams"
+msgstr "Создавайте свои турниры для друзей или команд"
+
+msgid "Host custom events for meetups, work team-building, or just fun sessions. We’ve run tournaments for 1,000+ players."
+msgstr "Проводите свои события для митапов, тимбилдингов или просто ради удовольствия. Мы проводили турниры на 1000+ игроков."
+
+msgid "Friends & communities"
+msgstr "Друзья и сообщества"
+
+msgid "Create private rooms, invite friends, and enjoy real-time battles together."
+msgstr "Создавайте приватные комнаты, приглашайте друзей и сражайтесь вместе в реальном времени."
+
+msgid "Invite links"
+msgstr "Ссылки-приглашения"
+
+msgid "Instant rematch"
+msgstr "Мгновенный реванш"
+
+msgid "Team-building"
+msgstr "Тимбилдинг"
+
+msgid "Run company tournaments and energize your team with friendly competition."
+msgstr "Проводите корпоративные турниры и заряжайте команду дружеским соперничеством."
+
+msgid "Team brackets"
+msgstr "Командные сетки"
+
+msgid "Flexible schedule"
+msgstr "Гибкое расписание"
+
+msgid "Highlights"
+msgstr "Лучшие моменты"
+
+msgid "Large-scale events"
+msgstr "Масштабные события"
+
+msgid "Trusted for tournaments at scale with thousands of players."
+msgstr "Нам доверяют турниры с тысячами игроков."
+
+msgid "1,000+ players"
+msgstr "1000+ игроков"
+
+msgid "Stable rounds"
+msgstr "Стабильные раунды"
+
+msgid "Fast judge"
+msgstr "Быстрая проверка"
+
+msgid "Battle in your language"
+msgstr "Сражайтесь на своём языке"
+
+msgid "Pick your stack and jump into any tournament format."
+msgstr "Выберите свой стек и участвуйте в турнире любого формата."
+
+msgid "Community"
+msgstr "Сообщество"
+
+msgid "Built by competitive coders"
+msgstr "Создано спортивными программистами"
+
+msgid "Codebattle is open and community-driven. Join contributors and help shape upcoming seasons."
+msgstr "Codebattle — открытый проект, который развивает сообщество. Присоединяйтесь к контрибьюторам и помогайте формировать новые сезоны."
+
+msgid "Ready to enter the arena?"
+msgstr "Готовы выйти на арену?"
+
+msgid "Spin up a quick match or start planning your next season."
+msgstr "Начните быструю игру или планируйте следующий сезон."
+
+msgid "Version"
+msgstr "Версия"
+
+msgid "No stages yet."
+msgstr "Этапов пока нет."
+
+msgid "Feedback sent, thank you"
+msgstr "Отзыв отправлен, спасибо"
+
+msgid "Could not send the feedback"
+msgstr "Не удалось отправить отзыв"
+
+msgid "Back to the game"
+msgstr "Вернуться в игру"
+
+msgid "Who wants to battle?"
+msgstr "Кто готов к битве?"
+
+msgid "Invite posted to the lobby chat"
+msgstr "Приглашение отправлено в чат лобби"
+
+msgid "Could not post to the lobby chat. Try again."
+msgstr "Не удалось отправить в чат лобби. Попробуйте ещё раз."
+
+msgid "Share in the lobby chat"
+msgstr "Поделиться в чате лобби"
+
+msgid "Shared in the lobby chat"
+msgstr "Отправлено в чат лобби"
+
+msgid "You?"
+msgstr "Ты?"
+
+msgid "Free seat"
+msgstr "Свободное место"
+
+msgid "Join the battle"
+msgstr "Вступить в бой"
+
+msgid "Time is up"
+msgstr "Время вышло"
+
+msgid "Ladder tournament"
+msgstr "Турнир-лестница"
+
+msgid "Swiss tournament"
+msgstr "Швейцарский турнир"
+
+msgid "Grand slam"
+msgstr "Большой шлем"
+
+msgid "%{first} vs %{second}: live"
+msgstr "%{first} против %{second}: прямо сейчас"
+
+msgid "%{winner} beat %{loser}"
+msgstr "%{winner} победил(а) %{loser}"
+
+msgid "Coding battle"
+msgstr "Битва программистов"
+
+msgid "%{first} vs %{second}"
+msgstr "%{first} против %{second}"
+
+msgid "%{name} (%{player}) is waiting for an opponent. Take the free seat and solve the task first!"
+msgstr "%{name} (%{player}) ждёт соперника. Занимай свободное место и реши задачу первым!"
+
+msgid "%{first} (%{first_meta}) and %{second} (%{second_meta}) are solving the same task right now. Watch live!"
+msgstr "%{first} (%{first_meta}) и %{second} (%{second_meta}) прямо сейчас решают одну задачу. Смотри в прямом эфире!"
+
+msgid "The battle is over. Think you can solve it faster? Play on Codebattle."
+msgstr "Битва окончена. Думаешь, решишь быстрее? Играй на Codebattle."
+
+msgid "%{name} solved the task first in %{lang}. Think you can do better? Play on Codebattle."
+msgstr "%{name} первым решил(а) задачу на %{lang}. Думаешь, сможешь лучше? Играй на Codebattle."
+
+msgid "Time ran out before anyone solved the task. Think you can? Play on Codebattle."
+msgstr "Время вышло, задачу никто не решил. Думаешь, у тебя получится? Играй на Codebattle."
+
+msgid "A head-to-head coding battle on Codebattle."
+msgstr "Битва программистов один на один на Codebattle."
+
+msgid "Starts %{date} UTC. Join and battle for the top!"
+msgstr "Старт %{date} UTC. Присоединяйся и борись за топ!"
+
+msgid "Live now: watch the battles."
+msgstr "Идёт прямо сейчас: смотри битвы."
+
+msgid "Finished: see the results."
+msgstr "Завершён: смотри результаты."
+
+msgid "This game has already started. You can watch it."
+msgstr "Игра уже началась. Можно посмотреть за ней."
+
+msgid "You are already in this game."
+msgstr "Вы уже в этой игре."
+
+msgid "You are already in another game. Finish or cancel it before joining a new one."
+msgstr "Вы уже участвуете в другой игре. Завершите или отмените её, прежде чем присоединяться к новой."
+
+msgid "Pasting from outside the editor is disabled in battles"
+msgstr "В битвах нельзя вставлять текст не из своего редактора"
+
+msgid "Search language"
+msgstr "Поиск языка"
+
+msgid "Nothing found"
+msgstr "Ничего не найдено"
+
+msgid "This game is closed, a rematch is no longer possible. Start a new game from the lobby."
+msgstr "Эта игра уже закрыта, реванш невозможен. Начните новую игру из лобби."
+
+msgid "One of the players is already in another game."
+msgstr "Один из игроков уже в другой игре."
+
+msgid "Could not start a rematch. Try again."
+msgstr "Не удалось начать реванш. Попробуйте ещё раз."
+
+msgid "Hide the tests"
+msgstr "Скрыть тесты"
+
+msgid "Show the tests"
+msgstr "Показать тесты"
+
+msgid "Report this player for cheating"
+msgstr "Пожаловаться на нечестную игру"
+
+msgid "Banned in this tournament"
+msgstr "Забанен в этом турнире"
+
+msgid "You are banned in this tournament"
+msgstr "Вы забанены в этом турнире"
+
+msgid "Your editor is locked and solutions can no longer be submitted. If you think this is a mistake, contact the organizers."
+msgstr "Редактор заблокирован, отправлять решения больше нельзя. Если считаете, что это ошибка, свяжитесь с организаторами."
+
+msgid "Battle created"
+msgstr "Битва создана"
+
+msgid "The link is posted to the lobby chat. The game starts as soon as someone joins."
+msgstr "Ссылка отправлена в чат лобби. Игра начнётся, как только кто-нибудь присоединится."
+
+msgid "Game canceled"
+msgstr "Игра отменена"
+
+msgid "Game expired"
+msgstr "Время ожидания истекло"
+
+msgid "Nobody joined before the time ran out."
+msgstr "Никто не присоединился к игре вовремя."
+
+msgid "The game was canceled before anyone joined."
+msgstr "Игру отменили до того, как кто-то присоединился."
+
+msgid "%{name} canceled the game before anyone joined."
+msgstr "%{name} отменил(а) игру до того, как кто-то присоединился."

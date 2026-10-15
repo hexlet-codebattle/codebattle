@@ -1,5 +1,5 @@
 # Single-node cluster profile
-# Runs: codebattle app + legacy runner + 1 replica per each zig runner language
+# Runs: codebattle app + 1 replica per each zig runner language
 ingress:
   enabled: true
   className: nginx
@@ -14,14 +14,6 @@ codebattle:
   service:
     type: ClusterIP
   nodeSelector: {}
-
-runner:
-  enabled: true
-  replicaCount: 1
-  antiAffinity:
-    required: false
-  updateStrategy:
-    type: Recreate
 
 zigRunners:
   strategy: simple

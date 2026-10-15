@@ -30,7 +30,6 @@ services:
       CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE: http://runner-{lang}:4040/run
       CODEBATTLE_LIVE_VIEW_SALT: ${CODEBATTLE_LIVE_VIEW_SALT:-dev-only-salt}
       CODEBATTLE_PORT: ${CODEBATTLE_PORT:-4000}
-      CODEBATTLE_RUNNER_PORT: ${CODEBATTLE_RUNNER_PORT:-4001}
       CODEBATTLE_SECRET_KEY_BASE: ${CODEBATTLE_SECRET_KEY_BASE:-dev-only-secret-key-base-dev-only-secret-key-base-dev-only-secret-key-base}
       CODEBATTLE_FRONTEND_PORT: ${CODEBATTLE_FRONTEND_PORT:-8081}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-ASFD}
@@ -48,7 +47,7 @@ services:
       - ./.devcontainer/empty.env:/workspace/.env:ro
       - build:/workspace/_build
       - deps:/workspace/deps
-      - frontend_node_modules:/workspace/apps/codebattle/frontend/node_modules
+      - frontend_node_modules:/workspace/frontend/node_modules
       - plts:/workspace/priv/plts
       - pnpm_store:/home/codebattle/.local/share/pnpm
     tmpfs:

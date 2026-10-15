@@ -87,9 +87,8 @@ config :codebattle, :oauth,
 config :codebattle, :start_create_bot_timeout, to_timeout(second: 3)
 config :codebattle, :tournament_run_upcoming, false
 config :codebattle, app_version: "dev"
-# config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteZig
 config :codebattle, chat_bot_token: System.get_env("CODEBATTLE_CHAT_BOT_TOKEN", "chat_bot")
-config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteContainerRun
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteZig
 config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
 
 config :codebattle,
@@ -110,6 +109,7 @@ config :codebattle, tournament_finish_timeout_ms: 3000
 config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, tournament_rematch_timeout_ms: 2000
 config :codebattle, user_rank_server: true
+config :codebattle, white_list_lang_slugs: []
 
 # Use the tz database for DateTime timezone conversions (e.g. DateTime.shift_zone!/2)
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
@@ -162,24 +162,5 @@ config :phoenix_meta_tags,
   }
 
 config :porcelain, goon_warn_if_missing: false
-
-config :runner, Runner.ImagesPuller, timeout: to_timeout(hour: 7)
-
-# Configures the runner endpoint
-config :runner, RunnerWeb.Endpoint,
-  url: [host: "localhost"],
-  adapter: Bandit.PhoenixAdapter,
-  secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
-  render_errors: [view: RunnerWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: Runner.PubSub
-
-config :runner, :runner_url, "http://localhost:4001"
-config :runner, fake_docker_run: false
-config :runner, load_dot_env_file: true
-config :runner, max_parallel_containers_run: 16
-config :runner, pull_docker_images: false
-config :runner, runner_container_killer: false
-config :runner, runner_cpu_logger: false
-config :runner, white_list_lang_slugs: []
 
 import_config "#{Mix.env()}.exs"

@@ -1,9 +1,10 @@
 import Config
 
+alias Codebattle.CodeCheck.Executor.Local
+
 checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
-    "local" -> Codebattle.CodeCheck.Executor.Local
-    "remote" -> Codebattle.CodeCheck.Executor.RemoteContainerRun
+    "local" -> Local
     "zig" -> Codebattle.CodeCheck.Executor.RemoteZig
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
@@ -78,6 +79,7 @@ config :codebattle,
 config :codebattle, checker_executor: checker_executor
 config :codebattle, code_check_timeout: 35_000
 config :codebattle, env: :test
+config :codebattle, fake_container_run: checker_executor != Local
 config :codebattle, fake_html_to_image: true
 config :codebattle, freeze_time: true
 
@@ -104,9 +106,3 @@ config :fun_with_flags, :cache_bust_notifications, enabled: false
 config :logger, :console, level: :error
 
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
-
-config :runner, RunnerWeb.Endpoint,
-  http: [port: 4004],
-  server: true
-
-config :runner, fake_container_run: true

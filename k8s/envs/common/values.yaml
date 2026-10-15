@@ -14,11 +14,6 @@ codebattle:
   service:
     type: ClusterIP
 
-# Legacy runner (hexlet-codebattle/runner)
-runner:
-  enabled: true
-  replicaCount: 1
-
 zigRunners:
   enabled: true
   avoidCodebattleNode: false

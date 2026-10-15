@@ -49,38 +49,6 @@ codebattle:
     CODEBATTLE_VERSION: "{{ .Values.version }}"
     CODEBATTLE_PORT: 4000
 
-runner:
-  enabled: true
-  replicaCount: 1
-  antiAffinity:
-    required: true
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-  # Deployment or DaemonSet
-  type: Deployment
-  image:
-    repository: hexlet-codebattle/runner
-    imagePullPolicy: Always
-  resources:
-    requests:
-      cpu: "50m"
-      memory: "64Mi"
-    limits:
-      cpu: "2"
-      memory: "2Gi"
-  probes:
-    readiness:
-      initialDelaySeconds: 5
-      periodSeconds: 5
-      successThreshold: 1
-    liveness:
-      initialDelaySeconds: 20
-      periodSeconds: 10
-      failureThreshold: 3
-
 chatbot:
   enabled: false
   replicaCount: 1
@@ -113,7 +81,7 @@ nginx:
       failureThreshold: 3
 
 zigRunners:
-  enabled: false
+  enabled: true
   imagePullPolicy: Always
   strategy: simple # simple | robust
   avoidCodebattleNode: false

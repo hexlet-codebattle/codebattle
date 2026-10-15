@@ -16,11 +16,12 @@ Open-source competitive programming platform where users solve coding tasks head
 
 ## Project Structure
 
-Elixir umbrella project with two apps under `apps/`:
+Single Elixir/Phoenix application at the repository root:
 - `codebattle` — Main Phoenix web app (backend + frontend assets)
-- `runner` — HTTP service that executes user code in isolated containers; language images in `apps/runner/images/`
+- `lib/codebattle/runner/` — shared language metadata, checker generators, and local Docker execution
+- `images/` — language images with Zig HTTP runners
 
-Frontend source lives in `apps/codebattle/frontend/src/`: Inertia pages in `pages/`, features in `features/`, theme in `theme/`. Static files (images, audio, fonts) live in `apps/codebattle/static/` and are served at `/assets/*`; i18n strings are keyed by English text in `apps/codebattle/priv/gettext/*/LC_MESSAGES/default.po`.
+Frontend source lives in `frontend/src/`: Inertia pages in `pages/`, features in `features/`, theme in `theme/`. Static files (images, audio, fonts) live in `static/` and are served at `/assets/*`; i18n strings are keyed by English text in `priv/gettext/*/LC_MESSAGES/default.po`.
 
 See `AGENTS.md` for detailed module organization and core domain contexts.
 
@@ -41,7 +42,7 @@ make test-fe                    # Frontend typecheck + build
 make test-code-checkers         # Image executor tests (CODEBATTLE_EXECUTOR=local)
 
 # Single Elixir test file:
-make dev-exec CMD='mix test apps/codebattle/test/codebattle/game/context_test.exs'
+make dev-exec CMD='mix test test/codebattle/game/context_test.exs'
 ```
 
 ### Linting & Formatting
@@ -69,7 +70,7 @@ Do not mount host Docker sockets or credential directories into the app service.
 ## Code Style
 
 - Elixir: enforced by `mix format` and Credo (120-char line limit)
-- TypeScript: OXLint (`apps/codebattle/frontend/.oxlintrc.json`), `tsc --noEmit`
+- TypeScript: OXLint (`frontend/.oxlintrc.json`), `tsc --noEmit`
 - Coverage threshold: 60% minimum (ExCoveralls)
 
 ## CI Pipeline

@@ -1,0 +1,4862 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "Welcome to %{name}!"
+msgstr "Welcome to %{name}!"
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "%{name}: game for programmers."
+msgstr "%{name}: game for programmers."
+
+#, fuzzy
+#: lib/codebattle_web/templates/page/index.html.slim:6
+#: lib/codebattle_web/templates/game/index.html.slim:11
+msgid "Create a game"
+msgstr "Create game"
+
+#: lib/codebattle_web/templates/user/index.html.slim:1
+msgid "List of games"
+msgstr "List of games"
+
+#: lib/codebattle_web/templates/page/index.html.slim:16
+msgid "Lobby chat"
+msgstr "Lobby chat"
+
+#: lib/codebattle_web/templates/page/index.html.slim:18
+msgid "Type a message..."
+msgstr "Type a message..."
+
+#: lib/codebattle_web/templates/page/index.html.slim:25
+msgid "Online users"
+msgstr "Online users"
+
+#: lib/codebattle_web/templates/layout/app.html.slim:26
+msgid "Logout"
+msgstr "Logout"
+
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Sign in with %{name}"
+msgstr "Sign in with %{name}"
+
+#: lib/codebattle_web/templates/game/index.html.slim:1
+msgid "Listing games"
+msgstr "Listing games"
+
+#: lib/codebattle_web/templates/user/index.html.slim:1
+msgid "Total: "
+msgstr "Total: "
+
+#: lib/codebattle_web/templates/game/index.html.slim:2
+msgid "Users rating: "
+msgstr "Users rating: "
+
+#: lib/codebattle_web/templates/game/index.html.slim:17
+msgid "id: %{id}, state: %{state}, players: %{players}  "
+msgstr "id: %{id}, state: %{state}, players: %{players}  "
+
+#: lib/codebattle_web/templates/game/index.html.slim:19
+msgid "Join"
+msgstr "Join"
+
+#: lib/codebattle_web/templates/game/index.html.slim:21
+msgid "Show"
+msgstr "Show"
+
+#: lib/codebattle_web/templates/game/index.html.slim:25
+msgid "Main page"
+msgstr "Main page"
+
+#: lib/codebattle_web/templates/game/show.html.slim:1
+msgid "Game: %{id}"
+msgstr "Game: %{id}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:2
+msgid "State: %{state}"
+msgstr "State: %{state}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:4
+msgid "The winner is: %{name}"
+msgstr "The winner is: %{name}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:5
+msgid "Players"
+msgstr "Players"
+
+#: lib/codebattle_web/templates/game/show.html.slim:13
+msgid "Check result"
+msgstr "Check result"
+
+#: lib/codebattle_web/templates/game/show.html.slim:15
+msgid "Waiting for an opponent"
+msgstr "Waiting for an opponent"
+
+#: lib/codebattle_web/templates/game/show.html.slim:21
+msgid "Back to the list of games"
+msgstr "Back to the list of games"
+
+#: lib/codebattle_web/templates/game/show.html.slim:31
+msgid "Game chat"
+msgstr "Game chat"
+
+#: lib/codebattle_web/templates/user/index.html.slim:12
+msgid "%{index}) name: %{name}, rating: %{rating}"
+msgstr "%{index}) name: %{name}, rating: %{rating}"
+
+#: lib/codebattle_web/controllers/session_controller.ex:6
+msgid "You have been logged out!"
+msgstr "You have been logged out!"
+
+#: lib/codebattle_web/controllers/auth_controller.ex:15
+msgid "Failed to authenticate."
+msgstr "Failed to authenticate."
+
+#: lib/codebattle_web/controllers/fallback_controller.ex
+#: lib/codebattle_web/channels/lobby_channel.ex
+msgid "You are already in a game. Finish or cancel your current game before joining another one."
+msgstr "You are already in a game. Finish or cancel your current game before joining another one."
+
+#: lib/codebattle_web/controllers/auth_controller.ex:30
+msgid "Successfully authenticated"
+msgstr "Successfully authenticated"
+
+#: lib/codebattle_web/controllers/game_controller.ex:41
+msgid "Game not found"
+msgstr "Game not found"
+
+#: lib/codebattle_web/controllers/game_controller.ex:27
+msgid "Game has been created"
+msgstr "Game has been created"
+
+#: lib/codebattle_web/controllers/game_controller.ex:53
+msgid "Yay, you won the game!"
+msgstr "Yay, you won the game!"
+
+#: lib/codebattle_web/channels/game_channel.ex:116
+msgid "You lost the game"
+msgstr "You lost the game"
+
+#: lib/codebattle_web/views/error_view.ex:8
+msgid "Page not found"
+msgstr "Page not found"
+
+#: lib/codebattle_web/views/error_view.ex:13
+msgid "Internal server error"
+msgstr "Internal server error"
+
+#: lib/codebattle_web/plugs/require_auth.ex:12
+msgid "You must be logged in to access that page"
+msgstr "You must be logged in to access that page"
+
+#: assets/js/socket.js:49
+msgid "joined to"
+msgstr "joined to"
+
+#: assets/js/socket.js:49
+msgid "left"
+msgstr "left"
+
+#: assets/js/socket.js:52
+msgid "channel"
+msgstr "channel"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_over.html.slim:1
+msgid "Game over"
+msgstr "Game over"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_result.html.slim:1
+msgid "Game status"
+msgstr "Game status"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/join.html.slim:1
+msgid "Join the game"
+msgstr "Join the game"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Sign Out"
+msgstr "Sign Out"
+
+msgid "Sign up"
+msgstr "Sign up"
+
+#, elixir-format
+#: lib/codebattle_web/controllers/auth_controller.ex:23
+#: lib/codebattle_web/controllers/dev_login_controller.ex:15
+msgid "Successfully authenticated."
+msgstr "Successfully authenticated."
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Users rating"
+msgstr "Users rating"
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:28
+msgid "You are in a different game"
+msgstr "You are in a different game"
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:250
+msgid "%{name} gave up!"
+msgstr "%{name} gave up!"
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:162
+msgid "won the game!"
+msgstr "won the game!"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Hexlet"
+msgstr "Hexlet"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "My Profile"
+msgstr "My Profile"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Sound"
+msgstr "Sound"
+
+msgid "Master sound"
+msgstr "Master sound"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Manage your public identity and coding preferences."
+msgstr "Manage your public identity and coding preferences."
+
+msgid "Sound settings"
+msgstr "Sound settings"
+
+msgid "Set the volume of game and tournament sounds."
+msgstr "Set the volume of game and tournament sounds."
+
+msgid "Game sound level"
+msgstr "Game sound level"
+
+msgid "Tournament sound level"
+msgstr "Tournament sound level"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Update profile"
+msgstr "Update profile"
+
+msgid "Manage your public identity."
+msgstr "Manage your public identity."
+
+msgid "Coding preferences"
+msgstr "Coding preferences"
+
+msgid "Weapon and locale changes are saved automatically."
+msgstr "Weapon and locale changes are saved automatically."
+
+msgid "Manage your account, preferences, and active sessions."
+msgstr "Manage your account, preferences, and active sessions."
+
+msgid "Connected accounts"
+msgstr "Connected accounts"
+
+msgid "Manage the services you use to sign in."
+msgstr "Manage the services you use to sign in."
+
+msgid "Review and remove signed-in sessions."
+msgstr "Review and remove signed-in sessions."
+
+msgid "On"
+msgstr "On"
+
+msgid "Off"
+msgstr "Off"
+
+msgid "Mute sound"
+msgstr "Mute sound"
+
+msgid "Turn sound on"
+msgstr "Turn sound on"
+
+msgid "New private message"
+msgstr "New private message"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Tg#codebattle"
+msgstr "Tg#codebattle"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "SourceCode"
+msgstr "SourceCode"
+
+# JSX
+msgid "Task: "
+msgstr "Task: "
+
+msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgstr "Found a mistake? Have something to add? Pull Requests are welcome: "
+
+msgid "Run your code!"
+msgstr "Run your code!"
+
+msgid "Solution cannot be executed"
+msgstr "The solution cannot be executed"
+
+msgid "Tests failed"
+msgstr "Tests failed"
+
+msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr "Passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+
+msgid "Yay! All tests passed!"
+msgstr "Yay! All tests passed!"
+
+msgid "Success Test Message"
+msgstr "Yay! All tests passed!"
+
+msgid "Failure Test Message"
+msgstr "Oh no, some test has failed!"
+
+msgid "Win Game Message"
+msgstr "You have won the game!"
+
+msgid "Win Training Message"
+msgstr "Congratulations! If you want to fight with real players for a place in the ranking, you need to sign up"
+
+msgid "Lose Game Message"
+msgstr "Your opponent has won the game"
+
+msgid "Press Check solution or Give up"
+msgstr "Press 'Check solution' or 'Give up'"
+
+msgid "Give up"
+msgstr "Give up"
+
+msgid "Сheck"
+msgstr "Check"
+
+msgid "Сheck status:"
+msgstr "Check status:"
+
+msgid "execution time: %{time} ms"
+msgstr "execution time: %{time} ms"
+
+msgid "Receive:"
+msgstr "Receive:"
+
+msgid "Expected:"
+msgstr "Expected:"
+
+msgid "Arguments:"
+msgstr "Arguments:"
+
+msgid "Oops"
+msgstr "Oops"
+
+msgid "Sort by:"
+msgstr "Sort by:"
+
+msgid "Rank"
+msgstr "Rank"
+
+msgid "Rating"
+msgstr "Rating"
+
+msgid "Games played"
+msgstr "Games played"
+
+msgid "Joined"
+msgstr "Joined"
+
+msgid "Codebattle Intro"
+msgstr "Read a simple task and solve it faster than your opponent in live time. Play with bots, friends and other players. Also you can fight in great tournaments."
+
+msgid "Codebattle Intro Title"
+msgstr "Welcome to Codebattle. Show your skill!"
+
+msgid "Start simple battle"
+msgstr "Start simple battle"
+
+msgid "Start battle"
+msgstr "Start battle"
+
+msgid "Try again"
+msgstr "Try again"
+
+msgid "Back to Home"
+msgstr "Back to Home"
+
+msgid "%{name} (bot)"
+msgstr "%{name} (bot)"
+
+msgid "%{name} (you)"
+msgstr "%{name} (you)"
+
+msgid "Fight"
+msgstr "Fight"
+
+#, elixir-format
+#: lib/codebattle_web/support/notifications.ex:13
+msgid "Oh no, the time is out! Both players lost ;("
+msgstr "Oh no, the time is out! Both players lost ;("
+
+msgid "Timeout - no timeout"
+msgstr "No timeout"
+
+msgid "Timeout 60 seconds"
+msgstr "1 min"
+
+msgid "Timeout 120 seconds"
+msgstr "2 min"
+
+msgid "Timeout 180 seconds"
+msgstr "3 min"
+
+msgid "Timeout 300 seconds"
+msgstr "5 min"
+
+msgid "Timeout 480 seconds"
+msgstr "8 min"
+
+msgid "Timeout 780 seconds"
+msgstr "13 min"
+
+msgid "Timeout 1260 seconds"
+msgstr "21 min"
+
+msgid "Timeout 2040 seconds"
+msgstr "34 min"
+
+msgid "Timeout 3300 seconds"
+msgstr "55 min"
+
+msgid "random task (%{total} available)"
+msgstr "random task (%{total} available)"
+
+msgid "Settings changed successfully"
+msgstr "Your settings has been changed"
+
+msgid "Something went wrong"
+msgstr "Oops, something has gone wrong"
+
+msgid "arena_task_stats"
+msgid_plural "%{count} tasks left"
+msgstr[0] "%{count} task left"
+msgstr[1] "%{count} tasks left"
+msgstr[2] "%{count} tasks left"
+
+msgid "Active match"
+msgstr "Асtive"
+
+# Participant Dashboard Translations
+msgid "Participant Dashboard"
+msgstr "Participant Dashboard"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "University"
+msgstr "University"
+
+msgid "Player"
+msgstr "Player"
+
+msgid "Join this tournament to take part in the matches."
+msgstr "Join this tournament to take part in the matches."
+
+msgid "You are registered for this tournament. You can leave before it starts."
+msgstr "You are registered for this tournament. You can leave before it starts."
+
+msgid "Page"
+msgstr "Page"
+
+msgid "of"
+msgstr "of"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Overall Standing"
+msgstr "Overall Standing"
+
+msgid "Category Standing"
+msgstr "Category Standing"
+
+msgid "Qualification"
+msgstr "Qualification"
+
+msgid "Semifinal Qualification"
+msgstr "Semifinal Qualification"
+
+msgid "Semifinal"
+msgstr "Semifinal"
+
+msgid "Final Qualification"
+msgstr "Final Qualification"
+
+msgid "Final"
+msgstr "Final"
+
+msgid "Failed"
+msgstr "Failed"
+
+msgid "Go to"
+msgstr "Go to"
+
+msgid "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support."
+msgstr "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support."
+
+msgid "Cheaters Panel"
+msgstr "Cheaters Panel"
+
+msgid "Cheaters"
+msgstr "Cheaters"
+
+msgid "No cheaters marked yet"
+msgstr "No cheaters marked yet"
+
+msgid "All reports"
+msgstr "All reports"
+
+msgid "No reports yet"
+msgstr "No reports yet"
+
+msgid "Unban"
+msgstr "Unban"
+
+msgid "Grand Slam"
+msgstr "Grand Slam"
+
+msgid "Masters"
+msgstr "Masters"
+
+msgid "Elite"
+msgstr "Elite"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "Challenger"
+msgstr "Challenger"
+
+msgid "Rookie"
+msgstr "Rookie"
+
+msgid "Sort by %{label}"
+msgstr "Sort by %{label}"
+
+msgid "of %{count} players"
+msgstr "of %{count} players"
+
+msgid "Leaderboard pagination"
+msgstr "Leaderboard pagination"
+
+msgid "Search player"
+msgstr "Search player"
+
+msgid "Search by name..."
+msgstr "Search by name..."
+
+msgid "Filter by clan"
+msgstr "Filter by clan"
+
+msgid "All Clans"
+msgstr "All Clans"
+
+msgid "Filter by language"
+msgstr "Filter by language"
+
+msgid "All Languages"
+msgstr "All Languages"
+
+msgid "Clear Filters"
+msgstr "Clear Filters"
+
+msgid "View player insights"
+msgstr "View player insights"
+
+msgid "Stats"
+msgstr "Stats"
+
+msgid "No results yet"
+msgstr "No results yet"
+
+msgid "No players match your filters"
+msgstr "No players match your filters"
+
+msgid "Avg Place"
+msgstr "Avg Place"
+
+msgid "Insights"
+msgstr "Insights"
+
+msgid "Top 3"
+msgstr "Top 3"
+
+msgid "Previous Seasons Champions"
+msgstr "Previous Seasons Champions"
+
+msgid "View All Seasons"
+msgstr "View All Seasons"
+
+msgid "Full Results"
+msgstr "Full Results"
+
+msgid "Hall of Fame"
+msgstr "Hall of Fame"
+
+msgid "Starts"
+msgstr "Starts"
+
+msgid "Ends"
+msgstr "Ends"
+
+msgid "Current Season Leaderboard"
+msgstr "Current Season Leaderboard"
+
+msgid "%{count} players"
+msgstr "%{count} players"
+
+msgid "points"
+msgstr "points"
+
+msgid "Season"
+msgstr "Season"
+
+msgid "View Results"
+msgstr "View Results"
+
+msgid "Competition archive"
+msgstr "Competition archive"
+
+msgid "Seasons"
+msgstr "Seasons"
+
+msgid "Browse finished seasons and open the full leaderboard for each one."
+msgstr "Browse finished seasons and open the full leaderboard for each one."
+
+msgid "No seasons found"
+msgstr "No seasons found"
+
+msgid "Champions"
+msgstr "Champions"
+
+msgid "Season not found"
+msgstr "Season not found"
+
+msgid "Upcoming"
+msgstr "Upcoming"
+
+msgid "Completed"
+msgstr "Completed"
+
+msgid "All Seasons"
+msgstr "All Seasons"
+
+msgid "Full Leaderboard"
+msgstr "Full Leaderboard"
+
+msgid "n/a"
+msgstr "n/a"
+
+msgid "Finished"
+msgstr "Finished"
+
+msgid "Waiting"
+msgstr "Waiting"
+
+msgid "Timeout"
+msgstr "Timeout"
+
+msgid "Playing"
+msgstr "Playing"
+
+msgid "Canceled"
+msgstr "Canceled"
+
+msgid "Unknown"
+msgstr "Unknown"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "In progress"
+msgstr "In progress"
+
+msgid "Won"
+msgstr "Won"
+
+msgid "Lost"
+msgstr "Lost"
+
+msgid "Over"
+msgstr "Over"
+
+msgid "Draw"
+msgstr "Draw"
+
+msgid "%{count} pts"
+msgstr "%{count} pts"
+
+msgid "Leading"
+msgstr "Leading"
+
+msgid "Contender"
+msgstr "Contender"
+
+msgid "%{count} wins"
+msgstr "%{count} wins"
+
+msgid "Game"
+msgstr "Game"
+
+msgid "Open game"
+msgstr "Open game"
+
+msgid "Duration: %{duration}"
+msgstr "Duration: %{duration}"
+
+msgid "Finished %{date}"
+msgstr "Finished %{date}"
+
+msgid "Still in progress"
+msgstr "Still in progress"
+
+msgid "H2H Arena"
+msgstr "H2H Arena"
+
+msgid "Direct duel history with profile links, live status, and every shared game."
+msgstr "Direct duel history with profile links, live status, and every shared game."
+
+msgid "Matches"
+msgstr "Matches"
+
+msgid "No winner"
+msgstr "No winner"
+
+msgid "Avg Result"
+msgstr "Avg Result"
+
+msgid "Match duration"
+msgstr "Match duration"
+
+msgid "Match start time"
+msgstr "Match start time"
+
+msgid "Total Time"
+msgstr "Total Time"
+
+msgid "Win rate"
+msgstr "Win rate"
+
+msgid "Average result"
+msgstr "Average result"
+
+msgid "Current round"
+msgstr "Current round"
+
+msgid "Total games"
+msgstr "Total games"
+
+msgid "Draws"
+msgstr "Draws"
+
+msgid "All games"
+msgstr "All games"
+
+msgid "%{count} records"
+msgstr "%{count} records"
+
+msgid "No games found for this pair."
+msgstr "No games found for this pair."
+
+msgid "Total games: %{count}"
+msgstr "Total games: %{count}"
+
+msgid "Total tournament wins: %{count}"
+msgstr "Total tournament wins: %{count}"
+
+msgid "Total tournament wins"
+msgstr "Total tournament wins"
+
+msgid "Failed to load tournaments"
+msgstr "Failed to load tournaments"
+
+msgid "No tournaments played yet"
+msgstr "No tournaments played yet"
+
+msgid "Grade"
+msgstr "Grade"
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Lang"
+msgstr "Lang"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Total tournaments: %{count}"
+msgstr "Total tournaments: %{count}"
+
+msgid "Last 365 days"
+msgstr "Last 365 days"
+
+msgid "%{count} games in %{year}"
+msgstr "%{count} games in %{year}"
+
+msgid "%{count} games in the last 365 days"
+msgstr "%{count} games in the last 365 days"
+
+msgid "%{count} games on %{date}"
+msgstr "%{count} games on %{date}"
+
+msgid "No games"
+msgstr "No games"
+
+msgid "User avatar"
+msgstr "User avatar"
+
+msgid "No clan"
+msgstr "No clan"
+
+msgid "joined at %{date}"
+msgstr "joined at %{date}"
+
+msgid "Github account"
+msgstr "Github account"
+
+msgid "Place: #%{place}"
+msgstr "Place: #%{place}"
+
+msgid "Completed games"
+msgstr "Completed games"
+
+msgid "(Elo Rating)"
+msgstr "(Elo Rating)"
+
+msgid "Rivals"
+msgstr "Rivals"
+
+msgid "Clan: %{clan}"
+msgstr "Clan: %{clan}"
+
+msgid "W/L/T: %{wins}/%{losses}/%{timeouts}"
+msgstr "W/L/T: %{wins}/%{losses}/%{timeouts}"
+
+msgid "Languages"
+msgstr "Languages"
+
+msgid "Activity"
+msgstr "Activity"
+
+msgid "Total entries: %{count}"
+msgstr "Total entries: %{count}"
+
+msgid "Username contains..."
+msgstr "Username contains..."
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Users per page"
+msgstr "Users per page"
+
+msgid "With bots"
+msgstr "With bots"
+
+msgid "Season %{name} %{year}: %{start} - %{end}"
+msgstr "Season %{name} %{year}: %{start} - %{end}"
+
+msgid "Closest Opponents"
+msgstr "Closest Opponents"
+
+msgid "Avatar Logo"
+msgstr "Avatar Logo"
+
+msgid "Live Tournaments"
+msgstr "Live Tournaments"
+
+msgid "Upcoming Tournaments"
+msgstr "Upcoming Tournaments"
+
+msgid "Competition not started yet"
+msgstr "Competition not started yet"
+
+msgid "add clan"
+msgstr "add clan"
+
+msgid "Codebattle League"
+msgstr "Codebattle League"
+
+msgid "Challenge the best! Participate in the Competition tournaments, defeat your rivals to earn points, and claim the first place in the programmer ranking."
+msgstr "Challenge the best! Participate in the Competition tournaments, defeat your rivals to earn points, and claim the first place in the programmer ranking."
+
+msgid "See Rules & Details"
+msgstr "See Rules & Details"
+
+msgid "Seasons, Grades, Points — Overview"
+msgstr "Seasons, Grades, Points — Overview"
+
+msgid "Season 0: Sep 21 – Dec 21"
+msgstr "Season 0: Sep 21 – Dec 21"
+
+msgid "Season 1: Dec 21 – Mar 21"
+msgstr "Season 1: Dec 21 – Mar 21"
+
+msgid "Season 2: Mar 21 – Jun 21"
+msgstr "Season 2: Mar 21 – Jun 21"
+
+msgid "Season 3: Jun 21 – Sep 21"
+msgstr "Season 3: Jun 21 – Sep 21"
+
+msgid "On the season end date (the 21st), we run a Grand Slam at 16:00 UTC."
+msgstr "On the season end date (the 21st), we run a Grand Slam at 16:00 UTC."
+
+msgid "Season Points reset each season. Elo never resets (lifetime)."
+msgstr "Season Points reset each season. Elo never resets (lifetime)."
+
+msgid "Grades"
+msgstr "Grades"
+
+msgid "open, rookie, challenger, pro, elite, masters, grand_slam — determine prestige, task pools, points, schedules, and limits."
+msgstr "open, rookie, challenger, pro, elite, masters, grand_slam — determine prestige, task pools, points, schedules, and limits."
+
+msgid "Tournament Scheduling & Preemption"
+msgstr "Tournament Scheduling & Preemption"
+
+msgid "Daily/Hourly (UTC)"
+msgstr "Daily/Hourly (UTC)"
+
+msgid "Rookie: every 4 hours — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (no 16:00 slot)."
+msgstr "Rookie: every 4 hours — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (no 16:00 slot)."
+
+msgid "Challenger: daily 16:00 UTC; preempted by higher grades that day/week."
+msgstr "Challenger: daily 16:00 UTC; preempted by higher grades that day/week."
+
+msgid "Weekly 16:00 UTC priority"
+msgstr "Weekly 16:00 UTC priority"
+
+msgid "grand_slam > masters > elite > pro."
+msgstr "grand_slam > masters > elite > pro."
+
+msgid "In any week, exactly one of these runs at 16:00. Grand Slam week -> only GS at 16:00. Masters week -> no pro/elite. Otherwise pro (Tue) and elite (Wed) alternate as backbone."
+msgstr "In any week, exactly one of these runs at 16:00. Grand Slam week -> only GS at 16:00. Masters week -> no pro/elite. Otherwise pro (Tue) and elite (Wed) alternate as backbone."
+
+msgid "Player Limits & Rounds per Grade"
+msgstr "Player Limits & Rounds per Grade"
+
+msgid "Players limit"
+msgstr "Players limit"
+
+msgid "rookie: 8"
+msgstr "rookie: 8"
+
+msgid "challenger: 16"
+msgstr "challenger: 16"
+
+msgid "pro: 32"
+msgstr "pro: 32"
+
+msgid "elite: 64"
+msgstr "elite: 64"
+
+msgid "masters: 128"
+msgstr "masters: 128"
+
+msgid "grand_slam: 256"
+msgstr "grand_slam: 256"
+
+msgid "Rounds per grade"
+msgstr "Rounds per grade"
+
+msgid "rookie: 4"
+msgstr "rookie: 4"
+
+msgid "challenger: 6"
+msgstr "challenger: 6"
+
+msgid "pro: 8"
+msgstr "pro: 8"
+
+msgid "elite: 10"
+msgstr "elite: 10"
+
+msgid "masters: 12"
+msgstr "masters: 12"
+
+msgid "grand_slam: 14"
+msgstr "grand_slam: 14"
+
+msgid "For each finished tournament (grade != open), award Season Points by final place using the tables below. All remaining participants (outside prize slots) receive 2 points each. Prize points do not stack with participation points."
+msgstr "For each finished tournament (grade != open), award Season Points by final place using the tables below. All remaining participants (outside prize slots) receive 2 points each. Prize points do not stack with participation points."
+
+msgid "rookie: [8, 4, 2] - top-3"
+msgstr "rookie: [8, 4, 2] - top-3"
+
+msgid "challenger: [16, 8, 4, 2] - top-6"
+msgstr "challenger: [16, 8, 4, 2] - top-6"
+
+msgid "pro: [128, 64, 32, 16, 8, 4, 2] - top-7"
+msgstr "pro: [128, 64, 32, 16, 8, 4, 2] - top-7"
+
+msgid "elite: [256, 128, 64, 32, 16, 8, 4, 2] - top-8"
+msgstr "elite: [256, 128, 64, 32, 16, 8, 4, 2] - top-8"
+
+msgid "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-10"
+msgstr "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-10"
+
+msgid "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-11"
+msgstr "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-11"
+
+msgid "Season Leaderboard Tie-Breakers"
+msgstr "Season Leaderboard Tie-Breakers"
+
+msgid "Total Season Points (desc)"
+msgstr "Total Season Points (desc)"
+
+msgid "Tournament wins in season (desc)"
+msgstr "Tournament wins in season (desc)"
+
+msgid "Tournament participations in season (desc)"
+msgstr "Tournament participations in season (desc)"
+
+msgid "Maintain a HoF for Season Champions and Grand Slam Champions (participants page optional later)."
+msgstr "Maintain a HoF for Season Champions and Grand Slam Champions (participants page optional later)."
+
+msgid "Codebattle - Overview & Key Concepts"
+msgstr "Codebattle - Overview & Key Concepts"
+
+msgid "Competitive Programming Game"
+msgstr "Competitive Programming Game"
+
+msgid "Codebattle (codebattle.hexlet.io) is a real-time coding duel platform. Two players solve the same task in parallel; whoever solves it first wins the match."
+msgstr "Codebattle (codebattle.hexlet.io) is a real-time coding duel platform. Two players solve the same task in parallel; whoever solves it first wins the match."
+
+msgid "Swiss Tournaments"
+msgstr "Swiss Tournaments"
+
+msgid "Multiple rounds; in each round, players are paired vs players with similar cumulative score; no repeat pairings (unless unavoidable on round 1 bootstrap or via bot fill-ins)."
+msgstr "Multiple rounds; in each round, players are paired vs players with similar cumulative score; no repeat pairings (unless unavoidable on round 1 bootstrap or via bot fill-ins)."
+
+msgid "17 supported - clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+msgstr "17 supported - clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+
+msgid "Create a CSS Game"
+msgstr "Create a CSS Game"
+
+msgid "Create a SQL Game"
+msgstr "Create a SQL Game"
+
+msgid "Join a battle"
+msgstr "Join a battle"
+
+msgid "Continue battle"
+msgstr "Continue battle"
+
+msgid "Create a battle"
+msgstr "Create a battle"
+
+msgid "Join a game"
+msgstr "Join a game"
+
+msgid "Online players: %{count}"
+msgstr "Online players: %{count}"
+
+msgid "Send message"
+msgstr "Send message"
+
+msgid "Send fight invite"
+msgstr "Send fight invite"
+
+msgid "fight"
+msgstr "fight"
+
+msgid "Be nice in chat!"
+msgstr "Be nice in chat!"
+
+msgid "Message length cannot exceed %{count} characters."
+msgstr "Message length cannot exceed %{count} characters."
+
+msgid "Open emoji picker"
+msgstr "Open emoji picker"
+
+msgid "Clean banned"
+msgstr "Clean banned"
+
+msgid "Joined channel: %{name}"
+msgstr "Joined channel: %{name}"
+
+msgid "%{count} Online"
+msgstr "%{count} Online"
+
+msgid "Watching"
+msgstr "Watching"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "Edit task"
+msgstr "Edit task"
+
+msgid "General"
+msgstr "General"
+
+msgid "Notification"
+msgstr "Notification"
+
+msgid "Welcome"
+msgstr "Welcome"
+
+msgid "You successfully authorized to the platform. Open your tournament link to start."
+msgstr "You successfully authorized to the platform. Open your tournament link to start."
+
+msgid "Tournament process is dead. Click Restart to make it live again so users can join."
+msgstr "Tournament process is dead. Click Restart to make it live again so users can join."
+
+msgid "Tests percent"
+msgstr "Tests percent"
+
+msgid "Started - Finished"
+msgstr "Started - Finished"
+
+msgid "Invitation Required"
+msgstr "Invitation Required"
+
+msgid "You need to accept an invitation to participate in this tournament."
+msgstr "You need to accept an invitation to participate in this tournament."
+
+msgid "Accept Invite"
+msgstr "Accept Invite"
+
+msgid "Check Status"
+msgstr "Check Status"
+
+msgid "Preparing your invite..."
+msgstr "Preparing your invite..."
+
+msgid "Invite failed. Please try again."
+msgstr "Invite failed. Please try again."
+
+msgid "Retry"
+msgstr "Retry"
+
+msgid "Could not retrieve your external platform credentials. Please contact support."
+msgstr "Could not retrieve your external platform credentials. Please contact support."
+
+msgid "Group Tournament"
+msgstr "Group Tournament"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Execution History"
+msgstr "Execution History"
+
+msgid "Add Solution +"
+msgstr "Add Solution +"
+
+msgid "Run Viewer"
+msgstr "Run Viewer"
+
+msgid "No viewer HTML for this run."
+msgstr "No viewer HTML for this run."
+
+msgid "Tournament Overview"
+msgstr "Tournament Overview"
+
+msgid "No additional setup is required for this tournament."
+msgstr "No additional setup is required for this tournament."
+
+msgid "Execution Logs"
+msgstr "Execution Logs"
+
+msgid "No logs yet"
+msgstr "No logs yet"
+
+msgid "... and %{count} more"
+msgstr "... and %{count} more"
+
+msgid "External Setup"
+msgstr "External Setup"
+
+msgid "Run Viewer Fullscreen"
+msgstr "Run Viewer Fullscreen"
+
+msgid "Close Fullscreen"
+msgstr "Close Fullscreen"
+
+msgid "Tournament finished"
+msgstr "Tournament finished"
+
+msgid "Your next step is the AI-round group tournament. Click the button below to continue."
+msgstr "Your next step is the AI-round group tournament. Click the button below to continue."
+
+msgid "Go to AI-round group tournament"
+msgstr "Go to AI-round group tournament"
+
+msgid "Later"
+msgstr "Later"
+
+msgid "Stage finished"
+msgstr "Stage finished"
+
+msgid "%{name} stage finished"
+msgstr "%{name} stage finished"
+
+msgid "First qualification round finished"
+msgstr "First qualification round finished"
+
+msgid "Accepted"
+msgstr "Accepted"
+
+msgid "Group assignment soon"
+msgstr "Group assignment soon"
+
+msgid "Group contest soon"
+msgstr "Group contest soon"
+
+msgid "Return to game"
+msgstr "Return to game"
+
+msgid "%{count} min"
+msgstr "%{count} min"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Base"
+msgstr "Base"
+
+msgid "First page"
+msgstr "First page"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Kick player"
+msgstr "Kick player"
+
+msgid "Kick %{name} from tournament?"
+msgstr "Kick %{name} from tournament?"
+
+msgid "Last page"
+msgstr "Last page"
+
+msgid "Level"
+msgstr "Level"
+
+msgid "Loss factor"
+msgstr "Loss factor"
+
+msgid "Match time"
+msgstr "Match time"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Next page"
+msgstr "Next page"
+
+msgid "No matches yet"
+msgstr "No matches yet"
+
+msgid "Players & Matches"
+msgstr "Players & Matches"
+
+msgid "Previous page"
+msgstr "Previous page"
+
+msgid "Record"
+msgstr "Record"
+
+msgid "Registration is open"
+msgstr "Registration is open"
+
+msgid "Rounds"
+msgstr "Rounds"
+
+msgid "Row spacer"
+msgstr "Row spacer"
+
+msgid "Show game history"
+msgstr "Show game history"
+
+msgid "Speed bonus"
+msgstr "Speed bonus"
+
+msgid "Tests"
+msgstr "Tests"
+
+msgid "The tournament continues for top 8 players."
+msgstr "The tournament continues for top 8 players."
+
+msgid "This tournament is live — join now to jump into the next round."
+msgstr "This tournament is live — join now to jump into the next round."
+
+msgid "Timeout factor"
+msgstr "Timeout factor"
+
+msgid "Top user by task ranking"
+msgstr "Top user by task ranking"
+
+msgid "Tournament in progress"
+msgstr "Tournament in progress"
+
+msgid "You're in — get ready to battle!"
+msgstr "You're in — get ready to battle!"
+
+msgid "Your games will appear here as soon as the round starts. Hang tight!"
+msgstr "Your games will appear here as soon as the round starts. Hang tight!"
+
+msgid "pts"
+msgstr "pts"
+
+msgid "task duration distribution"
+msgstr "task duration distribution"
+
+msgid "Please, be nice in chat"
+msgstr "Please, be nice in chat"
+
+msgid "Write message..."
+msgstr "Write message..."
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Chat message"
+msgstr "Chat message"
+
+msgid "Wins"
+msgstr "Wins"
+
+msgid "Your weapon"
+msgstr "Your weapon"
+
+msgid "No access yet"
+msgstr "No access yet"
+
+msgid "Your name"
+msgstr "Your name"
+
+msgid "Enter your name"
+msgstr "Enter your name"
+
+msgid "Your clan"
+msgstr "Your clan"
+
+msgid "clan list"
+msgstr "clan list"
+
+msgid "Enter your clan"
+msgstr "Enter your clan"
+
+msgid "Locale"
+msgstr "Locale"
+
+msgid "Select sound type"
+msgstr "Select sound type"
+
+msgid "Silent"
+msgstr "Silent"
+
+msgid "Select sound level"
+msgstr "Select sound level"
+
+msgid "Select tournament sound level"
+msgstr "Select tournament sound level"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Socials"
+msgstr "Socials"
+
+msgid "Unlink %{provider}"
+msgstr "Unlink %{provider}"
+
+msgid "Link %{provider}"
+msgstr "Link %{provider}"
+
+msgid "Change password"
+msgstr "Change password"
+
+msgid "Old password"
+msgstr "Old password"
+
+msgid "Enter old password"
+msgstr "Enter old password"
+
+msgid "New password"
+msgstr "New password"
+
+msgid "Enter new password"
+msgstr "Enter new password"
+
+msgid "Confirm new password"
+msgstr "Confirm new password"
+
+msgid "Active devices"
+msgstr "Active devices"
+
+msgid "No active devices"
+msgstr "No active devices"
+
+msgid "Unknown device"
+msgstr "Unknown device"
+
+msgid "Current device"
+msgstr "Current device"
+
+msgid "Remove device %{device}"
+msgstr "Remove device %{device}"
+
+msgid "Sign out"
+msgstr "Sign out"
+
+msgid "Remove"
+msgstr "Remove"
+
+msgid "Opponent found!"
+msgstr "Opponent found!"
+
+msgid "Change email"
+msgstr "Change email"
+
+msgid "Current email"
+msgstr "Current email"
+
+msgid "New email"
+msgstr "New email"
+
+msgid "Enter new email"
+msgstr "Enter new email"
+
+msgid "Current password"
+msgstr "Current password"
+
+msgid "Enter current password"
+msgstr "Enter current password"
+
+msgid "Send verification email"
+msgstr "Send verification email"
+
+msgid "Sending..."
+msgstr "Sending..."
+
+msgid "Verification email sent. Confirm the new address to finish the change."
+msgstr "Verification email sent. Confirm the new address to finish the change."
+
+msgid "Points"
+msgstr "Points"
+
+msgid "Best Streak"
+msgstr "Best Streak"
+
+msgid "Best win streak"
+msgstr "Best win streak"
+
+msgid "No Invites"
+msgstr "No Invites"
+
+msgid "Today"
+msgstr "Today"
+
+msgid "Month"
+msgstr "Month"
+
+msgid "Week"
+msgstr "Week"
+
+msgid "Day"
+msgstr "Day"
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Event"
+msgstr "Event"
+
+msgid "There are no tournaments in this range."
+msgstr "There are no tournaments in this range."
+
+msgid "+%{count} more"
+msgstr "+%{count} more"
+
+msgid "Season Points Distribution"
+msgstr "Season Points Distribution"
+
+msgid "Duration"
+msgstr "Duration"
+
+msgid "Winner"
+msgstr "Winner"
+
+msgid "starts in"
+msgstr "starts in"
+
+msgid "Starts in:"
+msgstr "Starts in:"
+
+msgid "at"
+msgstr "at"
+
+msgid "Tournament chat"
+msgstr "Tournament chat"
+
+msgid "Ranking Points"
+msgstr "Ranking Points"
+
+msgid "Elementary"
+msgstr "Elementary"
+
+msgid "Easy"
+msgstr "Easy"
+
+msgid "Medium"
+msgstr "Medium"
+
+msgid "Hard"
+msgstr "Hard"
+
+msgid "Tournament: %{name}"
+msgstr "Tournament: %{name}"
+
+msgid "Open Tournament"
+msgstr "Open Tournament"
+
+msgid "Start Date: %{date}"
+msgstr "Start Date: %{date}"
+
+msgid "Time: %{start} - %{end}"
+msgstr "Time: %{start} - %{end}"
+
+msgid "First Place Points: %{points} Ranking Points"
+msgstr "First Place Points: %{points} Ranking Points"
+
+msgid "Tournament Highlights:"
+msgstr "Tournament Highlights:"
+
+msgid "Prizes: Codebattle T-shirt merch for a top-tier of League"
+msgstr "Prizes: Codebattle T-shirt merch for a top-tier of League"
+
+msgid "Challenges: %{count} unique algorithm problems"
+msgstr "Challenges: %{count} unique algorithm problems"
+
+msgid "Impact: Advancing in the Codebattle programmer rankings"
+msgstr "Impact: Advancing in the Codebattle programmer rankings"
+
+msgid "View League Ranking Points System"
+msgstr "View League Ranking Points System"
+
+msgid "Tournament Description:"
+msgstr "Tournament Description:"
+
+msgid "%{grade} Tournament #%{number}"
+msgstr "%{grade} Tournament #%{number}"
+
+msgid "..."
+msgstr "..."
+
+msgid "%{state}"
+msgstr "%{state}"
+
+msgid "30 minutes to solve"
+msgstr "30 minutes to solve"
+
+msgid "Accept invitation"
+msgstr "Accept invitation"
+
+msgid "Ban player"
+msgstr "Ban player"
+
+msgid "Before you begin:"
+msgstr "Before you begin:"
+
+msgid "Break"
+msgstr "Break"
+
+msgid "Choose opponent"
+msgstr "Choose opponent"
+
+msgid "Confirmed"
+msgstr "Confirmed"
+
+msgid "Create invite"
+msgstr "Create invite"
+
+msgid "Denied"
+msgstr "Denied"
+
+msgid "Done"
+msgstr "Done"
+
+msgid "Done editing"
+msgstr "Done editing"
+
+msgid "Duration distribution"
+msgstr "Duration distribution"
+
+msgid "Edit Layout"
+msgstr "Edit Layout"
+
+msgid "Examples"
+msgstr "Examples"
+
+msgid "Feedback not sent."
+msgstr "Feedback not sent."
+
+msgid "Feedback sent successfully."
+msgstr "Feedback sent successfully."
+
+msgid "Find tournament details at"
+msgstr "Find tournament details at"
+
+msgid "Fuzzy search"
+msgstr "Fuzzy search"
+
+msgid "Gave up"
+msgstr "Gave up"
+
+msgid "GaveUp"
+msgstr "Gave up"
+
+msgid "Give Up"
+msgstr "Give Up"
+
+msgid "Go to task"
+msgstr "Go to task"
+
+msgid "Have not an account?"
+msgstr "Have not an account?"
+
+msgid "If you have an account"
+msgstr "If you have an account"
+
+msgid "Inserted At"
+msgstr "Inserted At"
+
+msgid "Join our External Platform organization to receive the task"
+msgstr "Join our External Platform organization to receive the task"
+
+msgid "Link"
+msgstr "Link"
+
+msgid "Loading participant data..."
+msgstr "Loading participant data..."
+
+msgid "Matches letters in order"
+msgstr "Matches letters in order"
+
+msgid "Matrix Broadcast Arena"
+msgstr "Matrix Broadcast Arena"
+
+msgid "No finished tournaments yet"
+msgstr "No finished tournaments yet"
+
+msgid "No leaderboard data available"
+msgstr "No leaderboard data available"
+
+msgid "Offender"
+msgstr "Offender"
+
+msgid "Once all steps are complete, you can start solving"
+msgstr "Once all steps are complete, you can start solving"
+
+msgid "Player not found"
+msgstr "Player not found"
+
+msgid "Please wait for someone to join or send an invite using the link below"
+msgstr "Please wait for someone to join or send an invite using the link below"
+
+msgid "Processed"
+msgstr "Processed"
+
+msgid "Release"
+msgstr "Release"
+
+msgid "Report on player"
+msgstr "Report on player"
+
+msgid "Reporter"
+msgstr "Reporter"
+
+msgid "Reports"
+msgstr "Reports"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Reset layout"
+msgstr "Reset layout"
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Sending"
+msgstr "Sending"
+
+msgid "Show the in-tournament chat to participants."
+msgstr "Show the in-tournament chat to participants."
+
+msgid "Sign In"
+msgstr "Sign In"
+
+msgid "Sign in with Discord"
+msgstr "Sign in with Discord"
+
+msgid "Sign in with Github"
+msgstr "Sign in with Github"
+
+msgid "Sign Up"
+msgstr "Sign Up"
+
+msgid "Sign up with Discord"
+msgstr "Sign up with Discord"
+
+msgid "Sign up with Github"
+msgstr "Sign up with Github"
+
+msgid "Start new game"
+msgstr "Start new game"
+
+msgid "Task is solved in External Plaform"
+msgstr "Task is solved in External Plaform"
+
+msgid "Test failed"
+msgstr "Test failed"
+
+msgid "This game has not been started"
+msgstr "This game has not been started"
+
+msgid "This users have contributed to this task:"
+msgstr "This users have contributed to this task:"
+
+msgid "Time is Over"
+msgstr "Time is Over"
+
+msgid "Timer"
+msgstr "Timer"
+
+msgid "Top users by task"
+msgstr "Top users by task"
+
+msgid "tournament"
+msgstr "tournament"
+
+msgid "Tournament will start soon"
+msgstr "Tournament will start soon"
+
+msgid "Type a player name"
+msgstr "Type a player name"
+
+msgid "We sent a verification email. Please confirm your email before signing in."
+msgstr "We sent a verification email. Please confirm your email before signing in."
+
+msgid "You are following %{followName}"
+msgstr "You are following %{followName}"
+
+msgid "Please verify your email before signing in. A new verification email was sent."
+msgstr "Please verify your email before signing in. A new verification email was sent."
+
+msgid "We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:"
+msgstr "We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:"
+
+msgid "Access"
+msgstr "Access"
+
+msgid "Access token"
+msgstr "Access token"
+
+msgid "Add tag"
+msgstr "Add tag"
+
+msgid "Add tag..."
+msgstr "Add tag..."
+
+msgid "animation"
+msgstr "animation"
+
+msgid "Arguments"
+msgstr "Arguments"
+
+msgid "Asserts status"
+msgstr "Asserts status"
+
+msgid "avatar"
+msgstr "avatar"
+
+msgid "Ban %{name}"
+msgstr "Ban %{name}"
+
+msgid "Cancel game"
+msgstr "Cancel game"
+
+msgid "Chat is disabled"
+msgstr "Chat is disabled"
+
+msgid "Close Record Player"
+msgstr "Close Record Player"
+
+msgid "Compress editor"
+msgstr "Compress editor"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Copy link"
+msgstr "Copy link"
+
+msgid "Countdown before redirect to the next match"
+msgstr "Countdown before redirect to the next match"
+
+msgid "Decrease font size"
+msgstr "Decrease font size"
+
+msgid "Delete message"
+msgstr "Delete message"
+
+msgid "Edit layout"
+msgstr "Edit layout"
+
+msgid "Editor height"
+msgstr "Editor height"
+
+msgid "Editor mode"
+msgstr "Editor mode"
+
+msgid "Editor settings"
+msgstr "Editor settings"
+
+msgid "Editor size controls"
+msgstr "Editor size controls"
+
+msgid "Execution Time"
+msgstr "Execution Time"
+
+msgid "Expand editor"
+msgstr "Expand editor"
+
+msgid "Expected"
+msgstr "Expected"
+
+msgid "follow user"
+msgstr "follow user"
+
+msgid "Game actions"
+msgstr "Game actions"
+
+msgid "Game award"
+msgstr "Game award"
+
+msgid "Gold cup"
+msgstr "Gold cup"
+
+msgid "Green check"
+msgstr "Green check"
+
+msgid "Hide header"
+msgstr "Hide header"
+
+msgid "Increase font size"
+msgstr "Increase font size"
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Invite"
+msgstr "Invite"
+
+msgid "invited you"
+msgstr "invited you"
+
+msgid "Invites"
+msgstr "Invites"
+
+msgid "Leaderboard header"
+msgstr "Leaderboard header"
+
+msgid "left editor solution"
+msgstr "left editor solution"
+
+msgid "Left editor solution picture"
+msgstr "Left editor solution picture"
+
+msgid "Open H2H"
+msgstr "Open H2H"
+
+msgid "Open Record Player"
+msgstr "Open Record Player"
+
+msgid "Other actions"
+msgstr "Other actions"
+
+msgid "play active game"
+msgstr "play active game"
+
+msgid "Private tournament"
+msgstr "Private tournament"
+
+msgid "Programming language select"
+msgstr "Programming language select"
+
+msgid "rating"
+msgstr "rating"
+
+msgid "Report actions"
+msgstr "Report actions"
+
+msgid "right editor solution"
+msgstr "right editor solution"
+
+msgid "Right editor solution picture"
+msgstr "Right editor solution picture"
+
+msgid "Scroll to bottom"
+msgstr "Scroll to bottom"
+
+msgid "Send an invite"
+msgstr "Send an invite"
+
+msgid "Show header"
+msgstr "Show header"
+
+msgid "Submit form"
+msgstr "Submit form"
+
+msgid "Swap game widgets"
+msgstr "Swap game widgets"
+
+msgid "target solution picture"
+msgstr "target solution picture"
+
+msgid "Unknown tournament type"
+msgstr "Unknown tournament type"
+
+msgid "User info"
+msgstr "User info"
+
+msgid "User row"
+msgstr "User row"
+
+msgid "Versus"
+msgstr "Versus"
+
+msgid "Waiting opponent avatar"
+msgstr "Waiting opponent avatar"
+
+msgid "White flag"
+msgstr "White flag"
+
+msgid "Win icon"
+msgstr "Win icon"
+
+msgid "Back to replay settings"
+msgstr "Back to replay settings"
+
+msgid "Check button"
+msgstr "Check button"
+
+msgid "Choose from 0.5× to 4×"
+msgstr "Choose from 0.5× to 4×"
+
+msgid "Choose the programming language that you like best"
+msgstr "Choose the programming language that you like best"
+
+msgid "Click the button to check your solution or use Ctrl+Enter/Cmd+Enter"
+msgstr "Click the button to check your solution or use Ctrl+Enter/Cmd+Enter"
+
+msgid "Click this button to give up. You will lose the game and can try it again next time, or ask your opponent for an immediate rematch."
+msgstr "Click this button to give up. You will lose the game and can try it again next time, or ask your opponent for an immediate rematch."
+
+msgid "Click this button to reset the code to the original template"
+msgstr "Click this button to reset the code to the original template"
+
+msgid "Copy replay link at current position"
+msgstr "Copy replay link at current position"
+
+msgid "Copy replay link"
+msgstr "Copy replay link"
+
+msgid "Decrease playback speed"
+msgstr "Decrease playback speed"
+
+msgid "Enter pass code"
+msgstr "Enter pass code"
+
+msgid "Example: 12345678"
+msgstr "Example: 12345678"
+
+msgid "Full access to game history"
+msgstr "Full access to game history"
+
+msgid "Game is Locked"
+msgstr "Game is Locked"
+
+msgid "Game lock input for pass code"
+msgstr "Game lock input for pass code"
+
+msgid "Game page"
+msgstr "Game page"
+
+msgid "Give up button"
+msgstr "Give up button"
+
+msgid "Here you will see the test results or compilation errors after checking your solution"
+msgstr "Here you will see the test results or compilation errors after checking your solution"
+
+msgid "Increase playback speed"
+msgstr "Increase playback speed"
+
+msgid "Link copied"
+msgstr "Link copied"
+
+msgid "No pauses between solution checks"
+msgstr "No pauses between solution checks"
+
+msgid "Not a Premium subscriber?"
+msgstr "Not a Premium subscriber?"
+
+msgid "Only for Premium subscribers"
+msgstr "Only for Premium subscribers"
+
+msgid "Original pauses or uniform steps"
+msgstr "Original pauses or uniform steps"
+
+msgid "Output:"
+msgstr "Output:"
+
+msgid "Pause replay"
+msgstr "Pause replay"
+
+msgid "Playback speed"
+msgstr "Playback speed"
+
+msgid "Playback speed presets"
+msgstr "Playback speed presets"
+
+msgid "Playback time"
+msgstr "Playback time"
+
+msgid "Play replay"
+msgstr "Play replay"
+
+msgid "Player gave up"
+msgstr "Player gave up"
+
+msgid "Player won"
+msgstr "Player won"
+
+msgid "Read the task carefully, pay attention to examples"
+msgstr "Read the task carefully, pay attention to examples"
+
+msgid "Real time"
+msgstr "Real time"
+
+msgid "Replay settings"
+msgstr "Replay settings"
+
+msgid "Replay timing"
+msgstr "Replay timing"
+
+msgid "Reset button"
+msgstr "Reset button"
+
+msgid "Restricted Content"
+msgstr "Restricted Content"
+
+msgid "Result output"
+msgstr "Result output"
+
+msgid "Set playback speed to %{speed}"
+msgstr "Set playback speed to %{speed}"
+
+msgid "Share this exact replay position"
+msgstr "Share this exact replay position"
+
+msgid "Skip guide"
+msgstr "Skip guide"
+
+msgid "Sorry! This content is for Premium subscribers only."
+msgstr "Sorry! This content is for Premium subscribers only."
+
+msgid "Subscribe to Premium and you'll get:"
+msgstr "Subscribe to Premium and you'll get:"
+
+msgid "Testing your own tasks"
+msgstr "Testing your own tasks"
+
+msgid "This is a game page. You need to solve the task first and pass all tests successfully."
+msgstr "This is a game page. You need to solve the task first and pass all tests successfully."
+
+msgid "Timing"
+msgstr "Timing"
+
+msgid "Uniform"
+msgstr "Uniform"
+
+msgid "Want to subscribe?"
+msgstr "Want to subscribe?"
+
+msgid "Working on it."
+msgstr "Working on it."
+
+msgid "Write the solution of task in the editor"
+msgstr "Write the solution of task in the editor"
+
+msgid "Forgot your password?"
+msgstr "Forgot your password?"
+
+msgid "Hide %{field}"
+msgstr "Hide %{field}"
+
+msgid "Show %{field}"
+msgstr "Show %{field}"
+
+msgid "We have sent you an email with instructions on how to reset your password"
+msgstr "We have sent you an email with instructions on how to reset your password"
+
+msgid "/ Top %{percent}%"
+msgstr "/ Top %{percent}%"
+
+msgid "Above You"
+msgstr "Above You"
+
+msgid "Avg"
+msgstr "Avg"
+
+msgid "Avg Finish"
+msgstr "Avg Finish"
+
+msgid "AVG Solving speed"
+msgstr "AVG Solving speed"
+
+msgid "AVG Tests"
+msgstr "AVG Tests"
+
+msgid "AVG Tests:"
+msgstr "AVG Tests:"
+
+msgid "AVG Duration:"
+msgstr "AVG Duration:"
+
+msgid "Base static score"
+msgstr "Base static score"
+
+msgid "Best"
+msgstr "Best"
+
+msgid "Best Finish"
+msgstr "Best Finish"
+
+msgid "Better than %{percent}% of players"
+msgstr "Better than %{percent}% of players"
+
+msgid "By Grade"
+msgstr "By Grade"
+
+msgid "Created"
+msgstr "Created"
+
+msgid "Creating game..."
+msgstr "Creating game..."
+
+msgid "Creator ID"
+msgstr "Creator ID"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Failed to load detailed stats"
+msgstr "Failed to load detailed stats"
+
+msgid "Fastest Solutions"
+msgstr "Fastest Solutions"
+
+msgid "Function Signature"
+msgstr "Function Signature"
+
+msgid "Loading detailed stats..."
+msgstr "Loading detailed stats..."
+
+msgid "Losses"
+msgstr "Losses"
+
+msgid "Median"
+msgstr "Median"
+
+msgid "No grade stats available"
+msgstr "No grade stats available"
+
+msgid "No solve time data yet"
+msgstr "No solve time data yet"
+
+msgid "No tournament data available"
+msgstr "No tournament data available"
+
+msgid "No tournament data by grade available"
+msgstr "No tournament data by grade available"
+
+msgid "Not enough data for trend analysis"
+msgstr "Not enough data for trend analysis"
+
+msgid "Overview"
+msgstr "Overview"
+
+msgid "Performance Over Time"
+msgstr "Performance Over Time"
+
+msgid "Play this task"
+msgstr "Play this task"
+
+msgid "Player: %{name}"
+msgstr "Player: %{name}"
+
+msgid "Podiums"
+msgstr "Podiums"
+
+msgid "Points by Tournament Grade"
+msgstr "Points by Tournament Grade"
+
+msgid "Points Distribution by Grade"
+msgstr "Points Distribution by Grade"
+
+msgid "Points:"
+msgstr "Points:"
+
+msgid "Season Rank"
+msgstr "Season Rank"
+
+msgid "Showing basic stats only."
+msgstr "Showing basic stats only."
+
+msgid "Show all %{count}"
+msgstr "Show all %{count}"
+
+msgid "Solve Time (winners)"
+msgstr "Solve Time (winners)"
+
+msgid "Stats vs Median (Normalized)"
+msgstr "Stats vs Median (Normalized)"
+
+msgid "Task must be active to play"
+msgstr "Task must be active to play"
+
+msgid "Task not found"
+msgstr "Task not found"
+
+msgid "Test Cases (%{count})"
+msgstr "Test Cases (%{count})"
+
+msgid "Time Played"
+msgstr "Time Played"
+
+msgid "Time to solve"
+msgstr "Time to solve"
+
+msgid "Top %{percent}%"
+msgstr "Top %{percent}%"
+
+msgid "Total Games"
+msgstr "Total Games"
+
+msgid "Total Points"
+msgstr "Total Points"
+
+msgid "Total Score"
+msgstr "Total Score"
+
+msgid "Total Wins"
+msgstr "Total Wins"
+
+msgid "Tournament #%{id}"
+msgstr "Tournament #%{id}"
+
+msgid "Tournament Performance by Grade"
+msgstr "Tournament Performance by Grade"
+
+msgid "Tournament Results"
+msgstr "Tournament Results"
+
+msgid "Tournaments by Grade"
+msgstr "Tournaments by Grade"
+
+msgid "Tournaments:"
+msgstr "Tournaments:"
+
+msgid "Trends"
+msgstr "Trends"
+
+msgid "Updated"
+msgstr "Updated"
+
+msgid "Visibility"
+msgstr "Visibility"
+
+msgid "vs Median Player"
+msgstr "vs Median Player"
+
+msgid "W/G"
+msgstr "W/G"
+
+msgid "Weapon"
+msgstr "Weapon"
+
+msgid "Weekly Performance Trend"
+msgstr "Weekly Performance Trend"
+
+msgid "Win Rate"
+msgstr "Win Rate"
+
+msgid "Win Rate %"
+msgstr "Win Rate %"
+
+msgid "Win Rate Comparison"
+msgstr "Win Rate Comparison"
+
+msgid "Win Rate:"
+msgstr "Win Rate:"
+
+msgid "Winners"
+msgstr "Winners"
+
+msgid "Wins by Grade"
+msgstr "Wins by Grade"
+
+msgid "Wins:"
+msgstr "Wins:"
+
+msgid "Your Percentile"
+msgstr "Your Percentile"
+
+msgid "Your Ranking Percentile"
+msgstr "Your Ranking Percentile"
+
+msgid "Your Stats vs Median"
+msgstr "Your Stats vs Median"
+
+msgid "(%{count} available)"
+msgstr "(%{count} available)"
+
+msgid "Are you sure you want to finish this tournament?"
+msgstr "Are you sure you want to finish this tournament?"
+
+msgid "Are you sure you want to reset this tournament?"
+msgstr "Are you sure you want to reset this tournament?"
+
+msgid "Are you sure you want to retry this tournament?"
+msgstr "Are you sure you want to retry this tournament?"
+
+msgid "Are you sure you want to start the round?"
+msgstr "Are you sure you want to start the round?"
+
+msgid "Are you sure you want to start the tournament?"
+msgstr "Are you sure you want to start the tournament?"
+
+msgid "Bots visible"
+msgstr "Bots visible"
+
+msgid "Break duration"
+msgstr "Break duration"
+
+msgid "Chat enabled"
+msgstr "Chat enabled"
+
+msgid "Choose player"
+msgstr "Choose player"
+
+msgid "Choose task level for"
+msgstr "Choose task level for"
+
+msgid "Completed tournaments"
+msgstr "Completed tournaments"
+
+msgid "Copy Name"
+msgstr "Copy Name"
+
+msgid "Creator: %{name}"
+msgstr "Creator: %{name}"
+
+msgid "Current round timeout"
+msgstr "Current round timeout"
+
+msgid "Direct message"
+msgstr "Direct message"
+
+msgid "Edit Tournament"
+msgstr "Edit Tournament"
+
+msgid "Event ID"
+msgstr "Event ID"
+
+msgid "Finish Round"
+msgstr "Finish Round"
+
+msgid "Finish tournament"
+msgstr "Finish tournament"
+
+msgid "Finish Tournament"
+msgstr "Finish Tournament"
+
+msgid "Hide bots"
+msgstr "Hide bots"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Level: %{level} (%{count} available)"
+msgstr "Level: %{level} (%{count} available)"
+
+msgid "Live"
+msgstr "Live"
+
+msgid "Live tournaments"
+msgstr "Live tournaments"
+
+msgid "Lobby"
+msgstr "Lobby"
+
+msgid "Match seconds"
+msgstr "Match seconds"
+
+msgid "Mode:"
+msgstr "Mode:"
+
+msgid "No"
+msgstr "No"
+
+msgid "No completed games"
+msgstr "No completed games"
+
+msgid "No invites"
+msgstr "No invites"
+
+msgid "No rating"
+msgstr "No rating"
+
+msgid "Open up"
+msgstr "Open up"
+
+msgid "Opponent: %{name}"
+msgstr "Opponent: %{name}"
+
+msgid "Origin"
+msgstr "Origin"
+
+msgid "Participants"
+msgstr "Participants"
+
+msgid "Please"
+msgstr "Please"
+
+msgid "Ranking type"
+msgstr "Ranking type"
+
+msgid "Reset tournament"
+msgstr "Reset tournament"
+
+msgid "Reset tournament progress"
+msgstr "Reset tournament progress"
+
+msgid "Restart"
+msgstr "Restart"
+
+msgid "Retry tournament"
+msgstr "Retry tournament"
+
+msgid "Round %{number}"
+msgstr "Round %{number}"
+
+msgid "Round already started"
+msgstr "Round already started"
+
+msgid "Round task level"
+msgstr "Round task level"
+
+msgid "Round task pack id"
+msgstr "Round task pack id"
+
+msgid "Round timeout"
+msgstr "Round timeout"
+
+msgid "Round timeout seconds"
+msgstr "Round timeout seconds"
+
+msgid "Rounds limit"
+msgstr "Rounds limit"
+
+msgid "Saving..."
+msgstr "Saving..."
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "sec"
+msgstr "sec"
+
+msgid "Seconds:"
+msgstr "Seconds:"
+
+msgid "Show bots"
+msgstr "Show bots"
+
+msgid "Show Results"
+msgstr "Show Results"
+
+msgid "sign in"
+msgstr "sign in"
+
+msgid "Spectator"
+msgstr "Spectator"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Start next round"
+msgstr "Start next round"
+
+msgid "Start round"
+msgstr "Start round"
+
+msgid "Start Round"
+msgstr "Start Round"
+
+msgid "Start tournament confirmation"
+msgstr "Start tournament confirmation"
+
+msgid "Starts at %{date}"
+msgstr "Starts at %{date}"
+
+msgid "Task level:"
+msgstr "Task level:"
+
+msgid "Task pack"
+msgstr "Task pack"
+
+msgid "Task pack name:"
+msgstr "Task pack name:"
+
+msgid "Task provider"
+msgstr "Task provider"
+
+msgid "Task strategy"
+msgstr "Task strategy"
+
+msgid "Template Task is Loading"
+msgstr "Template Task is Loading"
+
+msgid "There are no active tournaments right now"
+msgstr "There are no active tournaments right now"
+
+msgid "This action is destructive. All tournament progress, matches, and results will be lost."
+msgstr "This action is destructive. All tournament progress, matches, and results will be lost."
+
+msgid "This will clear tournament games and results, then restore the current player roster."
+msgstr "This will clear tournament games and results, then restore the current player roster."
+
+msgid "This will end the tournament and finalize all results."
+msgstr "This will end the tournament and finalize all results."
+
+msgid "Timeout mode"
+msgstr "Timeout mode"
+
+msgid "Timeouts"
+msgstr "Timeouts"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "to see the tournament details"
+msgstr "to see the tournament details"
+
+msgid "Toggle stream mode"
+msgstr "Toggle stream mode"
+
+msgid "Top list"
+msgstr "Top list"
+
+msgid "Tournament details"
+msgstr "Tournament details"
+
+msgid "Tournament flow"
+msgstr "Tournament flow"
+
+msgid "Tournament ID"
+msgstr "Tournament ID"
+
+msgid "Tournament timeout"
+msgstr "Tournament timeout"
+
+msgid "Tournaments Info"
+msgstr "Tournaments Info"
+
+msgid "Updated at"
+msgstr "Updated at"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "you"
+msgstr "you"
+
+msgid "You invited "
+msgstr "You invited "
+
+msgid "You may want to create one"
+msgstr "You may want to create one"
+
+msgid "Your invites"
+msgstr "Your invites"
+
+msgid "Blank"
+msgstr "Blank"
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "On Moderation"
+msgstr "On Moderation"
+
+msgid "Disabled"
+msgstr "Disabled"
+
+msgid "blank"
+msgstr "blank"
+
+msgid "draft"
+msgstr "draft"
+
+msgid "on_moderation"
+msgstr "on moderation"
+
+msgid "active"
+msgstr "active"
+
+msgid "disabled"
+msgstr "disabled"
+
+msgid "public"
+msgstr "public"
+
+msgid "hidden"
+msgstr "hidden"
+
+msgid "algorithms"
+msgstr "algorithms"
+
+msgid "elementary"
+msgstr "elementary"
+
+msgid "easy"
+msgstr "easy"
+
+msgid "medium"
+msgstr "medium"
+
+msgid "hard"
+msgstr "hard"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Nickname"
+msgstr "Nickname"
+
+msgid "Password Confirmation"
+msgstr "Password Confirmation"
+
+msgid "Tournament statistics"
+msgstr "Tournament statistics"
+
+msgid "Tournament round statistics"
+msgstr "Tournament round statistics"
+
+msgid "Archive account"
+msgstr "Archive account"
+
+msgid "Archiving account..."
+msgstr "Archiving account..."
+
+msgid "Archive account permanently"
+msgstr "Archive account permanently"
+
+msgid "Anonymize your profile, revoke every session, and permanently disable access to this account."
+msgstr "Anonymize your profile, revoke every session, and permanently disable access to this account."
+
+msgid "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+msgstr "This action cannot be undone. You will lose access to this account forever. You can create a new account later, but it will not restore this account."
+
+msgid "Type ARCHIVE to confirm"
+msgstr "Type ARCHIVE to confirm"
+
+msgid "Archive permanently"
+msgstr "Archive permanently"
+
+msgid "In tournament"
+msgstr "In tournament"
+
+msgid "Time for checking after the game is over"
+msgstr "Time for checking after the game is over"
+
+msgid "Checked after the time ran out: the result does not count"
+msgstr "Checked after the time ran out: the result does not count"
+
+msgid "API tokens"
+msgstr "API tokens"
+
+msgid "Personal tokens for bots, CLI and devices."
+msgstr "Personal tokens for bots, CLI and devices."
+
+msgid "API documentation"
+msgstr "API documentation"
+
+msgid "Copy the token now, it will not be shown again:"
+msgstr "Copy the token now, it will not be shown again:"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Token name"
+msgstr "Token name"
+
+msgid "Expires in"
+msgstr "Expires in"
+
+msgid "30 days"
+msgstr "30 days"
+
+msgid "90 days"
+msgstr "90 days"
+
+msgid "1 year"
+msgstr "1 year"
+
+msgid "Never (read-only tokens)"
+msgstr "Never (read-only tokens)"
+
+msgid "Create token"
+msgstr "Create token"
+
+msgid "No API tokens"
+msgstr "No API tokens"
+
+msgid "Last used"
+msgstr "Last used"
+
+msgid "Expires"
+msgstr "Expires"
+
+msgid "Never expires"
+msgstr "Never expires"
+
+msgid "Revoke"
+msgstr "Revoke"
+
+msgid "e.g. Gauntlet or my bot"
+msgstr "e.g. Gauntlet or my bot"
+
+msgid "Available for accounts older than a week"
+msgstr "Available for accounts older than a week"
+
+msgid "Your profile, games, tournaments and the schedule"
+msgstr "Your profile, games, tournaments and the schedule"
+
+msgid "Create and cancel your games"
+msgstr "Create and cancel your games"
+
+msgid "Create, edit, start and cancel private tournaments"
+msgstr "Create, edit, start and cancel private tournaments"
+
+msgid "Never used"
+msgstr "Never used"
+
+msgid "Connecting..."
+msgstr "Connecting..."
+
+# New frontend (frontend)
+
+msgid "%{date} at %{time}"
+msgstr "%{date} at %{time}"
+
+msgid "1st place"
+msgstr "1st place"
+
+msgid "About this tournament"
+msgstr "About this tournament"
+
+msgid "Add clan"
+msgstr "Add clan"
+
+msgid "All-time"
+msgstr "All-time"
+
+msgid "Ban in chat"
+msgstr "Ban in chat"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Close chat with %{name}"
+msgstr "Close chat with %{name}"
+
+msgid "Codebattle League rules"
+msgstr "Codebattle League rules"
+
+msgid "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+msgstr "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+
+msgid "Connection lost. Reconnecting…"
+msgstr "Connection lost. Reconnecting…"
+
+msgid "Copied"
+msgstr "Copied"
+
+msgid "Copy invite link"
+msgstr "Copy invite link"
+
+msgid "Copy name"
+msgstr "Copy name"
+
+msgid "Could not create the game. Try again."
+msgstr "Could not create the game. Try again."
+
+msgid "Couldn't load the leaderboard."
+msgstr "Couldn't load the leaderboard."
+
+msgid "Create"
+msgstr "Create"
+
+msgid "Custom tournament"
+msgstr "Custom tournament"
+
+msgid "Editing a task"
+msgstr "Editing a task"
+
+msgid "Elo"
+msgstr "Elo"
+
+msgid "Elo gained this month"
+msgstr "Elo gained this month"
+
+msgid "Elo gained this week"
+msgstr "Elo gained this week"
+
+msgid "Elo gained this year"
+msgstr "Elo gained this year"
+
+msgid "Elo rating"
+msgstr "Elo rating"
+
+msgid "Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun 21 – Sep 21. Season points reset every season; Elo rating never does. Each season ends with a Grand Slam on the 21st at 16:00 UTC."
+msgstr "Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun 21 – Sep 21. Season points reset every season; Elo rating never does. Each season ends with a Grand Slam on the 21st at 16:00 UTC."
+
+msgid "In a game"
+msgstr "In a game"
+
+msgid "Join battle"
+msgstr "Join battle"
+
+msgid "Loading tasks…"
+msgstr "Loading tasks…"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "No active season"
+msgstr "No active season"
+
+msgid "No messages yet. Say hi!"
+msgstr "No messages yet. Say hi!"
+
+msgid "No results this season yet."
+msgstr "No results this season yet."
+
+msgid "No tasks match"
+msgstr "No tasks match"
+
+msgid "Nobody has played this month."
+msgstr "Nobody has played this month."
+
+msgid "Nobody has played this week."
+msgstr "Nobody has played this week."
+
+msgid "Nobody has played this year."
+msgstr "Nobody has played this year."
+
+msgid "Nobody has played yet."
+msgstr "Nobody has played yet."
+
+msgid "Online now"
+msgstr "Online now"
+
+msgid "Players: %{count}"
+msgstr "Players: %{count}"
+
+msgid "Points halve with each place down to 2; every other finisher gets 2 points. Prize and participation points don't stack."
+msgstr "Points halve with each place down to 2; every other finisher gets 2 points. Prize and participation points don't stack."
+
+msgid "Private message to %{name}"
+msgstr "Private message to %{name}"
+
+msgid "Prize places"
+msgstr "Prize places"
+
+msgid "Random player"
+msgstr "Random player"
+
+msgid "Registration open"
+msgstr "Registration open"
+
+msgid "Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › Pro. Open tournaments are created by players and award no points."
+msgstr "Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › Pro. Open tournaments are created by players and award no points."
+
+msgid "Rules"
+msgstr "Rules"
+
+msgid "S%{name} ’%{year}"
+msgstr "S%{name} ’%{year}"
+
+msgid "Season %{name}"
+msgstr "Season %{name}"
+
+msgid "Season %{name}, %{year}"
+msgstr "Season %{name}, %{year}"
+
+msgid "Season and Grand Slam champions enter the Hall of Fame."
+msgstr "Season and Grand Slam champions enter the Hall of Fame."
+
+msgid "Season ranking"
+msgstr "Season ranking"
+
+msgid "Send private message"
+msgstr "Send private message"
+
+msgid "Start a private conversation with %{name}."
+msgstr "Start a private conversation with %{name}."
+
+msgid "Started at %{time}"
+msgstr "Started at %{time}"
+
+msgid "Starting soon"
+msgstr "Starting soon"
+
+msgid "Switch to dark theme"
+msgstr "Switch to dark theme"
+
+msgid "Switch to light theme"
+msgstr "Switch to light theme"
+
+msgid "There are no active games right now. Create one!"
+msgstr "There are no active games right now. Create one!"
+
+msgid "Total season points"
+msgstr "Total season points"
+
+msgid "Tournament wins this season"
+msgstr "Tournament wins this season"
+
+msgid "Tournaments played this season"
+msgstr "Tournaments played this season"
+
+msgid "Tournaments: %{count}"
+msgstr "Tournaments: %{count}"
+
+msgid "Waiting for opponent"
+msgstr "Waiting for opponent"
+
+msgid "Watch"
+msgstr "Watch"
+
+msgid "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
+msgstr "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
+
+msgid "Wins: %{wins} / %{games}"
+msgstr "Wins: %{wins} / %{games}"
+
+msgid "Year"
+msgstr "Year"
+
+msgid "game #%{id}"
+msgstr "game #%{id}"
+
+msgid "private"
+msgstr "private"
+
+
+msgid "to %{name}"
+msgstr "to %{name}"
+
+msgid "top %{count}"
+msgstr "top %{count}"
+
+msgid "tournament #%{id}"
+msgstr "tournament #%{id}"
+
+msgid "until %{date}"
+msgstr "until %{date}"
+
+msgid "in %{time}"
+msgstr "in %{time}"
+
+msgid "%{name} accepted your invite. Starting the battle…"
+msgstr "%{name} accepted your invite. Starting the battle…"
+
+msgid "%{name} canceled the invite"
+msgstr "%{name} canceled the invite"
+
+msgid "%{name} invites you"
+msgstr "%{name} invites you"
+
+msgid "%{name} invites you to a battle"
+msgstr "%{name} invites you to a battle"
+
+msgid "Anonymous"
+msgstr "Anonymous"
+
+msgid "Battle invite"
+msgstr "Battle invite"
+
+msgid "Couldn't load this player's stats."
+msgstr "Couldn't load this player's stats."
+
+msgid "Deploy finished. Syncing latest session..."
+msgstr "Deploy finished. Syncing latest session..."
+
+msgid "Deploy handoff incomplete. Reconnecting..."
+msgstr "Deploy handoff incomplete. Reconnecting..."
+
+msgid "Deploy in progress. Reconnecting game session..."
+msgstr "Deploy in progress. Reconnecting game session..."
+
+msgid "Follow"
+msgstr "Follow"
+
+msgid "Follow: open their games automatically"
+msgstr "Follow: open their games automatically"
+
+msgid "Highest Win"
+msgstr "Highest Win"
+
+msgid "Invite accepted"
+msgstr "Invite accepted"
+
+msgid "Invite not found."
+msgstr "Invite not found."
+
+msgid "Invite sent to %{name}. Waiting for the reply…"
+msgstr "Invite sent to %{name}. Waiting for the reply…"
+
+msgid "Invite to a battle"
+msgstr "Invite to a battle"
+
+msgid "Invite to battle"
+msgstr "Invite to battle"
+
+msgid "No invites. Hover a player to invite them to a battle."
+msgstr "No invites. Hover a player to invite them to a battle."
+
+msgid "Nobody found"
+msgstr "Nobody found"
+
+msgid "Not in a game"
+msgstr "Not in a game"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "One of you is already in a game."
+msgstr "One of you is already in a game."
+
+msgid "Polyglot"
+msgstr "Polyglot"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Searching…"
+msgstr "Searching…"
+
+msgid "Season Wins"
+msgstr "Season Wins"
+
+msgid "Send invite"
+msgstr "Send invite"
+
+msgid "The server is restarting. Try again in a moment."
+msgstr "The server is restarting. Try again in a moment."
+
+msgid "There is already a pending invite between you two."
+msgstr "There is already a pending invite between you two."
+
+msgid "This invite is no longer active."
+msgstr "This invite is no longer active."
+
+msgid "This player can't be invited."
+msgstr "This player can't be invited."
+
+msgid "Tournament wins"
+msgstr "Tournament wins"
+
+msgid "Type a name to search"
+msgstr "Type a name to search"
+
+msgid "Watch the game"
+msgstr "Watch the game"
+
+msgid "You are following %{name}"
+msgstr "You are following %{name}"
+
+msgid "You can't invite yourself."
+msgstr "You can't invite yourself."
+
+msgid "You invited %{name}"
+msgstr "You invited %{name}"
+
+msgid "Language not set"
+msgstr "Language not set"
+
+msgid "Seen %{when}"
+msgstr "Seen %{when}"
+
+msgid "Seen recently"
+msgstr "Seen recently"
+
+msgid "%{percent}% won"
+msgstr "%{percent}% won"
+
+msgid "Activity period"
+msgstr "Activity period"
+
+msgid "Back to lobby"
+msgstr "Back to lobby"
+
+msgid "Couldn't load activity."
+msgstr "Couldn't load activity."
+
+msgid "Couldn't load this profile."
+msgstr "Couldn't load this profile."
+
+msgid "Failed to load games"
+msgstr "Failed to load games"
+
+msgid "Less"
+msgstr "Less"
+
+msgid "Load more"
+msgstr "Load more"
+
+msgid "More"
+msgstr "More"
+
+msgid "No games on %{date}"
+msgstr "No games on %{date}"
+
+msgid "No rivals yet."
+msgstr "No rivals yet."
+
+msgid "No wins yet."
+msgstr "No wins yet."
+
+msgid "Something went wrong. Try again."
+msgstr "Something went wrong. Try again."
+
+msgid "There is no player with this id."
+msgstr "There is no player with this id."
+
+msgid "W/L/T"
+msgstr "W/L/T"
+
+msgid "%{count} tasks"
+msgstr "%{count} tasks"
+
+msgid "Activate"
+msgstr "Activate"
+
+msgid "All"
+msgstr "All"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Delete task \"%{name}\"?"
+msgstr "Delete task \"%{name}\"?"
+
+msgid "Delete task pack?"
+msgstr "Delete task pack?"
+
+msgid "Delete this clan?"
+msgstr "Delete this clan?"
+
+msgid "Disable"
+msgstr "Disable"
+
+msgid "No clans found"
+msgstr "No clans found"
+
+msgid "No members yet."
+msgstr "No members yet."
+
+msgid "No task packs yet."
+msgstr "No task packs yet."
+
+msgid "Ordered sets of tasks for tournaments."
+msgstr "Ordered sets of tasks for tournaments."
+
+msgid "Search by name, tag or id"
+msgstr "Search by name, tag or id"
+
+msgid "Search clans"
+msgstr "Search clans"
+
+msgid "Show more (%{count} left)"
+msgstr "Show more (%{count} left)"
+
+msgid "Task not found for id = %{id}"
+msgstr "Task not found for id = %{id}"
+
+msgid "Total clans: %{count}"
+msgstr "Total clans: %{count}"
+
+msgid "Unnamed clan"
+msgstr "Unnamed clan"
+
+msgid "moderation"
+msgstr "moderation"
+
+msgid "Based on %{count} winning games."
+msgstr "Based on %{count} winning games."
+
+msgid "Couldn't save the task. Try again."
+msgstr "Couldn't save the task. Try again."
+
+msgid "No Russian description yet."
+msgstr "No Russian description yet."
+
+msgid "No description yet."
+msgstr "No description yet."
+
+msgid "Opens a game against a bot in a new tab."
+msgstr "Opens a game against a bot in a new tab."
+
+msgid "Preview"
+msgstr "Preview"
+
+msgid "Write"
+msgstr "Write"
+
+msgid "median"
+msgstr "median"
+
+msgid "Edit task pack"
+msgstr "Edit task pack"
+
+msgid "Back to pack"
+msgstr "Back to pack"
+
+msgid "Unique name, up to %{count} characters"
+msgstr "Unique name, up to %{count} characters"
+
+msgid "Hidden packs are visible only to you and admins"
+msgstr "Hidden packs are visible only to you and admins"
+
+msgid "Order matters: tournaments play the tasks in this order."
+msgstr "Order matters: tournaments play the tasks in this order."
+
+msgid "List"
+msgstr "List"
+
+msgid "IDs"
+msgstr "IDs"
+
+msgid "Only integers separated by commas"
+msgstr "Only integers separated by commas"
+
+msgid "Add a task: search by name, tag or id"
+msgstr "Add a task: search by name, tag or id"
+
+msgid "No tasks yet. Add some above."
+msgstr "No tasks yet. Add some above."
+
+msgid "Move up"
+msgstr "Move up"
+
+msgid "Move down"
+msgstr "Move down"
+
+msgid "3–16 Latin letters, digits, - or _"
+msgstr "3–16 Latin letters, digits, - or _"
+
+msgid "Active %{ago}"
+msgstr "Active %{ago}"
+
+msgid "Active now"
+msgstr "Active now"
+
+msgid "Active recently"
+msgstr "Active recently"
+
+msgid "At least 8 characters, any symbols"
+msgstr "At least 8 characters, any symbols"
+
+msgid "CSS tasks"
+msgstr "CSS tasks"
+
+msgid "Changing it signs you out on other devices and revokes your API tokens."
+msgstr "Changing it signs you out on other devices and revokes your API tokens."
+
+msgid "Connected"
+msgstr "Connected"
+
+msgid "Couldn't save your settings. Try again."
+msgstr "Couldn't save your settings. Try again."
+
+msgid "Danger zone"
+msgstr "Danger zone"
+
+msgid "Dark"
+msgstr "Dark"
+
+msgid "Every device is signed out and every API token revoked"
+msgstr "Every device is signed out and every API token revoked"
+
+msgid "Expires %{date}"
+msgstr "Expires %{date}"
+
+msgid "Failed tests"
+msgstr "Failed tests"
+
+msgid "Field can't be empty"
+msgstr "Field can't be empty"
+
+msgid "Games and tournament results stay, without your name"
+msgstr "Games and tournament results stay, without your name"
+
+msgid "Invalid email"
+msgstr "Invalid email"
+
+msgid "Is too long"
+msgstr "Is too long"
+
+msgid "Last used %{ago}"
+msgstr "Last used %{ago}"
+
+msgid "Latin letters, digits, - and _; starts with a letter"
+msgstr "Latin letters, digits, - and _; starts with a letter"
+
+msgid "Leave empty to leave your clan."
+msgstr "Leave empty to leave your clan."
+
+msgid "Light"
+msgstr "Light"
+
+msgid "New token"
+msgstr "New token"
+
+msgid "Not connected"
+msgstr "Not connected"
+
+msgid "Password and email you sign in with."
+msgstr "Password and email you sign in with."
+
+msgid "Password changed. Other devices were signed out."
+msgstr "Password changed. Other devices were signed out."
+
+msgid "Passwords must match"
+msgstr "Passwords must match"
+
+msgid "Preferences"
+msgstr "Preferences"
+
+msgid "Profile updated"
+msgstr "Profile updated"
+
+msgid "Public profile"
+msgstr "Public profile"
+
+msgid "Revoke token \"%{name}\"? Apps using it stop working."
+msgstr "Revoke token \"%{name}\"? Apps using it stop working."
+
+msgid "Round start"
+msgstr "Round start"
+
+msgid "SQL tasks"
+msgstr "SQL tasks"
+
+msgid "Saved"
+msgstr "Saved"
+
+msgid "Saved in this browser."
+msgstr "Saved in this browser."
+
+msgid "Scopes"
+msgstr "Scopes"
+
+msgid "Security"
+msgstr "Security"
+
+msgid "Should be 16 character(s) or less"
+msgstr "Should be 16 character(s) or less"
+
+msgid "Should be at least 3 characters"
+msgstr "Should be at least 3 characters"
+
+msgid "Should be at least 8 characters"
+msgstr "Should be at least 8 characters"
+
+msgid "Sign out on all other devices?"
+msgstr "Sign out on all other devices?"
+
+msgid "Sign out other devices"
+msgstr "Sign out other devices"
+
+msgid "Sign-in & security"
+msgstr "Sign-in & security"
+
+msgid "Some devices could not be signed out. Try again."
+msgstr "Some devices could not be signed out. Try again."
+
+msgid "System"
+msgstr "System"
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "This is your only way to sign in. Set a password or link another account first."
+msgstr "This is your only way to sign in. Set a password or link another account first."
+
+msgid "Time is over"
+msgstr "Time is over"
+
+msgid "Token \"%{name}\" created"
+msgstr "Token \"%{name}\" created"
+
+msgid "Try it:"
+msgstr "Try it:"
+
+msgid "Unlink"
+msgstr "Unlink"
+
+msgid "Unlink %{provider}?"
+msgstr "Unlink %{provider}?"
+
+msgid "Verification email sent to %{email}. Confirm the new address to finish the change."
+msgstr "Verification email sent to %{email}. Confirm the new address to finish the change."
+
+msgid "You sign in with a linked account, so there is no password to change here."
+msgstr "You sign in with a linked account, so there is no password to change here."
+
+msgid "Your name is anonymized; avatar, email and linked accounts are removed"
+msgstr "Your name is anonymized; avatar, email and linked accounts are removed"
+
+msgid "Your tokens"
+msgstr "Your tokens"
+
+msgid "signed in %{date}"
+msgstr "signed in %{date}"
+
+msgid "#%{place} of %{count}"
+msgstr "#%{place} of %{count}"
+
+msgid "%{count} days left"
+msgstr "%{count} days left"
+
+msgid "%{hours}h %{minutes}m"
+msgstr "%{hours}h %{minutes}m"
+
+msgid "%{minutes}m"
+msgstr "%{minutes}m"
+
+msgid "%{percent}% played"
+msgstr "%{percent}% played"
+
+msgid "%{points} pts · %{players} players"
+msgstr "%{points} pts · %{players} players"
+
+msgid "Best / avg place"
+msgstr "Best / avg place"
+
+msgid "Codebattle League champions, season by season."
+msgstr "Codebattle League champions, season by season."
+
+msgid "Find me · #%{place}"
+msgstr "Find me · #%{place}"
+
+msgid "Four seasons a year. Points reset every season; champions stay forever."
+msgstr "Four seasons a year. Points reset every season; champions stay forever."
+
+msgid "Median player"
+msgstr "Median player"
+
+msgid "Newer"
+msgstr "Newer"
+
+msgid "No clans yet"
+msgstr "No clans yet"
+
+msgid "No seasons yet"
+msgstr "No seasons yet"
+
+msgid "Older"
+msgstr "Older"
+
+msgid "Points awarded"
+msgstr "Points awarded"
+
+msgid "Points per tournament"
+msgstr "Points per tournament"
+
+msgid "Points per week"
+msgstr "Points per week"
+
+msgid "Points: %{count}"
+msgstr "Points: %{count}"
+
+msgid "Rows per page"
+msgstr "Rows per page"
+
+msgid "Season at a glance"
+msgstr "Season at a glance"
+
+msgid "Season progress"
+msgstr "Season progress"
+
+msgid "Starts soon"
+msgstr "Starts soon"
+
+msgid "Time in battles"
+msgstr "Time in battles"
+
+msgid "Top %{count} at a glance"
+msgstr "Top %{count} at a glance"
+
+msgid "Top %{count} of %{total} players"
+msgstr "Top %{count} of %{total} players"
+
+msgid "Top clans"
+msgstr "Top clans"
+
+msgid "Weapons of choice"
+msgstr "Weapons of choice"
+
+msgid "Week of %{date}"
+msgstr "Week of %{date}"
+
+msgid "vs %{value}"
+msgstr "vs %{value}"
+
+msgid "%{count} tournaments"
+msgstr "%{count} tournaments"
+
+msgid "%{index} of %{count}"
+msgstr "%{index} of %{count}"
+
+msgid "%{points} points"
+msgstr "%{points} points"
+
+msgid "All Tournaments"
+msgstr "All Tournaments"
+
+msgid "Codebattle League tournaments, your own tournaments and past results."
+msgstr "Codebattle League tournaments, your own tournaments and past results."
+
+msgid "Codebattle League · %{grade}"
+msgstr "Codebattle League · %{grade}"
+
+msgid "Couldn't load the schedule."
+msgstr "Couldn't load the schedule."
+
+msgid "Every other finisher gets 2 points."
+msgstr "Every other finisher gets 2 points."
+
+msgid "League rules"
+msgstr "League rules"
+
+msgid "Nothing matches your filters"
+msgstr "Nothing matches your filters"
+
+msgid "Opens when registration starts"
+msgstr "Opens when registration starts"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Registration"
+msgstr "Registration"
+
+msgid "Season points by place"
+msgstr "Season points by place"
+
+msgid "Starts in"
+msgstr "Starts in"
+
+msgid "Tournament or winner"
+msgstr "Tournament or winner"
+
+msgid "Tournament schedule"
+msgstr "Tournament schedule"
+
+msgid "Create clan"
+msgstr "Create clan"
+
+msgid "Edit clan"
+msgstr "Edit clan"
+
+msgid "Full name"
+msgstr "Full name"
+
+msgid "Short and unique, shown next to players"
+msgstr "Short and unique, shown next to players"
+
+msgid "Optional, e.g. a company or school"
+msgstr "Optional, e.g. a company or school"
+
+msgid "Leave %{clan} and join this clan"
+msgstr "Leave %{clan} and join this clan"
+
+msgid "Join this clan"
+msgstr "Join this clan"
+
+msgid "Clan created"
+msgstr "Clan created"
+
+msgid "Clan updated"
+msgstr "Clan updated"
+
+msgid "Only the clan creator or an admin can edit it"
+msgstr "Only the clan creator or an admin can edit it"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "An error occurred while creating the tournament"
+msgstr "An error occurred while creating the tournament"
+
+msgid "Created by you"
+msgstr "Created by you"
+
+msgid "Invalid JSON"
+msgstr "Invalid JSON"
+
+msgid "Network error. Please try again."
+msgstr "Network error. Please try again."
+
+msgid "No task packs"
+msgstr "No task packs"
+
+msgid "Please fix the highlighted fields: %{fields}"
+msgstr "Please fix the highlighted fields: %{fields}"
+
+msgid "Random name"
+msgstr "Random name"
+
+msgid "Summary"
+msgstr "Summary"
+
+msgid "Use last settings"
+msgstr "Use last settings"
+
+msgid "User IDs separated by commas. You are always a moderator."
+msgstr "User IDs separated by commas. You are always a moderator."
+
+msgid "in 1 hour"
+msgstr "in 1 hour"
+
+msgid "in 30 min"
+msgstr "in 30 min"
+
+msgid "in 5 min"
+msgstr "in 5 min"
+
+msgid "now"
+msgstr "now"
+
+msgid "Edit %{name}"
+msgstr "Edit %{name}"
+
+msgid "Failed to update tournament"
+msgstr "Failed to update tournament"
+
+msgid "Tournament updated successfully"
+msgstr "Tournament updated successfully"
+
+msgid "by"
+msgstr "by"
+
+msgid "Back to tournament"
+msgstr "Back to tournament"
+
+msgid "Mine"
+msgstr "Mine"
+
+msgid "%{count} rounds"
+msgstr "%{count} rounds"
+
+msgid "About"
+msgstr "About"
+
+msgid "Banned"
+msgstr "Banned"
+
+msgid "Break: the next round starts soon."
+msgstr "Break: the next round starts soon."
+
+msgid "Cancel the tournament? This cannot be undone."
+msgstr "Cancel the tournament? This cannot be undone."
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Couldn't load the ranking."
+msgstr "Couldn't load the ranking."
+
+msgid "Couldn't load the results."
+msgstr "Couldn't load the results."
+
+msgid "Final round ends in"
+msgstr "Final round ends in"
+
+msgid "Find me"
+msgstr "Find me"
+
+msgid "Finish the tournament now? Running games are stopped."
+msgstr "Finish the tournament now? Running games are stopped."
+
+msgid "Finishing the round…"
+msgstr "Finishing the round…"
+
+msgid "In the pool, waiting for an opponent…"
+msgstr "In the pool, waiting for an opponent…"
+
+msgid "Invite link"
+msgstr "Invite link"
+
+msgid "It may be private: open it with the invite link from the organizer."
+msgstr "It may be private: open it with the invite link from the organizer."
+
+msgid "Join now and get notified when it starts."
+msgstr "Join now and get notified when it starts."
+
+msgid "Kick"
+msgstr "Kick"
+
+msgid "Kick %{name} from the tournament?"
+msgstr "Kick %{name} from the tournament?"
+
+msgid "Make the tournament public?"
+msgstr "Make the tournament public?"
+
+msgid "Manage tournament"
+msgstr "Manage tournament"
+
+msgid "My matches"
+msgstr "My matches"
+
+msgid "Next matchmaking in"
+msgstr "Next matchmaking in"
+
+msgid "Next round in"
+msgstr "Next round in"
+
+msgid "No matches in this round yet."
+msgstr "No matches in this round yet."
+
+msgid "No matches yet. They show up here when a round starts."
+msgstr "No matches yet. They show up here when a round starts."
+
+msgid "No players yet."
+msgstr "No players yet."
+
+msgid "Nobody has joined yet. Be the first!"
+msgstr "Nobody has joined yet. Be the first!"
+
+msgid "Open now"
+msgstr "Open now"
+
+msgid "Pairing players…"
+msgstr "Pairing players…"
+
+msgid "Private: joins by invite link"
+msgstr "Private: joins by invite link"
+
+msgid "Reconnecting…"
+msgstr "Reconnecting…"
+
+msgid "Restart from scratch? All results of this tournament are lost."
+msgstr "Restart from scratch? All results of this tournament are lost."
+
+msgid "Results"
+msgstr "Results"
+
+msgid "Results coming soon"
+msgstr "Results coming soon"
+
+msgid "Round ends in"
+msgstr "Round ends in"
+
+msgid "Sign in to join the tournament."
+msgstr "Sign in to join the tournament."
+
+msgid "Start the next round now?"
+msgstr "Start the next round now?"
+
+msgid "Start the tournament for %{count} players?"
+msgstr "Start the tournament for %{count} players?"
+
+msgid "Stay here"
+msgstr "Stay here"
+
+msgid "The game opens automatically."
+msgstr "The game opens automatically."
+
+msgid "The tournament is full."
+msgstr "The tournament is full."
+
+msgid "The tournament is running, you can still jump in."
+msgstr "The tournament is running, you can still jump in."
+
+msgid "The tournament process isn't running. Restart it to continue."
+msgstr "The tournament process isn't running. Restart it to continue."
+
+msgid "Too many players to list here."
+msgstr "Too many players to list here."
+
+msgid "Tournament not found"
+msgstr "Tournament not found"
+
+msgid "Waiting for players"
+msgstr "Waiting for players"
+
+msgid "Waiting for your next match."
+msgstr "Waiting for your next match."
+
+msgid "You played in this tournament."
+msgstr "You played in this tournament."
+
+msgid "You're in. The game opens here when the tournament starts."
+msgstr "You're in. The game opens here when the tournament starts."
+
+msgid "Your next match is ready"
+msgstr "Your next match is ready"
+
+msgid "Raw JSON"
+msgstr "Raw JSON"
+
+msgid "Hide JSON"
+msgstr "Hide JSON"
+
+msgid "Clan / Player"
+msgstr "Clan / Player"
+
+msgid "Duration: %{seconds}s"
+msgstr "Duration: %{seconds}s"
+
+msgid "Fastest"
+msgstr "Fastest"
+
+msgid "Game #%{id}"
+msgstr "Game #%{id}"
+
+msgid "Join the tournament to see your matches here."
+msgstr "Join the tournament to see your matches here."
+
+msgid "No reports"
+msgstr "No reports"
+
+msgid "Panel"
+msgstr "Panel"
+
+msgid "Reason"
+msgstr "Reason"
+
+msgid "Score per player"
+msgstr "Score per player"
+
+msgid "Slowest"
+msgstr "Slowest"
+
+msgid "Solutions"
+msgstr "Solutions"
+
+msgid "Statistics appear once the tournament starts."
+msgstr "Statistics appear once the tournament starts."
+
+msgid "Task #%{id}"
+msgstr "Task #%{id}"
+
+msgid "The leaderboard is published when the tournament ends. Live standings are in the ranking."
+msgstr "The leaderboard is published when the tournament ends. Live standings are in the ranking."
+
+msgid "Total players: %{count}"
+msgstr "Total players: %{count}"
+
+msgid "Total score"
+msgstr "Total score"
+
+msgid "Total: %{count}"
+msgstr "Total: %{count}"
+
+msgid "You were marked for a fair play violation and are excluded from the results."
+msgstr "You were marked for a fair play violation and are excluded from the results."
+
+msgid "cheater"
+msgstr "cheater"
+
+msgid "confirmed"
+msgstr "confirmed"
+
+msgid "copypaste"
+msgstr "copypaste"
+
+msgid "denied"
+msgstr "denied"
+
+msgid "pending"
+msgstr "pending"
+
+msgid "player"
+msgstr "player"
+
+msgid "processed"
+msgstr "processed"
+
+msgid "wrong_solution"
+msgstr "wrong_solution"
+
+msgid "The tournament didn't respond. Try again in a moment."
+msgstr "The tournament didn't respond. Try again in a moment."
+
+msgid "The tournament isn't running right now. Joining reopens when an organizer restarts it."
+msgstr "The tournament isn't running right now. Joining reopens when an organizer restarts it."
+
+msgid "Leave the tournament? You will be removed from the ranking and get no new matches."
+msgstr "Leave the tournament? You will be removed from the ranking and get no new matches."
+
+msgid "+%{count} other"
+msgstr "+%{count} other"
+
+msgid "in progress"
+msgstr "in progress"
+
+msgid "Moderation"
+msgstr "Moderation"
+
+msgid "Clans chart"
+msgstr "Clans chart"
+
+msgid "You : Opponent"
+msgstr "You : Opponent"
+
+msgid "Wins / losses"
+msgstr "Wins / losses"
+
+msgid "+%{count} no winner"
+msgstr "+%{count} no winner"
+
+msgid "Task base score"
+msgstr "Task base score"
+
+msgid "Tests passed"
+msgstr "Tests passed"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Your points : opponent's points"
+msgstr "Your points : opponent's points"
+
+msgid "solved %{solved} of %{players}"
+msgstr "solved %{solved} of %{players}"
+
+msgid "of %{count}"
+msgstr "of %{count}"
+
+msgid "LIVE"
+msgstr "LIVE"
+
+msgid "Base score %{score}"
+msgstr "Base score %{score}"
+
+msgid "Time limit %{time}"
+msgstr "Time limit %{time}"
+
+msgid "%{from}–%{to}: %{count} solved"
+msgstr "%{from}–%{to}: %{count} solved"
+
+msgid "You %{time}"
+msgstr "You %{time}"
+
+msgid "All tests passed"
+msgstr ""
+
+msgid "Bigger"
+msgstr ""
+
+msgid "Checking your solution…"
+msgstr ""
+
+msgid "Checking…"
+msgstr ""
+
+msgid "Connection lost, reconnecting…"
+msgstr ""
+
+msgid "Ctrl/Cmd + Enter"
+msgstr ""
+
+msgid "Exit full screen"
+msgstr ""
+
+msgid "Font size"
+msgstr ""
+
+msgid "Full screen"
+msgstr ""
+
+msgid "Give up?"
+msgstr ""
+
+msgid "Hide the side panel"
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+msgid "Rematch declined"
+msgstr ""
+
+msgid "Rematch offered, waiting…"
+msgstr ""
+
+msgid "Reset code"
+msgstr ""
+
+msgid "Reset the code?"
+msgstr ""
+
+msgid "Run tests"
+msgstr ""
+
+msgid "Run your code to see the test results here"
+msgstr ""
+
+msgid "Send this link to a friend; the game starts as soon as they join."
+msgstr ""
+
+msgid "Show the side panel"
+msgstr ""
+
+msgid "Side panel"
+msgstr ""
+
+msgid "Smaller"
+msgstr ""
+
+msgid "Test %{number}"
+msgstr ""
+
+msgid "Tests passed: %{percent}%"
+msgstr ""
+
+msgid "The game ends and your opponent wins."
+msgstr ""
+
+msgid "Time left"
+msgstr ""
+
+msgid "Vim mode"
+msgstr ""
+
+msgid "Vim mode off"
+msgstr ""
+
+msgid "Vim mode on"
+msgstr ""
+
+msgid "Wins against each other"
+msgstr ""
+
+msgid "You gave up"
+msgstr ""
+
+msgid "You lost"
+msgstr ""
+
+msgid "You won!"
+msgstr ""
+
+msgid "Your code in this language is replaced with the starting template."
+msgstr ""
+
+msgid "%{name} is looking for an opponent"
+msgstr ""
+
+msgid "Enter the pass code to start playing."
+msgstr ""
+
+msgid "Join game"
+msgstr ""
+
+msgid "Pass code"
+msgstr ""
+
+msgid "Play"
+msgstr ""
+
+msgid "Replay position"
+msgstr ""
+
+msgid "Speed"
+msgstr ""
+
+msgid "The replay of this game is not available"
+msgstr ""
+
+msgid "This game is locked"
+msgstr ""
+
+msgid "To the end"
+msgstr ""
+
+msgid "To the start"
+msgstr ""
+
+msgid "Unlock"
+msgstr ""
+
+msgid "Wrong pass code"
+msgstr ""
+
+msgid "No runs yet"
+msgstr ""
+
+msgid "Hide the task"
+msgstr ""
+
+msgid "Show the task"
+msgstr ""
+
+msgid "%{failed} of %{total} tests failed"
+msgstr ""
+
+msgid "Memory limit exceeded"
+msgstr ""
+
+msgid "Time limit exceeded"
+msgstr ""
+
+msgid "failed"
+msgstr ""
+
+msgid "passed"
+msgstr ""
+
+msgid "Show test results"
+msgstr ""
+
+msgid "Open the task in a window"
+msgstr ""
+
+msgid "A sharper theme for bright rooms and projectors"
+msgstr ""
+
+msgid "A small map of the code on the right"
+msgstr ""
+
+msgid "Colored brackets"
+msgstr ""
+
+msgid "Dots for spaces, arrows for tabs"
+msgstr ""
+
+msgid "High contrast"
+msgstr ""
+
+msgid "Line numbers"
+msgstr ""
+
+msgid "Long lines wrap instead of scrolling sideways"
+msgstr ""
+
+msgid "Matching pairs share a color"
+msgstr ""
+
+msgid "Minimap"
+msgstr ""
+
+msgid "Relative"
+msgstr ""
+
+msgid "Show whitespace"
+msgstr ""
+
+msgid "Smooth cursor"
+msgstr ""
+
+msgid "Sticky scroll"
+msgstr ""
+
+msgid "The current function stays at the top"
+msgstr ""
+
+msgid "The cursor glides and fades instead of jumping"
+msgstr ""
+
+msgid "Word wrap"
+msgstr ""
+
+msgid "Color theme"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "Back to game"
+msgstr ""
+
+msgid "Open history"
+msgstr ""
+
+msgid "Whitespace"
+msgstr ""
+
+msgid "Waiting for the next match..."
+msgstr ""
+
+msgid "Waiting..."
+msgstr ""
+
+msgid "Drag windows to move, the corner to resize. Hidden ones come back from Widgets."
+msgstr ""
+
+msgid "Hide"
+msgstr ""
+
+msgid "Left editor"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+msgid "Right editor"
+msgstr ""
+
+msgid "Widgets"
+msgstr ""
+
+msgid "Game started"
+msgstr "Game started"
+
+msgid "New message"
+msgstr "New message"
+
+msgid "Tournament start"
+msgstr "Tournament start"
+
+msgid "Round end"
+msgstr "Round end"
+
+msgid "Tournament end"
+msgstr "Tournament end"
+
+msgid "Show controls"
+msgstr ""
+
+msgid "Hide controls"
+msgstr ""
+
+msgid "Decrease"
+msgstr ""
+
+msgid "Increase"
+msgstr ""
+
+msgid "Game is loading"
+msgstr ""
+
+msgid "Tournament is finished"
+msgstr ""
+
+msgid "Tournament is waiting to start"
+msgstr ""
+
+msgid "Tournament is canceled"
+msgstr ""
+
+msgid "Waiting for the player's next game"
+msgstr ""
+
+msgid "Could not connect to the tournament, retrying…"
+msgstr ""
+
+msgid "Connection details"
+msgstr ""
+
+msgid "User ID"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Connected at"
+msgstr ""
+
+msgid "Ref"
+msgstr ""
+
+msgid "Add to redirect list"
+msgstr ""
+
+msgid "Fetched %{count} player IDs"
+msgstr ""
+
+msgid "Redirect sent"
+msgstr ""
+
+msgid "Redirect failed"
+msgstr ""
+
+msgid "Redirect users"
+msgstr ""
+
+msgid "Fetch player IDs"
+msgstr ""
+
+msgid "All (%{count})"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "User IDs (comma or space separated)"
+msgstr ""
+
+msgid "Redirect (%{count})"
+msgstr ""
+
+msgid "3–16 Latin letters, digits, - and _"
+msgstr ""
+
+msgid "At least 8 characters"
+msgstr ""
+
+msgid "Confirm password"
+msgstr ""
+
+msgid "Enter the email of your account and we will send you a link to set a new password."
+msgstr ""
+
+msgid "Reset password"
+msgstr ""
+
+msgid "or"
+msgstr ""
+
+msgid "Email required"
+msgstr ""
+
+msgid "Should begin and end with a Latin letter or number"
+msgstr ""
+
+msgid "Can't contain special symbols"
+msgstr ""
+
+msgid "Nickname required"
+msgstr ""
+
+msgid "Should be from 3 to 16 characters"
+msgstr ""
+
+msgid "Nickname must start with a Latin letter and contain only Latin letters, digits, - and _"
+msgstr ""
+
+msgid "Password required"
+msgstr ""
+
+msgid "Should be at most 128 characters"
+msgstr ""
+
+msgid "Something went wrong, please try again later"
+msgstr ""
+
+msgid "Could not update the playbook"
+msgstr ""
+
+msgid "Playbook status"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "Report sent, thank you"
+msgstr ""
+
+msgid "Could not send the report"
+msgstr ""
+
+msgid "Player released"
+msgstr ""
+
+msgid "Player banned"
+msgstr ""
+
+msgid "Could not change the ban"
+msgstr ""
+
+msgid "Player actions"
+msgstr ""
+
+msgid "Reported"
+msgstr ""
+
+msgid "User #%{id}"
+msgstr ""
+
+msgid "Risk score: 1+ low, 5+ suspicious, 10+ likely bot"
+msgstr ""
+
+msgid "Risk score"
+msgstr ""
+
+msgid "No analysis for this player."
+msgstr ""
+
+msgid "No telemetry batches recorded."
+msgstr ""
+
+msgid "Either the player never typed, or their solution was injected via WebSocket without using the editor."
+msgstr ""
+
+msgid "Signals"
+msgstr ""
+
+msgid "Final solution analysis"
+msgstr ""
+
+msgid "Total chars / lines"
+msgstr ""
+
+msgid "Code lines / comment lines"
+msgstr ""
+
+msgid "Comment-to-code ratio"
+msgstr ""
+
+msgid "Long comment lines (>40 chars)"
+msgstr ""
+
+msgid "GPT-style phrase hits"
+msgstr ""
+
+msgid "Typed vs final"
+msgstr ""
+
+msgid "Final solution length"
+msgstr ""
+
+msgid "Language template length"
+msgstr ""
+
+msgid "excluded from coverage"
+msgstr ""
+
+msgid "Effective added length"
+msgstr ""
+
+msgid "Total chars typed"
+msgstr ""
+
+msgid "Typed coverage"
+msgstr ""
+
+msgid "low → likely injected/pasted"
+msgstr ""
+
+msgid "Keystrokes"
+msgstr ""
+
+msgid "Batches"
+msgstr ""
+
+msgid "Total events"
+msgstr ""
+
+msgid "Key events"
+msgstr ""
+
+msgid "Printable keys"
+msgstr ""
+
+msgid "Chars inserted / deleted"
+msgstr ""
+
+msgid "%{rate} ins/s"
+msgstr ""
+
+msgid "Net Δ text"
+msgstr ""
+
+msgid "Backspace / Delete"
+msgstr ""
+
+msgid "Arrow keys"
+msgstr ""
+
+msgid "Undo / Redo"
+msgstr ""
+
+msgid "Copy / Cut / Paste shortcuts"
+msgstr ""
+
+msgid "Paste blocked"
+msgstr ""
+
+msgid "Timing and edits"
+msgstr ""
+
+msgid "Session length"
+msgstr ""
+
+msgid "Avg key delta"
+msgstr ""
+
+msgid "Min / Max key delta"
+msgstr ""
+
+msgid "Idle pauses >2s"
+msgstr ""
+
+msgid "Multi-char inserts / deletes"
+msgstr ""
+
+msgid "Multi-line inserts"
+msgstr ""
+
+msgid "Largest single insert / delete"
+msgstr ""
+
+msgid "≥8 → likely paste"
+msgstr ""
+
+msgid "Large inserts (≥50)"
+msgstr ""
+
+msgid "Content changes / printable keys"
+msgstr ""
+
+msgid "more changes than keys → programmatic"
+msgstr ""
+
+msgid "Events per batch"
+msgstr ""
+
+msgid "Net Δ chars per batch"
+msgstr ""
+
+msgid "Avg key delta (ms) per batch"
+msgstr ""
+
+msgid "Final submitted code (%{count} chars)"
+msgstr ""
+
+msgid "Could not start the tournament, try again"
+msgstr ""
+
+msgid "Waiting for start"
+msgstr ""
+
+msgid "Admin panel"
+msgstr ""
+
+msgid "Choose a language"
+msgstr ""
+
+msgid "Solutions are submitted on the external platform"
+msgstr ""
+
+msgid "The server did not respond, try again"
+msgstr ""
+
+msgid "Could not submit the solution"
+msgstr ""
+
+msgid "Swap sides"
+msgstr ""
+
+msgid "Time limit"
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Stage"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Live connections"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Connections"
+msgstr ""
+
+msgid "No active connections"
+msgstr ""
+
+msgid "Add all to redirect list"
+msgstr ""
+
+msgid "Contact support for help logging in."
+msgstr ""
+
+msgid "Don't have an account?"
+msgstr ""
+
+msgid "Already have an account?"
+msgstr ""
+
+msgid "Game #%{id}: bot/human signal review"
+msgstr ""
+
+msgid "Higher risk score / more signals → more bot-like. Always confirm by playing back the editor history. Reports are computed once and cached; Re-analyze forces a fresh run."
+msgstr ""
+
+msgid "Re-analyze"
+msgstr ""
+
+msgid "No players found for this game."
+msgstr ""
+
+msgid "Could not connect to the tournament"
+msgstr ""
+
+msgid "Tournaments. Seasons. Code-first competition."
+msgstr ""
+
+msgid "Play in the best coding arena"
+msgstr ""
+
+msgid "Codebattle powers head-to-head battles, team brackets, and seasonal leaderboards. Set formats, invite players, and watch the rankings move in real time."
+msgstr ""
+
+msgid "No registration required"
+msgstr ""
+
+msgid "Live ladders"
+msgstr ""
+
+msgid "Team seasons"
+msgstr ""
+
+msgid "Bots + training"
+msgstr ""
+
+msgid "Season standings will appear here soon."
+msgstr ""
+
+msgid "Top 5 players • current season"
+msgstr ""
+
+msgid "Seasons and formats"
+msgstr ""
+
+msgid "Four seasons a year. One Grand Slam to crown the best."
+msgstr ""
+
+msgid "Join a competitive ladder that resets each season so every coder gets a fresh climb. Swiss rounds keep every match fair, while lifetime Elo tracks your true skill across seasons. Top finishers earn prizes and exclusive merch."
+msgstr ""
+
+msgid "Season ladder"
+msgstr ""
+
+msgid "Earn season points, climb the live leaderboard, and lock your place in the finale."
+msgstr ""
+
+msgid "Season points"
+msgstr ""
+
+msgid "Finals on 21st"
+msgstr ""
+
+msgid "Swiss tournaments"
+msgstr ""
+
+msgid "Face opponents with similar scores, solve the same task, and rise with every win."
+msgstr ""
+
+msgid "Swiss pairing"
+msgstr ""
+
+msgid "Live standings"
+msgstr ""
+
+msgid "No repeat pairs"
+msgstr ""
+
+msgid "Grades & schedule"
+msgstr ""
+
+msgid "Start at rookie, fight up the grades, and aim for the Grand Slam spotlight."
+msgstr ""
+
+msgid "Rookie → Grand Slam"
+msgstr ""
+
+msgid "Grand Slam finale"
+msgstr ""
+
+msgid "Points by place"
+msgstr ""
+
+msgid "How it works"
+msgstr ""
+
+msgid "Join, battle, climb, repeat"
+msgstr ""
+
+msgid "A clear loop that keeps the competition fair and the season exciting."
+msgstr ""
+
+msgid "Join a season"
+msgstr ""
+
+msgid "Seasons reset points so everyone gets a fresh shot at the top."
+msgstr ""
+
+msgid "Battle in Swiss rounds"
+msgstr ""
+
+msgid "Face opponents with similar scores on the same task each round."
+msgstr ""
+
+msgid "Earn season points"
+msgstr ""
+
+msgid "Climb the live leaderboard and secure your place in the finale."
+msgstr ""
+
+msgid "Win the Grand Slam"
+msgstr ""
+
+msgid "Champions take the spotlight, prizes, and exclusive merch."
+msgstr ""
+
+msgid "Private tournaments"
+msgstr ""
+
+msgid "Build your own tournaments for friends or teams"
+msgstr ""
+
+msgid "Host custom events for meetups, work team-building, or just fun sessions. We’ve run tournaments for 1,000+ players."
+msgstr ""
+
+msgid "Friends & communities"
+msgstr ""
+
+msgid "Create private rooms, invite friends, and enjoy real-time battles together."
+msgstr ""
+
+msgid "Invite links"
+msgstr ""
+
+msgid "Instant rematch"
+msgstr ""
+
+msgid "Team-building"
+msgstr ""
+
+msgid "Run company tournaments and energize your team with friendly competition."
+msgstr ""
+
+msgid "Team brackets"
+msgstr ""
+
+msgid "Flexible schedule"
+msgstr ""
+
+msgid "Highlights"
+msgstr ""
+
+msgid "Large-scale events"
+msgstr ""
+
+msgid "Trusted for tournaments at scale with thousands of players."
+msgstr ""
+
+msgid "1,000+ players"
+msgstr ""
+
+msgid "Stable rounds"
+msgstr ""
+
+msgid "Fast judge"
+msgstr ""
+
+msgid "Battle in your language"
+msgstr ""
+
+msgid "Pick your stack and jump into any tournament format."
+msgstr ""
+
+msgid "Community"
+msgstr ""
+
+msgid "Built by competitive coders"
+msgstr ""
+
+msgid "Codebattle is open and community-driven. Join contributors and help shape upcoming seasons."
+msgstr ""
+
+msgid "Ready to enter the arena?"
+msgstr ""
+
+msgid "Spin up a quick match or start planning your next season."
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "No stages yet."
+msgstr ""
+
+msgid "Feedback sent, thank you"
+msgstr ""
+
+msgid "Could not send the feedback"
+msgstr ""

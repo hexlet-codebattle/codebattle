@@ -4,9 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-JS_PREFIX="apps/codebattle/frontend/src/"
-APP_DIR="apps/codebattle/frontend"
-APP_PREFIX="apps/codebattle/frontend/"
+JS_PREFIX="frontend/src/"
+APP_DIR="frontend"
+APP_PREFIX="frontend/"
 ELIXIR_PATTERN='(^mix\.exs$|^\.formatter\.exs$|^config/.*\.exs$|.*\.(ex|exs)$)'
 
 JS_STAGED_FILES=()
