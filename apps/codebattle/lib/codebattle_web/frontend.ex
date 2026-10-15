@@ -42,7 +42,10 @@ defmodule CodebattleWeb.Frontend do
     end
   end
 
-  defp static_path(file), do: CodebattleWeb.Endpoint.static_path("/assets/v2/" <> file)
+  # Vite already fingerprints its files. Not Endpoint.static_path: the phx.digest name
+  # (main-<vite>-<md5>.js) differs from the "./main-<vite>.js" that lazy chunks import,
+  # so the browser would run the entry twice (two React roots, two sockets, two editors).
+  defp static_path(file), do: "/assets/v2/" <> file
 
   # The manifest only changes on deploy; cache it outside dev.
   defp manifest do

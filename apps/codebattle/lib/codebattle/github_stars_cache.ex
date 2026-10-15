@@ -79,7 +79,7 @@ defmodule Codebattle.GithubStarsCache do
     :codebattle
     |> Application.get_env(:github_html_req_options, [])
     |> Keyword.put(:headers, html_headers())
-    |> Keyword.put_new(:finch, CodebattleHTTP)
+    |> Keyword.put_new(:finch, name: CodebattleHTTP)
   end
 
   defp html_headers do

@@ -499,7 +499,9 @@
   gap: 3px;
 }
 
-.testCell {
+/* Scoped under .testStrip to outrank UnstyledButton's reset (transparent bg, no border,
+   inherited color, md font), which otherwise wipes the failed-test base style. */
+.testStrip .testCell {
   display: grid;
   place-items: center;
   min-width: 20px;
