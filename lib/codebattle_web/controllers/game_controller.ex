@@ -69,25 +69,30 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
+  # The bot-detection report, like the history: for everyone who can see the game once it is
+  # over (it shows both players' code), for admins and moderators also during play.
   def ml(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
-    if User.admin_or_moderator?(user) do
-      render_ml(conn, id, user, params)
-    else
-      render_ml_forbidden(conn)
-    end
-  end
-
-  defp render_ml(conn, id, user, params) do
     case Context.fetch_game(id) do
-      {:ok, game} -> render_ml_for_game(conn, game, user, params)
-      {:error, :not_found} -> render_game_not_found(conn)
+      {:ok, game} ->
+        cond do
+          User.admin_or_moderator?(user) -> render_ml_for_game(conn, game, user, params)
+          not can_access_game?(game, user) -> render_ml_forbidden(conn, gettext("You don't have access to this game"))
+          game.state in ["game_over", "timeout"] -> render_ml_for_game(conn, game, user, params)
+          true -> render_ml_forbidden(conn, gettext("The report opens once the game is over"), game)
+        end
+
+      {:error, :not_found} ->
+        render_game_not_found(conn)
     end
   end
 
-  defp render_ml_for_game(conn, game, _user, params) do
-    if Map.get(params, "refresh") == "1" do
+  defp render_ml_for_game(conn, game, user, params) do
+    can_manage = User.admin_or_moderator?(user)
+
+    # Re-analyzing is CPU-heavy: admins and moderators only.
+    if can_manage and Map.get(params, "refresh") == "1" do
       {:ok, _} = BotDetection.analyze_and_persist(game.id)
     end
 
@@ -100,15 +105,16 @@ defmodule CodebattleWeb.GameController do
     |> Frontend.put_layout()
     |> render_inertia("GameMl", %{
       "game_id" => game.id,
+      "can_manage" => can_manage,
       "players" => Enum.map(players, &serialize_ml_player(&1, analyses_by_user)),
       "batches" => Enum.map(batches, &serialize_batch/1)
     })
   end
 
-  defp render_ml_forbidden(conn) do
+  defp render_ml_forbidden(conn, message, game \\ nil) do
     conn
-    |> put_flash(:danger, gettext("You must be admin to access that page"))
-    |> redirect(to: Routes.root_path(conn, :index))
+    |> put_flash(:danger, message)
+    |> redirect(to: if(game, do: Routes.game_path(conn, :show, game.id), else: Routes.root_path(conn, :index)))
   end
 
   defp serialize_ml_player(player, analyses_by_user) do

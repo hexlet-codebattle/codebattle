@@ -272,4 +272,39 @@ defmodule CodebattleWeb.GameControllerTest do
       |> html_response(302)
     end
   end
+
+  describe "GET games/:id/ml" do
+    test "opens the report for any user once the game is over, without Re-analyze", %{conn: conn} do
+      [first, second] = insert_list(2, :user)
+      viewer = insert(:user)
+      {:ok, game} = Game.Context.create_game(%{state: "game_over", players: [first, second], task: insert(:task)})
+
+      conn = conn |> log_in_user(viewer.id) |> get("/games/#{game.id}/ml")
+
+      assert inertia_component(conn) == "GameMl"
+      assert %{"game_id" => game_id, "can_manage" => false, "players" => players} = inertia_props(conn)
+      assert game_id == game.id
+      assert length(players) == 2
+    end
+
+    test "sends users back to the game while it is played", %{conn: conn} do
+      [first, second] = insert_list(2, :user)
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [first, second], task: insert(:task)})
+
+      conn = conn |> log_in_user(first.id) |> get("/games/#{game.id}/ml")
+
+      assert redirected_to(conn) == "/games/#{game.id}"
+    end
+
+    test "opens the report for admins during play", %{conn: conn} do
+      [first, second] = insert_list(2, :user)
+      admin = insert(:admin)
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [first, second], task: insert(:task)})
+
+      conn = conn |> log_in_user(admin.id) |> get("/games/#{game.id}/ml")
+
+      assert inertia_component(conn) == "GameMl"
+      assert %{"can_manage" => true} = inertia_props(conn)
+    end
+  end
 end

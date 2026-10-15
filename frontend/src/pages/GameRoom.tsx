@@ -115,6 +115,7 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
         // Everyone once the game is over; admins also during play, to check for cheating.
         historyHref={!history && (isGameOver(game.state) || canManage) ? `/games/${game.id}?history=1` : null}
         liveHref={history && liveGame ? `/games/${game.id}` : null}
+        canManage={canManage}
       />
 
       <div className={classes.body}>
@@ -242,6 +243,7 @@ function HistoryRoom({ props }: { props: PageProps }) {
       footer={footer}
       editable={false}
       allowClipboard={props.can_manage_game}
+      canManage={props.can_manage_game}
     />
   );
 }
@@ -261,11 +263,11 @@ export default function GameRoom() {
   useState(() => useGameStore.getState().load(props.game));
   const game = useGameStore((state) => state.game) ?? props.game;
 
-  // Spectators (and players once the game is over) can invite from the player cards here;
-  // a player mid-game gets no invite toasts, and an invite opens the lobby's dialog instead.
+  // Invites (the header menu, the dialog from player cards) work here as on other pages, but a
+  // player mid-game gets no invite toasts: incoming ones only show on the header menu.
   const playing = isPlayer && !props.is_record && !isGameOver(game.state);
-  const invites = !props.current_user.is_guest && !playing;
-  useInvitesChannel(invites);
+  const invites = !props.current_user.is_guest;
+  useInvitesChannel(invites, { quiet: playing });
 
   // Nobody joined: no task or editors to show. Also replaces the waiting room when the creator cancels.
   if (isAbandoned(game)) return <GameCanceled game={game} />;

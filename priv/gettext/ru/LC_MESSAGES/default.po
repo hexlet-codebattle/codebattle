@@ -6239,3 +6239,12 @@ msgstr "Игроков: %{count} · %{share}%"
 
 msgid "Only an admin, or the creator of a clan with no players, can delete it"
 msgstr "Удалить клан может админ или его создатель, если в клане нет игроков"
+
+msgid "Stream mode"
+msgstr "Режим трансляции"
+
+msgid "Bot detection (ML)"
+msgstr "Детектор ботов (ML)"
+
+msgid "The report opens once the game is over"
+msgstr "Отчёт откроется после окончания игры"

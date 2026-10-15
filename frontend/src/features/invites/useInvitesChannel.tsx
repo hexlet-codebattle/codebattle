@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useChannel } from '@/api/useChannel';
 import { t } from '@/i18n';
 import { blinkTitleUntilVisible } from '@/shared/blinkTitle';
+import { useLatest } from '@/shared/useLatest';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { acceptInvite, cancelInvite, enterAcceptedGame } from './actions';
@@ -56,10 +57,13 @@ function showIncoming(invite: Invite) {
  * Incoming invites pop up as toasts with Accept/Decline; an accepted invite
  * sends both players into the game. Mounted once per page by AppLayout (or the game page).
  */
-export function useInvitesChannel(enabled: boolean) {
+export function useInvitesChannel(enabled: boolean, { quiet = false }: { quiet?: boolean } = {}) {
   const { current_user: user } = useSharedProps();
   const { setAll, upsert } = useInvitesStore.getState();
   const byOthers = (invite: Partial<Invite>) => invite.executor_id != null && invite.executor_id !== user.id;
+
+  // No incoming-invite toasts (a player mid-game); read at event time, so it may change.
+  const quietRef = useLatest(quiet);
 
   const { push } = useChannel(enabled ? 'invites' : null, {
     events: {
@@ -67,7 +71,7 @@ export function useInvitesChannel(enabled: boolean) {
 
       'invites:created': ({ invite }: { invite: Invite }) => {
         upsert(invite);
-        if (invite.creator_id !== user.id) showIncoming(invite);
+        if (invite.creator_id !== user.id && !quietRef.current) showIncoming(invite);
       },
 
       'invites:accepted': ({ invite }: { invite: Invite }) => {

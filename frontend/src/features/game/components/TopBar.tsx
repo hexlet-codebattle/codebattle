@@ -9,6 +9,8 @@ import {
   IconMaximize,
   IconMinimize,
   IconRefresh,
+  IconBroadcast,
+  IconRobot,
   IconFileDescription,
   IconFlask,
   IconLayoutNavbarCollapse,
@@ -20,6 +22,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
+import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { UserMenu } from '@/layout/AppLayout';
 import { ColorSchemeToggle } from '@/layout/ColorSchemeToggle';
 import { SoundToggle } from '@/layout/SoundToggle';
@@ -169,11 +172,24 @@ interface TopBarProps {
   historyHref?: string | null;
   /** Back from the replay to the game, while it still runs. */
   liveHref?: string | null;
+  /** Admins and moderators: the bot-detection (ML) report also during play (everyone once it's over). */
+  canManage?: boolean;
 }
 
-export function TopBar({ game, api, left, right, strip, chat = null, history = false, historyHref = null, liveHref = null }: TopBarProps) {
+export function TopBar({
+  game,
+  api,
+  left,
+  right,
+  strip,
+  chat = null,
+  history = false,
+  historyHref = null,
+  liveHref = null,
+  canManage = false,
+}: TopBarProps) {
   const { t } = useTranslation();
-  const { current_user: me } = useSharedProps();
+  const { current_user: me, branding } = useSharedProps();
   const { toggle, fullscreen } = useFullscreenDocument();
   const over = history || isGameOver(game.state);
   const back = game.tournament_id
@@ -267,6 +283,18 @@ export function TopBar({ game, api, left, right, strip, chat = null, history = f
             {t('Back to game')}
           </Button>
         )}
+        <Tooltip label={t('Stream mode')}>
+          <ActionIcon component="a" href={`/games/${game.id}/stream`} size="sm" variant="default" aria-label={t('Stream mode')}>
+            <IconBroadcast size={14} />
+          </ActionIcon>
+        </Tooltip>
+        {(canManage || over) && (
+          <Tooltip label={t('Bot detection (ML)')}>
+            <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Bot detection (ML)')}>
+              <IconRobot size={14} />
+            </ActionIcon>
+          </Tooltip>
+        )}
       </div>
 
       <Group gap={6} wrap="nowrap" justify="flex-end" className={classes.topRight}>
@@ -279,6 +307,7 @@ export function TopBar({ game, api, left, right, strip, chat = null, history = f
             </Indicator>
           </Tooltip>
         )}
+        {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
         <SoundToggle />
         <ColorSchemeToggle />
         <Tooltip label={fullscreen ? t('Exit full screen') : t('Full screen')}>

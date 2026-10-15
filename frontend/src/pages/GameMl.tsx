@@ -10,9 +10,11 @@ import { AppLayout } from '@/layout/AppLayout';
 import { PageHeader } from '@/shared/PageHeader';
 import { useSharedProps } from '@/shared/useSharedProps';
 
-// Props from GameController.ml (admins and moderators only).
+// Props from GameController.ml (everyone once the game is over; admins and moderators always).
 interface GameMlProps {
   game_id: number;
+  /** Admins and moderators: may force a fresh analysis. */
+  can_manage?: boolean;
   players: MlPlayer[];
   batches: MlBatch[];
 }
@@ -22,7 +24,7 @@ const PLAYER_COLORS = ['blue', 'pink'];
 /** Bot/human signal review of a game: each player's risk report from editor telemetry. */
 export default function GameMl() {
   const { t } = useTranslation();
-  const { game_id: gameId, players = [], batches = [] } = useSharedProps<GameMlProps>();
+  const { game_id: gameId, can_manage: canManage = false, players = [], batches = [] } = useSharedProps<GameMlProps>();
 
   const batchesByUser = useMemo(() => {
     const map = new Map<number, MlBatch[]>();
@@ -41,9 +43,11 @@ export default function GameMl() {
         )}
         actions={
           <>
-            <Button component="a" href={`/games/${gameId}/ml?refresh=1`} variant="default" size="compact-sm" leftSection={<IconRefresh size={14} />}>
-              {t('Re-analyze')}
-            </Button>
+            {canManage && (
+              <Button component="a" href={`/games/${gameId}/ml?refresh=1`} variant="default" size="compact-sm" leftSection={<IconRefresh size={14} />}>
+                {t('Re-analyze')}
+              </Button>
+            )}
             <Button component="a" href={`/games/${gameId}`} variant="subtle" size="compact-sm" leftSection={<IconArrowLeft size={14} />}>
               {t('Back to game')}
             </Button>
