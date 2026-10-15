@@ -5,12 +5,16 @@ import { create } from 'zustand';
 // tournament cues' voice by scripts/generate_game_sounds.py.
 const GAME_SOUNDS = {
   check: '/assets/audio/game/check.wav',
+  opponent_check: '/assets/audio/game/opponent_check.wav',
   win: '/assets/audio/game/win.wav',
   failure: '/assets/audio/game/failure.wav',
   give_up: '/assets/audio/game/give_up.wav',
   round_created: '/assets/audio/game/round_created.wav',
   time_is_over: '/assets/audio/game/time_is_over.wav',
   message: '/assets/audio/game/message.wav',
+  invite: '/assets/audio/game/invite.wav',
+  invite_accepted: '/assets/audio/game/invite_accepted.wav',
+  rematch: '/assets/audio/game/rematch.wav',
 } as const;
 
 export type SoundEffect = keyof typeof GAME_SOUNDS;
@@ -99,9 +103,13 @@ export function playTournamentSound(sound: TournamentSound, level = useSoundStor
   play(TOURNAMENT_SOUNDS[sound], level);
 }
 
-/** Plays a game effect at the account's game level, unless muted. */
-export function playGameSound(effect: SoundEffect) {
+/**
+ * Plays a game effect at the account's game level, unless muted. `overlap` layers it over
+ * whatever is playing instead of cutting it off (background cues like the opponent's runs).
+ */
+export function playGameSound(effect: SoundEffect, { overlap = false }: { overlap?: boolean } = {}) {
   const { muted, settings } = useSoundStore.getState();
   if (muted) return;
-  playSound(effect, settings.level);
+  if (overlap) play(GAME_SOUNDS[effect], settings.level);
+  else playSound(effect, settings.level);
 }

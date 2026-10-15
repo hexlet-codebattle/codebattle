@@ -1,7 +1,7 @@
 import { router } from '@inertiajs/react';
 import { Center, SegmentedControl, SimpleGrid, Stack, Text, useMantineColorScheme } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconCode, IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react';
+import { IconCheck, IconCode, IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react';
 import i18next from 'i18next';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,17 +25,12 @@ interface LangTilesProps {
   value: string | null;
   onChange: (lang: string) => void;
   label: string;
-  minWidth?: number;
 }
 
-function LangTiles({ langs, value, onChange, label, minWidth }: LangTilesProps) {
+/** One tile per option on a shared grid, so the weapon, CSS and SQL rows line up column by column. */
+function LangTiles({ langs, value, onChange, label }: LangTilesProps) {
   return (
-    <div
-      className={classes.tiles}
-      role="radiogroup"
-      aria-label={label}
-      style={minWidth ? { gridTemplateColumns: `repeat(auto-fill, minmax(${minWidth}px, 1fr))` } : undefined}
-    >
+    <div className={classes.tiles} role="radiogroup" aria-label={label}>
       {langs.map((lang) => {
         const active = lang === value;
         return (
@@ -50,6 +45,7 @@ function LangTiles({ langs, value, onChange, label, minWidth }: LangTilesProps) 
           >
             <LangIcon lang={lang} size={20} withTooltip={false} />
             <span className={classes.tileName}>{langName(lang)}</span>
+            {active && <IconCheck size={14} stroke={3} className={classes.tileCheck} />}
           </button>
         );
       })}
@@ -110,28 +106,15 @@ export function PreferencesSection({ account, onChange, onSaved }: PreferencesSe
           />
         </Stack>
 
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-          <Stack gap="xs">
-            <Text className={classes.subhead}>{t('CSS tasks')}</Text>
-            <LangTiles
-              langs={STYLE_LANGS}
-              value={account.style_lang}
-              label={t('CSS tasks')}
-              minWidth={110}
-              onChange={(style_lang) => save({ style_lang })}
-            />
-          </Stack>
-          <Stack gap="xs">
-            <Text className={classes.subhead}>{t('SQL tasks')}</Text>
-            <LangTiles
-              langs={DB_TYPES}
-              value={account.db_type}
-              label={t('SQL tasks')}
-              minWidth={130}
-              onChange={(db_type) => save({ db_type })}
-            />
-          </Stack>
-        </SimpleGrid>
+        <Stack gap="xs">
+          <Text className={classes.subhead}>{t('CSS tasks')}</Text>
+          <LangTiles langs={STYLE_LANGS} value={account.style_lang} label={t('CSS tasks')} onChange={(style_lang) => save({ style_lang })} />
+        </Stack>
+
+        <Stack gap="xs">
+          <Text className={classes.subhead}>{t('SQL tasks')}</Text>
+          <LangTiles langs={DB_TYPES} value={account.db_type} label={t('SQL tasks')} onChange={(db_type) => save({ db_type })} />
+        </Stack>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
           <Stack gap="xs">

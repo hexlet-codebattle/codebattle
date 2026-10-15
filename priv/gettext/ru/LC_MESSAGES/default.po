@@ -435,8 +435,11 @@ msgstr "Проверить решение"
 msgid "Expand"
 msgstr "Развернуть описание"
 
-msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
-msgstr "Нашли ошибку? Вам есть что добавить к описанию? Мы будем рады вашим Pull Requests: "
+msgid "Found a mistake? Send a Pull Request on GitHub"
+msgstr "Нашёл ошибку? Пришли Pull Request на GitHub"
+
+msgid "Suggest a fix"
+msgstr "Предложить правку"
 
 msgid "Run your code!"
 msgstr "Запустите Ваш код!"
@@ -5277,6 +5280,12 @@ msgstr "Получено"
 msgid "Rematch declined"
 msgstr "Реванш отклонён"
 
+msgid "Rematch offer"
+msgstr "Предложение реванша"
+
+msgid "%{name} offers a rematch"
+msgstr "%{name} предлагает реванш"
+
 msgid "Rematch offered, waiting…"
 msgstr "Реванш предложен, ждём ответа…"
 
@@ -5501,6 +5510,9 @@ msgstr "Игра началась"
 
 msgid "New message"
 msgstr "Новое сообщение"
+
+msgid "Opponent runs tests"
+msgstr "Соперник запускает тесты"
 
 msgid "Tournament start"
 msgstr "Начало турнира"
@@ -6248,3 +6260,12 @@ msgstr "Детектор ботов (ML)"
 
 msgid "The report opens once the game is over"
 msgstr "Отчёт откроется после окончания игры"
+
+msgid "Spectators: %{count}"
+msgstr "Зрители: %{count}"
+
+msgid "Nobody is watching yet"
+msgstr "Пока никто не смотрит"
+
+msgid "Open the full chat"
+msgstr "Открыть весь чат"

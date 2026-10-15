@@ -1,5 +1,6 @@
 import { Anchor, Group, Text } from '@mantine/core';
 import { IconTrophy } from '@tabler/icons-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
 import { RoundClock } from '@/features/tournament/components/RoundClock';
@@ -11,15 +12,19 @@ import { useGameStore } from '../store';
 import type { GameTournamentInfo } from '../types';
 import classes from '../GameRoom.module.css';
 
+import { Spectators } from './Spectators';
+
 // The round clock is shared with the tournament page; it reads only the clock fields.
 const asClockTournament = (info: GameTournamentInfo) =>
   ({ ...info, id: info.tournament_id, starts_at: null }) as unknown as Tournament;
 
-/** Tournament games: where the round is, your place and the top of the standings. */
+/** Tournament games: where the round is, your place, the top of the standings and who watches. */
 export function TournamentBox({ info }: { info: GameTournamentInfo }) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const currentPlayer = useGameStore((state) => state.currentPlayer);
+  const gameId = useGameStore((state) => state.game?.id);
+  const playerIds = useGameStore(useShallow((state) => state.game?.players.map((player) => player.id) ?? []));
   const entries = [...(info.ranking?.entries ?? [])].sort((a, b) => a.place - b.place);
   const top = entries.filter((entry) => entry.place <= 5);
   const mine = entries.find((entry) => entry.id === me.id);
@@ -84,6 +89,15 @@ export function TournamentBox({ info }: { info: GameTournamentInfo }) {
           )}
         </ol>
       </div>
+
+      {gameId != null && (
+        <div className={classes.tournamentWatchers}>
+          <Text span size="xs" fw={700} c="dimmed" className={classes.standingsTitle}>
+            {t('Watching')}
+          </Text>
+          <Spectators gameId={gameId} playerIds={playerIds} />
+        </div>
+      )}
     </div>
   );
 }

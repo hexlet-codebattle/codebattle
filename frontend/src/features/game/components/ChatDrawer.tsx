@@ -1,5 +1,4 @@
 import { Drawer } from '@mantine/core';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel } from '@/features/chat/components/ChatPanel';
@@ -8,9 +7,17 @@ import type { ChatApi } from '@/features/chat/useChat';
 import classes from '../GameRoom.module.css';
 
 /** The game chat, sliding in from the right so the editors keep the full width. */
-export function ChatDrawer({ chat, opened, onClose }: { chat: ChatApi; opened: boolean; onClose: () => void }) {
+interface ChatDrawerProps {
+  chat: ChatApi;
+  opened: boolean;
+  onClose: () => void;
+  /** The open private room (peer id), or null for General; owned above so the mini chat can open DMs. */
+  room: number | null;
+  onRoomChange: (room: number | null) => void;
+}
+
+export function ChatDrawer({ chat, opened, onClose, room, onRoomChange: setRoom }: ChatDrawerProps) {
   const { t } = useTranslation();
-  const [room, setRoom] = useState<number | null>(null);
 
   return (
     <Drawer

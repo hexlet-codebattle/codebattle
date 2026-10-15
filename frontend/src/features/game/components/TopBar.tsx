@@ -8,7 +8,6 @@ import {
   IconPlayerPlay,
   IconMaximize,
   IconMinimize,
-  IconRefresh,
   IconBroadcast,
   IconRobot,
   IconFileDescription,
@@ -17,12 +16,12 @@ import {
   IconLayoutNavbarExpand,
   IconMessages,
   IconTrophy,
-  IconX,
 } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
 import { InvitesMenu } from '@/features/invites/InvitesMenu';
+import { FollowMenu } from '@/features/main/FollowMenu';
 import { UserMenu } from '@/layout/AppLayout';
 import { ColorSchemeToggle } from '@/layout/ColorSchemeToggle';
 import { SoundToggle } from '@/layout/SoundToggle';
@@ -34,56 +33,8 @@ import type { GameApi } from '../useGame';
 import classes from '../GameRoom.module.css';
 
 import { GameTimer } from './GameTimer';
+import { RematchControls } from './RematchControls';
 import { type BriefTab, TestsScore } from './TaskBrief';
-
-/** Rematch offer / answer for casual games. */
-function Rematch({ game, api, me }: { game: Game; api: GameApi; me: number }) {
-  const { t } = useTranslation();
-
-  if (game.rematch_state === 'in_approval') {
-    if (game.rematch_initiator_id === me) {
-      return (
-        <Group gap={6} wrap="nowrap">
-          <Text size="xs" c="dimmed">
-            {t('Rematch offered, waiting…')}
-          </Text>
-          <Tooltip label={t('Cancel rematch')}>
-            <ActionIcon size="sm" variant="subtle" color="gray" onClick={api.cancelRematch} aria-label={t('Cancel rematch')}>
-              <IconX size={14} />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
-      );
-    }
-    return (
-      <Group gap={6} wrap="nowrap">
-        <Text size="xs" fw={600}>
-          {t('Rematch?')}
-        </Text>
-        <Button size="compact-xs" color="green" onClick={api.acceptRematch}>
-          {t('Accept')}
-        </Button>
-        <ActionIcon size="sm" variant="subtle" color="gray" onClick={api.rejectRematch} aria-label={t('Decline')}>
-          <IconX size={14} />
-        </ActionIcon>
-      </Group>
-    );
-  }
-
-  if (game.rematch_state === 'rejected') {
-    return (
-      <Text size="xs" c="dimmed">
-        {t('Rematch declined')}
-      </Text>
-    );
-  }
-
-  return (
-    <Button size="compact-xs" variant="default" leftSection={<IconRefresh size={13} />} onClick={api.sendRematch}>
-      {t('Rematch')}
-    </Button>
-  );
-}
 
 /** Replaces the timer once the game is over: the outcome for me, and what to do next. */
 function Outcome({ game, api, mePlayer }: { game: Game; api: GameApi | null; mePlayer: GamePlayer | undefined }) {
@@ -130,7 +81,7 @@ function Outcome({ game, api, mePlayer }: { game: Game; api: GameApi | null; meP
           )}
         </>
       ) : (
-        mePlayer && api && <Rematch game={game} api={api} me={mePlayer.id} />
+        mePlayer && api && <RematchControls game={game} api={api} me={mePlayer.id} />
       )}
     </Group>
   );
@@ -307,6 +258,7 @@ export function TopBar({
             </Indicator>
           </Tooltip>
         )}
+        {!me.is_guest && <FollowMenu />}
         {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
         <SoundToggle />
         <ColorSchemeToggle />

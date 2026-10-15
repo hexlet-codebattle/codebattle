@@ -139,10 +139,16 @@
     outline-offset: 1px;
   }
 
-  &[data-active] {
-    background: var(--cb-tab-active);
-    border-color: var(--cb-tab-active);
-    color: var(--cb-tab-active-text);
+  /* Picked: filled like the segmented controls below, logo in the text color, a check at the end. */
+  &[data-active],
+  &[data-active]:hover:not(:disabled) {
+    --cb-lang-icon: currentColor;
+
+    background: var(--mantine-primary-color-filled);
+    border-color: var(--mantine-primary-color-filled);
+    color: var(--mantine-color-white);
+    font-weight: 700;
+    cursor: default;
   }
 
   &:disabled {
@@ -155,6 +161,11 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.tileCheck {
+  flex: none;
+  margin-left: auto;
 }
 
 .volume {

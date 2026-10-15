@@ -1,11 +1,9 @@
-import { ActionIcon, Badge, Button, Divider, Group, Indicator, Popover, Stack, Text, Tooltip } from '@mantine/core';
-import { IconBinoculars, IconPlayerPause, IconPlayerPlay, IconSwords, IconX } from '@tabler/icons-react';
+import { ActionIcon, Badge, Button, Group, Indicator, Popover, Stack, Text, Tooltip } from '@mantine/core';
+import { IconSwords } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 
 import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
-import { setFollowPaused, unfollowUser } from '@/features/main/useMainChannel';
-import { useFollowStore } from '@/features/main/store';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { acceptInvite, cancelInvite } from './actions';
@@ -44,42 +42,11 @@ function InviteRow({ invite, userId }: { invite: Invite; userId: number }) {
   );
 }
 
-function FollowBar() {
-  const { t } = useTranslation();
-  const { followId, followName, paused } = useFollowStore();
-
-  if (!followId) return null;
-
-  return (
-    <Stack gap={6}>
-      <Group gap={6} wrap="nowrap">
-        <IconBinoculars size={16} />
-        <Text size="sm" truncate>
-          {t('You are following %{name}', { name: followName || `#${followId}` })}
-        </Text>
-      </Group>
-      <Group gap={6}>
-        <Button
-          size="compact-xs"
-          leftSection={paused ? <IconPlayerPlay size={12} /> : <IconPlayerPause size={12} />}
-          onClick={() => setFollowPaused(!paused)}
-        >
-          {paused ? t('Resume') : t('Pause')}
-        </Button>
-        <Button size="compact-xs" color="red" variant="subtle" leftSection={<IconX size={12} />} onClick={unfollowUser}>
-          {t('Unfollow')}
-        </Button>
-      </Group>
-    </Stack>
-  );
-}
-
-/** Header button: pending battle invites (sent and received) plus follow-mode controls. */
+/** Header button: pending battle invites (sent and received). */
 export function InvitesMenu() {
   const { t } = useTranslation();
   const { current_user: user } = useSharedProps();
   const invites = useInvitesStore(useShallow(selectPendingInvites));
-  const following = useFollowStore((state) => state.followId != null);
   const incoming = invites.filter((invite) => invite.recipient_id === user.id).length;
 
   return (
@@ -94,15 +61,13 @@ export function InvitesMenu() {
         >
           <Tooltip label={t('Invites')}>
             <ActionIcon size="md" aria-label={t('Invites')}>
-              {following ? <IconBinoculars size={18} /> : <IconSwords size={18} />}
+              <IconSwords size={18} />
             </ActionIcon>
           </Tooltip>
         </Indicator>
       </Popover.Target>
       <Popover.Dropdown>
         <Stack gap="sm">
-          <FollowBar />
-          {following && <Divider />}
           {invites.length === 0 ? (
             <Text size="sm" c="dimmed" ta="center" py={4}>
               {t('No invites. Hover a player to invite them to a battle.')}

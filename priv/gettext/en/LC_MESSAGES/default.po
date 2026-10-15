@@ -313,8 +313,11 @@ msgstr "SourceCode"
 msgid "Task: "
 msgstr "Task: "
 
-msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
-msgstr "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgid "Found a mistake? Send a Pull Request on GitHub"
+msgstr "Found a mistake? Send a Pull Request on GitHub"
+
+msgid "Suggest a fix"
+msgstr "Suggest a fix"
 
 msgid "Run your code!"
 msgstr "Run your code!"
@@ -4054,6 +4057,12 @@ msgstr ""
 msgid "Rematch declined"
 msgstr ""
 
+msgid "Rematch offer"
+msgstr "Rematch offer"
+
+msgid "%{name} offers a rematch"
+msgstr "%{name} offers a rematch"
+
 msgid "Rematch offered, waiting…"
 msgstr ""
 
@@ -4278,6 +4287,9 @@ msgstr "Game started"
 
 msgid "New message"
 msgstr "New message"
+
+msgid "Opponent runs tests"
+msgstr "Opponent runs tests"
 
 msgid "Tournament start"
 msgstr "Tournament start"
@@ -4860,3 +4872,12 @@ msgstr ""
 
 msgid "Could not send the feedback"
 msgstr ""
+
+msgid "Spectators: %{count}"
+msgstr "Spectators: %{count}"
+
+msgid "Nobody is watching yet"
+msgstr "Nobody is watching yet"
+
+msgid "Open the full chat"
+msgstr "Open the full chat"

@@ -318,7 +318,10 @@ msgstr ""
 msgid "Task: "
 msgstr ""
 
-msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgid "Found a mistake? Send a Pull Request on GitHub"
+msgstr ""
+
+msgid "Suggest a fix"
 msgstr ""
 
 msgid "Run your code!"

@@ -17,7 +17,7 @@ export const TestDetail = forwardRef<HTMLDivElement, { assert: AssertResult; ind
   const passed = assert.status === 'success';
 
   return (
-    <div ref={ref} className={classes.testDetail} data-active={active || undefined}>
+    <div ref={ref} className={classes.testDetail} data-active={active || undefined} data-passed={passed || undefined}>
       <div className={classes.testDetailHead}>
         <Text span size="xs" fw={700}>
           {t('Test %{number}', { number: index + 1 })}
@@ -109,16 +109,23 @@ interface OutputPanelProps {
   checking: boolean;
   /** Verdict and pass/fail squares only (the opponent's tests): no values, nothing to pick. */
   summaryOnly?: boolean;
+  /** Above the verdict (my summary in the Tests tab while the opponent's run is open). */
+  leftBefore?: ReactNode;
+  /** Right over the verdict: whose run this is. */
+  label?: ReactNode;
   /** Under the verdict and squares (the opponent's summary in the Tests tab). */
   leftExtra?: ReactNode;
+  checkingTitle?: string;
 }
 
-export function OutputPanel({ output, checking, summaryOnly = false, leftExtra = null }: OutputPanelProps) {
+export function OutputPanel({ output, checking, summaryOnly = false, leftBefore = null, label = null, leftExtra = null, checkingTitle }: OutputPanelProps) {
   const { t } = useTranslation();
-  // Layouts without the split still show the extra block under them.
+  // Layouts without the split still show the extra blocks around them.
   const withExtra = (node: ReactNode) =>
-    leftExtra ? (
+    leftBefore || label || leftExtra ? (
       <div className={classes.out}>
+        {leftBefore}
+        {label}
         {node}
         {leftExtra}
       </div>
@@ -136,7 +143,7 @@ export function OutputPanel({ output, checking, summaryOnly = false, leftExtra =
     setSelected(Math.max(firstFailed, 0));
   }
 
-  if (checking) return withExtra(<Head tone="muted" title={summaryOnly ? t('Checking…') : t('Checking your solution…')} />);
+  if (checking) return withExtra(<Head tone="muted" title={checkingTitle ?? (summaryOnly ? t('Checking…') : t('Checking your solution…'))} />);
   if (!output) return withExtra(null);
 
   if (output.status === 'game_is_dead') return withExtra(<Alert color="gray">{t('Time for checking after the game is over')}</Alert>);
@@ -158,6 +165,8 @@ export function OutputPanel({ output, checking, summaryOnly = false, leftExtra =
   if (ERROR_STATUSES.includes(output.status)) {
     return (
       <div className={classes.out}>
+        {leftBefore}
+        {label}
         <Head tone="error" title={output.status === 'timeout' ? t('Time limit exceeded') : output.status === 'memory_leak' ? t('Memory limit exceeded') : t('Error')} />
         {postTimeout}
         {!summaryOnly && output.output_error ? <pre className={classes.outputError}>{output.output_error}</pre> : null}
@@ -191,6 +200,8 @@ export function OutputPanel({ output, checking, summaryOnly = false, leftExtra =
   return (
     <div className={classes.outSplit}>
       <div className={`${classes.out} ${classes.outPinned}`}>
+        {leftBefore}
+        {label}
         {head}
         {postTimeout}
         {asserts.length > 0 && <TestStrip asserts={asserts} selected={selected} onSelect={setSelected} />}

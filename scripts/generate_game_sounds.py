@@ -70,6 +70,8 @@ def note(hz, seconds, gap=0.0, to=None):
 SOUNDS = {
     # Run tests: a quick, light upward blip.
     "check": phrase([note(G5, 0.06), note(C6, 0.09)], peak=0.45),
+    # The opponent runs tests: a quiet low double tick, unlike your own upward blip.
+    "opponent_check": phrase([note(D5, 0.04, 0.05), note(A4, 0.07)], peak=0.3),
     # Tests passed: a bright staccato climb that lands on a held top note.
     "win": phrase(
         [
@@ -98,6 +100,12 @@ SOUNDS = {
     "round_created": phrase([note(E5, 0.08, 0.09), note(E5, 0.08, 0.09), note(E6, 0.3)]),
     # Private chat message: a soft two-tone chime.
     "message": phrase([note(D6, 0.06), note(G6, 0.16)], peak=0.4),
+    # The opponent offers a rematch: a bouncy "again?" that lifts at the end.
+    "rematch": phrase([note(C6, 0.06, 0.04), note(G5, 0.06, 0.04), note(C6, 0.07), note(E6, 0.22, to=E6 * 1.01)], peak=0.5),
+    # Battle invite (sent or received): a light staccato knock that rings on top.
+    "invite": phrase([note(A5, 0.06, 0.04), note(D6, 0.06, 0.04), note(A5, 0.06, 0.04), note(D6, 0.2)], peak=0.45),
+    # Invite accepted: a quick bright handshake, short enough to finish before the game opens.
+    "invite_accepted": phrase([note(D6, 0.06, 0.03), note(G6, 0.07), note(G6, 0.2, to=G6 * 1.003)], peak=0.5),
 }
 
 

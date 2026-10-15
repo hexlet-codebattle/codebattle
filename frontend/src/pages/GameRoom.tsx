@@ -8,6 +8,7 @@ import { EditorPane } from '@/features/game/components/EditorPane';
 import { GameCanceled } from '@/features/game/components/GameCanceled';
 import { GameResultModal } from '@/features/game/components/GameResultModal';
 import { LockScreen } from '@/features/game/components/LockScreen';
+import { MiniChat } from '@/features/game/components/MiniChat';
 import { PlaybookReview } from '@/features/game/components/PlaybookReview';
 import { ReplayBar } from '@/features/game/components/ReplayBar';
 import { type BriefTab, TaskBrief } from '@/features/game/components/TaskBrief';
@@ -58,15 +59,32 @@ interface LayoutProps {
 const NO_CHAT = { messages: [], online: false } as unknown as ChatApi;
 
 /**
- * Top to bottom: the bar, the task strip (collapsible; tournament standings beside it),
- * then both editors at full width with their results under them. The chat is a drawer.
+ * Top to bottom: the bar, the task strip (collapsible; the tournament box or the chat beside it),
+ * then both editors at full width with their results under them. The chat peeks from the strip
+ * (latest messages, spectators) and opens in full in a drawer.
  */
 function RoomBody({ game, api, history = false, aside, chat, footer, editable, allowClipboard, canManage = false, liveGame = false }: Omit<LayoutProps, 'withChat'> & { chat: ChatApi | null }) {
   const { current_user: me } = useSharedProps();
   // The task is open on every visit; collapsing it lasts for this page only.
   const [brief, setBrief] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
-  const unread = useUnread(chat ?? NO_CHAT, chatOpen);
+  const [chatRoom, setChatRoom] = useState<number | null>(null);
+  // The open strip shows the chat too, so what it shows counts as read.
+  const miniChat =
+    chat && brief ? (
+      <MiniChat
+        chat={chat}
+        gameId={game.id}
+        playerIds={game.players.map((player) => player.id)}
+        onExpand={() => setChatOpen(true)}
+        onDirectMessage={(user) => {
+          chat.openRoom(user);
+          setChatRoom(user.id);
+          setChatOpen(true);
+        }}
+      />
+    ) : null;
+  const unread = useUnread(chat ?? NO_CHAT, chatOpen || miniChat != null);
   const [left, right] = seats(game, me.id);
   const [tab, setTab] = useState<BriefTab>('task');
   const showTests = useCallback(() => {
@@ -119,7 +137,21 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
       />
 
       <div className={classes.body}>
-        {brief && <TaskBrief tab={tab} testsOf={leftId} opponentId={right?.id ?? null} aside={aside} />}
+        {brief && (
+          <TaskBrief
+            tab={tab}
+            testsOf={leftId}
+            opponentId={right?.id ?? null}
+            aside={
+              aside || miniChat ? (
+                <>
+                  {aside}
+                  {miniChat}
+                </>
+              ) : null
+            }
+          />
+        )}
 
         <main className={classes.editors} data-single={!right || undefined}>
           {left && <EditorPane player={left} editable={editable} api={api} allowClipboard={allowClipboard} onShowTests={showTests} withSettings />}
@@ -128,7 +160,7 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
         {footer}
       </div>
 
-      {chat && <ChatDrawer chat={chat} opened={chatOpen} onClose={() => setChatOpen(false)} />}
+      {chat && <ChatDrawer chat={chat} opened={chatOpen} onClose={() => setChatOpen(false)} room={chatRoom} onRoomChange={setChatRoom} />}
     </div>
   );
 }
@@ -139,9 +171,8 @@ function WithChat({ topic, ...props }: Omit<LayoutProps, 'withChat'> & { topic: 
 }
 
 function RoomLayout({ withChat, ...props }: LayoutProps) {
-  // Tournament games talk in the tournament's chat (as in legacy); other games have their own room.
-  const topic = props.game.tournament_id ? `chat:t_${props.game.tournament_id}` : `chat:g_${props.game.id}`;
-  return withChat ? <WithChat {...props} topic={topic} /> : <RoomBody {...props} chat={null} />;
+  // Tournament games have no chat: the tournament box (round, standings, spectators) takes its place.
+  return withChat && !props.game.tournament_id ? <WithChat {...props} topic={`chat:g_${props.game.id}`} /> : <RoomBody {...props} chat={null} />;
 }
 
 function LiveRoom({ props }: { props: PageProps }) {
@@ -176,7 +207,7 @@ function LiveRoom({ props }: { props: PageProps }) {
         allowClipboard={props.can_manage_game}
         canManage={props.can_manage_game}
       />
-      {isPlayer && <GameResultModal />}
+      {isPlayer && <GameResultModal api={api} />}
       {api.status === 'error' && (
         <div className={classes.offline} role="status">
           <Text size="xs" fw={700}>

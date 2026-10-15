@@ -27,9 +27,9 @@ const fail = (error: unknown) => {
   notifications.show({ color: 'red', title: t('Invite'), message: inviteErrorText(error) });
 };
 
-/** Both sides land in the new game shortly after an accept (legacy: 250ms). */
+/** Both sides land in the new game shortly after an accept, once the accept sound has played. */
 export const enterAcceptedGame = (invite: Invite) => {
-  if (invite.game_id) window.setTimeout(() => window.location.assign(gameUrl(invite.game_id!)), 250);
+  if (invite.game_id) window.setTimeout(() => window.location.assign(gameUrl(invite.game_id!)), 400);
 };
 
 /** Resolves with the created invite; rejects with the server's `{reason}` (callers show it inline). */

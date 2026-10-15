@@ -1,9 +1,10 @@
 import { Loader } from '@mantine/core';
-import { IconFlask } from '@tabler/icons-react';
-import type { ReactNode } from 'react';
+import { IconChevronRight, IconFlask } from '@tabler/icons-react';
+import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGameStore } from '../store';
+import type { CheckResult } from '../types';
 import classes from '../GameRoom.module.css';
 
 import { OutputPanel } from './OutputPanel';
@@ -24,17 +25,42 @@ export function TestsScore({ playerId }: { playerId: number }) {
   );
 }
 
-/** The other player's last run: their name, verdict and pass/fail squares (no values). */
-function OpponentTests({ playerId }: { playerId: number }) {
+const hasRun = (output: CheckResult | undefined, checking: boolean) => checking || Boolean(output && !['initial', 'started'].includes(output.status));
+
+/**
+ * A player's last run folded to their name, verdict and pass/fail squares (no values); a click
+ * opens it in full.
+ */
+function RunCard({ playerId, before = false, onOpen }: { playerId: number; before?: boolean; onOpen: () => void }) {
   const { t } = useTranslation();
   const name = useGameStore((state) => state.players[playerId]?.name);
   const output = useGameStore((state) => state.outputs[playerId]);
   const checking = useGameStore((state) => Boolean(state.checking[playerId]));
-  const ran = checking || (output && !['initial', 'started'].includes(output.status));
+  const ran = hasRun(output, checking);
+  // Nothing to open before the first run.
+  const open = ran ? onOpen : undefined;
 
   return (
-    <div className={classes.opponentTests}>
-      <span className={classes.opponentTestsLabel}>{name ?? t('Opponent')}</span>
+    <div
+      className={classes.opponentTests}
+      data-before={before || undefined}
+      data-clickable={open ? true : undefined}
+      {...(open && {
+        role: 'button',
+        tabIndex: 0,
+        'aria-label': `${t('Show the tests')}: ${name ?? t('Opponent')}`,
+        onClick: open,
+        onKeyDown: (event: KeyboardEvent) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          open();
+        },
+      })}
+    >
+      <span className={classes.opponentTestsLabel}>
+        {name ?? t('Opponent')}
+        {open && <IconChevronRight size={12} />}
+      </span>
       {ran ? (
         <OutputPanel output={output} checking={checking} summaryOnly />
       ) : (
@@ -48,8 +74,32 @@ function TestsBody({ playerId, opponentId }: { playerId: number; opponentId: num
   const { t } = useTranslation();
   const output = useGameStore((state) => state.outputs[playerId]);
   const checking = useGameStore((state) => Boolean(state.checking[playerId]));
-  const ran = checking || (output && !['initial', 'started'].includes(output.status));
-  const opponent = opponentId != null ? <OpponentTests playerId={opponentId} /> : null;
+  const opponentName = useGameStore((state) => (opponentId != null ? state.players[opponentId]?.name : undefined));
+  const opponentOutput = useGameStore((state) => (opponentId != null ? state.outputs[opponentId] : undefined));
+  const opponentChecking = useGameStore((state) => (opponentId != null ? Boolean(state.checking[opponentId]) : false));
+  const ran = hasRun(output, checking);
+  const [opponentOpen, setOpponentOpen] = useState(false);
+
+  // My new run brings my results back.
+  const [seenChecking, setSeenChecking] = useState(checking);
+  if (seenChecking !== checking) {
+    setSeenChecking(checking);
+    if (checking) setOpponentOpen(false);
+  }
+
+  if (opponentOpen && opponentId != null && hasRun(opponentOutput, opponentChecking)) {
+    return (
+      <OutputPanel
+        output={opponentOutput}
+        checking={opponentChecking}
+        checkingTitle={t('Checking…')}
+        leftBefore={<RunCard playerId={playerId} before onOpen={() => setOpponentOpen(false)} />}
+        label={<span className={classes.opponentTestsLabel}>{opponentName ?? t('Opponent')}</span>}
+      />
+    );
+  }
+
+  const opponent = opponentId != null ? <RunCard playerId={opponentId} onOpen={() => setOpponentOpen(true)} /> : null;
 
   if (!ran) {
     return (

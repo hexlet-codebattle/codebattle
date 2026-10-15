@@ -112,6 +112,38 @@
   min-width: 0;
 }
 
+/* An incoming rematch offer: a soft green glow so it isn't missed after the game. */
+.rematchOffer {
+  padding: 2px 4px 2px 12px;
+  border-radius: var(--mantine-radius-xl);
+  background: alpha(var(--mantine-color-green-6), 0.12);
+  animation: rematchGlow 1.6s ease-in-out infinite;
+
+  &[data-variant='modal'] {
+    padding: 8px 8px 8px 16px;
+  }
+}
+
+@keyframes rematchGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 alpha(var(--mantine-color-green-5), 0);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 3px alpha(var(--mantine-color-green-5), 0.35),
+      0 0 14px alpha(var(--mantine-color-green-5), 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rematchOffer {
+    animation: none;
+    box-shadow: 0 0 0 2px alpha(var(--mantine-color-green-5), 0.45);
+  }
+}
+
 /* ---------- body ---------- */
 
 .body {
@@ -132,7 +164,7 @@
   min-height: 0;
 
   &[data-aside] {
-    grid-template-columns: minmax(0, 1fr) clamp(320px, 26vw, 440px);
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   @media (max-width: $mantine-breakpoint-md) {
@@ -190,8 +222,24 @@
 
 .briefAside {
   display: flex;
+  gap: 6px;
   min-height: 0;
-  overflow-y: auto;
+
+  /* The tournament box (tournament games) or the mini chat. */
+  & > * {
+    flex: none;
+    width: clamp(320px, 26vw, 440px);
+  }
+
+  @media (max-width: $mantine-breakpoint-md) {
+    flex-wrap: wrap;
+
+    & > * {
+      flex: 1 1 280px;
+      width: auto;
+      max-height: 280px;
+    }
+  }
 }
 
 .editors {
@@ -286,9 +334,123 @@
 
 /* ---------- sidebar ---------- */
 
+/* The chat at a glance: who watches, the latest messages, a one-line composer. */
+.miniChat {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+  overflow: hidden;
+
+  @media (max-width: $mantine-breakpoint-md) {
+    height: 280px;
+  }
+}
+
+.miniChatHead {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 4px 6px 4px 10px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.miniChatTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: auto;
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+
+  &:hover {
+    color: var(--cb-text-strong);
+  }
+}
+
+.miniChatWatchers {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 700;
+  color: var(--cb-text-muted);
+
+  &[data-empty] {
+    gap: 3px;
+    opacity: 0.7;
+  }
+}
+
+.miniChatWatchCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.miniChatList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  padding: 6px 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.miniChatMessage {
+  flex: none;
+  font-size: var(--mantine-font-size-xs);
+  line-height: 1.45;
+  color: var(--cb-text);
+  overflow-wrap: anywhere;
+
+  &[data-system] {
+    font-style: italic;
+    color: var(--cb-text-muted);
+  }
+}
+
+.miniChatName {
+  font-weight: 700;
+  color: var(--cb-text-strong);
+  cursor: default;
+
+  .miniChatMessage[data-mine] & {
+    color: var(--mantine-color-green-text);
+  }
+
+  &::after {
+    content: ':';
+  }
+}
+
+.miniChatLock {
+  margin-right: 3px;
+  vertical-align: -1px;
+  color: var(--mantine-color-violet-text);
+}
+
+.miniChatComposer {
+  flex: none;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-top: 1px solid var(--cb-border);
+}
+
 /* Two rows: the round clock, then the standings (scroll inside when long). */
 .tournamentBox {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -306,6 +468,16 @@
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
+}
+
+.tournamentWatchers {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--cb-border);
 }
 
 .standingsTitle {
@@ -385,6 +557,17 @@
   max-width: 36ch;
 }
 
+.taskControls {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.langSwitch {
+  padding: 1px;
+  margin-bottom: 2px;
+}
+
 /* Task / Tests in the top bar: each shows its pane in the strip, or hides the strip when already shown. */
 .stripToggle {
   flex: none;
@@ -425,15 +608,6 @@
     font-size: 0.85em;
     line-height: 1.45;
   }
-}
-
-.contribution {
-  clear: both;
-}
-
-.contributionIcon {
-  margin: 0 3px 0 4px;
-  vertical-align: -2px;
 }
 
 /* ---------- output ---------- */
@@ -557,6 +731,10 @@
   &[data-active] {
     border-color: var(--cb-text-muted);
     box-shadow: inset 3px 0 0 var(--cb-danger);
+  }
+
+  &[data-active][data-passed] {
+    box-shadow: inset 3px 0 0 var(--cb-success);
   }
 }
 
@@ -830,9 +1008,35 @@
   margin-top: 4px;
   padding-top: 10px;
   border-top: 1px dashed var(--cb-border);
+
+  /* Mine, over the opponent's opened run. */
+  &[data-before] {
+    margin: 0 0 4px;
+    padding: 0 0 10px;
+    border-top: 0;
+    border-bottom: 1px dashed var(--cb-border);
+  }
+
+  /* A click opens the run in full. */
+  &[data-clickable] {
+    cursor: pointer;
+  }
+
+  &[data-clickable]:hover .opponentTestsLabel {
+    color: var(--cb-text-strong);
+  }
+
+  &[data-clickable]:focus-visible {
+    outline: 2px solid var(--mantine-primary-color-filled);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
 }
 
 .opponentTestsLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;

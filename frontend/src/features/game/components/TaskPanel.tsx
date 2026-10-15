@@ -1,4 +1,4 @@
-import { Anchor, Badge, Button, Group, Modal, SegmentedControl, Text } from '@mantine/core';
+import { Badge, Button, Group, Modal, SegmentedControl, Stack, Text, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBrandGithub, IconWindowMaximize } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -55,7 +55,7 @@ interface TaskPanelProps {
   onLangChange?: (lang: DescriptionLang) => void;
   /** Leave the examples out (shown in a pane of their own on the broadcast). */
   hideExamples?: boolean;
-  /** Leave out the "send a PR" footer of GitHub tasks (the broadcast). */
+  /** Leave out the "send a PR" link of GitHub tasks (the broadcast). */
   hideContribution?: boolean;
   /** The level and task name above the description (the game strip; the top bar has no name). */
   withTitle?: boolean;
@@ -85,27 +85,33 @@ export function TaskPanel({
   const description = (lang === 'ru' ? task.description_ru : task.description_en) ?? '';
   // No "Examples:" heading: the code block right under the description speaks for itself.
   const examples = !hideExamples && task.examples?.trim() ? `\n\n${codeBlock(task.examples)}` : '';
+  const withContribution = task.origin === 'github' && Boolean(task.tags?.length) && !hideContribution;
+  const withControls = (hasRu && hasEn) || withPreview || withContribution;
 
   return (
     <div className={classes.task}>
       {/* Floats top-right so the description wraps around it instead of losing a line to it. */}
-      {((hasRu && hasEn) || withPreview || withTitle) && (
+      {(withControls || withTitle) && (
         <div className={classes.taskCorner}>
           {withTitle && (
-            <Group gap={8} wrap="nowrap" className={classes.taskTitle}>
+            <Stack gap={4} align="flex-end" className={classes.taskTitle}>
               <Badge size="sm" variant="light" color={LEVEL_COLORS[task.level as GameLevel] ?? 'gray'}>
                 {levelLabel(task.level as GameLevel)}
               </Badge>
-              <Text span size="sm" fw={700} c="bright" ff="monospace" truncate>
+              <Text span size="sm" fw={700} c="bright" ff="monospace" truncate maw="100%">
                 {task.name}
               </Text>
-            </Group>
+            </Stack>
           )}
-          {((hasRu && hasEn) || withPreview) && (
-            <Group gap={6} wrap="nowrap">
+          {/* One control per row, all as wide as the widest; kept quiet next to the description. */}
+          {withControls && (
+            <div className={classes.taskControls}>
               {hasRu && hasEn && (
                 <SegmentedControl
                   size="xs"
+                  fullWidth
+                  className={classes.langSwitch}
+                  vars={() => ({ root: { '--sc-padding': '1px 6px', '--sc-font-size': '10px' } })}
                   value={lang}
                   onChange={(value) => setLang(value as DescriptionLang)}
                   data={[
@@ -117,30 +123,44 @@ export function TaskPanel({
               {withPreview && (
                 <Button
                   size="compact-xs"
-                  variant="default"
-                  leftSection={<IconWindowMaximize size={13} />}
+                  variant="subtle"
+                  color="gray"
+                  fw={400}
+                  fullWidth
+                  justify="flex-start"
+                  leftSection={<IconWindowMaximize size={12} />}
                   onClick={open}
                   aria-label={t('Open the task in a window')}
                 >
                   {t('Preview')}
                 </Button>
               )}
-            </Group>
+              {withContribution && (
+                <Tooltip label={t('Found a mistake? Send a Pull Request on GitHub')}>
+                  <Button
+                    component="a"
+                    href={taskSourceUrl(task)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="compact-xs"
+                    variant="subtle"
+                    color="gray"
+                    fw={400}
+                    fullWidth
+                    justify="flex-start"
+                    leftSection={<IconBrandGithub size={12} />}
+                  >
+                    {t('Suggest a fix')}
+                  </Button>
+                </Tooltip>
+              )}
+            </div>
           )}
         </div>
       )}
       <div className={classes.description}>
         <Markdown>{`${description}${examples}`}</Markdown>
       </div>
-      {task.origin === 'github' && task.tags?.length && !hideContribution ? (
-        <Text size="xs" c="dimmed" fs="italic" mt="sm" className={classes.contribution}>
-          {t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
-          <Anchor href={taskSourceUrl(task)} target="_blank" rel="noopener noreferrer" size="xs" inherit>
-            <IconBrandGithub size={13} className={classes.contributionIcon} />
-            hexlet-codebattle/tasks
-          </Anchor>
-        </Text>
-      ) : null}
       {withPreview && (
         <Modal
           opened={preview}

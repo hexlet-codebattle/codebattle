@@ -8,6 +8,9 @@ import type { Tournament } from '@/features/tournament/types';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { isGameOver, useGameStore } from '../store';
+import type { GameApi } from '../useGame';
+
+import { RematchControls } from './RematchControls';
 
 // The legacy result animations (config/gifs.ts), served by Phoenix.
 const GIFS = {
@@ -55,15 +58,21 @@ function TournamentNext() {
 
 /**
  * The legacy game-over animation: a dinosaur for a win, a loss or a give-up. Opens only
- * when the game ends while the page is open, and only for the players.
+ * when the game ends while the page is open, and only for the players. Casual games offer
+ * a rematch here too, in sync with the top bar.
  */
-export function GameResultModal() {
+export function GameResultModal({ api }: { api: GameApi }) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const state = useGameStore((store) => store.game?.state);
   const result = useGameStore((store) => store.players[me.id]?.result);
   const activeGameId = useGameStore((store) => store.activeGameId);
-  const gameId = useGameStore((store) => store.game?.id);
+  const game = useGameStore((store) => store.game);
+  const gameId = game?.id;
+  const tournament = useGameStore((store) => store.tournament);
+  // Casual games offer a rematch; the opponent's offer gets a row of its own above the footer.
+  const rematch = !tournament && game ? game : null;
+  const incomingRematch = rematch?.rematch_state === 'in_approval' && rematch.rematch_initiator_id !== me.id;
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const wasOver = useRef(isGameOver(state));
 
@@ -104,15 +113,24 @@ export function GameResultModal() {
             <Image src={GIFS[outcome]} alt={t('animation')} radius="md" maw={400} w="100%" />
           )}
           <TournamentNext />
-          <Group justify="flex-end" w="100%" gap="xs">
-            {nextGame && (
-              <Button component="a" href={`/games/${nextGame}`} color="green" rightSection={<IconArrowRight size={14} />}>
-                {t('Next game')}
+          {rematch && incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
+          <Group justify={rematch && !incomingRematch ? 'space-between' : 'flex-end'} w="100%" gap="xs" mt="xs">
+            {rematch && !incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
+            <Group gap="xs">
+              {nextGame && (
+                <Button component="a" href={`/games/${nextGame}`} color="green" rightSection={<IconArrowRight size={14} />}>
+                  {t('Next game')}
+                </Button>
+              )}
+              {/* Secondary while a rematch or the next game is on offer. */}
+              <Button
+                variant={nextGame || rematch ? 'default' : 'filled'}
+                color={won ? 'green' : 'gray'}
+                onClick={() => setOutcome(null)}
+              >
+                {won ? t('GG') : t("I'll be back")}
               </Button>
-            )}
-            <Button variant={nextGame ? 'default' : 'filled'} color={won ? 'green' : 'gray'} onClick={() => setOutcome(null)}>
-              {won ? t('GG') : t("I'll be back")}
-            </Button>
+            </Group>
           </Group>
         </Stack>
       )}

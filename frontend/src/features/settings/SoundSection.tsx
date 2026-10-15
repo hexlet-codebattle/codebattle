@@ -23,11 +23,15 @@ import classes from './Settings.module.css';
 const GAME_SAMPLES: { effect: SoundEffect; label: string }[] = [
   { effect: 'round_created', label: 'Game started' },
   { effect: 'check', label: 'Run tests' },
+  { effect: 'opponent_check', label: 'Opponent runs tests' },
   { effect: 'failure', label: 'Failed tests' },
   { effect: 'win', label: 'Win' },
   { effect: 'give_up', label: 'Gave up' },
+  { effect: 'rematch', label: 'Rematch offer' },
   { effect: 'time_is_over', label: 'Time is over' },
   { effect: 'message', label: 'New message' },
+  { effect: 'invite', label: 'Battle invite' },
+  { effect: 'invite_accepted', label: 'Invite accepted' },
 ];
 
 const TOURNAMENT_SAMPLES: { cue: TournamentSound; label: string }[] = [

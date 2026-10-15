@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import logo from '@/assets/logo.svg?raw';
 import { InviteDialog } from '@/features/invites/InviteDialog';
 import { InvitesMenu } from '@/features/invites/InvitesMenu';
+import { FollowMenu } from '@/features/main/FollowMenu';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
 import { DeployBanner } from '@/features/main/DeployBanner';
@@ -265,6 +266,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
             <Brand />
             <Group gap="sm" wrap="nowrap">
               {!user.is_guest && <ActiveGameLink />}
+              {!user.is_guest && <FollowMenu />}
               {!user.is_guest && !branding.hide_invites && (
                 <>
                   <GithubStars />

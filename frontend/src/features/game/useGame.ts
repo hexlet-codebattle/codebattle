@@ -72,8 +72,8 @@ interface UseGameOptions {
 export function useGame(gameId: number, { embedded = false, extraEvents = {} }: UseGameOptions = {}) {
   const { current_user: me } = useSharedProps();
   const store = useGameStore.getState;
-  const sound = (effect: Parameters<typeof playGameSound>[0]) => {
-    if (!embedded) playGameSound(effect);
+  const sound = (...args: Parameters<typeof playGameSound>) => {
+    if (!embedded) playGameSound(...args);
   };
   const tournamentSound = (cue: Parameters<typeof playTournamentSound>[0]) => {
     if (!embedded) playTournamentSound(cue);
@@ -107,7 +107,11 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       'editor:data': ({ user_id: userId, editor_text: text, lang_slug: lang }: { user_id: number; editor_text: string; lang_slug: string }) => {
         if (userId !== me.id) store().setEditor(userId, { text, lang });
       },
-      'user:start_check': ({ user_id: userId }: { user_id: number }) => store().setChecking(userId, true),
+      'user:start_check': ({ user_id: userId }: { user_id: number }) => {
+        store().setChecking(userId, true);
+        // Only players hear their opponent's runs; spectators would get a tick per player.
+        if (userId !== me.id && store().players[me.id]) sound('opponent_check', { overlap: true });
+      },
       'user:check_complete': (payload: {
         user_id: number;
         solution_status: boolean;
@@ -149,8 +153,11 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       'game:unlocked': () => store().patchGame({ locked: false }),
       'game:head_to_head': ({ head_to_head: headToHead }: { head_to_head: HeadToHead | null }) =>
         store().patchGame({ head_to_head: headToHead }),
-      'rematch:status_updated': ({ rematch_state: state, rematch_initiator_id: initiator }: { rematch_state: string; rematch_initiator_id: number | null }) =>
-        store().patchGame({ rematch_state: state, rematch_initiator_id: initiator }),
+      'rematch:status_updated': ({ rematch_state: state, rematch_initiator_id: initiator }: { rematch_state: string; rematch_initiator_id: number | null }) => {
+        store().patchGame({ rematch_state: state, rematch_initiator_id: initiator });
+        // The opponent offers a rematch: call me back to the game.
+        if (state === 'in_approval' && initiator !== me.id && store().players[me.id]) sound('rematch');
+      },
       'rematch:accepted': ({ game_id: newGameId }: { game_id: number }) => navigate(newGameId),
       'user:banned': ({ user_id: userId }: { user_id: number }) => {
         const player = store().players[userId];

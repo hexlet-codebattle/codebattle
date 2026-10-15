@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useChannel } from '@/api/useChannel';
 import { t } from '@/i18n';
 import { blinkTitleUntilVisible } from '@/shared/blinkTitle';
+import { playGameSound } from '@/shared/sound';
 import { useLatest } from '@/shared/useLatest';
 import { useSharedProps } from '@/shared/useSharedProps';
 
@@ -71,12 +72,18 @@ export function useInvitesChannel(enabled: boolean, { quiet = false }: { quiet?:
 
       'invites:created': ({ invite }: { invite: Invite }) => {
         upsert(invite);
-        if (invite.creator_id !== user.id && !quietRef.current) showIncoming(invite);
+        if (invite.creator_id === user.id) {
+          playGameSound('invite');
+        } else if (!quietRef.current) {
+          playGameSound('invite');
+          showIncoming(invite);
+        }
       },
 
       'invites:accepted': ({ invite }: { invite: Invite }) => {
         upsert(invite);
         notifications.hide(`invite-${invite.id}`);
+        playGameSound('invite_accepted');
         if (byOthers(invite)) {
           notifications.show({
             color: 'green',
