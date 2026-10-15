@@ -1,5 +1,5 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG MONGO_TAG=8.0.15
+ARG MONGO_TAG=9.0.4
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner

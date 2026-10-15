@@ -1,5 +1,5 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG PY_TAG=3.14.5-alpine3.23
+ARG PY_TAG=3.15.0-alpine3.24
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner

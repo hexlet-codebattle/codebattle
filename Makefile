@@ -344,7 +344,7 @@ runner-ruby:
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/ruby:4.0.1
+	    ghcr.io/hexlet-codebattle/ruby:4.0.7
 
 runner-cpp:
 	 docker run --rm -p 4040:4040 \
@@ -358,70 +358,70 @@ runner-swift:
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/swift:6.2.3
+	    ghcr.io/hexlet-codebattle/swift:6.4.1
 
 runner-kotlin:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/kotlin:2.3.0
+	    ghcr.io/hexlet-codebattle/kotlin:2.4.21
 
 runner-js:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/js:25.4.0
+	    ghcr.io/hexlet-codebattle/js:26.12.0
 
 runner-dart:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/dart:3.10.0
+	    ghcr.io/hexlet-codebattle/dart:3.13.5
 
 runner-csharp:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/csharp:10.0.102
+	    ghcr.io/hexlet-codebattle/csharp:10.0.402
 
 runner-clojure:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/clojure:1.12.4
+	    ghcr.io/hexlet-codebattle/clojure:1.12.6
 
 runner-elixir:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/elixir:1.19.5
+	    ghcr.io/hexlet-codebattle/elixir:1.20.4
 
 runner-golang:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/golang:1.25.6
+	    ghcr.io/hexlet-codebattle/golang:1.27.2
 
 runner-php:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/php:8.5.2
+	    ghcr.io/hexlet-codebattle/php:8.5.11
 
 runner-java:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/java:25.0.2
+	    ghcr.io/hexlet-codebattle/java:27.0.0
 
 runner-dlang:
 	 docker run --rm -p 4040:4040 \
@@ -435,11 +435,11 @@ runner-zig:
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/zig:0.15.2
+	    ghcr.io/hexlet-codebattle/zig:0.17.0
 
 runner-rust:
 	 docker run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/rust:1.93.0
+	    ghcr.io/hexlet-codebattle/rust:1.99.0

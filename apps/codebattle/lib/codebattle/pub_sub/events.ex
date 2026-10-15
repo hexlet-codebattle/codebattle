@@ -597,7 +597,7 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "game:#{params.game.id}",
         event: "game:terminated",
-        payload: %{game_id: params.game.id}
+        payload: %{game_id: params.game.id, game_state: params.game.state}
       },
       %Message{
         topic: "games",

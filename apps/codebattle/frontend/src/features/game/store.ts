@@ -101,3 +101,7 @@ export const useGameStore = create<GameStore>((set) => ({
 }));
 
 export const isGameOver = (state: string | undefined) => state === 'game_over' || state === 'timeout' || state === 'canceled';
+
+/** Over before an opponent joined: canceled by its creator, or expired while waiting. */
+export const isAbandoned = (game: { state: string; players: unknown[] }) =>
+  game.players.length < 2 && (game.state === 'canceled' || game.state === 'timeout');

@@ -364,10 +364,10 @@ defmodule Codebattle.Game.Engine do
 
   def cancel_game(game, user) do
     with %Game.Player{} = player <- get_player(game, user.id),
-         :ok <- player_can_cancel_game?(game, player),
-         :ok <- terminate_game(game) do
+         :ok <- player_can_cancel_game?(game, player) do
       update_game!(game, %{state: "canceled"})
-      :ok
+      # Terminated as canceled, so open game pages show the canceled screen.
+      terminate_game(%{game | state: "canceled"})
     end
   end
 
@@ -385,6 +385,8 @@ defmodule Codebattle.Game.Engine do
         :noop
       else
         Codebattle.PubSub.broadcast("game:terminated", %{game: game})
+        # Lobby chat invites to this game (posted on creation) would now lead nowhere.
+        Codebattle.Chat.delete_game_messages(:lobby, game.id, game.player_ids)
       end
 
       :ok

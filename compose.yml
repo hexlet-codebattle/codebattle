@@ -64,17 +64,17 @@ services:
 
   runner-js:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/js:25.4.0
+    image: ghcr.io/hexlet-codebattle/js:26.12.0
     profiles: [runner-js]
 
   runner-python:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/python:3.14.5
+    image: ghcr.io/hexlet-codebattle/python:3.15.0
     profiles: [runner-python]
 
   runner-clojure:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/clojure:1.12.4
+    image: ghcr.io/hexlet-codebattle/clojure:1.12.6
     profiles: [runner-clojure]
 
   runner-cpp:
@@ -84,32 +84,32 @@ services:
 
   runner-csharp:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/csharp:10.0.102
+    image: ghcr.io/hexlet-codebattle/csharp:10.0.402
     profiles: [runner-csharp]
 
   runner-dart:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/dart:3.10.0
+    image: ghcr.io/hexlet-codebattle/dart:3.13.5
     profiles: [runner-dart]
 
   runner-elixir:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/elixir:1.19.5
+    image: ghcr.io/hexlet-codebattle/elixir:1.20.4
     profiles: [runner-elixir]
 
   runner-golang:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/golang:1.25.6
+    image: ghcr.io/hexlet-codebattle/golang:1.27.2
     profiles: [runner-golang]
 
   runner-java:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/java:25.0.2
+    image: ghcr.io/hexlet-codebattle/java:27.0.0
     profiles: [runner-java]
 
   runner-kotlin:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/kotlin:2.3.0
+    image: ghcr.io/hexlet-codebattle/kotlin:2.4.21
     profiles: [runner-kotlin]
     environment:
       DEBUG: "false"
@@ -117,22 +117,22 @@ services:
 
   runner-php:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/php:8.5.2
+    image: ghcr.io/hexlet-codebattle/php:8.5.11
     profiles: [runner-php]
 
   runner-ruby:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/ruby:4.0.1
+    image: ghcr.io/hexlet-codebattle/ruby:4.0.7
     profiles: [runner-ruby]
 
   runner-rust:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/rust:1.93.0
+    image: ghcr.io/hexlet-codebattle/rust:1.99.0
     profiles: [runner-rust]
 
   runner-swift:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/swift:6.2.3
+    image: ghcr.io/hexlet-codebattle/swift:6.4.1
     profiles: [runner-swift]
 
   runner-dlang:
@@ -142,12 +142,12 @@ services:
 
   runner-ts:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/js:25.4.0
+    image: ghcr.io/hexlet-codebattle/js:26.12.0
     profiles: [runner-ts]
 
   runner-zig:
     <<: *zig-runner
-    image: ghcr.io/hexlet-codebattle/zig:0.15.2
+    image: ghcr.io/hexlet-codebattle/zig:0.17.0
     profiles: [runner-zig]
 
   db:

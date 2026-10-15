@@ -14,6 +14,7 @@ import { LEVELS, levelLabel } from '../format';
 import type { GameLevel, Task } from '../types';
 
 import { OpponentPicker } from './OpponentPicker';
+import { WaitingShare } from './WaitingShare';
 
 // Same list RootController passes to the lobby; other pages have no task_tags prop.
 export const DEFAULT_TASK_TAGS = ['strings', 'math', 'hash-maps', 'collections', 'rest'];
@@ -37,6 +38,9 @@ interface CreateGameModalProps {
   onCreate?: (params: CreateGameParams) => Promise<void>;
   /** Preselects "With a friend" and this opponent (hover card, chat, ?opponent_id=). */
   initialOpponent?: InviteUser | null;
+  /** The user's random-player game still waiting for an opponent: the modal shares it instead of the form. */
+  waitingGameId?: number | null;
+  onCancelGame?: (gameId: number) => void;
 }
 
 const DEFAULT_MINUTES = 8;
@@ -83,6 +87,8 @@ export function CreateGameModal({
   taskTags = DEFAULT_TASK_TAGS,
   onCreate,
   initialOpponent = null,
+  waitingGameId = null,
+  onCancelGame,
 }: CreateGameModalProps) {
   const { t } = useTranslation();
   const { locale } = useSharedProps();
@@ -157,13 +163,22 @@ export function CreateGameModal({
           task_tags: selectedTask ? [] : tags,
         });
       }
-      onClose();
+      // A random-player game stays here: the modal switches to sharing it.
+      if (opponent !== 'other_user') onClose();
     } catch (reason) {
       setError(opponent === 'friend' ? inviteErrorText(reason) : errorMessage(reason));
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (waitingGameId !== null && onCancelGame) {
+    return (
+      <Modal opened={opened} onClose={onClose} title={t('Create a battle')} size="md">
+        <WaitingShare gameId={waitingGameId} onCancelGame={onCancelGame} onClose={onClose} />
+      </Modal>
+    );
+  }
 
   return (
     <Modal opened={opened} onClose={onClose} title={inviteOnly ? t('Invite to a battle') : t('Create a battle')} size="lg">

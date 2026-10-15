@@ -83,6 +83,13 @@ defmodule Codebattle.Chat.Server do
     :exit, _reason -> {:error, :no_chat}
   end
 
+  @spec delete_game_messages(Chat.chat_type(), pos_integer(), list(Chat.user_id())) :: list(pos_integer())
+  def delete_game_messages(chat_type, game_id, user_ids) do
+    GenServer.call(chat_key(chat_type), {:delete_game_messages, game_id, user_ids})
+  catch
+    :exit, _reason -> []
+  end
+
   @spec add_to_banned(Chat.chat_type(), Chat.user_id()) :: :ok
   def add_to_banned(chat_type, user_id) do
     GenServer.cast(chat_key(chat_type), {:add_to_banned, user_id})
@@ -177,6 +184,16 @@ defmodule Codebattle.Chat.Server do
   end
 
   @impl GenServer
+  def handle_call({:delete_game_messages, game_id, user_ids}, _from, state) do
+    {deleted, kept} =
+      Enum.split_with(state.messages, fn message ->
+        message.user_id in user_ids && game_message?(message, game_id)
+      end)
+
+    {:reply, Enum.map(deleted, & &1.id), %{state | messages: kept}}
+  end
+
+  @impl GenServer
   def handle_cast({:delete_user_messages, user_id}, state) do
     new_messages = Enum.reject(state.messages, fn msg -> msg.user_id == user_id end)
 
@@ -206,6 +223,9 @@ defmodule Codebattle.Chat.Server do
     Process.send_after(self(), :clean_messages, state.clean_timeout)
     {:noreply, %{state | messages: new_messages}}
   end
+
+  defp game_message?(%{meta: %{"game_id" => game_id}}, game_id), do: true
+  defp game_message?(_message, _game_id), do: false
 
   defp own_message?(_message, nil), do: false
   defp own_message?(message, user_id), do: message.user_id == user_id

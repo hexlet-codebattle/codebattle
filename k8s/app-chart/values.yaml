@@ -148,57 +148,57 @@ zigRunners:
     DEBUG: "true"
   langs:
     - name: clojure
-      image: ghcr.io/hexlet-codebattle/clojure:1.12.4
+      image: ghcr.io/hexlet-codebattle/clojure:1.12.6
       replicaCount: 1
     - name: cpp
       image: ghcr.io/hexlet-codebattle/cpp:23
       replicaCount: 1
     - name: csharp
-      image: ghcr.io/hexlet-codebattle/csharp:10.0.102
+      image: ghcr.io/hexlet-codebattle/csharp:10.0.402
       replicaCount: 1
     - name: dart
-      image: ghcr.io/hexlet-codebattle/dart:3.10.0
+      image: ghcr.io/hexlet-codebattle/dart:3.13.5
       replicaCount: 1
     - name: dlang
       image: ghcr.io/hexlet-codebattle/dlang:ldc2
       replicaCount: 1
     - name: elixir
-      image: ghcr.io/hexlet-codebattle/elixir:1.19.5
+      image: ghcr.io/hexlet-codebattle/elixir:1.20.4
       replicaCount: 1
     - name: golang
-      image: ghcr.io/hexlet-codebattle/golang:1.25.6
+      image: ghcr.io/hexlet-codebattle/golang:1.27.2
       replicaCount: 1
     - name: java
-      image: ghcr.io/hexlet-codebattle/java:25.0.2
+      image: ghcr.io/hexlet-codebattle/java:27.0.0
       replicaCount: 1
     - name: js
-      image: ghcr.io/hexlet-codebattle/js:25.4.0
+      image: ghcr.io/hexlet-codebattle/js:26.12.0
       replicaCount: 1
     - name: kotlin
-      image: ghcr.io/hexlet-codebattle/kotlin:2.3.0
+      image: ghcr.io/hexlet-codebattle/kotlin:2.4.21
       replicaCount: 1
       env:
         SLOW_KOTLIN: "1"
     - name: php
-      image: ghcr.io/hexlet-codebattle/php:8.5.2
+      image: ghcr.io/hexlet-codebattle/php:8.5.11
       replicaCount: 1
     - name: python
-      image: ghcr.io/hexlet-codebattle/python:3.14.5
+      image: ghcr.io/hexlet-codebattle/python:3.15.0
       replicaCount: 1
     - name: ruby
-      image: ghcr.io/hexlet-codebattle/ruby:4.0.1
+      image: ghcr.io/hexlet-codebattle/ruby:4.0.7
       replicaCount: 1
     - name: rust
-      image: ghcr.io/hexlet-codebattle/rust:1.93.0
+      image: ghcr.io/hexlet-codebattle/rust:1.99.0
       replicaCount: 1
     - name: swift
-      image: ghcr.io/hexlet-codebattle/swift:6.2.3
+      image: ghcr.io/hexlet-codebattle/swift:6.4.1
       replicaCount: 1
     - name: ts
-      image: ghcr.io/hexlet-codebattle/js:25.4.0
+      image: ghcr.io/hexlet-codebattle/js:26.12.0
       replicaCount: 1
     - name: zig
-      image: ghcr.io/hexlet-codebattle/zig:0.15.2
+      image: ghcr.io/hexlet-codebattle/zig:0.17.0
       replicaCount: 1
 
 resources: {}

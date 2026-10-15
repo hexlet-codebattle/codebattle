@@ -9,7 +9,7 @@
     "js-yaml": "^4.3.2"
   },
   "dependencies": {
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "lz-string": "^1.5.0",
     "node-html-to-image": "^6.2.0",
     "pixelmatch": "^8.0.0",

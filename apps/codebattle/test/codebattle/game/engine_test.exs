@@ -267,4 +267,31 @@ defmodule Codebattle.Game.EngineTest do
     assert {:ok, _stored} = Game.Engine.store_result!(game)
     assert Codebattle.User.get!(guest_user.id).rating == 777
   end
+
+  test "canceling a waiting game tells its page and drops its lobby chat invite" do
+    insert(:task, level: "easy")
+    user = insert(:user)
+
+    {:ok, game} = Game.Context.create_game(%{level: "easy", players: [user]})
+    assert game.state == "waiting_opponent"
+    Codebattle.PubSub.subscribe("game:#{game.id}")
+
+    invite = "Who wants to battle? /games/#{game.id}"
+
+    Codebattle.Chat.add_message(:lobby, %{
+      type: :text,
+      text: invite,
+      user_id: user.id,
+      name: user.name,
+      meta: %{"type" => "general", "game_id" => game.id}
+    })
+
+    assert Enum.any?(Codebattle.Chat.get_messages(:lobby), &(&1.text == invite))
+
+    assert :ok = Game.Context.cancel_game(game.id, user)
+
+    assert_receive %{event: "game:terminated", payload: %{game_state: "canceled"}}
+    assert Codebattle.Repo.get!(Game, game.id).state == "canceled"
+    refute Enum.any?(Codebattle.Chat.get_messages(:lobby), &(&1.text == invite))
+  end
 end

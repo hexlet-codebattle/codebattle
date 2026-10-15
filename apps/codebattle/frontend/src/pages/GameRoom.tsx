@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { type ChatApi, useChat } from '@/features/chat/useChat';
 import { ChatDrawer } from '@/features/game/components/ChatDrawer';
 import { EditorPane } from '@/features/game/components/EditorPane';
+import { GameCanceled } from '@/features/game/components/GameCanceled';
 import { GameResultModal } from '@/features/game/components/GameResultModal';
 import { LockScreen } from '@/features/game/components/LockScreen';
 import { PlaybookReview } from '@/features/game/components/PlaybookReview';
@@ -15,7 +16,7 @@ import { TournamentBox } from '@/features/game/components/TournamentBox';
 import { WaitingOpponent } from '@/features/game/components/WaitingOpponent';
 import classes from '@/features/game/GameRoom.module.css';
 import { usePlaybook } from '@/features/game/history';
-import { isGameOver, useGameStore } from '@/features/game/store';
+import { isAbandoned, isGameOver, useGameStore } from '@/features/game/store';
 import type { Game, GamePageProps, GamePlayer } from '@/features/game/types';
 import { type GameApi, useGame } from '@/features/game/useGame';
 import { useMainChannel } from '@/features/main/useMainChannel';
@@ -256,6 +257,10 @@ export default function GameRoom() {
 
   // Render from the page props at once; the channel join (live games) then takes over.
   useState(() => useGameStore.getState().load(props.game));
+  const game = useGameStore((state) => state.game) ?? props.game;
+
+  // Nobody joined: no task or editors to show. Also replaces the waiting room when the creator cancels.
+  if (isAbandoned(game)) return <GameCanceled game={game} />;
 
   return props.is_record ? <HistoryRoom props={props} /> : <LiveRoom props={props} />;
 }

@@ -1,5 +1,5 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG PG_TAG=18-alpine
+ARG PG_TAG=18.6-alpine3.24
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner

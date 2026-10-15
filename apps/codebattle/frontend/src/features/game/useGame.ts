@@ -131,10 +131,11 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
         refreshRanking();
         void loadHeadToHead();
       },
+      // Also the game process ending: `game_state` is then "canceled" for a game its creator canceled.
       'game:timeout': ({ game_state: state }: { game_state?: string }) => {
         if (isGameOver(store().game?.state)) return;
-        store().patchGame({ state: state ?? 'timeout' });
-        sound('time_is_over');
+        store().patchGame({ state: isGameOver(state) ? state : 'timeout' });
+        if (state !== 'canceled') sound('time_is_over');
       },
       'game:updated': ({ state }: { state: string }) => {
         // An opponent joined: reload into the battle with full props (task, langs, players).

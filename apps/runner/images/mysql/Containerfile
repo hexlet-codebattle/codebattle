@@ -1,5 +1,5 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG MYSQL_TAG=8.4.7
+ARG MYSQL_TAG=9.7.2
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner

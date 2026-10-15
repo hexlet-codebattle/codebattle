@@ -1,6 +1,6 @@
 ARG TARGETPLATFORM
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG NODE_TAG=25.4.0-alpine3.23
+ARG NODE_TAG=26.12.0-alpine3.24
 
 # ---- runner binary stage ----
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner

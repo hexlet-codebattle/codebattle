@@ -126,6 +126,29 @@ defmodule Codebattle.ChatTest do
     assert [%Message{id: 2, text: "blz"}] = Chat.get_messages(@chat_type)
   end
 
+  test "deletes a game's invites posted by its players", %{user1: user1, user2: user2} do
+    {:ok, _pid} = Chat.start_link(@chat_type, %{clean_timeout: 50, message_ttl: 10})
+    Codebattle.PubSub.subscribe("chat:game:#{elem(@chat_type, 1)}")
+
+    invite = %{"type" => "general", "game_id" => 42}
+    Chat.add_message(@chat_type, %{type: :text, text: "join 42", user_id: user1.id, name: user1.name, meta: invite})
+    Chat.add_message(@chat_type, %{type: :text, text: "oi", user_id: user1.id, name: user1.name})
+    Chat.add_message(@chat_type, %{type: :text, text: "fake 42", user_id: user2.id, name: user2.name, meta: invite})
+
+    Chat.add_message(@chat_type, %{
+      type: :text,
+      text: "join 7",
+      user_id: user1.id,
+      name: user1.name,
+      meta: %{"type" => "general", "game_id" => 7}
+    })
+
+    :ok = Chat.delete_game_messages(@chat_type, 42, [user1.id])
+
+    assert_receive %{event: "chat:msg_deleted", payload: %{id: 1}}
+    assert [%Message{text: "oi"}, %Message{text: "fake 42"}, %Message{text: "join 7"}] = Chat.get_messages(@chat_type)
+  end
+
   test "catches no_chat error", %{user1: %{id: user_id, name: name} = user1} do
     assert %{messages: [], users: []} = Chat.join_chat(@chat_type, user1)
     assert [] = Chat.leave_chat(@chat_type, user1)

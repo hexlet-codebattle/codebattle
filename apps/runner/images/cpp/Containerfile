@@ -1,12 +1,12 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG ALPINE_TAG=3.23
+ARG ALPINE_TAG=3.24
 ARG TARGETPLATFORM
 
 ########################################
 # 1) builder – PCH + prebuilt runtime.o
 ########################################
 FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG} AS pch-builder
-RUN apk add --no-cache clang mold lld libc++ make
+RUN apk add --no-cache clang gcc mold lld libc++ make
 
 # Compiler flags must match the per-run flags in Makefile, otherwise clang
 # rejects the PCH / object file as incompatible.
@@ -29,7 +29,7 @@ FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 ########################################
 FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG}
 
-RUN apk add --no-cache clang mold lld libc++ make
+RUN apk add --no-cache clang gcc mold lld libc++ make
 
 # idempotent user/group creation (no failure if already present)
 RUN grep -q '^app:' /etc/group || addgroup -S -g 10001 app \

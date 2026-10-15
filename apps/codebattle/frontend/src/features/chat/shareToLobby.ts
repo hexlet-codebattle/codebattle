@@ -1,4 +1,7 @@
 import { getSocket } from '@/api/socket';
+import { t } from '@/i18n';
+
+import { shareableGameUrl } from './linkify';
 
 const sharedKey = (gameId: number) => `cb-v2:shared-game:${gameId}`;
 
@@ -11,7 +14,7 @@ export function wasShared(gameId: number) {
   }
 }
 
-function markShared(gameId: number) {
+export function markShared(gameId: number) {
   try {
     sessionStorage.setItem(sharedKey(gameId), '1');
   } catch {
@@ -20,10 +23,19 @@ function markShared(gameId: number) {
 }
 
 /**
- * Posts `text` to the lobby General chat from any page: joins "chat:lobby" just for
- * this message and leaves right after (the push and the leave go out in order).
+ * The "chat:add_msg" payload inviting everyone to `gameId`. `meta.game_id` lets the
+ * server drop the message once the game is canceled.
  */
-export function shareToLobbyChat(token: string, gameId: number, text: string) {
+export const gameInviteMessage = (gameId: number) => ({
+  text: `${t('Who wants to battle?')} ${shareableGameUrl(gameId)}`,
+  meta: { type: 'general', game_id: gameId },
+});
+
+/**
+ * Posts the invite to `gameId` to the lobby General chat from any page: joins "chat:lobby"
+ * just for this message and leaves right after (the push and the leave go out in order).
+ */
+export function shareToLobbyChat(token: string, gameId: number) {
   return new Promise<void>((resolve, reject) => {
     const channel = getSocket(token).channel('chat:lobby', {});
     const fail = (reason: unknown) => {
@@ -34,7 +46,7 @@ export function shareToLobbyChat(token: string, gameId: number, text: string) {
     channel
       .join()
       .receive('ok', () => {
-        channel.push('chat:add_msg', { text, meta: { type: 'general' } });
+        channel.push('chat:add_msg', gameInviteMessage(gameId));
         channel.leave();
         markShared(gameId);
         resolve();

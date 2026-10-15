@@ -47,6 +47,12 @@ export default function Lobby() {
   const games = useLobbyStore((state) => state.games);
   const activeGame = useMemo(() => games.find((game) => isPlayer(game, user.id)), [games, user.id]);
 
+  // The random-player game we are waiting in. Right after creation it may not be in the
+  // store yet, so remember its id until the channel delivers it.
+  const [createdGameId, setCreatedGameId] = useState<number | null>(null);
+  const waitingGameId = activeGame?.state === 'waiting_opponent' ? activeGame.id : null;
+  if (createdGameId !== null && createdGameId === waitingGameId) setCreatedGameId(null);
+
   // Chat state lives here so other widgets can open private rooms in it.
   const chat = useChat('chat:lobby');
   const [activeRoomId, setActiveRoomId] = useState<number | null>(null);
@@ -68,8 +74,28 @@ export default function Lobby() {
   const createGame = async (params: CreateGameParams) => {
     const { game_id: gameId } = await push<{ game_id: number }>('game:create', { ...params });
 
-    // Bot games start right away; random-player games open their waiting room until someone joins.
-    window.location.assign(gameUrl(gameId));
+    // Bot games start right away.
+    if (params.opponent_type === 'bot') {
+      window.location.assign(gameUrl(gameId));
+      return;
+    }
+
+    // Random-player games wait here in the lobby (we enter once someone joins); the invite goes to the chat.
+    setCreatedGameId(gameId);
+    chat.shareGame(gameId);
+  };
+
+  // The server also drops the game's invite from the lobby chat.
+  const cancelGame = (gameId: number) => {
+    cast('game:cancel', { game_id: gameId });
+    setCreatedGameId(null);
+    useLobbyStore.getState().removeGame(gameId);
+  };
+
+  const closeCreate = () => {
+    createModal.close();
+    // Reopening falls back to the store, which by then has the game (or knows it is gone).
+    setCreatedGameId(null);
   };
 
   return (
@@ -112,9 +138,19 @@ export default function Lobby() {
         onClose={joinModal.close}
         userId={user.id}
         online={online}
-        onCancel={(gameId) => cast('game:cancel', { game_id: gameId })}
+        onCancel={cancelGame}
       />
-      <CreateGameModal opened={createOpened} onClose={createModal.close} taskTags={props.task_tags} onCreate={createGame} />
+      <CreateGameModal
+        opened={createOpened}
+        onClose={closeCreate}
+        taskTags={props.task_tags}
+        onCreate={createGame}
+        waitingGameId={waitingGameId ?? createdGameId}
+        onCancelGame={(gameId) => {
+          cancelGame(gameId);
+          createModal.close();
+        }}
+      />
     </AppLayout>
   );
 }

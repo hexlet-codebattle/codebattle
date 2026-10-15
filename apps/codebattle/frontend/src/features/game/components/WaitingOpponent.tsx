@@ -6,16 +6,13 @@ import { useTranslation } from 'react-i18next';
 
 import { shareableGameUrl } from '@/features/chat/linkify';
 import { shareToLobbyChat, wasShared } from '@/features/chat/shareToLobby';
-
-import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
-import type { GameLevel } from '@/features/lobby/types';
-import { LangIcon } from '@/shared/LangIcon';
 import { MethodButton } from '@/shared/MethodButton';
-import { UserAvatar } from '@/shared/UserAvatar';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import type { Game } from '../types';
 import classes from '../GameRoom.module.css';
+
+import { GameCreatorBadge } from './GameCreatorBadge';
 
 /**
  * A game nobody has joined yet. Its creator gets the invite link and a way out;
@@ -34,7 +31,7 @@ export function WaitingOpponent({ game }: { game: Game }) {
   const share = async () => {
     setSharing(true);
     try {
-      await shareToLobbyChat(token, game.id, `${t('Who wants to battle?')} ${link}`);
+      await shareToLobbyChat(token, game.id);
       setShared(true);
       notifications.show({ color: 'green', message: t('Invite posted to the lobby chat') });
     } catch {
@@ -48,27 +45,7 @@ export function WaitingOpponent({ game }: { game: Game }) {
     <div className={classes.waiting}>
       <Card w={460} maw="100%" padding="xl">
         <Stack gap="md" align="center">
-          {creator && (
-            <Group gap="sm" wrap="nowrap">
-              <UserAvatar user={creator} size={40} />
-              <Stack gap={2}>
-                <Group gap={6} wrap="nowrap">
-                  <LangIcon lang={creator.editor_lang} />
-                  <Text fw={700} c="bright">
-                    {creator.name}
-                  </Text>
-                </Group>
-                <Group gap={6}>
-                  <Text size="xs" c="dimmed" ff="monospace">
-                    {creator.rating}
-                  </Text>
-                  <Text size="xs" fw={700} c={LEVEL_COLORS[game.level as GameLevel] ?? 'dimmed'}>
-                    {levelLabel(game.level as GameLevel)}
-                  </Text>
-                </Group>
-              </Stack>
-            </Group>
-          )}
+          {creator && <GameCreatorBadge game={game} creator={creator} />}
 
           {isCreator ? (
             <>

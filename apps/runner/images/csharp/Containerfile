@@ -1,6 +1,6 @@
 # ---------- build args ----------
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG DOTNET_TAG=10.0.102-noble
+ARG DOTNET_TAG=10.0.402-noble
 ARG TARGETPLATFORM
 
 # ---------- bring in the external runner ----------

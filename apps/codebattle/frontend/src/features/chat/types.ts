@@ -8,7 +8,7 @@ export interface ChatMessage {
   text: string;
   /** Unix seconds. */
   time: number | null;
-  meta: { type?: 'general' | 'private'; target_user_id?: number } | null;
+  meta: { type?: 'general' | 'private'; target_user_id?: number; game_id?: number } | null;
 }
 
 export interface PrivateRoom {

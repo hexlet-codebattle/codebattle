@@ -1,19 +1,18 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG ALPINE_TAG=3.23
+ARG DART_TAG=3.13.5
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
-FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG}
+# Official Debian-based image: Alpine only ships Dart in edge/testing, which lags upstream.
+FROM --platform=$TARGETPLATFORM dart:${DART_TAG}
 
-# edge repos for Dart & ICU
-RUN echo "@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-  echo "@edgecommunity http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-  echo "@edgemain http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
-  apk add --update --no-cache make ca-certificates curl icu-libs@edgemain icu-data-full@edgecommunity dart@edge
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends make \
+  && rm -rf /var/lib/apt/lists/*
 
 # app user
-RUN addgroup -S app -g 10001 \
-  && adduser -S -D -H -h /home/app -s /sbin/nologin -G app -u 10001 app \
+RUN groupadd --system --gid 10001 app \
+  && useradd --system --uid 10001 --gid app --home-dir /home/app --shell /usr/sbin/nologin app \
   && mkdir -p /home/app/.dart-tool /usr/src/app \
   && chown -R app:app /home/app /usr/src/app
 

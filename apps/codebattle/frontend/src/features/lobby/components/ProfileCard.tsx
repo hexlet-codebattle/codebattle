@@ -25,7 +25,10 @@ function Stat({ label, value }: { label: string; value: string | number }) {
 }
 
 interface ProfileCardProps {
-  /** The current user's unfinished lobby game, if any: the main button continues it. */
+  /**
+   * The current user's unfinished lobby game, if any: the main button continues it, or
+   * (still waiting for an opponent) reopens the create modal, which shares it.
+   */
   activeGame: LobbyGame | undefined;
   online: boolean;
   /** Joinable/watchable games, shown on the "Join a battle" button. */
@@ -77,13 +80,13 @@ export function ProfileCard({ activeGame, online, gamesCount, onCreate, onJoin }
         </SimpleGrid>
 
         <SimpleGrid cols={2} spacing="xs">
-          {activeGame ? (
+          {activeGame && activeGame.state !== 'waiting_opponent' ? (
             <Button component="a" href={gameUrl(activeGame.id)} size="sm" px="xs">
               {t('Continue')}
             </Button>
           ) : (
             <Button size="sm" px="xs" onClick={onCreate} loading={!online}>
-              {t('Create battle')}
+              {activeGame ? t('Invite link') : t('Create battle')}
             </Button>
           )}
           <Button

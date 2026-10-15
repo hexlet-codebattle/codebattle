@@ -86,6 +86,21 @@ defmodule Codebattle.Chat do
     :ok
   end
 
+  @doc """
+  Removes the invites to `game_id` its players posted (messages with `meta.game_id`),
+  e.g. once a waiting game is canceled and its link leads nowhere.
+  """
+  @spec delete_game_messages(chat_type(), pos_integer(), list(user_id())) :: :ok
+  def delete_game_messages(chat_type, game_id, user_ids) do
+    chat_type
+    |> Chat.Server.delete_game_messages(game_id, user_ids)
+    |> Enum.each(fn message_id ->
+      Codebattle.PubSub.broadcast("chat:msg_deleted", %{chat_type: chat_type, message_id: message_id})
+    end)
+
+    :ok
+  end
+
   @spec ban_user(chat_type(), ban_user_params()) :: :ok
   def ban_user(chat_type, params) do
     Chat.Server.delete_user_messages(chat_type, params.user_id)

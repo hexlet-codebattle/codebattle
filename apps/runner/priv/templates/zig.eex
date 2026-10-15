@@ -1,14 +1,30 @@
 const std = @import("std");
 const solution = @import("solution.zig");
 
-const Pipe = struct { r: std.posix.fd_t, w: std.posix.fd_t };
+const posix = std.posix;
+const Io = std.Io;
+
+const Pipe = struct { r: posix.fd_t, w: posix.fd_t };
+
+// Zig 0.16+ dropped the std.posix pipe/dup wrappers; posix.system is the raw
+// syscall layer (linux) or libc (darwin).
+fn sysFd(rc: anytype) !posix.fd_t {
+    if (posix.errno(rc) != .SUCCESS) return error.Syscall;
+    return @intCast(rc);
+}
 
 fn pipeOpen() !Pipe {
-    const fds = try std.posix.pipe(); // Zig 0.14.1: no args
+    var fds: [2]posix.fd_t = undefined;
+    _ = try sysFd(posix.system.pipe(&fds));
     return .{ .r = fds[0], .w = fds[1] };
 }
 
-fn secondsFromNs(ns: i128) f64 {
+fn closeFd(fd: posix.fd_t) void {
+    _ = posix.system.close(fd);
+}
+
+fn secondsBetween(t0: Io.Timestamp, t1: Io.Timestamp) f64 {
+    const ns = t0.durationTo(t1).nanoseconds;
     return @as(f64, @floatFromInt(ns)) / @as(f64, @floatFromInt(std.time.ns_per_s));
 }
 
@@ -16,12 +32,12 @@ fn writeJson(outw: anytype, value: anytype) !void {
     try outw.print("{f}", .{std.json.fmt(value, .{})});
 }
 
-pub fn main() !void {
-    const gpa = std.heap.page_allocator;
-    const stdout_file = std.fs.File.stdout();
-    const stdout_fd = stdout_file.handle;
+pub fn main(init: std.process.Init) !void {
+    const io = init.io;
+    const gpa = init.gpa;
+    const stdout_fd = posix.STDOUT_FILENO;
     var stdout_buf: [4096]u8 = undefined;
-    var stdout_writer = stdout_file.writer(&stdout_buf);
+    var stdout_writer = Io.File.stdout().writer(io, &stdout_buf);
     const outw = &stdout_writer.interface;
 
     // Begin JSON array
@@ -40,27 +56,29 @@ pub fn main() !void {
 
         if (maybe_p) |p| {
             // duplicate stdout and redirect
-            const saved = try std.posix.dup(stdout_fd);
-            defer _ = std.posix.close(saved);
+            const saved = try sysFd(posix.system.dup(stdout_fd));
+            defer closeFd(saved);
 
-            try std.posix.dup2(p.w, stdout_fd);
+            _ = try sysFd(posix.system.dup2(p.w, stdout_fd));
 
-            const t0 = std.time.nanoTimestamp();
+            const t0 = Io.Timestamp.now(io, .awake);
             const val = solution.solution(<%= arguments.expression %>);
-            const t1 = std.time.nanoTimestamp();
+            const t1 = Io.Timestamp.now(io, .awake);
 
-            // restore stdout (no flush method on fs.File in Zig 0.14)
-            try std.posix.dup2(saved, stdout_fd);
-            _ = std.posix.close(p.w);
+            // restore stdout
+            _ = try sysFd(posix.system.dup2(saved, stdout_fd));
+            closeFd(p.w);
 
             // read captured output
-            var rfile = std.fs.File{ .handle = p.r };
-            defer _ = rfile.close();
+            const rfile: Io.File = .{ .handle = p.r, .flags = .{ .nonblocking = false } };
+            defer rfile.close(io);
+            var rbuf: [4096]u8 = undefined;
+            var rreader = rfile.reader(io, &rbuf);
 
-            const out_slice = try rfile.readToEndAlloc(gpa, 1 << 20); // 1 MiB
+            const out_slice = try rreader.interface.allocRemaining(gpa, .limited(1 << 20)); // 1 MiB
             defer gpa.free(out_slice);
 
-            const secs = secondsFromNs(t1 - t0);
+            const secs = secondsBetween(t0, t1);
 
             // emit JSON object
             try outw.writeAll("{\"type\":\"result\",\"value\":");
@@ -72,10 +90,10 @@ pub fn main() !void {
             try outw.writeByte('}');
         } else {
             // No-capture fallback
-            const t0 = std.time.nanoTimestamp();
+            const t0 = Io.Timestamp.now(io, .awake);
             const val = solution.solution(<%= arguments.expression %>);
-            const t1 = std.time.nanoTimestamp();
-            const secs = secondsFromNs(t1 - t0);
+            const t1 = Io.Timestamp.now(io, .awake);
+            const secs = secondsBetween(t0, t1);
 
             try outw.writeAll("{\"type\":\"result\",\"value\":");
             try writeJson(outw, val);

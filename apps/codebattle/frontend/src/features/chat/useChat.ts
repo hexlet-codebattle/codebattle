@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { blinkTitleUntilVisible } from '@/shared/blinkTitle';
 import { useSharedProps } from '@/shared/useSharedProps';
 
+import { gameInviteMessage, markShared } from './shareToLobby';
 import type { ChatMessage, ChatUserRef, PrivateRoom } from './types';
 
 export const MAX_MESSAGE_LENGTH = 1024;
@@ -86,6 +87,11 @@ export function useChat(topic: string) {
     openRoom: touchRoom,
     closeRoom: (userId: number) => setRooms((current) => current.filter((room) => room.userId !== userId)),
     send,
+    /** Invite everyone to `gameId` (General room); the server drops it if the game is canceled. */
+    shareGame: (gameId: number) => {
+      cast('chat:add_msg', gameInviteMessage(gameId));
+      markShared(gameId);
+    },
     deleteMessage: (id: number) => cast('chat:delete_msg', { id }),
     ban: (target: ChatUserRef) => cast('chat:command', { type: 'ban', name: target.name, user_id: target.id }),
     cleanBanned: () => cast('chat:command', { type: 'clean_banned' }),

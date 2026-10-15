@@ -1,5 +1,5 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG PHP_TAG=8.5.2-cli-alpine3.23
+ARG PHP_TAG=8.5.11-cli-alpine3.24
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner

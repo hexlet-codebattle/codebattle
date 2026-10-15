@@ -6206,3 +6206,24 @@ msgstr "Вы забанены в этом турнире"
 
 msgid "Your editor is locked and solutions can no longer be submitted. If you think this is a mistake, contact the organizers."
 msgstr "Редактор заблокирован, отправлять решения больше нельзя. Если считаете, что это ошибка, свяжитесь с организаторами."
+
+msgid "Battle created"
+msgstr "Битва создана"
+
+msgid "The link is posted to the lobby chat. The game starts as soon as someone joins."
+msgstr "Ссылка отправлена в чат лобби. Игра начнётся, как только кто-нибудь присоединится."
+
+msgid "Game canceled"
+msgstr "Игра отменена"
+
+msgid "Game expired"
+msgstr "Время ожидания истекло"
+
+msgid "Nobody joined before the time ran out."
+msgstr "Никто не присоединился к игре вовремя."
+
+msgid "The game was canceled before anyone joined."
+msgstr "Игру отменили до того, как кто-то присоединился."
+
+msgid "%{name} canceled the game before anyone joined."
+msgstr "%{name} отменил(а) игру до того, как кто-то присоединился."

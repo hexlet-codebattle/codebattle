@@ -40,12 +40,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "4.0.1",
+      version: "4.0.7",
       container_run_timeout: "15s",
       check_dir: "check",
       solution_file_name: "solution.rb",
       checker_file_name: "checker.rb",
-      image: "ghcr.io/hexlet-codebattle/ruby:4.0.1",
+      image: "ghcr.io/hexlet-codebattle/ruby:4.0.7",
       solution_template: """
       def solution(<%= arguments %>)
         <%= default_value %>
@@ -73,12 +73,12 @@ defmodule Runner.Languages do
       generate_checker?: false,
       name: "Node.js",
       slug: "js",
-      version: "25.4.0",
+      version: "26.12.0",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      image: "ghcr.io/hexlet-codebattle/js:25.4.0",
+      image: "ghcr.io/hexlet-codebattle/js:26.12.0",
       solution_template: """
       const _ = require("lodash");
       const R = require("rambda");
@@ -123,12 +123,12 @@ defmodule Runner.Languages do
       generate_checker?: false,
       name: "typescript",
       slug: "ts",
-      version: "5.9.3",
+      version: "6.0.3",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      image: "ghcr.io/hexlet-codebattle/js:25.4.0",
+      image: "ghcr.io/hexlet-codebattle/js:26.12.0",
       solution_template: """
       import * as _ from "lodash";
       import * as R from "rambda";
@@ -174,12 +174,12 @@ defmodule Runner.Languages do
       name: "Dart",
       slug: "dart",
       output_version: 2,
-      version: "3.10.0",
+      version: "3.13.5",
       check_dir: "lib",
       container_run_timeout: "20s",
       solution_file_name: "solution.dart",
       checker_file_name: "checker.dart",
-      image: "ghcr.io/hexlet-codebattle/dart:3.10.0",
+      image: "ghcr.io/hexlet-codebattle/dart:3.13.5",
       solution_template: """
       <%= expected %>solution(<%= arguments %>) {
         <%= expected %>ans = <%= default_value %>;
@@ -266,12 +266,12 @@ defmodule Runner.Languages do
       name: "Java",
       slug: "java",
       output_version: 2,
-      version: "25.0.2",
+      version: "27.0.0",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "Solution.java",
       checker_file_name: "Checker.java",
-      image: "ghcr.io/hexlet-codebattle/java:25.0.2",
+      image: "ghcr.io/hexlet-codebattle/java:27.0.0",
       solution_template: """
       import java.util.*;
       import java.util.stream.*;
@@ -323,13 +323,13 @@ defmodule Runner.Languages do
     "kotlin" => %LanguageMeta{
       name: "Kotlin",
       slug: "kotlin",
-      version: "2.3.0",
+      version: "2.4.21",
       output_version: 2,
       check_dir: "check",
       container_run_timeout: "25s",
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
-      image: "ghcr.io/hexlet-codebattle/kotlin:2.3.0",
+      image: "ghcr.io/hexlet-codebattle/kotlin:2.4.21",
       solution_template: """
       import kotlin.collections.*
 
@@ -379,12 +379,12 @@ defmodule Runner.Languages do
       name: "C#",
       slug: "csharp",
       output_version: 2,
-      version: "10.0.102",
+      version: "10.0.402",
       check_dir: "check",
       container_run_timeout: "25s",
       solution_file_name: "solution.cs",
       checker_file_name: "checker.cs",
-      image: "ghcr.io/hexlet-codebattle/csharp:10.0.102",
+      image: "ghcr.io/hexlet-codebattle/csharp:10.0.402",
       solution_template: """
       using System;
       using System.Collections.Generic;
@@ -438,12 +438,12 @@ defmodule Runner.Languages do
       name: "golang",
       slug: "golang",
       output_version: 2,
-      version: "1.25.6",
+      version: "1.27.2",
       container_run_timeout: "20s",
       check_dir: "check",
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
-      image: "ghcr.io/hexlet-codebattle/golang:1.25.6",
+      image: "ghcr.io/hexlet-codebattle/golang:1.27.2",
       solution_template: """
       // import "fmt"
 
@@ -493,12 +493,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "1.19.5",
+      version: "1.20.4",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
-      image: "ghcr.io/hexlet-codebattle/elixir:1.19.5",
+      image: "ghcr.io/hexlet-codebattle/elixir:1.20.4",
       solution_template: """
       defmodule Solution do
         def solution(<%= arguments %>) do
@@ -529,12 +529,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "3.14.5",
+      version: "3.15.0",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
-      image: "ghcr.io/hexlet-codebattle/python:3.14.5",
+      image: "ghcr.io/hexlet-codebattle/python:3.15.0",
       solution_template: """
       from typing import List, Dict
 
@@ -570,7 +570,7 @@ defmodule Runner.Languages do
     "php" => %LanguageMeta{
       name: "php",
       slug: "php",
-      version: "8.5.2",
+      version: "8.5.11",
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
@@ -578,7 +578,7 @@ defmodule Runner.Languages do
       container_run_timeout: "15s",
       solution_file_name: "solution.php",
       checker_file_name: "checker.php",
-      image: "ghcr.io/hexlet-codebattle/php:8.5.2",
+      image: "ghcr.io/hexlet-codebattle/php:8.5.11",
       solution_template: """
       <?php
 
@@ -620,7 +620,7 @@ defmodule Runner.Languages do
     "clojure" => %LanguageMeta{
       name: "clojure",
       slug: "clojure",
-      version: "1.12.4",
+      version: "1.12.6",
       check_dir: "check",
       checker_version: 2,
       output_version: 2,
@@ -628,7 +628,7 @@ defmodule Runner.Languages do
       container_run_timeout: "15s",
       solution_file_name: "solution.clj",
       checker_file_name: "checker.clj",
-      image: "ghcr.io/hexlet-codebattle/clojure:1.12.4",
+      image: "ghcr.io/hexlet-codebattle/clojure:1.12.6",
       solution_template: """
       (defn solution [<%= arguments %>]
         <%= default_value %>
@@ -703,14 +703,13 @@ defmodule Runner.Languages do
       name: "Zig",
       slug: "zig",
       output_version: 2,
-      # https://github.com/ziglang/zig/wiki/Install-Zig-from-a-Package-Manager
-      # check version here for alpine
-      version: "0.15.2",
+      # installed from the official tarball, see apps/runner/images/zig/Containerfile
+      version: "0.17.0",
       container_run_timeout: "20s",
       solution_file_name: "solution.zig",
       checker_file_name: "checker.zig",
       check_dir: "check",
-      image: "ghcr.io/hexlet-codebattle/zig:0.15.2",
+      image: "ghcr.io/hexlet-codebattle/zig:0.17.0",
       solution_template: """
       const std = @import("std");
 
@@ -767,12 +766,12 @@ defmodule Runner.Languages do
       name: "rust",
       slug: "rust",
       output_version: 2,
-      version: "1.93.0",
+      version: "1.99.0",
       container_run_timeout: "20s",
       solution_file_name: "solution.rs",
       checker_file_name: "checker.rs",
       check_dir: "check",
-      image: "ghcr.io/hexlet-codebattle/rust:1.93.0",
+      image: "ghcr.io/hexlet-codebattle/rust:1.99.0",
       solution_template: """
       use std::collections::HashMap;
 
@@ -817,12 +816,12 @@ defmodule Runner.Languages do
       name: "Swift",
       slug: "swift",
       output_version: 2,
-      version: "6.2.3",
+      version: "6.4.1",
       container_run_timeout: "20s",
       solution_file_name: "solution.swift",
       checker_file_name: "checker.swift",
       check_dir: "check",
-      image: "ghcr.io/hexlet-codebattle/swift:6.2.3",
+      image: "ghcr.io/hexlet-codebattle/swift:6.4.1",
       solution_template: """
       import Foundation
 
@@ -866,26 +865,26 @@ defmodule Runner.Languages do
     "mongodb" => %LanguageMeta{
       name: "MongoDB",
       slug: "mongodb",
-      version: "8.0.15",
+      version: "9.0.4",
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
       container_run_timeout: "20s",
       check_dir: "check",
-      image: "ghcr.io/hexlet-codebattle/mongodb:8.0.15",
+      image: "ghcr.io/hexlet-codebattle/mongodb:9.0.4",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js"
     },
     "mysql" => %LanguageMeta{
       name: "MySQL",
       slug: "mysql",
-      version: "8.4.7",
+      version: "9.7.2",
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
       container_run_timeout: "20s",
       check_dir: "check",
-      image: "ghcr.io/hexlet-codebattle/mysql:8.4.7",
+      image: "ghcr.io/hexlet-codebattle/mysql:9.7.2",
       solution_file_name: "solution.sql",
       checker_file_name: "checker.sql"
     },
