@@ -37,8 +37,9 @@ const continuesRun = (previous: ChatMessage | undefined, message: ChatMessage) =
   (message.time ?? 0) - (previous.time ?? 0) < GROUP_WINDOW_SECONDS;
 
 function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: MessageRowProps) {
-  // Messages carry no language; show the author's while they're online.
-  const lang = usePresenceStore((state) => state.users.find(({ id }) => id === message.user_id)?.lang);
+  // The author's current language while they're online, else the one the message was sent with.
+  const onlineLang = usePresenceStore((state) => state.users.find(({ id }) => id === message.user_id)?.lang);
+  const lang = onlineLang ?? message.lang;
   const { t } = useTranslation();
   const isText = message.type === 'text' && message.user_id != null;
   const privateTo =

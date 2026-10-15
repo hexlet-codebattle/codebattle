@@ -210,10 +210,12 @@ defmodule Codebattle.SeasonResult do
           SELECT
             $1::bigint AS season_id,
             qr.user_id,
-            MAX(qr.user_name) AS user_name,
-            MAX(qr.user_lang) AS user_lang,
-            MAX(qr.clan_id) AS clan_id,
-            MAX(c.name) AS clan_name,
+            -- Name, language and clan come from the user's latest tournament of the season.
+            (ARRAY_AGG(qr.user_name ORDER BY qr.started_at DESC, qr.tournament_id DESC))[1] AS user_name,
+            (ARRAY_AGG(qr.user_lang ORDER BY qr.started_at DESC, qr.tournament_id DESC)
+              FILTER (WHERE qr.user_lang IS NOT NULL))[1] AS user_lang,
+            (ARRAY_AGG(qr.clan_id ORDER BY qr.started_at DESC, qr.tournament_id DESC))[1] AS clan_id,
+            (ARRAY_AGG(c.name ORDER BY qr.started_at DESC, qr.tournament_id DESC))[1] AS clan_name,
             SUM(qr.points)::integer AS total_points,
             SUM(qr.score)::integer AS total_score,
             COUNT(DISTINCT qr.tournament_id)::integer AS tournaments_count,

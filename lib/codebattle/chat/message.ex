@@ -16,6 +16,7 @@ defmodule Codebattle.Chat.Message do
     field(:type, type(), default: :text)
     field(:user_id, integer())
     field(:name, String.t())
+    field(:lang, String.t())
     field(:text, String.t())
     field(:time, timestamp())
     field(:meta, meta_type())

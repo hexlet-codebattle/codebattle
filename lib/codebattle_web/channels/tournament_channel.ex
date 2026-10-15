@@ -239,11 +239,8 @@ defmodule CodebattleWeb.TournamentChannel do
         %{"type" => "task_duration_distribution", "task_id" => task_id} ->
           with_task_id(task_id, &TournamentResult.get_task_duration_distribution(tournament, &1))
 
-        %{"type" => "clans_bubble_distribution"} ->
-          TournamentResult.get_clans_bubble_distribution(
-            tournament,
-            int_param(params, "max_radius", 7, 1..50)
-          )
+        %{"type" => type} when type in ["clans_bubble_distribution", "langs_distribution"] ->
+          get_distribution(tournament, params)
 
         %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
           with_task_id(
@@ -413,6 +410,14 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   # Client-supplied numbers feed raw SQL; only accept bounded integers.
+  defp get_distribution(tournament, %{"type" => "clans_bubble_distribution"} = params) do
+    TournamentResult.get_clans_bubble_distribution(tournament, int_param(params, "max_radius", 7, 1..50))
+  end
+
+  defp get_distribution(tournament, %{"type" => "langs_distribution"}) do
+    TournamentResult.get_langs_distribution(tournament)
+  end
+
   defp int_param(params, key, default, lo..hi//_) do
     case to_int(Map.get(params, key)) do
       nil -> default

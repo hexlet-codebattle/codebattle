@@ -40,9 +40,16 @@ function Rematch({ game, api, me }: { game: Game; api: GameApi; me: number }) {
   if (game.rematch_state === 'in_approval') {
     if (game.rematch_initiator_id === me) {
       return (
-        <Text size="xs" c="dimmed">
-          {t('Rematch offered, waiting…')}
-        </Text>
+        <Group gap={6} wrap="nowrap">
+          <Text size="xs" c="dimmed">
+            {t('Rematch offered, waiting…')}
+          </Text>
+          <Tooltip label={t('Cancel rematch')}>
+            <ActionIcon size="sm" variant="subtle" color="gray" onClick={api.cancelRematch} aria-label={t('Cancel rematch')}>
+              <IconX size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
       );
     }
     return (

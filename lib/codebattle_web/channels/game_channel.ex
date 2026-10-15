@@ -339,6 +339,12 @@ defmodule CodebattleWeb.GameChannel do
     |> handle_rematch_result(socket)
   end
 
+  def handle_in("rematch:cancel_offer", _, socket) do
+    socket.assigns.game_id
+    |> Context.rematch_cancel(socket.assigns.current_user)
+    |> handle_rematch_result(socket)
+  end
+
   def handle_in("rematch:accept_offer", _, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user

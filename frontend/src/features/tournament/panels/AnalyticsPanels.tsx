@@ -309,6 +309,85 @@ export function ClansBubblePanel({ tournament, api }: { tournament: Tournament; 
   );
 }
 
+// --- Languages -----------------------------------------------------------------------------
+
+interface LangRow {
+  lang: string;
+  player_count: number;
+  total_score: number;
+  performance: number;
+  wins_count: number;
+}
+
+/** Players per language, by the language of their latest game (get_results "langs_distribution"). */
+export function LangsPanel({ tournament, api }: { tournament: Tournament; api: TournamentApi }) {
+  const { t } = useTranslation();
+  const { rows, failed, waiting } = usePanelResults<LangRow>(api, tournament.state, { type: 'langs_distribution' });
+
+  if (waiting) return <PanelMessage>{waitingText(t)}</PanelMessage>;
+  if (failed) return <PanelMessage>{t("Couldn't load the results.")}</PanelMessage>;
+  if (!rows) return <PanelMessage loading />;
+  if (rows.length === 0) return <PanelMessage>{t('No results yet')}</PanelMessage>;
+
+  const maxPlayers = Math.max(...rows.map((row) => row.player_count), 1);
+  const totalPlayers = rows.reduce((sum, row) => sum + row.player_count, 0);
+
+  return (
+    <ScrollArea type="auto">
+      <Table miw={520} verticalSpacing={6} aria-label={t('Languages')}>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>{t('Language')}</Table.Th>
+            <Table.Th w="40%">{t('Players')}</Table.Th>
+            <Table.Th ta="right">{t('Wins')}</Table.Th>
+            <Table.Th ta="right">{t('Score per player')}</Table.Th>
+            <Table.Th ta="right">{t('Total score')}</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {rows.map((row) => (
+            <Table.Tr key={row.lang}>
+              <Table.Td>
+                <Group gap={6} wrap="nowrap">
+                  <LangIcon lang={row.lang} withTooltip={false} />
+                  <Text span size="sm" fw={600} c="bright">
+                    {row.lang}
+                  </Text>
+                </Group>
+              </Table.Td>
+              <Table.Td>
+                <Tooltip
+                  label={t('%{count} players · %{share}%', {
+                    count: row.player_count,
+                    share: Math.round((100 * row.player_count) / totalPlayers),
+                  })}
+                  openDelay={150}
+                >
+                  <div className={classes.langBarRow}>
+                    <div className={classes.langBar} style={{ width: `${(100 * row.player_count) / maxPlayers}%` }} />
+                    <Text span size="xs" ff="monospace">
+                      {num(row.player_count)}
+                    </Text>
+                  </div>
+                </Tooltip>
+              </Table.Td>
+              <Table.Td ta="right" ff="monospace">
+                {num(row.wins_count)}
+              </Table.Td>
+              <Table.Td ta="right" ff="monospace">
+                {num(row.performance)}
+              </Table.Td>
+              <Table.Td ta="right" ff="monospace">
+                {num(row.total_score)}
+              </Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+    </ScrollArea>
+  );
+}
+
 // --- Task drill-down -----------------------------------------------------------------------
 
 interface TaskInfo {

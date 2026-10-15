@@ -125,6 +125,8 @@ defmodule Codebattle.SeasonResultTest do
       assert second.avatar_url == user2.avatar_url
       assert second.total_points == 24
       assert second.total_score == 350
+      # The latest tournament's language (py, March), not the alphabetical max (rb).
+      assert second.user_lang == "py"
 
       assert [leader] = SeasonResult.get_leaderboard(season.id, 1)
       assert leader.user_id == user1.id

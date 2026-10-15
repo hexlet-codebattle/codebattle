@@ -1016,6 +1016,42 @@ defmodule Codebattle.Tournament.TournamenResultTest do
              ] = TournamentResult.get_top_user_by_task_ranking(tournament, task.id)
     end
 
+    test "get_langs_distribution counts each player once, by the language of their latest game" do
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user")
+
+      row = fn id, user_id, lang, score, percent ->
+        %{
+          id: id,
+          tournament_id: tournament.id,
+          user_id: user_id,
+          user_name: "u#{user_id}",
+          user_lang: lang,
+          score: score,
+          duration_sec: 10,
+          round_position: 1,
+          game_id: id,
+          task_id: 1,
+          level: "easy",
+          result_percent: Decimal.new(percent),
+          clan_id: nil,
+          was_cheated: false
+        }
+      end
+
+      Repo.insert_all(TournamentResult, [
+        # u1 switched from python to dlang: counted as dlang, with both games' score.
+        row.(9_000_001, 1, "python", 10, "100"),
+        row.(9_000_002, 1, "dlang", 20, "100"),
+        row.(9_000_003, 2, "dlang", 4, "50"),
+        row.(9_000_004, 3, "python", 30, "100")
+      ])
+
+      assert [
+               %{lang: "dlang", player_count: 2, total_score: 34, performance: 17, wins_count: 2},
+               %{lang: "python", player_count: 1, total_score: 30, performance: 30, wins_count: 1}
+             ] = TournamentResult.get_langs_distribution(tournament)
+    end
+
     test "get_tasks_ranking sorts tasks by round position" do
       tournament = insert(:tournament, type: "swiss", ranking_type: "by_user")
       task_round_1 = insert(:task, level: "easy", name: "round-1")

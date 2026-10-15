@@ -8,6 +8,7 @@ export const PanelMode = {
   topUsersByClan: 'top_users_by_clan_ranking',
   tasksRanking: 'tasks_ranking',
   clansBubble: 'clans_bubble_distribution',
+  langs: 'langs_distribution',
   taskAdvanced: 'task_rating_advanced',
   about: 'about',
 } as const;
@@ -24,12 +25,13 @@ export const PANEL_TITLES: Record<PanelModeId, string> = {
   top_users_by_clan_ranking: 'Top users by clan ranking',
   tasks_ranking: 'Tasks ranking',
   clans_bubble_distribution: 'Clans bubble distribution',
+  langs_distribution: 'Languages',
   task_rating_advanced: 'Duration distribution and top users by task',
   about: 'About',
 };
 
 const BASE: PanelModeId[] = [PanelMode.player, PanelMode.leaderboard];
-const FINISHED: PanelModeId[] = [...BASE, PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble];
+const FINISHED: PanelModeId[] = [...BASE, PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble, PanelMode.langs];
 const ALL: PanelModeId[] = [
   PanelMode.player,
   PanelMode.rating,
@@ -37,6 +39,7 @@ const ALL: PanelModeId[] = [
   PanelMode.topUsersByClan,
   PanelMode.tasksRanking,
   PanelMode.clansBubble,
+  PanelMode.langs,
   PanelMode.reports,
   PanelMode.cheaters,
 ];
@@ -46,7 +49,7 @@ const ALL: PanelModeId[] = [
  * others get the player panel and leaderboard, plus the analytics once finished.
  * About (the description) is always last.
  */
-const NEEDS_GAMES: PanelModeId[] = [PanelMode.rating, PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble];
+const NEEDS_GAMES: PanelModeId[] = [PanelMode.rating, PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble, PanelMode.langs];
 
 export function allowedPanels({
   moderator,
@@ -80,8 +83,13 @@ export const PANEL_GROUPS: { id: string; title: string; modes: PanelModeId[]; su
   {
     id: 'stats',
     title: 'Statistics',
-    modes: [PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble, PanelMode.taskAdvanced],
-    sub: { top_users_by_clan_ranking: 'Top clans', tasks_ranking: 'Tasks', clans_bubble_distribution: 'Clans chart' },
+    modes: [PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble, PanelMode.langs, PanelMode.taskAdvanced],
+    sub: {
+      top_users_by_clan_ranking: 'Top clans',
+      tasks_ranking: 'Tasks',
+      clans_bubble_distribution: 'Clans chart',
+      langs_distribution: 'Languages',
+    },
   },
   {
     id: 'moderation',

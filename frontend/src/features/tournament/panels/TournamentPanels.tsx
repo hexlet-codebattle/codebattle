@@ -12,7 +12,7 @@ import { useTournamentStore } from '../store';
 import type { Tournament } from '../types';
 import type { TournamentApi } from '../useTournament';
 
-import { ClanRankingPanel, ClansBubblePanel, TaskAdvancedPanel, TasksRankingPanel } from './AnalyticsPanels';
+import { ClanRankingPanel, ClansBubblePanel, LangsPanel, TaskAdvancedPanel, TasksRankingPanel } from './AnalyticsPanels';
 import { PanelMessage } from './common';
 import { CheatersPanel, ReportsPanel } from './ModerationPanels';
 import { allowedPanels, groupOf, PANEL_GROUPS, PANEL_TITLES, PanelMode, type PanelModeId } from './modes';
@@ -93,6 +93,8 @@ export function TournamentPanels({ tournament, api }: { tournament: Tournament; 
         );
       case PanelMode.clansBubble:
         return <ClansBubblePanel tournament={tournament} api={api} />;
+      case PanelMode.langs:
+        return <LangsPanel tournament={tournament} api={api} />;
       case PanelMode.taskAdvanced:
         return (
           <TaskAdvancedPanel

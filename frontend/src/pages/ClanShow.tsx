@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { Button, Card, Center, Grid, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from '@mantine/core';
-import { IconArrowLeft, IconPencil } from '@tabler/icons-react';
+import { IconArrowLeft, IconPencil, IconTrash } from '@tabler/icons-react';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,7 @@ import { UserCard } from '@/features/users/UserCard';
 import { getLocale } from '@/i18n';
 import { AppLayout } from '@/layout/AppLayout';
 import { LangIcon } from '@/shared/LangIcon';
+import { MethodButton } from '@/shared/MethodButton';
 import { PageHeader } from '@/shared/PageHeader';
 import { UserAvatar } from '@/shared/UserAvatar';
 import { useSharedProps } from '@/shared/useSharedProps';
@@ -29,7 +30,12 @@ function Fact({ label, value }: { label: string; value: ReactNode }) {
 
 export default function ClanShow() {
   const { t } = useTranslation();
-  const { clan, members, can_edit: canEdit } = useSharedProps<{ clan: Clan; members: ClanMember[]; can_edit?: boolean }>();
+  const {
+    clan,
+    members,
+    can_edit: canEdit,
+    can_delete: canDelete,
+  } = useSharedProps<{ clan: Clan; members: ClanMember[]; can_edit?: boolean; can_delete?: boolean }>();
   const [editing, setEditing] = useState(false);
   const dateFormat = useMemo(() => new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium' }), []);
   // Strongest first: Elo, then name.
@@ -54,6 +60,19 @@ export default function ClanShow() {
               <Button variant="default" size="compact-sm" leftSection={<IconPencil size={14} />} onClick={() => setEditing(true)}>
                 {t('Edit clan')}
               </Button>
+            )}
+            {canDelete && (
+              <MethodButton
+                action={`/clans/${clan.id}`}
+                method="delete"
+                variant="subtle"
+                color="red"
+                size="compact-sm"
+                leftSection={<IconTrash size={14} />}
+                confirm={t('Delete this clan?')}
+              >
+                {t('Delete')}
+              </MethodButton>
             )}
           </>
         }

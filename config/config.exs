@@ -36,7 +36,13 @@ config :codebattle, Oban,
   # `bot_detection` is intentionally low-concurrency: the analysis is CPU-bound
   # (telemetry aggregation + code parsing) and runs after every finished game,
   # so we cap parallelism to keep the box responsive under bursts.
-  queues: [default: 40, bot_detection: 2]
+  queues: [default: 40, bot_detection: 2],
+  # Keep a day of finished jobs for the /admin/oban dashboard, then delete them.
+  pruner: [max_age: {1, :day}],
+  # Re-queue jobs left `executing` by a node that died or was stopped mid-job
+  # (e.g. a deploy outlasting the shutdown grace period). Must exceed the
+  # longest legitimate job (runner calls are capped at 180s).
+  lifeline: [rescue_after: {30, :minutes}]
 
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"

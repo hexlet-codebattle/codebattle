@@ -106,8 +106,10 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           user_id: tr.user_id,
           clan_id: tr.clan_id,
           clan_name: c.name,
-          user_name: max(tr.user_name),
-          user_lang: max(tr.user_lang),
+          # The latest game's name and language, not the alphabetical max (python beat dlang).
+          user_name: fragment("(ARRAY_AGG(? ORDER BY ? DESC))[1]", tr.user_name, tr.id),
+          user_lang:
+            fragment("(ARRAY_AGG(? ORDER BY ? DESC) FILTER (WHERE ? IS NOT NULL))[1]", tr.user_lang, tr.id, tr.user_lang),
           score: sum(tr.score),
           games_count: count(tr.id),
           wins_count:

@@ -33,6 +33,7 @@ defmodule CodebattleWeb.ChatChannel do
     Chat.add_message(chat_type, %{
       user_id: user.id,
       name: user.name,
+      lang: user.lang,
       type: :text,
       text: text,
       meta: payload["meta"]

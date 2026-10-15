@@ -17,6 +17,7 @@ defmodule Codebattle.Game.Fsm do
           | :give_up
           | :rematch_reject
           | :rematch_send_offer
+          | :rematch_cancel
 
   @spec transition(event, Game.t(), map()) :: {:ok, Game.t()} | {:error, String.t()}
   def transition(:join, %{state: "waiting_opponent"} = game, params) do
@@ -108,6 +109,18 @@ defmodule Codebattle.Game.Fsm do
     new_rematch_data = handle_rematch_offer(game, params)
     {:ok, Map.merge(game, new_rematch_data)}
   end
+
+  # The initiator takes a pending offer back; it can be made again later.
+  def transition(:rematch_cancel, %{state: s, rematch_state: "in_approval"} = game, %{player_id: player_id})
+      when s in ["game_over", "timeout"] do
+    if game.rematch_initiator_id == player_id do
+      {:ok, %{game | rematch_state: "none", rematch_initiator_id: nil}}
+    else
+      {:ok, game}
+    end
+  end
+
+  def transition(:rematch_cancel, %{state: s} = game, _params) when s in ["game_over", "timeout"], do: {:ok, game}
 
   def transition(:unlock_game, game, _params) do
     {:ok, Map.put(game, :locked, false)}

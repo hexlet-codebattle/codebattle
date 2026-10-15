@@ -5,6 +5,8 @@ export interface ChatMessage {
   type: string;
   user_id: number | null;
   name: string | null;
+  /** The author's language when the message was sent. */
+  lang?: string | null;
   text: string;
   /** Unix seconds. */
   time: number | null;

@@ -2,7 +2,6 @@ defmodule CodebattleWeb.ClanController do
   use CodebattleWeb, :controller
 
   alias Codebattle.Clan
-  alias Codebattle.User
   alias CodebattleWeb.Frontend
   alias CodebattleWeb.Frontend.Present
 
@@ -48,7 +47,8 @@ defmodule CodebattleWeb.ClanController do
     |> render_inertia("ClanShow", %{
       "clan" => Present.clan(clan),
       "members" => Enum.map(clan.users, &Present.clan_member/1),
-      "can_edit" => Clan.can_edit?(clan, conn.assigns.current_user)
+      "can_edit" => Clan.can_edit?(clan, conn.assigns.current_user),
+      "can_delete" => Clan.can_delete?(clan, conn.assigns.current_user)
     })
   end
 
@@ -89,9 +89,10 @@ defmodule CodebattleWeb.ClanController do
   end
 
   def delete(conn, %{"id" => id}) do
-    if User.admin?(conn.assigns.current_user) do
-      id
-      |> Clan.get!()
+    clan = Clan.get!(id)
+
+    if Clan.can_delete?(clan, conn.assigns.current_user) do
+      clan
       |> Clan.delete()
       |> case do
         {:ok, _clan} ->
@@ -106,7 +107,7 @@ defmodule CodebattleWeb.ClanController do
       end
     else
       conn
-      |> put_flash(:danger, "You must be admin to delete clans")
+      |> put_flash(:danger, gettext("Only an admin, or the creator of a clan with no players, can delete it"))
       |> redirect(to: Routes.clan_path(conn, :index))
     end
   end

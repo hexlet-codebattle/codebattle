@@ -1,5 +1,5 @@
-import { Alert, Loader, Text, Tooltip, UnstyledButton } from '@mantine/core';
-import { IconAlertTriangleFilled, IconCircleCheckFilled, IconCircleXFilled } from '@tabler/icons-react';
+import { Alert, Group, Loader, Text, Tooltip, UnstyledButton } from '@mantine/core';
+import { IconAlertTriangleFilled, IconChevronDown, IconChevronRight, IconCircleCheckFilled, IconCircleXFilled } from '@tabler/icons-react';
 import { forwardRef, type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -202,29 +202,50 @@ export function OutputPanel({ output, checking, summaryOnly = false, leftExtra =
   );
 }
 
-/** Every failed test (plus a passed one when picked), the picked one scrolled into view. */
+/**
+ * Every failed test (plus a passed one when picked), the picked one scrolled into view; the
+ * other passed tests fold under a toggle (an always-false solution can pass half of them).
+ */
 function TestList({ asserts, selected }: { asserts: AssertResult[]; selected: number }) {
+  const { t } = useTranslation();
   const cards = useRef(new Map<number, HTMLDivElement>());
+  const [passedOpen, setPassedOpen] = useState(false);
   const shown = asserts.flatMap((assert, index) => (assert.status !== 'success' || index === selected ? [index] : []));
+  const folded = asserts.flatMap((assert, index) => (assert.status === 'success' && index !== selected ? [index] : []));
 
   useEffect(() => {
     cards.current.get(selected)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }, [selected]);
 
+  const card = (index: number) => (
+    <TestDetail
+      key={index}
+      ref={(node) => {
+        if (node) cards.current.set(index, node);
+        else cards.current.delete(index);
+      }}
+      assert={asserts[index]}
+      index={index}
+      active={index === selected}
+    />
+  );
+
   return (
     <div className={classes.testList}>
-      {shown.map((index) => (
-        <TestDetail
-          key={index}
-          ref={(node) => {
-            if (node) cards.current.set(index, node);
-            else cards.current.delete(index);
-          }}
-          assert={asserts[index]}
-          index={index}
-          active={index === selected}
-        />
-      ))}
+      {shown.map(card)}
+      {folded.length > 0 && (
+        <>
+          <UnstyledButton onClick={() => setPassedOpen((open) => !open)} aria-expanded={passedOpen}>
+            <Group gap={4} wrap="nowrap">
+              {passedOpen ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+              <Text span size="xs" fw={600} c="dimmed">
+                {t('Passed tests (%{count})', { count: folded.length })}
+              </Text>
+            </Group>
+          </UnstyledButton>
+          {passedOpen && folded.map(card)}
+        </>
+      )}
     </div>
   );
 }

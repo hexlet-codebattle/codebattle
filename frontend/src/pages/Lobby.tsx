@@ -124,7 +124,10 @@ export default function Lobby() {
             <ProfileCard
               activeGame={activeGame}
               online={online}
-              gamesCount={visibleGames.length}
+              gamesCount={
+                // The lobby always holds a few bot games waiting for a player; count only the rest.
+                visibleGames.filter((game) => !(game.is_bot && game.state === 'waiting_opponent')).length
+              }
               onCreate={createModal.open}
               onJoin={joinModal.open}
             />

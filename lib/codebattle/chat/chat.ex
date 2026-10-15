@@ -17,6 +17,7 @@ defmodule Codebattle.Chat do
           required(:text) => String.t(),
           optional(:user_id) => user_id(),
           optional(:name) => String.t(),
+          optional(:lang) => String.t() | nil,
           optional(:meta) => Chat.Message.meta_type()
         }
 
@@ -51,6 +52,7 @@ defmodule Codebattle.Chat do
       type: Map.get(params, :type),
       user_id: Map.get(params, :user_id),
       name: Map.get(params, :name),
+      lang: Map.get(params, :lang),
       text: Map.get(params, :text),
       time: now(),
       meta: Map.get(params, :meta)

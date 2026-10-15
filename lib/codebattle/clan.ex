@@ -79,21 +79,9 @@ defmodule Codebattle.Clan do
 
   @spec find_or_create_by_clan(String.t(), pos_integer()) :: {:ok, t()} | {:error, term()}
   def find_or_create_by_clan(name, user_id) do
-    name = String.replace(name, ~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")
-    trimmed_name = String.trim(name)
+    name = name |> String.replace(~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "") |> String.trim()
 
-    {name, trimmed_name}
-    |> then(fn {name, trimmed_name} ->
-      __MODULE__
-      |> where(
-        [c],
-        c.name == ^name or c.long_name == ^name or c.name == ^trimmed_name or
-          c.long_name == ^trimmed_name
-      )
-      |> limit(1)
-      |> Repo.one()
-    end)
-    |> case do
+    case find_similar(name) do
       nil ->
         %__MODULE__{}
         |> changeset(%{name: name, long_name: name, creator_id: user_id})
@@ -108,7 +96,44 @@ defmodule Codebattle.Clan do
   def create(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
+    |> validate_name_not_taken()
     |> Repo.insert()
+  end
+
+  # "МГУ им. Ломоносова" and "мгу им.Ломоносова" are the same clan: names are compared
+  # without case and whitespace, by name or long name.
+  @spec find_similar(String.t(), pos_integer() | nil) :: t() | nil
+  def find_similar(name, except_id \\ nil) do
+    case similarity_key(name) do
+      "" ->
+        nil
+
+      key ->
+        __MODULE__
+        |> where(
+          [c],
+          fragment("lower(regexp_replace(?, '\\s+', '', 'g'))", c.name) == ^key or
+            fragment("lower(regexp_replace(?, '\\s+', '', 'g'))", c.long_name) == ^key
+        )
+        |> except_clan(except_id)
+        |> order_by([c], asc: c.id)
+        |> limit(1)
+        |> Repo.one()
+    end
+  end
+
+  defp except_clan(query, nil), do: query
+  defp except_clan(query, id), do: where(query, [c], c.id != ^id)
+
+  defp similarity_key(name), do: name |> String.downcase() |> String.replace(~r/\s+/u, "")
+
+  defp validate_name_not_taken(changeset) do
+    with name when is_binary(name) <- get_change(changeset, :name),
+         %__MODULE__{} <- find_similar(name, changeset.data.id) do
+      add_error(changeset, :name, "has already been taken")
+    else
+      _ -> changeset
+    end
   end
 
   @spec update(t(), map()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
@@ -130,7 +155,7 @@ defmodule Codebattle.Clan do
   """
   @spec rename(t(), map()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
   def rename(clan, attrs) do
-    changeset = changeset(clan, Map.take(attrs, ["name", "long_name"]))
+    changeset = clan |> changeset(Map.take(attrs, ["name", "long_name"])) |> validate_name_not_taken()
 
     Repo.transaction(fn ->
       case Repo.update(changeset) do
@@ -160,6 +185,14 @@ defmodule Codebattle.Clan do
     Repo.update_all(users_query, set: [clan: clan.name, clan_id: clan.id])
     clan
   end
+
+  @doc "Admins may delete any clan; its creator only once nobody is left in it."
+  @spec can_delete?(t(), User.t()) :: boolean()
+  def can_delete?(%__MODULE__{} = clan, %User{} = user) do
+    User.admin?(user) or (clan.creator_id == user.id and members_count(clan.id) == 0)
+  end
+
+  defp members_count(clan_id), do: Repo.aggregate(from(u in User, where: u.clan_id == ^clan_id), :count)
 
   @spec delete(t()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
   def delete(clan), do: Repo.delete(clan)

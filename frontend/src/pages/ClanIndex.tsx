@@ -44,7 +44,9 @@ export default function ClanIndex() {
   // undefined: closed, null: creating, a clan: editing it.
   const [formClan, setFormClan] = useState<Clan | null | undefined>(undefined);
   const canEdit = (clan: Clan) => Boolean(me.is_admin) || clan.creator?.id === me.id;
-  const anyEditable = clans.some(canEdit);
+  // The creator can drop a clan once nobody is left in it; admins any clan.
+  const canDelete = (clan: Clan) => Boolean(me.is_admin) || (clan.creator?.id === me.id && !clan.users_count);
+  const anyEditable = clans.some((clan) => canEdit(clan) || canDelete(clan));
   const dateFormat = useMemo(() => new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium' }), []);
 
   const filtered = useMemo(() => {
@@ -91,7 +93,7 @@ export default function ClanIndex() {
                 <Table.Th>
                   <SortHeader field="created_at" label={t('Created at')} sort={sort} order={order} />
                 </Table.Th>
-                {(me.is_admin || anyEditable) && <Table.Th />}
+                {anyEditable && <Table.Th />}
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -128,7 +130,7 @@ export default function ClanIndex() {
                       {dateFormat.format(new Date(utc(clan.inserted_at)))}
                     </Text>
                   </Table.Td>
-                  {(me.is_admin || anyEditable) && (
+                  {anyEditable && (
                     <Table.Td ta="right">
                       <Group gap={4} justify="flex-end" wrap="nowrap">
                         {canEdit(clan) && (
@@ -138,7 +140,7 @@ export default function ClanIndex() {
                             </ActionIcon>
                           </Tooltip>
                         )}
-                        {me.is_admin && (
+                        {canDelete(clan) && (
                           <MethodButton
                             action={`/clans/${clan.id}`}
                             method="delete"

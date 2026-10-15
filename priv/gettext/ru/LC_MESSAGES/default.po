@@ -6227,3 +6227,15 @@ msgstr "Игру отменили до того, как кто-то присое
 
 msgid "%{name} canceled the game before anyone joined."
 msgstr "%{name} отменил(а) игру до того, как кто-то присоединился."
+
+msgid "Cancel rematch"
+msgstr "Отменить реванш"
+
+msgid "Passed tests (%{count})"
+msgstr "Пройденные тесты (%{count})"
+
+msgid "%{count} players · %{share}%"
+msgstr "Игроков: %{count} · %{share}%"
+
+msgid "Only an admin, or the creator of a clan with no players, can delete it"
+msgstr "Удалить клан может админ или его создатель, если в клане нет игроков"

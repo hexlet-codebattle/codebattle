@@ -83,13 +83,18 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
   };
 
 
+  // Whether I edited my code on this page (see onJoin).
+  const typedHere = useRef(false);
+
   const { status, push, cast } = useChannel(`game:${gameId}`, {
     onJoin: (reply: JoinReply) => {
       // The server answers {error} for a game it can't find; hosts show a message.
       store().set({ joinError: reply.error ?? null });
       if (!reply.game) return;
       // A rejoin (reconnect) brings the server's copy of my code, which lags behind my typing.
-      const mine = store().game?.id === reply.game.id ? store().editors[me.id] : undefined;
+      // Without typing here the local copy is only the page props, which are stale when the
+      // page comes back from history (Back after the game): then the server's copy wins.
+      const mine = typedHere.current && store().game?.id === reply.game.id ? store().editors[me.id] : undefined;
       store().load(reply.game);
       if (mine) store().setEditor(me.id, mine);
       if (reply.tournament) {
@@ -220,6 +225,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
     (text: string) => {
       const lang = store().editors[me.id]?.lang ?? 'js';
       store().setEditor(me.id, { text });
+      typedHere.current = true;
       pending.current = { text, lang };
       if (timer.current == null) timer.current = window.setTimeout(flush, EDITOR_SYNC_MS);
     },
@@ -230,6 +236,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
   const changeLang = useCallback(
     (lang: string, text: string) => {
       store().setEditor(me.id, { lang, text });
+      typedHere.current = true;
       pending.current = null;
       cast('editor:lang', { lang_slug: lang });
       cast('editor:data', { editor_text: text, lang_slug: lang });
@@ -255,12 +262,19 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
     });
   }, [embedded, flush, me.id, push, store]);
 
-  useEffect(
-    () => () => {
-      if (timer.current != null) window.clearTimeout(timer.current);
-    },
-    [],
-  );
+  // Leaving the page (the lobby, the next game) sends my last keystrokes instead of dropping them.
+  useEffect(() => {
+    const flushNow = () => {
+      if (timer.current == null) return;
+      window.clearTimeout(timer.current);
+      flush();
+    };
+    window.addEventListener('pagehide', flushNow);
+    return () => {
+      window.removeEventListener('pagehide', flushNow);
+      flushNow();
+    };
+  }, [flush]);
 
   /** One telemetry window for bot detection (Game.EditorEventBatch). */
   const sendEditorSummary = useCallback(
@@ -304,6 +318,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       sendRematch: () => push('rematch:send_offer').catch(rematchFailed),
       acceptRematch: () => push('rematch:accept_offer').catch(rematchFailed),
       rejectRematch: () => push('rematch:reject_offer').catch(rematchFailed),
+      cancelRematch: () => push('rematch:cancel_offer').catch(rematchFailed),
       /** Resolves true when the pass code unlocks the game. */
       enterPassCode: (passCode: string) =>
         push<{ result: boolean }>('enter_pass_code', { pass_code: passCode })

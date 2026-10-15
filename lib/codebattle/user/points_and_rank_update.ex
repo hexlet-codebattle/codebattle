@@ -65,7 +65,9 @@ defmodule Codebattle.User.PointsAndRankUpdate do
         points = ur.season_points,
         rank = ur.new_rank
       FROM user_rankings ur
-      WHERE users.id = ur.user_id;
+      WHERE users.id = ur.user_id
+        -- Rewriting (and locking) every user when only a few moved blocks rating updates and bloats the table.
+        AND (users.points IS DISTINCT FROM ur.season_points OR users.rank IS DISTINCT FROM ur.new_rank);
     """
 
     SQL.query!(Repo, sql, [season_id])
@@ -126,7 +128,9 @@ defmodule Codebattle.User.PointsAndRankUpdate do
         points = ur.season_points,
         rank = ur.new_rank
       FROM user_rankings ur
-      WHERE users.id = ur.user_id;
+      WHERE users.id = ur.user_id
+        -- Rewriting (and locking) every user when only a few moved blocks rating updates and bloats the table.
+        AND (users.points IS DISTINCT FROM ur.season_points OR users.rank IS DISTINCT FROM ur.new_rank);
     """
 
     SQL.query!(Repo, sql)

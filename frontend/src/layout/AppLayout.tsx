@@ -16,7 +16,7 @@ import {
   IconUser,
   IconUsersGroup,
 } from '@tabler/icons-react';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
@@ -252,7 +252,11 @@ interface AppLayoutProps {
 
 /** App-wide "invite to a battle" dialog (opened from hover cards, chat, ?opponent_id=). */
 function InviteDialog() {
-  const { opened, opponent, close } = useInviteDialog();
+  const { opened, opponent, close, setMounted } = useInviteDialog();
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, [setMounted]);
   return <CreateGameModal opened={opened} onClose={close} initialOpponent={opponent} />;
 }
 

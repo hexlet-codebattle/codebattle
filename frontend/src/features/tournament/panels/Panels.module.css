@@ -124,6 +124,26 @@
   }
 }
 
+/* Languages: players per language as a bar with the count after it. */
+.langBarRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+
+  &:hover .langBar {
+    background: var(--mantine-color-blue-5);
+  }
+}
+
+.langBar {
+  height: 10px;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+  background: color-mix(in srgb, var(--mantine-color-blue-4) 70%, transparent);
+  transition: background 120ms ease;
+}
+
 /* Panel tabs: a single scrolling row. */
 .tabsRow.tabsRow {
   flex-wrap: nowrap;

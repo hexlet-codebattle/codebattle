@@ -897,6 +897,39 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> map_repo_result()
   end
 
+  # Players per language (each counted once, by the language of their latest game) and how they scored.
+  def get_langs_distribution(tournament) do
+    """
+    WITH user_langs AS (
+      SELECT DISTINCT ON (user_id) user_id, user_lang
+      FROM tournament_results
+      WHERE tournament_id = $1 AND user_lang IS NOT NULL
+      ORDER BY user_id, id DESC
+    ),
+    user_scores AS (
+      SELECT
+        user_id,
+        SUM(score) AS score,
+        COUNT(*) FILTER (WHERE result_percent = 100.0) AS wins
+      FROM tournament_results
+      WHERE tournament_id = $1
+      GROUP BY user_id
+    )
+    SELECT
+      ul.user_lang AS lang,
+      COUNT(*)::int AS player_count,
+      COALESCE(SUM(us.score), 0)::int AS total_score,
+      COALESCE(ROUND(AVG(us.score)), 0)::int AS performance,
+      COALESCE(SUM(us.wins), 0)::int AS wins_count
+    FROM user_langs ul
+    INNER JOIN user_scores us ON us.user_id = ul.user_id
+    GROUP BY ul.user_lang
+    ORDER BY player_count DESC, total_score DESC, lang
+    """
+    |> Repo.query!([tournament.id])
+    |> map_repo_result()
+  end
+
   def get_top_user_by_task_ranking(tournament, task_id, limit \\ 30) do
     query =
       from(r in __MODULE__,

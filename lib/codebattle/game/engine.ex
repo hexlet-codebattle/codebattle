@@ -416,6 +416,13 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
+  def rematch_cancel(game, user) do
+    case fire_transition(game.id, :rematch_cancel, %{player_id: user.id}) do
+      {:ok, {_old_game_state, new_game}} -> {:rematch_status_updated, new_game}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   def rematch_reject(game) do
     case fire_transition(game.id, :rematch_reject) do
       {:ok, {_old_game_state, new_game}} -> {:rematch_status_updated, new_game}

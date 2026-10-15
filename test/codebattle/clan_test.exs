@@ -41,4 +41,33 @@ defmodule Codebattle.ClanTest do
     assert {:ok, deleted} = Clan.delete(created)
     assert deleted.id == created.id
   end
+
+  test "treats names differing only in case and spaces as the same clan" do
+    creator = insert(:user)
+    assert {:ok, clan} = Clan.create(%{name: "МГУ им. Ломоносова", creator_id: creator.id})
+
+    assert {:ok, found} = Clan.find_or_create_by_clan("мгу им.Ломоносова", creator.id)
+    assert found.id == clan.id
+
+    assert {:error, changeset} = Clan.create(%{name: "МГУ  им.ломоносова", creator_id: creator.id})
+    assert {"has already been taken", _} = changeset.errors[:name]
+
+    assert {:ok, other} = Clan.create(%{name: "СПбГУ", creator_id: creator.id})
+    assert {:error, _changeset} = Clan.rename(other, %{"name" => "мгу им. ломоносова"})
+    assert {:ok, _renamed} = Clan.rename(clan, %{"name" => "МГУ им.Ломоносова"})
+  end
+
+  test "lets the creator delete only an empty clan, admins any" do
+    creator = insert(:user)
+    stranger = insert(:user)
+    admin = insert(:admin)
+    assert {:ok, clan} = Clan.create(%{name: "empty-clan", creator_id: creator.id})
+
+    assert Clan.can_delete?(clan, creator)
+    refute Clan.can_delete?(clan, stranger)
+
+    insert(:user, clan_id: clan.id, clan: clan.name)
+    refute Clan.can_delete?(clan, creator)
+    assert Clan.can_delete?(clan, admin)
+  end
 end

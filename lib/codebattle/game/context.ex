@@ -318,6 +318,14 @@ defmodule Codebattle.Game.Context do
     end
   end
 
+  @spec rematch_cancel(raw_game_id, User.t()) :: {:rematch_status_updated, map()} | {:error, atom}
+  def rematch_cancel(game_id, user) do
+    case get_game!(game_id) do
+      %{is_live: true} = game -> Engine.rematch_cancel(game, user)
+      _ -> {:error, :game_is_dead}
+    end
+  end
+
   @spec rematch_reject(game_id) :: {:rematch_status_updated, map()} | {:error, atom}
   def rematch_reject(game_id) do
     case get_game!(game_id) do
@@ -521,6 +529,8 @@ defmodule Codebattle.Game.Context do
   # e.g. a bot game that waited in the lobby for hours before the user joined it.
   def get_active_game_id(user_id, states) do
     from(g in Game,
+      # The literal list lets Postgres use games_active_player_ids_idx (a bound list can't match it).
+      where: fragment("? IN ('waiting_opponent', 'playing')", g.state),
       where: g.state in ^states,
       where: fragment("? @> ARRAY[?]::integer[]", g.player_ids, ^user_id),
       order_by: [desc: g.id],
