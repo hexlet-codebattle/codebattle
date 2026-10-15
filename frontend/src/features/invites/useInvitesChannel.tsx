@@ -54,7 +54,7 @@ function showIncoming(invite: Invite) {
 /**
  * Joins "invites" (signed-in users only) and keeps the invites store in sync.
  * Incoming invites pop up as toasts with Accept/Decline; an accepted invite
- * sends both players into the game. Mounted once per page by AppLayout.
+ * sends both players into the game. Mounted once per page by AppLayout (or the game page).
  */
 export function useInvitesChannel(enabled: boolean) {
   const { current_user: user } = useSharedProps();

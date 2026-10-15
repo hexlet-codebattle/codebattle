@@ -19,6 +19,8 @@ import { usePlaybook } from '@/features/game/history';
 import { isAbandoned, isGameOver, useGameStore } from '@/features/game/store';
 import type { Game, GamePageProps, GamePlayer } from '@/features/game/types';
 import { type GameApi, useGame } from '@/features/game/useGame';
+import { InviteDialog } from '@/features/invites/InviteDialog';
+import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { useMainChannel } from '@/features/main/useMainChannel';
 import { useSyncSoundMute } from '@/features/settings/useSoundMute';
 import { useUnread } from '@/features/tournament/components/SidePanels';
@@ -259,8 +261,19 @@ export default function GameRoom() {
   useState(() => useGameStore.getState().load(props.game));
   const game = useGameStore((state) => state.game) ?? props.game;
 
+  // Spectators (and players once the game is over) can invite from the player cards here;
+  // a player mid-game gets no invite toasts, and an invite opens the lobby's dialog instead.
+  const playing = isPlayer && !props.is_record && !isGameOver(game.state);
+  const invites = !props.current_user.is_guest && !playing;
+  useInvitesChannel(invites);
+
   // Nobody joined: no task or editors to show. Also replaces the waiting room when the creator cancels.
   if (isAbandoned(game)) return <GameCanceled game={game} />;
 
-  return props.is_record ? <HistoryRoom props={props} /> : <LiveRoom props={props} />;
+  return (
+    <>
+      {props.is_record ? <HistoryRoom props={props} /> : <LiveRoom props={props} />}
+      {invites && <InviteDialog />}
+    </>
+  );
 }

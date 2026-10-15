@@ -16,15 +16,14 @@ import {
   IconUser,
   IconUsersGroup,
 } from '@tabler/icons-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
-import { useInviteDialog } from '@/features/invites/dialog';
+import { InviteDialog } from '@/features/invites/InviteDialog';
 import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
-import { CreateGameModal } from '@/features/lobby/components/CreateGameModal';
 import { DeployBanner } from '@/features/main/DeployBanner';
 import { useMainChannel } from '@/features/main/useMainChannel';
 import { type PresenceState, usePresenceStore } from '@/features/presence/store';
@@ -248,16 +247,6 @@ interface AppLayoutProps {
   presence?: PresenceState;
   /** Data-heavy pages (wide tables) use more of the screen. */
   wide?: boolean;
-}
-
-/** App-wide "invite to a battle" dialog (opened from hover cards, chat, ?opponent_id=). */
-function InviteDialog() {
-  const { opened, opponent, close, setMounted } = useInviteDialog();
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, [setMounted]);
-  return <CreateGameModal opened={opened} onClose={close} initialOpponent={opponent} />;
 }
 
 export function AppLayout({ children, presence = 'online', wide = false }: AppLayoutProps) {
