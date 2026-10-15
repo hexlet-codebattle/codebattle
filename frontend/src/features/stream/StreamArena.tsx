@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import logo from '@/assets/logo.svg?raw';
 import { EditorPane } from '@/features/game/components/EditorPane';
 import { TournamentBox } from '@/features/game/components/TournamentBox';
-import { CodeEditor } from '@/features/game/editor/CodeEditor';
+import { CodeEditor } from '@/features/game/editor/LazyCodeEditor';
 import { useGameStore } from '@/features/game/store';
 import type { Game, GamePlayer } from '@/features/game/types';
 import { useGame } from '@/features/game/useGame';

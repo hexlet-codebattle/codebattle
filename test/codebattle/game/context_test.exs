@@ -165,6 +165,13 @@ defmodule Codebattle.Game.ContextTest do
                winner_id: user1.id
              } == Game.Context.fetch_head_to_head_by_game_id(game3.id)
     end
+
+    test "skips bot games" do
+      user = insert(:user)
+      game = insert(:game, state: "playing", players: [Player.build(user), Player.build(Codebattle.Bot.Context.build())])
+
+      assert Game.Context.fetch_head_to_head_by_game_id(game.id) == nil
+    end
   end
 
   describe "public game helpers" do

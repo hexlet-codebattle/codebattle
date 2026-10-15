@@ -3,7 +3,7 @@ import { IconAlertTriangle, IconChevronDown, IconChevronRight, IconInfoCircle } 
 import { type CSSProperties, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CodeEditor } from '@/features/game/editor/CodeEditor';
+import { CodeEditor } from '@/features/game/editor/LazyCodeEditor';
 import { UserCard } from '@/features/users/UserCard';
 import { LangIcon, langName } from '@/shared/LangIcon';
 import { UserAvatar } from '@/shared/UserAvatar';

@@ -9,16 +9,22 @@ defmodule Codebattle.Game.Query do
 
   @spec fetch_head_to_head_by_game_id(Game.Context.raw_game_id()) :: map() | nil
   def fetch_head_to_head_by_game_id(id) do
-    game = Game.Context.get_game!(id)
+    id |> Game.Context.get_game!() |> fetch_head_to_head()
+  end
 
-    case game.players do
-      [%{id: first_player_id}, %{id: second_player_id}] ->
-        build_head_to_head(first_player_id, second_player_id)
-
-      _ ->
-        nil
+  # All-time wins between the two players of an already loaded game. Bot games have none:
+  # every bot game is played against the one Codebot, so the tally would scan all of a
+  # player's bot games on every page view for a number nobody needs.
+  @spec fetch_head_to_head(Game.t()) :: map() | nil
+  def fetch_head_to_head(%{players: [%{id: first_player_id} = first, %{id: second_player_id} = second]}) do
+    if Map.get(first, :is_bot) || Map.get(second, :is_bot) do
+      nil
+    else
+      build_head_to_head(first_player_id, second_player_id)
     end
   end
+
+  def fetch_head_to_head(_game), do: nil
 
   @spec fetch_head_to_head_page_data(User.raw_id(), User.raw_id()) :: map()
   def fetch_head_to_head_page_data(user_id, opponent_id) do

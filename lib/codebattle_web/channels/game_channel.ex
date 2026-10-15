@@ -34,7 +34,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   defp join_regular_game(game, socket, game_id) do
-    head_to_head = maybe_fetch_head_to_head(game_id)
+    head_to_head = maybe_fetch_head_to_head(game)
 
     {:ok,
      %{
@@ -50,7 +50,7 @@ defmodule CodebattleWeb.GameChannel do
     user_id = socket.assigns.current_user.id
     is_player? = user_id in player_ids
     tournament = Tournament.Context.get_tournament_info(game.tournament_id)
-    head_to_head = maybe_fetch_head_to_head(game_id)
+    head_to_head = maybe_fetch_head_to_head(game)
 
     {follow_id, active_game_id} =
       get_follow_and_active_game_id(tournament, user_id, player_ids, game.tournament_id)
@@ -122,11 +122,11 @@ defmodule CodebattleWeb.GameChannel do
     %{entries: entries}
   end
 
-  defp maybe_fetch_head_to_head(game_id) do
+  defp maybe_fetch_head_to_head(game) do
     if FunWithFlags.enabled?(:async_game_score_on_join) do
       nil
     else
-      Context.fetch_head_to_head_by_game_id(game_id)
+      Context.fetch_head_to_head(game)
     end
   end
 

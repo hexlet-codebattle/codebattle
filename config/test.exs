@@ -88,6 +88,7 @@ config :codebattle,
     plug: {Req.Test, Codebattle.GithubApi}
   ]
 
+config :codebattle, github_stars_refresh: false
 config :codebattle, group_tournament_slice_run_concurrency: 1
 config :codebattle, min_break_duration_seconds: 1
 config :codebattle, store_playbook_async: false

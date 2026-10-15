@@ -46,7 +46,7 @@ defmodule CodebattleWeb.GameController do
     case Context.fetch_game(id) do
       {:ok, game} ->
         if can_access_game?(game, user) do
-          head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+          head_to_head = Context.fetch_head_to_head(game)
           game = ensure_task_loaded(game)
           game_params = GameView.render_game(game, head_to_head)
 
@@ -286,14 +286,14 @@ defmodule CodebattleWeb.GameController do
   end
 
   defp show_game(game, user, conn) do
-    render_history(conn, game, user, has_playbook: !is_nil(Playbook.Context.exists?(game.id)), live: false)
+    render_history(conn, game, user, has_playbook: Playbook.Context.exists?(game.id), live: false)
   end
 
   defp live_history_allowed?(game, user), do: game.state in ["game_over", "timeout"] or User.admin_or_moderator?(user)
 
   defp render_history(conn, game, user, opts) do
     game = ensure_task_loaded(game)
-    head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+    head_to_head = Context.fetch_head_to_head(game)
 
     conn
     |> put_game_meta_tags(game)
@@ -315,7 +315,7 @@ defmodule CodebattleWeb.GameController do
   defp live_game_props(game, user) do
     # Games started without their task in memory (an older tournament bug) still show it.
     game = ensure_task_loaded(game)
-    head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+    head_to_head = Context.fetch_head_to_head(game)
 
     %{
       "reports" => maybe_get_reports(user, game.id),

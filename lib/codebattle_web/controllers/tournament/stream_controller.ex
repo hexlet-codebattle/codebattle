@@ -207,7 +207,7 @@ defmodule CodebattleWeb.Tournament.StreamController do
       game_id when is_integer(game_id) ->
         case Game.Context.fetch_game(game_id) do
           {:ok, game} ->
-            head_to_head = Game.Context.fetch_head_to_head_by_game_id(game.id)
+            head_to_head = Game.Context.fetch_head_to_head(game)
             {game_id, GameView.render_game(game, head_to_head)}
 
           _ ->

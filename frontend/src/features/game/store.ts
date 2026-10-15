@@ -69,6 +69,8 @@ export const useGameStore = create<GameStore>((set) => ({
               ...incoming,
               task: incoming.task ?? state.game.task,
               langs: incoming.langs?.length ? incoming.langs : state.game.langs,
+              // With async_game_score_on_join the join reply has none; the score arrives later.
+              head_to_head: incoming.head_to_head ?? state.game.head_to_head,
             }
           : incoming;
       return {

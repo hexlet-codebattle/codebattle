@@ -18,7 +18,7 @@ import { useSharedProps } from '@/shared/useSharedProps';
 import { LangIcon, langName } from '@/shared/LangIcon';
 import { UserAvatar } from '@/shared/UserAvatar';
 
-import { CodeEditor } from '../editor/CodeEditor';
+import { CodeEditor } from '../editor/LazyCodeEditor';
 import { useEditorTelemetry } from '../editor/useEditorTelemetry';
 import { useEditorPrefs } from '../editor/prefs';
 import { isGameOver, useGameStore } from '../store';

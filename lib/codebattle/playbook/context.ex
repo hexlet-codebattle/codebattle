@@ -26,7 +26,7 @@ defmodule Codebattle.Playbook.Context do
   ]
 
   def exists?(game_id) do
-    Repo.one(from(p in Playbook, where: p.game_id == ^game_id, limit: 1))
+    Repo.exists?(from(p in Playbook, where: p.game_id == ^game_id))
   end
 
   def init_records(players) do

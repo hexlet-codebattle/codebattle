@@ -3,7 +3,7 @@ import { IconSend } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CodeEditor } from '@/features/game/editor/CodeEditor';
+import { CodeEditor } from '@/features/game/editor/LazyCodeEditor';
 import { LangIcon } from '@/shared/LangIcon';
 
 import type { Lang } from './types';
