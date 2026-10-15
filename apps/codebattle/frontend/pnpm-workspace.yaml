@@ -3,3 +3,8 @@ minimumReleaseAgeExclude:
   - vite@8.3.4
   - '@inertiajs/core@3.9.1'
   - '@inertiajs/react@3.9.1'
+overrides:
+  # Security: monaco-editor pins dompurify 3.4.15 (GHSA, fixed in 3.4.16).
+  dompurify: ^3.4.16
+  # Security: rehype-katex/micromark-extension-math want katex ^0.16 (fixed in 0.18.2); align with our direct katex.
+  katex: ^0.19.0
