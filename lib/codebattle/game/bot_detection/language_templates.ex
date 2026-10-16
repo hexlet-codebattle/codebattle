@@ -14,10 +14,7 @@ defmodule Codebattle.Game.BotDetection.LanguageTemplates do
   """
   @spec length_for(map() | nil, String.t() | nil) :: non_neg_integer()
   def length_for(%Codebattle.Task{} = task, lang) when is_binary(lang) and lang != "" do
-    case Languages.meta(lang) do
-      %{} = meta -> task |> CodeCheck.generate_solution_template(meta) |> String.length()
-      _ -> length_for(lang)
-    end
+    task |> CodeCheck.generate_solution_template(Languages.meta(lang)) |> String.length()
   rescue
     _ -> length_for(lang)
   end
