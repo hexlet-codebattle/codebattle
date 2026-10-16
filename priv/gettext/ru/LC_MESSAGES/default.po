@@ -6269,3 +6269,81 @@ msgstr "Пока никто не смотрит"
 
 msgid "Open the full chat"
 msgstr "Открыть весь чат"
+
+msgid "Nobody changed the code during this game, so there is nothing to replay."
+msgstr "В этой игре никто не менял код — воспроизводить нечего."
+
+msgid "Assisted chars / completions"
+msgstr "Символы от редактора / автодополнения"
+
+msgid "Inserted by the editor for a keystroke: auto-indent, closing brackets, accepted autocomplete. Not counted as pasted."
+msgstr "Вставлено редактором при нажатии клавиши: автоотступ, закрывающие скобки, принятое автодополнение. Не считается вставкой из буфера."
+
+msgid "Final solution"
+msgstr "Итоговое решение"
+
+msgid "The starting code of the task; excluded from coverage."
+msgstr "Стартовый код задачи; не учитывается в покрытии."
+
+msgid "Chars typed in the editor against the code added on top of the template."
+msgstr "Сколько символов набрано в редакторе относительно кода, добавленного к шаблону."
+
+msgid "Metric"
+msgstr "Метрика"
+
+msgid "Bots are not analyzed."
+msgstr "Боты не анализируются."
+
+msgid "No signals."
+msgstr "Сигналов нет."
+
+msgid "Final code"
+msgstr "Итоговый код"
+
+msgid "%{count} chars"
+msgstr "%{count} симв."
+
+msgid "No code."
+msgstr "Кода нет."
+
+msgid "vs"
+msgstr "vs"
+
+msgid "Pasted chars"
+msgstr "Вставлено символов"
+
+msgid "Pastes can only bring back code copied from this editor."
+msgstr "Вставить можно только код, скопированный из этого же редактора."
+
+msgid "Focus and the server copy"
+msgstr "Фокус и копия на сервере"
+
+msgid "Left the game / time away"
+msgstr "Уходы из игры / время вне игры"
+
+msgid "Switches to another tab or window while playing."
+msgstr "Переключения на другую вкладку или окно во время игры."
+
+msgid "Editor updates received"
+msgstr "Получено обновлений редактора"
+
+msgid "The server's own copy of the editor: the client sends the code at most every 250 ms."
+msgstr "Собственная копия редактора на сервере: клиент отправляет код не чаще раза в 250 мс."
+
+msgid "Largest jump between updates"
+msgstr "Самый большой скачок между обновлениями"
+
+msgid "Most characters (not counting spaces) one update added. Typing adds a few; a big jump without a paste was not typed."
+msgstr "Больше всего символов (без пробелов), добавленных одним обновлением. При наборе это несколько символов; большой скачок без вставки — не набран вручную."
+
+msgid "≥80 → not typed"
+msgstr "≥80 → не набрано"
+
+msgid "Likely bot in game #%{id}"
+msgstr "Вероятно бот в игре #%{id}"
+
+msgid "Suspicious play in game #%{id}"
+msgstr "Подозрительная игра #%{id}"
+
+msgid "Open the report"
+msgstr "Открыть отчёт"

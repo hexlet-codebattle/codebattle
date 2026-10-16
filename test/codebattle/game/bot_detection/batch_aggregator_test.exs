@@ -139,4 +139,51 @@ defmodule Codebattle.Game.BotDetection.BatchAggregatorTest do
       assert stats.total_chars_inserted == 0
     end
   end
+
+  describe "aggregate/1 — editor-assisted inserts" do
+    test "sums assisted chars and accepted completions" do
+      stats =
+        BatchAggregator.aggregate([
+          batch(%{"assisted_chars" => 10, "completion_insert_count" => 2}),
+          batch(%{"assisted_chars" => 5, "completion_insert_count" => 1})
+        ])
+
+      assert stats.total_assisted_chars == 15
+      assert stats.total_completion_inserts == 3
+    end
+
+    test "older batches: Enter presses are taken off the multi-line inserts" do
+      stats =
+        BatchAggregator.aggregate([
+          batch(%{"multi_line_insert_count" => 3, "enter_count" => 2}),
+          batch(%{"multi_line_insert_count" => 1, "enter_count" => 4})
+        ])
+
+      assert stats.total_multi_line_inserts == 1
+    end
+
+    test "newer batches keep their multi-line inserts" do
+      stats =
+        BatchAggregator.aggregate([batch(%{"multi_line_insert_count" => 2, "enter_count" => 5, "assisted_chars" => 0})])
+
+      assert stats.total_multi_line_inserts == 2
+    end
+  end
+
+  describe "aggregate/1 — pastes and leaving the game" do
+    test "sums pasted chars, blurs and time away; tracked only when every batch reports pastes" do
+      tracked =
+        BatchAggregator.aggregate([
+          batch(%{"paste_chars" => 30, "blur_count" => 1, "away_ms" => 5_000}),
+          batch(%{"paste_chars" => 12, "blur_count" => 2, "away_ms" => 40_000})
+        ])
+
+      assert tracked.total_paste_chars == 42
+      assert tracked.total_blurs == 3
+      assert tracked.total_away_ms == 45_000
+      assert tracked.paste_tracked
+
+      refute BatchAggregator.aggregate([batch(%{"paste_chars" => 1}), batch()]).paste_tracked
+    end
+  end
 end

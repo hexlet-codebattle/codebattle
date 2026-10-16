@@ -68,6 +68,22 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
       assert List.last(steps).step_timeout_ms == 0
     end
 
+    test "types at a typing pace and spends the spare time on pauses between lines" do
+      {:ok, params} = PlaybookPlayer.init(%{game: build_game(%{time_to_solve_sec: 100}), bot_id: @bot_id})
+
+      {first_line_at_ms, _elapsed_ms} =
+        params
+        |> collect_steps()
+        |> Enum.reduce_while({nil, 0}, fn step, {nil, elapsed_ms} ->
+          if elem(step.editor_state, 0) == "import sys",
+            do: {:halt, {elapsed_ms, elapsed_ms}},
+            else: {:cont, {nil, elapsed_ms + step.step_timeout_ms}}
+        end)
+
+      # Spread evenly over 95s, these 10 characters alone would take ~14s.
+      assert first_line_at_ms < 8_000
+    end
+
     test "keeps activity delays under 2 seconds even for short solutions" do
       {:ok, params} =
         PlaybookPlayer.init(%{

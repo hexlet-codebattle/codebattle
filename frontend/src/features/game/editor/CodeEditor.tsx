@@ -10,7 +10,7 @@ import { useLatest } from '@/shared/useLatest';
 import { insertSpaces, monacoLanguage, tabSize } from './monaco';
 import { guardForeignEditor, guardOwnEditor } from './pasteGuard';
 import { useEditorPrefs } from './prefs';
-import { contentMetrics, type TelemetryEvent } from './telemetry';
+import { type ContentChangeEvent, contentMetrics, SYNC_EDIT_SOURCE, type TelemetryEvent } from './telemetry';
 import { resolveTheme } from './themes';
 import classes from './CodeEditor.module.css';
 
@@ -103,9 +103,10 @@ export function CodeEditor({
         alt_key: browserEvent.altKey,
       }),
     );
-    editor.onDidChangeModelContent(({ changes }) => {
-      const metrics = contentMetrics(changes);
-      telemetry({ type: 'content_change', change_count: changes.length, net_text_delta: metrics.inserted_chars - metrics.deleted_chars, ...metrics });
+    // Monaco's event also carries what made each edit (typing, completion, paste, our sync).
+    editor.onDidChangeModelContent((event) => {
+      const metrics = contentMetrics(event as ContentChangeEvent);
+      if (metrics) telemetry({ type: 'content_change', ...metrics });
     });
 
     // Cursor, selection and scroll: shared with the room (the broadcast draws them).
@@ -165,7 +166,7 @@ export function CodeEditor({
       return;
     }
     editor.pushUndoStop();
-    editor.executeEdits('cb-sync', [{ range: model.getFullModelRange(), text: value, forceMoveMarkers: true }]);
+    editor.executeEdits(SYNC_EDIT_SOURCE, [{ range: model.getFullModelRange(), text: value, forceMoveMarkers: true }]);
     editor.pushUndoStop();
   }, [value, readOnly]);
 

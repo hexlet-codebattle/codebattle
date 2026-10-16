@@ -19,10 +19,14 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
       across substantial edits, very fast typing, suspiciously uniform
       key-delta timings.
 
-  Self-paste (user copies their own code via Cmd+C / Cmd+V) is respected:
-  when paste shortcuts were actually pressed we *significantly* discount
-  Tier 1 weights, since Monaco's custom clipboard system allows pasting
-  previously-copied selections.
+  Self-paste (user copies their own code via Cmd+C / Cmd+V) is respected.
+  Newer telemetry counts pasted chars (`paste_tracked`) and keeps them out of
+  the injection counters, so those keep their full weight; for older batches,
+  a paste shortcut pressed anywhere *significantly* discounts Tier 1 weights.
+
+  Two signals don't come from the code or the keystrokes: time spent away from
+  the game (another tab or window) and, from the server's own copy of the
+  editor (`EditorHistory`), code that showed up between two editor updates.
   """
 
   @no_telemetry_solution_min_chars 20
@@ -31,7 +35,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
   @bulk_insert_large_threshold 50
   @coverage_eval_min_added 60
   @gpt_eval_min_added 60
-  @no_backspace_min_chars 80
+  @no_backspace_min_chars 150
   @fast_typing_max_avg_ms 30
   @fast_typing_min_keys 30
   @uniform_timing_max_diff_ms 10
@@ -43,12 +47,16 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
   @comment_ratio_high_min_lines 4
   @comment_ratio_medium 0.3
   @comment_ratio_medium_min_lines 3
+  @away_min_ms 30_000
+  @away_long_ms 120_000
+  @jump_min_chars 80
 
   @type input :: %{
-          stats: map() | nil,
-          code_analysis: map() | nil,
-          final_length: non_neg_integer(),
-          template_length: non_neg_integer()
+          required(:stats) => map() | nil,
+          required(:code_analysis) => map() | nil,
+          required(:final_length) => non_neg_integer(),
+          required(:template_length) => non_neg_integer(),
+          optional(:editor_history) => map() | nil
         }
 
   @type result :: %{
@@ -59,9 +67,10 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
 
   @doc "Compute risk score, level and human-readable signals."
   @spec score(input()) :: result()
-  def score(%{stats: stats, code_analysis: code, final_length: fl, template_length: tl}) do
+  def score(%{stats: stats, code_analysis: code, final_length: fl, template_length: tl} = input) do
     effective = max(0, fl - (tl || 0))
     paste_attempted = paste_attempted?(stats)
+    history = Map.get(input, :editor_history)
 
     contributions =
       []
@@ -74,6 +83,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
       |> apply_rule(multi_line_insert(stats, paste_attempted))
       |> apply_rule(coverage_mismatch(stats, effective))
       |> apply_rule(paste_blocked(stats))
+      |> apply_rule(editor_jump(history, stats, paste_attempted))
+      |> apply_rule(away_from_game(stats))
       |> apply_rule(zero_idle_pauses(stats))
       |> apply_rule(no_backspace(stats))
       |> apply_rule(fast_typing(stats))
@@ -98,8 +109,11 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
   defp paste_attempted?(nil), do: false
 
   defp paste_attempted?(stats) when is_map(stats) do
-    get(stats, :total_paste_attempts) > 0 or get(stats, :total_paste_blocked) > 0
+    not paste_tracked?(stats) and
+      (get(stats, :total_paste_attempts) > 0 or get(stats, :total_paste_blocked) > 0)
   end
+
+  defp paste_tracked?(stats), do: Map.get(stats, :paste_tracked, Map.get(stats, "paste_tracked")) == true
 
   defp classify(score) when score >= 10, do: :high
   defp classify(score) when score >= 5, do: :medium
@@ -119,8 +133,10 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
 
   defp programmatic_injection(nil, _), do: nil
 
+  # Editor-assisted chars (auto-indent, closing brackets, completions) arrive without their own
+  # keypress but are not injected.
   defp programmatic_injection(stats, paste_attempted) do
-    chars = get(stats, :total_chars_inserted)
+    chars = typed_chars(stats)
     keys = get(stats, :total_printable_keys)
 
     cond do
@@ -255,6 +271,44 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
     end
   end
 
+  # The server got the code in a jump no typing explains: an `editor:data` update (the client
+  # sends them at most every 250 ms) added this many non-whitespace chars at once.
+  defp editor_jump(nil, _stats, _paste_attempted), do: nil
+
+  defp editor_jump(history, stats, paste_attempted) do
+    jump = get(history, :max_jump)
+
+    cond do
+      jump < @jump_min_chars ->
+        nil
+
+      # Pastes only take the player's own code (the editor's paste guard).
+      stats && get(stats, :total_paste_chars) >= jump ->
+        contrib(1, "#{jump} chars arrived in one editor update — explained by pasting the player's own code")
+
+      stats && (paste_attempted or get(stats, :total_undo) + get(stats, :total_redo) > 0) ->
+        contrib(3, "#{jump} chars arrived in one editor update — maybe an undo or a paste of own code")
+
+      true ->
+        contrib(8, "#{jump} chars arrived in one editor update (≤250 ms) with no paste or undo — not typed in the editor")
+    end
+  end
+
+  # Another tab or window while playing: not proof (docs, a message), but where AI answers are.
+  defp away_from_game(nil), do: nil
+
+  defp away_from_game(stats) do
+    away = get(stats, :total_away_ms)
+    times = get(stats, :total_blurs)
+    seconds = round(away / 1000)
+
+    cond do
+      away >= @away_long_ms -> contrib(4, "left the game #{times} time(s), #{seconds} s away in total")
+      away >= @away_min_ms -> contrib(2, "left the game #{times} time(s), #{seconds} s away in total")
+      true -> nil
+    end
+  end
+
   # ── Tier 3: typing rhythm anomalies ──────────────────────────────────
 
   defp zero_idle_pauses(nil), do: nil
@@ -269,9 +323,12 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
 
   defp no_backspace(nil), do: nil
 
+  # Replacing a selection deletes too, so a human who never presses Backspace still has
+  # deleted chars.
   defp no_backspace(stats) do
     if get(stats, :total_backspace) + get(stats, :total_delete) == 0 and
-         get(stats, :total_chars_inserted) > @no_backspace_min_chars do
+         get(stats, :total_chars_deleted) == 0 and
+         typed_chars(stats) > @no_backspace_min_chars do
       contrib(2, "no backspace/delete across a substantial edit")
     end
   end
@@ -375,6 +432,10 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
   # ── helpers ──────────────────────────────────────────────────────────
 
   defp contrib(weight, signal), do: %{weight: weight, signal: signal}
+
+  # Inserted chars a keypress of their own should explain: not editor-assisted, not a self-paste.
+  defp typed_chars(stats),
+    do: max(get(stats, :total_chars_inserted) - get(stats, :total_assisted_chars) - get(stats, :total_paste_chars), 0)
 
   defp get(map, key) when is_atom(key) do
     case Map.get(map, key) do

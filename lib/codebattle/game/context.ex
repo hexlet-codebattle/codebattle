@@ -47,13 +47,17 @@ defmodule Codebattle.Game.Context do
     content_change_count
     chars_inserted
     chars_deleted
-    net_text_delta
     max_single_insert_len
     max_single_delete_len
     multi_char_insert_count
     multi_char_delete_count
     multi_line_insert_count
     large_insert_count
+    assisted_chars
+    completion_insert_count
+    paste_chars
+    blur_count
+    away_ms
     final_text_length
     key_delta_sample_count
     avg_key_delta_ms
@@ -420,6 +424,8 @@ defmodule Codebattle.Game.Context do
             Map.put(acc, key, summary |> map_get(key) |> normalize_non_negative_integer())
           end
         )
+        # Deleting more than inserting makes it negative.
+        |> Map.put("net_text_delta", summary |> map_get("net_text_delta") |> normalize_integer())
         |> maybe_put_string("lang_slug", map_get(summary, "lang_slug"), 32)
     end
   end
@@ -448,6 +454,17 @@ defmodule Codebattle.Game.Context do
   end
 
   defp normalize_non_negative_integer(_value), do: 0
+
+  defp normalize_integer(value) when is_integer(value), do: value
+
+  defp normalize_integer(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {integer, ""} -> integer
+      _ -> 0
+    end
+  end
+
+  defp normalize_integer(_value), do: 0
 
   defp offset_ms_to_datetime(value, anchor),
     do: anchor |> DateTime.add(value, :millisecond) |> DateTime.truncate(:microsecond)

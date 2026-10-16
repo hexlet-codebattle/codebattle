@@ -146,6 +146,23 @@ defmodule Codebattle.Game.BotDetectionTest do
     end
   end
 
+  describe "analyze_game/1 — the server's copy of the editor" do
+    test "code that arrives in one update shows up as a jump", %{game: game, user1: user} do
+      lang = Enum.find(game.players, &(&1.id == user.id)).editor_lang
+      {:ok, _} = Context.update_editor_data(game.id, user, "x", lang)
+      {:ok, _} = Context.update_editor_data(game.id, user, "x" <> String.duplicate("abcdefghij", 12), lang)
+
+      {:ok, analyses} = BotDetection.analyze_game(game.id)
+      analysis = Enum.find(analyses, &(&1.user_id == user.id))
+
+      assert %{updates: 2, max_jump: 120} = analysis.editor_history
+      assert Enum.any?(analysis.signals, &String.contains?(&1, "120 chars arrived in one editor update"))
+
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+      assert %{"max_jump" => 120} = BotDetection.get_report(game.id, user.id).editor_history
+    end
+  end
+
   describe "get_or_analyze/1" do
     test "first call computes + persists; second call reads from DB", %{game: game} do
       assert BotDetection.list_reports(game.id) == []
@@ -156,6 +173,27 @@ defmodule Codebattle.Game.BotDetectionTest do
 
       assert {:ok, analyses2} = BotDetection.get_or_analyze(game.id)
       assert length(analyses2) == 2
+    end
+
+    test "a player without telemetry reads back with no stats", %{game: game, user1: user} do
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+      assert BotDetection.get_report(game.id, user.id).stats == %{}
+
+      {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(analyses, &(&1.user_id == user.id)).stats == nil
+    end
+
+    test "recomputes reports built by an older scoring", %{game: game, user1: user} do
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+      report = BotDetection.get_report(game.id, user.id)
+      current = report.version
+      assert current > 1
+
+      report |> Ecto.Changeset.change(version: current - 1, score: 99) |> Codebattle.Repo.update!()
+
+      assert {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(analyses, &(&1.user_id == user.id)).score != 99
+      assert BotDetection.get_report(game.id, user.id).version == current
     end
 
     test "round-trips report → analysis preserving score and level", %{game: game, user1: u} do

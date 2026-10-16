@@ -32,6 +32,7 @@ defmodule Codebattle.Game.BotDetection do
   alias Codebattle.Game.BotDetection.Analysis
   alias Codebattle.Game.BotDetection.BatchAggregator
   alias Codebattle.Game.BotDetection.CodeAnalyzer
+  alias Codebattle.Game.BotDetection.EditorHistory
   alias Codebattle.Game.BotDetection.LanguageTemplates
   alias Codebattle.Game.BotDetection.PlayerReport
   alias Codebattle.Game.BotDetection.RiskScorer
@@ -41,6 +42,10 @@ defmodule Codebattle.Game.BotDetection do
   alias Codebattle.Game.Helpers
   alias Codebattle.Repo
   alias Codebattle.User
+
+  # Bump when the scoring or the stats change: older persisted reports are recomputed on read.
+  @report_version 3
+  @after_game_delay_sec 10
 
   @doc """
   Run the full pipeline for the given game and return one `Analysis`
@@ -59,9 +64,11 @@ defmodule Codebattle.Game.BotDetection do
           |> Helpers.get_players()
           |> Enum.reject(&ignored_player?/1)
 
+        history = if players == [], do: %{}, else: EditorHistory.summarize(game)
+
         analyses =
           Enum.map(players, fn player ->
-            analyze_player(game, player, Map.get(batches_by_user, player.id, []))
+            analyze_player(game, player, Map.get(batches_by_user, player.id, []), Map.get(history, player.id))
           end)
 
         {:ok, analyses}
@@ -74,15 +81,16 @@ defmodule Codebattle.Game.BotDetection do
   @doc """
   Run the pipeline for a single player. `player` should be a
   `Codebattle.Game.Player` struct (or any map exposing `:id`,
-  `:editor_text`, `:editor_lang`).
+  `:editor_text`, `:editor_lang`). `history` is the player's
+  `EditorHistory` summary, if the game has editor records.
   """
-  @spec analyze_player(map(), map(), [EditorEventBatch.t()]) :: Analysis.t()
-  def analyze_player(game, player, batches) do
+  @spec analyze_player(map(), map(), [EditorEventBatch.t()], map() | nil) :: Analysis.t()
+  def analyze_player(game, player, batches, history \\ nil) do
     stats = BatchAggregator.aggregate(batches)
     final_text = Map.get(player, :editor_text) || ""
     final_lang = Map.get(player, :editor_lang) || Map.get(player, :lang)
     code_analysis = CodeAnalyzer.analyze(final_text)
-    template_length = LanguageTemplates.length_for(final_lang)
+    template_length = LanguageTemplates.length_for(Map.get(game, :task), final_lang)
     final_length = String.length(final_text)
     effective = max(0, final_length - template_length)
 
@@ -90,6 +98,7 @@ defmodule Codebattle.Game.BotDetection do
       RiskScorer.score(%{
         stats: stats,
         code_analysis: code_analysis,
+        editor_history: history,
         final_length: final_length,
         template_length: template_length
       })
@@ -102,6 +111,7 @@ defmodule Codebattle.Game.BotDetection do
       signals: signals,
       stats: stats,
       code_analysis: code_analysis,
+      editor_history: history,
       final_length: final_length,
       template_length: template_length,
       effective_added_length: effective,
@@ -143,7 +153,7 @@ defmodule Codebattle.Game.BotDetection do
   end
 
   defp upsert_report(%Analysis{} = analysis) do
-    attrs = PlayerReport.from_analysis(analysis)
+    attrs = analysis |> PlayerReport.from_analysis() |> Map.put(:version, @report_version)
 
     if Repo.exists?(from(u in User, where: u.id == ^analysis.user_id and u.is_bot == false)) do
       %PlayerReport{}
@@ -181,23 +191,23 @@ defmodule Codebattle.Game.BotDetection do
   end
 
   @doc """
-  Read persisted reports if any exist for the game; otherwise compute
-  the analyses synchronously, persist them and return the freshly-built
-  analyses. The caller can convert reports back to analyses via
-  `report_to_analysis/1` if needed.
+  Read persisted reports if any exist for the game (and were built by the
+  current scoring); otherwise compute the analyses synchronously, persist
+  them and return the freshly-built analyses. The caller can convert reports
+  back to analyses via `report_to_analysis/1` if needed.
   """
   @spec get_or_analyze(pos_integer() | String.t()) ::
           {:ok, [Analysis.t()]} | {:error, term()}
   def get_or_analyze(game_id) do
-    case list_reports(game_id) do
-      [] ->
-        with {:ok, analyses} <- analyze_game(game_id),
-             {:ok, _reports} <- persist_analyses(analyses) do
-          {:ok, analyses}
-        end
+    reports = list_reports(game_id)
 
-      reports ->
-        {:ok, Enum.map(reports, &report_to_analysis/1)}
+    if reports != [] and Enum.all?(reports, &(&1.version >= @report_version)) do
+      {:ok, Enum.map(reports, &report_to_analysis/1)}
+    else
+      with {:ok, analyses} <- analyze_game(game_id),
+           {:ok, _reports} <- persist_analyses(analyses) do
+        {:ok, analyses}
+      end
     end
   end
 
@@ -210,8 +220,10 @@ defmodule Codebattle.Game.BotDetection do
       score: r.score,
       level: level_to_atom(r.level),
       signals: r.signals || [],
-      stats: stringify_keys(r.stats),
+      # No telemetry is stored as an empty map.
+      stats: if(r.stats == %{}, do: nil, else: stringify_keys(r.stats)),
       code_analysis: stringify_keys(r.code_analysis),
+      editor_history: if(r.editor_history == %{}, do: nil, else: r.editor_history),
       final_length: r.final_length,
       template_length: r.template_length,
       effective_added_length: r.effective_added_length
@@ -234,14 +246,17 @@ defmodule Codebattle.Game.BotDetection do
   @doc """
   Fire-and-forget hook called by `Codebattle.Game.Engine` after every
   finished game. Enqueues the bot-detection worker on the low-priority
-  `:bot_detection` queue and never raises — failures are logged and
+  `:bot_detection` queue, a few seconds out so the players' last telemetry
+  windows land first, and never raises — failures are logged and
   swallowed so the engine path never crashes on telemetry analysis.
   """
   @spec schedule_analysis_after_game(pos_integer() | String.t() | map()) :: :ok
   def schedule_analysis_after_game(%{id: id}), do: schedule_analysis_after_game(id)
 
   def schedule_analysis_after_game(game_id) do
-    case schedule_analysis(game_id) do
+    # The editors send their last telemetry window when the game ends, i.e. after this
+    # point: analyzing at once would miss it (all of it in a short game).
+    case schedule_analysis(game_id, schedule_in: @after_game_delay_sec) do
       {:ok, _job} ->
         :ok
 

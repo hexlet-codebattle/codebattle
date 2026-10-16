@@ -24,7 +24,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
       stats: stats,
       code_analysis: Keyword.get(opts, :code, nil),
       final_length: Keyword.get(opts, :final_length, 0),
-      template_length: Keyword.get(opts, :template_length, 0)
+      template_length: Keyword.get(opts, :template_length, 0),
+      editor_history: Keyword.get(opts, :history, nil)
     })
   end
 
@@ -423,13 +424,14 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
   end
 
   describe "No backspace across substantial edit" do
-    test "no backspace/delete with > 80 chars typed → flagged" do
+    test "no backspace/delete and nothing deleted with > 150 chars typed → flagged" do
       stats =
         aggregate([
           batch(%{
-            "chars_inserted" => 120,
-            "key_event_count" => 100,
-            "printable_key_count" => 100,
+            "chars_inserted" => 200,
+            "chars_deleted" => 0,
+            "key_event_count" => 200,
+            "printable_key_count" => 200,
             "backspace_count" => 0,
             "delete_count" => 0
           })
@@ -437,6 +439,164 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
 
       result = score(stats)
       assert signal_present?(result, "no backspace/delete")
+    end
+
+    test "a short solution typed without mistakes → not flagged" do
+      stats =
+        aggregate([
+          batch(%{
+            "chars_inserted" => 120,
+            "chars_deleted" => 0,
+            "key_event_count" => 100,
+            "printable_key_count" => 100,
+            "backspace_count" => 0,
+            "delete_count" => 0
+          })
+        ])
+
+      refute signal_present?(score(stats), "no backspace/delete")
+    end
+
+    test "edits by replacing a selection count as deleting → not flagged" do
+      stats =
+        aggregate([
+          batch(%{
+            "chars_inserted" => 200,
+            "chars_deleted" => 12,
+            "key_event_count" => 200,
+            "printable_key_count" => 200,
+            "backspace_count" => 0,
+            "delete_count" => 0
+          })
+        ])
+
+      refute signal_present?(score(stats), "no backspace/delete")
+    end
+  end
+
+  describe "Tracked pastes (newer telemetry)" do
+    test "a self-paste explains its chars; nothing is discounted beyond it" do
+      stats =
+        aggregate([
+          batch(%{
+            "chars_inserted" => 200,
+            "printable_key_count" => 100,
+            "paste_chars" => 100,
+            "paste_shortcut_attempt_count" => 1
+          })
+        ])
+
+      refute signal_present?(score(stats), "printable key")
+    end
+
+    test "one Cmd+V no longer softens injected chars" do
+      stats =
+        aggregate([
+          batch(%{
+            "chars_inserted" => 300,
+            "printable_key_count" => 20,
+            "paste_chars" => 10,
+            "paste_shortcut_attempt_count" => 1
+          })
+        ])
+
+      result = score(stats)
+      assert signal_present?(result, "looks programmatic")
+      refute signal_present?(result, "could be self-paste")
+    end
+
+    test "older batches keep the blanket discount" do
+      stats =
+        aggregate([batch(%{"chars_inserted" => 300, "printable_key_count" => 20, "paste_shortcut_attempt_count" => 1})])
+
+      assert signal_present?(score(stats), "could be self-paste")
+    end
+  end
+
+  describe "Leaving the game" do
+    test "a short look away is fine" do
+      stats = aggregate([batch(%{"blur_count" => 2, "away_ms" => 10_000})])
+      refute signal_present?(score(stats), "left the game")
+    end
+
+    test "half a minute away is a weak signal, minutes a stronger one" do
+      short = score(aggregate([batch(%{"blur_count" => 1, "away_ms" => 40_000})]))
+      long = score(aggregate([batch(%{"blur_count" => 3, "away_ms" => 180_000})]))
+
+      assert signal_present?(short, "left the game 1 time(s), 40 s away")
+      assert long.score > short.score
+    end
+  end
+
+  describe "Server-side editor jumps" do
+    test "a big jump with no paste or undo is flagged" do
+      result = score(aggregate([batch(%{"paste_chars" => 0})]), history: %{updates: 10, max_jump: 150})
+
+      assert signal_present?(result, "150 chars arrived in one editor update")
+      assert signal_present?(result, "not typed in the editor")
+      assert result.level in [:medium, :high]
+    end
+
+    test "flagged even without any telemetry" do
+      result = score(nil, history: %{"updates" => 3, "max_jump" => 120})
+      assert signal_present?(result, "not typed in the editor")
+    end
+
+    test "a paste of own code that big explains it" do
+      result =
+        score(aggregate([batch(%{"paste_chars" => 200, "paste_shortcut_attempt_count" => 1})]),
+          history: %{updates: 10, max_jump: 150}
+        )
+
+      assert signal_present?(result, "explained by pasting")
+      refute signal_present?(result, "not typed in the editor")
+    end
+
+    test "an undo makes it only a maybe" do
+      result =
+        score(aggregate([batch(%{"paste_chars" => 0, "undo_shortcut_count" => 1})]),
+          history: %{updates: 10, max_jump: 150}
+        )
+
+      assert signal_present?(result, "maybe an undo")
+    end
+
+    test "small jumps (typing, completions) are ignored" do
+      refute signal_present?(score(aggregate([batch()]), history: %{updates: 40, max_jump: 30}), "editor update")
+    end
+  end
+
+  describe "Editor-assisted inserts" do
+    test "auto-indent and completions don't count as chars without keys" do
+      stats =
+        aggregate([
+          batch(%{
+            "chars_inserted" => 300,
+            "printable_key_count" => 120,
+            "key_event_count" => 160,
+            "assisted_chars" => 150,
+            "completion_insert_count" => 12
+          })
+        ])
+
+      refute signal_present?(score(stats), "printable key")
+    end
+
+    test "older telemetry: every Enter's auto-indent is not a multi-line insert" do
+      # Game 324804: two Enters, two "multi-line inserts", flagged as suspicious.
+      stats =
+        aggregate([
+          batch(%{"multi_line_insert_count" => 1, "enter_count" => 1}),
+          batch(%{"multi_line_insert_count" => 1, "enter_count" => 1})
+        ])
+
+      refute signal_present?(score(stats), "multi-line insert")
+    end
+
+    test "newer telemetry: a multi-line insert is one (Enter is already left out)" do
+      stats = aggregate([batch(%{"multi_line_insert_count" => 1, "enter_count" => 1, "assisted_chars" => 4})])
+
+      assert signal_present?(score(stats), "1 multi-line insert")
     end
   end
 

@@ -4,6 +4,7 @@ import { useChannel } from '@/api/useChannel';
 import { playTournamentSound } from '@/shared/sound';
 import { useSharedProps } from '@/shared/useSharedProps';
 
+import { type BotAlert, showBotAlert } from './botAlert';
 import { canModerate, useTournamentStore } from './store';
 import type { JoinReply, Match, Player, Report, Tournament } from './types';
 
@@ -105,6 +106,8 @@ export function useTournament(id: number, accessToken: string | null) {
       ...events,
       'tournament:report:pending': ({ report }: { report: Report }) => store.getState().upsertReport(report),
       'tournament:report:updated': ({ report }: { report: Report }) => store.getState().upsertReport(report),
+      'tournament:bot_alert': (alert: BotAlert) =>
+        showBotAlert(alert, (userId) => store.getState().players[userId]?.name ?? `#${userId}`),
     },
   });
 

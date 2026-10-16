@@ -18,6 +18,14 @@ export interface MlStats {
   total_multi_char_deletes: number;
   total_multi_line_inserts: number;
   total_paste_blocked: number;
+  /** Auto-indent, auto-closed pairs, accepted completions (newer telemetry only). */
+  total_assisted_chars?: number;
+  total_completion_inserts?: number;
+  /** Pastes (of the player's own code) and leaving the game (newer telemetry only). */
+  total_paste_chars?: number;
+  paste_tracked?: boolean;
+  total_blurs?: number;
+  total_away_ms?: number;
   total_paste_attempts: number;
   total_copy_shortcuts?: number;
   total_cut_shortcuts?: number;
@@ -56,6 +64,8 @@ export interface MlReport {
   signals: string[];
   stats: MlStats | null;
   code_analysis: MlCodeAnalysis | null;
+  /** BotDetection.EditorHistory: the editor updates the server received. */
+  editor_history: { updates: number; max_jump: number } | null;
   final_length: number | null;
   template_length: number | null;
   effective_added_length: number | null;

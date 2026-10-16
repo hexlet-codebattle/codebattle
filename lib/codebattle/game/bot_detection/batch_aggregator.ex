@@ -8,6 +8,15 @@ defmodule Codebattle.Game.BotDetection.BatchAggregator do
 
   All keys in the returned map use `snake_case` so the result round-trips
   through Ecto JSONB storage and JSON encoding.
+
+  Newer clients keep editor-assisted inserts (Enter's auto-indent, auto-closed
+  brackets, accepted completions) out of the bulk / multi-line counters and
+  report them as `assisted_chars`. Older batches (no `assisted_chars` key)
+  counted every Enter as a multi-line insert, so those are taken off here.
+
+  Pastes (only of the player's own code: the editor's paste guard) are counted
+  as `paste_chars` and kept out of those counters too; `paste_tracked` says
+  every batch reports them, so the scorer needs no blanket paste discount.
   """
 
   @type batch :: map()
@@ -60,9 +69,15 @@ defmodule Codebattle.Game.BotDetection.BatchAggregator do
       total_large_inserts: sum(batches, "large_insert_count"),
       total_multi_char_inserts: sum(batches, "multi_char_insert_count"),
       total_multi_char_deletes: sum(batches, "multi_char_delete_count"),
-      total_multi_line_inserts: sum(batches, "multi_line_insert_count"),
+      total_multi_line_inserts: batches |> Enum.map(&multi_line_inserts/1) |> Enum.sum(),
       total_paste_blocked: sum(batches, "paste_blocked_count"),
       total_paste_attempts: sum(batches, "paste_shortcut_attempt_count"),
+      total_assisted_chars: sum(batches, "assisted_chars"),
+      total_completion_inserts: sum(batches, "completion_insert_count"),
+      total_paste_chars: sum(batches, "paste_chars"),
+      paste_tracked: Enum.all?(batches, &Map.has_key?(summary(&1), "paste_chars")),
+      total_blurs: sum(batches, "blur_count"),
+      total_away_ms: sum(batches, "away_ms"),
       total_copy_shortcuts: sum(batches, "copy_shortcut_count"),
       total_cut_shortcuts: sum(batches, "cut_shortcut_count"),
       total_idle_pauses: sum(batches, "idle_pause_over_2s_count"),
@@ -100,6 +115,16 @@ defmodule Codebattle.Game.BotDetection.BatchAggregator do
       nil -> 0
       v when is_number(v) -> v
       _ -> 0
+    end
+  end
+
+  defp multi_line_inserts(batch) do
+    s = summary(batch)
+
+    if Map.has_key?(s, "assisted_chars") do
+      num(s, "multi_line_insert_count")
+    else
+      max(num(s, "multi_line_insert_count") - num(s, "enter_count"), 0)
     end
   end
 

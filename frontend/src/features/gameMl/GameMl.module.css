@@ -1,8 +1,3 @@
-/* One card per player, the left edge in the player's chart colour. */
-.card {
-  border-left: 4px solid var(--player-color);
-}
-
 .section {
   font-size: 11px;
   font-weight: 700;
@@ -10,53 +5,6 @@
   text-transform: uppercase;
   color: var(--cb-text-muted);
   margin-bottom: 4px;
-}
-
-/* Key–value stat lists. */
-.statRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--mantine-spacing-sm);
-  padding: 3px 0;
-  border-bottom: 1px dashed var(--cb-border);
-  font-size: var(--mantine-font-size-xs);
-
-  &:last-child {
-    border-bottom: 0;
-  }
-}
-
-.statLabel {
-  color: var(--cb-text-muted);
-  min-width: 0;
-}
-
-.statValue {
-  flex: none;
-  text-align: right;
-  font-family: var(--mantine-font-family-monospace);
-  color: var(--cb-text-strong);
-  white-space: nowrap;
-}
-
-.hint {
-  margin-left: 6px;
-  font-family: var(--mantine-font-family-default);
-  color: var(--cb-text-muted);
-
-  &[data-warn] {
-    color: var(--mantine-color-orange-5);
-    font-weight: 600;
-  }
-}
-
-.panel {
-  padding: 8px 12px;
-  border: 1px solid var(--cb-border);
-  border-radius: var(--cb-radius);
-  background: var(--cb-sunken);
-  min-width: 0;
 }
 
 .signals {
@@ -69,8 +17,11 @@
   }
 }
 
+/* A flex column: the editor fills its parent with `flex: 1` (CodeEditor.module.css).
+   The height follows the code (set inline). */
 .codeBox {
-  height: 360px;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius);
   overflow: hidden;
@@ -135,8 +86,184 @@
   stroke-width: 2;
 }
 
-.risk {
+/* ── Side-by-side comparison ─────────────────────────────────────── */
+
+/* A player's verdict, the top edge in their colour. */
+.playerHead {
+  padding: 12px 14px;
+  border: 1px solid var(--cb-border);
+  border-top: 3px solid var(--player-color);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+  min-width: 0;
+}
+
+.playerDot {
+  flex: none;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--player-color);
+  vertical-align: middle;
+}
+
+/* Head to head: player 1 | metric | player 2, bars growing away from the middle. */
+.versus {
+  --versus-cols: minmax(0, 1fr) minmax(120px, 240px) minmax(0, 1fr);
+
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+  padding-bottom: 8px;
+}
+
+.versusHead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: var(--versus-cols);
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius) var(--cb-radius) 0 0;
+  background: var(--cb-panel);
+}
+
+.headSide {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+
+  &[data-side='right'] {
+    justify-content: flex-end;
+  }
+}
+
+.headMid {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+.groupTitle {
+  padding: 14px 14px 4px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cb-text-muted);
+}
+
+.versusRow {
+  display: grid;
+  grid-template-columns: var(--versus-cols);
+  align-items: center;
+  padding: 3px 14px;
+  font-size: var(--mantine-font-size-xs);
+
+  &:hover {
+    background: var(--cb-hover);
+  }
+}
+
+.metricName {
+  padding: 0 10px;
+  text-align: center;
+  line-height: 1.3;
+  color: var(--cb-text-muted);
+}
+
+/* Left: [value][bar→centre]; right: [centre←bar][value]. */
+.side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  &[data-side='right'] {
+    flex-direction: row-reverse;
+  }
+}
+
+.sideValue {
+  flex: 0 1 auto;
+  min-width: 64px;
+
+  [data-side='right'] > & {
+    text-align: right;
+  }
+}
+
+.track {
+  flex: 1 1 auto;
+  min-width: 24px;
+  height: 8px;
+  display: flex;
+  border-radius: 4px;
+  background: var(--cb-sunken);
+  overflow: hidden;
+
+  [data-side='left'] > & {
+    justify-content: flex-end;
+  }
+}
+
+.fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--player-color);
+
+  [data-warn] > .track > & {
+    background: var(--mantine-color-orange-5);
+  }
+}
+
+.help {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.value {
+  font-family: var(--mantine-font-family-monospace);
+  color: var(--cb-text-strong);
+  white-space: nowrap;
+
+  [data-warn] & {
+    color: var(--mantine-color-orange-6);
+    font-weight: 700;
+  }
+}
+
+.cellHint {
+  display: block;
+  color: var(--cb-text-muted);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.chartCell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 10px 4px;
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  background: var(--cb-panel);
+  min-width: 0;
+}
+
+.emptyCode {
+  padding: 16px;
+  border: 1px dashed var(--cb-border);
+  border-radius: var(--cb-radius);
+  text-align: center;
 }

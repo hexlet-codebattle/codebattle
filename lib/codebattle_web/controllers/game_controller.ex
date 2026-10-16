@@ -143,6 +143,7 @@ defmodule CodebattleWeb.GameController do
       signals: a.signals,
       stats: a.stats,
       code_analysis: a.code_analysis,
+      editor_history: a.editor_history,
       final_length: a.final_length,
       template_length: a.template_length,
       effective_added_length: a.effective_added_length

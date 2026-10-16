@@ -4881,3 +4881,84 @@ msgstr "Nobody is watching yet"
 
 msgid "Open the full chat"
 msgstr "Open the full chat"
+
+msgid "Nobody changed the code during this game, so there is nothing to replay."
+msgstr ""
+
+msgid "Assisted chars / completions"
+msgstr ""
+
+msgid "Inserted by the editor for a keystroke: auto-indent, closing brackets, accepted autocomplete. Not counted as pasted."
+msgstr ""
+
+msgid "Final solution"
+msgstr ""
+
+msgid "The starting code of the task; excluded from coverage."
+msgstr ""
+
+msgid "Chars typed in the editor against the code added on top of the template."
+msgstr ""
+
+msgid "Metric"
+msgstr ""
+
+msgid "Bots are not analyzed."
+msgstr ""
+
+msgid "No signals."
+msgstr ""
+
+msgid "Final code"
+msgstr ""
+
+msgid "%{count} chars"
+msgstr ""
+
+msgid "No code."
+msgstr ""
+
+msgid "vs"
+msgstr ""
+
+msgid "Pasted chars"
+msgstr ""
+
+msgid "Pastes can only bring back code copied from this editor."
+msgstr ""
+
+msgid "Focus and the server copy"
+msgstr ""
+
+msgid "Left the game / time away"
+msgstr ""
+
+msgid "Switches to another tab or window while playing."
+msgstr ""
+
+msgid "Editor updates received"
+msgstr ""
+
+msgid "The server's own copy of the editor: the client sends the code at most every 250 ms."
+msgstr ""
+
+msgid "Largest jump between updates"
+msgstr ""
+
+msgid "Most characters (not counting spaces) one update added. Typing adds a few; a big jump without a paste was not typed."
+msgstr ""
+
+msgid "≥80 → not typed"
+msgstr ""
+
+msgid "Likely bot in game #%{id}"
+msgstr ""
+
+msgid "Suspicious play in game #%{id}"
+msgstr ""
+
+msgid "Open the report"
+msgstr ""
+
+msgid "Score: %{score}"
+msgstr ""

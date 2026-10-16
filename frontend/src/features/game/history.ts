@@ -4,6 +4,8 @@ import type { CheckResult } from './types';
 
 // Finished games are replayed from their playbook (GET /api/v1/playbook/:id,
 // Codebattle.Playbook records): "init" per player, then editor diffs, checks, give-ups…
+// A game still in memory (just over, or the minutes after a timeout) serves its raw records:
+// editor updates carry the whole `editor_text` instead of a diff.
 
 interface DeltaOp {
   insert?: string;
@@ -86,7 +88,11 @@ export function buildTimeline(playbook: Playbook): ReplayStep[] {
 
     switch (record.type) {
       case 'update_editor_data':
-        patch({ text: applyDelta(current?.text ?? '', record.diff?.delta ?? []), lang: record.diff?.next_lang ?? current?.lang });
+        patch(
+          record.editor_text != null
+            ? { text: record.editor_text, lang: record.editor_lang ?? current?.lang }
+            : { text: applyDelta(current?.text ?? '', record.diff?.delta ?? []), lang: record.diff?.next_lang ?? current?.lang },
+        );
         break;
       case 'start_check':
         patch({ checking: true });

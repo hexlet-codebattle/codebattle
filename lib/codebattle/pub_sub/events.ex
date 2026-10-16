@@ -6,8 +6,7 @@ defmodule Codebattle.PubSub.Events do
 
   def get_messages("tournament:bot_alert", %{tournament_id: tournament_id} = params) do
     # Admin-only topic — the same one `TournamentAdminChannel.join/3`
-    # subscribes to. The matching `tournament:bot_alert` push from the
-    # admin channel to the FE is not wired up yet (TODO).
+    # subscribes to; the channel pushes it on to the moderators' page.
     [
       %Message{
         topic: "tournament:#{tournament_id}",

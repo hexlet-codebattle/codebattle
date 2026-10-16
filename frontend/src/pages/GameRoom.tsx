@@ -1,5 +1,5 @@
 import { Center, Loader, Text } from '@mantine/core';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { type ChatApi, useChat } from '@/features/chat/useChat';
@@ -242,15 +242,23 @@ function HistoryRoom({ props }: { props: PageProps }) {
   }, [steps, index]);
 
   const onIndex = useCallback((value: number) => setChosen(value), []);
+  // Nobody touched the code (e.g. both idle until the timeout): the bar would only jump to the end.
+  const unchanged = useMemo(
+    () => steps?.every((step) => Object.entries(step.players).every(([id, player]) => player.text === steps[0].players[Number(id)]?.text)) ?? false,
+    [steps],
+  );
+  const review = props.current_user.is_admin ? <PlaybookReview gameId={props.game_id} initial={playbook.data?.solutionType ?? null} /> : null;
 
   const footer = props.has_playbook ? (
-    steps && index != null ? (
-      <ReplayBar
-        steps={steps}
-        index={index}
-        onIndex={onIndex}
-        extra={props.current_user.is_admin ? <PlaybookReview gameId={props.game_id} initial={playbook.data?.solutionType ?? null} /> : null}
-      />
+    steps && index != null && !unchanged ? (
+      <ReplayBar steps={steps} index={index} onIndex={onIndex} extra={review} />
+    ) : steps && unchanged ? (
+      <div className={classes.replayBar}>
+        <Text size="xs" c="dimmed">
+          {t('Nobody changed the code during this game, so there is nothing to replay.')}
+        </Text>
+        {review}
+      </div>
     ) : (
       <div className={classes.replayBar}>
         {playbook.isError ? (

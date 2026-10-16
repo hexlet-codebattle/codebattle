@@ -248,7 +248,12 @@ defmodule CodebattleWeb.GameChannelTest do
           content_change_count: 12,
           chars_inserted: 84,
           chars_deleted: 9,
-          net_text_delta: 75,
+          net_text_delta: -5,
+          assisted_chars: 14,
+          completion_insert_count: 2,
+          paste_chars: 7,
+          blur_count: 1,
+          away_ms: 12_000,
           max_single_insert_len: 61,
           max_single_delete_len: 3,
           multi_char_insert_count: 3,
@@ -279,6 +284,11 @@ defmodule CodebattleWeb.GameChannelTest do
       assert batch.summary["large_insert_count"] == 1
       assert batch.summary["max_single_insert_len"] == 61
       assert batch.summary["avg_key_delta_ms"] == 114
+      assert batch.summary["net_text_delta"] == -5
+      assert batch.summary["assisted_chars"] == 14
+      assert batch.summary["completion_insert_count"] == 2
+      assert batch.summary["paste_chars"] == 7
+      assert batch.summary["away_ms"] == 12_000
     end
 
     test "rate limits too many editor summaries in a short window", %{

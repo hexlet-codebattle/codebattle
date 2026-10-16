@@ -12,16 +12,25 @@ export interface ChartPoint {
 }
 
 interface BatchChartProps {
-  title: string;
+  /** Shown above the chart; without it the chart is labelled by `ariaLabel` only. */
+  title?: string;
+  ariaLabel?: string;
   points: ChartPoint[];
-  /** The time axis end (shared by a player's charts). */
+  /** The time axis end (shared by the charts being compared). */
   maxX: number;
   kind: 'bar' | 'line';
   format?: (value: number) => string;
+  /** The value axis (shared by the charts being compared); from the points when absent. */
+  range?: ChartRange;
 }
 
-const W = 360;
-const H = 140;
+export interface ChartRange {
+  min: number;
+  max: number;
+}
+
+const W = 520;
+const H = 110;
 const PAD = { left: 40, right: 8, top: 8, bottom: 18 };
 
 const niceMax = (value: number) => {
@@ -31,15 +40,18 @@ const niceMax = (value: number) => {
   return step * magnitude;
 };
 
+/** A value axis from 0 (or below, for negatives) to a round number above the largest value. */
+export function chartRange(values: number[]): ChartRange {
+  const rawMin = Math.min(0, ...values);
+  return { min: rawMin < 0 ? -niceMax(-rawMin) : 0, max: niceMax(Math.max(0, ...values)) };
+}
+
 /**
  * One per-batch series over game time: bars span their telemetry window (zero baseline,
  * negatives below it), a line joins window midpoints. Hover a mark for its value.
  */
-export function BatchChart({ title, points, maxX, kind, format = (value) => String(Math.round(value)) }: BatchChartProps) {
-  const values = points.map((point) => point.value);
-  const yMax = niceMax(Math.max(0, ...values));
-  const rawMin = Math.min(0, ...values);
-  const yMin = rawMin < 0 ? -niceMax(-rawMin) : 0;
+export function BatchChart({ title, ariaLabel, points, maxX, kind, format = (value) => String(Math.round(value)), range }: BatchChartProps) {
+  const { min: yMin, max: yMax } = range ?? chartRange(points.map((point) => point.value));
   const spanX = Math.max(maxX, 1);
 
   const x = (ms: number) => PAD.left + (ms / spanX) * (W - PAD.left - PAD.right);
@@ -56,10 +68,12 @@ export function BatchChart({ title, points, maxX, kind, format = (value) => Stri
 
   return (
     <div>
-      <Text size="xs" c="dimmed" fw={600} mb={2}>
-        {title}
-      </Text>
-      <svg viewBox={`0 0 ${W} ${H}`} className={classes.chart} role="img" aria-label={title}>
+      {title && (
+        <Text size="xs" c="dimmed" fw={600} mb={2}>
+          {title}
+        </Text>
+      )}
+      <svg viewBox={`0 0 ${W} ${H}`} className={classes.chart} role="img" aria-label={ariaLabel ?? title}>
         {yTicks.map((tick) => (
           <g key={tick}>
             <line x1={PAD.left} x2={W - PAD.right} y1={y(tick)} y2={y(tick)} className={tick === 0 ? classes.baseline : classes.grid} />

@@ -39,6 +39,22 @@ defmodule CodebattleWeb.TournamentAdminChannelTest do
     channel_socket
   end
 
+  describe "tournament:bot_alert" do
+    test "pushes the bot-detection alert to moderators" do
+      creator = insert(:user)
+      tournament = create_tournament(creator)
+      _socket = join_admin(creator, tournament.id)
+
+      Codebattle.PubSub.broadcast("tournament:bot_alert", %{
+        tournament_id: tournament.id,
+        game_id: 123,
+        reports: [%{user_id: 7, level: "high", score: 14, signals: ["no telemetry"]}]
+      })
+
+      assert_push("tournament:bot_alert", %{game_id: 123, reports: [%{user_id: 7, level: "high", score: 14}]})
+    end
+  end
+
   describe "tournament:player:kick handle_in" do
     test "removes a player from the tournament" do
       creator = insert(:user)

@@ -25,6 +25,7 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
              :signals,
              :stats,
              :code_analysis,
+             :editor_history,
              :final_length,
              :template_length,
              :effective_added_length,
@@ -42,6 +43,8 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
     field(:signals, {:array, :string}, default: [])
     field(:stats, :map, default: %{})
     field(:code_analysis, :map, default: %{})
+    # BotDetection.EditorHistory: the editor updates the server received.
+    field(:editor_history, :map, default: %{})
     field(:final_length, :integer, default: 0)
     field(:template_length, :integer, default: 0)
     field(:effective_added_length, :integer, default: 0)
@@ -61,6 +64,7 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
       :signals,
       :stats,
       :code_analysis,
+      :editor_history,
       :final_length,
       :template_length,
       :effective_added_length,
@@ -88,6 +92,7 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
       signals: a.signals,
       stats: a.stats || %{},
       code_analysis: a.code_analysis || %{},
+      editor_history: a.editor_history || %{},
       final_length: a.final_length,
       template_length: a.template_length,
       effective_added_length: a.effective_added_length

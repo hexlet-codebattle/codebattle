@@ -4,7 +4,8 @@ import { IconAlertTriangle, IconArrowLeft, IconRefresh } from '@tabler/icons-rea
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PlayerReport } from '@/features/gameMl/PlayerReport';
+import { BatchCharts, CodeColumns, type MlColumn, PlayerHeaders, VersusTable } from '@/features/gameMl/Comparison';
+import { PLAYER_COLORS } from '@/features/gameMl/format';
 import type { MlBatch, MlPlayer } from '@/features/gameMl/types';
 import { AppLayout } from '@/layout/AppLayout';
 import { PageHeader } from '@/shared/PageHeader';
@@ -19,19 +20,22 @@ interface GameMlProps {
   batches: MlBatch[];
 }
 
-const PLAYER_COLORS = ['blue', 'pink'];
-
 /** Bot/human signal review of a game: each player's risk report from editor telemetry. */
 export default function GameMl() {
   const { t } = useTranslation();
   const { game_id: gameId, can_manage: canManage = false, players = [], batches = [] } = useSharedProps<GameMlProps>();
 
-  const batchesByUser = useMemo(() => {
-    const map = new Map<number, MlBatch[]>();
-    for (const batch of batches) map.set(batch.user_id, [...(map.get(batch.user_id) ?? []), batch]);
-    for (const list of map.values()) list.sort((a, b) => (a.window_start_offset_ms ?? 0) - (b.window_start_offset_ms ?? 0));
-    return map;
-  }, [batches]);
+  // One column per player, left to right: verdict, per-batch charts, the metrics head to head, code.
+  const columns = useMemo<MlColumn[]>(() => {
+    const byUser = new Map<number, MlBatch[]>();
+    for (const batch of batches) byUser.set(batch.user_id, [...(byUser.get(batch.user_id) ?? []), batch]);
+    for (const list of byUser.values()) list.sort((a, b) => (a.window_start_offset_ms ?? 0) - (b.window_start_offset_ms ?? 0));
+    return players.map((player: MlPlayer, index) => ({
+      player,
+      batches: byUser.get(player.id) ?? [],
+      color: PLAYER_COLORS[index % PLAYER_COLORS.length],
+    }));
+  }, [players, batches]);
 
   return (
     <AppLayout wide>
@@ -60,15 +64,11 @@ export default function GameMl() {
           {t('No players found for this game.')}
         </Alert>
       ) : (
-        <Stack gap="md">
-          {players.map((player, index) => (
-            <PlayerReport
-              key={player.id}
-              player={player}
-              batches={batchesByUser.get(player.id) ?? []}
-              color={PLAYER_COLORS[index % PLAYER_COLORS.length]}
-            />
-          ))}
+        <Stack gap="lg">
+          <PlayerHeaders columns={columns} />
+          <BatchCharts columns={columns} />
+          <VersusTable columns={columns} />
+          <CodeColumns columns={columns} />
         </Stack>
       )}
     </AppLayout>

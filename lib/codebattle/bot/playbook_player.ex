@@ -68,6 +68,8 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   # don't make the bot submit instantly.
   @min_total_time_ms to_timeout(second: 5)
   @max_activity_delay_ms 1_999
+  # Typing pace: an average character weighs ~9, i.e. ~180ms per keystroke.
+  @keystroke_ms_per_weight 20
 
   @bot_lang "python"
   @wrong_lines [
@@ -310,29 +312,63 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     end
   end
 
+  # Keystrokes go at a typing pace and the rest of the time becomes thinking pauses after
+  # lines and words. Spreading every keystroke evenly over the whole time typed a short
+  # solution at one character per few seconds, so the bot looked idle.
   defp distribute_timeouts(_total_time_ms, [], _solution), do: []
 
   defp distribute_timeouts(total_time_ms, operations, solution) do
-    weighted_operations =
-      operations
-      |> Enum.with_index()
-      |> Enum.map(fn {operation, index} ->
-        {operation, operation_weight(operation, index, solution)}
+    indexed_operations = Enum.with_index(operations)
+
+    typing_weights =
+      Enum.map(indexed_operations, fn {operation, index} -> operation_weight(operation, index, solution) end)
+
+    {pause_weights, _previous} =
+      Enum.map_reduce(indexed_operations, nil, fn {operation, index}, previous ->
+        {pause_weight(operation, previous, index, solution), operation}
       end)
 
-    total_weight =
-      weighted_operations
-      |> Enum.map(&elem(&1, 1))
-      |> Enum.sum()
+    typing_ms = Enum.sum(typing_weights) * @keystroke_ms_per_weight
+    total_pause_weight = Enum.sum(pause_weights)
+
+    if typing_ms >= total_time_ms or total_pause_weight == 0 do
+      spread(total_time_ms, typing_weights)
+    else
+      keystrokes_ms = Enum.map(typing_weights, &(&1 * @keystroke_ms_per_weight))
+      pauses_ms = spread(total_time_ms - typing_ms, pause_weights)
+      Enum.zip_with(keystrokes_ms, pauses_ms, &+/2)
+    end
+  end
+
+  defp spread(total_ms, weights) do
+    total_weight = Enum.sum(weights)
 
     {timeouts, allocated_ms} =
-      Enum.map_reduce(weighted_operations, 0, fn {_operation, weight}, allocated_ms ->
-        timeout_ms = div(total_time_ms * weight, total_weight)
+      Enum.map_reduce(weights, 0, fn weight, allocated_ms ->
+        timeout_ms = div(total_ms * weight, total_weight)
         {timeout_ms, allocated_ms + timeout_ms}
       end)
 
-    add_remainder(timeouts, total_time_ms - allocated_ms)
+    add_remainder(timeouts, total_ms - allocated_ms)
   end
+
+  # A pause after finishing a line (not after blank lines) and a short one between words.
+  defp pause_weight(%{type: :insert, phase: :solution, text: "\n"}, %{text: "\n"}, _index, _solution), do: 0
+
+  defp pause_weight(%{type: :insert, phase: :solution, text: "\n"}, _previous, index, solution) do
+    16
+    |> add_noise({:pause, index}, solution, 6)
+    |> max(1)
+  end
+
+  defp pause_weight(%{type: :insert, phase: :solution, text: " "}, %{text: previous_text}, index, solution)
+       when previous_text not in [" ", "\t", "\n"] do
+    2
+    |> add_noise({:pause, index}, solution, 1)
+    |> max(1)
+  end
+
+  defp pause_weight(_operation, _previous, _index, _solution), do: 0
 
   defp operation_weight(%{type: :delete} = operation, index, solution) do
     13

@@ -5,7 +5,24 @@ defmodule Codebattle.Game.BotDetection.LanguageTemplates do
   actually added.
   """
 
+  alias Codebattle.CodeCheck
   alias Codebattle.Runner.Languages
+
+  @doc """
+  The length of the template the player's editor started from: the one generated for the
+  game's task (its signature), falling back to the language's generic template.
+  """
+  @spec length_for(map() | nil, String.t() | nil) :: non_neg_integer()
+  def length_for(%Codebattle.Task{} = task, lang) when is_binary(lang) and lang != "" do
+    case Languages.meta(lang) do
+      %{} = meta -> task |> CodeCheck.generate_solution_template(meta) |> String.length()
+      _ -> length_for(lang)
+    end
+  rescue
+    _ -> length_for(lang)
+  end
+
+  def length_for(_task, lang), do: length_for(lang)
 
   @doc """
   Returns the length (in characters) of the default solution template for

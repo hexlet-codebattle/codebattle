@@ -351,6 +351,16 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:noreply, socket}
   end
 
+  # BotDetection.Worker flagged players of a finished tournament game (medium / high risk).
+  def handle_info(%{event: "tournament:bot_alert", payload: payload}, socket) do
+    push(socket, "tournament:bot_alert", %{
+      game_id: payload.game_id,
+      reports: Enum.map(payload.reports, &Map.take(&1, [:user_id, :level, :score, :signals]))
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:report:updated", payload: payload}, socket) do
     push(socket, "tournament:report:updated", %{report: payload.report})
 

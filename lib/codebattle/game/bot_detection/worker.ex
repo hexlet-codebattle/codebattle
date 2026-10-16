@@ -12,12 +12,8 @@ defmodule Codebattle.Game.BotDetection.Worker do
   After persisting the per-player reports the worker checks if the game
   belongs to a tournament. If at least one player was flagged
   `:medium` / `:high`, an alert event is broadcast on the admin-only
-  `tournament:<tournament_id>` PubSub topic so moderators can investigate.
-
-  TODO: the matching `tournament:bot_alert` handler in
-  `CodebattleWeb.TournamentAdminChannel` (and the FE notification widget)
-  isn't wired up yet — the broadcast will simply land in the PubSub bus
-  and be dropped until that listener exists.
+  `tournament:<tournament_id>` PubSub topic; `CodebattleWeb.TournamentAdminChannel`
+  pushes it to the moderators' tournament page, which links the game's report.
 
   Concurrency is capped to 2 in the `:bot_detection` Oban queue so a burst
   of finishing games never starves the rest of the system.
@@ -63,10 +59,7 @@ defmodule Codebattle.Game.BotDetection.Worker do
            GameContext.fetch_game(game_id) do
       payload = build_alert_payload(game_id, tournament_id, suspicious)
 
-      # NOTE: published on the admin-only `tournament:#{id}` topic.
-      # The receiving handler in `CodebattleWeb.TournamentAdminChannel` is
-      # NOT implemented yet — that's tracked separately. For now this just
-      # surfaces the alert into the PubSub bus.
+      # Published on the admin-only `tournament:#{id}` topic (TournamentAdminChannel).
       Codebattle.PubSub.broadcast("tournament:bot_alert", payload)
     else
       _ -> :ok
