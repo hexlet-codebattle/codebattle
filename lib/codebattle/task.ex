@@ -334,6 +334,27 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  @doc "Prefers public beginner training tasks, falling back to other beginner tasks and avoiding repeats."
+  @spec get_onboarding_task(integer() | nil) :: t() | nil
+  def get_onboarding_task(previous_task_id \\ nil) do
+    query =
+      __MODULE__
+      |> active()
+      |> where([t], t.visibility == "public" and t.level in ["elementary", "easy"])
+      |> order_by([t],
+        desc: fragment("? @> ?::varchar[]", t.tags, ["training"]),
+        asc: fragment("CASE WHEN ? = 'elementary' THEN 0 ELSE 1 END", t.level),
+        asc: t.id
+      )
+      |> limit(1)
+
+    if is_integer(previous_task_id) do
+      Repo.one(where(query, [t], t.id != ^previous_task_id)) || Repo.one(query)
+    else
+      Repo.one(query)
+    end
+  end
+
   @spec list_all_tags() :: list(String.t())
   def list_all_tags do
     query = """

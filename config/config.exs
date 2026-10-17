@@ -44,7 +44,10 @@ config :codebattle, Oban,
   # longest legitimate job (runner calls are capped at 180s).
   lifeline: [rescue_after: {30, :minutes}],
   # Privacy retention: drop expired/revoked browser sessions (IP, user agent).
-  crontab: [{"17 3 * * *", Codebattle.Workers.UserSessionPurgeWorker}]
+  crontab: [
+    {"17 3 * * *", Codebattle.Workers.UserSessionPurgeWorker},
+    {"27 3 * * *", Codebattle.Workers.OnboardingPurgeWorker}
+  ]
 
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"

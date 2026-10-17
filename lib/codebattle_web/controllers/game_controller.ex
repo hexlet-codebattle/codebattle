@@ -7,6 +7,7 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.Game.Helpers
   alias Codebattle.Playbook
   alias Codebattle.Repo
+  alias Codebattle.Runner.Languages
   alias Codebattle.Task
   alias Codebattle.Tournament
   alias Codebattle.User
@@ -18,6 +19,12 @@ defmodule CodebattleWeb.GameController do
   require Logger
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete, :create_by_task])
+
+  plug(
+    CodebattleWeb.Plugs.RateLimit,
+    [bucket: "training", limit: 12, window: to_timeout(minute: 5)] when action in [:create_training]
+  )
+
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   action_fallback(CodebattleWeb.FallbackController)
@@ -220,21 +227,48 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  def create_training(conn, _params) do
-    task = Task.get_random_training_task()
+  def create_training(conn, params) do
+    task = Task.get_onboarding_task(get_session(conn, :practice_task_id))
+    lang = params["lang"] || get_session(conn, :practice_lang) || conn.assigns.current_user.lang
+
+    cond do
+      lang not in Languages.get_lang_slugs() ->
+        conn
+        |> put_flash(:warning, gettext("Choose an available programming language."))
+        |> redirect(to: "/onboarding")
+
+      is_nil(task) ->
+        conn
+        |> put_flash(:warning, gettext("Practice is unavailable right now. Please try again later."))
+        |> redirect(to: "/onboarding")
+
+      true ->
+        create_practice(conn, task, lang)
+    end
+  end
+
+  defp create_practice(conn, task, lang) do
+    user = %{conn.assigns.current_user | lang: lang}
 
     game_params = %{
-      level: "elementary",
+      level: task.level,
       task: task,
       mode: "training",
       use_chat: false,
       visibility_type: "hidden",
-      players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
+      players: [user, Codebattle.Bot.Context.build()]
     }
 
     case Context.create_game(game_params) do
-      {:ok, game} -> redirect(conn, to: Routes.game_path(conn, :show, game.id))
-      {:error, reason} -> {:error, reason}
+      {:ok, game} ->
+        conn
+        |> CodebattleWeb.OnboardingTracking.practice(game, lang)
+        |> put_session(:practice_lang, lang)
+        |> put_session(:practice_task_id, task.id)
+        |> redirect(to: Routes.game_path(conn, :show, game.id))
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

@@ -31,6 +31,34 @@
   background: var(--cb-panel-gradient);
 }
 
+.battlePreview {
+  background: var(--cb-panel-gradient);
+  border: 1px solid var(--cb-border);
+}
+
+.exampleTask,
+.exampleEditor {
+  background: var(--cb-sunken);
+  border: 1px solid var(--cb-border);
+  border-radius: var(--cb-radius);
+  padding: 16px;
+  min-width: 0;
+}
+
+.codeLine {
+  height: 6px;
+  width: 85%;
+  margin-top: 14px;
+  border-radius: 3px;
+  background: var(--cb-success);
+  opacity: 0.45;
+
+  &[data-short] {
+    width: 55%;
+    opacity: 0.25;
+  }
+}
+
 .leaderRow {
   padding: 6px 8px;
   border-radius: 8px;

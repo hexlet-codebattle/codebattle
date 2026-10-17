@@ -294,8 +294,12 @@ defmodule Codebattle.Game.Context do
           {:ok, Game.t(), %{check_result: CodeCheck.check_result(), solution_status: boolean}}
           | {:error, atom}
   def check_result(id, params) do
-    case get_game!(id) do
-      %{is_live: true} = game -> Engine.check_result(game, params)
+    with %{is_live: true} = game <- get_game!(id),
+         {:ok, checked_game, result} <- Engine.check_result(game, params) do
+      Codebattle.Onboarding.record_check(checked_game, params.user, result.check_result)
+      {:ok, checked_game, result}
+    else
+      {:error, reason} -> {:error, reason}
       _ -> {:error, :game_is_dead}
     end
   end

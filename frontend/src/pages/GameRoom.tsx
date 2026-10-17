@@ -10,6 +10,7 @@ import { GameResultModal } from '@/features/game/components/GameResultModal';
 import { LockScreen } from '@/features/game/components/LockScreen';
 import { MiniChat } from '@/features/game/components/MiniChat';
 import { PlaybookReview } from '@/features/game/components/PlaybookReview';
+import { PracticeGuide } from '@/features/game/components/PracticeGuide';
 import { ReplayBar } from '@/features/game/components/ReplayBar';
 import { type BriefTab, TaskBrief } from '@/features/game/components/TaskBrief';
 import { TopBar } from '@/features/game/components/TopBar';
@@ -138,6 +139,7 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
       />
 
       <div className={classes.body}>
+        {!history && game.mode === 'training' && game.players.some((player) => player.id === me.id) && <PracticeGuide />}
         {brief && (
           <TaskBrief
             tab={tab}
@@ -204,7 +206,7 @@ function LiveRoom({ props }: { props: PageProps }) {
         withChat={game.use_chat && !me.is_guest}
         // Players keep editing and checking after the end while the game lives (the server
         // accepts it: a win stays a win, after a timeout the check doesn't count).
-        editable={isPlayer && !me.is_guest}
+        editable={isPlayer && (!me.is_guest || game.mode === 'training')}
         allowClipboard={props.can_manage_game}
         canManage={props.can_manage_game}
       />

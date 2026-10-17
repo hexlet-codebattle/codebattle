@@ -6625,3 +6625,159 @@ msgstr "Зарегистрируйтесь и займите место до н�
 
 msgid "Warm up with a quick match against a bot."
 msgstr "Разомнитесь в быстрой игре против бота."
+
+msgid "Play your first battle"
+msgstr "Сыграть первую дуэль"
+
+msgid "Code. Compete. Learn together."
+msgstr "Пишите код. Соревнуйтесь. Учитесь вместе."
+
+msgid "A coding challenge. Two players. One winner."
+msgstr "Одна задача. Два игрока. Один победитель."
+
+msgid "Solve the same task in your favorite language. See your opponent’s code live and race to pass the tests."
+msgstr "Решайте одну задачу на любимом языке. Следите за кодом соперника в реальном времени и постарайтесь первым пройти все тесты."
+
+msgid "Start with a practice bot. No signup. No rating changes."
+msgstr "Начните с тренировочного бота. Без регистрации и изменений рейтинга."
+
+msgid "Choose your language"
+msgstr "Выберите язык"
+
+msgid "Preview the task"
+msgstr "Посмотрите задачу"
+
+msgid "Practice bot"
+msgstr "Тренировочный бот"
+
+msgid "Already play here? Sign in"
+msgstr "Уже играете здесь? Войти"
+
+msgid "How a coding battle works"
+msgstr "Как проходит дуэль"
+
+msgid "One task. Two editors."
+msgstr "Одна задача. Два редактора."
+
+msgid "Example battle"
+msgstr "Пример дуэли"
+
+msgid "Return the sum of two numbers."
+msgstr "Верните сумму двух чисел."
+
+msgid "Your opponent"
+msgstr "Ваш соперник"
+
+msgid "The first correct solution wins. Watch each other code live."
+msgstr "Побеждает первое верное решение. Следите за кодом друг друга в реальном времени."
+
+msgid "Your first battle, step by step"
+msgstr "Ваша первая дуэль — шаг за шагом"
+
+msgid "Choose a language, preview the task, and start when you’re ready."
+msgstr "Выберите язык, прочитайте задачу и начните, когда будете готовы."
+
+msgid "Preview an approachable task before starting. Your practice opponent is a bot."
+msgstr "Прочитайте несложную задачу перед началом. Ваш тренировочный соперник — бот."
+
+msgid "Write it. Run it."
+msgstr "Напишите код. Запустите тесты."
+
+msgid "Fill in the solution and run the tests. Use the results to improve your code."
+msgstr "Допишите решение и запустите тесты. Используйте результаты, чтобы улучшить код."
+
+msgid "Play again or meet a rival"
+msgstr "Сыграйте ещё или найдите соперника"
+
+msgid "Try another task, then create an account to challenge real players."
+msgstr "Попробуйте другую задачу, а затем создайте аккаунт для дуэлей с людьми."
+
+msgid "Explore seasons and tournaments"
+msgstr "Посмотреть сезоны и турниры"
+
+msgid "Your first coding battle"
+msgstr "Ваша первая дуэль"
+
+msgid "Which language do you want to use?"
+msgstr "На каком языке вы хотите играть?"
+
+msgid "Unrated"
+msgstr "Без рейтинга"
+
+msgid "Write your solution on the left. Watch the bot on the right. Run tests as often as you like."
+msgstr "Пишите решение слева. Следите за ботом справа. Запускайте тесты сколько угодно раз."
+
+msgid "The first correct solution wins. You can keep solving after the bot finishes."
+msgstr "Побеждает первое верное решение. Вы можете продолжить решать, даже если бот закончит раньше."
+
+msgid "Start practice battle"
+msgstr "Начать тренировочную дуэль"
+
+msgid "No signup required. Your rating stays unchanged."
+msgstr "Регистрация не нужна. Ваш рейтинг не изменится."
+
+msgid "Your practice task"
+msgstr "Ваша тренировочная задача"
+
+msgid "Practice is unavailable right now. Please try again later."
+msgstr "Тренировка сейчас недоступна. Попробуйте позже."
+
+msgid "Choose an available programming language."
+msgstr "Выберите доступный язык программирования."
+
+msgid "Hide tips"
+msgstr "Скрыть подсказки"
+
+msgid "Show tips"
+msgstr "Показать подсказки"
+
+msgid "You solved it! Ready for another challenge?"
+msgstr "Задача решена! Готовы к следующей?"
+
+msgid "Use the test results to improve your solution, then run it again."
+msgstr "Используйте результаты тестов, чтобы улучшить решение, и запустите их снова."
+
+msgid "Read the task, write your solution on the left, then press Run to check it."
+msgstr "Прочитайте задачу, напишите решение слева и нажмите «Запустить», чтобы проверить его."
+
+msgid "Keep the function signature and return your answer. The bot is on the right; you can keep solving after it finishes."
+msgstr "Сохраните сигнатуру функции и верните ответ. Бот находится справа; вы можете продолжить решать после его финиша."
+
+msgid "Practice again"
+msgstr "Ещё тренировка"
+
+msgid "Create an account to play people"
+msgstr "Создать аккаунт для игры с людьми"
+
+msgid "Practice complete!"
+msgstr "Тренировка завершена!"
+
+msgid "Keep practicing"
+msgstr "Продолжайте тренировку"
+
+msgid "You passed the tests and solved the challenge. Try another task or create an account to play against people."
+msgstr "Вы прошли все тесты и решили задачу. Попробуйте другую или создайте аккаунт для игры с людьми."
+
+msgid "The battle is over, but you can keep editing and running tests. Take a look at the bot’s solution if you need an idea."
+msgstr "Дуэль завершена, но вы можете продолжить писать код и запускать тесты. Если нужны идеи, посмотрите решение бота."
+
+msgid "Review the code"
+msgstr "Посмотреть код"
+
+msgid "Keep solving"
+msgstr "Продолжить решение"
+
+msgid "Cookies keep you signed in and remember your settings. We measure onboarding on our own servers. No ads or third-party tracking."
+msgstr "Cookie сохраняют вход и настройки. Мы измеряем прохождение знакомства с игрой на своих серверах. Без рекламы и стороннего отслеживания."
+
+msgid "a random guest ID in the session cookie. We reuse it to count landing visits, practice setup, test runs, solved practice tasks, another practice and sign-in. These onboarding records stay on our servers for up to 90 days and contain no IP address, browser details, account ID or submitted code."
+msgstr "случайный гостевой ID в cookie сессии. Мы используем его для подсчёта посещений главной страницы, открытия тренировки, запуска тестов, решения тренировочной задачи, следующей тренировки и входа. Эти записи хранятся на наших серверах до 90 дней и не содержат IP-адреса, сведений о браузере, ID аккаунта или отправленного кода."
+
+msgid "To improve onboarding"
+msgstr "Для улучшения знакомства с игрой"
+
+msgid "first-party counts of the steps from landing to practice. We skip this measurement when your browser sends Do Not Track or Global Privacy Control."
+msgstr "собственные счётчики шагов от главной страницы до тренировки. Мы не ведём эти измерения, если браузер отправляет Do Not Track или Global Privacy Control."
+
+msgid "We use no additional analytics cookies, advertising cookies or third-party trackers. First-party onboarding counts reuse the existing guest session and honor Do Not Track and Global Privacy Control. Fonts are served from our own servers. Profile pictures of users who signed in with GitHub, Discord or a partner platform load from those services, which see your IP address. You can delete cookies and local storage in your browser at any time; you will be signed out."
+msgstr "Мы не используем дополнительные аналитические cookie, рекламные cookie или сторонние трекеры. Наши счётчики знакомства с игрой используют существующую гостевую сессию и учитывают Do Not Track и Global Privacy Control. Шрифты загружаются с наших серверов. Аватары пользователей, вошедших через GitHub, Discord или партнёрскую платформу, загружаются с этих сервисов, которые видят ваш IP-адрес. Вы можете удалить cookie и локальное хранилище браузера в любой момент; это завершит вход."

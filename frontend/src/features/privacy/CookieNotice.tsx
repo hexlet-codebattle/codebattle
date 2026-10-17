@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import classes from './CookieNotice.module.css';
 
-// We only set strictly necessary cookies/storage, which need no consent anywhere (GDPR/ePrivacy,
-// UK PECR, CCPA, LGPD, 152-FZ…), so this is a one-time notice, not an accept/reject prompt.
-// If a non-essential tracker is ever added, it needs a real opt-in here before it loads.
+// No analytics SDK or additional tracking cookie. First-party onboarding milestones
+// reuse the existing guest session; the server honors DNT and Global Privacy Control.
 const DISMISSED_KEY = 'cb.privacyNoticeDismissed';
 
 function dismissed() {
@@ -38,7 +37,7 @@ export function CookieNotice() {
       <Group gap="sm" wrap="nowrap" align="flex-start">
         <IconCookie size={20} className={classes.icon} aria-hidden />
         <Text size="sm">
-          {t('We use only essential cookies and local storage: to keep you signed in and remember your settings. No ads, no tracking.')}{' '}
+          {t('Cookies keep you signed in and remember your settings. We measure onboarding on our own servers. No ads or third-party tracking.')}{' '}
           <Anchor href="/privacy" size="sm">
             {t('Privacy Policy')}
           </Anchor>

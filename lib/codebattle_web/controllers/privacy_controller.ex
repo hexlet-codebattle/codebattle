@@ -7,7 +7,7 @@ defmodule CodebattleWeb.PrivacyController do
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   # Bump whenever the policy text (frontend/src/pages/Privacy.tsx) changes.
-  @updated_on "2026-10-17"
+  @updated_on "2026-10-18"
 
   @doc """
   /privacy: one policy for every jurisdiction. The text lives in the frontend

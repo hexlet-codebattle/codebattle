@@ -11,6 +11,7 @@ defmodule CodebattleWeb.UserAuth do
     {:ok, _session, token} = UserSession.create(user, session_metadata(conn))
 
     conn
+    |> CodebattleWeb.OnboardingTracking.sign_in()
     |> configure_session(renew: true)
     |> delete_session(:user_id)
     |> delete_session(:session_version)

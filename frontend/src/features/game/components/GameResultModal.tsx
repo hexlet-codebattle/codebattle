@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { RoundClock } from '@/features/tournament/components/RoundClock';
 import type { Tournament } from '@/features/tournament/types';
 import { useSharedProps } from '@/shared/useSharedProps';
+import { MethodButton } from '@/shared/MethodButton';
 
 import { isGameOver, useGameStore } from '../store';
 import type { GameApi } from '../useGame';
@@ -71,7 +72,9 @@ export function GameResultModal({ api }: { api: GameApi }) {
   const gameId = game?.id;
   const tournament = useGameStore((store) => store.tournament);
   // Casual games offer a rematch; the opponent's offer gets a row of its own above the footer.
-  const rematch = !tournament && game ? game : null;
+  const practice = game?.mode === 'training';
+  const editorLang = useGameStore((store) => store.editors[me.id]?.lang ?? me.lang ?? 'js');
+  const rematch = !tournament && game && !practice ? game : null;
   const incomingRematch = rematch?.rematch_state === 'in_approval' && rematch.rematch_initiator_id !== me.id;
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const wasOver = useRef(isGameOver(state));
@@ -86,6 +89,21 @@ export function GameResultModal({ api }: { api: GameApi }) {
   // A game with an award (e.g. a tournament prize) shows it instead of the dinosaur.
   const award = useGameStore((store) => store.game?.award);
   const nextGame = activeGameId && activeGameId !== gameId ? activeGameId : null;
+
+  if (practice) {
+    return (
+      <Modal opened={outcome != null} onClose={() => setOutcome(null)} centered size="md" title={won ? t('Practice complete!') : t('Keep practicing')}>
+        <Stack gap="md">
+          <Text>{won ? t('You passed the tests and solved the challenge. Try another task or create an account to play against people.') : t('The battle is over, but you can keep editing and running tests. Take a look at the bot’s solution if you need an idea.')}</Text>
+          <Group gap="xs">
+            <MethodButton action={`/games/training?lang=${encodeURIComponent(editorLang)}`} method="post" size="sm" color="green">{t('Practice again')}</MethodButton>
+            <Button size="sm" variant="default" onClick={() => setOutcome(null)}>{won ? t('Review the code') : t('Keep solving')}</Button>
+          </Group>
+          <Button component="a" href={me.is_guest ? '/users/new' : '/'} variant="light">{me.is_guest ? t('Create an account to play people') : t('Back to lobby')}</Button>
+        </Stack>
+      </Modal>
+    );
+  }
 
   return (
     <Modal

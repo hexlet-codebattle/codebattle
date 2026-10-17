@@ -97,7 +97,7 @@ export default function Privacy() {
                 {t('the IP address and browser (user agent) of each signed-in session, server logs and error reports.')}
               </List.Item>
               <List.Item>
-                <b>{t('Guests')}:</b> {t('a random guest ID in the session cookie, nothing else.')}
+                <b>{t('Guests')}:</b> {t('a random guest ID in the session cookie. We reuse it to count landing visits, practice setup, test runs, solved practice tasks, another practice and sign-in. These onboarding records stay on our servers for up to 90 days and contain no IP address, browser details, account ID or submitted code.')}
               </List.Item>
             </List>
             <Text>
@@ -119,6 +119,9 @@ export default function Privacy() {
               </List.Item>
               <List.Item>
                 <b>{t('To fix bugs')}</b> ({t('legitimate interests')}): {t('error reports.')}
+              </List.Item>
+              <List.Item>
+                <b>{t('To improve onboarding')}</b>: {t('first-party counts of the steps from landing to practice. We skip this measurement when your browser sends Do Not Track or Global Privacy Control.')}
               </List.Item>
               <List.Item>
                 <b>{t('To meet legal obligations')}</b>, {t('when the law requires us to keep or disclose data.')}
@@ -169,7 +172,7 @@ export default function Privacy() {
             </Table>
             <Text>
               {t(
-                'All of these are strictly necessary for the site to work, so they need no consent. We use no analytics, advertising or third-party tracking cookies, and fonts are served from our own servers. The only exception: profile pictures of users who signed in with GitHub, Discord or a partner platform load from those services, which see your IP address. You can delete cookies and local storage in your browser at any time; you will be signed out. Since we do not track you, Global Privacy Control and Do Not Track are effectively always honored.',
+                'We use no additional analytics cookies, advertising cookies or third-party trackers. First-party onboarding counts reuse the existing guest session and honor Do Not Track and Global Privacy Control. Fonts are served from our own servers. Profile pictures of users who signed in with GitHub, Discord or a partner platform load from those services, which see your IP address. You can delete cookies and local storage in your browser at any time; you will be signed out.',
               )}
             </Text>
           </Section>

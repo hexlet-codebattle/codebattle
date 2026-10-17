@@ -650,6 +650,8 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
           </div>
         </div>
 
+        <.live_component module={CodebattleWeb.Live.Admin.OnboardingFunnel} id="onboarding-funnel" />
+
         <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-2">
           <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
             <h3 class="text-white mb-0">{chart_title(registrations_granularity)}</h3>

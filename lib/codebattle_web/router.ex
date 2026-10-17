@@ -436,6 +436,7 @@ defmodule CodebattleWeb.Router do
     get("/sitemap.xml", RootController, :sitemap)
 
     get("/", RootController, :index)
+    get("/onboarding", OnboardingController, :show)
     get("/maintenance", RootController, :maintenance)
     get("/waiting", RootController, :waiting)
     get("/authorized", RootController, :authorized)

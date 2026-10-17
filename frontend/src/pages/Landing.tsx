@@ -1,5 +1,5 @@
 import { Anchor, Avatar, Badge, Button, Card, Container, Group, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
-import { IconSwords, IconTrophy } from '@tabler/icons-react';
+import { IconCheck, IconSwords, IconTrophy } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,6 @@ import { DevSignIn } from '@/features/auth/AuthForms';
 import classes from '@/features/landing/Landing.module.css';
 import { AppLayout } from '@/layout/AppLayout';
 import { LangIcon } from '@/shared/LangIcon';
-import { MethodButton } from '@/shared/MethodButton';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 interface LeaderboardRow {
@@ -33,9 +32,9 @@ const YEAR = new Date().getFullYear();
 function TryBattle({ size = 'lg' }: { size?: 'md' | 'lg' }) {
   const { t } = useTranslation();
   return (
-    <MethodButton action="/games/training" method="post" size={size} color="green" leftSection={<IconSwords size={18} />}>
-      {t('Try simple battle')}
-    </MethodButton>
+    <Button component="a" href="/onboarding" size={size} color="green" leftSection={<IconSwords size={18} />}>
+      {t('Play your first battle')}
+    </Button>
   );
 }
 
@@ -76,6 +75,36 @@ function Feature({ title, text, tags }: { title: string; text: string; tags: str
   );
 }
 
+function BattlePreview() {
+  const { t } = useTranslation();
+  return (
+    <Card className={classes.battlePreview} padding="lg" aria-label={t('How a coding battle works')}>
+      <Group justify="space-between" mb="lg">
+        <Text fw={700}>{t('One task. Two editors.')}</Text>
+        <Badge variant="light" color="gray">{t('Example battle')}</Badge>
+      </Group>
+      <div className={classes.exampleTask}>
+        <Text size="sm" fw={600}>{t('Return the sum of two numbers.')}</Text>
+        <Text ff="monospace" size="sm" mt={8}>solution(2, 3) → 5</Text>
+      </div>
+      <SimpleGrid cols={2} spacing="xs" mt="sm">
+        {[t('You'), t('Your opponent')].map((name) => (
+          <div key={name} className={classes.exampleEditor}>
+            <Text size="xs" fw={700} mb="md">{name}</Text>
+            <Text ff="monospace" size="xs" c="dimmed">solution(a, b)</Text>
+            <div className={classes.codeLine} />
+            <div className={classes.codeLine} data-short />
+          </div>
+        ))}
+      </SimpleGrid>
+      <Group gap={8} mt="lg" wrap="nowrap">
+        <ThemeIcon variant="light" color="green" radius="xl"><IconCheck size={16} /></ThemeIcon>
+        <Text size="sm">{t('The first correct solution wins. Watch each other code live.')}</Text>
+      </Group>
+    </Card>
+  );
+}
+
 /** `/` for guests: what Codebattle is, the current season's top five, and a way in. */
 export default function Landing() {
   const { t } = useTranslation();
@@ -86,84 +115,37 @@ export default function Landing() {
       <Container size="lg">
         <section className={classes.hero}>
           <Stack gap="md" className={classes.heroText}>
-            <Text className={classes.eyebrow}>{t('Tournaments. Seasons. Code-first competition.')}</Text>
-            <Title className={classes.heroTitle}>{t('Play in the best coding arena')}</Title>
+            <Text className={classes.eyebrow}>{t('Code. Compete. Learn together.')}</Text>
+            <Title className={classes.heroTitle}>{t('A coding challenge. Two players. One winner.')}</Title>
             <Text size="lg" c="dimmed">
-              {t('Codebattle powers head-to-head battles, team brackets, and seasonal leaderboards. Set formats, invite players, and watch the rankings move in real time.')}
+              {t('Solve the same task in your favorite language. See your opponent’s code live and race to pass the tests.')}
             </Text>
             <Group gap="sm">
               <TryBattle />
-              <Button component="a" href="/users/new" size="lg" variant="default">
-                {t('Sign up')}
-              </Button>
             </Group>
             <Text size="sm" c="dimmed">
-              {t('No registration required')}
+              {t('Start with a practice bot. No signup. No rating changes.')}
             </Text>
             <Group gap={6}>
-              {[t('Live ladders'), t('Team seasons'), t('Bots + training')].map((pill) => (
+              {[t('Choose your language'), t('Preview the task'), t('Practice bot')].map((pill) => (
                 <Badge key={pill} variant="light" color="green">
                   {pill}
                 </Badge>
               ))}
             </Group>
+            <Anchor href="/session/new" size="sm">{t('Already play here? Sign in')}</Anchor>
             {devSignIn && <DevSignIn />}
           </Stack>
 
-          <Card className={classes.leaderboard}>
-            <Group justify="space-between" mb="sm">
-              <Group gap={6}>
-                <IconTrophy size={18} />
-                <Text fw={700}>{t('Current Season Leaderboard')}</Text>
-              </Group>
-              <Badge variant="light">{season ? `${season.name} ${season.year}` : t('Upcoming')}</Badge>
-            </Group>
-            {leaderboard.length === 0 ? (
-              <Text c="dimmed" size="sm">
-                {t('Season standings will appear here soon.')}
-              </Text>
-            ) : (
-              <Stack gap={6}>
-                {leaderboard.map((row) => (
-                  <Group key={row.user_id} gap="sm" wrap="nowrap" className={classes.leaderRow}>
-                    <span className={classes.place}>{row.place}</span>
-                    <Avatar src={row.avatar_url} size={32} radius="xl" />
-                    <LangIcon lang={row.user_lang} />
-                    <Text fw={700} c="bright" truncate flex={1}>
-                      {row.user_name}
-                    </Text>
-                    <Text ff="monospace" fw={700}>
-                      {row.total_points} {t('pts')}
-                    </Text>
-                  </Group>
-                ))}
-              </Stack>
-            )}
-            <Text size="xs" c="dimmed" mt="sm">
-              {t('Top 5 players • current season')}
-            </Text>
-          </Card>
+          <BattlePreview />
         </section>
 
-        <Section
-          eyebrow={t('Seasons and formats')}
-          title={t('Four seasons a year. One Grand Slam to crown the best.')}
-          lead={t('Join a competitive ladder that resets each season so every coder gets a fresh climb. Swiss rounds keep every match fair, while lifetime Elo tracks your true skill across seasons. Top finishers earn prizes and exclusive merch.')}
-        >
+        <Section eyebrow={t('How it works')} title={t('Your first battle, step by step')} lead={t('Choose a language, preview the task, and start when you’re ready.')}>
           <SimpleGrid cols={{ base: 1, sm: 3 }}>
-            <Feature title={t('Season ladder')} text={t('Earn season points, climb the live leaderboard, and lock your place in the finale.')} tags={[t('Season points'), t('Finals on 21st'), t('Hall of Fame')]} />
-            <Feature title={t('Swiss tournaments')} text={t('Face opponents with similar scores, solve the same task, and rise with every win.')} tags={[t('Swiss pairing'), t('Live standings'), t('No repeat pairs')]} />
-            <Feature title={t('Grades & schedule')} text={t('Start at rookie, fight up the grades, and aim for the Grand Slam spotlight.')} tags={[t('Rookie → Grand Slam'), t('Grand Slam finale'), t('Points by place')]} />
-          </SimpleGrid>
-        </Section>
-
-        <Section eyebrow={t('How it works')} title={t('Join, battle, climb, repeat')} lead={t('A clear loop that keeps the competition fair and the season exciting.')}>
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
             {[
-              [t('Join a season'), t('Seasons reset points so everyone gets a fresh shot at the top.')],
-              [t('Battle in Swiss rounds'), t('Face opponents with similar scores on the same task each round.')],
-              [t('Earn season points'), t('Climb the live leaderboard and secure your place in the finale.')],
-              [t('Win the Grand Slam'), t('Champions take the spotlight, prizes, and exclusive merch.')],
+              [t('Choose your language'), t('Preview an approachable task before starting. Your practice opponent is a bot.')],
+              [t('Write it. Run it.'), t('Fill in the solution and run the tests. Use the results to improve your code.')],
+              [t('Play again or meet a rival'), t('Try another task, then create an account to challenge real players.')],
             ].map(([title, text], index) => (
               <Card key={title} className={classes.feature}>
                 <ThemeIcon variant="light" color="green" size="lg" radius="md" mb="sm">
@@ -180,6 +162,29 @@ export default function Landing() {
               </Card>
             ))}
           </SimpleGrid>
+        </Section>
+
+        <Section eyebrow={t('Seasons and formats')} title={t('Current Season Leaderboard')}>
+          <Card className={classes.leaderboard} maw={640} mx="auto">
+            <Group justify="space-between" mb="sm">
+              <Group gap={6}><IconTrophy size={18} /><Text fw={700}>{t('Top 5 players • current season')}</Text></Group>
+              <Badge variant="light">{season ? `${season.name} ${season.year}` : t('Upcoming')}</Badge>
+            </Group>
+            {leaderboard.length === 0 ? <Text c="dimmed" size="sm">{t('Season standings will appear here soon.')}</Text> : (
+              <Stack gap={6}>
+                {leaderboard.map((row) => (
+                  <Group key={row.user_id} gap="sm" wrap="nowrap" className={classes.leaderRow}>
+                    <span className={classes.place}>{row.place}</span>
+                    <Avatar src={row.avatar_url} size={32} radius="xl" />
+                    <LangIcon lang={row.user_lang} />
+                    <Text fw={700} c="bright" truncate flex={1}>{row.user_name}</Text>
+                    <Text ff="monospace" fw={700}>{row.total_points} {t('pts')}</Text>
+                  </Group>
+                ))}
+              </Stack>
+            )}
+            <Anchor href="/seasons" size="sm" mt="md">{t('Explore seasons and tournaments')}</Anchor>
+          </Card>
         </Section>
 
         <Section
@@ -204,7 +209,7 @@ export default function Landing() {
 
         <section className={classes.cta}>
           <Title order={2}>{t('Ready to enter the arena?')}</Title>
-          <Text c="dimmed">{t('Spin up a quick match or start planning your next season.')}</Text>
+          <Text c="dimmed">{t('Choose a language, preview the task, and start when you’re ready.')}</Text>
           <TryBattle />
         </section>
 

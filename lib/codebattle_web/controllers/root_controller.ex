@@ -49,6 +49,7 @@ defmodule CodebattleWeb.RootController do
     leaderboard = if current_season, do: SeasonResult.get_top_users(current_season.id, 5), else: []
 
     conn
+    |> CodebattleWeb.OnboardingTracking.landing()
     |> Frontend.put_layout()
     |> render_inertia("Landing", %{
       "season" => current_season && %{name: current_season.name, year: current_season.year},
