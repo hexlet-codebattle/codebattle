@@ -67,7 +67,7 @@ function Countdown({ gameId, onStay }: { gameId: number; onStay: () => void }) {
           <Button variant="default" onClick={onStay}>
             {t('Stay here')}
           </Button>
-          <Button variant="filled" color="green" onClick={() => window.location.replace(`/games/${gameId}`)}>
+          <Button data-autofocus variant="filled" color="green" onClick={() => window.location.replace(`/games/${gameId}`)}>
             {t('Open now')}
           </Button>
         </Group>
