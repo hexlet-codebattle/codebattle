@@ -62,15 +62,19 @@ defmodule CodebattleWeb.MetaTagsTest do
       assert html =~ ~s(content="1200" property="og:image:width")
     end
 
-    test "still sends a guest browser to the login page", %{conn: conn} do
+    test "shows a guest browser the public tournament page with the card", %{conn: conn} do
       tournament = insert(:tournament, name: "Autumn Cup", state: "upcoming")
 
-      conn =
+      html =
         conn
         |> put_req_header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
         |> get(Routes.tournament_path(conn, :show, tournament.id))
+        |> html_response(200)
 
-      assert redirected_to(conn, 302) =~ "/session/new"
+      assert html =~ "TournamentPublic"
+
+      assert html =~
+               ~s(content="#{Routes.tournament_image_url(CodebattleWeb.Endpoint, :show, tournament.id)}" property="og:image")
     end
   end
 end
