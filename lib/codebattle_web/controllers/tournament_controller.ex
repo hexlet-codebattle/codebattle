@@ -1,14 +1,18 @@
 defmodule CodebattleWeb.TournamentController do
   use CodebattleWeb, :controller
 
+  alias Codebattle.Season
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.Ranking
   alias Codebattle.User
   alias CodebattleWeb.LinkPreview
   alias CodebattleWeb.OgImage
+  alias CodebattleWeb.Plugs.RequireAuth
 
   plug(:link_preview when action == :show)
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show, :edit])
+  # Guests see :show as a public preview with sign-up calls instead of the login redirect.
+  plug(RequireAuth when action in [:index, :edit])
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
@@ -47,13 +51,24 @@ defmodule CodebattleWeb.TournamentController do
     current_user = conn.assigns[:current_user]
     tournament = Tournament.Context.get!(params["id"])
 
-    if Helpers.can_access?(tournament, current_user, params) do
-      handle_tournament_for_user(conn, tournament, current_user, params)
-    else
-      conn
-      |> put_status(:not_found)
-      |> put_view(CodebattleWeb.ErrorView)
-      |> render("404.html", %{msg: gettext("Tournament not found")})
+    can_access? = Helpers.can_access?(tournament, current_user, params)
+
+    cond do
+      current_user.is_guest and can_access? ->
+        render_public_tournament(conn, tournament)
+
+      # A private tournament without its token: maybe the guest is a player, let them sign in.
+      current_user.is_guest ->
+        RequireAuth.call(conn, [])
+
+      can_access? ->
+        handle_tournament_for_user(conn, tournament, current_user, params)
+
+      true ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(CodebattleWeb.ErrorView)
+        |> render("404.html", %{msg: gettext("Tournament not found")})
     end
   end
 
@@ -167,6 +182,58 @@ defmodule CodebattleWeb.TournamentController do
       "tournament_access_token" => params["access_token"]
     })
   end
+
+  # Guests: what the tournament is, what Codebattle is, and the way in (sign up, then join).
+  defp render_public_tournament(conn, tournament) do
+    season = Season.get_current_season()
+
+    conn
+    |> put_tournament_meta_tags(tournament)
+    |> CodebattleWeb.Frontend.put_layout()
+    |> render_inertia("TournamentPublic", %{
+      "tournament" => public_tournament_json(tournament),
+      "top_players" => public_top_players(tournament),
+      "season" => season && %{name: season.name, year: season.year},
+      "next" => current_path(conn),
+      "dev_sign_in" => Application.get_env(:codebattle, :dev_sign_in, false) == true
+    })
+  end
+
+  defp public_tournament_json(tournament) do
+    tournament
+    |> Map.take([
+      :id,
+      :name,
+      :description,
+      :type,
+      :grade,
+      :state,
+      :break_state,
+      :show_results,
+      :access_type,
+      :level,
+      :task_provider,
+      :task_pack_name,
+      :players_limit,
+      :rounds_limit,
+      :current_round_position,
+      :starts_at,
+      :started_at,
+      :finished_at
+    ])
+    |> Map.put(:players_count, Helpers.players_count(tournament))
+  end
+
+  # The current top five, once there are results to show.
+  defp public_top_players(%{state: state, show_results: true, ranking_type: "by_user"} = tournament)
+       when state in ["active", "finished"] do
+    tournament
+    |> Ranking.get_page(1, 5)
+    |> Map.get(:entries, [])
+    |> Enum.map(&Map.take(&1, [:id, :place, :score, :name, :lang]))
+  end
+
+  defp public_top_players(_tournament), do: []
 
   # The edit form's values: the same settings plus identity and the current start time.
   defp edit_tournament_json(tournament) do

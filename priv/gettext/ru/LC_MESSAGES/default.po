@@ -6574,3 +6574,54 @@ msgstr "Регистрируясь, вы подтверждаете, что оз
 
 msgid "Your email and password sign-in is deleted"
 msgstr "Вход по email и паролю удаляется"
+
+msgid "Leaders right now"
+msgstr "Лидеры прямо сейчас"
+
+msgid "What is Codebattle"
+msgstr "Что такое Codebattle"
+
+msgid "Head-to-head battles"
+msgstr "Битвы один на один"
+
+msgid "You and your opponent get the same task. The first correct solution wins the round."
+msgstr "Вы и соперник получаете одну и ту же задачу. Раунд выигрывает тот, кто первым решит её правильно."
+
+msgid "Seasons and Elo"
+msgstr "Сезоны и Elo"
+
+msgid "Join this tournament"
+msgstr "Участвуйте в турнире"
+
+msgid "Create a free account or sign in to take your seat. It takes less than a minute."
+msgstr "Создайте бесплатный аккаунт или войдите, чтобы занять место. Это займёт меньше минуты."
+
+msgid "The battles are live"
+msgstr "Битвы уже идут"
+
+msgid "Sign in to watch the games, follow the standings, and get ready for the next tournament."
+msgstr "Войдите, чтобы смотреть игры, следить за таблицей и готовиться к следующему турниру."
+
+msgid "This tournament is over"
+msgstr "Турнир завершён"
+
+msgid "Sign in to see the full results and join the next tournament."
+msgstr "Войдите, чтобы увидеть все результаты и принять участие в следующем турнире."
+
+msgid "Join Codebattle"
+msgstr "Присоединяйтесь к Codebattle"
+
+msgid "Sign in to follow this tournament and battle in the next ones."
+msgstr "Войдите, чтобы следить за этим турниром и участвовать в следующих."
+
+msgid "Counts toward the %{season} season: the winner takes %{points} season points."
+msgstr "Идёт в зачёт сезона %{season}: победитель получает %{points} сезонных очков."
+
+msgid "A Codebattle League tournament: the winner takes %{points} season points."
+msgstr "Турнир Codebattle League: победитель получает %{points} сезонных очков."
+
+msgid "Sign up and take your seat before the tournament starts."
+msgstr "Зарегистрируйтесь и займите место до начала турнира."
+
+msgid "Warm up with a quick match against a bot."
+msgstr "Разомнитесь в быстрой игре против бота."

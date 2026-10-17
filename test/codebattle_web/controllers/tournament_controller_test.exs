@@ -92,7 +92,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
     assert new_conn.status == 302
   end
 
-  test "keeps private tournament token in login redirect", %{conn: conn} do
+  test "redirects guests without the token of a private tournament to login", %{conn: conn} do
     creator = insert(:user)
 
     {:ok, tournament} =
@@ -111,18 +111,68 @@ defmodule CodebattleWeb.TournamentControllerTest do
         "players_limit" => 200
       })
 
-    new_conn =
-      get(
-        conn,
-        Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
-      )
+    new_conn = get(conn, Routes.tournament_path(conn, :show, tournament.id))
 
     assert redirected_to(new_conn, 302) ==
-             Routes.session_path(
-               CodebattleWeb.Endpoint,
-               :new,
-               next: Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
-             )
+             Routes.session_path(CodebattleWeb.Endpoint, :new, next: Routes.tournament_path(conn, :show, tournament.id))
+  end
+
+  test "shows guests the public tournament page", %{conn: conn} do
+    creator = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Open Arena",
+        "description" => "Open Arena description",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    new_conn = get(conn, Routes.tournament_path(conn, :show, tournament.id))
+
+    assert new_conn.status == 200
+    assert inertia_component(new_conn) == "TournamentPublic"
+
+    assert %{
+             "tournament" => %{name: "Open Arena", description: "Open Arena description", players_count: 0},
+             "top_players" => [],
+             "next" => next
+           } = inertia_props(new_conn)
+
+    assert next == Routes.tournament_path(conn, :show, tournament.id)
+  end
+
+  test "shows guests with the invite token the public page of a private tournament", %{conn: conn} do
+    creator = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Private Tournament",
+        "description" => "Private tournament description",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "access_type" => "token",
+        "access_token" => "access_token",
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    path = Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
+    new_conn = get(conn, path)
+
+    assert inertia_component(new_conn) == "TournamentPublic"
+    # Signing up comes back with the token.
+    assert %{"next" => ^path} = inertia_props(new_conn)
   end
 
   test "renders not found", %{conn: conn} do

@@ -11,7 +11,13 @@ import type { Tournament } from '../types';
 
 import classes from './Room.module.css';
 
-export function TournamentStateBadge({ tournament, size = 'md' }: { tournament: Tournament; size?: 'xs' | 'sm' | 'md' }) {
+export function TournamentStateBadge({
+  tournament,
+  size = 'md',
+}: {
+  tournament: Pick<Tournament, 'state' | 'break_state' | 'show_results'>;
+  size?: 'xs' | 'sm' | 'md';
+}) {
   const { t } = useTranslation();
   const [color, label] = (() => {
     switch (tournament.state) {
