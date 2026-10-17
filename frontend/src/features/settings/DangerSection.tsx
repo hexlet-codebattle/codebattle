@@ -1,38 +1,45 @@
-import { Button, Group, List, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { Button, Group, List, Modal, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { IconAlertTriangle, IconUserMinus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { archiveAccount } from './api';
+import { archiveAccount, firstErrors, RequestError } from './api';
 import { Section } from './Section';
 
 const CONFIRMATION = 'ARCHIVE';
 
-export function DangerSection() {
+/** `requiresPassword`: email sign-in accounts confirm with their password, which lets us delete the sign-in too. */
+export function DangerSection({ requiresPassword }: { requiresPassword: boolean }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState('');
+  const [password, setPassword] = useState('');
   const [archiving, setArchiving] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string> | null>(null);
 
   const close = () => {
     if (archiving) return;
     setOpen(false);
     setTyped('');
-    setFailed(false);
+    setPassword('');
+    setErrors(null);
   };
 
   const archive = async () => {
     setArchiving(true);
-    setFailed(false);
+    setErrors(null);
     try {
-      await archiveAccount();
+      await archiveAccount(requiresPassword ? { current_password: password } : {});
       window.location.assign('/');
-    } catch {
+    } catch (error) {
       setArchiving(false);
-      setFailed(true);
+      setErrors(error instanceof RequestError && Object.keys(error.errors).length ? firstErrors(error.errors) : {});
     }
   };
+
+  const ready = typed === CONFIRMATION && (!requiresPassword || password !== '');
+  const passwordError = errors?.current_password;
+  const otherError = errors && !passwordError ? (errors.base ?? t('Something went wrong')) : null;
 
   return (
     <Section
@@ -63,6 +70,7 @@ export function DangerSection() {
           </Text>
           <List size="sm" spacing={4} c="dimmed">
             <List.Item>{t('Your name is anonymized; avatar, email and linked accounts are removed')}</List.Item>
+            {requiresPassword && <List.Item>{t('Your email and password sign-in is deleted')}</List.Item>}
             <List.Item>{t('Every device is signed out and every API token revoked')}</List.Item>
             <List.Item>{t('Games and tournament results stay, without your name')}</List.Item>
           </List>
@@ -75,16 +83,26 @@ export function DangerSection() {
             data-autofocus
             styles={{ input: { fontFamily: 'var(--mantine-font-family-monospace)' } }}
           />
-          {failed && (
+          {requiresPassword && (
+            <PasswordInput
+              label={t('Current password')}
+              value={password}
+              onChange={(event) => setPassword(event.currentTarget.value)}
+              error={passwordError}
+              disabled={archiving}
+              autoComplete="current-password"
+            />
+          )}
+          {otherError && (
             <Text size="sm" c="red">
-              {t('Something went wrong')}
+              {otherError}
             </Text>
           )}
           <Group justify="flex-end" gap="xs">
             <Button variant="default" onClick={close} disabled={archiving}>
               {t('Cancel')}
             </Button>
-            <Button color="red" variant="filled" onClick={archive} loading={archiving} disabled={typed !== CONFIRMATION}>
+            <Button color="red" variant="filled" onClick={archive} loading={archiving} disabled={!ready}>
               {t('Archive permanently')}
             </Button>
           </Group>

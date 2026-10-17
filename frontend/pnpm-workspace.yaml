@@ -1,3 +1,6 @@
+allowBuilds:
+  # Install-time download analytics pulled in by swagger-ui-dist: never run it.
+  '@scarf/scarf': false
 # Standalone package: the new frontend shares no dependencies with ../assets.
 minimumReleaseAgeExclude:
   - vite@8.3.4

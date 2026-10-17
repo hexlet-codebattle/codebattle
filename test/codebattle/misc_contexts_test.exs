@@ -10,7 +10,7 @@ defmodule Codebattle.MiscContextsTest do
   alias Codebattle.GroupTournamentPlayer
   alias Codebattle.Task
 
-  test "formats, lists, and orders feedback entries" do
+  test "lists feedback entries" do
     attrs = %{
       author_name: "Alice",
       status: "Great",
@@ -21,13 +21,6 @@ defmodule Codebattle.MiscContextsTest do
     assert Feedback.changeset(%Feedback{}, %{}).valid? == false
     assert {:ok, feedback} = %Feedback{} |> Feedback.changeset(attrs) |> Repo.insert()
     assert Enum.map(Feedback.list_all(), & &1.id) == [feedback.id]
-
-    assert [formatted] = Feedback.get_all()
-    assert formatted.title == "Great Alice"
-    assert formatted.description == "Useful service"
-    assert formatted.link == attrs.title_link
-    assert formatted.guid == feedback.id
-    assert formatted.pubDate =~ "GMT"
   end
 
   test "upserts and fetches customization values" do

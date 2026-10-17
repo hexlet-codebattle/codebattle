@@ -45,6 +45,25 @@ defmodule Codebattle.Auth.User.FirebaseUser do
     {:error, %{base: ["Email sign-in is not available for this account"]}}
   end
 
+  @doc """
+  Deletes the user's Firebase account (their email + password sign-in) when the
+  account is archived. Re-authenticating with the current password yields an ID
+  token that may delete its own account, so no admin credentials are needed.
+  Accounts without Firebase sign-in have nothing to delete.
+  """
+  def delete_account(%User{firebase_uid: firebase_uid, email: email}, password)
+      when is_binary(firebase_uid) and firebase_uid != "" do
+    if is_binary(password) and password != "" do
+      with {:ok, id_token} <- reauthenticate(email, password, firebase_uid) do
+        delete_in_firebase(id_token)
+      end
+    else
+      {:error, %{current_password: ["can't be blank"]}}
+    end
+  end
+
+  def delete_account(%User{}, _password), do: :ok
+
   # Only the nickname is validated against the DB. Email uniqueness is enforced
   # by Firebase, and we deliberately don't disclose whether an email is taken
   # (see `register_in_firebase/1`).
@@ -275,11 +294,11 @@ defmodule Codebattle.Auth.User.FirebaseUser do
         {:ok, id_token}
 
       {:ok, %Req.Response{status: 200}} ->
-        Logger.warning("Firebase email-change reauthentication returned a different user")
+        Logger.warning("Firebase reauthentication returned a different user")
         {:error, %{current_password: ["is invalid"]}}
 
       {:ok, %Req.Response{status: 400, body: body}} ->
-        Logger.info("Firebase email-change reauthentication rejected: #{inspect(firebase_error(body))}")
+        Logger.info("Firebase reauthentication rejected: #{inspect(firebase_error(body))}")
         {:error, %{current_password: ["is invalid"]}}
 
       {:ok, %Req.Response{body: body}} ->
@@ -289,6 +308,31 @@ defmodule Codebattle.Auth.User.FirebaseUser do
       {:error, reason} ->
         Logger.error("Unable to reauthenticate Firebase user: #{inspect(reason)}")
         {:error, %{base: ["Unable to verify your password. Please try again later."]}}
+    end
+  end
+
+  defp delete_in_firebase(id_token) do
+    case firebase_post("delete", %{idToken: id_token}) do
+      {:ok, %Req.Response{status: 200}} ->
+        :ok
+
+      {:ok, %Req.Response{status: 400, body: body}} ->
+        case firebase_error(body) do
+          "USER_NOT_FOUND" ->
+            :ok
+
+          error ->
+            Logger.error("Unable to delete Firebase user: #{inspect(error)}")
+            {:error, %{base: ["Unable to delete your sign-in. Please try again later."]}}
+        end
+
+      {:ok, %Req.Response{body: body}} ->
+        Logger.error("Unable to delete Firebase user: #{inspect(body)}")
+        {:error, %{base: ["Unable to delete your sign-in. Please try again later."]}}
+
+      {:error, reason} ->
+        Logger.error("Unable to delete Firebase user: #{inspect(reason)}")
+        {:error, %{base: ["Unable to delete your sign-in. Please try again later."]}}
     end
   end
 
@@ -371,7 +415,6 @@ defmodule Codebattle.Auth.User.FirebaseUser do
     %User{}
     |> User.changeset(%{
       lang: Application.get_env(:codebattle, :default_lang_slug),
-      avatar_url: gravatar_url(email),
       name: name,
       email: email,
       firebase_uid: firebase_uid
@@ -396,11 +439,5 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp firebase_post(action, payload) do
     request_options = Application.get_env(:codebattle, :firebase_req_options, [])
     Req.post("#{firebase_url()}:#{action}?key=#{api_key()}", Keyword.put(request_options, :json, payload))
-  end
-
-  defp gravatar_url(email) do
-    hash = email |> :erlang.md5() |> Base.encode16(case: :lower)
-
-    "https://gravatar.com/avatar/#{hash}?d=identicon"
   end
 end

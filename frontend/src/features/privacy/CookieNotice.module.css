@@ -1,0 +1,13 @@
+.notice {
+  position: fixed;
+  inset-inline: 16px;
+  bottom: 16px;
+  z-index: 300;
+  max-width: 420px;
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--cb-text-muted);
+}

@@ -52,6 +52,16 @@ export default function Auth() {
               </>
             )}
 
+            {mode === 'sign_up' && (
+              <Text size="xs" c="dimmed" ta="center">
+                {t('By signing up, you confirm that you have read the')}{' '}
+                <Anchor href="/privacy" size="xs" target="_blank">
+                  {t('Privacy Policy')}
+                </Anchor>
+                .
+              </Text>
+            )}
+
             {mode !== 'token_only' && (
               <Stack gap={4} align="center">
                 {mode !== 'sign_up' && (

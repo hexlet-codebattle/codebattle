@@ -86,7 +86,7 @@ export default function Settings() {
             onRevoked={(ids) => setSessions((current) => current.filter((session) => !ids.includes(session.id)))}
           />
           <ApiTokensSection tokens={tokens} availableScopes={props.api_token_scopes} onChange={setTokens} />
-          <DangerSection />
+          <DangerSection requiresPassword={Boolean(account.has_firebase_auth)} />
         </div>
       </div>
     </AppLayout>

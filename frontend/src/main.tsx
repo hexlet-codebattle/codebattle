@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import '@/theme/fonts';
+
 import { initI18n } from '@/i18n';
 import { ErrorBoundary } from '@/shared/ErrorBoundary';
 import { showFlash } from '@/shared/flash';

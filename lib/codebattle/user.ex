@@ -420,8 +420,9 @@ defmodule Codebattle.User do
   Archives an account without deleting records referenced by games and tournaments.
 
   Reusable credentials and profile data are removed, administrative privileges
-  are dropped, and every browser session is revoked. The same external identity
-  may create a new account later, but it cannot regain access to this account.
+  are dropped, and every browser session is revoked with its IP and user agent
+  erased. The same external identity may create a new account later, but it
+  cannot regain access to this account.
   """
   def archive(%__MODULE__{id: user_id}) do
     now = DateTime.utc_now(:second)
@@ -471,6 +472,14 @@ defmodule Codebattle.User do
           UserSession
           |> where([s], s.id in ^session_ids)
           |> Repo.update_all(set: [revoked_at: now, updated_at: NaiveDateTime.utc_now(:second)])
+
+          UserSession
+          |> where([s], s.user_id == ^user_id)
+          |> Repo.update_all(set: [ip: nil, user_agent: nil])
+
+          Codebattle.Feedback
+          |> where([f], f.user_id == ^user_id)
+          |> Repo.update_all(set: [author_name: archived_user.name])
 
           {archived_user, session_ids}
         else

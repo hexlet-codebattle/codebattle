@@ -12,6 +12,8 @@
     "check": "tsc --noEmit && oxlint --deny-warnings"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/source-code-pro": "^5.3.1",
     "@inertiajs/react": "3.9.1",
     "@mantine/core": "^9.7.2",
     "@mantine/hooks": "^9.7.2",
@@ -35,6 +37,7 @@
     "react-markdown": "^10.1.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
+    "swagger-ui-dist": "^5.33.3",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

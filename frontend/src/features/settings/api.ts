@@ -119,4 +119,6 @@ export const createApiToken = (fields: { name: string; scopes: string[]; expires
 
 export const revokeApiToken = (id: string) => request<{ status: 'ok' }>('DELETE', `/api/v1/settings/api_tokens/${id}`);
 
-export const archiveAccount = () => request<{ status: 'archived' }>('DELETE', '/api/v1/settings/account');
+/** `current_password` is required for email sign-in (Firebase) accounts, whose sign-in gets deleted too. */
+export const archiveAccount = (fields: { current_password?: string } = {}) =>
+  request<{ status: 'archived' }>('DELETE', '/api/v1/settings/account', fields);

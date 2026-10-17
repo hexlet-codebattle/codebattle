@@ -42,7 +42,9 @@ config :codebattle, Oban,
   # Re-queue jobs left `executing` by a node that died or was stopped mid-job
   # (e.g. a deploy outlasting the shutdown grace period). Must exceed the
   # longest legitimate job (runner calls are capped at 180s).
-  lifeline: [rescue_after: {30, :minutes}]
+  lifeline: [rescue_after: {30, :minutes}],
+  # Privacy retention: drop expired/revoked browser sessions (IP, user agent).
+  crontab: [{"17 3 * * *", Codebattle.Workers.UserSessionPurgeWorker}]
 
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"

@@ -4,14 +4,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { requestJson } from '@/shared/http';
-import { useSharedProps } from '@/shared/useSharedProps';
 
 const KINDS = ['Bug', 'Suggestion', 'Question'] as const;
 
 /** Bug reports and ideas; they land in /admin/feedback. */
 export function FeedbackModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const { t } = useTranslation();
-  const { current_user: user } = useSharedProps();
   const [kind, setKind] = useState<string>(KINDS[0]);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
@@ -19,7 +17,7 @@ export function FeedbackModal({ opened, onClose }: { opened: boolean; onClose: (
   const send = () => {
     setSending(true);
     requestJson('POST', '/api/v1/feedback', {
-      attachments: [{ author_name: user.name || 'Anonymous', fallback: kind, text: text.trim(), title_link: window.location.href }],
+      attachments: [{ fallback: kind, text: text.trim(), title_link: window.location.href }],
     })
       .then(() => {
         notifications.show({ color: 'green', message: t('Feedback sent, thank you') });

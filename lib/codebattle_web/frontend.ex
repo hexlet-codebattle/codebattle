@@ -13,6 +13,7 @@ defmodule CodebattleWeb.Frontend do
   @manifest_path "static/assets/v2/manifest.json"
   @entry "src/main.tsx"
   @admin_entry "src/admin/main.ts"
+  @api_docs_entry "src/apiDocs/main.ts"
 
   # The new frontend is the only frontend now (guests included); the legacy assets
   # are being removed. Kept as a function until every caller's legacy branch is gone.
@@ -29,6 +30,9 @@ defmodule CodebattleWeb.Frontend do
 
   @doc "The admin pages' entry (LiveView socket, phoenix_html, admin styles)."
   def admin_entry_path, do: @admin_entry
+
+  @doc "The public API docs page's entry (self-hosted Swagger UI)."
+  def api_docs_entry_path, do: @api_docs_entry
 
   @doc "Production script and stylesheet paths for an entry (the app by default), from the Vite manifest."
   @spec assets(String.t()) :: %{js: String.t() | nil, css: [String.t()]}

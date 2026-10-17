@@ -434,7 +434,6 @@ defmodule CodebattleWeb.Router do
 
     get("/robots.txt", RootController, :robots)
     get("/sitemap.xml", RootController, :sitemap)
-    get("/feedback/rss.xml", RootController, :feedback)
 
     get("/", RootController, :index)
     get("/maintenance", RootController, :maintenance)
@@ -452,6 +451,7 @@ defmodule CodebattleWeb.Router do
 
     get("/schedule", TournamentsScheduleController, :index)
     get("/hall_of_fame", HallOfFameController, :index)
+    get("/privacy", PrivacyController, :show)
     get("/h2h/:user_id/:opponent_id", HeadToHeadController, :show)
 
     resources("/seasons", SeasonController, only: [:index, :show])

@@ -6347,3 +6347,230 @@ msgstr "Подозрительная игра #%{id}"
 
 msgid "Open the report"
 msgstr "Открыть отчёт"
+
+
+msgid "Privacy Policy"
+msgstr "Политика конфиденциальности"
+
+msgid "Last updated: %{date}"
+msgstr "Последнее обновление: %{date}"
+
+msgid "This policy explains what personal data we collect when you use Codebattle, why, and what control you have over it. It applies to everyone, wherever you live: every user gets the same rights, whether or not local law requires them."
+msgstr "Эта политика объясняет, какие персональные данные мы собираем, когда вы пользуетесь Codebattle, зачем и как вы можете ими управлять. Она действует для всех, где бы вы ни жили: у каждого пользователя одинаковые права, независимо от того, требует ли их местный закон."
+
+msgid "Who is responsible"
+msgstr "Кто отвечает за данные"
+
+msgid "The controller (operator) of your personal data is %{operator}."
+msgstr "Оператор ваших персональных данных — %{operator}."
+
+msgid "For any privacy question or request, use the \"Send feedback\" form in the user menu (choose \"Question\")."
+msgstr "По любым вопросам и запросам о персональных данных пишите через форму «Отправить отзыв» в меню пользователя (выберите «Вопрос»)."
+
+msgid "Codebattle is open-source software. If you use an instance run by someone else, that operator is responsible for your data there."
+msgstr "Codebattle — программа с открытым исходным кодом. Если вы пользуетесь инсталляцией, которую запустил кто-то другой, за ваши данные там отвечает её оператор."
+
+msgid "What we collect"
+msgstr "Что мы собираем"
+
+msgid "Account"
+msgstr "Аккаунт"
+
+msgid "name, email and password (stored only as a hash), or, if you sign in with GitHub, Discord or a partner platform, your ID, username and avatar there."
+msgstr "имя, email и пароль (хранится только в виде хеша) или, если вы входите через GitHub, Discord или партнёрскую платформу, ваши ID, имя пользователя и аватар там."
+
+msgid "Profile and settings"
+msgstr "Профиль и настройки"
+
+msgid "programming language, clan, editor and sound preferences, interface language, time zone."
+msgstr "язык программирования, клан, настройки редактора и звука, язык интерфейса, часовой пояс."
+
+msgid "games, the code you write and submit, results, ratings, tournaments, achievements and chat messages."
+msgstr "игры, код, который вы пишете и отправляете, результаты, рейтинг, турниры, достижения и сообщения в чатах."
+
+msgid "Fair-play data"
+msgstr "Данные для честной игры"
+
+msgid "during games we record summaries of editor activity (such as typing pace and pastes) and analyze submitted code to detect bots and cheating."
+msgstr "во время игр мы записываем сводки действий в редакторе (например, темп набора и вставки) и анализируем отправленный код, чтобы выявлять ботов и нечестную игру."
+
+msgid "Technical data"
+msgstr "Технические данные"
+
+msgid "the IP address and browser (user agent) of each signed-in session, server logs and error reports."
+msgstr "IP-адрес и браузер (user agent) каждой сессии входа, серверные логи и отчёты об ошибках."
+
+msgid "Guests"
+msgstr "Гости"
+
+msgid "a random guest ID in the session cookie, nothing else."
+msgstr "случайный гостевой ID в сессионной cookie, и больше ничего."
+
+msgid "We do not collect sensitive data (health, beliefs, biometrics and the like), we do not buy data about you, and we do not build advertising profiles."
+msgstr "Мы не собираем специальные категории данных (здоровье, убеждения, биометрию и т. п.), не покупаем данные о вас и не строим рекламные профили."
+
+msgid "Why we use it"
+msgstr "Зачем мы их используем"
+
+msgid "To provide the service"
+msgstr "Чтобы сервис работал"
+
+msgid "performance of our agreement with you"
+msgstr "исполнение соглашения с вами"
+
+msgid "accounts, games, ratings, tournaments and events."
+msgstr "аккаунты, игры, рейтинги, турниры и события."
+
+msgid "To keep it secure and fair"
+msgstr "Чтобы он был безопасным и честным"
+
+msgid "legitimate interests"
+msgstr "законный интерес"
+
+msgid "sign-in sessions, abuse and rate limiting, cheating and bot detection."
+msgstr "сессии входа, защита от злоупотреблений и ограничение частоты запросов, выявление нечестной игры и ботов."
+
+msgid "To fix bugs"
+msgstr "Чтобы исправлять ошибки"
+
+msgid "error reports."
+msgstr "отчёты об ошибках."
+
+msgid "To meet legal obligations"
+msgstr "Чтобы выполнять требования закона"
+
+msgid "when the law requires us to keep or disclose data."
+msgstr "когда закон обязывает нас хранить или раскрывать данные."
+
+msgid "We never sell your personal data, never share it for cross-context behavioral advertising, and never use it for targeted ads. If fair-play checks flag one of your results and you think that is wrong, contact us and a person will review it."
+msgstr "Мы никогда не продаём ваши персональные данные, не передаём их для поведенческой рекламы и не используем для таргетированной рекламы. Если проверка честной игры отметила ваш результат и вы считаете это ошибкой, напишите нам — его проверит человек."
+
+msgid "What other users can see"
+msgstr "Что видят другие пользователи"
+
+msgid "Your name, avatar, rating, clan, achievements and games, including the code written in them and game chat messages, are visible to other users. Your email, sessions and settings are not."
+msgstr "Ваши имя, аватар, рейтинг, клан, достижения и игры, включая написанный в них код и сообщения в игровом чате, видны другим пользователям. Ваши email, сессии и настройки — нет."
+
+msgid "Cookies and local storage"
+msgstr "Cookie и локальное хранилище"
+
+msgid "Purpose"
+msgstr "Назначение"
+
+msgid "Lifetime"
+msgstr "Срок хранения"
+
+msgid "Signed, HTTP-only session cookie: keeps you signed in, holds your guest ID and language."
+msgstr "Подписанная сессионная HTTP-only cookie: сохраняет вход, гостевой ID и язык."
+
+msgid "%{count} days"
+msgstr "%{count} дн."
+
+msgid "Local storage"
+msgstr "Локальное хранилище"
+
+msgid "Preferences you choose (theme, editor, sound, layouts) and that this notice was dismissed. Never sent to us."
+msgstr "Выбранные вами настройки (тема, редактор, звук, раскладки) и отметка, что уведомление закрыто. Нам не отправляется."
+
+msgid "Until you clear it"
+msgstr "Пока вы его не очистите"
+
+msgid "All of these are strictly necessary for the site to work, so they need no consent. We use no analytics, advertising or third-party tracking cookies, and fonts are served from our own servers. The only exception: profile pictures of users who signed in with GitHub, Discord or a partner platform load from those services, which see your IP address. You can delete cookies and local storage in your browser at any time; you will be signed out. Since we do not track you, Global Privacy Control and Do Not Track are effectively always honored."
+msgstr "Всё это строго необходимо для работы сайта, поэтому согласия не требует. Мы не используем аналитические, рекламные и сторонние отслеживающие cookie, а шрифты загружаются с наших серверов. Единственное исключение: аватары пользователей, вошедших через GitHub, Discord или партнёрскую платформу, загружаются с этих сервисов, и они видят ваш IP-адрес. Вы можете в любой момент удалить cookie и локальное хранилище в браузере — после этого вы выйдете из аккаунта. Так как мы вас не отслеживаем, сигналы Global Privacy Control и Do Not Track фактически всегда соблюдаются."
+
+msgid "Service providers"
+msgstr "Поставщики услуг"
+
+msgid "We share data only with providers that help run the service, under contracts that limit its use to our instructions:"
+msgstr "Мы передаём данные только поставщикам, которые помогают обеспечивать работу сервиса, по договорам, разрешающим использовать их лишь по нашим поручениям:"
+
+msgid "our hosting provider, which stores the database and runs the servers;"
+msgstr "хостинг-провайдеру, который хранит базу данных и обслуживает серверы;"
+
+msgid "Google Firebase Authentication, for email and password sign-in and verification emails;"
+msgstr "Google Firebase Authentication — для входа по email и паролю и писем с подтверждением;"
+
+msgid "Sentry, for error reports;"
+msgstr "Sentry — для отчётов об ошибках;"
+
+msgid "GitHub and Discord, only if you choose to sign in with them;"
+msgstr "GitHub и Discord — только если вы входите через них;"
+
+msgid "partner learning platforms, only for events you join through them."
+msgstr "партнёрским образовательным платформам — только для событий, в которые вы попали через них."
+
+msgid "Some providers process data outside your country. Where the law requires it, such transfers rely on appropriate safeguards, such as the EU Standard Contractual Clauses. We may also disclose data when required by law."
+msgstr "Некоторые поставщики обрабатывают данные за пределами вашей страны. Когда этого требует закон, такая передача опирается на надлежащие гарантии, например стандартные договорные условия ЕС. Мы также можем раскрыть данные, если этого требует закон."
+
+msgid "How long we keep it"
+msgstr "Как долго мы храним данные"
+
+msgid "Account and activity data: until you delete your account."
+msgstr "Данные аккаунта и активности — пока вы не удалите аккаунт."
+
+msgid "After deletion: your name is anonymized; email, avatar, linked accounts and session IP addresses are erased. Games and tournament results stay without your name, because other players’ results and ratings depend on them."
+msgstr "После удаления имя обезличивается; email, аватар, привязанные аккаунты и IP-адреса сессий стираются. Игры и результаты турниров остаются без вашего имени, потому что от них зависят результаты и рейтинги других игроков."
+
+msgid "Sign-in sessions: up to %{days} days; ended sessions, with their IP address and browser, are deleted %{stale} days later."
+msgstr "Сессии входа — до %{days} дн.; завершённые сессии вместе с IP-адресом и браузером удаляются через %{stale} дн."
+
+msgid "Error reports and backups: a limited period, after which they are overwritten."
+msgstr "Отчёты об ошибках и резервные копии — ограниченный срок, после которого они перезаписываются."
+
+msgid "Your rights"
+msgstr "Ваши права"
+
+msgid "Wherever you live, you can:"
+msgstr "Где бы вы ни жили, вы можете:"
+
+msgid "get a copy of your data in a portable format: ask us through the feedback form;"
+msgstr "получить копию своих данных в переносимом формате: запросите её через форму обратной связи;"
+
+msgid "correct it: Settings → Profile;"
+msgstr "исправить их: Настройки → Профиль;"
+
+msgid "delete it: Settings → Danger zone → Archive account;"
+msgstr "удалить их: Настройки → Опасная зона → Архивировать аккаунт;"
+
+msgid "object to or restrict processing, and withdraw any consent you gave;"
+msgstr "возразить против обработки или ограничить её, а также отозвать данное согласие;"
+
+msgid "complain to your data protection authority."
+msgstr "пожаловаться в уполномоченный орган по защите персональных данных."
+
+msgid "For anything you cannot do in Settings, contact us. We answer within 30 days, free of charge, and you will never be treated differently for using these rights."
+msgstr "Всё, что нельзя сделать в настройках, можно запросить у нас. Мы отвечаем в течение 30 дней бесплатно, и использование этих прав никак не повлияет на отношение к вам."
+
+msgid "Children"
+msgstr "Дети"
+
+msgid "Codebattle is not directed at children under 13. If you are under the age at which you can consent to data processing in your country (between 13 and 16 in most places), ask a parent or guardian before signing up. Parents can contact us to have a child’s account deleted."
+msgstr "Codebattle не предназначен для детей младше 13 лет. Если вы младше возраста, с которого в вашей стране можно самостоятельно давать согласие на обработку данных (в большинстве стран от 13 до 16 лет), спросите разрешения у родителя или опекуна перед регистрацией. Родители могут написать нам, чтобы удалить аккаунт ребёнка."
+
+msgid "Connections are encrypted (HTTPS), passwords and session tokens are stored only as hashes, and session cookies are signed and unreadable by scripts. No system is perfectly secure; if a breach affects your data, we will notify you and the authorities as the law requires."
+msgstr "Соединения шифруются (HTTPS), пароли и токены сессий хранятся только в виде хешей, а сессионные cookie подписаны и недоступны скриптам. Абсолютно защищённых систем не бывает: если утечка затронет ваши данные, мы уведомим вас и уполномоченные органы, как того требует закон."
+
+msgid "Changes"
+msgstr "Изменения"
+
+msgid "When this policy changes, we update the date at the top. Significant changes are announced on the site before they take effect."
+msgstr "Когда политика меняется, мы обновляем дату вверху страницы. О существенных изменениях мы сообщаем на сайте до того, как они вступят в силу."
+
+msgid "Cookies"
+msgstr "Cookie"
+
+msgid "We use only essential cookies and local storage: to keep you signed in and remember your settings. No ads, no tracking."
+msgstr "Мы используем только необходимые cookie и локальное хранилище: чтобы сохранять вход и ваши настройки. Без рекламы и слежки."
+
+msgid "Got it"
+msgstr "Понятно"
+
+
+
+
+
+msgid "By signing up, you confirm that you have read the"
+msgstr "Регистрируясь, вы подтверждаете, что ознакомились с документом"
+
+msgid "Your email and password sign-in is deleted"
+msgstr "Вход по email и паролю удаляется"

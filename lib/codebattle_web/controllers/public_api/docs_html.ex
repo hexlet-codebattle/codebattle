@@ -46,9 +46,6 @@ defmodule CodebattleWeb.PublicApi.DocsHTML do
       <title>Codebattle API</title>
       <meta name="description" content="Codebattle Public API v1: guide, endpoints, objects, errors and limits. Also available as Markdown at /api-docs.md.">
       <link rel="alternate" type="text/markdown" href="/api-docs.md" title="Markdown version for LLMs">
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
       <style>#{css()}</style>
     </head>
     <body>

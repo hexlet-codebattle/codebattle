@@ -88,10 +88,6 @@ defmodule CodebattleWeb.RootController do
     render(conn, "authorized.html")
   end
 
-  def feedback(conn, _) do
-    render(conn, "feedback.xml")
-  end
-
   def robots(conn, _) do
     render(conn, "robots.txt")
   end

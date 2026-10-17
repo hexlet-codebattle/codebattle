@@ -12,6 +12,12 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/inter':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/source-code-pro':
+        specifier: ^5.3.1
+        version: 5.3.1
       '@inertiajs/react':
         specifier: 3.9.1
         version: 3.9.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -81,6 +87,9 @@ importers:
       remark-math:
         specifier: ^6.0.0
         version: 6.0.0
+      swagger-ui-dist:
+        specifier: ^5.33.3
+        version: 5.33.3
       zustand:
         specifier: ^5.0.15
         version: 5.0.15(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0))
@@ -148,6 +157,12 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fontsource/inter@5.3.0':
+    resolution: {integrity: sha512-RofMylZmjlJEfELXeNHFWBRcSs75rGU/6bV2S2jfnvv/3rPXPGe0LgUJTklcHZ9lM4OZmAVFhcJPnACfb91A3g==}
+
+  '@fontsource/source-code-pro@5.3.1':
+    resolution: {integrity: sha512-qsJEkwJWXYP/9clmtt3BsIlZ+Lr4cuRgNAgu0vyZdCgESMRMhRkAmEFFHHNM81VdeURqg5D5+Rr3bALDFav78A==}
 
   '@inertiajs/core@3.9.1':
     resolution: {integrity: sha512-ScLQZ1/KXlvmqCEJMEZABSK5updJZIli1kaG/coWXpWMmpSLsazSJkR7esITYp7X5vTgrOGNIrcRmdMp/GQ0NA==}
@@ -431,6 +446,9 @@ packages:
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
+
+  '@scarf/scarf@1.4.0':
+    resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
 
   '@tabler/icons-react@3.49.0':
     resolution: {integrity: sha512-Um59pm5RVNUaQjFUtG0r4oYJbZuBS3tGugAA2tgBg0WufMk34Eio3nsO30RUkLuL2giYPQUNdY9HvqltLLYyNA==}
@@ -1245,6 +1263,9 @@ packages:
     peerDependencies:
       postcss: ^8.3.3
 
+  swagger-ui-dist@5.33.3:
+    resolution: {integrity: sha512-7xJKxAjf+/ajlW/V/dMfbiY+NC5BWtbvzzdI/AsX5UzMtOMudmFz/tjuKN0jN7QVe5drKKnx01CdYEJvTFvQlw==}
+
   tabbable@6.5.0:
     resolution: {integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==}
 
@@ -1431,6 +1452,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
+  '@fontsource/inter@5.3.0': {}
+
+  '@fontsource/source-code-pro@5.3.1': {}
+
   '@inertiajs/core@3.9.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
@@ -1602,6 +1627,8 @@ snapshots:
     optional: true
 
   '@rolldown/pluginutils@1.0.1': {}
+
+  '@scarf/scarf@1.4.0': {}
 
   '@tabler/icons-react@3.49.0(react@19.3.0)':
     dependencies:
@@ -2510,6 +2537,10 @@ snapshots:
   sugarss@5.0.2(postcss@8.5.30):
     dependencies:
       postcss: 8.5.30
+
+  swagger-ui-dist@5.33.3:
+    dependencies:
+      '@scarf/scarf': 1.4.0
 
   tabbable@6.5.0: {}
 

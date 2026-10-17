@@ -213,6 +213,9 @@ export default function Landing() {
           <Anchor href="https://t.me/hexletcommunity/5" target="_blank" c="dimmed" size="sm">
             {t('Support')}: Tg#codebattle
           </Anchor>
+          <Anchor href="/privacy" c="dimmed" size="sm">
+            {t('Privacy Policy')}
+          </Anchor>
           <span>
             {t('Version')}: {version}
           </span>

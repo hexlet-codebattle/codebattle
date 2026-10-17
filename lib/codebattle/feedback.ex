@@ -11,9 +11,10 @@ defmodule Codebattle.Feedback do
   alias Codebattle.Feedback
   alias Codebattle.Repo
 
-  @derive {Jason.Encoder, only: [:id, :author_name, :status, :text, :title_link, :inserted_at]}
+  @derive {Jason.Encoder, only: [:id, :user_id, :author_name, :status, :text, :title_link, :inserted_at]}
 
   schema "feedback" do
+    belongs_to(:user, Codebattle.User)
     field(:author_name, :string)
     field(:status, :string)
     field(:text, :string)
@@ -25,39 +26,23 @@ defmodule Codebattle.Feedback do
   @doc false
   def changeset(%Feedback{} = feedback, attrs) do
     feedback
-    |> cast(attrs, [:author_name, :status, :text, :title_link])
+    |> cast(attrs, [:user_id, :author_name, :status, :text, :title_link])
     |> validate_required([:author_name, :status, :text, :title_link])
-  end
-
-  def get_all do
-    from(
-      f in Feedback,
-      order_by: [desc: f.inserted_at]
-    )
-    |> Repo.all()
-    |> Enum.map(&format_feedback/1)
+    |> validate_length(:text, max: 10_000)
   end
 
   def list_all do
     Repo.all(from(f in Feedback, order_by: [desc: f.inserted_at]))
   end
 
-  def format_feedback(%Feedback{
-        id: id,
-        author_name: name,
-        status: status,
-        text: text,
-        title_link: link,
-        inserted_at: inserted_at
-      }) do
-    pub_date = Calendar.strftime(inserted_at, "%a, %d %B %Y %H:%M:%S GMT")
+  @doc "Feedback visible to `user`: everything for admins, their own otherwise (newest first)."
+  def visible_to(user) do
+    query = from(f in Feedback, order_by: [desc: f.id])
 
-    %{
-      title: status <> " " <> name,
-      description: text,
-      pubDate: pub_date,
-      link: link,
-      guid: id
-    }
+    if Codebattle.User.admin?(user) do
+      query
+    else
+      where(query, [f], f.user_id == ^user.id)
+    end
   end
 end

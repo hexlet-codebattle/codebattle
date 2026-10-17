@@ -10,6 +10,7 @@ import {
   IconMedal,
   IconSchool,
   IconSettings,
+  IconShieldLock,
   IconStarFilled,
   IconSwords,
   IconTrophy,
@@ -26,6 +27,7 @@ import { FollowMenu } from '@/features/main/FollowMenu';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
 import { DeployBanner } from '@/features/main/DeployBanner';
+import { CookieNotice } from '@/features/privacy/CookieNotice';
 import { useMainChannel } from '@/features/main/useMainChannel';
 import { type PresenceState, usePresenceStore } from '@/features/presence/store';
 import { useSyncSoundMute } from '@/features/settings/useSoundMute';
@@ -226,6 +228,9 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
               <Menu.Item onClick={() => setFeedbackOpen(true)} leftSection={<IconMessageReport size={16} />}>
                 {t('Send feedback')}
               </Menu.Item>
+              <Menu.Item component="a" href="/privacy" leftSection={<IconShieldLock size={16} />}>
+                {t('Privacy Policy')}
+              </Menu.Item>
               <Menu.Divider />
             </>
           )}
@@ -288,6 +293,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
         </Container>
       </AppShell.Main>
       {!user.is_guest && <InviteDialog />}
+      <CookieNotice />
     </AppShell>
   );
 }

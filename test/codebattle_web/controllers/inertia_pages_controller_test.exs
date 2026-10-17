@@ -15,6 +15,21 @@ defmodule CodebattleWeb.InertiaPagesControllerTest do
            } = inertia_props(conn)
   end
 
+  test "renders the privacy policy for guests", %{conn: conn} do
+    conn = get(conn, "/privacy")
+
+    assert inertia_component(conn) == "Privacy"
+
+    assert %{
+             "updated_on" => updated_on,
+             "session_days" => session_days,
+             "stale_session_days" => 30
+           } = inertia_props(conn)
+
+    assert is_binary(updated_on)
+    assert session_days > 0
+  end
+
   test "renders the seasons index with explicit props", %{conn: conn} do
     conn = get(conn, Routes.season_path(conn, :index))
 

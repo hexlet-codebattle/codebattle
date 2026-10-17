@@ -6,6 +6,7 @@ import 'phoenix_html';
 import { Socket } from 'phoenix';
 import { LiveSocket } from 'phoenix_live_view';
 
+import '../theme/fonts';
 import './legacy-admin.css';
 
 const csrfToken = document.querySelector<HTMLMetaElement>("meta[name='csrf-token']")?.content ?? '';

@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
+  import Ecto.Query
+
   alias Codebattle.Auth.User.FirebaseUser
   alias Codebattle.Repo
   alias Codebattle.User
@@ -484,6 +486,13 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
   end
 
   describe "#archive_account" do
+    setup {Req.Test, :verify_on_exit!}
+
+    setup do
+      Cachex.clear(:password_attempts_cache)
+      :ok
+    end
+
     test "anonymizes the account, drops privileges, and revokes every sign-in credential", %{conn: conn} do
       clan = insert(:clan, name: "Secret Clan")
 
@@ -511,11 +520,13 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           subscription_type: :admin
         )
 
-      conn = log_in_user(conn, user)
+      conn = log_in_user(conn, user, %{ip: "203.0.113.7", user_agent: "Firefox"})
       current_token = get_session(conn, :user_session_token)
-      {:ok, other_session, other_token} = UserSession.create(user)
+      {:ok, other_session, other_token} = UserSession.create(user, %{ip: "198.51.100.1", user_agent: "Safari"})
 
-      conn = delete(conn, "/api/v1/settings/account")
+      expect_firebase_delete("owner@example.com", "firebase-password", "firebase-id")
+
+      conn = delete(conn, "/api/v1/settings/account", %{"current_password" => "firebase-password"})
 
       assert json_response(conn, 200) == %{"status" => "archived"}
       assert get_session(conn, :user_session_token) == nil
@@ -555,6 +566,47 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert UserSession.get_active_by_token(other_token) == nil
       assert Repo.get!(UserSession, other_session.id).revoked_at
       assert {:error, :account_archived} = UserSession.create(archived)
+
+      for session <- Repo.all(from(s in UserSession, where: s.user_id == ^user.id)) do
+        assert session.ip == nil
+        assert session.user_agent == nil
+      end
+    end
+
+    test "archives an account without email sign-in without asking for a password", %{conn: conn} do
+      user = insert(:user, github_id: 42, firebase_uid: nil)
+
+      conn =
+        conn
+        |> log_in_user(user)
+        |> delete("/api/v1/settings/account")
+
+      assert json_response(conn, 200) == %{"status" => "archived"}
+      assert Repo.get!(User, user.id).archived_at
+    end
+
+    test "keeps an email sign-in account when the password is missing or wrong", %{conn: conn} do
+      user = insert(:user, email: "owner@example.com", firebase_uid: "firebase-id")
+
+      Req.Test.expect(FirebaseUser, fn firebase_conn ->
+        assert firebase_conn.request_path == "/v1/accounts:signInWithPassword"
+
+        firebase_conn
+        |> Plug.Conn.put_status(400)
+        |> Req.Test.json(%{"error" => %{"message" => "INVALID_LOGIN_CREDENTIALS"}})
+      end)
+
+      conn = log_in_user(conn, user)
+
+      assert json_response(delete(conn, "/api/v1/settings/account"), 422) == %{
+               "errors" => %{"current_password" => ["can't be blank"]}
+             }
+
+      assert json_response(delete(conn, "/api/v1/settings/account", %{"current_password" => "wrong"}), 422) == %{
+               "errors" => %{"current_password" => ["is invalid"]}
+             }
+
+      refute Repo.get!(User, user.id).archived_at
     end
 
     test "requires an authenticated account", %{conn: conn} do
@@ -562,6 +614,22 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
       assert json_response(conn, 401) == %{"error" => "oiblz"}
     end
+  end
+
+  defp expect_firebase_delete(email, password, firebase_uid) do
+    Req.Test.expect(FirebaseUser, 2, fn firebase_conn ->
+      body = firebase_conn |> Req.Test.raw_body() |> Jason.decode!()
+
+      case firebase_conn.request_path do
+        "/v1/accounts:signInWithPassword" ->
+          assert %{"email" => ^email, "password" => ^password} = body
+          Req.Test.json(firebase_conn, %{"idToken" => "fresh-token", "localId" => firebase_uid})
+
+        "/v1/accounts:delete" ->
+          assert body == %{"idToken" => "fresh-token"}
+          Req.Test.json(firebase_conn, %{})
+      end
+    end)
   end
 
   defp insert_user_with_password do

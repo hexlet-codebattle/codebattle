@@ -47,6 +47,14 @@ defmodule CodebattleWeb.PublicApi.DocsControllerTest do
     refute html =~ "<h3 id=\"get-"
   end
 
+  test "docs pages load nothing from third-party hosts", %{conn: conn} do
+    for path <- ["/api-docs", "/public_api/docs"] do
+      html = conn |> get(path) |> html_response(200)
+
+      refute html =~ ~r/(src="https?:|<link[^>]+href="https?:)/, "#{path} loads a remote asset"
+    end
+  end
+
   test "llms.txt points to the markdown docs", %{conn: conn} do
     assert conn |> get("/llms.txt") |> response(200) =~ "/api-docs.md"
   end

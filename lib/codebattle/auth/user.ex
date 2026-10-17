@@ -34,4 +34,8 @@ defmodule Codebattle.Auth.User do
   def request_firebase_email_change(user, user_attrs) do
     FirebaseUser.request_email_change(user, user_attrs)
   end
+
+  def delete_firebase_account(user, password) do
+    FirebaseUser.delete_account(user, password)
+  end
 end

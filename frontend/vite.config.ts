@@ -85,6 +85,8 @@ export default defineConfig(({ command }) => {
           main: path.resolve(__dirname, 'src/main.tsx'),
           // Admin pages: LiveView socket + legacy admin styles (layout/admin.html.heex).
           admin: path.resolve(__dirname, 'src/admin/main.ts'),
+          // Public API docs page: self-hosted Swagger UI (PublicApi.V1.SpecController).
+          apiDocs: path.resolve(__dirname, 'src/apiDocs/main.ts'),
         },
       },
     },

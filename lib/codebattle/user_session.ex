@@ -21,6 +21,9 @@ defmodule Codebattle.UserSession do
   @session_lifetime_days 365
   @touch_interval_seconds 300
   @token_bytes 32
+  # How long revoked/expired sessions (with their IP and user agent) are kept for
+  # security review before they're deleted. Stated on /privacy.
+  @stale_retention_days 30
 
   schema "user_sessions" do
     belongs_to(:user, User)
@@ -241,6 +244,20 @@ defmodule Codebattle.UserSession do
       {:ok, _session} -> {:error, :invalid_session_owner}
       {:error, changeset} -> {:error, changeset}
     end
+  end
+
+  def stale_retention_days, do: @stale_retention_days
+
+  @doc "Deletes sessions revoked or expired more than #{@stale_retention_days} days ago."
+  def purge_stale do
+    cutoff = DateTime.add(now(), -@stale_retention_days, :day)
+
+    {count, _} =
+      __MODULE__
+      |> where([s], s.revoked_at < ^cutoff or s.expires_at < ^cutoff)
+      |> Repo.delete_all()
+
+    count
   end
 
   @doc """

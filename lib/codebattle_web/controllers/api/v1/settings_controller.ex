@@ -114,18 +114,45 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
     end
   end
 
-  def archive_account(conn, _params) do
-    case User.archive(conn.assigns.current_user) do
-      {:ok, _user} ->
+  # Email sign-in lives in Firebase: it's deleted first (which needs the current
+  # password), so the email doesn't outlive the archived account there.
+  def archive_account(conn, params) do
+    current_user = conn.assigns.current_user
+    attempt_key = {:archive_account, current_user.id}
+
+    if password_rate_limited?(attempt_key) do
+      conn
+      |> put_status(:too_many_requests)
+      |> json(%{errors: %{current_password: ["too many attempts, try again later"]}})
+    else
+      with :ok <- delete_firebase_account(current_user, params["current_password"], attempt_key),
+           {:ok, _user} <- User.archive(current_user) do
         conn
         |> clear_session()
         |> configure_session(drop: true)
         |> json(%{status: "archived"})
+      else
+        {:error, %{} = errors} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{errors: errors})
 
-      {:error, _reason} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "account could not be archived"})
+        {:error, _reason} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: "account could not be archived"})
+      end
+    end
+  end
+
+  defp delete_firebase_account(user, password, attempt_key) do
+    case Codebattle.Auth.User.delete_firebase_account(user, password) do
+      {:error, %{current_password: _}} = error ->
+        register_password_failure(attempt_key)
+        error
+
+      result ->
+        result
     end
   end
 

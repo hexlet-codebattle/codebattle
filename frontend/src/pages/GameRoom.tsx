@@ -23,6 +23,7 @@ import { type GameApi, useGame } from '@/features/game/useGame';
 import { InviteDialog } from '@/features/invites/InviteDialog';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { useMainChannel } from '@/features/main/useMainChannel';
+import { CookieNotice } from '@/features/privacy/CookieNotice';
 import { useSyncSoundMute } from '@/features/settings/useSoundMute';
 import { useUnread } from '@/features/tournament/components/SidePanels';
 import type { SharedProps } from '@/shared/types';
@@ -208,6 +209,8 @@ function LiveRoom({ props }: { props: PageProps }) {
         canManage={props.can_manage_game}
       />
       {isPlayer && <GameResultModal api={api} />}
+      {/* Guests may arrive straight from a shared game link, never passing an AppLayout page. */}
+      {me.is_guest && <CookieNotice />}
       {api.status === 'error' && (
         <div className={classes.offline} role="status">
           <Text size="xs" fw={700}>
