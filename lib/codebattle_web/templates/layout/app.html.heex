@@ -20,7 +20,7 @@
       type="image/svg+xml"
     />
     <link href="/assets/images/favicons/favicon.ico?v=codebattle-logo" rel="shortcut icon" />
-    {render_tags_all(assigns[:meta_tags] || %{})}
+    {render_tags_all(page_meta_tags(@conn, assigns))}
     <meta name="csrf-token" content={csrf_token_value()} />
     <title>{Application.get_env(:codebattle, :app_title)}</title>
     {render("_server_styles.html", assigns)}

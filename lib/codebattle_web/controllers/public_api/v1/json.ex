@@ -99,6 +99,8 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
       break: break(tournament)
     }
 
+    card = if viewer, do: Map.put(card, :joined, Helpers.player?(tournament, viewer.id)), else: card
+
     if viewer && Helpers.can_moderate?(tournament, viewer) && tournament.access_token do
       Map.merge(card, %{
         access_token: tournament.access_token,

@@ -95,7 +95,13 @@
   font-family: var(--mantine-font-family-monospace);
   font-size: var(--mantine-font-size-sm);
   color: var(--cb-text-muted);
-  cursor: help;
+  text-decoration: none;
+  border-radius: var(--mantine-radius-sm);
+
+  &:hover {
+    color: var(--cb-text-strong);
+    background: var(--mantine-color-default-hover);
+  }
 
   & b {
     padding: 0 3px;

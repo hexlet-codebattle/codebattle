@@ -3900,8 +3900,8 @@ msgstr "Доступно для аккаунтов старше недели"
 msgid "Your profile, games, tournaments and the schedule"
 msgstr "Профиль, игры, турниры и расписание"
 
-msgid "Create and cancel your games"
-msgstr "Создание и отмена своих игр"
+msgid "Play: create and join games, invites, join tournaments"
+msgstr "Игра: создание игр и вход в них, приглашения, участие в турнирах"
 
 msgid "Create, edit, start and cancel private tournaments"
 msgstr "Создание, изменение, запуск и отмена приватных турниров"

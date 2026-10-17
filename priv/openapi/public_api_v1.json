@@ -15,7 +15,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Scopes: read, games:write, tournaments:write"
+        "description": "Scopes: read, games:write (also tournament join/leave), tournaments:write"
       }
     },
     "schemas": {
@@ -404,6 +404,10 @@
                 "format": "date-time"
               }
             }
+          },
+          "joined": {
+            "type": "boolean",
+            "description": "Whether you are a player of this tournament"
           },
           "access_token": {
             "type": "string",
@@ -1813,6 +1817,133 @@
           }
         ],
         "description": "Cancels your tournament and finishes its games."
+      }
+    },
+    "/tournaments/{id}/join": {
+      "post": {
+        "summary": "Join a tournament as a player",
+        "description": "Same as the Join button on the tournament page: works for a public tournament from the schedule, or a private one when you pass the `access_token` from its `invite_url` (without it, a private tournament you are not related to answers 404). Possible while the tournament is `waiting_participants`, and for swiss and ladder also while it is `active`. Joining twice is not an error: you get the card with `joined: true`. Then wait for `tournament.started` / `game.started` on `GET /me/events` and open the game `url` only when it begins, instead of keeping the tournament page open. A failed join answers 422 `validation_failed` with `details.reason`: `not_open` (finished, canceled or not open yet), `full` (`players_limit` reached), `not_running` (the tournament process is stopped; an organizer has to restart it) or `rejected` (the tournament didn't accept the join).",
+        "security": [
+          {
+            "bearerAuth": [
+              "games:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "access_token": {
+                    "type": "string",
+                    "description": "The `access_token` query parameter of a private tournament's `invite_url`"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Joined (or already a player)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tournament": {
+                      "$ref": "#/components/schemas/Tournament"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/tournaments/{id}/leave": {
+      "post": {
+        "summary": "Leave a tournament before it starts",
+        "description": "Removes you from the players while the tournament is `waiting_participants`. Leaving a tournament you don't play in returns the card with `joined: false`. After the start it answers 422 `validation_failed` with `details.reason` `already_started`; `not_running` means the tournament process is stopped.",
+        "security": [
+          {
+            "bearerAuth": [
+              "games:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Left",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tournament": {
+                      "$ref": "#/components/schemas/Tournament"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
       }
     },
     "/tasks": {

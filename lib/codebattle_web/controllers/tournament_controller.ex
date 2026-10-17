@@ -4,7 +4,10 @@ defmodule CodebattleWeb.TournamentController do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
   alias Codebattle.User
+  alias CodebattleWeb.LinkPreview
+  alias CodebattleWeb.OgImage
 
+  plug(:link_preview when action == :show)
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show, :edit])
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
@@ -127,14 +130,36 @@ defmodule CodebattleWeb.TournamentController do
     redirect(conn, to: Routes.group_tournament_path(conn, :show, tournament.group_tournament_id))
   end
 
+  # Scrapers come as guests; answer them with the tournament's preview, not the login redirect.
+  defp link_preview(%{assigns: %{current_user: %{is_guest: true}}, params: %{"id" => id}} = conn, _opts) do
+    with true <- LinkPreview.scraper?(conn),
+         %{} = tournament <- Tournament.Context.get(id) do
+      conn
+      |> put_tournament_meta_tags(tournament)
+      |> LinkPreview.send_head()
+    else
+      _ -> conn
+    end
+  end
+
+  defp link_preview(conn, _opts), do: conn
+
+  defp put_tournament_meta_tags(conn, tournament) do
+    image = Routes.tournament_image_url(conn, :show, tournament.id)
+
+    put_meta_tags(
+      conn,
+      Map.merge(OgImage.meta_image(image), %{
+        title: "🏆 #{tournament.name} · Codebattle",
+        description: tournament_meta_description(tournament),
+        url: Routes.tournament_url(conn, :show, tournament.id)
+      })
+    )
+  end
+
   defp render_tournament(conn, tournament, params) do
     conn
-    |> put_meta_tags(%{
-      title: "🏆 #{tournament.name} · Codebattle",
-      description: tournament_meta_description(tournament),
-      image: Routes.tournament_image_url(conn, :show, tournament.id),
-      url: Routes.tournament_url(conn, :show, tournament.id)
-    })
+    |> put_tournament_meta_tags(tournament)
     |> CodebattleWeb.Frontend.put_layout()
     |> render_inertia("TournamentRoom", %{
       "tournament_id" => tournament.id,

@@ -87,7 +87,7 @@ function Outcome({ game, api, mePlayer }: { game: Game; api: GameApi | null; meP
   );
 }
 
-/** Head-to-head: all-time wins of the two players against each other. */
+/** Head-to-head: all-time wins of the two players against each other, linking to their duel history. */
 function HeadToHeadScore({ game, left, right }: { game: Game; left: GamePlayer; right: GamePlayer }) {
   const { t } = useTranslation();
   const wins = (id: number) => game.head_to_head?.players.find((player) => player.id === id)?.wins;
@@ -97,9 +97,9 @@ function HeadToHeadScore({ game, left, right }: { game: Game; left: GamePlayer; 
 
   return (
     <Tooltip label={t('Wins against each other')}>
-      <span className={classes.h2h}>
+      <a href={`/h2h/${left.id}/${right.id}`} className={classes.h2h}>
         <b data-lead={a > b || undefined}>{a}</b>:<b data-lead={b > a || undefined}>{b}</b>
-      </span>
+      </a>
     </Tooltip>
   );
 }

@@ -23,6 +23,9 @@ defmodule CodebattleWeb.LayoutView do
     """)
   end
 
+  @doc "The page's meta tags over the site defaults, see `CodebattleWeb.MetaTags`."
+  def page_meta_tags(conn, assigns), do: CodebattleWeb.MetaTags.build(conn, assigns[:meta_tags])
+
   def app_short_version do
     case Application.get_env(:codebattle, :app_version, "") do
       "" -> "undefined"

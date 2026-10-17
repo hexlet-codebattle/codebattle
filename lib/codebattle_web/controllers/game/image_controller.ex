@@ -2,7 +2,7 @@ defmodule CodebattleWeb.Game.ImageController do
   use CodebattleWeb, :controller
   use Gettext, backend: CodebattleWeb.Gettext
 
-  import CodebattleWeb.OgImage, only: [esc: 1, chip: 1, chip: 2, avatar: 1, level_color: 1, level_label: 1]
+  import CodebattleWeb.OgImage, only: [esc: 1, chip: 2, avatar: 1, level_color: 1, level_label: 1]
 
   alias Codebattle.Game.Context
   alias CodebattleWeb.HtmlImage
@@ -83,8 +83,8 @@ defmodule CodebattleWeb.Game.ImageController do
       [
         state_chip(game),
         level_chip(game.level),
-        game.timeout_seconds && chip("⏱ " <> gettext("%{count} min", count: div(game.timeout_seconds, 60))),
-        game.tournament_id && chip("🏆 " <> gettext("Tournament")),
+        game.timeout_seconds && chip(gettext("%{count} min", count: div(game.timeout_seconds, 60)), icon: :clock),
+        game.tournament_id && chip(gettext("Tournament"), icon: :trophy),
         game.state == "waiting_opponent" && chip(gettext("Join the battle") <> " →", class: "cta push")
       ],
       &(&1 in [nil, false])
@@ -94,7 +94,7 @@ defmodule CodebattleWeb.Game.ImageController do
   defp level_chip(level) when level in [nil, ""], do: nil
   defp level_chip(level), do: chip(level_label(level), dot: level_color(level))
 
-  defp state_chip(%{state: "waiting_opponent"}), do: chip(gettext("Waiting for an opponent"), dot: "#fcc419")
+  defp state_chip(%{state: "waiting_opponent"}), do: chip(gettext("Waiting for an opponent"), dot: "#e0bf7a")
   defp state_chip(%{state: "playing"}), do: chip("LIVE", dot: "#ff5252", class: "live")
   defp state_chip(%{state: "game_over"}), do: chip(gettext("Finished"), dot: "#51cf66")
   defp state_chip(%{state: "timeout"}), do: chip(gettext("Time is up"), dot: "#868e96")
@@ -111,7 +111,7 @@ defmodule CodebattleWeb.Game.ImageController do
     }
     .side { display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0; position: relative; }
     .name { max-width: 440px; font-size: 50px; line-height: 1.1; margin-top: 8px; }
-    .meta { font-size: 26px; color: rgba(241, 243, 245, 0.6); }
+    .meta { font-size: 26px; color: rgba(244, 234, 210, 0.6); }
     .vs {
       text-align: center;
       font-size: 112px;
@@ -121,15 +121,16 @@ defmodule CodebattleWeb.Game.ImageController do
       color: transparent;
       filter: drop-shadow(0 0 30px rgba(219, 0, 0, 0.55));
     }
-    .winner .avatar { border-color: #fcc419; box-shadow: 0 0 60px rgba(252, 196, 25, 0.45); }
+    .winner .avatar { border-color: #e0bf7a; box-shadow: 0 0 60px rgba(224, 191, 122, 0.5); }
     .badge {
       position: absolute;
       top: -22px;
       z-index: 1;
       padding: 6px 18px;
       border-radius: 14px;
-      background: #fcc419;
-      color: #1c1c1c;
+      background: linear-gradient(180deg, #fff0c8, #e0bf7a 55%, #b8903c);
+      color: #14110a;
+      box-shadow: 0 0 20px rgba(224, 191, 122, 0.5);
       font-size: 22px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -140,12 +141,12 @@ defmodule CodebattleWeb.Game.ImageController do
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 4px dashed rgba(255, 255, 255, 0.28);
-      background: rgba(255, 255, 255, 0.03);
+      border: 4px dashed rgba(224, 191, 122, 0.4);
+      background: rgba(224, 191, 122, 0.04);
       font-size: 110px;
-      color: rgba(255, 255, 255, 0.4);
+      color: rgba(224, 191, 122, 0.6);
     }
-    .seat .name { color: rgba(241, 243, 245, 0.8); }
+    .seat .name { color: rgba(244, 234, 210, 0.8); }
     .push { margin-left: auto; }
     """
   end

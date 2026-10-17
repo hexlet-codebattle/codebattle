@@ -577,5 +577,76 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
 
       refute Enum.any?(schedule, &(&1["id"] == id))
     end
+
+    test "joins and leaves tournaments, private ones only with the invite's access_token", %{conn: conn} do
+      creator = old_user()
+      user = old_user()
+      token = token(user, ["read", "games:write"])
+      starts_at = Calendar.strftime(DateTime.add(DateTime.utc_now(), 1, :hour), "%Y-%m-%dT%H:%M")
+
+      create = fn attrs ->
+        {:ok, tournament} =
+          %{
+            "creator" => creator,
+            "name" => "Join cup",
+            "description" => "join test",
+            "starts_at" => starts_at,
+            "type" => "swiss",
+            "players_limit" => 8
+          }
+          |> Map.merge(attrs)
+          |> Tournament.Context.create()
+
+        tournament
+      end
+
+      public = create.(%{"access_type" => "public"})
+      private = create.(%{"access_type" => "token"})
+
+      assert %{"error" => %{"code" => "insufficient_scope"}} =
+               conn |> api(token(user)) |> post("/public_api/v1/tournaments/#{public.id}/join") |> json_response(403)
+
+      assert %{"tournament" => %{"joined" => true}} =
+               conn |> api(token) |> post("/public_api/v1/tournaments/#{public.id}/join") |> json_response(200)
+
+      assert Tournament.Helpers.player?(Tournament.Context.get!(public.id), user.id)
+
+      # idempotent
+      assert %{"tournament" => %{"joined" => true}} =
+               conn |> api(token) |> post("/public_api/v1/tournaments/#{public.id}/join") |> json_response(200)
+
+      assert %{"tournament" => %{"joined" => true}} =
+               conn |> api(token) |> get("/public_api/v1/tournaments/#{public.id}") |> json_response(200)
+
+      assert %{"tournament" => %{"joined" => false}} =
+               conn |> api(token) |> post("/public_api/v1/tournaments/#{public.id}/leave") |> json_response(200)
+
+      refute Tournament.Helpers.player?(Tournament.Context.get!(public.id), user.id)
+
+      assert %{"error" => %{"code" => "not_found"}} =
+               conn |> api(token) |> post("/public_api/v1/tournaments/#{private.id}/join") |> json_response(404)
+
+      assert %{"error" => %{"code" => "not_found"}} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/tournaments/#{private.id}/join", %{access_token: "wrong"})
+               |> json_response(404)
+
+      assert %{"tournament" => %{"joined" => true} = card} =
+               conn
+               |> api(token)
+               |> post("/public_api/v1/tournaments/#{private.id}/join", %{access_token: private.access_token})
+               |> json_response(200)
+
+      refute Map.has_key?(card, "access_token")
+
+      Tournament.Context.handle_event(private.id, :start, %{user: creator})
+
+      assert %{"error" => %{"details" => %{"reason" => "already_started"}}} =
+               conn |> api(token) |> post("/public_api/v1/tournaments/#{private.id}/leave") |> json_response(422)
+
+      Tournament.Context.handle_event(private.id, :cancel, %{user: creator})
+      Tournament.Context.handle_event(public.id, :cancel, %{user: creator})
+    end
   end
 end

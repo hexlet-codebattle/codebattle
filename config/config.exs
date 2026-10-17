@@ -145,28 +145,17 @@ config :phoenix, :json_library, Jason
 
 config :phoenix_meta_tags,
   title: "Hexlet Codebattle • Game for programmers",
-  description:
-    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
+  description: "Real-time 1v1 coding battles, tournaments and a league. Free and open source.",
   url: "https://codebattle.hexlet.io",
-  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.png",
+  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.jpg",
   "og:type": "website",
-  fb: %{
-    size: %{
-      width: 100,
-      height: 200,
-      position: %{
-        x: 10,
-        y: 15
-      }
-    }
-
-    # Import environment specific config. This must remain at the bottom
-    # of this file so it overrides the configuration defined above.
-  },
+  "og:site_name": "Codebattle",
   twitter: %{
     card: "summary_large_image"
   }
 
 config :porcelain, goon_warn_if_missing: false
 
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

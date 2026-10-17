@@ -2,7 +2,8 @@ defmodule CodebattleWeb.Tournament.ImageController do
   use CodebattleWeb, :controller
   use Gettext, backend: CodebattleWeb.Gettext
 
-  import CodebattleWeb.OgImage, only: [esc: 1, chip: 1, chip: 2, avatar: 1, level_color: 1, level_label: 1]
+  import CodebattleWeb.OgImage,
+    only: [esc: 1, chip: 1, chip: 2, avatar: 1, grade_cup: 1, level_color: 1, level_label: 1]
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
@@ -32,7 +33,8 @@ defmodule CodebattleWeb.Tournament.ImageController do
       #{starts_line(tournament)}
     </div>
     <div class="crowd">
-      <div class="count display">#{players_count}</div>
+      #{grade_cup(tournament.grade)}
+      <div class="count display gold">#{players_count}</div>
       <div class="count-label mono">#{gettext("Players")}</div>
       #{faces(tournament)}
     </div>
@@ -85,7 +87,7 @@ defmodule CodebattleWeb.Tournament.ImageController do
   defp level_chip(level), do: chip(level_label(level), dot: level_color(level))
 
   defp state_chip("upcoming"), do: chip(gettext("Upcoming"), dot: "#4dabf7")
-  defp state_chip("waiting_participants"), do: chip(gettext("Registration is open"), dot: "#fcc419")
+  defp state_chip("waiting_participants"), do: chip(gettext("Registration is open"), dot: "#e0bf7a")
   defp state_chip("active"), do: chip("LIVE", dot: "#ff5252", class: "live")
   defp state_chip("finished"), do: chip(gettext("Finished"), dot: "#51cf66")
   defp state_chip(state) when state in ["timeout", "canceled"], do: chip(gettext("Canceled"), dot: "#868e96")
@@ -95,7 +97,7 @@ defmodule CodebattleWeb.Tournament.ImageController do
     """
     main { gap: 56px; }
     .info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-    .kicker { font-size: 24px; font-weight: 700; color: #ff6b6b; letter-spacing: 0.12em; text-transform: uppercase; }
+    .kicker { font-size: 24px; font-weight: 700; color: #e0bf7a; letter-spacing: 0.12em; text-transform: uppercase; }
     .title {
       font-size: 76px;
       line-height: 1.05;
@@ -105,7 +107,7 @@ defmodule CodebattleWeb.Tournament.ImageController do
       overflow: hidden;
       overflow-wrap: anywhere;
     }
-    .when { font-size: 26px; color: rgba(241, 243, 245, 0.7); }
+    .when { font-size: 26px; color: rgba(244, 234, 210, 0.7); }
     .crowd {
       width: 330px;
       display: flex;
@@ -114,18 +116,19 @@ defmodule CodebattleWeb.Tournament.ImageController do
       gap: 4px;
       padding: 30px 0 36px;
       border-radius: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(224, 191, 122, 0.3);
+      background: radial-gradient(circle at 50% 30%, rgba(224, 191, 122, 0.12), rgba(224, 191, 122, 0.03) 70%);
     }
-    .count { font-size: 104px; line-height: 1; }
-    .count-label { font-size: 24px; color: rgba(241, 243, 245, 0.6); letter-spacing: 0.1em; text-transform: uppercase; }
+    .crowd .cup { width: 104px; height: 104px; margin-bottom: 14px; }
+    .count { font-size: 96px; line-height: 1; }
+    .count-label { font-size: 24px; color: rgba(244, 234, 210, 0.6); letter-spacing: 0.1em; text-transform: uppercase; }
     .faces { display: flex; margin-top: 26px; padding-left: 18px; }
     .faces .avatar {
       width: 72px;
       height: 72px;
       margin-left: -18px;
       border-radius: 50%;
-      border: 3px solid #0b0d12;
+      border: 3px solid #000;
       font-size: 34px;
     }
     .push { margin-left: auto; }

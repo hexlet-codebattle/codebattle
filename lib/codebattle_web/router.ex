@@ -340,6 +340,8 @@ defmodule CodebattleWeb.Router do
     patch("/tournaments/:id", TournamentController, :update)
     post("/tournaments/:id/start", TournamentController, :start)
     post("/tournaments/:id/cancel", TournamentController, :cancel)
+    post("/tournaments/:id/join", TournamentController, :join)
+    post("/tournaments/:id/leave", TournamentController, :leave)
 
     get("/tasks", TaskController, :index)
 

@@ -27,7 +27,7 @@ import classes from './Settings.module.css';
 
 const SCOPES = [
   { scope: 'read', description: 'Your profile, games, tournaments and the schedule' },
-  { scope: 'games:write', description: 'Create and cancel your games' },
+  { scope: 'games:write', description: 'Play: create and join games, invites, join tournaments' },
   { scope: 'tournaments:write', description: 'Create, edit, start and cancel private tournaments' },
 ];
 

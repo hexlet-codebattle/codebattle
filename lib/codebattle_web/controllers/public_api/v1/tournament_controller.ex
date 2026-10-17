@@ -33,9 +33,11 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
     "use_chat" => {:boolean, []}
   }
   @create_required ~w(name description starts_at level)
+  @join_spec %{"access_token" => {:string, length: {1, 255}}}
 
   plug(:require_scope, "read" when action in [:schedule, :live, :show, :ranking])
   plug(:require_scope, "tournaments:write" when action in [:create, :update, :start, :cancel])
+  plug(:require_scope, "games:write" when action in [:join, :leave])
 
   def schedule(conn, _params) do
     now = DateTime.utc_now()
@@ -150,6 +152,74 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
     run_event(conn, id, :cancel, "tournament.cancel", nil)
   end
 
+  # Joins as a player, like the Join button on the tournament page: a public tournament from the
+  # schedule, or a private one with the `access_token` from its invite_url. Joining is idempotent.
+  # Clients can then wait for `game.started` on the event stream instead of in a browser tab.
+  def join(conn, %{"id" => id} = params) do
+    case Params.validate(Map.drop(params, ["id", "format"]), @join_spec) do
+      {:ok, body} -> with_joinable_tournament(conn, id, body, &join_tournament(conn, &1, conn.assigns.current_user))
+      {:error, errors} -> validation_failed(conn, errors)
+    end
+  end
+
+  # Leaving is possible until the tournament starts, as on the site.
+  def leave(conn, %{"id" => id}) do
+    with_visible_tournament(conn, id, &leave_tournament(conn, &1, conn.assigns.current_user))
+  end
+
+  defp join_tournament(conn, tournament, user) do
+    cond do
+      Helpers.player?(tournament, user.id) ->
+        json(conn, %{tournament: JSON.tournament(tournament, user)})
+
+      tournament.state not in @live_states ->
+        join_failed(conn, "not_open", "The tournament is not open for joining")
+
+      Helpers.players_count(tournament) >= tournament.players_limit ->
+        join_failed(conn, "full", "The tournament is full")
+
+      true ->
+        player_event(conn, tournament, user, {:join, %{user: user}}, "tournament.join", true)
+    end
+  end
+
+  defp leave_tournament(conn, tournament, user) do
+    cond do
+      not Helpers.player?(tournament, user.id) ->
+        json(conn, %{tournament: JSON.tournament(tournament, user)})
+
+      tournament.state != "waiting_participants" ->
+        join_failed(conn, "already_started", "A started tournament can't be left")
+
+      true ->
+        player_event(conn, tournament, user, {:leave, %{user_id: user.id}}, "tournament.leave", false)
+    end
+  end
+
+  # Runs a join / leave in the tournament process; `joined` is whether the user must be a
+  # player afterwards. The strategy drops a join it doesn't accept silently.
+  defp player_event(conn, tournament, user, {event, params}, action, joined) do
+    case Tournament.Context.handle_event(tournament.id, event, params) do
+      %Tournament{} = updated ->
+        if Helpers.player?(updated, user.id) == joined do
+          ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, action, "tournament", tournament.id)
+          json(conn, %{tournament: JSON.tournament(updated, user)})
+        else
+          join_failed(conn, "rejected", "The tournament didn't accept the request; check its state and players_limit")
+        end
+
+      {:error, _reason} ->
+        not_running(conn)
+    end
+  end
+
+  defp not_running(conn) do
+    join_failed(conn, "not_running", "The tournament isn't running right now; try again when an organizer restarts it")
+  end
+
+  defp join_failed(conn, reason, message),
+    do: ErrorJSON.send_error(conn, 422, "validation_failed", message, %{reason: reason})
+
   defp run_event(conn, id, event, action, required_state) do
     user = conn.assigns.current_user
 
@@ -165,12 +235,24 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
   end
 
   # Visible: related to the user, or public and in the schedule window.
-  defp with_visible_tournament(conn, id, fun) do
+  defp with_visible_tournament(conn, id, fun), do: load(conn, id, fun, &visible?/2)
+
+  # Joinable: visible, or private and opened with its invite's access_token.
+  defp with_joinable_tournament(conn, id, body, fun) do
     load(conn, id, fun, fn tournament, user ->
-      related?(tournament, user) ||
-        (tournament.access_type == "public" and tournament.state in @schedule_states)
+      visible?(tournament, user) || valid_access_token?(tournament, body["access_token"])
     end)
   end
+
+  defp visible?(tournament, user) do
+    related?(tournament, user) ||
+      (tournament.access_type == "public" and tournament.state in @schedule_states)
+  end
+
+  defp valid_access_token?(%{access_type: "token", access_token: expected}, given)
+       when is_binary(expected) and is_binary(given), do: Plug.Crypto.secure_compare(expected, given)
+
+  defp valid_access_token?(_tournament, _given), do: false
 
   defp with_related_tournament(conn, id, fun), do: load(conn, id, fun, &related?/2)
 

@@ -22,13 +22,13 @@ opengraph_title = System.get_env("CODEBATTLE_OPENGRAPH_TITLE", "Hexlet Codebattl
 opengraph_description =
   System.get_env(
     "CODEBATTLE_OPENGRAPH_DESCRIPTION",
-    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players."
+    "Real-time 1v1 coding battles, tournaments and a league. Free and open source."
   )
 
 opengraph_image =
   System.get_env("CODEBATTLE_OPENGRAPH_IMAGE") ||
     System.get_env("CODEBATTLE_OPENGRAPH_URL") ||
-    "https://codebattle.hexlet.io/assets/images/opengraph-main.png"
+    "https://codebattle.hexlet.io/assets/images/opengraph-main.jpg"
 
 tournament_rematch_timeout_ms =
   "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
@@ -224,16 +224,7 @@ config :phoenix_meta_tags,
   url: codebattle_url,
   image: opengraph_image,
   "og:type": "website",
-  fb: %{
-    size: %{
-      width: 100,
-      height: 200,
-      position: %{
-        x: 10,
-        y: 15
-      }
-    }
-  },
+  "og:site_name": "Codebattle",
   twitter: %{
     card: "summary_large_image"
   }

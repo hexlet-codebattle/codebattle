@@ -2794,8 +2794,8 @@ msgstr "Available for accounts older than a week"
 msgid "Your profile, games, tournaments and the schedule"
 msgstr "Your profile, games, tournaments and the schedule"
 
-msgid "Create and cancel your games"
-msgstr "Create and cancel your games"
+msgid "Play: create and join games, invites, join tournaments"
+msgstr "Play: create and join games, invites, join tournaments"
 
 msgid "Create, edit, start and cancel private tournaments"
 msgstr "Create, edit, start and cancel private tournaments"

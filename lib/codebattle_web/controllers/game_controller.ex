@@ -13,6 +13,7 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.UserGameReport
   alias CodebattleWeb.Api.GameView
   alias CodebattleWeb.Frontend
+  alias CodebattleWeb.OgImage
 
   require Logger
 
@@ -414,13 +415,17 @@ defmodule CodebattleWeb.GameController do
   end
 
   defp put_game_meta_tags(conn, game) do
-    put_meta_tags(conn, %{
-      title: game_meta_title(game) <> " · Codebattle",
-      description: game_meta_description(game),
-      url: Routes.game_url(conn, :show, game.id, level: Helpers.get_level(game)),
-      image: Routes.game_image_url(conn, :show, game.id),
-      twitter: get_twitter_labels_meta(game.players)
-    })
+    image = Routes.game_image_url(conn, :show, game.id)
+
+    put_meta_tags(
+      conn,
+      Map.merge(OgImage.meta_image(image), %{
+        title: game_meta_title(game) <> " · Codebattle",
+        description: game_meta_description(game),
+        url: Routes.game_url(conn, :show, game.id, level: Helpers.get_level(game)),
+        twitter: get_twitter_labels_meta(game.players)
+      })
+    )
   end
 
   defp render_game_not_found(conn) do

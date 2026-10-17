@@ -1,7 +1,7 @@
 # Codebattle Public API v1
 
 A small, me-centric HTTP API for bots, CLIs, editors and devices: see your live game and history,
-start games against Codebot or a friend, join open games from the lobby, run your own tournaments.
+start games against Codebot or a friend, join open games from the lobby, join tournaments and run your own.
 
 - **Base URL:** `https://codebattle.hexlet.io/public_api/v1`
 - **Format:** JSON in, JSON out (`Content-Type: application/json` on requests with a body)
@@ -67,7 +67,7 @@ A token belongs to one user, acts as that user and carries **scopes**:
 | Scope | Allows |
 |-------|--------|
 | `read` | All `GET` endpoints |
-| `games:write` | Create and cancel your games; send, accept and cancel invites |
+| `games:write` | Create, join and cancel games; send, accept and cancel invites; join and leave tournaments |
 | `tournaments:write` | Create, edit, start and cancel your tournaments |
 
 - Tokens with write scopes must have an expiry (30, 90 or 365 days) and can be created only by
@@ -333,6 +333,26 @@ You can play one game at a time; if you are in another one, the join answers `42
 `details.reason` `already_in_a_game` and `details.active_game_id`: finish that game, or cancel it
 with `POST /games/{id}/cancel` while it still waits for an opponent. To wait for someone to join
 your own game instead, create one with `{"opponent": "link"}` and share its `join_url`.
+
+**Join a tournament without keeping its page open.** Find it in `GET /tournaments/schedule` (or
+`GET /tournaments/live`) and join it (needs `games:write`); for a private tournament pass the
+`access_token` from its `invite_url`:
+
+```bash
+curl -s -X POST https://codebattle.hexlet.io/public_api/v1/tournaments/777/join \
+  -H "Authorization: Bearer $CODEBATTLE_TOKEN"
+
+curl -s -X POST https://codebattle.hexlet.io/public_api/v1/tournaments/778/join \
+  -H "Authorization: Bearer $CODEBATTLE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"access_token": "from_the_invite_url"}'
+```
+
+The card comes back with `joined: true` (joining twice is fine). Now listen to the
+[event stream](#event-stream) and open the browser only on `game.started`: its `game.url` is your
+first game. A phone saves a lot of battery compared with a tournament tab open for ten minutes
+before the start. Changed your mind? `POST /tournaments/{id}/leave` works until the start. A
+failed join answers `422` with `details.reason`: `not_open`, `full` or `not_running`.
 
 **Bot that runs a private tournament.** `POST /tournaments` with `name`, `description`,
 `starts_at`, `level`, send players the returned `invite_url`, then `POST /tournaments/{id}/start`
