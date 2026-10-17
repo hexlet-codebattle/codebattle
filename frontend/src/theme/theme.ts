@@ -22,7 +22,7 @@ import {
   type VariantColorsResolver,
 } from '@mantine/core';
 
-import { blue, dark, grades, green, orange, red, slate, violet, yellow } from './colors';
+import { blue, brand, dark, grades, green, orange, red, slate, violet, yellow } from './colors';
 import classes from './components.module.css';
 import { BADGE_COLORS } from './cssVariables';
 
@@ -55,7 +55,7 @@ export const theme = createTheme({
   primaryColor: 'slate',
   // Light uses one shade darker so filled colours and status text keep contrast on white.
   primaryShade: { light: 7, dark: 6 },
-  colors: { dark, slate, green, red, orange, blue, violet, yellow },
+  colors: { dark, slate, brand, green, red, orange, blue, violet, yellow },
   variantColorResolver,
   white: '#ffffff',
   black: '#1c1c1c',

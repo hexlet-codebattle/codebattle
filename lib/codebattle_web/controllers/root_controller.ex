@@ -3,6 +3,7 @@ defmodule CodebattleWeb.RootController do
 
   alias Codebattle.Season
   alias Codebattle.SeasonResult
+  alias Codebattle.Tournament
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
   alias CodebattleWeb.Frontend
@@ -43,10 +44,16 @@ defmodule CodebattleWeb.RootController do
     end
   end
 
-  # Guests outside event mode: what Codebattle is, with the current season's top five.
+  # Guests outside event mode: what Codebattle is, the next league tournament of each grade
+  # and the current season's top five.
   defp render_landing(conn) do
     current_season = Season.get_current_season()
     leaderboard = if current_season, do: SeasonResult.get_top_users(current_season.id, 5), else: []
+
+    league_tournaments =
+      Tournament.Context.get_one_upcoming_tournament_for_each_grade()
+      |> Enum.sort_by(& &1.starts_at, DateTime)
+      |> Enum.map(&Map.take(&1, [:id, :name, :grade, :starts_at]))
 
     conn
     |> CodebattleWeb.OnboardingTracking.landing()
@@ -55,6 +62,7 @@ defmodule CodebattleWeb.RootController do
       "season" => current_season && %{name: current_season.name, year: current_season.year},
       "leaderboard" =>
         Enum.map(leaderboard, &Map.take(&1, [:place, :user_id, :user_name, :avatar_url, :user_lang, :total_points])),
+      "league_tournaments" => league_tournaments,
       "dev_sign_in" => Application.get_env(:codebattle, :dev_sign_in, false) == true,
       "version" => LayoutView.app_short_version()
     })

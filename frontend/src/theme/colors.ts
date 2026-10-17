@@ -46,6 +46,20 @@ export const green: MantineColorsTuple = [
   '#22553d',
 ];
 
+// The logo's red (assets/logo.svg) as shade 6: guest calls to action (Sign up, Play your first battle).
+export const brand: MantineColorsTuple = [
+  '#ffe8e8',
+  '#ffcfcf',
+  '#ff9e9e',
+  '#ff6b6b',
+  '#ff3b3b',
+  '#f01414',
+  '#db0000',
+  '#b80000',
+  '#940000',
+  '#700000',
+];
+
 // Danger: bootstrap `text-danger` (#dc3545) as shade 6 so Mantine's filled red
 // is the legacy danger colour.
 export const red: MantineColorsTuple = [

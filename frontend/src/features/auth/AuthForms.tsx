@@ -40,11 +40,11 @@ export function SocialButtons({ next, label }: { next: string; label: 'in' | 'up
 }
 
 /** Development only (config :dev_sign_in): a fresh random user of each kind. */
-export function DevSignIn() {
+export function DevSignIn({ size = 'compact-sm' }: { size?: 'compact-xs' | 'compact-sm' }) {
   return (
-    <Group gap="xs" justify="center">
+    <Group gap="xs" justify="center" wrap="nowrap">
       {(['free', 'premium', 'admin'] as const).map((kind) => (
-        <MethodButton key={kind} action={`/auth/dev_login?locale=en&subscription_type=${kind}`} method="post" size="compact-sm" variant="light" color="gray">
+        <MethodButton key={kind} action={`/auth/dev_login?locale=en&subscription_type=${kind}`} method="post" size={size} variant="light" color="gray">
           Dev {kind}
         </MethodButton>
       ))}

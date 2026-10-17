@@ -24,6 +24,7 @@ import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { FollowMenu } from '@/features/main/FollowMenu';
 import { UserMenu } from '@/layout/AppLayout';
 import { ColorSchemeToggle } from '@/layout/ColorSchemeToggle';
+import { LocaleSwitch } from '@/layout/LocaleSwitch';
 import { SoundToggle } from '@/layout/SoundToggle';
 import { useSharedProps } from '@/shared/useSharedProps';
 
@@ -262,6 +263,7 @@ export function TopBar({
         {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
         <SoundToggle />
         <ColorSchemeToggle />
+        <LocaleSwitch />
         <Tooltip label={fullscreen ? t('Exit full screen') : t('Full screen')}>
           <ActionIcon size="md" variant="default" onClick={() => void toggle()} aria-label={t('Full screen')} visibleFrom="sm">
             {fullscreen ? <IconMinimize size={16} /> : <IconMaximize size={16} />}

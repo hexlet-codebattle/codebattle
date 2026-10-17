@@ -39,7 +39,7 @@ void createInertiaApp({
   setup({ App, el, props }) {
     if (!el) return;
 
-    // The locale is fixed for the page (switching it reloads), so set it up once.
+    // Seed translations before rendering; locale controls update them in place.
     initI18n(props.initialPage.props.locale);
 
     createRoot(el).render(

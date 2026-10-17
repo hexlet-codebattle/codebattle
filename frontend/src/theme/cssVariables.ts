@@ -45,10 +45,13 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {
     ...statusVariables,
     '--cb-radius': '0.5rem',
+    // The logo's red (assets/logo.svg); brand text uses --cb-brand-text, tuned per scheme for contrast.
+    '--cb-brand': 'var(--mantine-color-brand-6)',
     '--cb-font-display': "'CB Display', 'Source Code Pro', monospace",
   },
   light: {
     ...gradeVariables('light'),
+    '--cb-brand-text': '#c40000',
     ...badgeVariables('light'),
     // Leaderboard 1st/2nd/3rd: deep enough for white digits on a light page.
     '--cb-medal-1': '#8a6a24',
@@ -90,6 +93,8 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
   },
   dark: {
     ...gradeVariables('dark'),
+    // Logo red lifted so small text keeps 4.5:1 on the dark page.
+    '--cb-brand-text': 'var(--mantine-color-brand-4)',
     ...badgeVariables('dark'),
     '--cb-medal-1': 'var(--cb-grade-grand_slam)',
     '--cb-medal-2': 'var(--cb-grade-masters)',

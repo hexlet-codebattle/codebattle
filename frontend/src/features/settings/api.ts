@@ -1,5 +1,6 @@
 import type { SoundSettings } from '@/shared/sound';
 import type { CurrentUser } from '@/shared/types';
+import type { Locale } from '@/i18n';
 
 // /api/v1/settings/* (Api.V1.SettingsController). The page is seeded from the
 // shared props, which carry the account fields on /settings.
@@ -102,6 +103,8 @@ export function updateSettings(fields: SettingsUpdate) {
   queue = next;
   return next;
 }
+
+export const updateLocale = (locale: Locale) => request<{ locale: Locale }>('PATCH', '/api/v1/locale', { locale });
 
 export const updatePassword = (fields: { current_password: string; password: string; password_confirmation: string }) =>
   request<{ status: 'ok' }>('PATCH', '/api/v1/settings/password', fields);

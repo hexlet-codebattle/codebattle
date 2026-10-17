@@ -53,6 +53,7 @@ export interface SharedProps {
   current_user: CurrentUser;
   current_season: Season | null;
   locale: string;
+  locale_forced: boolean;
   user_token: string;
   [key: string]: unknown;
 }

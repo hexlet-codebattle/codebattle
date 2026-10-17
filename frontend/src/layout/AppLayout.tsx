@@ -1,4 +1,4 @@
-import { AppShell, Badge, Button, Container, Group, Menu, Stack, Text, UnstyledButton } from '@mantine/core';
+import { AppShell, Badge, Box, Button, Container, Group, Menu, Stack, Text, UnstyledButton } from '@mantine/core';
 import {
   IconBrandDiscord,
   IconBrandGithub,
@@ -21,6 +21,7 @@ import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import logo from '@/assets/logo.svg?raw';
+import { DevSignIn } from '@/features/auth/AuthForms';
 import { InviteDialog } from '@/features/invites/InviteDialog';
 import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { FollowMenu } from '@/features/main/FollowMenu';
@@ -36,6 +37,7 @@ import { useSharedProps } from '@/shared/useSharedProps';
 
 import classes from './AppLayout.module.css';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
+import { LocaleSwitch } from './LocaleSwitch';
 import { SoundToggle } from './SoundToggle';
 
 const REPO_URL = 'https://github.com/hexlet-codebattle/codebattle';
@@ -148,16 +150,22 @@ function ActiveGameLink() {
 /** The signed-in user (name, avatar, menu) or Sign in / Sign up; `compact` for the game's top bar. */
 export function UserMenu({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation();
-  const { current_user: user, branding } = useSharedProps();
+  // dev_sign_in is a page prop (Landing, Auth, TournamentPublic), so the dev logins show on those pages only.
+  const { current_user: user, branding, dev_sign_in: devSignIn } = useSharedProps<{ dev_sign_in?: boolean }>();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   if (user.is_guest) {
     return (
-      <Group gap="xs">
-        <Button component="a" href="/session/new" variant="outline" color="green" size={compact ? 'compact-sm' : 'sm'}>
+      <Group gap="xs" wrap="nowrap">
+        {devSignIn && !compact && (
+          <Box visibleFrom="md">
+            <DevSignIn size="compact-xs" />
+          </Box>
+        )}
+        <Button component="a" href="/session/new" size={compact ? 'compact-sm' : 'sm'}>
           {t('Sign in')}
         </Button>
-        <Button component="a" href="/users/new" variant="filled" color="green" size={compact ? 'compact-sm' : 'sm'}>
+        <Button component="a" href="/users/new" variant="filled" color="brand" size={compact ? 'compact-sm' : 'sm'}>
           {t('Sign up')}
         </Button>
       </Group>
@@ -269,7 +277,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
         <Container size="xl" h="100%">
           <Group h="100%" justify="space-between" wrap="nowrap">
             <Brand />
-            <Group gap="sm" wrap="nowrap">
+            <Group gap={6} wrap="nowrap">
               {!user.is_guest && <ActiveGameLink />}
               {!user.is_guest && <FollowMenu />}
               {!user.is_guest && !branding.hide_invites && (
@@ -281,6 +289,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
               )}
               <SoundToggle />
               <ColorSchemeToggle />
+              <LocaleSwitch />
               <UserMenu />
             </Group>
           </Group>

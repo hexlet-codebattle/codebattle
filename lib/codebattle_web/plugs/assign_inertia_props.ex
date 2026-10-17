@@ -27,6 +27,7 @@ defmodule CodebattleWeb.Plugs.AssignInertiaProps do
         ),
       "active_game" => present_active_game(current_user),
       "locale" => Gettext.get_locale(CodebattleWeb.Gettext),
+      "locale_forced" => CodebattleWeb.Plugs.Locale.forced?(),
       "branding" => present_branding(current_user),
       "user_token" =>
         Phoenix.Token.sign(

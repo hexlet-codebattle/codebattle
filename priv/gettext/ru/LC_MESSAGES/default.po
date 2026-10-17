@@ -6781,3 +6781,21 @@ msgstr "собственные счётчики шагов от главной �
 
 msgid "We use no additional analytics cookies, advertising cookies or third-party trackers. First-party onboarding counts reuse the existing guest session and honor Do Not Track and Global Privacy Control. Fonts are served from our own servers. Profile pictures of users who signed in with GitHub, Discord or a partner platform load from those services, which see your IP address. You can delete cookies and local storage in your browser at any time; you will be signed out."
 msgstr "Мы не используем дополнительные аналитические cookie, рекламные cookie или сторонние трекеры. Наши счётчики знакомства с игрой используют существующую гостевую сессию и учитывают Do Not Track и Global Privacy Control. Шрифты загружаются с наших серверов. Аватары пользователей, вошедших через GitHub, Discord или партнёрскую платформу, загружаются с этих сервисов, которые видят ваш IP-адрес. Вы можете удалить cookie и локальное хранилище браузера в любой момент; это завершит вход."
+
+msgid "languages to battle in"
+msgstr "языков для сражений"
+
+msgid "real-time duels"
+msgstr "дуэли в реальном времени"
+
+msgid "players in a single tournament"
+msgstr "игроков в одном турнире"
+
+msgid "ads or third-party trackers"
+msgstr "рекламы и сторонних трекеров"
+
+msgid "League tournaments will appear here soon."
+msgstr "Турниры лиги скоро появятся здесь."
+
+msgid "Four Grand Slams every season. One champion."
+msgstr "Четыре Гранд-слэма каждый сезон. Один чемпион."

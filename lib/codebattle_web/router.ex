@@ -380,6 +380,7 @@ defmodule CodebattleWeb.Router do
       get("/user/premium_requests", UserController, :premium_requests)
       post("/user/:id/send_premium_request", UserController, :send_premium_request)
       get("/user/current", UserController, :current)
+      patch("/locale", LocaleController, :update)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/session", SessionController, only: [:create], singleton: true)
