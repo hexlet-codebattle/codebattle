@@ -8,6 +8,11 @@
   /* Matches OnlinePlayers' header so the split card's top bars line up. */
   min-height: 44px;
   border-bottom: 1px solid var(--cb-border);
+  overflow-x: auto;
+
+  & > * {
+    flex-shrink: 0;
+  }
 }
 
 .messages {

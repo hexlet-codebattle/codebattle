@@ -1,4 +1,5 @@
-import { Center, Loader, Text } from '@mantine/core';
+import { Center, Loader, Text, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -71,9 +72,11 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
   const [brief, setBrief] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatRoom, setChatRoom] = useState<number | null>(null);
+  const theme = useMantineTheme();
+  const showMiniChat = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
   // The open strip shows the chat too, so what it shows counts as read.
   const miniChat =
-    chat && brief ? (
+    chat && brief && showMiniChat ? (
       <MiniChat
         chat={chat}
         gameId={game.id}

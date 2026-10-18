@@ -155,6 +155,7 @@ export function TournamentPanels({ tournament, api }: { tournament: Tournament; 
       )}
       {subModes.length > 1 && (
         <SegmentedControl
+          className={classes.subModes}
           size="xs"
           mx="sm"
           mt="sm"

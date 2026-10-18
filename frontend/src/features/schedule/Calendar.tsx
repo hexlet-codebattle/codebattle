@@ -12,6 +12,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconCalendarMonth, IconChevronLeft, IconChevronRight, IconList, IconUsers } from '@tabler/icons-react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { type CSSProperties, useMemo, useState } from 'react';
@@ -139,11 +140,11 @@ function Agenda({ days, today, onSelect }: { days: [Date, ScheduleEvent[]][]; to
                 <button
                   key={tournament.id}
                   type="button"
-                  className={classes.row}
+                  className={`${classes.row} ${classes.agendaEvent}`}
                   data-state={tournament.state}
                   onClick={() => onSelect(event)}
                 >
-                  <Text ff="monospace" size="sm" c="dimmed" w={96} style={{ flex: 'none' }}>
+                  <Text className={classes.eventRange} ff="monospace" size="sm" c="dimmed" w={96} style={{ flex: 'none' }}>
                     {timeOf(event.start)}–{timeOf(event.end)}
                   </Text>
                   {tournament.grade !== 'open' ? (
@@ -159,15 +160,17 @@ function Agenda({ days, today, onSelect }: { days: [Date, ScheduleEvent[]][]; to
                       {tournament.grade === 'open' ? t('Custom tournament') : gradeLabel(tournament.grade)}
                     </Text>
                   </Stack>
-                  {(tournament.players_count ?? 0) > 0 && (
-                    <Group gap={4} c="dimmed" wrap="nowrap">
-                      <IconUsers size={14} />
-                      <Text size="xs" ff="monospace">
-                        {tournament.players_count}
-                      </Text>
-                    </Group>
-                  )}
-                  <StateBadge state={tournament.state} />
+                  <Group gap="xs" className={classes.rowMeta}>
+                    {(tournament.players_count ?? 0) > 0 && (
+                      <Group gap={4} c="dimmed" wrap="nowrap">
+                        <IconUsers size={14} />
+                        <Text size="xs" ff="monospace">
+                          {tournament.players_count}
+                        </Text>
+                      </Group>
+                    )}
+                    <StateBadge state={tournament.state} />
+                  </Group>
                 </button>
               );
             })}
@@ -185,7 +188,9 @@ export function Calendar({ scope }: { scope: ScheduleScope }) {
   const today = new Date(useNow(60_000));
   const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const [month, setMonth] = useState(thisMonth);
-  const [view, setView] = useState<View>('month');
+  const compact = useMediaQuery('(max-width: 48em)');
+  const [chosenView, setView] = useState<View | null>(null);
+  const view = chosenView ?? (compact ? 'agenda' : 'month');
   const [selected, setSelected] = useState<ScheduleEvent | null>(null);
 
   const days = useMemo(() => monthGrid(month, weekStart(locale)), [month, locale]);

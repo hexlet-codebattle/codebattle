@@ -36,9 +36,7 @@ import { UserAvatar } from '@/shared/UserAvatar';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import classes from './AppLayout.module.css';
-import { ColorSchemeToggle } from './ColorSchemeToggle';
-import { LocaleSwitch } from './LocaleSwitch';
-import { SoundToggle } from './SoundToggle';
+import { HeaderTools } from './HeaderTools';
 
 const REPO_URL = 'https://github.com/hexlet-codebattle/codebattle';
 
@@ -50,7 +48,7 @@ function Brand() {
   const titleFirst = branding.logo_title_position === 'left';
 
   const title = branding.logo_title && (
-    <Stack gap={0} className={classes.brandText} visibleFrom="sm">
+    <Stack gap={0} className={classes.brandText} visibleFrom="lg">
       <Text size="sm" fw={800} c="bright" ff="heading" lh={1.2}>
         {branding.logo_title}
       </Text>
@@ -156,7 +154,7 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
 
   if (user.is_guest) {
     return (
-      <Group gap="xs" wrap="nowrap">
+      <Group gap={6} wrap="nowrap" className={classes.authButtons}>
         {devSignIn && !compact && (
           <Box visibleFrom="md">
             <DevSignIn size="compact-xs" />
@@ -179,9 +177,9 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       <Menu position="bottom-end" width={230}>
         <Menu.Target>
-          <UnstyledButton className={classes.userButton}>
+          <UnstyledButton className={classes.userButton} aria-label={user.name}>
             <Group gap="sm" wrap="nowrap">
-              <Text size="sm" fw={700} c="bright" visibleFrom={compact ? 'md' : 'xs'}>
+              <Text size="sm" fw={700} c="bright" visibleFrom="lg" truncate maw={140}>
                 {user.name}
               </Text>
               <UserAvatar user={user} size={compact ? 24 : 28} />
@@ -275,21 +273,20 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
       <DeployBanner />
       <AppShell.Header className={classes.header}>
         <Container size="xl" h="100%">
-          <Group h="100%" justify="space-between" wrap="nowrap">
+          <Group h="100%" justify="space-between" wrap="nowrap" gap="xs">
             <Brand />
             <Group gap={6} wrap="nowrap">
               {!user.is_guest && <ActiveGameLink />}
-              {!user.is_guest && <FollowMenu />}
-              {!user.is_guest && !branding.hide_invites && (
-                <>
-                  <GithubStars />
-                  <OnlineCount />
-                  <InvitesMenu />
-                </>
-              )}
-              <SoundToggle />
-              <ColorSchemeToggle />
-              <LocaleSwitch />
+              <HeaderTools>
+                {!user.is_guest && <FollowMenu />}
+                {!user.is_guest && !branding.hide_invites && (
+                  <>
+                    <GithubStars />
+                    <OnlineCount />
+                    <InvitesMenu />
+                  </>
+                )}
+              </HeaderTools>
               <UserMenu />
             </Group>
           </Group>
@@ -297,7 +294,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
       </AppShell.Header>
 
       <AppShell.Main>
-        <Container size={wide ? 1680 : 'xl'} py="lg">
+        <Container size={wide ? 1680 : 'xl'} py={{ base: 'sm', sm: 'lg' }} className={classes.content}>
           {children}
         </Container>
       </AppShell.Main>

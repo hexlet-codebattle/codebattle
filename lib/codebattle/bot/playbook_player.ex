@@ -3,7 +3,8 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   Simulates a bot solving a task.
 
   Instead of replaying recorded games (playbooks), the bot takes the task's
-  stored reference solution from the database (`task.solutions["python"]`) and
+  stored reference solution from the database (`task.solutions["python"]`, falling
+  back to the python `task.solution` from the tasks repo) and
   "types" it into the editor like a human, submitting the final solution after
   `time_to_solve_sec - 5s`.
   """
@@ -124,16 +125,20 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   # The bot always solves in python, using the reference solution stored on the task.
   defp bot_lang(_bot), do: @bot_lang
 
-  defp get_solution(%{solutions: solutions}) when is_map(solutions) do
-    Enum.find_value(["python", "py"], fn key ->
-      case Map.get(solutions, key) do
-        code when is_binary(code) and code != "" -> code
-        _ -> nil
-      end
-    end)
+  # Tasks pushed from the hexlet-codebattle/tasks repo carry only the single `solution`
+  # field, which that repo always writes in python; `solutions` stays empty for them.
+  defp get_solution(task) do
+    solutions = Map.get(task, :solutions) || %{}
+
+    Enum.find_value(["python", "py"], &present(Map.get(solutions, &1))) ||
+      present(Map.get(task, :solution))
   end
 
-  defp get_solution(_task), do: nil
+  defp present(code) when is_binary(code) do
+    if String.trim(code) == "", do: nil, else: code
+  end
+
+  defp present(_code), do: nil
 
   # Total time the bot spends before submitting: `time_to_solve_sec - 5s`.
   defp get_bot_time_ms(%{time_to_solve_sec: seconds}) when is_integer(seconds) do

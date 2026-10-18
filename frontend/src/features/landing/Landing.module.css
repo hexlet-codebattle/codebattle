@@ -43,6 +43,22 @@
   gap: 14px;
   margin-bottom: 12px;
   animation: rise 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    gap: 10px;
+
+    & > div {
+      min-width: 0;
+    }
+
+    & .brandLogo svg {
+      height: 36px;
+    }
+
+    & .wordmark {
+      font-size: clamp(24px, 7vw, 34px);
+    }
+  }
 }
 
 .brandLogo {
@@ -115,6 +131,15 @@
 }
 
 .primaryCta {
+  max-width: 100%;
+  height: auto;
+  min-height: var(--button-height);
+  padding-block: 10px;
+
+  & :global(.mantine-Button-label) {
+    white-space: normal;
+    text-align: center;
+  }
   box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--cb-brand) 60%, transparent);
   transition:
     transform 150ms ease,
@@ -441,6 +466,10 @@
 
 .section {
   padding: 56px 0;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: 32px 0;
+  }
 }
 
 .sectionTitle {

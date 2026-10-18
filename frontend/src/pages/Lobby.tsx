@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { Alert, Grid, Stack } from '@mantine/core';
+import { Alert, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlugConnectedX } from '@tabler/icons-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -20,6 +20,7 @@ import { useLobbyStore } from '@/features/lobby/store';
 import type { LobbyJoinReply } from '@/features/lobby/types';
 import { gameUrl, useLobbyChannel } from '@/features/lobby/useLobbyChannel';
 import { useVisibleGames } from '@/features/lobby/useVisibleGames';
+import classes from '@/features/lobby/Lobby.module.css';
 import { AppLayout } from '@/layout/AppLayout';
 import { useSharedProps } from '@/shared/useSharedProps';
 
@@ -106,36 +107,34 @@ export default function Lobby() {
           {t('Connection lost. Reconnecting…')}
         </Alert>
       )}
-      <Grid gap="xl">
-        <Grid.Col span={{ base: 12, md: 8 }} order={{ base: 2, md: 1 }}>
-          <Stack gap="xl">
-            <Tournaments isAdmin={Boolean(user.is_admin)} />
-            <LobbyChat
-              ref={chatRef}
-              chat={chat}
-              activeRoomId={activeRoomId}
-              onRoomChange={setActiveRoomId}
-              onDirectMessage={openDirect}
-            />
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 4 }} order={{ base: 1, md: 2 }}>
-          <Stack gap="lg">
-            <ProfileCard
-              activeGame={activeGame}
-              online={online}
-              gamesCount={
-                // The lobby always holds a few bot games waiting for a player; count only the rest.
-                visibleGames.filter((game) => !(game.is_bot && game.state === 'waiting_opponent')).length
-              }
-              onCreate={createModal.open}
-              onJoin={joinModal.open}
-            />
-            <LeagueBanner />
-            <Leaderboard />
-          </Stack>
-        </Grid.Col>
-      </Grid>
+      <div className={classes.layout}>
+        <Stack gap="xl" className={classes.main}>
+          <Tournaments isAdmin={Boolean(user.is_admin)} />
+          <LobbyChat
+            ref={chatRef}
+            chat={chat}
+            activeRoomId={activeRoomId}
+            onRoomChange={setActiveRoomId}
+            onDirectMessage={openDirect}
+          />
+        </Stack>
+        <div className={classes.profile}>
+          <ProfileCard
+            activeGame={activeGame}
+            online={online}
+            gamesCount={
+              // The lobby always holds a few bot games waiting for a player; count only the rest.
+              visibleGames.filter((game) => !(game.is_bot && game.state === 'waiting_opponent')).length
+            }
+            onCreate={createModal.open}
+            onJoin={joinModal.open}
+          />
+        </div>
+        <Stack gap="lg" className={classes.extras}>
+          <LeagueBanner />
+          <Leaderboard />
+        </Stack>
+      </div>
       <ActiveGamesModal
         opened={joinOpened}
         onClose={joinModal.close}

@@ -99,8 +99,8 @@ function SeasonTop({ season, leaderboard }: { season: { name: string; year: numb
 
   return (
     <div className={classes.leaguePanel}>
-      <Group justify="space-between" mb="sm" wrap="nowrap">
-        <Group gap={8} wrap="nowrap">
+      <Group justify="space-between" mb="sm" gap="xs">
+        <Group gap={8} wrap="nowrap" miw={0}>
           <IconTrophy size={16} className={classes.trophy} />
           <Text className={classes.panelTitle} mb={0}>
             {t('Top 5 players • current season')}

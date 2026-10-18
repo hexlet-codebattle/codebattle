@@ -23,9 +23,7 @@ import logo from '@/assets/logo.svg?raw';
 import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { FollowMenu } from '@/features/main/FollowMenu';
 import { UserMenu } from '@/layout/AppLayout';
-import { ColorSchemeToggle } from '@/layout/ColorSchemeToggle';
-import { LocaleSwitch } from '@/layout/LocaleSwitch';
-import { SoundToggle } from '@/layout/SoundToggle';
+import { HeaderTools } from '@/layout/HeaderTools';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { isGameOver, useGameStore } from '../store';
@@ -58,7 +56,7 @@ function Outcome({ game, api, mePlayer }: { game: Game; api: GameApi | null; meP
   const color = outcome === 'won' ? 'green' : outcome === 'lost' || outcome === 'gave_up' ? 'red' : 'gray';
 
   return (
-    <Group gap="sm" wrap="nowrap" className={classes.outcome} data-outcome={color}>
+    <Group gap="sm" className={classes.outcome} data-outcome={color}>
       <Badge size="lg" color={color} variant="light" leftSection={outcome === 'won' ? <IconTrophy size={14} /> : null}>
         {mePlayer ? label : game.state === 'timeout' ? t('Time is over') : t('Game over')}
       </Badge>
@@ -151,7 +149,7 @@ export function TopBar({
 
   return (
     <header className={classes.topBar}>
-      <Group gap="sm" wrap="nowrap" miw={0} className={classes.topLeft}>
+      <Group gap={8} miw={0} className={classes.topLeft}>
         <a href="/" className={classes.logo} aria-label="Codebattle" dangerouslySetInnerHTML={{ __html: logo }} />
         <Button
           component="a"
@@ -170,8 +168,10 @@ export function TopBar({
             {back.short}
           </Text>
         </Button>
+      </Group>
+      <div className={classes.topMiddle} data-over={over || undefined}>
         {task && (
-          <Button.Group>
+          <Button.Group className={classes.topTasks}>
             <Tooltip label={strip.open && strip.tab === 'task' ? t('Hide the task') : t('Show the task')}>
               <Button
                 size="compact-sm"
@@ -180,6 +180,7 @@ export function TopBar({
                 leftSection={<IconFileDescription size={15} />}
                 onClick={strip.onTask}
                 aria-pressed={strip.open && strip.tab === 'task'}
+                aria-label={t('Task')}
                 className={classes.stripToggle}
               >
                 <Text span size="xs" fw={700} visibleFrom="sm">
@@ -197,6 +198,7 @@ export function TopBar({
                   rightSection={<TestsScore playerId={strip.testsOf} />}
                   onClick={strip.onTests}
                   aria-pressed={strip.open && strip.tab === 'tests'}
+                  aria-label={t('Tests')}
                   className={classes.stripToggle}
                 >
                   <Text span size="xs" fw={700} visibleFrom="sm">
@@ -220,33 +222,32 @@ export function TopBar({
             </Tooltip>
           </Button.Group>
         )}
-      </Group>
-
-      <div className={classes.topCenter}>
-        {over ? <Outcome game={game} api={api} mePlayer={game.players.find((player) => player.id === me.id)} /> : <GameTimer game={game} />}
-        {left && right && <HeadToHeadScore game={game} left={left} right={right} />}
-        {historyHref && (
-          <Button component="a" href={historyHref} size="compact-xs" variant="default" leftSection={<IconHistory size={13} />}>
-            {t('Open history')}
-          </Button>
-        )}
-        {liveHref && (
-          <Button component="a" href={liveHref} size="compact-xs" variant="default" leftSection={<IconPlayerPlay size={13} />}>
-            {t('Back to game')}
-          </Button>
-        )}
-        <Tooltip label={t('Stream mode')}>
-          <ActionIcon component="a" href={`/games/${game.id}/stream`} size="sm" variant="default" aria-label={t('Stream mode')}>
-            <IconBroadcast size={14} />
-          </ActionIcon>
-        </Tooltip>
-        {(canManage || over) && (
-          <Tooltip label={t('Bot detection (ML)')}>
-            <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Bot detection (ML)')}>
-              <IconRobot size={14} />
+        <div className={classes.topCenter}>
+          {over ? <Outcome game={game} api={api} mePlayer={game.players.find((player) => player.id === me.id)} /> : <GameTimer game={game} />}
+          {left && right && <HeadToHeadScore game={game} left={left} right={right} />}
+          {historyHref && (
+            <Button component="a" href={historyHref} size="compact-xs" variant="default" leftSection={<IconHistory size={13} />}>
+              {t('Open history')}
+            </Button>
+          )}
+          {liveHref && (
+            <Button component="a" href={liveHref} size="compact-xs" variant="default" leftSection={<IconPlayerPlay size={13} />}>
+              {t('Back to game')}
+            </Button>
+          )}
+          <Tooltip label={t('Stream mode')}>
+            <ActionIcon component="a" href={`/games/${game.id}/stream`} size="sm" variant="default" aria-label={t('Stream mode')}>
+              <IconBroadcast size={14} />
             </ActionIcon>
           </Tooltip>
-        )}
+          {(canManage || over) && (
+            <Tooltip label={t('Bot detection (ML)')}>
+              <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Bot detection (ML)')}>
+                <IconRobot size={14} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </div>
       </div>
 
       <Group gap={6} wrap="nowrap" justify="flex-end" className={classes.topRight}>
@@ -259,11 +260,10 @@ export function TopBar({
             </Indicator>
           </Tooltip>
         )}
-        {!me.is_guest && <FollowMenu />}
-        {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
-        <SoundToggle />
-        <ColorSchemeToggle />
-        <LocaleSwitch />
+        <HeaderTools>
+          {!me.is_guest && <FollowMenu />}
+          {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
+        </HeaderTools>
         <Tooltip label={fullscreen ? t('Exit full screen') : t('Full screen')}>
           <ActionIcon size="md" variant="default" onClick={() => void toggle()} aria-label={t('Full screen')} visibleFrom="sm">
             {fullscreen ? <IconMinimize size={16} /> : <IconMaximize size={16} />}

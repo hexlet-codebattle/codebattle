@@ -56,6 +56,12 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding-inline: 0;
+    text-align: center;
+    font-size: 10px;
+  }
 }
 
 .day {
@@ -81,6 +87,7 @@
 
   @media (max-width: $mantine-breakpoint-sm) {
     min-height: 64px;
+    padding: 2px;
   }
 }
 
@@ -122,6 +129,25 @@
   line-height: 1.5;
   text-align: left;
   cursor: pointer;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding-inline: 1px;
+    gap: 2px;
+    border-left-width: 2px;
+    font-size: 9px;
+
+    & .eventTime {
+      flex-shrink: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    & .live {
+      flex: none;
+      width: 4px;
+      height: 4px;
+    }
+  }
 
   &:hover {
     background: color-mix(in srgb, var(--grade) 26%, transparent);
@@ -169,6 +195,22 @@
 }
 
 /* Agenda / history rows. */
+.row.agendaEvent {
+  @media (max-width: $mantine-breakpoint-sm) {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 6px 8px;
+
+    & .eventRange {
+      grid-column: 1 / -1;
+    }
+
+    & .rowMeta {
+      grid-column: 2;
+    }
+  }
+}
+
 .agendaDay {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);

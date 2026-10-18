@@ -290,7 +290,7 @@ export function UserCard({ user, children, onDirectMessage, onBan }: UserCardPro
           {children}
         </span>
       </Popover.Target>
-      <Popover.Dropdown {...hoverProps}>
+      <Popover.Dropdown {...hoverProps} maw="calc(100vw - 24px)">
         {opened && <CardContent user={user} onDirectMessage={onDirectMessage} onBan={onBan} />}
       </Popover.Dropdown>
     </Popover>

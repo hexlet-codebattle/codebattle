@@ -30,12 +30,25 @@
 /* Facts in two columns: players · rounds / level · start. */
 .heroFacts {
   display: grid;
-  grid-template-columns: repeat(2, auto);
+  grid-template-columns: repeat(2, minmax(0, auto));
   justify-content: start;
   gap: 2px 14px;
   font-size: var(--mantine-font-size-xs);
   color: var(--cb-text-muted);
   min-width: 0;
+
+  & > * {
+    min-width: 0;
+  }
+
+  & svg {
+    flex: none;
+  }
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
 }
 
 .heroIdentity {

@@ -51,11 +51,13 @@ function PlayerChip({ player, onShowTests }: { player: GamePlayer; onShowTests?:
   return (
     <Group gap={8} wrap="nowrap" miw={0} className={classes.playerChip}>
       <UserAvatar user={player} size={22} />
-      <UserCard user={player}>
-        <Text span size="sm" fw={700} c="bright" truncate>
-          {player.name}
-        </Text>
-      </UserCard>
+      <div className={classes.playerName}>
+        <UserCard user={player}>
+          <Text span size="sm" fw={700} c="bright" truncate>
+            {player.name}
+          </Text>
+        </UserCard>
+      </div>
       {player.rating != null && !player.is_bot && (
         <Tooltip label={t('Elo rating')}>
           <Text span size="xs" c="dimmed" ff="monospace">

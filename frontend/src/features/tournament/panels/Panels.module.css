@@ -155,6 +155,14 @@
 }
 
 /* Player panel: four stat tiles. */
+.subModes {
+  @media (max-width: $mantine-breakpoint-sm) {
+    & :global(.mantine-SegmentedControl-label) {
+      white-space: normal;
+    }
+  }
+}
+
 .tiles {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

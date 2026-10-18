@@ -114,8 +114,19 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
       assert params.bot_time_ms == 175_000
     end
 
+    test "falls back to the task's single solution when solutions has no python" do
+      {:ok, params} =
+        PlaybookPlayer.init(%{game: build_game(%{solutions: %{}, solution: @python_solution}), bot_id: @bot_id})
+
+      assert params |> collect_steps() |> List.last() |> Map.fetch!(:editor_state) ==
+               {@python_solution, "python"}
+    end
+
     test "returns an error when the task has no python solution" do
       assert PlaybookPlayer.init(%{game: build_game(%{solutions: %{}}), bot_id: @bot_id}) ==
+               {:error, :no_solution}
+
+      assert PlaybookPlayer.init(%{game: build_game(%{solutions: %{}, solution: "  \n"}), bot_id: @bot_id}) ==
                {:error, :no_solution}
 
       assert PlaybookPlayer.init(%{game: build_game(%{solutions: %{"js" => "x"}}), bot_id: @bot_id}) ==

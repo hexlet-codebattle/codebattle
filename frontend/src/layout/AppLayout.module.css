@@ -10,6 +10,7 @@
   min-width: 0;
   color: var(--cb-text-strong);
   text-decoration: none;
+  flex: 0 1 auto;
 }
 
 .logo {
@@ -26,11 +27,32 @@
   height: 30px;
   width: auto;
   flex-shrink: 0;
+  max-width: min(120px, 20vw);
+  object-fit: contain;
 }
 
 .brandText {
   min-width: 0;
   white-space: nowrap;
+  max-width: 240px;
+
+  & > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.content {
+  min-width: 0;
+}
+
+.authButtons {
+  @media (max-width: $mantine-breakpoint-xs) {
+    & > a {
+      --button-fz: var(--mantine-font-size-xs);
+      padding-inline: 8px;
+    }
+  }
 }
 
 .online {

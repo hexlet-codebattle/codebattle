@@ -1,10 +1,11 @@
 /*
- * Full-screen battle: a 44px top bar, then sidebar | editors filling the viewport.
- * Below md everything stacks and the page scrolls (my editor first, chat last).
+ * Full-screen battle: a top bar, then sidebar | editors filling the viewport.
+ * Below md the editors stack and the page scrolls; chat opens in its drawer.
  */
 .room {
   display: grid;
-  grid-template-rows: 44px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
   height: 100dvh;
   background: var(--mantine-color-body);
 
@@ -18,30 +19,60 @@
 
 .topBar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  padding: 0 8px;
+  min-height: 44px;
+  padding: 6px 8px;
   background: var(--cb-panel);
   border-bottom: 1px solid var(--cb-border);
 
-  @media (max-width: $mantine-breakpoint-sm) {
+  @media (max-width: $mantine-breakpoint-lg) {
     grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
 
-    & .topCenter {
+    & .topMiddle {
       grid-column: 1 / -1;
       grid-row: 2;
-      padding-bottom: 6px;
+    }
+
+    & .topCenter {
+      flex: 1 1 200px;
+      justify-content: flex-start;
+    }
+
+    & .topRight {
+      grid-row: 1;
+      grid-column: 2;
+    }
+
+    & .topMiddle[data-over] .topCenter {
+      flex-basis: 100%;
     }
   }
 }
 
 .topLeft {
   min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.topMiddle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.topTasks {
+  flex: none;
 }
 
 .topCenter {
   display: flex;
+  flex-wrap: wrap;
+  flex: 1;
   align-items: center;
   justify-content: center;
   gap: 12px;
@@ -158,6 +189,7 @@
   gap: 6px;
   padding: 6px;
   min-height: 0;
+  min-width: 0;
 }
 
 /* Task (scrolls inside) | tournament round and standings. Capped so the editors keep the room. */
@@ -230,6 +262,7 @@
   display: flex;
   gap: 6px;
   min-height: 0;
+  min-width: 0;
 
   /* The tournament box (tournament games) or the mini chat. */
   & > * {
@@ -241,7 +274,7 @@
     flex-wrap: wrap;
 
     & > * {
-      flex: 1 1 280px;
+      flex: 1 1 min(280px, 100%);
       width: auto;
       max-height: 280px;
     }
@@ -306,6 +339,19 @@
   padding: 3px 6px 3px 10px;
   background: var(--cb-panel);
   border-bottom: 1px solid var(--cb-border);
+  flex: none;
+  min-width: 0;
+
+  @media (max-width: $mantine-breakpoint-lg) {
+    flex-wrap: wrap;
+    padding: 6px;
+
+    & .paneActions {
+      flex: 1 1 100%;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  }
 }
 
 .paneActions {
@@ -314,6 +360,16 @@
 
 .playerChip {
   flex: 1;
+
+  & > * {
+    flex-shrink: 0;
+  }
+
+  & > .playerName {
+    min-width: 0;
+    flex: 0 1 auto;
+    overflow: hidden;
+  }
 }
 
 .langButton {
@@ -556,17 +612,38 @@
   align-items: flex-end;
   gap: 6px;
   margin: 0 0 6px 12px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    float: none;
+    align-items: stretch;
+    margin: 0 0 10px;
+  }
 }
 
 /* Level and name, first line of the corner; a long name truncates instead of widening it. */
 .taskTitle {
   max-width: 36ch;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    max-width: 100%;
+  }
 }
 
 .taskControls {
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    & > * {
+      flex: 1 1 auto;
+      width: auto;
+    }
+  }
 }
 
 .langSwitch {
@@ -932,6 +1009,12 @@
 /* The way back (tournament / lobby): labelled, next to the logo. */
 .backButton {
   flex: none;
+
+  @media (max-width: $mantine-breakpoint-xs) {
+    & :global(.mantine-Button-section)[data-position='right'] {
+      display: none;
+    }
+  }
 }
 
 /* ---------- chat drawer ---------- */
