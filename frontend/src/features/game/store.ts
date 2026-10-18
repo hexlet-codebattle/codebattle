@@ -9,11 +9,19 @@ export interface EditorState {
   lang: string;
 }
 
+/** Another player's caret (`from === to`) or selection, as offsets into their text. */
+export interface RemoteCursor {
+  from: number;
+  to: number;
+}
+
 interface GameStore {
   game: Game | null;
   players: Record<number, GamePlayer>;
   /** Live editor contents per player (mine is local-first, theirs come from `editor:data`). */
   editors: Record<number, EditorState>;
+  /** The other players' carets and selections (`editor:cursor_*`). */
+  cursors: Record<number, RemoteCursor>;
   /** Players whose solution is being checked right now. */
   checking: Record<number, boolean>;
   outputs: Record<number, CheckResult>;
@@ -29,6 +37,7 @@ interface GameStore {
   patchGame: (patch: Partial<Game>) => void;
   setPlayers: (players: GamePlayer[]) => void;
   setEditor: (userId: number, editor: Partial<EditorState>) => void;
+  setCursor: (userId: number, cursor: RemoteCursor) => void;
   setChecking: (userId: number, checking: boolean) => void;
   setOutput: (userId: number, output: CheckResult) => void;
   setMessage: (message: string | null) => void;
@@ -47,6 +56,7 @@ const INITIAL = {
   game: null,
   players: {},
   editors: {},
+  cursors: {},
   checking: {},
   outputs: {},
   message: null,
@@ -80,6 +90,7 @@ export const useGameStore = create<GameStore>((set) => ({
         outputs: Object.fromEntries(
           game.players.filter((player) => player.check_result).map((player) => [player.id, player.check_result as CheckResult]),
         ),
+        cursors: state.game?.id === game.id ? state.cursors : {},
         checking: {},
       };
     }),
@@ -94,6 +105,7 @@ export const useGameStore = create<GameStore>((set) => ({
     set((state) => ({
       editors: { ...state.editors, [userId]: { ...(state.editors[userId] ?? { text: '', lang: 'js' }), ...editor } },
     })),
+  setCursor: (userId, cursor) => set((state) => ({ cursors: { ...state.cursors, [userId]: cursor } })),
   setChecking: (userId, checking) => set((state) => ({ checking: { ...state.checking, [userId]: checking } })),
   setOutput: (userId, output) => set((state) => ({ outputs: { ...state.outputs, [userId]: output } })),
   setMessage: (message) => set({ message }),

@@ -107,6 +107,12 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       'editor:data': ({ user_id: userId, editor_text: text, lang_slug: lang }: { user_id: number; editor_text: string; lang_slug: string }) => {
         if (userId !== me.id) store().setEditor(userId, { text, lang });
       },
+      'editor:cursor_position': ({ user_id: userId, offset }: { user_id: number; offset?: number }) => {
+        if (userId !== me.id && typeof offset === 'number') store().setCursor(userId, { from: offset, to: offset });
+      },
+      'editor:cursor_selection': ({ user_id: userId, start_offset: from, end_offset: to }: { user_id: number; start_offset?: number; end_offset?: number }) => {
+        if (userId !== me.id && typeof from === 'number' && typeof to === 'number') store().setCursor(userId, { from, to });
+      },
       'user:start_check': ({ user_id: userId }: { user_id: number }) => {
         store().setChecking(userId, true);
         // Only players hear their opponent's runs; spectators would get a tick per player.

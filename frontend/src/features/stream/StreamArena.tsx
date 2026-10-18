@@ -21,7 +21,6 @@ import { clamp, typingIntensity, useBattleSignals } from './signals';
 import classes from './Stream.module.css';
 
 type CodeEditorInstance = Parameters<OnMount>[0];
-type Monaco = Parameters<OnMount>[1];
 
 interface StreamArenaProps {
   gameId: number;
@@ -46,39 +45,18 @@ function Cup({ params }: { params: StreamParams }) {
   );
 }
 
-/** Remote cursors / selections / scroll of the players (sent by the game page), drawn into their editors. */
-function useCursorEvents(editors: RefObject<Record<number, CodeEditorInstance>>, monacoRef: RefObject<Monaco | null>) {
-  const decorations = useRef<Record<number, { cursor: string[]; selection: string[] }>>({});
-
-  return useMemo(() => {
-    const draw = (userId: number, from: number, to: number | null) => {
-      const editor = editors.current[userId];
-      const model = editor?.getModel();
-      const monaco = monacoRef.current;
-      if (!editor || !model || !monaco) return;
-      const start = model.getPositionAt(from);
-      const end = to == null ? start : model.getPositionAt(to);
-      const range = new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column);
-      const store = (decorations.current[userId] ??= { cursor: [], selection: [] });
-      if (to == null) store.cursor = editor.deltaDecorations(store.cursor, [{ range, options: { className: 'cb-stream-remote-cursor' } }]);
-      else store.selection = editor.deltaDecorations(store.selection, [{ range, options: { className: 'cb-stream-remote-selection' } }]);
-      editor.revealRangeInCenterIfOutsideViewport(range);
-    };
-
-    return {
-      'editor:cursor_position': ({ user_id: userId, offset }: { user_id?: number; offset?: number }) => {
-        if (userId != null && typeof offset === 'number') draw(userId, offset, null);
-      },
-      'editor:cursor_selection': ({ user_id: userId, start_offset: from, end_offset: to }: { user_id?: number; start_offset?: number; end_offset?: number }) => {
-        if (userId != null && typeof from === 'number' && typeof to === 'number') draw(userId, from, to);
-      },
+/** The players' scroll (sent by the game page), mirrored in their editors; carets come with EditorPane. */
+function useScrollEvents(editors: RefObject<Record<number, CodeEditorInstance>>) {
+  return useMemo(
+    () => ({
       'editor:scroll_position': ({ user_id: userId, scroll_top: top, scroll_left: left }: { user_id?: number; scroll_top?: number; scroll_left?: number }) => {
         const editor = userId != null ? editors.current[userId] : undefined;
         if (typeof top === 'number') editor?.setScrollTop(top);
         if (typeof left === 'number') editor?.setScrollLeft(left);
       },
-    };
-  }, [editors, monacoRef]);
+    }),
+    [editors],
+  );
 }
 
 /** The toolbar shows on mouse movement and fades after a few idle seconds (never while editing). */
@@ -116,9 +94,8 @@ export function StreamArena({ gameId, initialGame, params, backHref }: StreamAre
     if (initialGame?.players?.length) useGameStore.getState().load(initialGame);
   });
   const editors = useRef<Record<number, CodeEditorInstance>>({});
-  const monacoRef = useRef<Monaco | null>(null);
-  const cursorEvents = useCursorEvents(editors, monacoRef);
-  useGame(gameId, { embedded: true, extraEvents: cursorEvents });
+  const scrollEvents = useScrollEvents(editors);
+  useGame(gameId, { embedded: true, extraEvents: scrollEvents });
 
   const game = useGameStore((state) => state.game);
   const tournament = useGameStore((state) => state.tournament);
@@ -126,9 +103,8 @@ export function StreamArena({ gameId, initialGame, params, backHref }: StreamAre
   const signals = useBattleSignals();
   const registerEditor =
     (player: GamePlayer): OnMount =>
-    (editor, monaco) => {
+    (editor) => {
       editors.current[player.id] = editor;
-      monacoRef.current ??= monaco;
     };
 
   // Frames glow with typing, checks and results.

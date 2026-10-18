@@ -30,3 +30,28 @@
     font: inherit;
   }
 }
+
+/* The opponent's caret and selection (Monaco decorations, so global class names). */
+:global(.cb-remote-caret) {
+  position: absolute;
+  height: 100%;
+  margin-left: -1px;
+  border-left: 2px solid var(--mantine-color-orange-6);
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mantine-color-orange-6);
+  }
+}
+
+:global(.cb-remote-selection) {
+  background-color: color-mix(in srgb, var(--mantine-color-orange-6) 28%, transparent);
+  border-radius: 2px;
+}

@@ -178,6 +178,8 @@ export function EditorPane({
   const over = useGameStore((state) => isGameOver(state.game?.state));
   const isTournament = useGameStore((state) => state.game?.tournament_id != null);
   const checking = useGameStore((state) => Boolean(state.checking[player.id]));
+  // Another player's caret and selection, live in their editor.
+  const remoteCursor = useGameStore((state) => (editable ? null : state.cursors[player.id]));
   // A ban arrives over the channel (user:banned): my editor locks, Run is off, until a release.
   const banned = useGameStore((state) => Boolean((state.players[player.id] ?? player).is_banned));
   const canType = editable && !banned;
@@ -300,6 +302,7 @@ export function EditorPane({
         onEditorMount={onEditorMount}
         onTelemetry={canType ? telemetry : undefined}
         onCursor={canType ? api?.cursorReport : undefined}
+        remoteCursor={remoteCursor}
         vim={vim && canType}
         // Moderators may copy anyone's code, but my own editor only takes pastes from itself.
         allowClipboard={allowClipboard && !editable}

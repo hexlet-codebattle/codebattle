@@ -5,6 +5,7 @@ import { Loader, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import { initVimMode, type VimAdapterInstance } from 'monaco-vim';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import type { RemoteCursor } from '@/features/game/store';
 import { useLatest } from '@/shared/useLatest';
 
 import { insertSpaces, monacoLanguage, tabSize } from './monaco';
@@ -48,6 +49,8 @@ interface CodeEditorProps {
   onTelemetry?: (event: EditorTelemetry) => void;
   /** My cursor, selection and scroll, shared with the room. */
   onCursor?: CursorReport;
+  /** The player's caret / selection, drawn into their editor for the opponent and spectators. */
+  remoteCursor?: RemoteCursor | null;
   /** A Monaco theme name instead of the editor preference (e.g. `cb-stream` for OBS). */
   theme?: string;
 }
@@ -65,6 +68,7 @@ export function CodeEditor({
   theme: themeOverride,
   onTelemetry,
   onCursor,
+  remoteCursor,
 }: CodeEditorProps) {
   const scheme = useComputedColorScheme('dark');
   const { fontFamilyMonospace } = useMantineTheme();
@@ -78,6 +82,9 @@ export function CodeEditor({
   const telemetryRef = useLatest(onTelemetry);
   const cursorRef = useLatest(onCursor);
   const valueRef = useLatest(value);
+  const hoveredRef = useRef(false);
+  const remoteDecorations = useRef<ReturnType<CodeEditorInstance['createDecorationsCollection']> | null>(null);
+  const revealedCursor = useRef<RemoteCursor | null>(null);
 
   const handleMount: OnMount = (editor, instance) => {
     editorRef.current = editor;
@@ -121,6 +128,10 @@ export function CodeEditor({
     editor.onDidScrollChange(({ scrollTop, scrollLeft, scrollTopChanged, scrollLeftChanged }) => {
       if (scrollTopChanged || scrollLeftChanged) cursorRef.current?.scroll?.(scrollTop, scrollLeft);
     });
+    // While the viewer points at the editor (reading, scrolling) the remote caret doesn't pull the view.
+    const node = editor.getDomNode();
+    node?.addEventListener('mouseenter', () => (hoveredRef.current = true));
+    node?.addEventListener('mouseleave', () => (hoveredRef.current = false));
     if (!readOnly) editor.focus();
     if (vim && !readOnly) vimRef.current = initVimMode(editor, statusRef.current);
   };
@@ -169,6 +180,34 @@ export function CodeEditor({
     editor.executeEdits(SYNC_EDIT_SOURCE, [{ range: model.getFullModelRange(), text: value, forceMoveMarkers: true }]);
     editor.pushUndoStop();
   }, [value, readOnly]);
+
+  // Drawn after the text sync above (same commit), so the offsets land in the text they came with;
+  // a new text alone re-places the decorations, a new caret also scrolls it into view.
+  useLayoutEffect(() => {
+    const model = mounted?.getModel();
+    if (!mounted || !model) return;
+    remoteDecorations.current ??= mounted.createDecorationsCollection();
+    if (!remoteCursor) {
+      remoteDecorations.current.clear();
+      return;
+    }
+    const start = model.getPositionAt(remoteCursor.from);
+    const end = model.getPositionAt(remoteCursor.to);
+    const caret = { startLineNumber: end.lineNumber, startColumn: end.column, endLineNumber: end.lineNumber, endColumn: end.column };
+    remoteDecorations.current.set([
+      ...(remoteCursor.from === remoteCursor.to
+        ? []
+        : [
+            {
+              range: { startLineNumber: start.lineNumber, startColumn: start.column, endLineNumber: end.lineNumber, endColumn: end.column },
+              options: { className: 'cb-remote-selection' },
+            },
+          ]),
+      { range: caret, options: { beforeContentClassName: 'cb-remote-caret' } },
+    ]);
+    if (revealedCursor.current !== remoteCursor && !hoveredRef.current) mounted.revealRangeInCenterIfOutsideViewport(caret);
+    revealedCursor.current = remoteCursor;
+  }, [mounted, remoteCursor, value]);
 
   return (
     <div className={classes.root}>

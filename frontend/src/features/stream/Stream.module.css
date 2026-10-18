@@ -382,15 +382,6 @@
   }
 }
 
-/* The players' remote cursor and selection (sent by the game page). */
-:global(.cb-stream-remote-cursor) {
-  border-left: 2px solid var(--mantine-color-orange-6);
-}
-
-:global(.cb-stream-remote-selection) {
-  background-color: color-mix(in srgb, var(--mantine-color-orange-6) 30%, transparent);
-}
-
 /* OBS composites the kiosk over the capture: no page background, no Monaco outlines. */
 :global(html.cb-stream-transparent),
 :global(html.cb-stream-transparent body) {

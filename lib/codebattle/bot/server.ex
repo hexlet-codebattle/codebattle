@@ -151,7 +151,8 @@ defmodule Codebattle.Bot.Server do
   end
 
   @impl GenServer
-  def handle_info(%{event: "editor:cursor_selection"}, state) do
+  def handle_info(%{event: event}, state)
+      when event in ["editor:cursor_position", "editor:cursor_selection", "editor:scroll_position"] do
     # just to skip logs
     {:noreply, state}
   end
