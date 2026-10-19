@@ -9,9 +9,10 @@ import type { LobbyGame } from '@/features/lobby/types';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { linkify } from '../linkify';
-import { splitInline } from '../mentions';
+import { singleEmoji, splitInline } from '../mentions';
 
 import classes from './Chat.module.css';
+import { Emoji } from './Emoji';
 
 function gameAction(game: LobbyGame | undefined) {
   if (!game) return { label: 'Open game', color: 'gray' };
@@ -87,6 +88,8 @@ function InlineText({ value, myName }: { value: string; myName: string }) {
       >
         @{segment.name}
       </span>
+    ) : segment.kind === 'emoji' ? (
+      <Emoji key={index} value={segment.value} />
     ) : (
       <Fragment key={index}>{segment.value}</Fragment>
     ),
@@ -97,6 +100,11 @@ function InlineText({ value, myName }: { value: string; myName: string }) {
 export function MessageText({ text }: { text: string }) {
   const { current_user: me } = useSharedProps();
   const segments = useMemo(() => linkify(text), [text]);
+  const emoji = useMemo(() => singleEmoji(text), [text]);
+
+  if (emoji) {
+    return <span className={classes.standaloneEmoji}><Emoji value={emoji} /></span>;
+  }
 
   return (
     <Text span size="sm" className={classes.text}>

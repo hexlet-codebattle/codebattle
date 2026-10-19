@@ -1,3 +1,5 @@
+import { languageIconShortcodes } from '@/shared/LangIcon';
+
 // Slack/GitHub shortcodes for the emoji people actually use in chat; ":smile" autocompletes,
 // and a full ":smile:" typed by hand renders as the emoji too.
 export const EMOJI: Record<string, string> = {
@@ -9,6 +11,7 @@ export const EMOJI: Record<string, string> = {
   sweat_smile: '😅',
   joy: '😂',
   rofl: '🤣',
+  lol: '🤣',
   slightly_smiling_face: '🙂',
   upside_down_face: '🙃',
   wink: '😉',
@@ -142,6 +145,7 @@ export const EMOJI: Record<string, string> = {
   crown: '👑',
   gem: '💎',
   dart: '🎯',
+  bullseye: '🎯',
   video_game: '🎮',
   game_die: '🎲',
   chess_pawn: '♟️',
@@ -211,12 +215,38 @@ export const EMOJI: Record<string, string> = {
   melting_face: '🫠',
 };
 
+type CustomEmoji =
+  | { kind: 'image'; src: string }
+  | { kind: 'logo' }
+  | { kind: 'language'; lang: string };
+
+const CUSTOM_EMOJI: Record<string, CustomEmoji> = {
+  kek: { kind: 'image', src: '/assets/images/emoji/troll.png' },
+  cb: { kind: 'logo' },
+  ...Object.fromEntries(
+    languageIconShortcodes.map((lang): [string, CustomEmoji] => [lang, { kind: 'language', lang }]),
+  ),
+};
+
+/** Image, logo or language icon for an exact supported custom shortcode. */
+export function customEmoji(value: string): CustomEmoji | undefined {
+  const name = value.match(/^:([\w+#-]+):$/)?.[1];
+
+  return name && Object.hasOwn(CUSTOM_EMOJI, name) ? CUSTOM_EMOJI[name] : undefined;
+}
+
+const EMOJI_OPTIONS = [
+  // Language names win overlaps such as Dart; the target emoji is also :bullseye:.
+  ...Object.entries(EMOJI).filter(([name]) => !Object.hasOwn(CUSTOM_EMOJI, name)),
+  ...Object.keys(CUSTOM_EMOJI).map((name) => [name, `:${name}:`]),
+];
+
 /** Up to `limit` emoji whose shortcode contains `query`, prefix matches first. */
 export function searchEmoji(query: string, limit = 8) {
   const needle = query.toLowerCase();
   const scored: { name: string; char: string; rank: number }[] = [];
 
-  for (const [name, char] of Object.entries(EMOJI)) {
+  for (const [name, char] of EMOJI_OPTIONS) {
     const index = name.indexOf(needle);
     if (index === -1) continue;
     // Word-start matches ("_face" → "face") rank between true prefixes and mid-word hits.

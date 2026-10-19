@@ -62,13 +62,14 @@ const ICONS: Record<string, { icon: IconType; scale?: number; name: string }> = 
 const ALIASES: Record<string, string> = { javascript: 'js', typescript: 'ts', go: 'golang', 'c++': 'cpp', 'c#': 'csharp' };
 
 export const languageIconSlugs = Object.keys(ICONS);
+export const languageIconShortcodes = [...languageIconSlugs, ...Object.keys(ALIASES)];
 
 export const langName = (lang: string) => ICONS[ALIASES[lang] ?? lang]?.name ?? lang;
 
 interface LangIconProps {
   lang: string | null | undefined;
-  /** Box size in px; the glyph is scaled inside it so names line up in lists. */
-  size?: number;
+  /** Box size in px or a CSS length; the glyph is scaled inside it so names line up. */
+  size?: number | string;
   /** Show the language name on hover (off inside other tooltips). */
   withTooltip?: boolean;
 }
@@ -91,7 +92,10 @@ export function LangIcon({ lang, size = 16, withTooltip = true }: LangIconProps)
       aria-label={label}
       role="img"
     >
-      <Icon size={Math.round(size * (entry.scale ?? 1))} aria-hidden />
+      <Icon
+        size={typeof size === 'number' ? Math.round(size * (entry.scale ?? 1)) : `calc(${size} * ${entry.scale ?? 1})`}
+        aria-hidden
+      />
     </span>
   );
 

@@ -10,6 +10,7 @@ import { activeToken } from '../mentions';
 import type { ChatMessage } from '../types';
 
 import classes from './Chat.module.css';
+import { Emoji } from './Emoji';
 
 const MAX_SUGGESTIONS = 8;
 
@@ -159,7 +160,7 @@ export function ChatInput({ value, onValueChange, messages, onKeyDown, ...inputP
           {emojiOptions.map((emoji) => (
             <Combobox.Option key={emoji.name} value={emoji.char}>
               <Group gap={8} wrap="nowrap">
-                <span className={classes.emojiOption}>{emoji.char}</span>
+                <span className={classes.emojiOption}><Emoji value={emoji.char} /></span>
                 <Text size="sm" c="dimmed" truncate>
                   :{emoji.name}:
                 </Text>

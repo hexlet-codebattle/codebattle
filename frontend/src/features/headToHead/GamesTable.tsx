@@ -3,11 +3,12 @@ import { IconExternalLink } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
+import { GradeIcon } from '@/features/lobby/components/GradeIcon';
+import { gradeLabel, LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
 import { formatClockDuration } from '@/features/tournament/clock';
 import { LangIcon } from '@/shared/LangIcon';
 
-import { formatDateTime, formatDay, modeLabel, resultTone, stateColor, stateLabel } from './format';
+import { formatDateTime, formatDay, resultTone, stateColor, stateLabel } from './format';
 import classes from './HeadToHead.module.css';
 import type { GameResult, H2HGame, H2HPlayer } from './types';
 
@@ -81,7 +82,7 @@ export function GamesTable({ games, players }: { games: H2HGame[]; players: H2HP
                   <Table.Th>{t('Game')}</Table.Th>
                   <Table.Th>{t('Date')}</Table.Th>
                   <Table.Th>{t('Level')}</Table.Th>
-                  <Table.Th>{t('Mode')}</Table.Th>
+                  <Table.Th>{t('Grade')}</Table.Th>
                   <Table.Th>{t('State')}</Table.Th>
                   <Table.Th>
                     <PlayerHead player={first} />
@@ -120,9 +121,16 @@ export function GamesTable({ games, players }: { games: H2HGame[]; players: H2HP
                       </Badge>
                     </Table.Td>
                     <Table.Td>
-                      <Text span size="sm" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
-                        {modeLabel(game)}
-                      </Text>
+                      {game.grade && game.grade !== 'open' ? (
+                        <Group gap={6} wrap="nowrap">
+                          <GradeIcon grade={game.grade} size={22} />
+                          <Text span size="sm" style={{ whiteSpace: 'nowrap' }}>
+                            {gradeLabel(game.grade)}
+                          </Text>
+                        </Group>
+                      ) : (
+                        <Text span c="dimmed">—</Text>
+                      )}
                     </Table.Td>
                     <Table.Td>
                       <Badge size="sm" variant="light" color={stateColor(game.state)}>

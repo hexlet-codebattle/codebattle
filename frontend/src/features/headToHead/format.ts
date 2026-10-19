@@ -44,15 +44,6 @@ export const stateLabel = (state: string | null | undefined) =>
 
 export const stateColor = (state: string | null | undefined) => (state && STATE_COLORS[state]) || 'gray';
 
-const MODE_LABELS: Record<string, string> = { standard: 'Standard', builder: 'Builder', training: 'Training' };
-const TASK_TYPE_LABELS: Record<string, string> = { algorithms: 'Algorithms', css: 'CSS', sql: 'SQL' };
-
-/** "Standard · Algorithms" / "Стандарт · Алгоритмы". */
-export const modeLabel = (game: H2HGame) =>
-  [game.mode && t(MODE_LABELS[game.mode] ?? game.mode), game.task_type && t(TASK_TYPE_LABELS[game.task_type] ?? game.task_type)]
-    .filter(Boolean)
-    .join(' · ');
-
 const formatters = new Map<string, Intl.DateTimeFormat>();
 
 function formatter(key: 'short' | 'long') {

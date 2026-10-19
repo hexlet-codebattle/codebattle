@@ -1,7 +1,8 @@
 .trigger {
   display: inline-block;
   max-width: 100%;
-  vertical-align: bottom;
+  /* Keep the name on the text baseline beside taller chat invites and reactions. */
+  vertical-align: baseline;
   cursor: pointer;
   border-radius: 4px;
   outline-offset: 2px;
