@@ -10,6 +10,7 @@ import { UserCard } from '@/features/users/UserCard';
 import { getLocale } from '@/i18n';
 import { parseServerDate } from '@/shared/date';
 import { LangIcon } from '@/shared/LangIcon';
+import { useSharedProps } from '@/shared/useSharedProps';
 
 import { useTournamentStore } from '../store';
 import type { Match, Player, PlayerResult } from '../types';
@@ -151,7 +152,7 @@ function TaskCell({ match, task }: { match: Match; task: { name: string; level: 
 interface MatchCardsProps {
   api: TournamentApi;
   matches: Match[];
-  /** Whose matches these are: shown on the left, and "Continue" when the game is live. */
+  /** Whose matches these are: shown on the left. */
   playerId: number;
   /** Ladder tournaments explain each score. */
   showScoreFormula?: boolean;
@@ -165,6 +166,7 @@ interface MatchCardsProps {
  */
 export function MatchCards({ api, matches, playerId, showScoreFormula = false, emptyText }: MatchCardsProps) {
   const { t } = useTranslation();
+  const { current_user: me } = useSharedProps();
   const players = useTournamentStore((state) => state.players);
   const sorted = useMemo(() => [...matches].sort((a, b) => b.round_position - a.round_position || b.id - a.id), [matches]);
   const tasks = useTaskNames(
@@ -192,7 +194,8 @@ export function MatchCards({ api, matches, playerId, showScoreFormula = false, e
         const theirs = opponent != null ? match.player_results?.[opponent] : undefined;
         const started = time(match.started_at);
         const finished = time(match.finished_at);
-        const live = outcome === 'live' && match.player_ids.includes(playerId);
+        // "Continue" only for the viewer's own live game; everyone else watches it.
+        const ownLive = outcome === 'live' && match.player_ids.includes(me.id);
 
         return (
           <div key={match.id} className={classes.row} data-outcome={outcome}>
@@ -267,9 +270,13 @@ export function MatchCards({ api, matches, playerId, showScoreFormula = false, e
             </div>
 
             <div className={classes.action}>
-              {live ? (
+              {ownLive ? (
                 <Button component="a" href={`/games/${match.game_id}`} size="compact-sm" color="green" leftSection={<IconPlayerPlay size={13} />}>
                   {t('Continue')}
+                </Button>
+              ) : outcome === 'live' ? (
+                <Button component="a" href={`/games/${match.game_id}`} size="compact-sm" variant="light" color="red" leftSection={<IconEye size={13} />}>
+                  {t('Watch')}
                 </Button>
               ) : (
                 <Tooltip label={t('Watch')} openDelay={300}>

@@ -54,6 +54,11 @@ defmodule CodebattleWeb.TournamentController do
     can_access? = Helpers.can_access?(tournament, current_user, params)
 
     cond do
+      # Guests watch a running or finished tournament like everyone else; before the start
+      # there is nothing to watch, so they get the sign-up page.
+      current_user.is_guest and can_access? and tournament.state in ["active", "finished"] ->
+        render_tournament(conn, tournament, params)
+
       current_user.is_guest and can_access? ->
         render_public_tournament(conn, tournament)
 

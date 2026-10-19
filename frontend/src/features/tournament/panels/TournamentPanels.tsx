@@ -27,14 +27,14 @@ export function TournamentPanels({ tournament, api }: { tournament: Tournament; 
   const isPlayer = useTournamentStore((state) => Boolean(state.players[me.id]));
   const finished = tournament.state === 'finished';
   const allowed = useMemo(
-    () => allowedPanels({ moderator: api.moderator, admin: Boolean(me.is_admin), started: finished || tournament.state === 'active', finished }),
-    [api.moderator, me.is_admin, finished, tournament.state],
+    () => allowedPanels({ admin: Boolean(me.is_admin), started: finished || tournament.state === 'active', finished }),
+    [me.is_admin, finished, tournament.state],
   );
   const fallback: PanelModeId = finished
     ? PanelMode.leaderboard
     : isPlayer && tournament.state === 'active'
       ? PanelMode.player
-      : api.moderator && tournament.state === 'active'
+      : tournament.state === 'active'
         ? PanelMode.rating
         : PanelMode.about;
 
@@ -58,13 +58,11 @@ export function TournamentPanels({ tournament, api }: { tournament: Tournament; 
     setMode(next);
     if (next !== PanelMode.rating) setSearchedUserId(null);
   };
-  // Clicking a player in the analytics opens them in Players & Matches (moderators, like legacy).
-  const selectUser = api.moderator
-    ? (userId: number) => {
-        setSearchedUserId(userId);
-        setMode(PanelMode.rating);
-      }
-    : undefined;
+  // Clicking a player in the analytics opens them in Players & Matches.
+  const selectUser = (userId: number) => {
+    setSearchedUserId(userId);
+    setMode(PanelMode.rating);
+  };
 
   const panel = (() => {
     switch (current) {

@@ -117,4 +117,35 @@ defmodule CodebattleWeb.TournamentChannelAuthTest do
       assert_reply(ref, :ok, %{results: []})
     end
   end
+
+  test "gives any viewer the full roster" do
+    creator = insert(:user)
+    player = insert(:user)
+    viewer = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Open roster",
+        "description" => "Open roster description",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    Tournament.Context.handle_event(tournament.id, :join, %{user: player})
+
+    assert {:ok, viewer_socket} = connect(UserSocket, %{"token" => user_socket_token(viewer)})
+
+    assert {:ok, _response, channel_socket} =
+             subscribe_and_join(viewer_socket, TournamentChannel, "tournament:#{tournament.id}", %{})
+
+    ref = push(channel_socket, "tournament:players:request_all", %{})
+    assert_reply(ref, :ok, %{players: players})
+    assert Enum.map(players, & &1.id) == [player.id]
+  end
 end

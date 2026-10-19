@@ -48,9 +48,10 @@ codebattle:
   env:
     CODEBATTLE_VERSION: "{{ .Values.version }}"
     CODEBATTLE_PORT: 4000
-    # Postgres allows 22 connections. Per pod: pool + 1 Oban notifier = 10; during a
-    # rollout the draining pod and the new one overlap = 20, leaving 2 spare.
-    CODEBATTLE_POOL_SIZE: 9
+    # Postgres is reached through the DO PgBouncer pool (port 25061, transaction mode,
+    # 20 backend connections out of the cluster's 22). These are client connections to
+    # PgBouncer, so overlapping pods during a rollout share the same 20 backends.
+    CODEBATTLE_POOL_SIZE: 18
 
 chatbot:
   enabled: false

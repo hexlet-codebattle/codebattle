@@ -30,8 +30,6 @@ export const PANEL_TITLES: Record<PanelModeId, string> = {
   about: 'About',
 };
 
-const BASE: PanelModeId[] = [PanelMode.player, PanelMode.leaderboard];
-const FINISHED: PanelModeId[] = [...BASE, PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble, PanelMode.langs];
 const ALL: PanelModeId[] = [
   PanelMode.player,
   PanelMode.rating,
@@ -45,28 +43,13 @@ const ALL: PanelModeId[] = [
 ];
 
 /**
- * Legacy rules: moderators see everything (reports and cheaters only for admins);
- * others get the player panel and leaderboard, plus the analytics once finished.
- * About (the description) is always last.
+ * Everyone, guests included, sees every player's matches and the analytics;
+ * reports and cheaters stay with admins. About (the description) is always last.
  */
 const NEEDS_GAMES: PanelModeId[] = [PanelMode.rating, PanelMode.topUsersByClan, PanelMode.tasksRanking, PanelMode.clansBubble, PanelMode.langs];
 
-export function allowedPanels({
-  moderator,
-  admin,
-  started,
-  finished,
-}: {
-  moderator: boolean;
-  admin: boolean;
-  started: boolean;
-  finished: boolean;
-}) {
-  const list = moderator
-    ? ALL.filter((mode) => admin || (mode !== PanelMode.reports && mode !== PanelMode.cheaters))
-    : finished
-      ? FINISHED
-      : BASE;
+export function allowedPanels({ admin, started, finished }: { admin: boolean; started: boolean; finished: boolean }) {
+  const list = ALL.filter((mode) => admin || (mode !== PanelMode.reports && mode !== PanelMode.cheaters));
   // Until the end the Ranking card already shows the standings; before the start
   // there are no games to analyse (and the ranking lists who joined).
   return [

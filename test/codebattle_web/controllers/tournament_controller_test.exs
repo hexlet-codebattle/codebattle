@@ -148,6 +148,31 @@ defmodule CodebattleWeb.TournamentControllerTest do
     assert next == Routes.tournament_path(conn, :show, tournament.id)
   end
 
+  test "lets guests watch a running tournament", %{conn: conn} do
+    creator = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Open Arena",
+        "description" => "Open Arena description",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "active",
+        "players_limit" => 200
+      })
+
+    new_conn = get(conn, Routes.tournament_path(conn, :show, tournament.id))
+
+    assert new_conn.status == 200
+    assert inertia_component(new_conn) == "TournamentRoom"
+    assert %{"tournament_id" => tournament_id} = inertia_props(new_conn)
+    assert tournament_id == tournament.id
+  end
+
   test "shows guests with the invite token the public page of a private tournament", %{conn: conn} do
     creator = insert(:user)
 

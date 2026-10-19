@@ -159,6 +159,13 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{ranking: ranking}}, socket}
   end
 
+  # Big tournaments join without the roster; Players & Matches loads it for any viewer.
+  def handle_in("tournament:players:request_all", _params, socket) do
+    tournament_info = socket.assigns.tournament_info
+
+    {:reply, {:ok, %{players: Helpers.get_players(tournament_info)}}, socket}
+  end
+
   def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do
     tournament_info = socket.assigns.tournament_info
     matches = Helpers.get_matches_by_players(tournament_info, [id])

@@ -27,7 +27,7 @@
   }
 
   &[data-outcome='live'] {
-    background: color-mix(in srgb, var(--mantine-color-blue-5) 8%, transparent);
+    background: color-mix(in srgb, var(--mantine-color-red-6) 6%, transparent);
   }
 
   /* Narrow panels: timing goes under the score, the action stays on the right. */
@@ -73,8 +73,8 @@
   }
 
   &[data-outcome='live'] {
-    color: var(--mantine-color-blue-5);
-    border-color: var(--mantine-color-blue-5);
+    color: var(--mantine-color-red-6);
+    border-color: var(--mantine-color-red-6);
     animation: pulse 1.6s ease-in-out infinite;
   }
 }
@@ -259,7 +259,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   color: #fff;
-  background: var(--mantine-color-blue-6);
+  background: var(--mantine-color-red-6);
   animation: pulse 1.6s ease-in-out infinite;
 }
 

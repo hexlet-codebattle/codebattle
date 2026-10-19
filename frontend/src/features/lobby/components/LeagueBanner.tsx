@@ -1,11 +1,13 @@
 import { Button, Group, List, Modal, Stack, Table, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBook2, IconCrown } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSharedProps } from '@/shared/useSharedProps';
 
-import { gradeLabel } from '../format';
+import { formatStartsAt, gradeLabel, promotedTournament, tournamentTitle } from '../format';
+import { useLobbyStore } from '../store';
 import type { TournamentGrade } from '../types';
 
 import { GradeIcon } from './GradeIcon';
@@ -103,28 +105,46 @@ export function RulesModal({ opened, onClose }: { opened: boolean; onClose: () =
   );
 }
 
-/** One-line pitch for the seasonal league, with rules and the Hall of Fame one click away. */
+/** Promote the next weekly event, or introduce newcomers to the seasonal league. */
 export function LeagueBanner() {
   const { t } = useTranslation();
   const { current_user: user } = useSharedProps();
   const [rulesOpened, rules] = useDisclosure(false);
+  const live = useLobbyStore((state) => state.liveTournaments);
+  const upcoming = useLobbyStore((state) => state.seasonTournaments);
+  const [now, setNow] = useState(() => Date.now());
 
-  // Marketing for newcomers only: users.points is this season's total and every
-  // finisher of a season tournament gets at least 2, so 0 means "not played yet".
-  if (user.points) return null;
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  // Prefer the live copy when registration opens and the schedule still has the old state.
+  const liveIds = new Set(live.map(({ id }) => id));
+  const tournament = promotedTournament([...live, ...upcoming.filter(({ id }) => !liveIds.has(id))], now);
+
+  // The general league pitch is for newcomers; a big event is an invitation to everyone.
+  if (user.points && !tournament) return null;
 
   return (
     <div className={classes.banner}>
       <Group gap="sm" wrap="nowrap">
-        <GradeIcon grade="grand_slam" size={36} />
+        <GradeIcon grade={tournament?.grade ?? 'grand_slam'} size={36} />
         <Stack gap={0} miw={0} flex={1}>
           <Text fw={700} c="bright">
-            {t('Codebattle League')}
+            {tournament ? tournamentTitle(tournament.name, tournament.grade) : t('Codebattle League')}
           </Text>
+          {tournament?.starts_at && (
+            <Text size="xs" fw={600} c="bright">
+              {formatStartsAt(tournament.starts_at)}
+            </Text>
+          )}
           <Text size="xs" c="dimmed">
-            {t(
-              'Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch.',
-            )}
+            {tournament
+              ? t('Fresh challenges. Fierce competition. Your shot at glory. Everyone is welcome — bring your best code and make your mark!')
+              : t(
+                  'Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch.',
+                )}
           </Text>
         </Stack>
       </Group>

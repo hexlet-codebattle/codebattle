@@ -4220,6 +4220,9 @@ msgstr "Смотреть"
 msgid "Play season games, earn points, and compete for your place in the Hall of Fame. Each season’s winner takes home exclusive Codebattle merch."
 msgstr "Играй в сезонных турнирах, набирай очки и борись за место в Зале славы. Победитель каждого сезона получает эксклюзивный мерч Codebattle."
 
+msgid "Fresh challenges. Fierce competition. Your shot at glory. Everyone is welcome — bring your best code and make your mark!"
+msgstr "Новые задачи, сильные соперники и твой шанс заявить о себе! Приглашаем всех — зови друзей, пиши лучший код и врывайся в борьбу за победу!"
+
 msgid "Wins: %{wins} / %{games}"
 msgstr "Побед: %{wins} / %{games}"
 

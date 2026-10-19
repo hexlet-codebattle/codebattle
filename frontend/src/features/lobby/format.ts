@@ -1,7 +1,7 @@
 import { getLocale, t } from '@/i18n';
 import { parseServerDate } from '@/shared/date';
 
-import type { GameLevel, LobbyGame, LobbyPlayer, TournamentGrade } from './types';
+import type { GameLevel, LobbyGame, LobbyPlayer, LobbyTournament, TournamentGrade } from './types';
 
 export const LEVELS: GameLevel[] = ['elementary', 'easy', 'medium', 'hard'];
 
@@ -90,6 +90,21 @@ export function formatStartsIn(ms: number) {
 }
 
 export const msUntil = (value: string) => parseUtc(value).getTime() - Date.now();
+
+/** Promote the nearest weekly league event during the 72 hours before its start. */
+export function promotedTournament(tournaments: LobbyTournament[], now: number) {
+  const window = 3 * 24 * 60 * 60 * 1000;
+
+  return tournaments
+    .filter(({ grade, state, starts_at }) => {
+      if (!['pro', 'elite', 'masters', 'grand_slam'].includes(grade)) return false;
+      if (!['upcoming', 'waiting_participants'].includes(state) || !starts_at) return false;
+
+      const left = parseUtc(starts_at).getTime() - now;
+      return left > 0 && left < window;
+    })
+    .sort((a, b) => parseUtc(a.starts_at!).getTime() - parseUtc(b.starts_at!).getTime())[0];
+}
 
 export function formatCountdown(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));

@@ -33,6 +33,9 @@ config :codebattle, CodebattleWeb.Gettext,
 
 config :codebattle, Oban,
   repo: Codebattle.Repo,
+  # Prod reaches Postgres through PgBouncer in transaction mode, where LISTEN/NOTIFY
+  # doesn't work; notify over Erlang process groups instead.
+  notifier: Oban.Notifiers.PG,
   # `bot_detection` is intentionally low-concurrency: the analysis is CPU-bound
   # (telemetry aggregation + code parsing) and runs after every finished game,
   # so we cap parallelism to keep the box responsive under bursts.

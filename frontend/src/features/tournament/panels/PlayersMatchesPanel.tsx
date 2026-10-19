@@ -15,6 +15,8 @@ import { PanelMessage } from './common';
 import { MatchCards } from './MatchCards';
 
 const PAGE_SIZE = 16;
+// Only moderators get the live match feed; everyone else re-polls the opened player.
+const REFRESH_MS = 15_000;
 
 /** Legacy fuzzy search: the query's letters appear in order in the name. */
 const fuzzy = (name: string, query: string) => {
@@ -28,20 +30,25 @@ const fuzzy = (name: string, query: string) => {
   return true;
 };
 
-function PlayerMatches({ player, api, ladder }: { player: Player; api: TournamentApi; ladder: boolean }) {
+function PlayerMatches({ player, api, ladder, live }: { player: Player; api: TournamentApi; ladder: boolean; live: boolean }) {
   const allMatches = useTournamentStore((state) => state.matches);
   const matches = useMemo(() => Object.values(allMatches).filter((match) => match.player_ids.includes(player.id)), [allMatches, player.id]);
 
   // Load this player's matches (and opponents) when the row opens.
   useEffect(() => {
     const push = api.moderator ? api.adminPush : api.push;
-    push<{ matches: Match[]; players: Player[] }>('tournament:matches:request', { player_id: player.id })
-      .then(({ matches: loaded, players }) => {
-        useTournamentStore.getState().upsertMatches(loaded);
-        useTournamentStore.getState().upsertPlayers(players ?? []);
-      })
-      .catch(() => undefined);
-  }, [api, player.id]);
+    const load = () =>
+      push<{ matches: Match[]; players: Player[] }>('tournament:matches:request', { player_id: player.id })
+        .then(({ matches: loaded, players }) => {
+          useTournamentStore.getState().upsertMatches(loaded);
+          useTournamentStore.getState().upsertPlayers(players ?? []);
+        })
+        .catch(() => undefined);
+    load();
+    if (!live || api.moderator) return;
+    const timer = window.setInterval(load, REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [api, player.id, live]);
 
   return <MatchCards api={api} matches={matches} playerId={player.id} showScoreFormula={ladder} />;
 }
@@ -62,18 +69,17 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
   const [query, setQuery] = useState(searched?.name ?? '');
   const [page, setPage] = usePage(query);
   const [opened, setOpened] = useState<string | null>(searchedUserId != null ? String(searchedUserId) : null);
-  const hideResults = (!tournament.show_results && !api.moderator) || (!players[me.id] && !api.moderator);
+  const hideResults = !tournament.show_results && !api.moderator;
 
-  // Current round matches; moderators also load the full roster when the channel sent only part of it.
+  // Current round matches, and the full roster when the channel sent only part of it (big tournaments).
   useEffect(() => {
     if (api.status !== 'joined') return;
-    const push = api.moderator ? api.adminPush : api.push;
+    const push = api.moderator && api.adminStatus === 'joined' ? api.adminPush : api.push;
     push<{ matches: Match[] }>('tournament:matches:request_for_round')
       .then(({ matches }) => useTournamentStore.getState().upsertMatches(matches))
       .catch(() => undefined);
-    if (api.moderator && api.adminStatus === 'joined' && Object.keys(useTournamentStore.getState().players).length < tournament.players_count) {
-      api
-        .adminPush<{ players: Player[] }>('tournament:players:request_all')
+    if (Object.keys(useTournamentStore.getState().players).length < tournament.players_count) {
+      push<{ players: Player[] }>('tournament:players:request_all')
         .then(({ players: all }) => useTournamentStore.getState().upsertPlayers(all))
         .catch(() => undefined);
     }
@@ -147,7 +153,7 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
-                {opened === String(player.id) && <PlayerMatches player={player} api={api} ladder={tournament.type === 'ladder'} />}
+                {opened === String(player.id) && <PlayerMatches player={player} api={api} ladder={tournament.type === 'ladder'} live={tournament.state === 'active'} />}
               </Accordion.Panel>
             </Accordion.Item>
           ))}
