@@ -6,8 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { LEVEL_COLORS, levelLabel, tournamentTitle } from '@/features/lobby/format';
 import { useLobbyStore } from '@/features/lobby/store';
 import type { LobbyGame } from '@/features/lobby/types';
+import { useSharedProps } from '@/shared/useSharedProps';
 
 import { linkify } from '../linkify';
+import { splitInline } from '../mentions';
 
 import classes from './Chat.module.css';
 
@@ -72,8 +74,28 @@ function TournamentInvite({ id, href }: { id: number; href: string }) {
   );
 }
 
+/** Plain text with "@name" mentions marked (yours stand out) and ":shortcodes:" as emoji. */
+function InlineText({ value, myName }: { value: string; myName: string }) {
+  const segments = useMemo(() => splitInline(value), [value]);
+
+  return segments.map((segment, index) =>
+    segment.kind === 'mention' ? (
+      <span
+        key={index}
+        className={classes.mention}
+        data-me={segment.name.toLowerCase() === myName.toLowerCase() || undefined}
+      >
+        @{segment.name}
+      </span>
+    ) : (
+      <Fragment key={index}>{segment.value}</Fragment>
+    ),
+  );
+}
+
 /** Message text with clickable links; the site's game and tournament links become invite cards. */
 export function MessageText({ text }: { text: string }) {
+  const { current_user: me } = useSharedProps();
   const segments = useMemo(() => linkify(text), [text]);
 
   return (
@@ -91,7 +113,7 @@ export function MessageText({ text }: { text: string }) {
               </Anchor>
             );
           default:
-            return <Fragment key={index}>{segment.value}</Fragment>;
+            return <InlineText key={index} value={segment.value} myName={me.name} />;
         }
       })}
     </Text>

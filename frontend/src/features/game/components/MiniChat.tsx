@@ -1,9 +1,11 @@
-import { ActionIcon, Text, TextInput, Tooltip, UnstyledButton } from '@mantine/core';
+import { ActionIcon, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { IconArrowsDiagonal, IconLock, IconMessages, IconSend2 } from '@tabler/icons-react';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ChatInput } from '@/features/chat/components/ChatInput';
 import { MessageText } from '@/features/chat/components/MessageText';
+import { mentions } from '@/features/chat/mentions';
 import type { ChatUserRef } from '@/features/chat/types';
 import { type ChatApi, MAX_MESSAGE_LENGTH } from '@/features/chat/useChat';
 import { UserCard } from '@/features/users/UserCard';
@@ -88,7 +90,12 @@ export function MiniChat({ chat, gameId, playerIds, onExpand, onDirectMessage }:
         ) : (
           messages.map((message) =>
             message.type === 'text' && message.user_id != null ? (
-              <div key={message.id} className={classes.miniChatMessage} data-mine={message.user_id === me.id || undefined}>
+              <div
+                key={message.id}
+                className={classes.miniChatMessage}
+                data-mine={message.user_id === me.id || undefined}
+                data-mentioned={(message.user_id !== me.id && mentions(message.text, me.name)) || undefined}
+              >
                 {message.meta?.type === 'private' && <IconLock size={11} className={classes.miniChatLock} aria-label={t('private')} />}
                 <UserCard user={{ id: message.user_id, name: message.name ?? '' }} onDirectMessage={onDirectMessage}>
                   <span className={classes.miniChatName}>{message.name}</span>
@@ -105,11 +112,12 @@ export function MiniChat({ chat, gameId, playerIds, onExpand, onDirectMessage }:
       </div>
 
       <form onSubmit={submit} className={classes.miniChatComposer}>
-        <TextInput
+        <ChatInput
           size="xs"
           flex={1}
           value={draft}
-          onChange={(event) => setDraft(event.currentTarget.value)}
+          onValueChange={setDraft}
+          messages={chat.messages}
           maxLength={MAX_MESSAGE_LENGTH}
           disabled={!chat.online}
           placeholder={chat.online ? t('Be nice in chat!') : t('Connecting...')}

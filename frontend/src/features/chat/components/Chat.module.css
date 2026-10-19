@@ -146,3 +146,43 @@
     min-height: 0;
   }
 }
+
+/* "@name" in a message; your own name gets Slack's highlight. */
+.mention {
+  padding: 0 2px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: var(--mantine-color-blue-text);
+  background: var(--mantine-color-blue-light);
+
+  &[data-me] {
+    color: var(--mantine-color-yellow-text);
+    background: var(--mantine-color-yellow-light);
+  }
+}
+
+/* A message that mentions you: tinted row with an accent bar, like Slack. */
+.message[data-mentioned] {
+  background: var(--mantine-color-yellow-light);
+  box-shadow: inset 2px 0 0 var(--mantine-color-yellow-filled);
+
+  &:hover {
+    background: var(--mantine-color-yellow-light-hover);
+  }
+}
+
+.onlineDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--mantine-color-green-filled);
+}
+
+.emojiOption {
+  width: 20px;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+}

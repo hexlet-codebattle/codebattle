@@ -481,6 +481,15 @@
     font-style: italic;
     color: var(--cb-text-muted);
   }
+
+  /* Mentions you: Slack's tinted row with an accent bar. */
+  &[data-mentioned] {
+    margin-inline: -4px;
+    padding-inline: 4px;
+    border-radius: 4px;
+    background: var(--mantine-color-yellow-light);
+    box-shadow: inset 2px 0 0 var(--mantine-color-yellow-filled);
+  }
 }
 
 .miniChatName {

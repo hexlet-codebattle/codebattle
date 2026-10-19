@@ -349,6 +349,9 @@ msgstr "Включить звук"
 msgid "New private message"
 msgstr "Новое личное сообщение"
 
+msgid "%{name} mentioned you"
+msgstr "%{name} упомянул(а) вас"
+
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Tg#codebattle"

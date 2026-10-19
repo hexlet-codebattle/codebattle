@@ -299,6 +299,9 @@ msgstr "Turn sound on"
 msgid "New private message"
 msgstr "New private message"
 
+msgid "%{name} mentioned you"
+msgstr "%{name} mentioned you"
+
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Tg#codebattle"

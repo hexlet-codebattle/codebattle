@@ -1,14 +1,16 @@
-import { ActionIcon, Badge, Button, CloseButton, Group, ScrollArea, Text, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, Badge, Button, CloseButton, Group, ScrollArea, Text, Tooltip } from '@mantine/core';
 import { IconLock, IconSend2, IconTrash } from '@tabler/icons-react';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSharedProps } from '@/shared/useSharedProps';
 
+import { mentions } from '../mentions';
 import type { ChatMessage, ChatUserRef } from '../types';
 import { type ChatApi, MAX_MESSAGE_LENGTH, roomMessages } from '../useChat';
 
 import classes from './Chat.module.css';
+import { ChatInput } from './ChatInput';
 import { MessageText } from './MessageText';
 import { UserCard } from '@/features/users/UserCard';
 import { LangIcon } from '@/shared/LangIcon';
@@ -41,12 +43,14 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
   const onlineLang = usePresenceStore((state) => state.users.find(({ id }) => id === message.user_id)?.lang);
   const lang = onlineLang ?? message.lang;
   const { t } = useTranslation();
+  const { current_user: me } = useSharedProps();
   const isText = message.type === 'text' && message.user_id != null;
+  const mentioned = isText && message.user_id !== me.id && mentions(message.text, me.name);
   const privateTo =
     message.meta?.type === 'private' ? chat.rooms.find((room) => room.userId === message.meta?.target_user_id) : undefined;
 
   return (
-    <div className={classes.message} data-grouped={grouped || undefined}>
+    <div className={classes.message} data-grouped={grouped || undefined} data-mentioned={mentioned || undefined}>
       {message.time != null && (
         <Text span size="xs" c="dimmed" ff="monospace" className={classes.time}>
           {timeFormat.format(message.time * 1000)}
@@ -209,10 +213,11 @@ export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, o
       </ScrollArea>
 
       <form onSubmit={submit} className={classes.composer}>
-        <TextInput
+        <ChatInput
           flex={1}
           value={draft}
-          onChange={(event) => setDraft(event.currentTarget.value)}
+          onValueChange={setDraft}
+          messages={chat.messages}
           maxLength={MAX_MESSAGE_LENGTH}
           disabled={!chat.online}
           placeholder={

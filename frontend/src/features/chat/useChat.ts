@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { blinkTitleUntilVisible } from '@/shared/blinkTitle';
 import { useSharedProps } from '@/shared/useSharedProps';
 
+import { mentions } from './mentions';
 import { gameInviteMessage, markShared } from './shareToLobby';
 import type { ChatMessage, ChatUserRef, PrivateRoom } from './types';
 
@@ -59,6 +60,8 @@ export function useChat(topic: string) {
         if (isPrivate(message) && message.user_id !== user.id && message.meta?.target_user_id === user.id) {
           touchRoom({ id: message.user_id!, name: message.name ?? 'user' });
           blinkTitleUntilVisible(`💬 ${t('New private message')}`);
+        } else if (message.type === 'text' && message.user_id !== user.id && mentions(message.text, user.name)) {
+          blinkTitleUntilVisible(`🔔 ${t('%{name} mentioned you', { name: message.name ?? 'user' })}`);
         }
       },
       'chat:msg_deleted': ({ id }: { id: number }) =>
