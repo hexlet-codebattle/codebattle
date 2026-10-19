@@ -2,6 +2,8 @@ defmodule Codebattle.Task.Stats do
   @moduledoc """
   Computes aggregate statistics for a given task:
   total games played, winners count, and solve-time percentiles.
+
+  Wins by surrender count as wins, but not as solutions for solve times or the leaderboard.
   """
 
   import Ecto.Query
@@ -56,6 +58,10 @@ defmodule Codebattle.Task.Stats do
       AND g.state = 'game_over'
       AND ug.result = 'won'
       AND g.duration_sec > 0
+      AND NOT EXISTS (
+        SELECT 1 FROM user_games opponent
+        WHERE opponent.game_id = g.id AND opponent.result = 'gave_up'
+      )
     """
 
     case Repo.query(query, [task_id]) do
@@ -90,6 +96,10 @@ defmodule Codebattle.Task.Stats do
       AND g.state = 'game_over'
       AND ug.result = 'won'
       AND g.duration_sec > 0
+      AND NOT EXISTS (
+        SELECT 1 FROM user_games opponent
+        WHERE opponent.game_id = g.id AND opponent.result = 'gave_up'
+      )
     ORDER BY g.duration_sec ASC
     LIMIT 10
     """

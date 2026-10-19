@@ -33,4 +33,48 @@ defmodule Codebattle.Task.StatsTest do
              leaderboard: []
            } = Stats.get_stats(-1)
   end
+
+  test "excludes surrender wins from solve times and before limiting the leaderboard" do
+    task = insert(:task)
+
+    for index <- 1..11 do
+      game = insert(:game, task: task, state: "game_over", duration_sec: 1)
+      insert(:user_game, game: game, result: "won", is_bot: rem(index, 2) == 0)
+      insert(:user_game, game: game, result: "gave_up")
+    end
+
+    fast_game = insert(:game, task: task, state: "game_over", duration_sec: 10)
+    bot_game = insert(:game, task: task, state: "game_over", duration_sec: 30)
+
+    insert(:user_game, game: fast_game, result: "won", is_bot: false)
+    insert(:user_game, game: fast_game, result: "lost")
+    insert(:user_game, game: bot_game, result: "won", is_bot: true)
+    insert(:user_game, game: bot_game, result: "lost")
+
+    stats = Stats.get_stats(task.id)
+
+    assert stats.games_count == 13
+    assert stats.winners_count == 13
+    assert stats.percentiles.count == 2
+    assert stats.percentiles.p10 == 12.0
+    assert stats.percentiles.p30 == 16.0
+    assert stats.percentiles.p50 == 20.0
+    assert stats.percentiles.p75 == 25.0
+    assert stats.percentiles.p95 == 29.0
+    assert Enum.map(stats.leaderboard, & &1.game_id) == [fast_game.id, bot_game.id]
+  end
+
+  test "returns no solutions when all completed games ended in surrender" do
+    task = insert(:task)
+    game = insert(:game, task: task, state: "game_over", duration_sec: 1)
+    insert(:user_game, game: game, result: "won", is_bot: true)
+    insert(:user_game, game: game, result: "gave_up")
+
+    assert %{
+             games_count: 1,
+             winners_count: 1,
+             percentiles: %{count: 0, p10: nil, p30: nil, p50: nil, p75: nil, p95: nil},
+             leaderboard: []
+           } = Stats.get_stats(task.id)
+  end
 end
