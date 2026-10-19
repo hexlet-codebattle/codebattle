@@ -458,6 +458,7 @@ defmodule CodebattleWeb.Router do
     get("/schedule", TournamentsScheduleController, :index)
     get("/hall_of_fame", HallOfFameController, :index)
     get("/privacy", PrivacyController, :show)
+    get("/dev", DevController, :show)
     get("/h2h/:user_id/:opponent_id", HeadToHeadController, :show)
 
     resources("/seasons", SeasonController, only: [:index, :show])
