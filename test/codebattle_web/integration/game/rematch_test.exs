@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
   use Codebattle.IntegrationCase, async: false
 
   alias Codebattle.Bot
+  alias Codebattle.Chat
   alias Codebattle.Game
   alias CodebattleWeb.UserSocket
 
@@ -48,6 +49,11 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
     assert editor_text_init == Helpers.get_first_player(game).editor_text
     assert editor_text_init == Helpers.get_second_player(game).editor_text
 
+    Chat.add_message({:game, game_id}, %{type: :text, text: "good game", user_id: user1.id, name: user1.name})
+    Chat.add_message({:game, game_id}, %{type: :info, text: "system message"})
+    Chat.react({:game, game_id}, 1, user2, "heart")
+    messages = Chat.get_messages({:game, game_id})
+
     editor_text1 = "Hello world1!"
     editor_text2 = "Hello world2!"
 
@@ -93,11 +99,23 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
     # Text editor go to init state, after start new game after rematch
     assert Helpers.get_first_player(game).editor_text == editor_text_init
     assert Helpers.get_second_player(game).editor_text == editor_text_init
+
+    assert Chat.join_chat({:game, new_game_id}, user1).messages == messages
+    assert :ok = Chat.react({:game, new_game_id}, 1, user2, "heart")
+    Chat.add_message({:game, new_game_id}, %{type: :text, text: "another round", user_id: user2.id})
+    assert List.last(Chat.get_messages({:game, new_game_id})).id == 3
+
+    assert {:ok, _game} = Game.Context.give_up(new_game_id, user1)
+    assert {:rematch_status_updated, _game} = Game.Context.rematch_send_offer(new_game_id, user1)
+    next_messages = Chat.get_messages({:game, new_game_id})
+    assert {:rematch_accepted, next_game} = Game.Context.rematch_send_offer(new_game_id, user2)
+    assert Chat.get_messages({:game, next_game.id}) == next_messages
   end
 
   test "first user gave up and send rematch offer to the bot", %{
     conn1: conn1,
-    socket1: socket1
+    socket1: socket1,
+    user1: user1
   } do
     task = insert(:task, level: "elementary")
     bot = Bot.Context.build()
@@ -130,10 +148,15 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
     game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
 
+    Chat.add_message({:game, game_id}, %{type: :text, text: "try again", user_id: user1.id, name: user1.name})
+    Chat.react({:game, game_id}, 1, user1, "fire")
+    messages = Chat.get_messages({:game, game_id})
+
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(150)
     game = Game.Context.get_game!(game_id + 1)
     assert game.state == "playing"
+    assert Chat.get_messages({:game, game.id}) == messages
   end
 
   test "first user gave up and both users send rematch offer at same time", %{

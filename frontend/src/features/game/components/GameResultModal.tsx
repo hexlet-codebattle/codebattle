@@ -74,7 +74,7 @@ export function GameResultModal({ api }: { api: GameApi }) {
   // Casual games offer a rematch; the opponent's offer gets a row of its own above the footer.
   const practice = game?.mode === 'training';
   const editorLang = useGameStore((store) => store.editors[me.id]?.lang ?? me.lang ?? 'js');
-  const rematch = !tournament && game && !practice ? game : null;
+  const rematch = !tournament && game && !game.tournament_id && !practice ? game : null;
   const incomingRematch = rematch?.rematch_state === 'in_approval' && rematch.rematch_initiator_id !== me.id;
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const wasOver = useRef(isGameOver(state));
@@ -136,7 +136,7 @@ export function GameResultModal({ api }: { api: GameApi }) {
             {rematch && !incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
             <Group gap="xs">
               {nextGame && (
-                <Button component="a" href={`/games/${nextGame}`} color="green" rightSection={<IconArrowRight size={14} />}>
+                <Button component="a" href={`/games/${nextGame}`} variant="filled" color="green" rightSection={<IconArrowRight size={14} />}>
                   {t('Next game')}
                 </Button>
               )}

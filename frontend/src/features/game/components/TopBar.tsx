@@ -61,7 +61,8 @@ function Outcome({ game, api, mePlayer }: { game: Game; api: GameApi | null; meP
         {mePlayer ? label : game.state === 'timeout' ? t('Time is over') : t('Game over')}
       </Badge>
       <GameTimer game={game} />
-      {tournament ? (
+      {/* game.tournament_id is there from the first render; the tournament info comes with the channel join. */}
+      {game.tournament_id || tournament ? (
         <>
           {waitType === 'round' && (
             <Text size="xs" c="dimmed" visibleFrom="md">
@@ -74,7 +75,7 @@ function Outcome({ game, api, mePlayer }: { game: Game; api: GameApi | null; meP
             </Text>
           )}
           {activeGameId && activeGameId !== game.id && (
-            <Button component="a" href={`/games/${activeGameId}`} size="compact-xs" color="green" rightSection={<IconArrowRight size={13} />}>
+            <Button component="a" href={`/games/${activeGameId}`} size="compact-xs" variant="filled" color="green" rightSection={<IconArrowRight size={13} />}>
               {t('Next game')}
             </Button>
           )}

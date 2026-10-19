@@ -149,15 +149,91 @@
   min-width: 0;
 }
 
-/* An incoming rematch offer: a soft green glow so it isn't missed after the game. */
+/* Offering a rematch: the bar button pulses a few times as the game ends; the arrows turn on hover. */
+.rematchButton[data-variant='bar'] {
+  animation: rematchInvite 1.4s ease-in-out 3;
+}
+
+@keyframes rematchInvite {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 alpha(var(--mantine-color-green-5), 0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px alpha(var(--mantine-color-green-5), 0.4);
+  }
+}
+
+.rematchIcon {
+  transition: transform 0.4s ease;
+}
+
+.rematchButton:hover .rematchIcon {
+  transform: rotate(180deg);
+}
+
+/* The game-over strip above the task; it turns red and pulses while the opponent's offer waits. */
+.rematchBanner {
+  flex: none;
+  border-color: alpha(var(--mantine-color-green-6), 0.45);
+  background: alpha(var(--mantine-color-green-6), 0.08);
+
+  &[data-incoming] {
+    border-color: alpha(var(--mantine-color-red-6), 0.5);
+    background: alpha(var(--mantine-color-red-6), 0.06);
+    animation: rematchBannerFlash 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes rematchBannerFlash {
+  50% {
+    box-shadow: 0 0 0 3px alpha(var(--mantine-color-red-6), 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rematchButton[data-variant='bar'],
+  .rematchBanner[data-incoming] {
+    animation: none;
+  }
+
+  .rematchIcon {
+    transition: none;
+  }
+}
+
+/* An incoming rematch offer. The top bar is otherwise static, so the offer there pulses red like
+   other alerts, behind a green Accept; in the modal a soft green glow is enough. */
 .rematchOffer {
   padding: 2px 4px 2px 12px;
   border-radius: var(--mantine-radius-xl);
   background: alpha(var(--mantine-color-green-6), 0.12);
   animation: rematchGlow 1.6s ease-in-out infinite;
 
+  &[data-variant='bar'] {
+    animation: rematchFlash 1.2s ease-in-out infinite;
+  }
+
   &[data-variant='modal'] {
     padding: 8px 8px 8px 16px;
+  }
+}
+
+.rematchOfferLabel {
+  color: var(--mantine-color-red-text);
+}
+
+@keyframes rematchFlash {
+  0%,
+  100% {
+    background: alpha(var(--mantine-color-red-6), 0.08);
+    box-shadow: 0 0 0 0 alpha(var(--mantine-color-red-6), 0);
+  }
+
+  50% {
+    background: alpha(var(--mantine-color-red-6), 0.2);
+    box-shadow: 0 0 0 3px alpha(var(--mantine-color-red-6), 0.25);
   }
 }
 
@@ -178,6 +254,11 @@
   .rematchOffer {
     animation: none;
     box-shadow: 0 0 0 2px alpha(var(--mantine-color-green-5), 0.45);
+
+    &[data-variant='bar'] {
+      background: alpha(var(--mantine-color-red-6), 0.16);
+      box-shadow: none;
+    }
   }
 }
 

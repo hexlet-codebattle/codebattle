@@ -24,7 +24,7 @@ import { useSharedProps } from '@/shared/useSharedProps';
 import { LangIcon } from '@/shared/LangIcon';
 
 import { AchievementTile, GRADE_WINS, PRESENCE_LABELS, visibleAchievements } from './achievements';
-import { fetchUserCard } from './api';
+import { fetchUserCard, fetchUserHeadToHead } from './api';
 import classes from './UserCard.module.css';
 
 export interface CardUser {
@@ -53,6 +53,51 @@ interface CardActions {
   onDirectMessage?: (user: CardUser) => void;
   /** Chat only (admins): ban from this chat. */
   onBan?: (user: CardUser) => void;
+}
+
+function HeadToHeadScore({ user }: { user: CardUser }) {
+  const { t } = useTranslation();
+  const { current_user: me } = useSharedProps();
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ['user-head-to-head', me.id, user.id],
+    queryFn: ({ signal }) => fetchUserHeadToHead(user.id, signal),
+    staleTime: 60_000,
+    retry: false,
+  });
+  const myWins = data?.players.find(({ id }) => id === me.id)?.wins ?? 0;
+  const opponentWins = data?.players.find(({ id }) => id === user.id)?.wins ?? 0;
+  const score = `${myWins} : ${opponentWins}`;
+
+  if (!isPending && !isError && !data) return null;
+
+  return (
+    <Group justify="space-between" wrap="nowrap" className={classes.stats} px="sm">
+      <Text size="xs" c="dimmed">H2H</Text>
+      {isPending ? (
+        <Skeleton h={18} w={60} />
+      ) : isError ? (
+        <Tooltip label={t("Couldn't load the results.")}>
+          <Anchor component="button" size="xs" onClick={() => void refetch()}>{t('Retry')}</Anchor>
+        </Tooltip>
+      ) : (
+        <Tooltip label={`${t('You')} : ${user.name}`}>
+          {myWins + opponentWins > 0 ? (
+            <Anchor
+              href={`/h2h/${me.id}/${user.id}`}
+              size="sm"
+              ff="monospace"
+              fw={700}
+              aria-label={`${t('Open H2H')}: ${me.name} ${myWins} : ${opponentWins} ${user.name}`}
+            >
+              {score}
+            </Anchor>
+          ) : (
+            <Text size="sm" ff="monospace" c="dimmed">{score}</Text>
+          )}
+        </Tooltip>
+      )}
+    </Group>
+  );
 }
 
 function CardContent({ user, onDirectMessage, onBan }: { user: CardUser } & CardActions) {
@@ -175,6 +220,8 @@ function CardContent({ user, onDirectMessage, onBan }: { user: CardUser } & Card
         <Stat label={t('Points')} value={profile?.points ?? '…'} />
         <Stat label={t('Elo')} value={profile?.rating ?? '…'} />
       </SimpleGrid>
+
+      {!me.is_guest && !self && <HeadToHeadScore user={user} />}
 
       {isError ? (
         <Text size="xs" c="dimmed" ta="center">

@@ -9,6 +9,9 @@ defmodule Codebattle.Chat.Server do
 
   @default_message_ttl to_timeout(hour: 1)
   @default_clean_timeout to_timeout(minute: 1)
+  @reactions ~w(laugh smile heart fire rocket clap eyes thumbs_up)
+  @reaction_languages ~w(clojure cpp csharp css dart dlang elixir golang java js kotlin less mongodb mysql php
+                         postgresql python ruby rust sass stylus swift ts zig)
   @initial_state %{
     message_ttl: @default_message_ttl,
     clean_timeout: @default_clean_timeout,
@@ -59,11 +62,26 @@ defmodule Codebattle.Chat.Server do
     :exit, _reason -> []
   end
 
+  @spec copy_messages(Chat.chat_type(), Chat.chat_type()) :: :ok | {:error, atom()}
+  def copy_messages(source_chat_type, target_chat_type) do
+    messages = get_messages(source_chat_type)
+    GenServer.call(chat_key(target_chat_type), {:copy_messages, messages})
+  catch
+    :exit, _reason -> {:error, :no_chat}
+  end
+
   @spec add_message(Chat.chat_type(), Chat.message()) ::
           {:ok, Chat.message()}
           | {:error, atom()}
   def add_message(chat_type, message) do
     GenServer.call(chat_key(chat_type), {:add_message, message})
+  catch
+    :exit, _reason -> {:error, :no_chat}
+  end
+
+  @spec react(Chat.chat_type(), pos_integer(), User.t(), String.t()) :: :ok | {:error, atom()}
+  def react(chat_type, message_id, user, reaction) do
+    GenServer.call(chat_key(chat_type), {:react, chat_type, message_id, user, reaction})
   catch
     :exit, _reason -> {:error, :no_chat}
   end
@@ -150,6 +168,16 @@ defmodule Codebattle.Chat.Server do
   end
 
   @impl GenServer
+  def handle_call({:copy_messages, messages}, _from, state) do
+    {new_messages, next_id} =
+      Enum.map_reduce(messages, state.messages_id_sec, fn message, id ->
+        {%{message | id: id}, id + 1}
+      end)
+
+    {:reply, :ok, %{state | messages: Enum.reverse(new_messages, state.messages), messages_id_sec: next_id}}
+  end
+
+  @impl GenServer
   def handle_call({:add_message, message}, _from, state) do
     if can_send_message?(message.user_id, state) do
       new_message = %{message | id: state.messages_id_sec}
@@ -180,6 +208,31 @@ defmodule Codebattle.Chat.Server do
 
       true ->
         {:reply, {:error, :unauthorized}, state}
+    end
+  end
+
+  @impl GenServer
+  def handle_call({:react, chat_type, message_id, user, reaction}, _from, state) do
+    message = Enum.find(state.messages, &(&1.id == message_id))
+
+    case validate_reaction(message, user, reaction, state) do
+      :ok ->
+        reactions =
+          case Map.get(message.reactions, user.id) do
+            %{reaction: ^reaction} -> Map.delete(message.reactions, user.id)
+            _ -> Map.put(message.reactions, user.id, %{reaction: reaction, name: user.name})
+          end
+
+        updated_message = %{message | reactions: reactions}
+        messages = Enum.map(state.messages, &if(&1.id == message_id, do: updated_message, else: &1))
+
+        # Publish from the server so concurrent reactions reach clients in mutation order.
+        Codebattle.PubSub.broadcast("chat:reactions_updated", %{chat_type: chat_type, message: updated_message})
+
+        {:reply, :ok, %{state | messages: messages}}
+
+      {:error, reason} ->
+        {:reply, {:error, reason}, state}
     end
   end
 
@@ -226,6 +279,33 @@ defmodule Codebattle.Chat.Server do
 
   defp game_message?(%{meta: %{"game_id" => game_id}}, game_id), do: true
   defp game_message?(_message, _game_id), do: false
+
+  defp validate_reaction(nil, _user, _reaction, _state), do: {:error, :not_found}
+
+  defp validate_reaction(message, user, reaction, state) do
+    cond do
+      !is_integer(user.id) or user.id == 0 or !can_send_message?(user.id, state) ->
+        {:error, :unauthorized}
+
+      message.type != :text or !can_react_to_message?(message, user.id) ->
+        {:error, :unauthorized}
+
+      !valid_reaction?(reaction) ->
+        {:error, :invalid_reaction}
+
+      true ->
+        :ok
+    end
+  end
+
+  defp valid_reaction?("lang:" <> lang), do: lang in @reaction_languages
+  defp valid_reaction?(reaction), do: reaction in @reactions
+
+  defp can_react_to_message?(%{meta: %{"type" => "private"} = meta} = message, user_id) do
+    user_id in [message.user_id, meta["target_user_id"]]
+  end
+
+  defp can_react_to_message?(_message, _user_id), do: true
 
   defp own_message?(_message, nil), do: false
   defp own_message?(message, user_id), do: message.user_id == user_id

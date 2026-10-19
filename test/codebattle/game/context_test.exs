@@ -208,6 +208,27 @@ defmodule Codebattle.Game.ContextTest do
       assert Enum.sort(Enum.map(new_game.players, & &1.id)) == Enum.sort([user1.id, user2.id])
     end
 
+    test "tournament games can't be rematched" do
+      user1 = insert(:user)
+      user2 = insert(:user)
+      task = insert(:task, level: "easy")
+      tournament = insert(:tournament)
+
+      {:ok, game} =
+        Game.Context.create_game(%{
+          state: "playing",
+          players: [user1, user2],
+          level: "easy",
+          task: task,
+          tournament_id: tournament.id
+        })
+
+      on_exit(fn -> GlobalSupervisor.terminate_game(game.id) end)
+      {:ok, _timed_out} = Game.Context.trigger_timeout(game.id)
+
+      assert {:error, :tournament_game} = Game.Context.rematch_send_offer(game.id, user1)
+    end
+
     test "rejects live-only operations for a persisted dead game" do
       user = insert(:user)
       game = insert(:game, state: "game_over", tournament_id: nil)

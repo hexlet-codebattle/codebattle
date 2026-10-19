@@ -42,6 +42,10 @@ defmodule Codebattle.Game.Auth do
     end
   end
 
+  # Tournament games are paired by the tournament, never rematched.
+  def player_can_rematch?(%{tournament_id: tournament_id}, _player_id) when not is_nil(tournament_id),
+    do: {:error, :tournament_game}
+
   def player_can_rematch?(game, player_id) do
     if Game.Helpers.player?(game, player_id) do
       :ok

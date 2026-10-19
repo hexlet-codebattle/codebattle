@@ -12,6 +12,7 @@ import { type ChatApi, MAX_MESSAGE_LENGTH, roomMessages } from '../useChat';
 import classes from './Chat.module.css';
 import { ChatInput } from './ChatInput';
 import { MessageText } from './MessageText';
+import { MessageReactions } from './MessageReactions';
 import { UserCard } from '@/features/users/UserCard';
 import { LangIcon } from '@/shared/LangIcon';
 import { usePresenceStore } from '@/features/presence/store';
@@ -50,7 +51,7 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
     message.meta?.type === 'private' ? chat.rooms.find((room) => room.userId === message.meta?.target_user_id) : undefined;
 
   return (
-    <div className={classes.message} data-grouped={grouped || undefined} data-mentioned={mentioned || undefined}>
+    <div className={classes.message} data-chat-message data-grouped={grouped || undefined} data-mentioned={mentioned || undefined}>
       {message.time != null && (
         <Text span size="xs" c="dimmed" ff="monospace" className={classes.time}>
           {timeFormat.format(message.time * 1000)}
@@ -79,6 +80,7 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
               </>
             )}
             <MessageText text={message.text} />
+            <MessageReactions message={message} chat={chat} />
           </>
         ) : (
           <Text span size="sm" c="dimmed" fs="italic">

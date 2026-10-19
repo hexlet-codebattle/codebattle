@@ -467,11 +467,11 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("chat:new_msg", params) do
+  def get_messages(event, params) when event in ["chat:new_msg", "chat:reactions_updated"] do
     [
       %Message{
         topic: chat_topic(params.chat_type),
-        event: "chat:new_msg",
+        event: event,
         payload: params.message
       }
     ]

@@ -20,5 +20,6 @@ defmodule Codebattle.Chat.Message do
     field(:text, String.t())
     field(:time, timestamp())
     field(:meta, meta_type())
+    field(:reactions, %{integer() => %{reaction: String.t(), name: String.t()}}, default: %{})
   end
 end

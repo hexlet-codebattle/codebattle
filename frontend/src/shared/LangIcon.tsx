@@ -61,6 +61,8 @@ const ICONS: Record<string, { icon: IconType; scale?: number; name: string }> = 
 
 const ALIASES: Record<string, string> = { javascript: 'js', typescript: 'ts', go: 'golang', 'c++': 'cpp', 'c#': 'csharp' };
 
+export const languageIconSlugs = Object.keys(ICONS);
+
 export const langName = (lang: string) => ICONS[ALIASES[lang] ?? lang]?.name ?? lang;
 
 interface LangIconProps {

@@ -93,6 +93,7 @@ defmodule Codebattle.Game.Context do
 
   defdelegate fetch_head_to_head_by_game_id(game_id), to: Game.Query
   defdelegate fetch_head_to_head(game), to: Game.Query
+  defdelegate fetch_head_to_head_by_user_ids(user_id, opponent_id), to: Game.Query
   defdelegate fetch_head_to_head_page_data(user_id, opponent_id), to: Game.Query
 
   defdelegate get_completed_games(

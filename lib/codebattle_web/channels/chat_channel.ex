@@ -55,6 +55,15 @@ defmodule CodebattleWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  def handle_in("chat:react", payload, socket) do
+    result = Chat.react(get_chat_type(socket), payload["id"], socket.assigns.current_user, payload["reaction"])
+
+    case result do
+      :ok -> {:reply, :ok, socket}
+      {:error, reason} -> {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
   def handle_in("chat:command", payload, socket) do
     chat_type = get_chat_type(socket)
     user = socket.assigns.current_user
@@ -115,6 +124,15 @@ defmodule CodebattleWeb.ChatChannel do
 
   def handle_info(%{topic: _topic, event: "chat:user_banned", payload: payload}, socket) do
     push(socket, "chat:user_banned", payload)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "chat:reactions_updated", payload: message}, socket) do
+    if message.meta == nil or message.meta["type"] != "private" or
+         users_private_message?(message, socket.assigns.current_user.id) do
+      push(socket, "chat:reactions_updated", %{id: message.id, reactions: message.reactions})
+    end
 
     {:noreply, socket}
   end

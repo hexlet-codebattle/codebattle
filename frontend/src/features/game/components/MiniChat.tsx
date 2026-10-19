@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ChatInput } from '@/features/chat/components/ChatInput';
 import { MessageText } from '@/features/chat/components/MessageText';
+import { MessageReactions } from '@/features/chat/components/MessageReactions';
 import { mentions } from '@/features/chat/mentions';
 import type { ChatUserRef } from '@/features/chat/types';
 import { type ChatApi, MAX_MESSAGE_LENGTH } from '@/features/chat/useChat';
@@ -93,6 +94,7 @@ export function MiniChat({ chat, gameId, playerIds, onExpand, onDirectMessage }:
               <div
                 key={message.id}
                 className={classes.miniChatMessage}
+                data-chat-message
                 data-mine={message.user_id === me.id || undefined}
                 data-mentioned={(message.user_id !== me.id && mentions(message.text, me.name)) || undefined}
               >
@@ -101,6 +103,7 @@ export function MiniChat({ chat, gameId, playerIds, onExpand, onDirectMessage }:
                   <span className={classes.miniChatName}>{message.name}</span>
                 </UserCard>{' '}
                 <MessageText text={message.text} />
+                <MessageReactions message={message} chat={chat} />
               </div>
             ) : (
               <div key={message.id} className={classes.miniChatMessage} data-system>

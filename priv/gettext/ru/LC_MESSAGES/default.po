@@ -5292,6 +5292,21 @@ msgstr "Предложение реванша"
 msgid "%{name} offers a rematch"
 msgstr "%{name} предлагает реванш"
 
+msgid "Offer %{name} a rematch"
+msgstr "Предложить реванш: %{name}"
+
+msgid "Want another round?"
+msgstr "Сыграем ещё раз?"
+
+msgid "A new task against the same opponent, it starts once you accept."
+msgstr "Новая задача против того же соперника, начнётся, как только вы примете."
+
+msgid "Rematch %{name} on a new task, it starts right away."
+msgstr "Реванш с %{name} на новой задаче, начнётся сразу."
+
+msgid "Rematch %{name} on a new task, they get an offer to accept."
+msgstr "Реванш с %{name} на новой задаче, соперник получит приглашение."
+
 msgid "Rematch offered, waiting…"
 msgstr "Реванш предложен, ждём ответа…"
 
@@ -6805,3 +6820,33 @@ msgstr "Турниры лиги скоро появятся здесь."
 
 msgid "Four Grand Slams every season. One champion."
 msgstr "Четыре Гранд-слэма каждый сезон. Один чемпион."
+
+msgid "Add reaction"
+msgstr "Добавить реакцию"
+
+msgid "One reaction per message"
+msgstr "Одна реакция на сообщение"
+
+msgid "Laugh"
+msgstr "Смех"
+
+msgid "Smile"
+msgstr "Улыбка"
+
+msgid "Heart"
+msgstr "Сердце"
+
+msgid "Fire"
+msgstr "Огонь"
+
+msgid "Rocket"
+msgstr "Ракета"
+
+msgid "Applause"
+msgstr "Аплодисменты"
+
+msgid "Eyes"
+msgstr "Глаза"
+
+msgid "Thumbs up"
+msgstr "Палец вверх"

@@ -71,7 +71,7 @@ export interface GameTask {
   origin?: string;
 }
 
-/** Codebattle.Game.Query.build_head_to_head/2: all-time wins between the two players. */
+/** Codebattle.Game.Query.fetch_head_to_head_by_user_ids/2: all-time wins between the two players. */
 export interface HeadToHead {
   winner_id: number | null;
   players: { id: number; wins: number }[];

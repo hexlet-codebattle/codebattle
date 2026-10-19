@@ -1,6 +1,8 @@
 // GET /api/v1/user/:id/achievements (UserController.achievements) — the data
 // behind the hover card. Only fields the card reads are typed.
 
+import type { HeadToHead } from '@/features/game/types';
+
 export interface Achievement {
   type: string;
   meta: {
@@ -45,4 +47,13 @@ export async function fetchUserCard(userId: number): Promise<UserCardData> {
   if (!response.ok) throw new Error(`achievements: ${response.status}`);
 
   return response.json();
+}
+
+/** Separate request so a slow matchup query never delays the rest of the card. */
+export async function fetchUserHeadToHead(userId: number, signal: AbortSignal): Promise<HeadToHead | null> {
+  const response = await fetch(`/api/v1/user/${userId}/head_to_head`, { signal });
+  if (!response.ok) throw new Error(`head_to_head: ${response.status}`);
+
+  const data: { head_to_head: HeadToHead | null } = await response.json();
+  return data.head_to_head;
 }

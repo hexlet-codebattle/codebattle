@@ -379,6 +379,7 @@ defmodule CodebattleWeb.Router do
       get("/user/:id/rivals", UserController, :rivals)
       get("/user/:id/tournaments", UserController, :tournaments)
       get("/user/:id/achievements", UserController, :achievements)
+      get("/user/:id/head_to_head", UserController, :head_to_head)
       get("/user/:id/simple_stats", UserController, :simple_stats)
       get("/user/premium_requests", UserController, :premium_requests)
       post("/user/:id/send_premium_request", UserController, :send_premium_request)

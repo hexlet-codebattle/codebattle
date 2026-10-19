@@ -146,6 +146,27 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{users: nearby_users})
   end
 
+  def head_to_head(%{assigns: %{current_user: %{is_guest: true}}} = conn, _params) do
+    conn |> put_status(:unauthorized) |> json(%{error: "unauthorized"})
+  end
+
+  def head_to_head(conn, %{"id" => id}) do
+    current_user = conn.assigns.current_user
+
+    case User.get(id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: "NOT_FOUND"})
+
+      opponent ->
+        head_to_head =
+          if opponent.id != current_user.id && !opponent.is_bot do
+            Game.Context.fetch_head_to_head_by_user_ids(current_user.id, opponent.id)
+          end
+
+        json(conn, %{head_to_head: head_to_head})
+    end
+  end
+
   def simple_stats(conn, %{"id" => id}) do
     achievements = Achievements.get_user_achievements(id)
 

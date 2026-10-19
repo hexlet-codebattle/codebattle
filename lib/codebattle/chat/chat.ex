@@ -43,6 +43,12 @@ defmodule Codebattle.Chat do
   @spec get_messages(chat_type()) :: list(message())
   defdelegate get_messages(chat_type), to: Chat.Server
 
+  @spec copy_messages(chat_type(), chat_type()) :: :ok | {:error, atom()}
+  defdelegate copy_messages(source_chat_type, target_chat_type), to: Chat.Server
+
+  @spec react(chat_type(), pos_integer(), User.t(), String.t()) :: :ok | {:error, atom()}
+  defdelegate react(chat_type, message_id, user, reaction), to: Chat.Server
+
   @spec clean_banned(chat_type()) :: :ok
   defdelegate clean_banned(chat_type), to: Chat.Server
 

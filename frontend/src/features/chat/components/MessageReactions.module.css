@@ -1,0 +1,86 @@
+.reactions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+
+  &[data-has-reactions] {
+    display: flex;
+    margin: 4px 0 2px;
+  }
+}
+
+.reaction,
+.option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid var(--cb-border);
+  border-radius: 999px;
+  color: var(--cb-text);
+  background: var(--cb-sunken);
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    background: var(--cb-hover);
+    border-color: var(--mantine-color-green-filled);
+  }
+
+  &[data-selected] {
+    color: var(--mantine-color-green-text);
+    background: var(--mantine-color-green-light);
+    border-color: var(--mantine-color-green-filled);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mantine-color-green-filled);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.reaction {
+  min-height: 24px;
+  padding: 3px 8px;
+  font-size: 13px;
+}
+
+.add {
+  opacity: 0;
+
+  [data-chat-message]:hover &,
+  [data-chat-message]:focus-within &,
+  &[data-opened] {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(8, 28px);
+  gap: 3px;
+}
+
+.option {
+  width: 28px;
+  height: 30px;
+  border-color: transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 19px;
+
+  &[data-language] {
+    grid-column: 1;
+  }
+}

@@ -66,6 +66,8 @@ export function useChat(topic: string) {
       },
       'chat:msg_deleted': ({ id }: { id: number }) =>
         setMessages((current) => current.filter((message) => message.id !== id)),
+      'chat:reactions_updated': ({ id, reactions }: Pick<ChatMessage, 'id' | 'reactions'>) =>
+        setMessages((current) => current.map((message) => message.id === id ? { ...message, reactions } : message)),
       'chat:user_banned': ({ name }: { name: string }) =>
         setMessages((current) => current.filter((message) => message.name !== name)),
     },
@@ -96,6 +98,7 @@ export function useChat(topic: string) {
       markShared(gameId);
     },
     deleteMessage: (id: number) => cast('chat:delete_msg', { id }),
+    react: (id: number, reaction: string) => cast('chat:react', { id, reaction }),
     ban: (target: ChatUserRef) => cast('chat:command', { type: 'ban', name: target.name, user_id: target.id }),
     cleanBanned: () => cast('chat:command', { type: 'clean_banned' }),
   };

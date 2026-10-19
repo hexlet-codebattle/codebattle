@@ -4,6 +4,7 @@ defmodule Codebattle.Game.Engine do
   import Codebattle.Game.Helpers
 
   alias Codebattle.Bot
+  alias Codebattle.Chat
   alias Codebattle.CodeCheck
   alias Codebattle.CssTask
   alias Codebattle.Game
@@ -386,7 +387,7 @@ defmodule Codebattle.Game.Engine do
       else
         Codebattle.PubSub.broadcast("game:terminated", %{game: game})
         # Lobby chat invites to this game (posted on creation) would now lead nowhere.
-        Codebattle.Chat.delete_game_messages(:lobby, game.id, game.player_ids)
+        Chat.delete_game_messages(:lobby, game.id, game.player_ids)
       end
 
       :ok
@@ -408,6 +409,10 @@ defmodule Codebattle.Game.Engine do
   defp start_rematch(game) do
     case create_rematch_game(game) do
       {:ok, new_game} ->
+        if is_nil(game.tournament_id) do
+          :ok = Chat.copy_messages({:game, game.id}, {:game, new_game.id})
+        end
+
         Game.GlobalSupervisor.terminate_game(game.id)
         {:rematch_accepted, new_game}
 

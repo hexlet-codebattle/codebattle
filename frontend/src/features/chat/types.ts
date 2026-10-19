@@ -1,3 +1,8 @@
+export interface ChatReaction {
+  reaction: string;
+  name: string;
+}
+
 // Codebattle.Chat.Message as pushed on "chat:*" topics.
 export interface ChatMessage {
   id: number;
@@ -11,6 +16,7 @@ export interface ChatMessage {
   /** Unix seconds. */
   time: number | null;
   meta: { type?: 'general' | 'private'; target_user_id?: number; game_id?: number } | null;
+  reactions?: Record<string, ChatReaction>;
 }
 
 export interface PrivateRoom {

@@ -220,5 +220,77 @@ defmodule CodebattleWeb.ChatChannelTest do
     assert [] = Chat.get_messages(chat_type)
   end
 
+  test "broadcasts reactions using the socket identity and includes them when joining", %{
+    user1: alice,
+    user2: bob,
+    socket1: socket1,
+    socket2: socket2
+  } do
+    chat_id = System.unique_integer([:positive])
+    Chat.start_link({:game, chat_id})
+    chat_type = {:game, "#{chat_id}"}
+    topic = get_chat_topic(chat_id)
+    {:ok, _, socket1} = subscribe_and_join(socket1, ChatChannel, topic)
+    Chat.add_message(chat_type, %{type: :text, text: "hello", user_id: bob.id})
+
+    ref = push(socket1, "chat:react", %{"id" => 1, "reaction" => "rocket", "user_id" => bob.id})
+    assert_reply ref, :ok
+    assert_push "chat:reactions_updated", %{id: 1, reactions: reactions}
+    assert reactions == %{alice.id => %{reaction: "rocket", name: "alice"}}
+
+    {:ok, %{messages: [message]}, socket2} = subscribe_and_join(socket2, ChatChannel, topic)
+    assert message.reactions == reactions
+
+    ref = push(socket2, "chat:react", %{"id" => 1, "reaction" => "heart"})
+    assert_reply ref, :ok
+    assert [%{reactions: reactions}] = Chat.get_messages(chat_type)
+    assert map_size(reactions) == 2
+  end
+
+  test "private reactions are hidden from outsiders and cannot be forged", %{
+    user1: alice,
+    user2: bob,
+    admin_socket: outsider_socket
+  } do
+    chat_id = System.unique_integer([:positive])
+    Chat.start_link({:game, chat_id})
+    chat_type = {:game, "#{chat_id}"}
+
+    Chat.add_message(chat_type, %{
+      type: :text,
+      text: "secret",
+      user_id: alice.id,
+      meta: %{"type" => "private", "target_user_id" => bob.id}
+    })
+
+    {:ok, %{messages: []}, outsider_socket} = subscribe_and_join(outsider_socket, ChatChannel, get_chat_topic(chat_id))
+    assert :ok = Chat.react(chat_type, 1, bob, "heart")
+    refute_push "chat:reactions_updated", _
+
+    ref = push(outsider_socket, "chat:react", %{"id" => 1, "reaction" => "heart", "user_id" => alice.id})
+    assert_reply ref, :error, %{reason: :unauthorized}
+    assert [%{reactions: reactions}] = Chat.get_messages(chat_type)
+    assert reactions == %{bob.id => %{reaction: "heart", name: "bob"}}
+  end
+
+  test "invalid reaction payloads return errors without closing the channel", %{user1: user, socket1: socket} do
+    chat_id = System.unique_integer([:positive])
+    Chat.start_link({:game, chat_id})
+    chat_type = {:game, "#{chat_id}"}
+    {:ok, _, socket} = subscribe_and_join(socket, ChatChannel, get_chat_topic(chat_id))
+    Chat.add_message(chat_type, %{type: :text, text: "hello", user_id: user.id})
+
+    for reaction <- [nil, %{}, "arbitrary", "lang:unknown"] do
+      ref = push(socket, "chat:react", %{"id" => 1, "reaction" => reaction})
+      assert_reply ref, :error, %{reason: :invalid_reaction}
+    end
+
+    ref = push(socket, "chat:react", %{"id" => 999, "reaction" => "heart"})
+    assert_reply ref, :error, %{reason: :not_found}
+
+    ref = push(socket, "chat:react", %{"id" => 1, "reaction" => "heart"})
+    assert_reply ref, :ok
+  end
+
   def get_chat_topic(id), do: "chat:g_#{id}"
 end

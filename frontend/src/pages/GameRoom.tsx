@@ -12,6 +12,7 @@ import { LockScreen } from '@/features/game/components/LockScreen';
 import { MiniChat } from '@/features/game/components/MiniChat';
 import { PlaybookReview } from '@/features/game/components/PlaybookReview';
 import { PracticeGuide } from '@/features/game/components/PracticeGuide';
+import { RematchBanner } from '@/features/game/components/RematchControls';
 import { ReplayBar } from '@/features/game/components/ReplayBar';
 import { type BriefTab, TaskBrief } from '@/features/game/components/TaskBrief';
 import { TopBar } from '@/features/game/components/TopBar';
@@ -143,6 +144,9 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
 
       <div className={classes.body}>
         {!history && game.mode === 'training' && game.players.some((player) => player.id === me.id) && <PracticeGuide />}
+        {!history && api && isGameOver(game.state) && !game.tournament_id && game.mode !== 'training' && left?.id === me.id && right && (
+          <RematchBanner game={game} api={api} me={me.id} />
+        )}
         {brief && (
           <TaskBrief
             tab={tab}

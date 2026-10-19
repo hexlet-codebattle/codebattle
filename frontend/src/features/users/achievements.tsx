@@ -1,9 +1,10 @@
-import { Stack, Text, Tooltip } from '@mantine/core';
+import { Group, Stack, Text, Tooltip } from '@mantine/core';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import type { TournamentGrade } from '@/features/lobby/types';
+import { LangIcon, langName } from '@/shared/LangIcon';
 
 import type { Achievement, UserCardData } from './api';
 import classes from './UserCard.module.css';
@@ -46,23 +47,25 @@ export function AchievementTile({ achievement }: { achievement: Achievement }) {
 
   let value: ReactNode = meta.label ?? meta.count ?? '—';
   let tone = config.tone;
+  let label = t(config.title);
 
   if (achievement.type === 'highest_tournament_win_grade' && meta.grade) {
     tone = meta.grade;
     value = <GradeIcon grade={meta.grade as TournamentGrade} size={24} />;
   } else if (achievement.type === 'polyglot') {
+    const languages = meta.languages ?? [];
+    label = `${label}: ${languages.map(langName).join(', ')}`;
     value = (
-      <Text size="xs" fw={700} lh={1.2} lineClamp={2}>
-        {(meta.languages ?? []).join(' · ')}
-      </Text>
+      <Group gap={4} justify="center">
+        {languages.map((lang) => (
+          <LangIcon key={lang} lang={lang} size={16} withTooltip={false} />
+        ))}
+      </Group>
     );
   }
 
   return (
-    <Tooltip
-      label={achievement.type === 'polyglot' ? `${t(config.title)}: ${(meta.languages ?? []).join(', ')}` : t(config.title)}
-      openDelay={300}
-    >
+    <Tooltip label={label} openDelay={300} multiline maw={240}>
       <Stack gap={2} align="center" justify="center" className={classes.tile} style={{ '--tone': `var(--cb-grade-${tone})` }}>
         <Text fz={10} fw={700} tt="uppercase" lts="0.04em" className={classes.tileTitle} ta="center" lh={1.1}>
           {t(config.title)}

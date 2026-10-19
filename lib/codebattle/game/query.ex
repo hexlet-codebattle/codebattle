@@ -20,7 +20,7 @@ defmodule Codebattle.Game.Query do
     if Map.get(first, :is_bot) || Map.get(second, :is_bot) do
       nil
     else
-      build_head_to_head(first_player_id, second_player_id)
+      fetch_head_to_head_by_user_ids(first_player_id, second_player_id)
     end
   end
 
@@ -89,7 +89,8 @@ defmodule Codebattle.Game.Query do
 
   defp filter_completed_games(query, %{}), do: query
 
-  defp build_head_to_head(first_player_id, second_player_id) do
+  @spec fetch_head_to_head_by_user_ids(User.raw_id(), User.raw_id()) :: map()
+  def fetch_head_to_head_by_user_ids(first_player_id, second_player_id) do
     %{first_player_wins: first_player_wins, second_player_wins: second_player_wins} =
       build_head_to_head_summary(first_player_id, second_player_id)
 

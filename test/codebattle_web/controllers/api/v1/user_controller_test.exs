@@ -206,6 +206,107 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     end
   end
 
+  describe "head_to_head" do
+    test "counts only shared duels with the signed-in user's wins first", %{conn: conn} do
+      user = insert(:user)
+      opponent = insert(:user)
+      other_user = insert(:user)
+      players = [Player.build(user), Player.build(opponent)]
+
+      for {user_result, opponent_result} <- [{"won", "lost"}, {"won", "gave_up"}, {"lost", "won"}] do
+        game = insert(:game, state: "game_over", players: players)
+        insert(:user_game, user: user, game: game, result: user_result)
+        insert(:user_game, user: opponent, game: game, result: opponent_result)
+      end
+
+      for {state, result} <- [{"playing", nil}, {"game_over", "timeout"}] do
+        game = insert(:game, state: state, players: players)
+        insert(:user_game, user: user, game: game, result: result)
+        insert(:user_game, user: opponent, game: game, result: result)
+      end
+
+      group_game = insert(:game, state: "game_over", players: players ++ [Player.build(other_user)])
+      insert(:user_game, user: user, game: group_game, result: "won")
+      insert(:user_game, user: opponent, game: group_game, result: "lost")
+
+      unrelated_game = insert(:game, state: "game_over", players: [Player.build(user), Player.build(other_user)])
+      insert(:user_game, user: user, game: unrelated_game, result: "won")
+      insert(:user_game, user: other_user, game: unrelated_game, result: "lost")
+
+      response =
+        conn
+        |> log_in_user(user)
+        |> get(Routes.api_v1_user_path(conn, :head_to_head, opponent.id))
+        |> json_response(200)
+
+      assert response["head_to_head"] == %{
+               "winner_id" => user.id,
+               "players" => [%{"id" => user.id, "wins" => 2}, %{"id" => opponent.id, "wins" => 1}]
+             }
+
+      reverse_response =
+        conn
+        |> log_in_user(opponent)
+        |> get(Routes.api_v1_user_path(conn, :head_to_head, user.id))
+        |> json_response(200)
+
+      assert reverse_response["head_to_head"]["players"] == [
+               %{"id" => opponent.id, "wins" => 1},
+               %{"id" => user.id, "wins" => 2}
+             ]
+    end
+
+    test "returns a zero score when the players have no shared wins", %{conn: conn} do
+      user = insert(:user)
+      opponent = insert(:user)
+
+      response =
+        conn
+        |> log_in_user(user)
+        |> get(Routes.api_v1_user_path(conn, :head_to_head, opponent.id))
+        |> json_response(200)
+
+      assert response["head_to_head"] == %{
+               "winner_id" => nil,
+               "players" => [%{"id" => user.id, "wins" => 0}, %{"id" => opponent.id, "wins" => 0}]
+             }
+    end
+
+    test "requires authentication", %{conn: conn} do
+      opponent = insert(:user)
+
+      conn = get(conn, Routes.api_v1_user_path(conn, :head_to_head, opponent.id))
+
+      assert json_response(conn, 401) == %{"error" => "unauthorized"}
+    end
+
+    test "skips self and bot matchups", %{conn: conn} do
+      user = insert(:user)
+      bot = insert(:user, is_bot: true)
+
+      for opponent <- [user, bot] do
+        response =
+          conn
+          |> log_in_user(user)
+          |> get(Routes.api_v1_user_path(conn, :head_to_head, opponent.id))
+          |> json_response(200)
+
+        assert response == %{"head_to_head" => nil}
+      end
+    end
+
+    test "returns not found for a missing opponent", %{conn: conn} do
+      user = insert(:user)
+
+      conn =
+        conn
+        |> log_in_user(user)
+        |> get(Routes.api_v1_user_path(conn, :head_to_head, 0))
+
+      assert json_response(conn, 404) == %{"error" => "NOT_FOUND"}
+    end
+  end
+
   describe "rivals" do
     test "shows top rivals excluding bots", %{conn: conn} do
       user = insert(:user, %{name: "hero", github_id: 9001})
