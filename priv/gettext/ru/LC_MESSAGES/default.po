@@ -6668,8 +6668,8 @@ msgstr "Одна задача. Два редактора."
 msgid "Example battle"
 msgstr "Пример дуэли"
 
-msgid "Return the sum of two numbers."
-msgstr "Верните сумму двух чисел."
+msgid "Count the unique letters in a word."
+msgstr "Посчитайте количество уникальных букв в слове."
 
 msgid "Your opponent"
 msgstr "Ваш соперник"

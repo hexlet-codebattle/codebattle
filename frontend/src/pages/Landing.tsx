@@ -139,31 +139,31 @@ function BattlePreview() {
       </Group>
       <div className={classes.exampleTask}>
         <Text size="sm" fw={600} c="bright">
-          {t('Return the sum of two numbers.')}
+          {t('Count the unique letters in a word.')}
         </Text>
         <Text ff="monospace" size="sm" mt={6} c="dimmed">
-          solution(2, 3) → <span className={classes.num}>5</span>
+          solution("banana") → <span className={classes.num}>3</span>
         </Text>
       </div>
       <div className={classes.arena}>
         <EditorPane name={t('You')} lang="js" passed={3} winner>
-          <Typed at={0.4} length={16}>
-            <span className={classes.kw}>const</span> <span className={classes.fn}>solution</span> =
+          <Typed at={0.4} length={21}>
+            <span className={classes.kw}>const</span> <span className={classes.fn}>solution</span> = s <span className={classes.kw}>=&gt;</span>
           </Typed>
           <Typed at={1.4} length={18}>
-            {'  '}(a, b) <span className={classes.kw}>=&gt;</span> a + b;
+            {'  '}<span className={classes.kw}>new</span> Set(s).size;
           </Typed>
         </EditorPane>
         <span className={classes.vs} aria-hidden>
           VS
         </span>
         <EditorPane name={t('Your opponent')} lang="python" passed={1}>
-          <Typed at={0.8} length={19}>
-            <span className={classes.kw}>def</span> <span className={classes.fn}>solution</span>(a, b):
+          <Typed at={0.8} length={16}>
+            <span className={classes.kw}>def</span> <span className={classes.fn}>solution</span>(s):
           </Typed>
-          <Typed at={2} length={16}>
+          <Typed at={2} length={17}>
             {'    '}
-            <span className={classes.kw}>return</span> a * b
+            <span className={classes.kw}>return</span> len(s)
           </Typed>
         </EditorPane>
       </div>
