@@ -1,8 +1,8 @@
 import { Presence } from 'phoenix';
 import { create } from 'zustand';
 
-// Activity a user reports on the "main" channel; a user with several tabs is
-// shown by their most engaged one (legacy weights).
+// Activity a user reports on the "main" channel. Among game tabs choose the
+// highest game ID; otherwise prefer the most engaged activity (legacy weights).
 export type PresenceState = 'online' | 'lobby' | 'task' | 'tournament' | 'watching' | 'playing';
 
 const WEIGHTS: Record<PresenceState, number> = {
@@ -36,10 +36,19 @@ export interface OnlineUser extends PresenceUser {
 
 type RawState = Record<string, { metas: PresenceMeta[] }>;
 
+const gameId = (meta: PresenceMeta): number => Number(meta.link?.match(/^\/games\/(\d+)$/)?.[1] ?? 0);
+
 const toOnlineUsers = (raw: RawState): OnlineUser[] =>
   Object.values(raw)
     .map(({ metas }) => {
-      const top = metas.reduce((best, meta) => ((WEIGHTS[meta.state] ?? 0) > (WEIGHTS[best.state] ?? 0) ? meta : best));
+      const top = metas.reduce((best, meta) => {
+        const currentGameId = gameId(meta);
+        const bestGameId = gameId(best);
+        if (currentGameId > 0 && bestGameId > 0 && currentGameId !== bestGameId) {
+          return currentGameId > bestGameId ? meta : best;
+        }
+        return (WEIGHTS[meta.state] ?? 0) > (WEIGHTS[best.state] ?? 0) ? meta : best;
+      });
       return { ...top.user, state: top.state, link: top.link };
     })
     .sort((a, b) => a.name.localeCompare(b.name));

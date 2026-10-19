@@ -460,6 +460,7 @@ defmodule CodebattleWeb.Router do
     get("/privacy", PrivacyController, :show)
     get("/dev", DevController, :show)
     get("/h2h/:user_id/:opponent_id", HeadToHeadController, :show)
+    get("/h2h/:user_id/:opponent_id/image", HeadToHead.ImageController, :show, as: :head_to_head_image)
 
     resources("/seasons", SeasonController, only: [:index, :show])
 
