@@ -2,6 +2,8 @@ defmodule Codebattle.Application do
   @moduledoc false
   use Application
 
+  import Cachex.Spec, only: [expiration: 1]
+
   @app_dir File.cwd!()
 
   @impl true
@@ -31,6 +33,10 @@ defmodule Codebattle.Application do
         Supervisor.child_spec(
           {Cachex, name: :public_api_rate_limit_cache},
           id: :public_api_rate_limit_cache
+        ),
+        Supervisor.child_spec(
+          {Cachex, name: :anonymous_rate_limit_cache, expiration: expiration(default: to_timeout(minute: 10))},
+          id: :anonymous_rate_limit_cache
         ),
         Supervisor.child_spec(
           {Cachex, name: :email_change_rate_limit_cache},

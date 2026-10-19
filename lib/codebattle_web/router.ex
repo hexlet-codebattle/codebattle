@@ -7,6 +7,7 @@ defmodule CodebattleWeb.Router do
 
   alias CodebattleWeb.Admin.GroupTaskController
   alias CodebattleWeb.Admin.TournamentDuplicatorController
+  alias CodebattleWeb.Plugs.AnonymousRateLimit
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.MaintenanceMode
   alias CodebattleWeb.Plugs.PublicApi.RateLimit
@@ -35,6 +36,7 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_live_flash)
     plug(Inertia.Plug)
     plug(AssignCurrentUser)
+    plug(AnonymousRateLimit)
     plug(MaintenanceMode)
     plug(RescrictAccess)
     plug(:protect_from_forgery)
@@ -47,6 +49,7 @@ defmodule CodebattleWeb.Router do
     plug(:accepts, ["json"])
     plug(:fetch_session)
     plug(AssignCurrentUser)
+    plug(AnonymousRateLimit)
     plug(MaintenanceMode)
     plug(RescrictAccess)
     plug(:protect_from_forgery)

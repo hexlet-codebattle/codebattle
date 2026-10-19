@@ -52,6 +52,25 @@ config :codebattle, Oban,
     {"27 3 * * *", Codebattle.Workers.OnboardingPurgeWorker}
   ]
 
+# Shared across game/tournament IDs and guest sessions, per client IP (IPv6 /64).
+config :codebattle, :anonymous_rate_limit,
+  burst: {30, to_timeout(second: 10)},
+  reads: {180, to_timeout(minute: 1)},
+  expensive: {20, to_timeout(minute: 1)}
+
+config :codebattle, :anonymous_rate_limit_enabled, true
+
+# The app is reached through an internal ingress. Walk X-Forwarded-For from
+# the nearest hop, trusting only these networks. Use [] when serving directly.
+config :codebattle, :anonymous_rate_limit_trusted_proxies, [
+  {{127, 0, 0, 0}, 8},
+  {{10, 0, 0, 0}, 8},
+  {{172, 16, 0, 0}, 12},
+  {{192, 168, 0, 0}, 16},
+  {{0, 0, 0, 0, 0, 0, 0, 1}, 128},
+  {{0xFC00, 0, 0, 0, 0, 0, 0, 0}, 7}
+]
+
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"

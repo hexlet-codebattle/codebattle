@@ -41,6 +41,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   server: true
 
 config :codebattle, Oban, testing: :inline
+config :codebattle, :anonymous_rate_limit_enabled, false
 config :codebattle, :auth_rate_limit_enabled, false
 config :codebattle, :external_platform_adapter, Codebattle.ExternalPlatform.Fake
 config :codebattle, :external_platform_org_slug, "test-org"
