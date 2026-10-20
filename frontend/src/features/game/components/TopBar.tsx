@@ -147,6 +147,32 @@ export function TopBar({
     ? { href: `/tournaments/${game.tournament_id}`, label: t('Back to tournament'), short: t('Tournament'), icon: <IconTrophy size={15} /> }
     : { href: '/', label: t('Back to lobby'), short: t('Lobby'), icon: <IconArrowBackUp size={15} /> };
   const task = game.task;
+  const secondaryActions = (
+    <>
+      {historyHref && (
+        <Button component="a" href={historyHref} size="compact-xs" variant="default" leftSection={<IconHistory size={13} />}>
+          {t('Open history')}
+        </Button>
+      )}
+      {liveHref && (
+        <Button component="a" href={liveHref} size="compact-xs" variant="default" leftSection={<IconPlayerPlay size={13} />}>
+          {t('Back to game')}
+        </Button>
+      )}
+      <Tooltip label={t('Stream mode')}>
+        <ActionIcon component="a" href={`/games/${game.id}/stream`} size="sm" variant="default" aria-label={t('Stream mode')}>
+          <IconBroadcast size={14} />
+        </ActionIcon>
+      </Tooltip>
+      {(canManage || over) && (
+        <Tooltip label={t('Bot detection (ML)')}>
+          <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Bot detection (ML)')}>
+            <IconRobot size={14} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+    </>
+  );
 
   return (
     <header className={classes.topBar}>
@@ -226,28 +252,7 @@ export function TopBar({
         <div className={classes.topCenter}>
           {over ? <Outcome game={game} api={api} mePlayer={game.players.find((player) => player.id === me.id)} /> : <GameTimer game={game} />}
           {left && right && <HeadToHeadScore game={game} left={left} right={right} />}
-          {historyHref && (
-            <Button component="a" href={historyHref} size="compact-xs" variant="default" leftSection={<IconHistory size={13} />}>
-              {t('Open history')}
-            </Button>
-          )}
-          {liveHref && (
-            <Button component="a" href={liveHref} size="compact-xs" variant="default" leftSection={<IconPlayerPlay size={13} />}>
-              {t('Back to game')}
-            </Button>
-          )}
-          <Tooltip label={t('Stream mode')}>
-            <ActionIcon component="a" href={`/games/${game.id}/stream`} size="sm" variant="default" aria-label={t('Stream mode')}>
-              <IconBroadcast size={14} />
-            </ActionIcon>
-          </Tooltip>
-          {(canManage || over) && (
-            <Tooltip label={t('Bot detection (ML)')}>
-              <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Bot detection (ML)')}>
-                <IconRobot size={14} />
-              </ActionIcon>
-            </Tooltip>
-          )}
+          <Group gap={6} wrap="nowrap" visibleFrom="lg">{secondaryActions}</Group>
         </div>
       </div>
 
@@ -261,15 +266,15 @@ export function TopBar({
             </Indicator>
           </Tooltip>
         )}
-        <HeaderTools>
+        <HeaderTools breakpoint="lg" menuActions={secondaryActions}>
           {!me.is_guest && <FollowMenu />}
           {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
+          <Tooltip label={fullscreen ? t('Exit full screen') : t('Full screen')}>
+            <ActionIcon size="md" variant="default" onClick={() => void toggle()} aria-label={t('Full screen')}>
+              {fullscreen ? <IconMinimize size={16} /> : <IconMaximize size={16} />}
+            </ActionIcon>
+          </Tooltip>
         </HeaderTools>
-        <Tooltip label={fullscreen ? t('Exit full screen') : t('Full screen')}>
-          <ActionIcon size="md" variant="default" onClick={() => void toggle()} aria-label={t('Full screen')} visibleFrom="sm">
-            {fullscreen ? <IconMinimize size={16} /> : <IconMaximize size={16} />}
-          </ActionIcon>
-        </Tooltip>
         {/* Who you are here, as in the site header. */}
         <UserMenu compact />
       </Group>

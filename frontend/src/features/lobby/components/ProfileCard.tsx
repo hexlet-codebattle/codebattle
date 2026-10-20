@@ -45,7 +45,7 @@ export function ProfileCard({ activeGame, online, gamesCount, onCreate, onJoin }
   return (
     <Card padding="sm">
       <Stack gap="sm">
-        <Group gap="sm" wrap="nowrap">
+        <Group gap="sm" wrap="nowrap" className={classes.details}>
           <UserAvatar user={user} size={44} />
           <Stack gap={0} miw={0} flex={1}>
             <Group gap={6} wrap="nowrap" miw={0}>
@@ -73,7 +73,7 @@ export function ProfileCard({ activeGame, online, gamesCount, onCreate, onJoin }
           )}
         </Group>
 
-        <SimpleGrid cols={3} spacing={0} className={classes.stats}>
+        <SimpleGrid cols={3} spacing={0} className={`${classes.stats} ${classes.details}`}>
           <Stat label={t('Elo')} value={user.rating ?? '—'} />
           <Stat label={t('Place')} value={user.points ? `#${user.rank}` : '—'} />
           <Stat label={t('Points')} value={user.points ?? 0} />

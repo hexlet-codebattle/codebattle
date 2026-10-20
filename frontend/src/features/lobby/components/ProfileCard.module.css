@@ -1,3 +1,9 @@
+.details {
+  @media (max-width: $mantine-breakpoint-md) {
+    display: none;
+  }
+}
+
 .stats {
   background: var(--cb-sunken);
   border: 1px solid var(--cb-border);

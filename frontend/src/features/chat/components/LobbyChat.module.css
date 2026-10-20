@@ -1,9 +1,14 @@
 .card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;
+  /* Bound the whole card, including the online list on phones. */
+  height: 485px;
+  max-height: 85dvh;
+  min-height: 0;
 
   @media (max-width: $mantine-breakpoint-sm) {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
   }
 }
 
@@ -15,7 +20,6 @@
   background: var(--cb-sunken);
 
   @media (max-width: $mantine-breakpoint-sm) {
-    max-height: 280px;
     border-left: 0;
     border-top: 1px solid var(--cb-border);
   }

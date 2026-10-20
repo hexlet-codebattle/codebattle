@@ -75,6 +75,8 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
   const [chatRoom, setChatRoom] = useState<number | null>(null);
   const theme = useMantineTheme();
   const showMiniChat = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
+  // Standings and spectators follow the editors when the page stacks vertically.
+  const stacked = useMediaQuery(`(max-width: ${theme.breakpoints.md})`);
   // The open strip shows the chat too, so what it shows counts as read.
   const miniChat =
     chat && brief && showMiniChat ? (
@@ -153,9 +155,9 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
             testsOf={leftId}
             opponentId={right?.id ?? null}
             aside={
-              aside || miniChat ? (
+              (!stacked && aside) || miniChat ? (
                 <>
-                  {aside}
+                  {!stacked && aside}
                   {miniChat}
                 </>
               ) : null
@@ -167,6 +169,7 @@ function RoomBody({ game, api, history = false, aside, chat, footer, editable, a
           {left && <EditorPane player={left} editable={editable} api={api} allowClipboard={allowClipboard} onShowTests={showTests} withSettings />}
           {right && <EditorPane player={right} editable={false} api={api} allowClipboard={allowClipboard} />}
         </main>
+        {stacked && aside}
         {footer}
       </div>
 

@@ -1,4 +1,5 @@
-import { ActionIcon, Alert, Button, Center, CopyButton, Divider, Group, Modal, Stack, Text, TextInput, Title, Tooltip } from '@mantine/core';
+import { ActionIcon, Alert, Button, Center, Collapse, CopyButton, Divider, Group, Modal, Stack, Text, TextInput, Title, Tooltip, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconAlertTriangle,
   IconArrowRight,
@@ -18,7 +19,7 @@ import {
   IconTrash,
 } from '@tabler/icons-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { levelLabel } from '@/features/lobby/format';
@@ -92,6 +93,10 @@ export function ModeratorControls({ tournament, api }: ModeratorControlsProps) {
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [detailsOpened, setDetailsOpened] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [controlsOpened, setControlsOpened] = useState(false);
+  const controlsId = useId();
+  const theme = useMantineTheme();
+  const compact = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const { state, break_state: breakState, is_live: isLive } = tournament;
   const disabled = api.adminStatus !== 'joined';
@@ -140,181 +145,194 @@ export function ModeratorControls({ tournament, api }: ModeratorControlsProps) {
 
   return (
     <>
-      <Stack gap="xs">
-        <Group gap={6} aria-label={t('Tournament flow')}>
-          {canStartRound && (
-            <Button
-              size="compact-sm"
-              color="green"
-              leftSection={<IconArrowRight size={14} />}
-              disabled={disabled}
-              onClick={() => setConfirmation(startConfirmation(false))}
-            >
-              {t('Start Round')}
-            </Button>
-          )}
-          {canFinishRound && (
-            <Button
-              size="compact-sm"
-              color="green"
-              leftSection={<IconFlag size={14} />}
-              disabled={disabled}
-              onClick={() => send('tournament:finish_round')}
-            >
-              {t('Finish Round')}
-            </Button>
-          )}
-          {canFinishTournament && (
-            <Button
-              size="compact-sm"
-              variant="default"
-              leftSection={<IconPlayerStop size={14} />}
-              disabled={disabled}
-              onClick={() =>
-                setConfirmation({
-                  title: t('Finish tournament'),
-                  heading: t('Are you sure you want to finish this tournament?'),
-                  text: t('This will end the tournament and finalize all results.'),
-                  confirmLabel: t('Finish tournament'),
-                  color: 'red',
-                  event: 'tournament:finish',
-                })
-              }
-            >
-              {t('Finish Tournament')}
-            </Button>
-          )}
-          {canRestart ? (
-            <Button
-              size="compact-sm"
-              variant="default"
-              leftSection={<IconRefresh size={14} />}
-              disabled={disabled}
-              onClick={() =>
-                setConfirmation({
-                  title: t('Reset tournament progress'),
-                  heading: t('Are you sure you want to reset this tournament?'),
-                  text: t('This action is destructive. All tournament progress, matches, and results will be lost.'),
-                  confirmLabel: t('Reset tournament'),
-                  color: 'red',
-                  event: 'tournament:restart',
-                })
-              }
-            >
-              {t('Restart')}
-            </Button>
-          ) : (
-            <Button
-              size="compact-sm"
-              color="green"
-              leftSection={<IconPlayerPlay size={14} />}
-              disabled={!canStart || disabled}
-              onClick={() => setConfirmation(startConfirmation(true))}
-            >
-              {t('Start')}
-            </Button>
-          )}
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconRotateClockwise size={14} />}
-            disabled={disabled}
-            onClick={() =>
-              setConfirmation({
-                title: t('Retry tournament'),
-                heading: t('Are you sure you want to retry this tournament?'),
-                text: t('This will clear tournament games and results, then restore the current player roster.'),
-                confirmLabel: t('Retry tournament'),
-                color: 'red',
-                event: 'tournament:retry',
-              })
-            }
-          >
-            {t('Retry')}
-          </Button>
-          <Button
-            size="compact-sm"
-            variant="default"
-            leftSection={<IconEye size={14} />}
-            disabled={disabled || !hideResults}
-            onClick={() => send('tournament:toggle_show_results')}
-          >
-            {t('Show Results')}
-          </Button>
-          <Button
-            size="compact-sm"
-            color="red"
-            leftSection={<IconTrash size={14} />}
-            disabled={disabled}
-            onClick={() => send('tournament:cancel')}
-          >
-            {t('Cancel')}
-          </Button>
-          <Divider orientation="vertical" mx={2} />
-          <Tooltip label={t('Edit')}>
-            <ActionIcon component="a" href={`/tournaments/${tournament.id}/edit`} variant="default" size={30} aria-label={t('Edit')}>
-              <IconPencil size={15} />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label={t('Tournament details')}>
-            <ActionIcon variant="default" size={30} onClick={() => setDetailsOpened(true)} aria-label={t('Tournament details')}>
-              <IconSettings size={15} />
-            </ActionIcon>
-          </Tooltip>
-          {tournament.access_type === 'token' && (
-            <Button
-              size="compact-sm"
-              variant="default"
-              leftSection={<IconLockOpen size={14} />}
-              disabled={disabled}
-              onClick={() => send('tournament:open_up')}
-            >
-              {t('Open up')}
-            </Button>
-          )}
-        </Group>
-
-        {accessUrl && (
-          <Stack gap="xs" pt="xs" style={{ borderTop: '1px solid var(--cb-border)' }}>
-            <Group gap={6} wrap="nowrap">
-              <TextInput size="compact-sm" readOnly value={accessUrl} leftSection={<IconKey size={14} />} aria-label={t('Access token')} style={{ flex: 1 }} />
-              <CopyButton value={accessUrl}>
-                {({ copied, copy }) => (
-                  <Button
-                    size="compact-sm"
-                    variant="default"
-                    leftSection={copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
-                    disabled={!isLive || disabled}
-                    onClick={copy}
-                  >
-                    {copied ? t('Copied') : t('Copy')}
-                  </Button>
-                )}
-              </CopyButton>
+      <Button
+        hiddenFrom="sm"
+        size="compact-sm"
+        variant="default"
+        leftSection={<IconSettings size={14} />}
+        onClick={() => setControlsOpened((opened) => !opened)}
+        aria-expanded={controlsOpened}
+        aria-controls={controlsId}
+      >
+        {t('Tournament flow')}
+      </Button>
+      <Collapse expanded={!compact || controlsOpened} id={controlsId}>
+        <Stack gap="xs">
+          <Group gap={6} aria-label={t('Tournament flow')}>
+            {canStartRound && (
+              <Button
+                size="compact-sm"
+                color="green"
+                leftSection={<IconArrowRight size={14} />}
+                disabled={disabled}
+                onClick={() => setConfirmation(startConfirmation(false))}
+              >
+                {t('Start Round')}
+              </Button>
+            )}
+            {canFinishRound && (
+              <Button
+                size="compact-sm"
+                color="green"
+                leftSection={<IconFlag size={14} />}
+                disabled={disabled}
+                onClick={() => send('tournament:finish_round')}
+              >
+                {t('Finish Round')}
+              </Button>
+            )}
+            {canFinishTournament && (
               <Button
                 size="compact-sm"
                 variant="default"
-                leftSection={<IconQrcode size={14} />}
-                onClick={() => setShowQr((value) => !value)}
-                aria-expanded={showQr}
+                leftSection={<IconPlayerStop size={14} />}
+                disabled={disabled}
+                onClick={() =>
+                  setConfirmation({
+                    title: t('Finish tournament'),
+                    heading: t('Are you sure you want to finish this tournament?'),
+                    text: t('This will end the tournament and finalize all results.'),
+                    confirmLabel: t('Finish tournament'),
+                    color: 'red',
+                    event: 'tournament:finish',
+                  })
+                }
               >
-                {showQr ? t('Hide QR') : t('Show QR')}
+                {t('Finish Tournament')}
               </Button>
-            </Group>
-            {showQr && (
-              <Center p="sm" bg="white" style={{ borderRadius: 'var(--cb-radius)', alignSelf: 'center' }}>
-                <QRCodeSVG value={accessUrl} size={280} />
-              </Center>
             )}
-          </Stack>
-        )}
+            {canRestart ? (
+              <Button
+                size="compact-sm"
+                variant="default"
+                leftSection={<IconRefresh size={14} />}
+                disabled={disabled}
+                onClick={() =>
+                  setConfirmation({
+                    title: t('Reset tournament progress'),
+                    heading: t('Are you sure you want to reset this tournament?'),
+                    text: t('This action is destructive. All tournament progress, matches, and results will be lost.'),
+                    confirmLabel: t('Reset tournament'),
+                    color: 'red',
+                    event: 'tournament:restart',
+                  })
+                }
+              >
+                {t('Restart')}
+              </Button>
+            ) : (
+              <Button
+                size="compact-sm"
+                color="green"
+                leftSection={<IconPlayerPlay size={14} />}
+                disabled={!canStart || disabled}
+                onClick={() => setConfirmation(startConfirmation(true))}
+              >
+                {t('Start')}
+              </Button>
+            )}
+            <Button
+              size="compact-sm"
+              variant="default"
+              leftSection={<IconRotateClockwise size={14} />}
+              disabled={disabled}
+              onClick={() =>
+                setConfirmation({
+                  title: t('Retry tournament'),
+                  heading: t('Are you sure you want to retry this tournament?'),
+                  text: t('This will clear tournament games and results, then restore the current player roster.'),
+                  confirmLabel: t('Retry tournament'),
+                  color: 'red',
+                  event: 'tournament:retry',
+                })
+              }
+            >
+              {t('Retry')}
+            </Button>
+            <Button
+              size="compact-sm"
+              variant="default"
+              leftSection={<IconEye size={14} />}
+              disabled={disabled || !hideResults}
+              onClick={() => send('tournament:toggle_show_results')}
+            >
+              {t('Show Results')}
+            </Button>
+            <Button
+              size="compact-sm"
+              color="red"
+              leftSection={<IconTrash size={14} />}
+              disabled={disabled}
+              onClick={() => send('tournament:cancel')}
+            >
+              {t('Cancel')}
+            </Button>
+            <Divider orientation="vertical" mx={2} />
+            <Tooltip label={t('Edit')}>
+              <ActionIcon component="a" href={`/tournaments/${tournament.id}/edit`} variant="default" size={30} aria-label={t('Edit')}>
+                <IconPencil size={15} />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label={t('Tournament details')}>
+              <ActionIcon variant="default" size={30} onClick={() => setDetailsOpened(true)} aria-label={t('Tournament details')}>
+                <IconSettings size={15} />
+              </ActionIcon>
+            </Tooltip>
+            {tournament.access_type === 'token' && (
+              <Button
+                size="compact-sm"
+                variant="default"
+                leftSection={<IconLockOpen size={14} />}
+                disabled={disabled}
+                onClick={() => send('tournament:open_up')}
+              >
+                {t('Open up')}
+              </Button>
+            )}
+          </Group>
 
-        {!isLive && (
-          <Alert color="yellow" icon={<IconAlertTriangle size={16} />} p="xs">
-            {t('Tournament process is dead. Click Restart to make it live again so users can join.')}
-          </Alert>
-        )}
-      </Stack>
+          {accessUrl && (
+            <Stack gap="xs" pt="xs" style={{ borderTop: '1px solid var(--cb-border)' }}>
+              <Group gap={6} wrap="nowrap">
+                <TextInput size="compact-sm" readOnly value={accessUrl} leftSection={<IconKey size={14} />} aria-label={t('Access token')} style={{ flex: 1 }} />
+                <CopyButton value={accessUrl}>
+                  {({ copied, copy }) => (
+                    <Button
+                      size="compact-sm"
+                      variant="default"
+                      leftSection={copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+                      disabled={!isLive || disabled}
+                      onClick={copy}
+                    >
+                      {copied ? t('Copied') : t('Copy')}
+                    </Button>
+                  )}
+                </CopyButton>
+                <Button
+                  size="compact-sm"
+                  variant="default"
+                  leftSection={<IconQrcode size={14} />}
+                  onClick={() => setShowQr((value) => !value)}
+                  aria-expanded={showQr}
+                >
+                  {showQr ? t('Hide QR') : t('Show QR')}
+                </Button>
+              </Group>
+              {showQr && (
+                <Center p="sm" bg="white" style={{ borderRadius: 'var(--cb-radius)', alignSelf: 'center' }}>
+                  <QRCodeSVG value={accessUrl} size={280} />
+                </Center>
+              )}
+            </Stack>
+          )}
+
+          {!isLive && (
+            <Alert color="yellow" icon={<IconAlertTriangle size={16} />} p="xs">
+              {t('Tournament process is dead. Click Restart to make it live again so users can join.')}
+            </Alert>
+          )}
+        </Stack>
+      </Collapse>
 
       <ConfirmModal confirmation={confirmation} onClose={() => setConfirmation(null)} onConfirm={send} />
       <DetailsModal tournament={tournament} opened={detailsOpened} onClose={() => setDetailsOpened(false)} />

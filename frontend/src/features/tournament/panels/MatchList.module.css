@@ -4,6 +4,7 @@
  * score lines up; the two sides share the remaining width equally.
  */
 .list {
+  container-type: inline-size;
   border: 1px solid var(--cb-border);
   border-radius: var(--cb-radius);
   overflow: hidden;
@@ -30,13 +31,15 @@
     background: color-mix(in srgb, var(--mantine-color-red-6) 6%, transparent);
   }
 
-  /* Narrow panels: timing goes under the score, the action stays on the right. */
-  @media (max-width: $mantine-breakpoint-sm) {
-    grid-template-columns: 28px minmax(0, 1fr) 84px minmax(0, 1fr) auto;
+  /* Use the panel width: this card can be narrow even on a desktop. */
+  @container (max-width: 48rem) {
+    grid-template-columns: 24px minmax(0, 1fr) 64px minmax(0, 1fr);
     grid-template-areas:
-      'badge me score opp action'
-      'badge task task meta action';
-    row-gap: 4px;
+      'badge me score opp'
+      'task task action action'
+      'meta meta meta meta';
+    gap: 8px;
+    padding: 10px;
   }
 }
 
@@ -143,6 +146,20 @@
   gap: 6px;
   max-width: 100%;
   min-width: 0;
+
+  & > * {
+    min-width: 0;
+  }
+
+  & :global(.mantine-Text-root) {
+    display: block;
+    max-width: 100%;
+  }
+
+  & > svg,
+  & > img {
+    flex-shrink: 0;
+  }
 }
 
 /* Second line wraps inside its column instead of spilling into the next one. */
@@ -276,9 +293,11 @@
   color: var(--cb-text-muted);
   white-space: nowrap;
 
-  @media (max-width: $mantine-breakpoint-sm) {
+  @container (max-width: 48rem) {
     flex-direction: row;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    white-space: normal;
     gap: 10px;
   }
 }

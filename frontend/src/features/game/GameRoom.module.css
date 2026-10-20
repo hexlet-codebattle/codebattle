@@ -27,9 +27,11 @@
   background: var(--cb-panel);
   border-bottom: 1px solid var(--cb-border);
 
-  @media (max-width: $mantine-breakpoint-lg) {
+  /* Landscape phones keep one row; only narrower screens need a second. */
+  @media (max-width: $mantine-breakpoint-sm) {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
+    gap: 4px 6px;
+    padding: 4px 6px;
 
     & .topMiddle {
       grid-column: 1 / -1;
@@ -37,8 +39,8 @@
     }
 
     & .topCenter {
-      flex: 1 1 200px;
-      justify-content: flex-start;
+      flex: 1;
+      justify-content: flex-end;
     }
 
     & .topRight {
@@ -63,10 +65,21 @@
   align-items: center;
   gap: 8px 12px;
   min-width: 0;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
 }
 
 .topTasks {
   flex: none;
+
+  @media (min-width: $mantine-breakpoint-sm) and (max-width: $mantine-breakpoint-lg) {
+    & :global(.mantine-Text-root) {
+      display: none;
+    }
+  }
 }
 
 .topCenter {
@@ -77,6 +90,25 @@
   justify-content: center;
   gap: 12px;
   min-width: 0;
+
+  @media (max-width: $mantine-breakpoint-lg) {
+    gap: 6px;
+  }
+}
+
+@media (max-width: $mantine-breakpoint-sm) {
+  .topCenter > .timerBar {
+    width: clamp(96px, 28vw, 150px);
+    flex-shrink: 0;
+  }
+
+  .topCenter .h2h {
+    display: none;
+  }
+
+  .topTasks .stripToggle :global(.mantine-Button-section)[data-position='left'] {
+    margin-inline-end: 0;
+  }
 }
 
 .topRight {

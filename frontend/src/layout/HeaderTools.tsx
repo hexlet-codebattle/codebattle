@@ -8,7 +8,7 @@ import { LocaleSwitch } from './LocaleSwitch';
 import { SoundToggle } from './SoundToggle';
 
 /** Keep secondary controls available without squeezing the navigation on phones. */
-export function HeaderTools({ children }: { children?: ReactNode }) {
+export function HeaderTools({ children, menuActions, breakpoint = 'md' }: { children?: ReactNode; menuActions?: ReactNode; breakpoint?: 'md' | 'lg' }) {
   const { t } = useTranslation();
   const controls = (
     <>
@@ -21,12 +21,12 @@ export function HeaderTools({ children }: { children?: ReactNode }) {
 
   return (
     <>
-      <Group gap={6} wrap="nowrap" visibleFrom="md">
+      <Group gap={6} wrap="nowrap" visibleFrom={breakpoint}>
         {controls}
       </Group>
       <Popover position="bottom-end" width={280} withArrow>
         <Popover.Target>
-          <ActionIcon hiddenFrom="md" size="lg" variant="default" aria-label={t('Settings')}>
+          <ActionIcon hiddenFrom={breakpoint} size="lg" variant="default" aria-label={t('Settings')}>
             <IconAdjustments size={18} />
           </ActionIcon>
         </Popover.Target>
@@ -35,6 +35,7 @@ export function HeaderTools({ children }: { children?: ReactNode }) {
             {t('Settings')}
           </Text>
           <Group gap="sm">
+            {menuActions}
             {controls}
           </Group>
         </Popover.Dropdown>

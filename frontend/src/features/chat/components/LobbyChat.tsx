@@ -19,7 +19,7 @@ interface LobbyChatProps {
 export const LobbyChat = forwardRef<HTMLDivElement, LobbyChatProps>(function LobbyChat(props, ref) {
   return (
     <Card padding={0} ref={ref} className={classes.card}>
-      <ChatPanel {...props} height={380} />
+      <ChatPanel {...props} height="fill" />
       <aside className={classes.online}>
         <OnlinePlayers onDirectMessage={props.onDirectMessage} />
       </aside>
