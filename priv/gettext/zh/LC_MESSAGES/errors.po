@@ -1,0 +1,88 @@
+# Initial machine-assisted translations. Core interface terminology reviewed in context.
+msgid ""
+msgstr ""
+"Project-Id-Version: Codebattle\n"
+"Language: zh\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "can't be blank"
+msgstr "不能为空"
+
+msgid "has already been taken"
+msgstr "已经被采取了"
+
+msgid "is invalid"
+msgstr "无效"
+
+msgid "has invalid format"
+msgstr "格式无效"
+
+msgid "has an invalid entry"
+msgstr "有无效条目"
+
+msgid "is reserved"
+msgstr "已保留"
+
+msgid "does not match confirmation"
+msgstr "不匹配确认"
+
+msgid "is still associated to this entry"
+msgstr "仍与此条目相关联"
+
+msgid "are still associated to this entry"
+msgstr "仍然与此条目相关联"
+
+msgid "should be %{count} character(s)"
+msgid_plural "should be %{count} character(s)"
+msgstr[0] "应该是 %{count} 字符"
+
+msgid "should have %{count} item(s)"
+msgid_plural "should have %{count} item(s)"
+msgstr[0] "应该有 %{count} 项目"
+
+msgid "should be at least %{count} character(s)"
+msgid_plural "should be at least %{count} character(s)"
+msgstr[0] "应至少为 %{count} 个字符"
+
+msgid "should have at least %{count} item(s)"
+msgid_plural "should have at least %{count} item(s)"
+msgstr[0] "应至少有 %{count} 项"
+
+msgid "should be at most %{count} character(s)"
+msgid_plural "should be at most %{count} character(s)"
+msgstr[0] "最多应为 %{count} 个字符"
+
+msgid "should have at most %{count} item(s)"
+msgid_plural "should have at most %{count} item(s)"
+msgstr[0] "最多应有 %{count} 项"
+
+msgid "must be less than %{number}"
+msgstr "必须小于 %{number}"
+
+msgid "must be greater than %{number}"
+msgstr "必须大于 %{number}"
+
+msgid "must be less than or equal to %{number}"
+msgstr "必须小于或等于 %{number}"
+
+msgid "must be greater than or equal to %{number}"
+msgstr "必须大于或等于 %{number}"
+
+msgid "must be equal to %{number}"
+msgstr "必须等于 %{number}"
+
+msgid "You are already in game"
+msgstr "您已经在游戏中了"
+
+msgid "You are not player of this game"
+msgstr "您不是该游戏的玩家"
+
+msgid "Game is already playing"
+msgstr "游戏已经开始"
+
+msgid "You cannot check result after win"
+msgstr "获胜后无法查看结果"
+
+msgid "Game is over"
+msgstr "游戏结束了"

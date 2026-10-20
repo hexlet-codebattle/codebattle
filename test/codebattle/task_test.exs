@@ -87,6 +87,24 @@ defmodule Codebattle.TaskTest do
       )
     end
 
+    test "task imports preserve translations omitted by the source and accept updates" do
+      params = task_params(%{description_es: "Suma", description_zh: "求和"})
+      task = Task.upsert!(params)
+      assert task.description_es == "Suma"
+      assert task.description_zh == "求和"
+
+      params = Map.drop(params, [:description_es, :description_zh])
+      Task.upsert!(params)
+      task = Task.get!(task.id)
+      assert task.description_es == "Suma"
+      assert task.description_zh == "求和"
+
+      Task.upsert!(Map.put(params, :description_es, "Suma dos números"))
+      task = Task.get!(task.id)
+      assert task.description_es == "Suma dos números"
+      assert task.description_zh == "求和"
+    end
+
     test "a new task without timing gets its level's defaults" do
       for {level, base_score, time_to_solve_sec} <- [
             {"elementary", 60, 120},

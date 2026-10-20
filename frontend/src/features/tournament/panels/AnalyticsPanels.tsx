@@ -3,12 +3,12 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { TaskPanel } from '@/features/game/components/TaskPanel';
 import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
 import { formatSeconds } from '@/features/tasks/shared';
 import { LangIcon } from '@/shared/LangIcon';
 import { useSharedProps } from '@/shared/useSharedProps';
-import { Markdown } from '@/shared/Markdown';
 
 import { useTournamentStore } from '../store';
 import type { Tournament } from '../types';
@@ -396,6 +396,8 @@ interface TaskInfo {
   name: string;
   description_en: string | null;
   description_ru: string | null;
+  description_es?: string | null;
+  description_zh?: string | null;
   time_to_solve_sec: number | null;
   base_score: number | null;
 }
@@ -553,10 +555,7 @@ export function TaskAdvancedPanel({
       {showDescription ? (
         <Paper withBorder p="sm" radius="md">
           <ScrollArea.Autosize mah={400}>
-            <Stack gap="md">
-              {task?.description_en && <Markdown>{task.description_en}</Markdown>}
-              {task?.description_ru && <Markdown>{task.description_ru}</Markdown>}
-            </Stack>
+            {task && <TaskPanel task={{ ...task, examples: null }} hideExamples hideContribution />}
           </ScrollArea.Autosize>
         </Paper>
       ) : top.rows == null ? (

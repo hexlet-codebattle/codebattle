@@ -1,0 +1,7105 @@
+# Initial machine-assisted translations. Core interface terminology reviewed in context.
+msgid ""
+msgstr ""
+"Project-Id-Version: Codebattle\n"
+"Language: zh\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Welcome to %{name}!"
+msgstr "欢迎来到 %{name}！"
+
+msgid "%{name}: game for programmers."
+msgstr "%{name}：程序员的游戏。"
+
+msgid "Create a game"
+msgstr "创建一个游戏"
+
+msgid "List of games"
+msgstr "游戏列表"
+
+msgid "Lobby chat"
+msgstr "大厅聊天"
+
+msgid "Type a message..."
+msgstr "输入消息..."
+
+msgid "Online users"
+msgstr "在线用户"
+
+msgid "Logout"
+msgstr "退出"
+
+msgid "Sign in with %{name}"
+msgstr "使用 %{name} 登录"
+
+msgid "Listing games"
+msgstr "列出游戏"
+
+msgid "Total: "
+msgstr "总计："
+
+msgid "Users rating: "
+msgstr "用户评价："
+
+msgid "id: %{id}, state: %{state}, players: %{players}  "
+msgstr "ID：%{id}，州：%{state}，玩家：%{players}"
+
+msgid "Join"
+msgstr "加入"
+
+msgid "Show"
+msgstr "显示"
+
+msgid "Main page"
+msgstr "主页"
+
+msgid "Game: %{id}"
+msgstr "游戏：%{id}"
+
+msgid "State: %{state}"
+msgstr "州：%{state}"
+
+msgid "The winner is: %{name}"
+msgstr "获胜者是：%{name}"
+
+msgid "Players"
+msgstr "玩家"
+
+msgid "Check result"
+msgstr "检查结果"
+
+msgid "Waiting for an opponent"
+msgstr "等待对手"
+
+msgid "Back to the list of games"
+msgstr "返回游戏列表"
+
+msgid "Game chat"
+msgstr "游戏聊天"
+
+msgid "%{index}) name: %{name}, rating: %{rating}"
+msgstr "%{index}) 姓名：%{name}，评级：%{rating}"
+
+msgid "You have been logged out!"
+msgstr "您已退出！"
+
+msgid "Failed to authenticate."
+msgstr "身份验证失败。"
+
+msgid ""
+"You are already in a game. Finish or cancel your current game before "
+"joining another one."
+msgstr "你已经在游戏中了。在加入另一游戏之前，请完成或取消当前游戏。"
+
+msgid "Successfully authenticated"
+msgstr "认证成功"
+
+msgid "Game not found"
+msgstr "找不到游戏"
+
+msgid "Game has been created"
+msgstr "游戏已创建"
+
+msgid "Yay, you won the game!"
+msgstr "耶，你赢了比赛！"
+
+msgid "You lost the game"
+msgstr "你输了比赛"
+
+msgid "Page not found"
+msgstr "找不到页面"
+
+msgid "Internal server error"
+msgstr "服务器内部错误"
+
+msgid "You must be logged in to access that page"
+msgstr "您必须登录才能访问该页面"
+
+msgid "joined to"
+msgstr "加入到"
+
+msgid "left"
+msgstr "左"
+
+msgid "channel"
+msgstr "频道"
+
+msgid "Game over"
+msgstr "对局结束"
+
+msgid "Game status"
+msgstr "游戏状态"
+
+msgid "Join the game"
+msgstr "加入游戏"
+
+msgid "Sign Out"
+msgstr "退出"
+
+msgid "Sign up"
+msgstr "注册"
+
+msgid "Successfully authenticated."
+msgstr "认证成功。"
+
+msgid "Users rating"
+msgstr "用户评价"
+
+msgid "You are in a different game"
+msgstr "你在一个不同的游戏中"
+
+msgid "%{name} gave up!"
+msgstr "%{name} 放弃了！"
+
+msgid "won the game!"
+msgstr "赢得了比赛！"
+
+msgid "Hexlet"
+msgstr "Hexlet"
+
+msgid "My Profile"
+msgstr "我的个人资料"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Sound"
+msgstr "声音"
+
+msgid "Master sound"
+msgstr "主音"
+
+msgid "Profile"
+msgstr "公司简介"
+
+msgid "Manage your public identity and coding preferences."
+msgstr "管理您的公共身份和编码偏好。"
+
+msgid "Sound settings"
+msgstr "声音设置"
+
+msgid "Set the volume of game and tournament sounds."
+msgstr "设置游戏和锦标赛声音的音量。"
+
+msgid "Game sound level"
+msgstr "对局音量"
+
+msgid "Tournament sound level"
+msgstr "比赛音量"
+
+msgid "Save changes"
+msgstr "保存更改"
+
+msgid "Update profile"
+msgstr "更新个人资料"
+
+msgid "Manage your public identity."
+msgstr "管理您的公共身份。"
+
+msgid "Coding preferences"
+msgstr "编码偏好"
+
+msgid "Weapon and locale changes are saved automatically."
+msgstr "武器和区域设置更改会自动保存。"
+
+msgid "Manage your account, preferences, and active sessions."
+msgstr "管理您的帐户、首选项和活动会话。"
+
+msgid "Connected accounts"
+msgstr "关联账户"
+
+msgid "Manage the services you use to sign in."
+msgstr "管理您用于登录的服务。"
+
+msgid "Review and remove signed-in sessions."
+msgstr "查看并删除已登录的会话。"
+
+msgid "On"
+msgstr "开"
+
+msgid "Off"
+msgstr "关闭"
+
+msgid "Mute sound"
+msgstr "静音"
+
+msgid "Turn sound on"
+msgstr "打开声音"
+
+msgid "New private message"
+msgstr "新私信"
+
+msgid "%{name} mentioned you"
+msgstr "%{name} 提到了你"
+
+msgid "Tg#codebattle"
+msgstr "Tg#codebattle"
+
+msgid "SourceCode"
+msgstr "源代码"
+
+msgid "Task: "
+msgstr "题目："
+
+msgid "Found a mistake? Send a Pull Request on GitHub"
+msgstr "发现错误了吗？在 GitHub 上发送 Pull 请求"
+
+msgid "Suggest a fix"
+msgstr "建议修复"
+
+msgid "Run your code!"
+msgstr "运行你的代码！"
+
+msgid "Solution cannot be executed"
+msgstr "解法无法执行"
+
+msgid "Tests failed"
+msgstr "测试失败"
+
+msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr "您从 %{assertsCount} 断言传递了 %{successCount} 。 (%{percent}%)"
+
+msgid "Yay! All tests passed!"
+msgstr "耶！所有测试都通过了！"
+
+msgid "Success Test Message"
+msgstr "成功测试消息"
+
+msgid "Failure Test Message"
+msgstr "故障测试消息"
+
+msgid "Win Game Message"
+msgstr "赢得游戏消息"
+
+msgid "Win Training Message"
+msgstr "赢得培训留言"
+
+msgid "Lose Game Message"
+msgstr "输掉游戏消息"
+
+msgid "Press Check solution or Give up"
+msgstr "按“检查解法”或“放弃”"
+
+msgid "Give up"
+msgstr "放弃"
+
+msgid "Сheck"
+msgstr "检查"
+
+msgid "Сheck status:"
+msgstr "检查状态："
+
+msgid "execution time: %{time} ms"
+msgstr "执行时间： %{time} 毫秒"
+
+msgid "Receive:"
+msgstr "接收："
+
+msgid "Expected:"
+msgstr "预计："
+
+msgid "Arguments:"
+msgstr "论据："
+
+msgid "Oops"
+msgstr "哎呀"
+
+msgid "Sort by:"
+msgstr "排序依据："
+
+msgid "Rank"
+msgstr "排名"
+
+msgid "Rating"
+msgstr "Elo 等级分"
+
+msgid "Games played"
+msgstr "已进行的对局"
+
+msgid "Joined"
+msgstr "已加入"
+
+msgid "Codebattle Intro"
+msgstr "Codebattle简介"
+
+msgid "Codebattle Intro Title"
+msgstr "Codebattle 简介标题"
+
+msgid "Start simple battle"
+msgstr "开始简单的战斗"
+
+msgid "Start battle"
+msgstr "开始战斗"
+
+msgid "Try again"
+msgstr "再试一次"
+
+msgid "Back to Home"
+msgstr "返回首页"
+
+msgid "%{name} (bot)"
+msgstr "%{name}（机器人）"
+
+msgid "%{name} (you)"
+msgstr "%{name}（你）"
+
+msgid "Fight"
+msgstr "战斗"
+
+msgid "Oh no, the time is out! Both players lost ;("
+msgstr "哦不，时间到了！双方都输了;("
+
+msgid "Timeout - no timeout"
+msgstr "超时-无超时"
+
+msgid "Timeout 60 seconds"
+msgstr "超时60秒"
+
+msgid "Timeout 120 seconds"
+msgstr "超时120秒"
+
+msgid "Timeout 180 seconds"
+msgstr "超时180秒"
+
+msgid "Timeout 300 seconds"
+msgstr "超时300秒"
+
+msgid "Timeout 480 seconds"
+msgstr "超时 480 秒"
+
+msgid "Timeout 780 seconds"
+msgstr "超时 780 秒"
+
+msgid "Timeout 1260 seconds"
+msgstr "超时 1260 秒"
+
+msgid "Timeout 2040 seconds"
+msgstr "超时 2040 秒"
+
+msgid "Timeout 3300 seconds"
+msgstr "超时3300秒"
+
+msgid "random task (%{total} available)"
+msgstr "随机题目（%{total} 可用）"
+
+msgid "Settings changed successfully"
+msgstr "设置更改成功"
+
+msgid "Something went wrong"
+msgstr "出了点问题"
+
+msgid "arena_task_stats"
+msgid_plural "%{count} tasks left"
+msgstr[0] "剩余 %{count} 道题目"
+
+msgid "Active match"
+msgstr "活跃比赛"
+
+msgid "Participant Dashboard"
+msgstr "参与者仪表板"
+
+msgid "Login"
+msgstr "登录"
+
+msgid "University"
+msgstr "大学"
+
+msgid "Player"
+msgstr "玩家"
+
+msgid "Join this tournament to take part in the matches."
+msgstr "参加本次锦标赛即可参加比赛。"
+
+msgid "You are registered for this tournament. You can leave before it starts."
+msgstr "您已注册参加本次锦标赛。你可以在活动开始前离开。"
+
+msgid "Page"
+msgstr "页面"
+
+msgid "of"
+msgstr "的"
+
+msgid "Category"
+msgstr "类别"
+
+msgid "Overall Standing"
+msgstr "整体排名"
+
+msgid "Category Standing"
+msgstr "类别排名"
+
+msgid "Qualification"
+msgstr "资质"
+
+msgid "Semifinal Qualification"
+msgstr "半决赛资格"
+
+msgid "Semifinal"
+msgstr "半决赛"
+
+msgid "Final Qualification"
+msgstr "最终资格"
+
+msgid "Final"
+msgstr "决赛"
+
+msgid "Failed"
+msgstr "失败"
+
+msgid "Go to"
+msgstr "前往"
+
+msgid ""
+"Your tournament access is temporarily restricted due to a fair-play review. "
+"You cannot be paired into new games right now. If you believe this is a "
+"mistake, please contact tournament support."
+msgstr "由于公平竞赛审查，您的锦标赛访问权限暂时受到限制。您现在无法配对进入新游戏。如果您认为这是一个错误，请联系锦标赛支持人员。"
+
+msgid "Cheaters Panel"
+msgstr "作弊者小组"
+
+msgid "Cheaters"
+msgstr "骗子"
+
+msgid "No cheaters marked yet"
+msgstr "尚未标记作弊者"
+
+msgid "All reports"
+msgstr "所有报告"
+
+msgid "No reports yet"
+msgstr "还没有报告"
+
+msgid "Unban"
+msgstr "解禁"
+
+msgid "Grand Slam"
+msgstr "大满贯"
+
+msgid "Masters"
+msgstr "大师赛"
+
+msgid "Elite"
+msgstr "精英"
+
+msgid "Pro"
+msgstr "专业版"
+
+msgid "Challenger"
+msgstr "挑战者"
+
+msgid "Rookie"
+msgstr "新手"
+
+msgid "Sort by %{label}"
+msgstr "按 %{label} 排序"
+
+msgid "of %{count} players"
+msgstr "%{count} 玩家"
+
+msgid "Leaderboard pagination"
+msgstr "排行榜分页"
+
+msgid "Search player"
+msgstr "搜索玩家"
+
+msgid "Search by name..."
+msgstr "按名称搜索..."
+
+msgid "Filter by clan"
+msgstr "按战队过滤"
+
+msgid "All Clans"
+msgstr "所有战队"
+
+msgid "Filter by language"
+msgstr "按语言过滤"
+
+msgid "All Languages"
+msgstr "所有语言"
+
+msgid "Clear Filters"
+msgstr "清除过滤器"
+
+msgid "View player insights"
+msgstr "查看玩家见解"
+
+msgid "Stats"
+msgstr "统计数据"
+
+msgid "No results yet"
+msgstr "还没有结果"
+
+msgid "No players match your filters"
+msgstr "没有符合您筛选条件的玩家"
+
+msgid "Avg Place"
+msgstr "平均排名"
+
+msgid "Insights"
+msgstr "见解"
+
+msgid "Top 3"
+msgstr "前3名"
+
+msgid "Previous Seasons Champions"
+msgstr "上赛季冠军"
+
+msgid "View All Seasons"
+msgstr "查看所有赛季"
+
+msgid "Full Results"
+msgstr "完整结果"
+
+msgid "Hall of Fame"
+msgstr "名人堂"
+
+msgid "Starts"
+msgstr "开始"
+
+msgid "Ends"
+msgstr "结束"
+
+msgid "Current Season Leaderboard"
+msgstr "当前赛季排行榜"
+
+msgid "%{count} players"
+msgstr "%{count} 玩家"
+
+msgid "points"
+msgstr "点"
+
+msgid "Season"
+msgstr "赛季"
+
+msgid "View Results"
+msgstr "查看结果"
+
+msgid "Competition archive"
+msgstr "竞赛档案"
+
+msgid "Seasons"
+msgstr "赛季"
+
+msgid "Browse finished seasons and open the full leaderboard for each one."
+msgstr "浏览已完成的赛季并打开每个赛季的完整排行榜。"
+
+msgid "No seasons found"
+msgstr "没有找到赛季"
+
+msgid "Champions"
+msgstr "冠军"
+
+msgid "Season not found"
+msgstr "找不到赛季"
+
+msgid "Upcoming"
+msgstr "即将推出"
+
+msgid "Completed"
+msgstr "已完成"
+
+msgid "All Seasons"
+msgstr "所有赛季"
+
+msgid "Full Leaderboard"
+msgstr "完整排行榜"
+
+msgid "n/a"
+msgstr "不适用"
+
+msgid "Finished"
+msgstr "完成"
+
+msgid "Waiting"
+msgstr "等待"
+
+msgid "Timeout"
+msgstr "超时"
+
+msgid "Playing"
+msgstr "演奏"
+
+msgid "Canceled"
+msgstr "取消"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Pending"
+msgstr "待定"
+
+msgid "Active"
+msgstr "活跃"
+
+msgid "In progress"
+msgstr "进行中"
+
+msgid "Won"
+msgstr "获胜"
+
+msgid "Lost"
+msgstr "失败"
+
+msgid "Over"
+msgstr "结束"
+
+msgid "Draw"
+msgstr "平局"
+
+msgid "%{count} pts"
+msgstr "%{count} 分"
+
+msgid "Leading"
+msgstr "领先"
+
+msgid "Contender"
+msgstr "竞争者"
+
+msgid "%{count} wins"
+msgstr "%{count} 获胜"
+
+msgid "Game"
+msgstr "对局"
+
+msgid "Open game"
+msgstr "开放游戏"
+
+msgid "Duration: %{duration}"
+msgstr "持续时间：%{duration}"
+
+msgid "Finished %{date}"
+msgstr "已完成 %{date}"
+
+msgid "Still in progress"
+msgstr "仍在进行中"
+
+msgid "H2H Arena"
+msgstr "面对面竞技场"
+
+msgid "Direct duel history with profile links, live status, and every shared game."
+msgstr "通过个人资料链接、实时状态和每个共享游戏直接查看决斗历史记录。"
+
+msgid "Matches"
+msgstr "火柴"
+
+msgid "No winner"
+msgstr "没有赢家"
+
+msgid "Avg Result"
+msgstr "平均结果"
+
+msgid "Match duration"
+msgstr "比赛时长"
+
+msgid "Match start time"
+msgstr "比赛开始时间"
+
+msgid "Total Time"
+msgstr "总时间"
+
+msgid "Win rate"
+msgstr "胜率"
+
+msgid "Average result"
+msgstr "平均结果"
+
+msgid "Current round"
+msgstr "本轮"
+
+msgid "Total games"
+msgstr "总比赛数"
+
+msgid "Draws"
+msgstr "平局"
+
+msgid "All games"
+msgstr "所有游戏"
+
+msgid "%{count} records"
+msgstr "%{count} 记录"
+
+msgid "No games found for this pair."
+msgstr "没有找到这对游戏的游戏。"
+
+msgid "Total games: %{count}"
+msgstr "游戏总数：%{count}"
+
+msgid "Total tournament wins: %{count}"
+msgstr "锦标赛总胜利数：%{count}"
+
+msgid "Total tournament wins"
+msgstr "锦标赛总胜场数"
+
+msgid "Failed to load tournaments"
+msgstr "无法加载锦标赛"
+
+msgid "No tournaments played yet"
+msgstr "还没有参加任何比赛"
+
+msgid "Grade"
+msgstr "组别"
+
+msgid "Time"
+msgstr "时间"
+
+msgid "Lang"
+msgstr "郎"
+
+msgid "Date"
+msgstr "日期"
+
+msgid "Total tournaments: %{count}"
+msgstr "锦标赛总数：%{count}"
+
+msgid "Last 365 days"
+msgstr "过去 365 天"
+
+msgid "%{count} games in %{year}"
+msgstr "%{count} 游戏在 %{year} 中"
+
+msgid "%{count} games in the last 365 days"
+msgstr "过去 365 天内%{count} 场比赛"
+
+msgid "%{count} games on %{date}"
+msgstr "%{count} 游戏在 %{date} 上"
+
+msgid "No games"
+msgstr "没有游戏"
+
+msgid "User avatar"
+msgstr "用户头像"
+
+msgid "No clan"
+msgstr "无战队"
+
+msgid "joined at %{date}"
+msgstr "于 %{date} 加入"
+
+msgid "Github account"
+msgstr "Github账号"
+
+msgid "Place: #%{place}"
+msgstr "地点：#%{place}"
+
+msgid "Completed games"
+msgstr "已完成的游戏"
+
+msgid "(Elo Rating)"
+msgstr "（Elo 评级）"
+
+msgid "Rivals"
+msgstr "对手"
+
+msgid "Clan: %{clan}"
+msgstr "战队：%{clan}"
+
+msgid "W/L/T: %{wins}/%{losses}/%{timeouts}"
+msgstr "上/下/时间：%{wins}/%{losses}/%{timeouts}"
+
+msgid "Languages"
+msgstr "语言"
+
+msgid "Activity"
+msgstr "活动"
+
+msgid "Total entries: %{count}"
+msgstr "条目总数：%{count}"
+
+msgid "Username contains..."
+msgstr "用户名包含..."
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "Users per page"
+msgstr "每页用户数"
+
+msgid "With bots"
+msgstr "使用机器人"
+
+msgid "Season %{name} %{year}: %{start} - %{end}"
+msgstr "赛季%{name} %{year}：%{start} - %{end}"
+
+msgid "Closest Opponents"
+msgstr "最接近的对手"
+
+msgid "Avatar Logo"
+msgstr "阿凡达标志"
+
+msgid "Live Tournaments"
+msgstr "现场锦标赛"
+
+msgid "Upcoming Tournaments"
+msgstr "即将举行的比赛"
+
+msgid "Competition not started yet"
+msgstr "比赛尚未开始"
+
+msgid "add clan"
+msgstr "添加战队"
+
+msgid "Codebattle League"
+msgstr "Codebattle 联赛"
+
+msgid ""
+"Challenge the best! Participate in the Competition tournaments, defeat your "
+"rivals to earn points, and claim the first place in the programmer ranking."
+msgstr "挑战最好的！参加竞赛，击败对手获得积分，夺得程序员排行榜第一名。"
+
+msgid "See Rules & Details"
+msgstr "查看规则和详情"
+
+msgid "Seasons, Grades, Points — Overview"
+msgstr "赛季、成绩、积分 — 概述"
+
+msgid "Season 0: Sep 21 – Dec 21"
+msgstr "第 0 季：9 月 21 日 – 12 月 21 日"
+
+msgid "Season 1: Dec 21 – Mar 21"
+msgstr "第 1 季：12 月 21 日 – 3 月 21 日"
+
+msgid "Season 2: Mar 21 – Jun 21"
+msgstr "第 2 季：3 月 21 日 – 6 月 21 日"
+
+msgid "Season 3: Jun 21 – Sep 21"
+msgstr "第 3 季：6 月 21 日 – 9 月 21 日"
+
+msgid "On the season end date (the 21st), we run a Grand Slam at 16:00 UTC."
+msgstr "在赛季结束日（21 日），我们将在 UTC 时间 16:00 举办一场大满贯比赛。"
+
+msgid "Season Points reset each season. Elo never resets (lifetime)."
+msgstr "赛季积分每个赛季都会重置。 Elo 永远不会重置（终生）。"
+
+msgid "Grades"
+msgstr "组别"
+
+msgid ""
+"open, rookie, challenger, pro, elite, masters, grand_slam — determine "
+"prestige, task pools, points, schedules, and limits."
+msgstr "开放、新秀、挑战者、职业、精英、大师、大满贯——确定声望、题目池、积分、时间表和限制。"
+
+msgid "Tournament Scheduling & Preemption"
+msgstr "比赛安排和抢占"
+
+msgid "Daily/Hourly (UTC)"
+msgstr "每日/每小时（UTC）"
+
+msgid ""
+"Rookie: every 4 hours — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (no "
+"16:00 slot)."
+msgstr "新手：每 4 小时 — 03:00、07:00、11:00、15:00、19:00、23:00 UTC（无 16:00 时段）。"
+
+msgid "Challenger: daily 16:00 UTC; preempted by higher grades that day/week."
+msgstr "挑战者：每日 16:00 UTC；那天/周被更高的成绩抢占。"
+
+msgid "Weekly 16:00 UTC priority"
+msgstr "每周 16:00 UTC 优先"
+
+msgid "grand_slam > masters > elite > pro."
+msgstr "大满贯 > 大师 > 精英 > 职业。"
+
+msgid ""
+"In any week, exactly one of these runs at 16:00. Grand Slam week -> only GS "
+"at 16:00. Masters week -> no pro/elite. Otherwise pro (Tue) and elite (Wed) "
+"alternate as backbone."
+msgstr ""
+"在任何一周，其中的一次运行时间为 16:00。大满贯周 -> 仅 GS 时间为 16:00。大师周 -> "
+"没有职业/精英。另外，专业人士（周二）和精英人士（周三）交替担任骨干。"
+
+msgid "Player Limits & Rounds per Grade"
+msgstr "每个等级的玩家限制和轮次"
+
+msgid "Players limit"
+msgstr "玩家限制"
+
+msgid "rookie: 8"
+msgstr "新秀：8"
+
+msgid "challenger: 16"
+msgstr "挑战者：16"
+
+msgid "pro: 32"
+msgstr "专业人士：32"
+
+msgid "elite: 64"
+msgstr "精英：64"
+
+msgid "masters: 128"
+msgstr "大师：128"
+
+msgid "grand_slam: 256"
+msgstr "大满贯：256"
+
+msgid "Rounds per grade"
+msgstr "每个年级的轮数"
+
+msgid "rookie: 4"
+msgstr "新秀：4"
+
+msgid "challenger: 6"
+msgstr "挑战者：6"
+
+msgid "pro: 8"
+msgstr "专业：8"
+
+msgid "elite: 10"
+msgstr "精英：10"
+
+msgid "masters: 12"
+msgstr "大师：12"
+
+msgid "grand_slam: 14"
+msgstr "大满贯：14"
+
+msgid ""
+"For each finished tournament (grade != open), award Season Points by final "
+"place using the tables below. All remaining participants (outside prize "
+"slots) receive 2 points each. Prize points do not stack with participation "
+"points."
+msgstr "对于每场已完成的锦标赛（等级！=开放），请使用下表按最终名次奖励赛季积分。所有剩余参与者（奖品位之外）每人获得 2 分。奖品积分不与参与积分叠加。"
+
+msgid "rookie: [8, 4, 2] - top-3"
+msgstr "新秀：[8, 4, 2] - 前 3"
+
+msgid "challenger: [16, 8, 4, 2] - top-6"
+msgstr "挑战者: [16, 8, 4, 2] - 前 6 名"
+
+msgid "pro: [128, 64, 32, 16, 8, 4, 2] - top-7"
+msgstr "专业版：[128, 64, 32, 16, 8, 4, 2] - 前 7 名"
+
+msgid "elite: [256, 128, 64, 32, 16, 8, 4, 2] - top-8"
+msgstr "精英：[256, 128, 64, 32, 16, 8, 4, 2] - 前 8 名"
+
+msgid "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-10"
+msgstr "大师：[1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - 前10名"
+
+msgid "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-11"
+msgstr "大满贯: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - 前11名"
+
+msgid "Season Leaderboard Tie-Breakers"
+msgstr "赛季排行榜决胜局"
+
+msgid "Total Season Points (desc)"
+msgstr "赛季总积分（描述）"
+
+msgid "Tournament wins in season (desc)"
+msgstr "本赛季锦标赛获胜次数（描述）"
+
+msgid "Tournament participations in season (desc)"
+msgstr "赛季中参加的比赛（描述）"
+
+msgid ""
+"Maintain a HoF for Season Champions and Grand Slam Champions (participants "
+"page optional later)."
+msgstr "维护赛季冠军和大满贯冠军的 HoF（稍后可选择参赛者页面）。"
+
+msgid "Codebattle - Overview & Key Concepts"
+msgstr "Codebattle - 概述和关键概念"
+
+msgid "Competitive Programming Game"
+msgstr "竞争性编程游戏"
+
+msgid ""
+"Codebattle (codebattle.hexlet.io) is a real-time coding duel platform. Two "
+"players solve the same task in parallel; whoever solves it first wins the "
+"match."
+msgstr "Codebattle (codebattle.hexlet.io) 是一个实时编码对决平台。两个玩家并行解决同一个题目；谁先解决它，谁就赢得了比赛。"
+
+msgid "Swiss Tournaments"
+msgstr "瑞士锦标赛"
+
+msgid ""
+"Multiple rounds; in each round, players are paired vs players with similar "
+"cumulative score; no repeat pairings (unless unavoidable on round 1 "
+"bootstrap or via bot fill-ins)."
+msgstr "多轮；每轮比赛中，玩家将与累计得分相近的玩家配对；没有重复配对（除非在第一轮引导或通过机器人填充不可避免）。"
+
+msgid ""
+"17 supported - clojure, cpp, csharp, dart, dlang, elixir, golang, java, js, "
+"kotlin, php, python, ruby, rust, swift, zig, ts."
+msgstr ""
+"支持 17 个 - "
+"clojure、cpp、csharp、dart、dlang、elixir、golang、java、js、kotlin、php、python、ruby、r"
+"ust、swift、zig、ts。"
+
+msgid "Create a CSS Game"
+msgstr "创建 CSS 游戏"
+
+msgid "Create a SQL Game"
+msgstr "创建 SQL 游戏"
+
+msgid "Join a battle"
+msgstr "加入战斗"
+
+msgid "Continue battle"
+msgstr "继续战斗"
+
+msgid "Create a battle"
+msgstr "创建对战"
+
+msgid "Join a game"
+msgstr "加入游戏"
+
+msgid "Online players: %{count}"
+msgstr "在线玩家：%{count}"
+
+msgid "Send message"
+msgstr "发送消息"
+
+msgid "Send fight invite"
+msgstr "发送战斗邀请"
+
+msgid "fight"
+msgstr "战斗"
+
+msgid "Be nice in chat!"
+msgstr "聊天时要友善！"
+
+msgid "Message length cannot exceed %{count} characters."
+msgstr "消息长度不能超过 %{count} 个字符。"
+
+msgid "Open emoji picker"
+msgstr "打开表情符号选择器"
+
+msgid "Clean banned"
+msgstr "移除已封禁玩家"
+
+msgid "Joined channel: %{name}"
+msgstr "已加入频道：%{name}"
+
+msgid "%{count} Online"
+msgstr "%{count} 在线"
+
+msgid "Watching"
+msgstr "观战中"
+
+msgid "Online"
+msgstr "在线"
+
+msgid "Edit task"
+msgstr "编辑题目"
+
+msgid "General"
+msgstr "一般"
+
+msgid "Notification"
+msgstr "通知"
+
+msgid "Welcome"
+msgstr "欢迎"
+
+msgid ""
+"You successfully authorized to the platform. Open your tournament link to "
+"start."
+msgstr "您已成功授权平台。打开您的锦标赛链接即可开始。"
+
+msgid ""
+"Tournament process is dead. Click Restart to make it live again so users "
+"can join."
+msgstr "锦标赛进程已死。单击“重新启动”使其再次生效，以便用户可以加入。"
+
+msgid "Tests percent"
+msgstr "测试百分比"
+
+msgid "Started - Finished"
+msgstr "开始 - 完成"
+
+msgid "Invitation Required"
+msgstr "需要邀请"
+
+msgid "You need to accept an invitation to participate in this tournament."
+msgstr "您需要接受邀请才能参加本次锦标赛。"
+
+msgid "Accept Invite"
+msgstr "接受邀请"
+
+msgid "Check Status"
+msgstr "检查状态"
+
+msgid "Preparing your invite..."
+msgstr "正在准备您的邀请..."
+
+msgid "Invite failed. Please try again."
+msgstr "邀请失败。请再试一次。"
+
+msgid "Retry"
+msgstr "重试"
+
+msgid ""
+"Could not retrieve your external platform credentials. Please contact "
+"support."
+msgstr "无法检索您的外部平台凭据。请联系支持人员。"
+
+msgid "Group Tournament"
+msgstr "团体赛"
+
+msgid "Support"
+msgstr "支持"
+
+msgid "Execution History"
+msgstr "执行历史"
+
+msgid "Add Solution +"
+msgstr "添加解法+"
+
+msgid "Run Viewer"
+msgstr "运行查看器"
+
+msgid "No viewer HTML for this run."
+msgstr "本次运行没有查看器 HTML。"
+
+msgid "Tournament Overview"
+msgstr "赛事概况"
+
+msgid "No additional setup is required for this tournament."
+msgstr "本次比赛不需要额外的设置。"
+
+msgid "Execution Logs"
+msgstr "执行日志"
+
+msgid "No logs yet"
+msgstr "还没有日志"
+
+msgid "... and %{count} more"
+msgstr "...以及 %{count} 更多"
+
+msgid "External Setup"
+msgstr "外部设置"
+
+msgid "Run Viewer Fullscreen"
+msgstr "全屏运行查看器"
+
+msgid "Close Fullscreen"
+msgstr "关闭全屏"
+
+msgid "Tournament finished"
+msgstr "比赛结束"
+
+msgid ""
+"Your next step is the AI-round group tournament. Click the button below to "
+"continue."
+msgstr "下一步是 AI 轮小组赛。单击下面的按钮继续。"
+
+msgid "Go to AI-round group tournament"
+msgstr "前往AI轮小组赛"
+
+msgid "Later"
+msgstr "后来"
+
+msgid "Stage finished"
+msgstr "舞台结束"
+
+msgid "%{name} stage finished"
+msgstr "%{name}阶段完成"
+
+msgid "First qualification round finished"
+msgstr "第一轮资格赛结束"
+
+msgid "Accepted"
+msgstr "已接受"
+
+msgid "Group assignment soon"
+msgstr "小组作业很快"
+
+msgid "Group contest soon"
+msgstr "团体赛即将进行"
+
+msgid "Return to game"
+msgstr "返回游戏"
+
+msgid "%{count} min"
+msgstr "%{count} 分钟"
+
+msgid "Actions"
+msgstr "行动"
+
+msgid "Base"
+msgstr "基地"
+
+msgid "First page"
+msgstr "第一页"
+
+msgid "Format"
+msgstr "格式"
+
+msgid "Kick player"
+msgstr "踢球员"
+
+msgid "Kick %{name} from tournament?"
+msgstr "将 %{name} 从锦标赛中踢出？"
+
+msgid "Last page"
+msgstr "最后一页"
+
+msgid "Level"
+msgstr "等级"
+
+msgid "Loss factor"
+msgstr "损耗因数"
+
+msgid "Match time"
+msgstr "比赛时间"
+
+msgid "Next"
+msgstr "下一步"
+
+msgid "Next page"
+msgstr "下一页"
+
+msgid "No matches yet"
+msgstr "还没有匹配项"
+
+msgid "Players & Matches"
+msgstr "球员与比赛"
+
+msgid "Previous page"
+msgstr "上一页"
+
+msgid "Record"
+msgstr "记录"
+
+msgid "Registration is open"
+msgstr "注册已开放"
+
+msgid "Rounds"
+msgstr "轮次"
+
+msgid "Row spacer"
+msgstr "行间隔器"
+
+msgid "Show game history"
+msgstr "显示游戏历史记录"
+
+msgid "Speed bonus"
+msgstr "速度加成"
+
+msgid "Tests"
+msgstr "测试"
+
+msgid "The tournament continues for top 8 players."
+msgstr "比赛继续进行，争夺前 8 名选手。"
+
+msgid "This tournament is live — join now to jump into the next round."
+msgstr "本次比赛正在进行中——立即加入即可进入下一轮。"
+
+msgid "Timeout factor"
+msgstr "超时因素"
+
+msgid "Top user by task ranking"
+msgstr "按题目排名排名靠前的用户"
+
+msgid "Tournament in progress"
+msgstr "比赛进行中"
+
+msgid "You're in — get ready to battle!"
+msgstr "你已经加入了——准备好战斗吧！"
+
+msgid "Your games will appear here as soon as the round starts. Hang tight!"
+msgstr "回合开始后，您的比赛就会出现在此处。坚持住！"
+
+msgid "pts"
+msgstr "分"
+
+msgid "task duration distribution"
+msgstr "题目持续时间分布"
+
+msgid "Please, be nice in chat"
+msgstr "请在聊天时保持友善"
+
+msgid "Write message..."
+msgstr "写留言..."
+
+msgid "Send"
+msgstr "发送"
+
+msgid "Chat message"
+msgstr "聊天消息"
+
+msgid "Wins"
+msgstr "胜场"
+
+msgid "Your weapon"
+msgstr "你的编程语言"
+
+msgid "No access yet"
+msgstr "还没有访问权限"
+
+msgid "Your name"
+msgstr "你的名字"
+
+msgid "Enter your name"
+msgstr "输入你的名字"
+
+msgid "Your clan"
+msgstr "你的战队"
+
+msgid "clan list"
+msgstr "战队列表"
+
+msgid "Enter your clan"
+msgstr "输入您的战队"
+
+msgid "Locale"
+msgstr "界面语言"
+
+msgid "Select sound type"
+msgstr "选择声音类型"
+
+msgid "Silent"
+msgstr "沉默"
+
+msgid "Select sound level"
+msgstr "选择声音级别"
+
+msgid "Select tournament sound level"
+msgstr "选择比赛声音级别"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Socials"
+msgstr "社交"
+
+msgid "Unlink %{provider}"
+msgstr "取消链接 %{provider}"
+
+msgid "Link %{provider}"
+msgstr "链接%{provider}"
+
+msgid "Change password"
+msgstr "更改密码"
+
+msgid "Old password"
+msgstr "旧密码"
+
+msgid "Enter old password"
+msgstr "输入旧密码"
+
+msgid "New password"
+msgstr "新密码"
+
+msgid "Enter new password"
+msgstr "输入新密码"
+
+msgid "Confirm new password"
+msgstr "确认新密码"
+
+msgid "Active devices"
+msgstr "已登录设备"
+
+msgid "No active devices"
+msgstr "无活动设备"
+
+msgid "Unknown device"
+msgstr "未知设备"
+
+msgid "Current device"
+msgstr "当前设备"
+
+msgid "Remove device %{device}"
+msgstr "删除设备 %{device}"
+
+msgid "Sign out"
+msgstr "退出"
+
+msgid "Remove"
+msgstr "删除"
+
+msgid "Opponent found!"
+msgstr "发现对手了！"
+
+msgid "Change email"
+msgstr "更改电子邮件"
+
+msgid "Current email"
+msgstr "当前电子邮件"
+
+msgid "New email"
+msgstr "新电子邮件"
+
+msgid "Enter new email"
+msgstr "输入新电子邮件"
+
+msgid "Current password"
+msgstr "当前密码"
+
+msgid "Enter current password"
+msgstr "输入当前密码"
+
+msgid "Send verification email"
+msgstr "发送验证邮件"
+
+msgid "Sending..."
+msgstr "正在发送..."
+
+msgid "Verification email sent. Confirm the new address to finish the change."
+msgstr "验证电子邮件已发送。确认新地址以完成更改。"
+
+msgid "Points"
+msgstr "积分"
+
+msgid "Best Streak"
+msgstr "最佳连胜纪录"
+
+msgid "Best win streak"
+msgstr "最佳连胜"
+
+msgid "No Invites"
+msgstr "没有邀请"
+
+msgid "Today"
+msgstr "今天"
+
+msgid "Month"
+msgstr "月份"
+
+msgid "Week"
+msgstr "周"
+
+msgid "Day"
+msgstr "日"
+
+msgid "Agenda"
+msgstr "议程"
+
+msgid "Event"
+msgstr "活动"
+
+msgid "There are no tournaments in this range."
+msgstr "此范围内没有任何锦标赛。"
+
+msgid "+%{count} more"
+msgstr "+%{count} 更多"
+
+msgid "Season Points Distribution"
+msgstr "赛季积分分配"
+
+msgid "Duration"
+msgstr "持续时间"
+
+msgid "Winner"
+msgstr "获胜者"
+
+msgid "starts in"
+msgstr "开始于"
+
+msgid "Starts in:"
+msgstr "开始于："
+
+msgid "at"
+msgstr "在"
+
+msgid "Tournament chat"
+msgstr "锦标赛聊天"
+
+msgid "Ranking Points"
+msgstr "排名积分"
+
+msgid "Elementary"
+msgstr "初级"
+
+msgid "Easy"
+msgstr "简单"
+
+msgid "Medium"
+msgstr "中等"
+
+msgid "Hard"
+msgstr "硬"
+
+msgid "Tournament: %{name}"
+msgstr "比赛：%{name}"
+
+msgid "Open Tournament"
+msgstr "公开赛"
+
+msgid "Start Date: %{date}"
+msgstr "开始日期：%{date}"
+
+msgid "Time: %{start} - %{end}"
+msgstr "时间：%{start} - %{end}"
+
+msgid "First Place Points: %{points} Ranking Points"
+msgstr "第一名积分：%{points} 排名积分"
+
+msgid "Tournament Highlights:"
+msgstr "比赛亮点："
+
+msgid "Prizes: Codebattle T-shirt merch for a top-tier of League"
+msgstr "奖品： 联盟顶级联赛的 Codebattle T 恤商品"
+
+msgid "Challenges: %{count} unique algorithm problems"
+msgstr "挑战：%{count}独特的算法问题"
+
+msgid "Impact: Advancing in the Codebattle programmer rankings"
+msgstr "影响：Codebattle 程序员排名不断进步"
+
+msgid "View League Ranking Points System"
+msgstr "查看联赛排名积分系统"
+
+msgid "Tournament Description:"
+msgstr "赛事说明："
+
+msgid "%{grade} Tournament #%{number}"
+msgstr "%{grade} 锦标赛 #%{number}"
+
+msgid "..."
+msgstr "..."
+
+msgid "%{state}"
+msgstr "%{state}"
+
+msgid "30 minutes to solve"
+msgstr "30分钟解决"
+
+msgid "Accept invitation"
+msgstr "接受邀请"
+
+msgid "Ban player"
+msgstr "封禁玩家"
+
+msgid "Before you begin:"
+msgstr "开始之前："
+
+msgid "Break"
+msgstr "休息"
+
+msgid "Choose opponent"
+msgstr "选择对手"
+
+msgid "Confirmed"
+msgstr "已确认"
+
+msgid "Create invite"
+msgstr "创建邀请"
+
+msgid "Denied"
+msgstr "被拒绝"
+
+msgid "Done"
+msgstr "完成"
+
+msgid "Done editing"
+msgstr "编辑完成"
+
+msgid "Duration distribution"
+msgstr "持续时间分布"
+
+msgid "Edit Layout"
+msgstr "编辑布局"
+
+msgid "Examples"
+msgstr "示例"
+
+msgid "Feedback not sent."
+msgstr "反馈未发送。"
+
+msgid "Feedback sent successfully."
+msgstr "反馈发送成功。"
+
+msgid "Find tournament details at"
+msgstr "查找锦标赛详细信息，请访问"
+
+msgid "Fuzzy search"
+msgstr "模糊搜索"
+
+msgid "Gave up"
+msgstr "放弃了"
+
+msgid "GaveUp"
+msgstr "放弃"
+
+msgid "Give Up"
+msgstr "放弃"
+
+msgid "Go to task"
+msgstr "前往题目"
+
+msgid "Have not an account?"
+msgstr "还没有帐户？"
+
+msgid "If you have an account"
+msgstr "如果您有帐户"
+
+msgid "Inserted At"
+msgstr "插入于"
+
+msgid "Join our External Platform organization to receive the task"
+msgstr "加入我们的外部平台组织来接收题目"
+
+msgid "Link"
+msgstr "链接"
+
+msgid "Loading participant data..."
+msgstr "正在加载参与者数据..."
+
+msgid "Matches letters in order"
+msgstr "按顺序匹配字母"
+
+msgid "Matrix Broadcast Arena"
+msgstr "矩阵广播竞技场"
+
+msgid "No finished tournaments yet"
+msgstr "尚未完成比赛"
+
+msgid "No leaderboard data available"
+msgstr "没有可用的排行榜数据"
+
+msgid "Offender"
+msgstr "罪犯"
+
+msgid "Once all steps are complete, you can start solving"
+msgstr "所有步骤完成后，就可以开始求解了"
+
+msgid "Player not found"
+msgstr "未找到玩家"
+
+msgid "Please wait for someone to join or send an invite using the link below"
+msgstr "请等待有人加入或使用下面的链接发送邀请"
+
+msgid "Processed"
+msgstr "已加工"
+
+msgid "Release"
+msgstr "发布"
+
+msgid "Report on player"
+msgstr "举报玩家"
+
+msgid "Reporter"
+msgstr "记者"
+
+msgid "Reports"
+msgstr "报告"
+
+msgid "Reset"
+msgstr "重置"
+
+msgid "Reset layout"
+msgstr "重置布局"
+
+msgid "Select"
+msgstr "选择"
+
+msgid "Sending"
+msgstr "发送"
+
+msgid "Show the in-tournament chat to participants."
+msgstr "向参与者展示锦标赛中的聊天内容。"
+
+msgid "Sign In"
+msgstr "登录"
+
+msgid "Sign in with Discord"
+msgstr "使用 Discord 登录"
+
+msgid "Sign in with Github"
+msgstr "使用 Github 登录"
+
+msgid "Sign Up"
+msgstr "注册"
+
+msgid "Sign up with Discord"
+msgstr "使用 Discord 注册"
+
+msgid "Sign up with Github"
+msgstr "使用 Github 注册"
+
+msgid "Start new game"
+msgstr "开始新游戏"
+
+msgid "Task is solved in External Plaform"
+msgstr "题目在外部平台解决"
+
+msgid "Test failed"
+msgstr "测试失败"
+
+msgid "This game has not been started"
+msgstr "这个游戏还没有开始"
+
+msgid "This users have contributed to this task:"
+msgstr "该用户对此题目做出了贡献："
+
+msgid "Time is Over"
+msgstr "时间结束了"
+
+msgid "Timer"
+msgstr "定时器"
+
+msgid "Top users by task"
+msgstr "按题目排名最高的用户"
+
+msgid "tournament"
+msgstr "锦标赛"
+
+msgid "Tournament will start soon"
+msgstr "比赛即将开始"
+
+msgid "Type a player name"
+msgstr "输入玩家姓名"
+
+msgid "We sent a verification email. Please confirm your email before signing in."
+msgstr "我们发送了一封验证电子邮件。请在登录前确认您的电子邮件。"
+
+msgid "You are following %{followName}"
+msgstr "您正在关注 %{followName}"
+
+msgid ""
+"Please verify your email before signing in. A new verification email was "
+"sent."
+msgstr "请在登录前验证您的电子邮件。新的验证电子邮件已发送。"
+
+msgid ""
+"We couldn't retrieve check results. Check your network connection or your "
+"solution for bugs or :prod_is_down:"
+msgstr "我们无法检索检查结果。检查您的网络连接或解法是否存在错误或：prod_is_down："
+
+msgid "Access"
+msgstr "访问"
+
+msgid "Access token"
+msgstr "访问令牌"
+
+msgid "Add tag"
+msgstr "添加标签"
+
+msgid "Add tag..."
+msgstr "添加标签..."
+
+msgid "animation"
+msgstr "动画"
+
+msgid "Arguments"
+msgstr "参数"
+
+msgid "Asserts status"
+msgstr "断言状态"
+
+msgid "avatar"
+msgstr "头像"
+
+msgid "Ban %{name}"
+msgstr "禁令 %{name}"
+
+msgid "Cancel game"
+msgstr "取消游戏"
+
+msgid "Chat is disabled"
+msgstr "聊天已禁用"
+
+msgid "Close Record Player"
+msgstr "关闭电唱机"
+
+msgid "Compress editor"
+msgstr "压缩编辑器"
+
+msgid "Confirm"
+msgstr "确认"
+
+msgid "Copy link"
+msgstr "复制链接"
+
+msgid "Countdown before redirect to the next match"
+msgstr "重定向到下一场比赛之前的倒计时"
+
+msgid "Decrease font size"
+msgstr "减小字体大小"
+
+msgid "Delete message"
+msgstr "删除留言"
+
+msgid "Edit layout"
+msgstr "编辑布局"
+
+msgid "Editor height"
+msgstr "编辑身高"
+
+msgid "Editor mode"
+msgstr "编辑器模式"
+
+msgid "Editor settings"
+msgstr "编辑器设置"
+
+msgid "Editor size controls"
+msgstr "编辑器大小控件"
+
+msgid "Execution Time"
+msgstr "执行时间"
+
+msgid "Expand editor"
+msgstr "展开编辑器"
+
+msgid "Expected"
+msgstr "预期结果"
+
+msgid "follow user"
+msgstr "关注用户"
+
+msgid "Game actions"
+msgstr "游戏动作"
+
+msgid "Game award"
+msgstr "游戏奖"
+
+msgid "Gold cup"
+msgstr "金杯"
+
+msgid "Green check"
+msgstr "绿色支票"
+
+msgid "Hide header"
+msgstr "隐藏标题"
+
+msgid "Increase font size"
+msgstr "增加字体大小"
+
+msgid "Info"
+msgstr "信息"
+
+msgid "Invite"
+msgstr "邀请"
+
+msgid "invited you"
+msgstr "邀请你"
+
+msgid "Invites"
+msgstr "邀请"
+
+msgid "Leaderboard header"
+msgstr "排行榜标题"
+
+msgid "left editor solution"
+msgstr "左编辑器解法"
+
+msgid "Left editor solution picture"
+msgstr "左编辑器解法图片"
+
+msgid "Open H2H"
+msgstr "开放式在线"
+
+msgid "Open Record Player"
+msgstr "打开电唱机"
+
+msgid "Other actions"
+msgstr "其他行动"
+
+msgid "play active game"
+msgstr "玩活跃游戏"
+
+msgid "Private tournament"
+msgstr "私人锦标赛"
+
+msgid "Programming language select"
+msgstr "编程语言选择"
+
+msgid "rating"
+msgstr "评级"
+
+msgid "Report actions"
+msgstr "报告行动"
+
+msgid "right editor solution"
+msgstr "正确的编辑器解法"
+
+msgid "Right editor solution picture"
+msgstr "右编辑器解法图片"
+
+msgid "Scroll to bottom"
+msgstr "滚动到底部"
+
+msgid "Send an invite"
+msgstr "发送邀请"
+
+msgid "Show header"
+msgstr "显示标题"
+
+msgid "Submit form"
+msgstr "提交表格"
+
+msgid "Swap game widgets"
+msgstr "交换游戏小部件"
+
+msgid "target solution picture"
+msgstr "目标解法图片"
+
+msgid "Unknown tournament type"
+msgstr "未知的比赛类型"
+
+msgid "User info"
+msgstr "用户信息"
+
+msgid "User row"
+msgstr "用户行"
+
+msgid "Versus"
+msgstr "对比"
+
+msgid "Waiting opponent avatar"
+msgstr "等待对手头像"
+
+msgid "White flag"
+msgstr "白旗"
+
+msgid "Win icon"
+msgstr "胜利图标"
+
+msgid "Back to replay settings"
+msgstr "返回重播设置"
+
+msgid "Check button"
+msgstr "检查按钮"
+
+msgid "Choose from 0.5× to 4×"
+msgstr "从 0.5× 到 4× 选择"
+
+msgid "Choose the programming language that you like best"
+msgstr "选择您最喜欢的编程语言"
+
+msgid "Click the button to check your solution or use Ctrl+Enter/Cmd+Enter"
+msgstr "单击按钮检查您的解法或使用 Ctrl+Enter/Cmd+Enter"
+
+msgid ""
+"Click this button to give up. You will lose the game and can try it again "
+"next time, or ask your opponent for an immediate rematch."
+msgstr "单击此按钮放弃。您将输掉比赛，可以下次再试，或者要求对手立即重赛。"
+
+msgid "Click this button to reset the code to the original template"
+msgstr "单击此按钮可将代码重置为原始模板"
+
+msgid "Copy replay link at current position"
+msgstr "复制当前位置的重播链接"
+
+msgid "Copy replay link"
+msgstr "复制重播链接"
+
+msgid "Decrease playback speed"
+msgstr "降低播放速度"
+
+msgid "Enter pass code"
+msgstr "输入密码"
+
+msgid "Example: 12345678"
+msgstr "示例：12345678"
+
+msgid "Full access to game history"
+msgstr "完全访问游戏历史记录"
+
+msgid "Game is Locked"
+msgstr "游戏已锁定"
+
+msgid "Game lock input for pass code"
+msgstr "游戏锁定密码输入"
+
+msgid "Game page"
+msgstr "游戏页面"
+
+msgid "Give up button"
+msgstr "放弃按钮"
+
+msgid ""
+"Here you will see the test results or compilation errors after checking "
+"your solution"
+msgstr "检查解法后，您将在此处看到测试结果或编译错误"
+
+msgid "Increase playback speed"
+msgstr "提高播放速度"
+
+msgid "Link copied"
+msgstr "链接已复制"
+
+msgid "No pauses between solution checks"
+msgstr "解法检查之间没有暂停"
+
+msgid "Not a Premium subscriber?"
+msgstr "还不是高级订阅者？"
+
+msgid "Only for Premium subscribers"
+msgstr "仅适用于高级订阅者"
+
+msgid "Original pauses or uniform steps"
+msgstr "原始的停顿或统一的步骤"
+
+msgid "Output:"
+msgstr "输出："
+
+msgid "Pause replay"
+msgstr "暂停重播"
+
+msgid "Playback speed"
+msgstr "播放速度"
+
+msgid "Playback speed presets"
+msgstr "播放速度预设"
+
+msgid "Playback time"
+msgstr "播放时间"
+
+msgid "Play replay"
+msgstr "播放重播"
+
+msgid "Player gave up"
+msgstr "玩家放弃了"
+
+msgid "Player won"
+msgstr "玩家获胜"
+
+msgid "Read the task carefully, pay attention to examples"
+msgstr "仔细阅读题目，注意示例"
+
+msgid "Real time"
+msgstr "实时"
+
+msgid "Replay settings"
+msgstr "重播设置"
+
+msgid "Replay timing"
+msgstr "重播计时"
+
+msgid "Reset button"
+msgstr "重置按钮"
+
+msgid "Restricted Content"
+msgstr "受限内容"
+
+msgid "Result output"
+msgstr "结果输出"
+
+msgid "Set playback speed to %{speed}"
+msgstr "将播放速度设置为 %{speed}"
+
+msgid "Share this exact replay position"
+msgstr "分享这个准确的重播位置"
+
+msgid "Skip guide"
+msgstr "跳过指南"
+
+msgid "Sorry! This content is for Premium subscribers only."
+msgstr "抱歉！此内容仅适用于高级订阅者。"
+
+msgid "Subscribe to Premium and you'll get:"
+msgstr "订阅高级版，您将获得："
+
+msgid "Testing your own tasks"
+msgstr "测试你自己的题目"
+
+msgid ""
+"This is a game page. You need to solve the task first and pass all tests "
+"successfully."
+msgstr "这是一个游戏页面。您需要先解决题目并成功通过所有测试。"
+
+msgid "Timing"
+msgstr "时机"
+
+msgid "Uniform"
+msgstr "制服"
+
+msgid "Want to subscribe?"
+msgstr "想订阅吗？"
+
+msgid "Working on it."
+msgstr "正在努力。"
+
+msgid "Write the solution of task in the editor"
+msgstr "在编辑器中编写题目的解法"
+
+msgid "Forgot your password?"
+msgstr "忘记密码？"
+
+msgid "Hide %{field}"
+msgstr "隐藏 %{field}"
+
+msgid "Show %{field}"
+msgstr "显示%{field}"
+
+msgid "We have sent you an email with instructions on how to reset your password"
+msgstr "我们已向您发送了一封电子邮件，其中包含有关如何重置密码的说明"
+
+msgid "/ Top %{percent}%"
+msgstr "/ 顶部 %{percent}%"
+
+msgid "Above You"
+msgstr "在你之上"
+
+msgid "Avg"
+msgstr "平均"
+
+msgid "Avg Finish"
+msgstr "平均完成时间"
+
+msgid "AVG Solving speed"
+msgstr "平均求解速度"
+
+msgid "AVG Tests"
+msgstr "平均测试"
+
+msgid "AVG Tests:"
+msgstr "平均电压测试："
+
+msgid "AVG Duration:"
+msgstr "平均持续时间："
+
+msgid "Base static score"
+msgstr "基础静态得分"
+
+msgid "Best"
+msgstr "最佳"
+
+msgid "Best Finish"
+msgstr "最佳完成度"
+
+msgid "Better than %{percent}% of players"
+msgstr "优于 %{percent}% 的玩家"
+
+msgid "By Grade"
+msgstr "按组别"
+
+msgid "Created"
+msgstr "已创建"
+
+msgid "Creating game..."
+msgstr "创建游戏..."
+
+msgid "Creator ID"
+msgstr "创建者ID"
+
+msgid "Details"
+msgstr "详情"
+
+msgid "Failed to load detailed stats"
+msgstr "无法加载详细统计数据"
+
+msgid "Fastest Solutions"
+msgstr "最快解法"
+
+msgid "Function Signature"
+msgstr "函数签名"
+
+msgid "Loading detailed stats..."
+msgstr "正在加载详细统计数据..."
+
+msgid "Losses"
+msgstr "损失"
+
+msgid "Median"
+msgstr "中位数"
+
+msgid "No grade stats available"
+msgstr "没有可用的成绩统计数据"
+
+msgid "No solve time data yet"
+msgstr "尚无解决时间数据"
+
+msgid "No tournament data available"
+msgstr "没有可用的比赛数据"
+
+msgid "No tournament data by grade available"
+msgstr "没有按级别划分的锦标赛数据"
+
+msgid "Not enough data for trend analysis"
+msgstr "没有足够的数据进行趋势分析"
+
+msgid "Overview"
+msgstr "概述"
+
+msgid "Performance Over Time"
+msgstr "随着时间的推移表现"
+
+msgid "Play this task"
+msgstr "玩这个题目"
+
+msgid "Player: %{name}"
+msgstr "玩家：%{name}"
+
+msgid "Podiums"
+msgstr "领奖台"
+
+msgid "Points by Tournament Grade"
+msgstr "按比赛等级划分的积分"
+
+msgid "Points Distribution by Grade"
+msgstr "按年级划分的积分"
+
+msgid "Points:"
+msgstr "要点："
+
+msgid "Season Rank"
+msgstr "赛季排名"
+
+msgid "Showing basic stats only."
+msgstr "仅显示基本统计数据。"
+
+msgid "Show all %{count}"
+msgstr "显示全部 %{count}"
+
+msgid "Solve Time (winners)"
+msgstr "解题时间（获胜者）"
+
+msgid "Stats vs Median (Normalized)"
+msgstr "统计数据与中位数（标准化）"
+
+msgid "Task must be active to play"
+msgstr "题目必须处于活动状态才能进行"
+
+msgid "Task not found"
+msgstr "未找到题目"
+
+msgid "Test Cases (%{count})"
+msgstr "测试用例 (%{count})"
+
+msgid "Time Played"
+msgstr "对局时长"
+
+msgid "Time to solve"
+msgstr "是时候解决了"
+
+msgid "Top %{percent}%"
+msgstr "前 %{percent}%"
+
+msgid "Total Games"
+msgstr "总比赛数"
+
+msgid "Total Points"
+msgstr "总分"
+
+msgid "Total Score"
+msgstr "总分"
+
+msgid "Total Wins"
+msgstr "总胜场数"
+
+msgid "Tournament #%{id}"
+msgstr "锦标赛#%{id}"
+
+msgid "Tournament Performance by Grade"
+msgstr "按年级划分的锦标赛表现"
+
+msgid "Tournament Results"
+msgstr "比赛结果"
+
+msgid "Tournaments by Grade"
+msgstr "按年级划分的锦标赛"
+
+msgid "Tournaments:"
+msgstr "锦标赛："
+
+msgid "Trends"
+msgstr "趋势"
+
+msgid "Updated"
+msgstr "已更新"
+
+msgid "Visibility"
+msgstr "能见度"
+
+msgid "vs Median Player"
+msgstr "对阵中位球员"
+
+msgid "W/G"
+msgstr "胜场/场次"
+
+msgid "Weapon"
+msgstr "武器"
+
+msgid "Weekly Performance Trend"
+msgstr "每周表现趋势"
+
+msgid "Win Rate"
+msgstr "胜率"
+
+msgid "Win Rate %"
+msgstr "胜率%"
+
+msgid "Win Rate Comparison"
+msgstr "胜率比较"
+
+msgid "Win Rate:"
+msgstr "胜率："
+
+msgid "Winners"
+msgstr "获胜者"
+
+msgid "Wins by Grade"
+msgstr "按等级获胜"
+
+msgid "Wins:"
+msgstr "获胜："
+
+msgid "Your Percentile"
+msgstr "您的百分位数"
+
+msgid "Your Ranking Percentile"
+msgstr "您的排名百分位"
+
+msgid "Your Stats vs Median"
+msgstr "您的统计数据与中位数"
+
+msgid "(%{count} available)"
+msgstr "（%{count} 可用）"
+
+msgid "Are you sure you want to finish this tournament?"
+msgstr "您确定要完成本次锦标赛吗？"
+
+msgid "Are you sure you want to reset this tournament?"
+msgstr "您确定要重置本次锦标赛吗？"
+
+msgid "Are you sure you want to retry this tournament?"
+msgstr "您确定要重试此锦标赛吗？"
+
+msgid "Are you sure you want to start the round?"
+msgstr "您确定要开始回合吗？"
+
+msgid "Are you sure you want to start the tournament?"
+msgstr "您确定要开始比赛吗？"
+
+msgid "Bots visible"
+msgstr "机器人可见"
+
+msgid "Break duration"
+msgstr "休息时间"
+
+msgid "Chat enabled"
+msgstr "已启用聊天功能"
+
+msgid "Choose player"
+msgstr "选择玩家"
+
+msgid "Choose task level for"
+msgstr "选择题目级别"
+
+msgid "Completed tournaments"
+msgstr "已完成的锦标赛"
+
+msgid "Copy Name"
+msgstr "复制姓名"
+
+msgid "Creator: %{name}"
+msgstr "创建者：%{name}"
+
+msgid "Current round timeout"
+msgstr "本轮超时"
+
+msgid "Direct message"
+msgstr "直接留言"
+
+msgid "Edit Tournament"
+msgstr "编辑锦标赛"
+
+msgid "Event ID"
+msgstr "事件ID"
+
+msgid "Finish Round"
+msgstr "完成回合"
+
+msgid "Finish tournament"
+msgstr "完成比赛"
+
+msgid "Finish Tournament"
+msgstr "完成锦标赛"
+
+msgid "Hide bots"
+msgstr "隐藏机器人"
+
+msgid "ID"
+msgstr "身份证号"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Level: %{level} (%{count} available)"
+msgstr "级别：%{level}（可用%{count}）"
+
+msgid "Live"
+msgstr "直播"
+
+msgid "Live tournaments"
+msgstr "现场锦标赛"
+
+msgid "Lobby"
+msgstr "大厅"
+
+msgid "Match seconds"
+msgstr "比赛秒数"
+
+msgid "Mode:"
+msgstr "模式："
+
+msgid "No"
+msgstr "否"
+
+msgid "No completed games"
+msgstr "没有完成的游戏"
+
+msgid "No invites"
+msgstr "没有邀请"
+
+msgid "No rating"
+msgstr "无评级"
+
+msgid "Open up"
+msgstr "开放"
+
+msgid "Opponent: %{name}"
+msgstr "对手：%{name}"
+
+msgid "Origin"
+msgstr "产地"
+
+msgid "Participants"
+msgstr "参加者"
+
+msgid "Please"
+msgstr "请"
+
+msgid "Ranking type"
+msgstr "排名类型"
+
+msgid "Reset tournament"
+msgstr "重置锦标赛"
+
+msgid "Reset tournament progress"
+msgstr "重置锦标赛进度"
+
+msgid "Restart"
+msgstr "重新启动"
+
+msgid "Retry tournament"
+msgstr "重试锦标赛"
+
+msgid "Round %{number}"
+msgstr "圆形 %{number}"
+
+msgid "Round already started"
+msgstr "回合已经开始"
+
+msgid "Round task level"
+msgstr "回合题目等级"
+
+msgid "Round task pack id"
+msgstr "回合题目集id"
+
+msgid "Round timeout"
+msgstr "回合超时"
+
+msgid "Round timeout seconds"
+msgstr "回合超时秒数"
+
+msgid "Rounds limit"
+msgstr "回合限制"
+
+msgid "Saving..."
+msgstr "正在保存..."
+
+msgid "Schedule"
+msgstr "时间表"
+
+msgid "Search"
+msgstr "搜索"
+
+msgid "sec"
+msgstr "秒"
+
+msgid "Seconds:"
+msgstr "秒："
+
+msgid "Show bots"
+msgstr "显示机器人"
+
+msgid "Show Results"
+msgstr "显示结果"
+
+msgid "sign in"
+msgstr "登录"
+
+msgid "Spectator"
+msgstr "旁观者"
+
+msgid "Start"
+msgstr "开始"
+
+msgid "Start next round"
+msgstr "开始下一轮"
+
+msgid "Start round"
+msgstr "开始回合"
+
+msgid "Start Round"
+msgstr "开始本轮"
+
+msgid "Start tournament confirmation"
+msgstr "开始比赛确认"
+
+msgid "Starts at %{date}"
+msgstr "从 %{date} 开始"
+
+msgid "Task level:"
+msgstr "题目级别："
+
+msgid "Task pack"
+msgstr "题目集"
+
+msgid "Task pack name:"
+msgstr "题目集名称："
+
+msgid "Task provider"
+msgstr "题目提供者"
+
+msgid "Task strategy"
+msgstr "题目策略"
+
+msgid "Template Task is Loading"
+msgstr "模板题目正在加载"
+
+msgid "There are no active tournaments right now"
+msgstr "目前没有正在进行的比赛"
+
+msgid ""
+"This action is destructive. All tournament progress, matches, and results "
+"will be lost."
+msgstr "这个动作是破坏性的。所有锦标赛进度、比赛和结果都将丢失。"
+
+msgid ""
+"This will clear tournament games and results, then restore the current "
+"player roster."
+msgstr "这将清除锦标赛比赛和结果，然后恢复当前的玩家名单。"
+
+msgid "This will end the tournament and finalize all results."
+msgstr "这将结束比赛并最终确定所有结果。"
+
+msgid "Timeout mode"
+msgstr "超时模式"
+
+msgid "Timeouts"
+msgstr "超时"
+
+msgid "Title"
+msgstr "标题"
+
+msgid "to see the tournament details"
+msgstr "查看比赛详情"
+
+msgid "Toggle stream mode"
+msgstr "切换流模式"
+
+msgid "Top list"
+msgstr "热门列表"
+
+msgid "Tournament details"
+msgstr "比赛详情"
+
+msgid "Tournament flow"
+msgstr "赛事流程"
+
+msgid "Tournament ID"
+msgstr "比赛ID"
+
+msgid "Tournament timeout"
+msgstr "比赛暂停"
+
+msgid "Tournaments Info"
+msgstr "赛事信息"
+
+msgid "Updated at"
+msgstr "更新于"
+
+msgid "Yes"
+msgstr "是的"
+
+msgid "you"
+msgstr "你"
+
+msgid "You invited "
+msgstr "你邀请了"
+
+msgid "You may want to create one"
+msgstr "您可能想创建一个"
+
+msgid "Your invites"
+msgstr "您的邀请"
+
+msgid "Blank"
+msgstr "空白"
+
+msgid "Draft"
+msgstr "吃水"
+
+msgid "On Moderation"
+msgstr "论适度"
+
+msgid "Disabled"
+msgstr "残疾人"
+
+msgid "blank"
+msgstr "空白"
+
+msgid "draft"
+msgstr "草案"
+
+msgid "on_moderation"
+msgstr "审核中"
+
+msgid "active"
+msgstr "活跃的"
+
+msgid "disabled"
+msgstr "残疾人"
+
+msgid "public"
+msgstr "公开的"
+
+msgid "hidden"
+msgstr "隐藏的"
+
+msgid "algorithms"
+msgstr "算法"
+
+msgid "elementary"
+msgstr "初级的"
+
+msgid "easy"
+msgstr "容易"
+
+msgid "medium"
+msgstr "中等"
+
+msgid "hard"
+msgstr "硬"
+
+msgid "Email"
+msgstr "电子邮件"
+
+msgid "Nickname"
+msgstr "昵称"
+
+msgid "Password Confirmation"
+msgstr "密码确认"
+
+msgid "Tournament statistics"
+msgstr "赛事统计"
+
+msgid "Tournament round statistics"
+msgstr "比赛轮次统计"
+
+msgid "Archive account"
+msgstr "归档账户"
+
+msgid "Archiving account..."
+msgstr "正在存档帐户..."
+
+msgid "Archive account permanently"
+msgstr "永久存档帐户"
+
+msgid ""
+"Anonymize your profile, revoke every session, and permanently disable "
+"access to this account."
+msgstr "匿名您的个人资料，撤销每个会话，并永久禁用对此帐户的访问。"
+
+msgid ""
+"This action cannot be undone. You will lose access to this account forever. "
+"You can create a new account later, but it will not restore this account."
+msgstr "此操作无法撤消。您将永远失去对该帐户的访问权限。您可以稍后创建一个新帐户，但不会恢复该帐户。"
+
+msgid "Type ARCHIVE to confirm"
+msgstr "输入 ARCHIVE 进行确认"
+
+msgid "Archive permanently"
+msgstr "永久存档"
+
+msgid "In tournament"
+msgstr "比赛中"
+
+msgid "Time for checking after the game is over"
+msgstr "比赛结束后检查时间"
+
+msgid "Checked after the time ran out: the result does not count"
+msgstr "超时后检查：结果不算数"
+
+msgid "API tokens"
+msgstr "API 令牌"
+
+msgid "Personal tokens for bots, CLI and devices."
+msgstr "机器人、CLI 和设备的个人令牌。"
+
+msgid "API documentation"
+msgstr "API文档"
+
+msgid "Copy the token now, it will not be shown again:"
+msgstr "现在复制令牌，它不会再次显示："
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Token name"
+msgstr "令牌名称"
+
+msgid "Expires in"
+msgstr "到期时间"
+
+msgid "30 days"
+msgstr "30天"
+
+msgid "90 days"
+msgstr "90天"
+
+msgid "1 year"
+msgstr "1年"
+
+msgid "Never (read-only tokens)"
+msgstr "从不（只读标记）"
+
+msgid "Create token"
+msgstr "创建令牌"
+
+msgid "No API tokens"
+msgstr "没有 API 令牌"
+
+msgid "Last used"
+msgstr "上次使用"
+
+msgid "Expires"
+msgstr "过期"
+
+msgid "Never expires"
+msgstr "永不过期"
+
+msgid "Revoke"
+msgstr "撤销"
+
+msgid "e.g. Gauntlet or my bot"
+msgstr "例如手套或我的机器人"
+
+msgid "Available for accounts older than a week"
+msgstr "适用于一周以上的账户"
+
+msgid "Your profile, games, tournaments and the schedule"
+msgstr "您的个人资料、比赛、锦标赛和赛程表"
+
+msgid "Play: create and join games, invites, join tournaments"
+msgstr "玩：创建和加入游戏、邀请、参加锦标赛"
+
+msgid "Create, edit, start and cancel private tournaments"
+msgstr "创建、编辑、开始和取消私人锦标赛"
+
+msgid "Never used"
+msgstr "从未使用过"
+
+msgid "Connecting..."
+msgstr "正在连接..."
+
+msgid "%{date} at %{time}"
+msgstr "%{date} 在 %{time}"
+
+msgid "1st place"
+msgstr "第一名"
+
+msgid "About this tournament"
+msgstr "关于本次比赛"
+
+msgid "Add clan"
+msgstr "添加战队"
+
+msgid "All-time"
+msgstr "空前的"
+
+msgid "Ban in chat"
+msgstr "禁止聊天"
+
+msgid "Bot"
+msgstr "机器人"
+
+msgid "Close chat with %{name}"
+msgstr "与 %{name} 关闭聊天"
+
+msgid "Codebattle League rules"
+msgstr "Codebattle联盟规则"
+
+msgid "Competition hasn't started yet. Check the schedule for upcoming tournaments."
+msgstr "比赛还没有开始。检查即将举行的比赛的时间表。"
+
+msgid "Connection lost. Reconnecting…"
+msgstr "连接丢失。正在重新连接..."
+
+msgid "Copied"
+msgstr "已复制"
+
+msgid "Copy invite link"
+msgstr "复制邀请链接"
+
+msgid "Copy name"
+msgstr "复制姓名"
+
+msgid "Could not create the game. Try again."
+msgstr "无法创建游戏。再试一次。"
+
+msgid "Couldn't load the leaderboard."
+msgstr "无法加载排行榜。"
+
+msgid "Create"
+msgstr "创建"
+
+msgid "Custom tournament"
+msgstr "定制锦标赛"
+
+msgid "Editing a task"
+msgstr "编辑题目"
+
+msgid "Elo"
+msgstr "Elo"
+
+msgid "Elo gained this month"
+msgstr "本月 Elo 收益"
+
+msgid "Elo gained this week"
+msgstr "Elo 本周获得收益"
+
+msgid "Elo gained this year"
+msgstr "今年 Elo 获得了"
+
+msgid "Elo rating"
+msgstr "Elo 等级分"
+
+msgid ""
+"Four seasons a year: Sep 21 – Dec 21, Dec 21 – Mar 21, Mar 21 – Jun 21, Jun "
+"21 – Sep 21. Season points reset every season; Elo rating never does. Each "
+"season ends with a Grand Slam on the 21st at 16:00 UTC."
+msgstr ""
+"一年四个赛季：9月21日-12月21日、12月21日-3月21日、3月21日-6月21日、6月21日-9月21日。每个赛季赛季积分重置； Elo "
+"评级从来不会。每个赛季都会在 UTC 时间 21 日 16:00 结束大满贯赛事。"
+
+msgid "In a game"
+msgstr "在一场比赛中"
+
+msgid "Join battle"
+msgstr "加入战斗"
+
+msgid "Loading tasks…"
+msgstr "正在加载题目..."
+
+msgid "Navigation"
+msgstr "导航"
+
+msgid "No active season"
+msgstr "无活跃赛季"
+
+msgid "No messages yet. Say hi!"
+msgstr "还没有消息。打个招呼吧！"
+
+msgid "No results this season yet."
+msgstr "本赛季还没有结果。"
+
+msgid "No tasks match"
+msgstr "没有匹配的题目"
+
+msgid "Nobody has played this month."
+msgstr "这个月没有人玩。"
+
+msgid "Nobody has played this week."
+msgstr "这周没人玩。"
+
+msgid "Nobody has played this year."
+msgstr "今年没人玩了。"
+
+msgid "Nobody has played yet."
+msgstr "还没有人玩过。"
+
+msgid "Online now"
+msgstr "现已上线"
+
+msgid "Players: %{count}"
+msgstr "玩家：%{count}"
+
+msgid ""
+"Points halve with each place down to 2; every other finisher gets 2 points. "
+"Prize and participation points don't stack."
+msgstr "每名次得分减半，降至 2 分；其他所有完成者均得 2 分。奖品和参与积分不叠加。"
+
+msgid "Private message to %{name}"
+msgstr "私信给 %{name}"
+
+msgid "Prize places"
+msgstr "奖名额"
+
+msgid "Random player"
+msgstr "随机玩家"
+
+msgid "Registration open"
+msgstr "开放报名"
+
+msgid ""
+"Rookie runs every 4 hours, Challenger daily at 16:00 UTC. One weekly "
+"tournament takes the 16:00 slot, by priority Grand Slam › Masters › Elite › "
+"Pro. Open tournaments are created by players and award no points."
+msgstr ""
+"Rookie 每 4 小时运行一次，Challenger 每天 16:00 UTC。每周一场比赛在 16:00 进行，优先顺序为大满贯 > 大师赛 > "
+"精英赛 > 职业赛。公开锦标赛由玩家创建，不奖励任何积分。"
+
+msgid "Rules"
+msgstr "规则"
+
+msgid "S%{name} ’%{year}"
+msgstr "S%{name} '%{year}"
+
+msgid "Season %{name}"
+msgstr "%{name} 赛季"
+
+msgid "Season %{name}, %{year}"
+msgstr "季 %{name}、%{year}"
+
+msgid "Season and Grand Slam champions enter the Hall of Fame."
+msgstr "赛季和大满贯冠军进入名人堂。"
+
+msgid "Season ranking"
+msgstr "赛季排名"
+
+msgid "Send private message"
+msgstr "发送私信"
+
+msgid "Start a private conversation with %{name}."
+msgstr "与 %{name} 开始私人对话。"
+
+msgid "Started at %{time}"
+msgstr "开始于 %{time}"
+
+msgid "Starting soon"
+msgstr "即将开始"
+
+msgid "Switch to dark theme"
+msgstr "切换到深色主题"
+
+msgid "Switch to light theme"
+msgstr "切换到浅色主题"
+
+msgid "There are no active games right now. Create one!"
+msgstr "目前没有正在进行的游戏。创建一个！"
+
+msgid "Total season points"
+msgstr "赛季总积分"
+
+msgid "Tournament wins this season"
+msgstr "本赛季锦标赛获胜"
+
+msgid "Tournaments played this season"
+msgstr "本赛季举行的比赛"
+
+msgid "Tournaments: %{count}"
+msgstr "锦标赛：%{count}"
+
+msgid "Waiting for opponent"
+msgstr "等待对手"
+
+msgid "Watch"
+msgstr "观战"
+
+msgid ""
+"Play season games, earn points, and compete for your place in the Hall of "
+"Fame. Each season’s winner takes home exclusive Codebattle merch."
+msgstr "参加赛季比赛，赚取积分，争夺名人堂的一席之地。每个赛季的获胜者都会获得独家 Codebattle 商品。"
+
+msgid "Wins: %{wins} / %{games}"
+msgstr "获胜：%{wins} / %{games}"
+
+msgid "Year"
+msgstr "年份"
+
+msgid "game #%{id}"
+msgstr "游戏#%{id}"
+
+msgid "private"
+msgstr "私人的"
+
+msgid "to %{name}"
+msgstr "至 %{name}"
+
+msgid "top %{count}"
+msgstr "顶部%{count}"
+
+msgid "tournament #%{id}"
+msgstr "比赛#%{id}"
+
+msgid "until %{date}"
+msgstr "直到 %{date}"
+
+msgid "in %{time}"
+msgstr "在 %{time}"
+
+msgid "%{name} accepted your invite. Starting the battle…"
+msgstr "%{name} 接受了您的邀请。开始战斗……"
+
+msgid "%{name} canceled the invite"
+msgstr "%{name} 取消了邀请"
+
+msgid "%{name} invites you"
+msgstr "%{name} 邀请您"
+
+msgid "%{name} invites you to a battle"
+msgstr "%{name} 邀您参战"
+
+msgid "Anonymous"
+msgstr "匿名"
+
+msgid "Battle invite"
+msgstr "对战邀请"
+
+msgid "Couldn't load this player's stats."
+msgstr "无法加载该玩家的统计数据。"
+
+msgid "Deploy finished. Syncing latest session..."
+msgstr "部署完成。正在同步最新会话..."
+
+msgid "Deploy handoff incomplete. Reconnecting..."
+msgstr "部署切换未完成。正在重新连接..."
+
+msgid "Deploy in progress. Reconnecting game session..."
+msgstr "部署正在进行中。正在重新连接游戏会话..."
+
+msgid "Follow"
+msgstr "关注"
+
+msgid "Follow: open their games automatically"
+msgstr "关注：自动打开他们的游戏"
+
+msgid "Highest Win"
+msgstr "最高胜利"
+
+msgid "Invite accepted"
+msgstr "已接受邀请"
+
+msgid "Invite not found."
+msgstr "未找到邀请。"
+
+msgid "Invite sent to %{name}. Waiting for the reply…"
+msgstr "邀请已发送至 %{name}。等待回复..."
+
+msgid "Invite to a battle"
+msgstr "邀请对战"
+
+msgid "Invite to battle"
+msgstr "邀请参战"
+
+msgid "No invites. Hover a player to invite them to a battle."
+msgstr "没有邀请。将鼠标悬停在玩家上即可邀请他们参加战斗。"
+
+msgid "Nobody found"
+msgstr "没有人找到"
+
+msgid "Not in a game"
+msgstr "不在游戏中"
+
+msgid "Offline"
+msgstr "离线"
+
+msgid "One of you is already in a game."
+msgstr "你们中的一个人已经在玩游戏了。"
+
+msgid "Polyglot"
+msgstr "多语言"
+
+msgid "Resume"
+msgstr "简历"
+
+msgid "Searching…"
+msgstr "正在寻找..."
+
+msgid "Season Wins"
+msgstr "赛季胜利"
+
+msgid "Send invite"
+msgstr "发送邀请"
+
+msgid "The server is restarting. Try again in a moment."
+msgstr "服务器正在重新启动。稍后再试一次。"
+
+msgid "There is already a pending invite between you two."
+msgstr "你们两个之间已经有一个待处理的邀请。"
+
+msgid "This invite is no longer active."
+msgstr "此邀请不再有效。"
+
+msgid "This player can't be invited."
+msgstr "无法邀请该玩家。"
+
+msgid "Tournament wins"
+msgstr "锦标赛获胜"
+
+msgid "Type a name to search"
+msgstr "输入名称进行搜索"
+
+msgid "Watch the game"
+msgstr "观看对局"
+
+msgid "You are following %{name}"
+msgstr "您正在关注 %{name}"
+
+msgid "You can't invite yourself."
+msgstr "你不能邀请自己。"
+
+msgid "You invited %{name}"
+msgstr "您邀请了%{name}"
+
+msgid "Language not set"
+msgstr "语言未设置"
+
+msgid "Seen %{when}"
+msgstr "见过%{when}"
+
+msgid "Seen recently"
+msgstr "最近看到"
+
+msgid "%{percent}% won"
+msgstr "%{percent}% 获胜"
+
+msgid "Activity period"
+msgstr "活动期间"
+
+msgid "Back to lobby"
+msgstr "返回大厅"
+
+msgid "Couldn't load activity."
+msgstr "无法加载活动。"
+
+msgid "Couldn't load this profile."
+msgstr "无法加载此配置文件。"
+
+msgid "Failed to load games"
+msgstr "无法加载游戏"
+
+msgid "Less"
+msgstr "少"
+
+msgid "Load more"
+msgstr "加载更多"
+
+msgid "More"
+msgstr "更多"
+
+msgid "No games on %{date}"
+msgstr "%{date} 上没有游戏"
+
+msgid "No rivals yet."
+msgstr "还没有竞争对手。"
+
+msgid "No wins yet."
+msgstr "还没有获胜。"
+
+msgid "Something went wrong. Try again."
+msgstr "出了点问题。再试一次。"
+
+msgid "There is no player with this id."
+msgstr "没有该id的玩家。"
+
+msgid "W/L/T"
+msgstr "胜/负/平"
+
+msgid "%{count} tasks"
+msgstr "%{count} 题目"
+
+msgid "Activate"
+msgstr "激活"
+
+msgid "All"
+msgstr "全部"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Delete task \"%{name}\"?"
+msgstr "删除题目“%{name}”？"
+
+msgid "Delete task pack?"
+msgstr "删除题目集？"
+
+msgid "Delete this clan?"
+msgstr "删除这个战队？"
+
+msgid "Disable"
+msgstr "禁用"
+
+msgid "No clans found"
+msgstr "未找到战队"
+
+msgid "No members yet."
+msgstr "还没有会员。"
+
+msgid "No task packs yet."
+msgstr "还没有题目集。"
+
+msgid "Ordered sets of tasks for tournaments."
+msgstr "为锦标赛订购了一组题目。"
+
+msgid "Search by name, tag or id"
+msgstr "按名称、标签或 ID 搜索"
+
+msgid "Search clans"
+msgstr "搜索战队"
+
+msgid "Show more (%{count} left)"
+msgstr "显示更多（%{count} 左）"
+
+msgid "Task not found for id = %{id}"
+msgstr "找不到 id = %{id} 的题目"
+
+msgid "Total clans: %{count}"
+msgstr "战队总数：%{count}"
+
+msgid "Unnamed clan"
+msgstr "无名战队"
+
+msgid "moderation"
+msgstr "节制"
+
+msgid "Based on %{count} winning games."
+msgstr "基于 %{count} 获胜比赛。"
+
+msgid "Couldn't save the task. Try again."
+msgstr "无法保存题目。再试一次。"
+
+msgid "No Russian description yet."
+msgstr "还没有俄语描述。"
+
+msgid "No description yet."
+msgstr "暂无描述。"
+
+msgid "Opens a game against a bot in a new tab."
+msgstr "在新选项卡中打开与机器人的游戏。"
+
+msgid "Preview"
+msgstr "预览"
+
+msgid "Write"
+msgstr "写"
+
+msgid "median"
+msgstr "中位数"
+
+msgid "Edit task pack"
+msgstr "编辑题目集"
+
+msgid "Back to pack"
+msgstr "返回包装"
+
+msgid "Unique name, up to %{count} characters"
+msgstr "唯一名称，最多 %{count} 个字符"
+
+msgid "Hidden packs are visible only to you and admins"
+msgstr "隐藏包仅对您和管理员可见"
+
+msgid "Order matters: tournaments play the tasks in this order."
+msgstr "顺序很重要：锦标赛按此顺序进行题目。"
+
+msgid "List"
+msgstr "列表"
+
+msgid "IDs"
+msgstr "ID"
+
+msgid "Only integers separated by commas"
+msgstr "仅限以逗号分隔的整数"
+
+msgid "Add a task: search by name, tag or id"
+msgstr "添加题目：按名称、标签或 ID 搜索"
+
+msgid "No tasks yet. Add some above."
+msgstr "还没有题目。上面补充一些。"
+
+msgid "Move up"
+msgstr "向上移动"
+
+msgid "Move down"
+msgstr "下移"
+
+msgid "3–16 Latin letters, digits, - or _"
+msgstr "3–16 个拉丁字母、数字、- 或 _"
+
+msgid "Active %{ago}"
+msgstr "活跃%{ago}"
+
+msgid "Active now"
+msgstr "现在活跃"
+
+msgid "Active recently"
+msgstr "最近活跃"
+
+msgid "At least 8 characters, any symbols"
+msgstr "至少8个字符，任何符号"
+
+msgid "CSS tasks"
+msgstr "CSS 题目"
+
+msgid "Changing it signs you out on other devices and revokes your API tokens."
+msgstr "更改它会使您在其他设备上注销并撤销您的 API 令牌。"
+
+msgid "Connected"
+msgstr "已连接"
+
+msgid "Couldn't save your settings. Try again."
+msgstr "无法保存您的设置。再试一次。"
+
+msgid "Danger zone"
+msgstr "危险区域"
+
+msgid "Dark"
+msgstr "深色"
+
+msgid "Every device is signed out and every API token revoked"
+msgstr "每个设备均已注销，每个 API 令牌均已撤销"
+
+msgid "Expires %{date}"
+msgstr "过期 %{date}"
+
+msgid "Failed tests"
+msgstr "测试失败"
+
+msgid "Field can't be empty"
+msgstr "字段不能为空"
+
+msgid "Games and tournament results stay, without your name"
+msgstr "游戏和锦标赛结果保留，没有您的名字"
+
+msgid "Invalid email"
+msgstr "电子邮件无效"
+
+msgid "Is too long"
+msgstr "太长了"
+
+msgid "Last used %{ago}"
+msgstr "最后使用 %{ago}"
+
+msgid "Latin letters, digits, - and _; starts with a letter"
+msgstr "拉丁字母、数字、- 和 _；以字母开头"
+
+msgid "Leave empty to leave your clan."
+msgstr "留空即可离开您的战队。"
+
+msgid "Light"
+msgstr "浅色"
+
+msgid "New token"
+msgstr "新代币"
+
+msgid "Not connected"
+msgstr "未连接"
+
+msgid "Password and email you sign in with."
+msgstr "您登录时使用的密码和电子邮件。"
+
+msgid "Password changed. Other devices were signed out."
+msgstr "密码已更改。其他设备已注销。"
+
+msgid "Passwords must match"
+msgstr "密码必须匹配"
+
+msgid "Preferences"
+msgstr "偏好设置"
+
+msgid "Profile updated"
+msgstr "个人资料已更新"
+
+msgid "Public profile"
+msgstr "公开资料"
+
+msgid "Revoke token \"%{name}\"? Apps using it stop working."
+msgstr "撤销令牌“%{name}”？使用它的应用程序停止工作。"
+
+msgid "Round start"
+msgstr "回合开始"
+
+msgid "SQL tasks"
+msgstr "SQL题目"
+
+msgid "Saved"
+msgstr "已保存"
+
+msgid "Saved in this browser."
+msgstr "保存在此浏览器中。"
+
+msgid "Scopes"
+msgstr "范围"
+
+msgid "Security"
+msgstr "安全性"
+
+msgid "Should be 16 character(s) or less"
+msgstr "不得超过 16 个字符"
+
+msgid "Should be at least 3 characters"
+msgstr "应至少 3 个字符"
+
+msgid "Should be at least 8 characters"
+msgstr "应至少 8 个字符"
+
+msgid "Sign out on all other devices?"
+msgstr "在所有其他设备上退出吗？"
+
+msgid "Sign out other devices"
+msgstr "注销其他设备"
+
+msgid "Sign-in & security"
+msgstr "登录和安全"
+
+msgid "Some devices could not be signed out. Try again."
+msgstr "某些设备无法注销。再试一次。"
+
+msgid "System"
+msgstr "跟随系统"
+
+msgid "Theme"
+msgstr "主题"
+
+msgid ""
+"This is your only way to sign in. Set a password or link another account "
+"first."
+msgstr "这是您登录的唯一方式。请先设置密码或链接其他帐户。"
+
+msgid "Time is over"
+msgstr "时间结束了"
+
+msgid "Token \"%{name}\" created"
+msgstr "代币“%{name}”已创建"
+
+msgid "Try it:"
+msgstr "尝试一下："
+
+msgid "Unlink"
+msgstr "取消链接"
+
+msgid "Unlink %{provider}?"
+msgstr "取消链接 %{provider}？"
+
+msgid ""
+"Verification email sent to %{email}. Confirm the new address to finish the "
+"change."
+msgstr "验证电子邮件已发送至 %{email}。确认新地址以完成更改。"
+
+msgid "You sign in with a linked account, so there is no password to change here."
+msgstr "您使用关联帐户登录，因此此处无需更改密码。"
+
+msgid "Your name is anonymized; avatar, email and linked accounts are removed"
+msgstr "您的名字已匿名；头像、电子邮件和关联帐户均被删除"
+
+msgid "Your tokens"
+msgstr "你的令牌"
+
+msgid "signed in %{date}"
+msgstr "签署%{date}"
+
+msgid "#%{place} of %{count}"
+msgstr "%{count} 的 #%{place}"
+
+msgid "%{count} days left"
+msgstr "还剩 %{count} 天"
+
+msgid "%{hours}h %{minutes}m"
+msgstr "%{hours}h %{minutes}m"
+
+msgid "%{minutes}m"
+msgstr "%{minutes}m"
+
+msgid "%{percent}% played"
+msgstr "%{percent}% 已玩过"
+
+msgid "%{points} pts · %{players} players"
+msgstr "%{points} 分 · %{players} 玩家"
+
+msgid "Best / avg place"
+msgstr "最佳名次 / 平均名次"
+
+msgid "Codebattle League champions, season by season."
+msgstr "Codebattle联盟冠军逐季。"
+
+msgid "Find me · #%{place}"
+msgstr "找到我·#%{place}"
+
+msgid "Four seasons a year. Points reset every season; champions stay forever."
+msgstr "一年四个赛季。每个赛季积分都会重置；冠军永远存在。"
+
+msgid "Median player"
+msgstr "中位球员"
+
+msgid "Newer"
+msgstr "较新"
+
+msgid "No clans yet"
+msgstr "还没有战队"
+
+msgid "No seasons yet"
+msgstr "还没有赛季"
+
+msgid "Older"
+msgstr "年长的"
+
+msgid "Points awarded"
+msgstr "授予积分"
+
+msgid "Points per tournament"
+msgstr "每场比赛的积分"
+
+msgid "Points per week"
+msgstr "每周积分"
+
+msgid "Points: %{count}"
+msgstr "积分：%{count}"
+
+msgid "Rows per page"
+msgstr "每页行数"
+
+msgid "Season at a glance"
+msgstr "赛季概览"
+
+msgid "Season progress"
+msgstr "赛季进度"
+
+msgid "Starts soon"
+msgstr "即将开始"
+
+msgid "Time in battles"
+msgstr "战斗时间"
+
+msgid "Top %{count} at a glance"
+msgstr "顶部 %{count} 一目了然"
+
+msgid "Top %{count} of %{total} players"
+msgstr "%{total} 顶级 %{count} 玩家"
+
+msgid "Top clans"
+msgstr "顶级战队"
+
+msgid "Weapons of choice"
+msgstr "武器选择"
+
+msgid "Week of %{date}"
+msgstr "%{date} 周"
+
+msgid "vs %{value}"
+msgstr "与 %{value}"
+
+msgid "%{count} tournaments"
+msgstr "%{count} 锦标赛"
+
+msgid "%{index} of %{count}"
+msgstr "%{index} 的 %{count}"
+
+msgid "%{points} points"
+msgstr "%{points} 分"
+
+msgid "All Tournaments"
+msgstr "所有锦标赛"
+
+msgid "Codebattle League tournaments, your own tournaments and past results."
+msgstr "Codebattle League 锦标赛、您自己的锦标赛和过去的成绩。"
+
+msgid "Codebattle League · %{grade}"
+msgstr "Codebattle联盟·%{grade}"
+
+msgid "Couldn't load the schedule."
+msgstr "无法加载时间表。"
+
+msgid "Every other finisher gets 2 points."
+msgstr "其他所有完成者均得 2 分。"
+
+msgid "League rules"
+msgstr "联赛规则"
+
+msgid "Nothing matches your filters"
+msgstr "没有任何内容符合您的过滤条件"
+
+msgid "Opens when registration starts"
+msgstr "注册开始时打开"
+
+msgid "Previous"
+msgstr "上一页"
+
+msgid "Registration"
+msgstr "注册"
+
+msgid "Season points by place"
+msgstr "各名次对应的赛季积分"
+
+msgid "Starts in"
+msgstr "开始于"
+
+msgid "Tournament or winner"
+msgstr "比赛或获胜者"
+
+msgid "Tournament schedule"
+msgstr "比赛日程"
+
+msgid "Create clan"
+msgstr "创建战队"
+
+msgid "Edit clan"
+msgstr "编辑战队"
+
+msgid "Full name"
+msgstr "全名"
+
+msgid "Short and unique, shown next to players"
+msgstr "简短而独特，显示在玩家旁边"
+
+msgid "Optional, e.g. a company or school"
+msgstr "可选的，例如公司或学校"
+
+msgid "Leave %{clan} and join this clan"
+msgstr "离开 %{clan} 并加入这个战队"
+
+msgid "Join this clan"
+msgstr "加入这个战队"
+
+msgid "Clan created"
+msgstr "战队创建"
+
+msgid "Clan updated"
+msgstr "战队更新"
+
+msgid "Only the clan creator or an admin can edit it"
+msgstr "只有战队创建者或管理员可以编辑它"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "An error occurred while creating the tournament"
+msgstr "创建锦标赛时发生错误"
+
+msgid "Created by you"
+msgstr "由您创建"
+
+msgid "Invalid JSON"
+msgstr "无效的 JSON"
+
+msgid "Network error. Please try again."
+msgstr "网络错误。请再试一次。"
+
+msgid "No task packs"
+msgstr "没有题目集"
+
+msgid "Please fix the highlighted fields: %{fields}"
+msgstr "请修复突出显示的字段：%{fields}"
+
+msgid "Random name"
+msgstr "随机名称"
+
+msgid "Summary"
+msgstr "总结"
+
+msgid "Use last settings"
+msgstr "使用最后的设置"
+
+msgid "User IDs separated by commas. You are always a moderator."
+msgstr "用户 ID 以逗号分隔。您始终是主持人。"
+
+msgid "in 1 hour"
+msgstr "1小时内"
+
+msgid "in 30 min"
+msgstr "30分钟内"
+
+msgid "in 5 min"
+msgstr "5 分钟后"
+
+msgid "now"
+msgstr "现在"
+
+msgid "Edit %{name}"
+msgstr "编辑 %{name}"
+
+msgid "Failed to update tournament"
+msgstr "锦标赛更新失败"
+
+msgid "Tournament updated successfully"
+msgstr "锦标赛更新成功"
+
+msgid "by"
+msgstr "通过"
+
+msgid "Back to tournament"
+msgstr "返回锦标赛"
+
+msgid "Mine"
+msgstr "我的"
+
+msgid "%{count} rounds"
+msgstr "%{count} 轮"
+
+msgid "About"
+msgstr "关于"
+
+msgid "Banned"
+msgstr "已封禁"
+
+msgid "Break: the next round starts soon."
+msgstr "休息：下一轮即将开始。"
+
+msgid "Cancel the tournament? This cannot be undone."
+msgstr "取消比赛？此操作无法撤消。"
+
+msgid "Chat"
+msgstr "聊天"
+
+msgid "Couldn't load the ranking."
+msgstr "无法加载排名。"
+
+msgid "Couldn't load the results."
+msgstr "无法加载结果。"
+
+msgid "Final round ends in"
+msgstr "最后一轮结束于"
+
+msgid "Find me"
+msgstr "找到我"
+
+msgid "Finish the tournament now? Running games are stopped."
+msgstr "现在结束比赛了吗？正在运行的游戏停止。"
+
+msgid "Finishing the round…"
+msgstr "结束本轮…"
+
+msgid "In the pool, waiting for an opponent…"
+msgstr "泳池里，等待着对手……"
+
+msgid "Invite link"
+msgstr "邀请链接"
+
+msgid "It may be private: open it with the invite link from the organizer."
+msgstr "它可能是私人的：使用组织者提供的邀请链接打开它。"
+
+msgid "Join now and get notified when it starts."
+msgstr "立即加入并在活动开始时收到通知。"
+
+msgid "Kick"
+msgstr "踢"
+
+msgid "Kick %{name} from the tournament?"
+msgstr "将%{name}踢出锦标赛？"
+
+msgid "Make the tournament public?"
+msgstr "公开比赛？"
+
+msgid "Manage tournament"
+msgstr "管理锦标赛"
+
+msgid "My matches"
+msgstr "我的比赛"
+
+msgid "Next matchmaking in"
+msgstr "下一次对接会在"
+
+msgid "Next round in"
+msgstr "下一轮在"
+
+msgid "No matches in this round yet."
+msgstr "本轮还没有比赛。"
+
+msgid "No matches yet. They show up here when a round starts."
+msgstr "还没有比赛。当一轮比赛开始时，他们会出现在这里。"
+
+msgid "No players yet."
+msgstr "还没有玩家。"
+
+msgid "Nobody has joined yet. Be the first!"
+msgstr "还没有人加入。成为第一！"
+
+msgid "Open now"
+msgstr "现已开放"
+
+msgid "Pairing players…"
+msgstr "配对玩家..."
+
+msgid "Private: joins by invite link"
+msgstr "私人：通过邀请链接加入"
+
+msgid "Reconnecting…"
+msgstr "正在重新连接..."
+
+msgid "Restart from scratch? All results of this tournament are lost."
+msgstr "从头开始？本次比赛的所有成绩全部丢失。"
+
+msgid "Results"
+msgstr "结果"
+
+msgid "Results coming soon"
+msgstr "结果即将公布"
+
+msgid "Round ends in"
+msgstr "回合结束于"
+
+msgid "Sign in to join the tournament."
+msgstr "登录即可参加锦标赛。"
+
+msgid "Start the next round now?"
+msgstr "现在开始下一轮吗？"
+
+msgid "Start the tournament for %{count} players?"
+msgstr "为 %{count} 玩家开始锦标赛？"
+
+msgid "Stay here"
+msgstr "留在这里"
+
+msgid "The game opens automatically."
+msgstr "游戏自动打开。"
+
+msgid "The tournament is full."
+msgstr "赛事已满员。"
+
+msgid "The tournament is running, you can still jump in."
+msgstr "比赛正在进行中，您仍然可以参加。"
+
+msgid "The tournament process isn't running. Restart it to continue."
+msgstr "锦标赛进程未运行。重新启动它以继续。"
+
+msgid "Too many players to list here."
+msgstr "玩家太多，无法在此列出。"
+
+msgid "Tournament not found"
+msgstr "未找到锦标赛"
+
+msgid "Waiting for players"
+msgstr "等待玩家"
+
+msgid "Waiting for your next match."
+msgstr "等待你的下一场比赛。"
+
+msgid "You played in this tournament."
+msgstr "你参加了这场比赛。"
+
+msgid "You're in. The game opens here when the tournament starts."
+msgstr "您已加入。比赛开始时，比赛将在此处开始。"
+
+msgid "Your next match is ready"
+msgstr "你的下一场比赛已经准备好了"
+
+msgid "Raw JSON"
+msgstr "原始 JSON"
+
+msgid "Hide JSON"
+msgstr "隐藏 JSON"
+
+msgid "Clan / Player"
+msgstr "战队/玩家"
+
+msgid "Duration: %{seconds}s"
+msgstr "持续时间：%{seconds}s"
+
+msgid "Fastest"
+msgstr "最快"
+
+msgid "Game #%{id}"
+msgstr "对局 #%{id}"
+
+msgid "Join the tournament to see your matches here."
+msgstr "加入锦标赛并在此处查看您的比赛。"
+
+msgid "No reports"
+msgstr "没有报告"
+
+msgid "Panel"
+msgstr "面板"
+
+msgid "Reason"
+msgstr "原因"
+
+msgid "Score per player"
+msgstr "每个玩家的得分"
+
+msgid "Slowest"
+msgstr "最慢"
+
+msgid "Solutions"
+msgstr "解法"
+
+msgid "Statistics appear once the tournament starts."
+msgstr "比赛开始后就会出现统计数据。"
+
+msgid "Task #%{id}"
+msgstr "题目 #%{id}"
+
+msgid ""
+"The leaderboard is published when the tournament ends. Live standings are "
+"in the ranking."
+msgstr "排行榜将在锦标赛结束时发布。实时排名在排名中。"
+
+msgid "Total players: %{count}"
+msgstr "玩家总数：%{count}"
+
+msgid "Total score"
+msgstr "总分"
+
+msgid "Total: %{count}"
+msgstr "总计：%{count}"
+
+msgid "You were marked for a fair play violation and are excluded from the results."
+msgstr "您被标记为违反公平竞赛行为，并且被排除在结果之外。"
+
+msgid "cheater"
+msgstr "骗子"
+
+msgid "confirmed"
+msgstr "已确认"
+
+msgid "copypaste"
+msgstr "复制粘贴"
+
+msgid "denied"
+msgstr "被拒绝"
+
+msgid "pending"
+msgstr "待定"
+
+msgid "player"
+msgstr "玩家"
+
+msgid "processed"
+msgstr "加工过的"
+
+msgid "wrong_solution"
+msgstr "错误的解法"
+
+msgid "The tournament didn't respond. Try again in a moment."
+msgstr "锦标赛没有回应。稍后再试一次。"
+
+msgid ""
+"The tournament isn't running right now. Joining reopens when an organizer "
+"restarts it."
+msgstr "比赛现在没有进行。当组织者重新启动加入时，加入会重新打开。"
+
+msgid ""
+"Leave the tournament? You will be removed from the ranking and get no new "
+"matches."
+msgstr "离开锦标赛？您将从排名中删除，并且不会再获得新的比赛。"
+
+msgid "+%{count} other"
+msgstr "+%{count} 其他"
+
+msgid "in progress"
+msgstr "进行中"
+
+msgid "Moderation"
+msgstr "适度"
+
+msgid "Clans chart"
+msgstr "战队图"
+
+msgid "You : Opponent"
+msgstr "你：对手"
+
+msgid "Wins / losses"
+msgstr "胜/负"
+
+msgid "+%{count} no winner"
+msgstr "+%{count} 无赢家"
+
+msgid "Task base score"
+msgstr "题目基础分"
+
+msgid "Tests passed"
+msgstr "测试通过"
+
+msgid "Total"
+msgstr "总计"
+
+msgid "Your points : opponent's points"
+msgstr "你的分数 : 对手的分数"
+
+msgid "solved %{solved} of %{players}"
+msgstr "解决了 %{players} 的 %{solved}"
+
+msgid "of %{count}"
+msgstr "%{count} 的"
+
+msgid "LIVE"
+msgstr "现场直播"
+
+msgid "Base score %{score}"
+msgstr "基本分数%{score}"
+
+msgid "Time limit %{time}"
+msgstr "时间限制%{time}"
+
+msgid "%{from}–%{to}: %{count} solved"
+msgstr "%{from}–%{to}：%{count} 已解决"
+
+msgid "You %{time}"
+msgstr "你%{time}"
+
+msgid "All tests passed"
+msgstr "所有测试均通过"
+
+msgid "Bigger"
+msgstr "更大"
+
+msgid "Checking your solution…"
+msgstr "检查您的解法..."
+
+msgid "Checking…"
+msgstr "正在检查..."
+
+msgid "Connection lost, reconnecting…"
+msgstr "连接丢失，正在重新连接..."
+
+msgid "Ctrl/Cmd + Enter"
+msgstr "Ctrl/Cmd + Enter"
+
+msgid "Exit full screen"
+msgstr "退出全屏"
+
+msgid "Font size"
+msgstr "字体大小"
+
+msgid "Full screen"
+msgstr "全屏"
+
+msgid "Give up?"
+msgstr "放弃？"
+
+msgid "Hide the side panel"
+msgstr "隐藏侧面板"
+
+msgid "Received"
+msgstr "已收到"
+
+msgid "Rematch declined"
+msgstr "复赛被拒绝"
+
+msgid "Rematch offer"
+msgstr "复赛报价"
+
+msgid "%{name} offers a rematch"
+msgstr "%{name} 提供重赛"
+
+msgid "Rematch offered, waiting…"
+msgstr "提供重赛，等待……"
+
+msgid "Reset code"
+msgstr "重置密码"
+
+msgid "Reset the code?"
+msgstr "重置代码？"
+
+msgid "Run tests"
+msgstr "运行测试"
+
+msgid "Run your code to see the test results here"
+msgstr "运行您的代码以在此处查看测试结果"
+
+msgid "Send this link to a friend; the game starts as soon as they join."
+msgstr "将此链接发送给朋友；他们一加入，游戏就开始了。"
+
+msgid "Show the side panel"
+msgstr "显示侧面板"
+
+msgid "Side panel"
+msgstr "侧板"
+
+msgid "Smaller"
+msgstr "较小"
+
+msgid "Test %{number}"
+msgstr "测试%{number}"
+
+msgid "Tests passed: %{percent}%"
+msgstr "通过测试：%{percent}%"
+
+msgid "The game ends and your opponent wins."
+msgstr "游戏结束，你的对手获胜。"
+
+msgid "Time left"
+msgstr "剩余时间"
+
+msgid "Vim mode"
+msgstr "Vim模式"
+
+msgid "Vim mode off"
+msgstr "Vim 模式关闭"
+
+msgid "Vim mode on"
+msgstr "Vim 模式开启"
+
+msgid "Wins against each other"
+msgstr "互相战胜对方"
+
+msgid "You gave up"
+msgstr "你放弃了"
+
+msgid "You lost"
+msgstr "你输了"
+
+msgid "You won!"
+msgstr "你赢了！"
+
+msgid "Your code in this language is replaced with the starting template."
+msgstr "您使用该语言的代码将替换为起始模板。"
+
+msgid "%{name} is looking for an opponent"
+msgstr "%{name} 正在寻找对手"
+
+msgid "Enter the pass code to start playing."
+msgstr "输入密码即可开始播放。"
+
+msgid "Join game"
+msgstr "加入游戏"
+
+msgid "Pass code"
+msgstr "密码"
+
+msgid "Play"
+msgstr "玩"
+
+msgid "Replay position"
+msgstr "重播位置"
+
+msgid "Speed"
+msgstr "速度"
+
+msgid "The replay of this game is not available"
+msgstr "该游戏无法重播"
+
+msgid "This game is locked"
+msgstr "此游戏已锁定"
+
+msgid "To the end"
+msgstr "到最后"
+
+msgid "To the start"
+msgstr "开始"
+
+msgid "Unlock"
+msgstr "解锁"
+
+msgid "Wrong pass code"
+msgstr "密码错误"
+
+msgid "No runs yet"
+msgstr "还没有运行"
+
+msgid "Hide the task"
+msgstr "隐藏题目"
+
+msgid "Show the task"
+msgstr "显示题目"
+
+msgid "%{failed} of %{total} tests failed"
+msgstr "%{total} 测试中的 %{failed} 失败"
+
+msgid "Memory limit exceeded"
+msgstr "超出内存限制"
+
+msgid "Time limit exceeded"
+msgstr "超过时间限制"
+
+msgid "failed"
+msgstr "失败了"
+
+msgid "passed"
+msgstr "通过了"
+
+msgid "Show test results"
+msgstr "显示测试结果"
+
+msgid "Open the task in a window"
+msgstr "在窗口中打开题目"
+
+msgid "A sharper theme for bright rooms and projectors"
+msgstr "明亮的房间和投影仪的更清晰的主题"
+
+msgid "A small map of the code on the right"
+msgstr "右边代码小图"
+
+msgid "Colored brackets"
+msgstr "彩色括号"
+
+msgid "Dots for spaces, arrows for tabs"
+msgstr "点代表空格，箭头代表制表符"
+
+msgid "High contrast"
+msgstr "高对比度"
+
+msgid "Line numbers"
+msgstr "行号"
+
+msgid "Long lines wrap instead of scrolling sideways"
+msgstr "长行换行而不是横向滚动"
+
+msgid "Matching pairs share a color"
+msgstr "匹配对共享一种颜色"
+
+msgid "Minimap"
+msgstr "小地图"
+
+msgid "Relative"
+msgstr "相对"
+
+msgid "Show whitespace"
+msgstr "显示空白"
+
+msgid "Smooth cursor"
+msgstr "平滑光标"
+
+msgid "Sticky scroll"
+msgstr "粘性滚动"
+
+msgid "The current function stays at the top"
+msgstr "当前函数保持在顶部"
+
+msgid "The cursor glides and fades instead of jumping"
+msgstr "光标滑动并淡出而不是跳跃"
+
+msgid "Word wrap"
+msgstr "自动换行"
+
+msgid "Color theme"
+msgstr "色彩主题"
+
+msgid "Default"
+msgstr "默认"
+
+msgid "Back to game"
+msgstr "返回游戏"
+
+msgid "Open history"
+msgstr "打开历史记录"
+
+msgid "Whitespace"
+msgstr "空白"
+
+msgid "Waiting for the next match..."
+msgstr "等待下一场比赛..."
+
+msgid "Waiting..."
+msgstr "等待..."
+
+msgid ""
+"Drag windows to move, the corner to resize. Hidden ones come back from "
+"Widgets."
+msgstr "拖动窗口进行移动，拖动角落来调整大小。隐藏的东西从小部件中回来。"
+
+msgid "Hide"
+msgstr "隐藏"
+
+msgid "Left editor"
+msgstr "左编辑"
+
+msgid "Right"
+msgstr "右"
+
+msgid "Right editor"
+msgstr "右编辑器"
+
+msgid "Widgets"
+msgstr "小部件"
+
+msgid "Game started"
+msgstr "比赛开始"
+
+msgid "New message"
+msgstr "新消息"
+
+msgid "Opponent runs tests"
+msgstr "对手进行测试"
+
+msgid "Tournament start"
+msgstr "比赛开始"
+
+msgid "Round end"
+msgstr "圆端"
+
+msgid "Tournament end"
+msgstr "比赛结束"
+
+msgid "Show controls"
+msgstr "显示控件"
+
+msgid "Hide controls"
+msgstr "隐藏控件"
+
+msgid "Decrease"
+msgstr "减少"
+
+msgid "Increase"
+msgstr "增加"
+
+msgid "Game is loading"
+msgstr "游戏正在加载中"
+
+msgid "Tournament is finished"
+msgstr "比赛结束了"
+
+msgid "Tournament is waiting to start"
+msgstr "比赛正在等待开始"
+
+msgid "Tournament is canceled"
+msgstr "比赛被取消"
+
+msgid "Waiting for the player's next game"
+msgstr "等待玩家的下一场比赛"
+
+msgid "Could not connect to the tournament, retrying…"
+msgstr "无法连接到锦标赛，正在重试..."
+
+msgid "Connection details"
+msgstr "连接详情"
+
+msgid "User ID"
+msgstr "用户ID"
+
+msgid "Path"
+msgstr "路径"
+
+msgid "Connected at"
+msgstr "连接于"
+
+msgid "Ref"
+msgstr "参考号"
+
+msgid "Add to redirect list"
+msgstr "添加到重定向列表"
+
+msgid "Fetched %{count} player IDs"
+msgstr "已获取 %{count} 玩家 ID"
+
+msgid "Redirect sent"
+msgstr "重定向已发送"
+
+msgid "Redirect failed"
+msgstr "重定向失败"
+
+msgid "Redirect users"
+msgstr "重定向用户"
+
+msgid "Fetch player IDs"
+msgstr "获取玩家ID"
+
+msgid "All (%{count})"
+msgstr "所有 (%{count})"
+
+msgid "Clear"
+msgstr "清除"
+
+msgid "User IDs (comma or space separated)"
+msgstr "用户 ID（逗号或空格分隔）"
+
+msgid "Redirect (%{count})"
+msgstr "重定向（%{count}）"
+
+msgid "3–16 Latin letters, digits, - and _"
+msgstr "3–16 个拉丁字母、数字、- 和 _"
+
+msgid "At least 8 characters"
+msgstr "至少 8 个字符"
+
+msgid "Confirm password"
+msgstr "确认密码"
+
+msgid ""
+"Enter the email of your account and we will send you a link to set a new "
+"password."
+msgstr "输入您帐户的电子邮件地址，我们将向您发送用于设置新密码的链接。"
+
+msgid "Reset password"
+msgstr "重置密码"
+
+msgid "or"
+msgstr "或"
+
+msgid "Email required"
+msgstr "需要电子邮件"
+
+msgid "Should begin and end with a Latin letter or number"
+msgstr "应以拉丁字母或数字开头和结尾"
+
+msgid "Can't contain special symbols"
+msgstr "不能包含特殊符号"
+
+msgid "Nickname required"
+msgstr "需要昵称"
+
+msgid "Should be from 3 to 16 characters"
+msgstr "应为 3 到 16 个字符"
+
+msgid ""
+"Nickname must start with a Latin letter and contain only Latin letters, "
+"digits, - and _"
+msgstr "昵称必须以拉丁字母开头，且仅包含拉丁字母、数字、- 和 _"
+
+msgid "Password required"
+msgstr "需要密码"
+
+msgid "Should be at most 128 characters"
+msgstr "最多应为 128 个字符"
+
+msgid "Something went wrong, please try again later"
+msgstr "出了点问题，请稍后重试"
+
+msgid "Could not update the playbook"
+msgstr "无法更新剧本"
+
+msgid "Playbook status"
+msgstr "剧本状态"
+
+msgid "Approve"
+msgstr "批准"
+
+msgid "Reject"
+msgstr "拒绝"
+
+msgid "Report sent, thank you"
+msgstr "报告已发送，谢谢"
+
+msgid "Could not send the report"
+msgstr "无法发送报告"
+
+msgid "Player released"
+msgstr "球员被释放"
+
+msgid "Player banned"
+msgstr "玩家被禁止"
+
+msgid "Could not change the ban"
+msgstr "无法更改禁令"
+
+msgid "Player actions"
+msgstr "玩家动作"
+
+msgid "Reported"
+msgstr "已报道"
+
+msgid "User #%{id}"
+msgstr "用户#%{id}"
+
+msgid "Risk score: 1+ low, 5+ suspicious, 10+ likely bot"
+msgstr "风险评分：1+ 低，5+ 可疑，10+ 可能是机器人"
+
+msgid "Risk score"
+msgstr "风险评分"
+
+msgid "No analysis for this player."
+msgstr "暂不分析该球员。"
+
+msgid "No telemetry batches recorded."
+msgstr "没有记录遥测批次。"
+
+msgid ""
+"Either the player never typed, or their solution was injected via WebSocket "
+"without using the editor."
+msgstr "要么玩家从未打字，要么他们的解法是在不使用编辑器的情况下通过 WebSocket 注入的。"
+
+msgid "Signals"
+msgstr "信号"
+
+msgid "Final solution analysis"
+msgstr "最终解法分析"
+
+msgid "Total chars / lines"
+msgstr "总字符数/行数"
+
+msgid "Code lines / comment lines"
+msgstr "代码行/注释行"
+
+msgid "Comment-to-code ratio"
+msgstr "注释与代码的比率"
+
+msgid "Long comment lines (>40 chars)"
+msgstr "长注释行（>40 个字符）"
+
+msgid "GPT-style phrase hits"
+msgstr "GPT 风格的短语命中"
+
+msgid "Typed vs final"
+msgstr "键入与最终"
+
+msgid "Final solution length"
+msgstr "最终解长度"
+
+msgid "Language template length"
+msgstr "语言模板长度"
+
+msgid "excluded from coverage"
+msgstr "排除在承保范围之外"
+
+msgid "Effective added length"
+msgstr "有效附加长度"
+
+msgid "Total chars typed"
+msgstr "输入的总字符数"
+
+msgid "Typed coverage"
+msgstr "手动输入覆盖率"
+
+msgid "low → likely injected/pasted"
+msgstr "低 → 可能注入/粘贴"
+
+msgid "Keystrokes"
+msgstr "击键"
+
+msgid "Batches"
+msgstr "批次"
+
+msgid "Total events"
+msgstr "活动总数"
+
+msgid "Key events"
+msgstr "关键事件"
+
+msgid "Printable keys"
+msgstr "可打印按键"
+
+msgid "Chars inserted / deleted"
+msgstr "插入/删除字符"
+
+msgid "%{rate} ins/s"
+msgstr "%{rate} 次插入/秒"
+
+msgid "Net Δ text"
+msgstr "净 Δ 文本"
+
+msgid "Backspace / Delete"
+msgstr "退格/删除"
+
+msgid "Arrow keys"
+msgstr "方向键"
+
+msgid "Undo / Redo"
+msgstr "撤消/重做"
+
+msgid "Copy / Cut / Paste shortcuts"
+msgstr "复制/剪切/粘贴快捷方式"
+
+msgid "Paste blocked"
+msgstr "粘贴被阻止"
+
+msgid "Timing and edits"
+msgstr "时间安排和编辑"
+
+msgid "Session length"
+msgstr "会话时长"
+
+msgid "Avg key delta"
+msgstr "每次按键的平均变化量"
+
+msgid "Min / Max key delta"
+msgstr "最小/最大密钥增量"
+
+msgid "Idle pauses >2s"
+msgstr "空闲暂停>2s"
+
+msgid "Multi-char inserts / deletes"
+msgstr "多字符插入/删除"
+
+msgid "Multi-line inserts"
+msgstr "多行插入"
+
+msgid "Largest single insert / delete"
+msgstr "最大单次插入/删除"
+
+msgid "≥8 → likely paste"
+msgstr "≥8 → 可能粘贴"
+
+msgid "Large inserts (≥50)"
+msgstr "大刀片（≥50）"
+
+msgid "Content changes / printable keys"
+msgstr "内容更改/可打印密钥"
+
+msgid "more changes than keys → programmatic"
+msgstr "比按键更多的变化 → 程序化"
+
+msgid "Events per batch"
+msgstr "每批次事件数"
+
+msgid "Net Δ chars per batch"
+msgstr "每批次净 Δ 字符数"
+
+msgid "Avg key delta (ms) per batch"
+msgstr "每批次平均密钥增量（毫秒）"
+
+msgid "Final submitted code (%{count} chars)"
+msgstr "最终提交的代码（%{count} 字符）"
+
+msgid "Could not start the tournament, try again"
+msgstr "无法开始比赛，请重试"
+
+msgid "Waiting for start"
+msgstr "等待开始"
+
+msgid "Admin panel"
+msgstr "管理面板"
+
+msgid "Choose a language"
+msgstr "选择语言"
+
+msgid "Solutions are submitted on the external platform"
+msgstr "解法在外部平台提交"
+
+msgid "The server did not respond, try again"
+msgstr "服务器没有响应，请重试"
+
+msgid "Could not submit the solution"
+msgstr "无法提交解法"
+
+msgid "Swap sides"
+msgstr "交换双方"
+
+msgid "Time limit"
+msgstr "时间限制"
+
+msgid "Mode"
+msgstr "模式"
+
+msgid "Stage"
+msgstr "阶段"
+
+msgid "Action"
+msgstr "行动"
+
+msgid "Live connections"
+msgstr "实时连接"
+
+msgid "Users"
+msgstr "用户"
+
+msgid "Connections"
+msgstr "连接"
+
+msgid "No active connections"
+msgstr "没有活动连接"
+
+msgid "Add all to redirect list"
+msgstr "将全部添加到重定向列表"
+
+msgid "Contact support for help logging in."
+msgstr "请联系支持人员以获取登录帮助。"
+
+msgid "Don't have an account?"
+msgstr "没有帐户？"
+
+msgid "Already have an account?"
+msgstr "已经有帐户？"
+
+msgid "Game #%{id}: bot/human signal review"
+msgstr "游戏#%{id}：机器人/人类信号审查"
+
+msgid ""
+"Higher risk score / more signals → more bot-like. Always confirm by playing "
+"back the editor history. Reports are computed once and cached; Re-analyze "
+"forces a fresh run."
+msgstr "更高的风险评分/更多的信号→更像机器人。始终通过回放编辑器历史记录进行确认。报告计算一次并缓存；重新分析力量，重新运行。"
+
+msgid "Re-analyze"
+msgstr "重新分析"
+
+msgid "No players found for this game."
+msgstr "没有找到该游戏的玩家。"
+
+msgid "Could not connect to the tournament"
+msgstr "无法连接到锦标赛"
+
+msgid "Tournaments. Seasons. Code-first competition."
+msgstr "锦标赛。赛季。代码优先竞赛。"
+
+msgid "Play in the best coding arena"
+msgstr "在最好的编码舞台上玩耍"
+
+msgid ""
+"Codebattle powers head-to-head battles, team brackets, and seasonal "
+"leaderboards. Set formats, invite players, and watch the rankings move in "
+"real time."
+msgstr "Codebattle 为面对面的战斗、团队分组和赛季性排行榜提供动力。设置赛制、邀请玩家并实时观看排名变化。"
+
+msgid "No registration required"
+msgstr "无需注册"
+
+msgid "Live ladders"
+msgstr "活梯"
+
+msgid "Team seasons"
+msgstr "球队赛季"
+
+msgid "Bots + training"
+msgstr "机器人+培训"
+
+msgid "Season standings will appear here soon."
+msgstr "赛季排名很快就会出现在这里。"
+
+msgid "Top 5 players • current season"
+msgstr "本赛季排名前 5 位的球员"
+
+msgid "Seasons and formats"
+msgstr "赛季和形式"
+
+msgid "Four seasons a year. One Grand Slam to crown the best."
+msgstr "一年四个赛季。一项大满贯冠军加冕。"
+
+msgid ""
+"Join a competitive ladder that resets each season so every coder gets a "
+"fresh climb. Swiss rounds keep every match fair, while lifetime Elo tracks "
+"your true skill across seasons. Top finishers earn prizes and exclusive "
+"merch."
+msgstr ""
+"加入每个赛季都会重置的竞争天梯，让每个程序员都能获得新的攀登。瑞士轮让每场比赛都公平，而终生 Elo "
+"可以跨赛季追踪您的真实技能。顶尖完成者将赢得奖品和独家商品。"
+
+msgid "Season ladder"
+msgstr "赛季天梯"
+
+msgid ""
+"Earn season points, climb the live leaderboard, and lock your place in the "
+"finale."
+msgstr "赚取赛季积分，攀登实时排行榜，并锁定决赛席位。"
+
+msgid "Season points"
+msgstr "赛季积分"
+
+msgid "Finals on 21st"
+msgstr "21日决赛"
+
+msgid "Swiss tournaments"
+msgstr "瑞士制比赛"
+
+msgid ""
+"Face opponents with similar scores, solve the same task, and rise with "
+"every win."
+msgstr "面对分数相近的对手，解决同样的题目，逐胜上升。"
+
+msgid "Swiss pairing"
+msgstr "瑞士配对"
+
+msgid "Live standings"
+msgstr "实时积分榜"
+
+msgid "No repeat pairs"
+msgstr "无重复对"
+
+msgid "Grades & schedule"
+msgstr "成绩和时间表"
+
+msgid "Start at rookie, fight up the grades, and aim for the Grand Slam spotlight."
+msgstr "从新秀开始，争取成绩，瞄准大满贯的聚光灯。"
+
+msgid "Rookie → Grand Slam"
+msgstr "新秀→大满贯"
+
+msgid "Grand Slam finale"
+msgstr "大满贯决赛"
+
+msgid "Points by place"
+msgstr "按地点分"
+
+msgid "How it works"
+msgstr "它是如何运作的"
+
+msgid "Join, battle, climb, repeat"
+msgstr "加入、战斗、攀爬、重复"
+
+msgid "A clear loop that keeps the competition fair and the season exciting."
+msgstr "清晰的循环使比赛保持公平，赛季精彩。"
+
+msgid "Join a season"
+msgstr "加入一个赛季"
+
+msgid "Seasons reset points so everyone gets a fresh shot at the top."
+msgstr "赛季会重置积分，以便每个人都能获得新的巅峰机会。"
+
+msgid "Battle in Swiss rounds"
+msgstr "瑞士回合战斗"
+
+msgid "Face opponents with similar scores on the same task each round."
+msgstr "每轮在同一题目上面对得分相似的对手。"
+
+msgid "Earn season points"
+msgstr "赚取赛季积分"
+
+msgid "Climb the live leaderboard and secure your place in the finale."
+msgstr "登上实时排行榜并确保在决赛中占据一席之地。"
+
+msgid "Win the Grand Slam"
+msgstr "赢得大满贯"
+
+msgid "Champions take the spotlight, prizes, and exclusive merch."
+msgstr "冠军将成为众人瞩目的焦点、奖品和独家商品。"
+
+msgid "Private tournaments"
+msgstr "私人锦标赛"
+
+msgid "Build your own tournaments for friends or teams"
+msgstr "为朋友或团队建立自己的锦标赛"
+
+msgid ""
+"Host custom events for meetups, work team-building, or just fun sessions. "
+"We’ve run tournaments for 1,000+ players."
+msgstr "举办聚会、工作团队建设或只是有趣的会议的自定义活动。我们已经为 1,000 多名玩家举办了锦标赛。"
+
+msgid "Friends & communities"
+msgstr "朋友和社区"
+
+msgid "Create private rooms, invite friends, and enjoy real-time battles together."
+msgstr "创建私人房间，邀请好友，一起享受实时战斗。"
+
+msgid "Invite links"
+msgstr "邀请链接"
+
+msgid "Instant rematch"
+msgstr "即时复赛"
+
+msgid "Team-building"
+msgstr "团队建设"
+
+msgid "Run company tournaments and energize your team with friendly competition."
+msgstr "举办公司锦标赛并通过友好的竞争为您的团队注入活力。"
+
+msgid "Team brackets"
+msgstr "团队对阵表"
+
+msgid "Flexible schedule"
+msgstr "灵活的日程安排"
+
+msgid "Highlights"
+msgstr "亮点"
+
+msgid "Large-scale events"
+msgstr "大型活动"
+
+msgid "Trusted for tournaments at scale with thousands of players."
+msgstr "值得信赖，适合拥有数千名玩家的大规模锦标赛。"
+
+msgid "1,000+ players"
+msgstr "超过 1,000 名玩家"
+
+msgid "Stable rounds"
+msgstr "稳定的回合"
+
+msgid "Fast judge"
+msgstr "快速判断"
+
+msgid "Battle in your language"
+msgstr "用您的语言进行战斗"
+
+msgid "Pick your stack and jump into any tournament format."
+msgstr "选择您的筹码并跳入任何锦标赛形式。"
+
+msgid "Community"
+msgstr "社区"
+
+msgid "Built by competitive coders"
+msgstr "由有竞争力的程序员构建"
+
+msgid ""
+"Codebattle is open and community-driven. Join contributors and help shape "
+"upcoming seasons."
+msgstr "Codebattle 是开放的且由社区驱动的。加入贡献者并帮助塑造即将到来的赛季。"
+
+msgid "Ready to enter the arena?"
+msgstr "准备好进入竞技场了吗？"
+
+msgid "Spin up a quick match or start planning your next season."
+msgstr "快速进行一场比赛或开始计划您的下一个赛季。"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "No stages yet."
+msgstr "还没有阶段。"
+
+msgid "Feedback sent, thank you"
+msgstr "已反馈，谢谢"
+
+msgid "Could not send the feedback"
+msgstr "无法发送反馈"
+
+msgid "Spectators: %{count}"
+msgstr "观众：%{count}"
+
+msgid "Nobody is watching yet"
+msgstr "还没有人看"
+
+msgid "Open the full chat"
+msgstr "打开完整聊天"
+
+msgid "Nobody changed the code during this game, so there is nothing to replay."
+msgstr "在这个游戏中没有人改变代码，所以没有什么可以重玩的。"
+
+msgid "Assisted chars / completions"
+msgstr "辅助字符/完成"
+
+msgid ""
+"Inserted by the editor for a keystroke: auto-indent, closing brackets, "
+"accepted autocomplete. Not counted as pasted."
+msgstr "由编辑器插入按键：自动缩进、右括号、接受的自动完成。不算粘贴的。"
+
+msgid "Final solution"
+msgstr "最终解法"
+
+msgid "The starting code of the task; excluded from coverage."
+msgstr "题目的起始代码；排除在承保范围之外。"
+
+msgid "Chars typed in the editor against the code added on top of the template."
+msgstr "根据在模板顶部添加的代码在编辑器中键入的字符。"
+
+msgid "Metric"
+msgstr "公制"
+
+msgid "Bots are not analyzed."
+msgstr "不分析机器人。"
+
+msgid "No signals."
+msgstr "没有信号。"
+
+msgid "Final code"
+msgstr "最终代码"
+
+msgid "%{count} chars"
+msgstr "%{count} 字符"
+
+msgid "No code."
+msgstr "没有代码。"
+
+msgid "vs"
+msgstr "与"
+
+msgid "Pasted chars"
+msgstr "粘贴的字符"
+
+msgid "Pastes can only bring back code copied from this editor."
+msgstr "粘贴只能带回从此编辑器复制的代码。"
+
+msgid "Focus and the server copy"
+msgstr "焦点和服务器副本"
+
+msgid "Left the game / time away"
+msgstr "离开游戏/离开时间"
+
+msgid "Switches to another tab or window while playing."
+msgstr "播放时切换到另一个选项卡或窗口。"
+
+msgid "Editor updates received"
+msgstr "收到编辑更新"
+
+msgid ""
+"The server's own copy of the editor: the client sends the code at most "
+"every 250 ms."
+msgstr "服务器自己的编辑器副本：客户端最多每 250 毫秒发送一次代码。"
+
+msgid "Largest jump between updates"
+msgstr "更新之间的最大跳跃"
+
+msgid ""
+"Most characters (not counting spaces) one update added. Typing adds a few; "
+"a big jump without a paste was not typed."
+msgstr "大多数字符（不包括空格）在一次更新中添加。打字会增加一些；没有粘贴的大跳转没有输入。"
+
+msgid "≥80 → not typed"
+msgstr "≥80 → 未输入"
+
+msgid "Likely bot in game #%{id}"
+msgstr "游戏中可能有机器人 #%{id}"
+
+msgid "Suspicious play in game #%{id}"
+msgstr "游戏 #%{id} 中的可疑玩法"
+
+msgid "Open the report"
+msgstr "打开报告"
+
+msgid "Score: %{score}"
+msgstr "分数：%{score}"
+
+msgid "Log in"
+msgstr "登录"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Enter your password"
+msgstr "输入您的密码"
+
+msgid "Sign in"
+msgstr "登录"
+
+msgid "Continue"
+msgstr "继续"
+
+msgid "You are following ID: %{followId}"
+msgstr "您正在关注 ID：%{followId}"
+
+msgid "Welcome to Codebattle!"
+msgstr "欢迎来到Codebattle！"
+
+msgid "Invalid name or password"
+msgstr "名称或密码无效"
+
+msgid "Tasks"
+msgstr "题目"
+
+msgid "Tournaments"
+msgstr "锦标赛"
+
+msgid "Tournament"
+msgstr "锦标赛"
+
+msgid "Join Discord"
+msgstr "加入不和谐"
+
+msgid "Pause"
+msgstr "暂停"
+
+msgid "Unpause"
+msgstr "取消暂停"
+
+msgid "Unfollow"
+msgstr "取消关注"
+
+msgid "Won:"
+msgstr "赢得："
+
+msgid "Lost:"
+msgstr "丢失："
+
+msgid "GaveUp:"
+msgstr "放弃："
+
+msgid "Task"
+msgstr "题目"
+
+msgid "Editor"
+msgstr "编辑"
+
+msgid "Solution"
+msgstr "解法"
+
+msgid "Submit solution"
+msgstr "提交解法"
+
+msgid "Submit"
+msgstr "提交"
+
+msgid "Copied!"
+msgstr "复制了！"
+
+msgid "Download"
+msgstr "下载"
+
+msgid "Output"
+msgstr "输出"
+
+msgid "Run"
+msgstr "运行"
+
+msgid "Charging..."
+msgstr "正在充电..."
+
+msgid "Running..."
+msgstr "运行..."
+
+msgid "Show guide"
+msgstr "演出指南"
+
+msgid "Reset solution"
+msgstr "重置解法"
+
+msgid "Check solution"
+msgstr "检查解法"
+
+msgid "Expand"
+msgstr "展开"
+
+msgid "Time is up. There are no winners in the game"
+msgstr "时间到了。游戏中没有赢家"
+
+msgid "Opponent tests"
+msgstr "对手测试"
+
+msgid "Open History"
+msgstr "开放历史"
+
+msgid "Timeout 600 seconds"
+msgstr "超时600秒"
+
+msgid "Timeout 1200 seconds"
+msgstr "超时1200秒"
+
+msgid "Timeout 3600 seconds"
+msgstr "超时3600秒"
+
+msgid "Top-3"
+msgstr "前三名"
+
+msgid "Total number of teams %{count}"
+msgstr "团队总数%{count}"
+
+msgid "Place"
+msgstr "地点"
+
+msgid "Score"
+msgstr "分数"
+
+msgid "best try"
+msgstr "最好的尝试"
+
+msgid "User"
+msgstr "用户"
+
+msgid "Duration (sec)"
+msgstr "持续时间（秒）"
+
+msgid "Clan"
+msgstr "战队"
+
+msgid "Count of solutions"
+msgstr "解数"
+
+msgid "Total time for solving task"
+msgstr "解决题目的总时间"
+
+msgid "Task duration distribution"
+msgstr "题目持续时间分布"
+
+msgid "Show task description"
+msgstr "显示题目描述"
+
+msgid "%{percent}% (sec)"
+msgstr "%{percent}%（秒）"
+
+msgid "Fastest time to solve task (sec)"
+msgstr "解决题目的最快时间（秒）"
+
+msgid "Slowest time to solve task (sec)"
+msgstr "解决题目最慢时间（秒）"
+
+msgid "Event rating"
+msgstr "事件评级"
+
+msgid "Clans rating"
+msgstr "战队评级"
+
+msgid "Players rating"
+msgstr "玩家评分"
+
+msgid "Clan players rating"
+msgstr "战队玩家评分"
+
+msgid "Clan players_count/registrations"
+msgstr "战队玩家数/注册人数"
+
+msgid "Clan players count"
+msgstr "战队玩家计数"
+
+msgid "Event stages"
+msgstr "活动阶段"
+
+msgid "Stage %{name}"
+msgstr "阶段%{name}"
+
+msgid "Stage: "
+msgstr "阶段："
+
+msgid "Games: "
+msgstr "游戏："
+
+msgid "Stats: "
+msgstr "统计数据："
+
+msgid "Games"
+msgstr "对局"
+
+msgid "closed"
+msgstr "关闭"
+
+msgid "soon"
+msgstr "很快"
+
+msgid "Tournament description"
+msgstr "赛事说明"
+
+msgid "Open"
+msgstr "打开"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Leave"
+msgstr "离开"
+
+msgid "Teams"
+msgstr "团队"
+
+msgid "Search opponent"
+msgstr "搜索对手"
+
+msgid "Back to tournaments"
+msgstr "返回锦标赛"
+
+msgid "Back to event"
+msgstr "返回活动"
+
+msgid "Star us on GitHub"
+msgstr "在 GitHub 上为我们加注星标"
+
+msgid "Star us"
+msgstr "为我们点个 Star"
+
+msgid "Restart searching"
+msgstr "重新开始搜索"
+
+msgid "Stop searching"
+msgstr "停止搜索"
+
+msgid "Go to active game"
+msgstr "进入活跃游戏"
+
+msgid "Searching opponent"
+msgstr "寻找对手"
+
+msgid "Congrats! All tasks are solved"
+msgstr "恭喜！所有题目都解决了"
+
+msgid "The tournament will start: %{duration}"
+msgstr "比赛开始时间：%{duration}"
+
+msgid "The tournament will start soon"
+msgstr "比赛即将开始"
+
+msgid "The tournament is canceled"
+msgstr "比赛被取消"
+
+msgid "The tournament is finished"
+msgstr "比赛结束了"
+
+msgid "Your opponent is waiting: %{name}"
+msgstr "你的对手正在等待：%{name}"
+
+msgid "Next match will be opened. Show now?"
+msgstr "下一场比赛将拉开帷幕。现在展示？"
+
+msgid "review"
+msgstr "评论"
+
+msgid "matches"
+msgstr "比赛"
+
+msgid "Opponent"
+msgstr "对手"
+
+msgid "Opponent clan"
+msgstr "对手战队"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Open match"
+msgstr "公开赛"
+
+msgid "You banned"
+msgstr "你禁止了"
+
+msgid "Wait round starts"
+msgstr "等待回合开始"
+
+msgid "Waiting Participants"
+msgstr "等待参加者"
+
+msgid "Round break"
+msgstr "回合休息"
+
+msgid "Loading"
+msgstr "加载中"
+
+msgid "Round ends in "
+msgstr "回合结束于"
+
+msgid "Next round will start in "
+msgstr "下一轮比赛将于"
+
+msgid "Next round will start soon"
+msgstr "下一轮即将开始"
+
+msgid "You lose"
+msgstr "你输了"
+
+msgid "You win"
+msgstr "你赢了"
+
+msgid "Your place in tournament"
+msgstr "您在锦标赛中的位置"
+
+msgid "Your place"
+msgstr "你的地方"
+
+msgid "Your score"
+msgstr "你的分数"
+
+msgid "Your clan place"
+msgstr "你的战队之地"
+
+msgid "Your clan score"
+msgstr "你的战队分数"
+
+msgid "Statistics"
+msgstr "统计数据"
+
+msgid "Wins count"
+msgstr "获胜次数"
+
+msgid "Score/Total"
+msgstr "分数/总分"
+
+msgid "Loses"
+msgstr "损失"
+
+msgid "Show match"
+msgstr "显示比赛"
+
+msgid "Show match history"
+msgstr "显示比赛历史"
+
+msgid "Continue match"
+msgstr "继续比赛"
+
+msgid "History"
+msgstr "历史记录"
+
+msgid "stored"
+msgstr "已存储"
+
+msgid "game_over"
+msgstr "游戏结束"
+
+msgid "Loading..."
+msgstr "正在加载..."
+
+msgid "Join the round"
+msgstr "加入回合"
+
+msgid "Timeout in: %{time}"
+msgstr "超时时间：%{time}"
+
+msgid "Woohoo, you're Champion!!!!!"
+msgstr "哇哦，你是冠军！！！！"
+
+msgid "Loading next game"
+msgstr "加载下一个游戏"
+
+msgid "Round is over, wait for the next round"
+msgstr "本轮结束，等待下一轮"
+
+msgid "If you read this you've lost the game"
+msgstr "如果你读到这篇文章你就输了"
+
+msgid "I'll be back"
+msgstr "我会回来的"
+
+msgid "GG"
+msgstr "GG"
+
+msgid "STDOUT"
+msgstr "标准输出"
+
+msgid "Next game"
+msgstr "下一场比赛"
+
+msgid "Award"
+msgstr "奖项"
+
+msgid "Total entries: %{totalEntries}"
+msgstr "条目总数：%{totalEntries}"
+
+msgid "We could not verify your solution"
+msgstr "我们无法验证您的解法"
+
+msgid "Please try to fix your code and submit it again"
+msgstr "请尝试修复您的代码并重新提交"
+
+msgid "Note that your code may contain an infinite loop or complex calculations"
+msgstr "请注意，您的代码可能包含无限循环或复杂的计算"
+
+msgid "Rating Panel"
+msgstr "评级小组"
+
+msgid "Reports Panel"
+msgstr "报告小组"
+
+msgid "Player Panel"
+msgstr "玩家面板"
+
+msgid "Top users by clan ranking"
+msgstr "按战队排名排名靠前的用户"
+
+msgid "Tasks ranking"
+msgstr "题目排名"
+
+msgid "Clans bubble distribution"
+msgstr "战队气泡分布"
+
+msgid "Duration distribution and top users by task"
+msgstr "按题目划分的持续时间分布和热门用户"
+
+msgid "Back"
+msgstr "返回"
+
+msgid "Tournament is paused"
+msgstr "比赛暂停"
+
+msgid "Connection lost, please reload the page"
+msgstr "连接丢失，请重新加载页面"
+
+msgid "Show full tournament table"
+msgstr "显示完整的锦标赛表"
+
+msgid "Type: %{type}"
+msgstr "类型：%{type}"
+
+msgid "swiss"
+msgstr "瑞士人"
+
+msgid "individual"
+msgstr "个人的"
+
+msgid "Tournament waiting_participants"
+msgstr "比赛等待_参与者"
+
+msgid "Tournament canceled"
+msgstr "比赛取消"
+
+msgid "Tournament active"
+msgstr "比赛活跃"
+
+msgid "Starts At"
+msgstr "开始于"
+
+msgid "Game playing"
+msgstr "玩游戏"
+
+msgid "Game waiting_opponent"
+msgstr "游戏等待对手"
+
+msgid "Game state: timeout"
+msgstr "游戏状态：超时"
+
+msgid "Game state: canceled"
+msgstr "游戏状态：已取消"
+
+msgid "Game state: game_over"
+msgstr "游戏状态：game_over"
+
+msgid "Game state: initial"
+msgstr "游戏状态：初始"
+
+msgid "Game state: builder"
+msgstr "游戏状态：建造者"
+
+msgid "Game state: waiting_opponent"
+msgstr "游戏状态： waiting_opponent"
+
+msgid "Game state: playing"
+msgstr "游戏状态：正在玩"
+
+msgid "Level: elementary"
+msgstr "级别：初级"
+
+msgid "Level: easy"
+msgstr "级别：简单"
+
+msgid "Level: medium"
+msgstr "级别：中"
+
+msgid "Level: hard"
+msgstr "级别：硬"
+
+msgid "Timeout: %{sec} seconds"
+msgstr "超时：%{sec} 秒"
+
+msgid "undefined"
+msgstr "未定义"
+
+msgid "won"
+msgstr "赢了"
+
+msgid "lost"
+msgstr "迷失了"
+
+msgid "gave_up"
+msgstr "放弃了"
+
+msgid "timeout"
+msgstr "超时"
+
+msgid "Game between"
+msgstr "之间的游戏"
+
+msgid "Game level"
+msgstr "游戏等级"
+
+msgid "Play with"
+msgstr "玩"
+
+msgid "Try simple battle"
+msgstr "尝试简单的战斗"
+
+msgid "You don't have access to this game"
+msgstr "您无权访问此游戏"
+
+msgid "Total players"
+msgstr "玩家总数"
+
+msgid "No players yet"
+msgstr "还没有玩家"
+
+msgid "Task Description"
+msgstr "题目描述"
+
+msgid "Win"
+msgstr "赢"
+
+msgid "Semifinal Entrance"
+msgstr "半决赛入场"
+
+msgid "Final Entrance"
+msgstr "最终入口"
+
+msgid "Report"
+msgstr "报告"
+
+msgid "Ban"
+msgstr "封禁"
+
+msgid "Place in total"
+msgstr "总计名额"
+
+msgid "Place in category"
+msgstr "所在类别"
+
+msgid "Time spent"
+msgstr "花费时间"
+
+msgid "You already passed this stage"
+msgstr "你已经过了这个阶段"
+
+msgid "Stage confirmation"
+msgstr "阶段确认"
+
+msgid "Passed"
+msgstr "通过"
+
+msgid "Not passed"
+msgstr "未通过"
+
+msgid "Ranking"
+msgstr "排名"
+
+msgid "Sended"
+msgstr "已发送"
+
+msgid "Wait revealing results"
+msgstr "等待结果揭晓"
+
+msgid "Leaderboard"
+msgstr "排行榜"
+
+msgid "Place: pending"
+msgstr "地点：待定"
+
+msgid "Test run"
+msgstr "试运行"
+
+msgid "Running…"
+msgstr "正在运行..."
+
+msgid "Running your solution…"
+msgstr "运行您的解法..."
+
+msgid "Running solutions…"
+msgstr "运行解法..."
+
+msgid "We're executing your code in the runner. This may take a few seconds."
+msgstr "我们正在运行器中执行您的代码。这可能需要几秒钟。"
+
+msgid "Loading run result…"
+msgstr "正在加载运行结果..."
+
+msgid "Fetching the executed run output."
+msgstr "获取执行的运行输出。"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "No description provided for this tournament."
+msgstr "没有提供有关本次比赛的描述。"
+
+msgid "Pick a run from the left panel to see its output."
+msgstr "从左侧面板中选择一次运行以查看其输出。"
+
+msgid "Fullscreen"
+msgstr "全屏"
+
+msgid "Slice"
+msgstr "分段"
+
+msgid "Round"
+msgstr "轮次"
+
+msgid "Left"
+msgstr "左"
+
+msgid "Seed"
+msgstr "种子"
+
+msgid "%{count} slices"
+msgstr "%{count} 个分段"
+
+msgid "%{visible} / %{total} slices"
+msgstr "%{visible} / %{total} 切片"
+
+msgid "Show all"
+msgstr "显示全部"
+
+msgid "Show less"
+msgstr "显示较少"
+
+msgid "No round data yet"
+msgstr "还没有回合数据"
+
+msgid "You"
+msgstr "你"
+
+msgid "Add solution"
+msgstr "添加解法"
+
+msgid "Time: %{duration}"
+msgstr "用时：%{duration}"
+
+msgid "Group %{n}"
+msgstr "组%{n}"
+
+msgid "Qualification run"
+msgstr "资格赛"
+
+msgid "Group run"
+msgstr "分组运行"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "Time Limit"
+msgstr "时间限制"
+
+msgid "Round %{n}"
+msgstr "圆形 %{n}"
+
+msgid "Results run"
+msgstr "运行结果"
+
+msgid "Create tournament"
+msgstr "创建锦标赛"
+
+msgid "My tournaments"
+msgstr "我的比赛"
+
+msgid "You haven't created any tournaments yet"
+msgstr "您还没有创建任何锦标赛"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "State"
+msgstr "状态"
+
+msgid "Starts at"
+msgstr "开始于"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Create a New Tournament"
+msgstr "创建一个新的锦标赛"
+
+msgid "Use my last tournament's settings"
+msgstr "使用我上次锦标赛的设置"
+
+msgid "Reset to defaults"
+msgstr "重置为默认值"
+
+msgid "Basic Information"
+msgstr "基本信息"
+
+msgid "Schedule & Access"
+msgstr "时间表和访问"
+
+msgid "Tournament Features"
+msgstr "赛事特色"
+
+msgid "Task Configuration"
+msgstr "题目配置"
+
+msgid "Tournament Settings"
+msgstr "锦标赛设置"
+
+msgid "Timeout Configuration"
+msgstr "超时配置"
+
+msgid "Advanced Settings"
+msgstr "高级设置"
+
+msgid "Tournament Name"
+msgstr "赛事名称"
+
+msgid "Moderator IDs"
+msgstr "主持人 ID"
+
+msgid "Access Type"
+msgstr "接入类型"
+
+msgid "Use Chat"
+msgstr "使用聊天"
+
+msgid "Use Clan"
+msgstr "使用战队"
+
+msgid "Exclude Banned Players"
+msgstr "排除被禁止的玩家"
+
+msgid "Task Provider"
+msgstr "题目提供者"
+
+msgid "Task Strategy"
+msgstr "题目策略"
+
+msgid "Task Pack"
+msgstr "题目集"
+
+msgid "Tags (comma separated)"
+msgstr "标签（逗号分隔）"
+
+msgid "Tournament Type"
+msgstr "赛事类型"
+
+msgid "Players Limit"
+msgstr "玩家限制"
+
+msgid "Ranking Type"
+msgstr "排名类型"
+
+msgid "Score Strategy"
+msgstr "评分策略"
+
+msgid "Rounds Limit"
+msgstr "回合限制"
+
+msgid "Break Duration (seconds)"
+msgstr "休息时间（秒）"
+
+msgid "Timeout Mode"
+msgstr "超时模式"
+
+msgid "Matching interval (sec)"
+msgstr "匹配间隔（秒）"
+
+msgid "Round Timeout (seconds)"
+msgstr "回合超时（秒）"
+
+msgid "Tournament Timeout (seconds)"
+msgstr "锦标赛超时（秒）"
+
+msgid "Meta JSON"
+msgstr "元 JSON"
+
+msgid "Tags"
+msgstr "标签"
+
+msgid "Random"
+msgstr "随机"
+
+msgid "Sequential"
+msgstr "顺序"
+
+msgid "Public"
+msgstr "公共"
+
+msgid "Token (Private)"
+msgstr "代币（私人）"
+
+msgid "By User"
+msgstr "按用户"
+
+msgid "By Clan"
+msgstr "按战队"
+
+msgid "75 Percentile"
+msgstr "75 百分位数"
+
+msgid "Static Base Score"
+msgstr "静态基础分数"
+
+msgid "Win/Loss"
+msgstr "赢/输"
+
+msgid "Per task timeout"
+msgstr "每个题目超时"
+
+msgid "Per round (fixed)"
+msgstr "每轮（固定）"
+
+msgid "Per round (with rematch)"
+msgstr "每轮（含复赛）"
+
+msgid "Per tournament timeout"
+msgstr "每场比赛暂停时间"
+
+msgid "Swiss"
+msgstr "瑞士制"
+
+msgid "Ladder"
+msgstr "梯子"
+
+msgid "Ladder (continuous matchmaking)"
+msgstr "天梯（持续匹配）"
+
+msgid "Select a task pack"
+msgstr "选择题目集"
+
+msgid "Shown to players in the lobby and on the tournament page."
+msgstr "在大厅和锦标赛页面上向玩家显示。"
+
+msgid "Markdown is supported. Shown on the tournament page."
+msgstr "支持 Markdown。显示在锦标赛页面上。"
+
+msgid ""
+"Enter user IDs separated by commas or spaces. You are always a moderator "
+"and do not need to be listed here."
+msgstr "输入以逗号或空格分隔的用户 ID。您始终是版主，不需要列在此处。"
+
+msgid "The tournament starts automatically at this time."
+msgstr "比赛此时自动开始。"
+
+msgid "Maximum number of players who can join."
+msgstr "可以加入的最大玩家数量。"
+
+msgid "Ladder always uses a static base score per task."
+msgstr "天梯始终对每个题目使用静态基本分数。"
+
+msgid "For Ladder, this is the number of matching rounds."
+msgstr "对于天梯，这是匹配轮数。"
+
+msgid "Number of rounds to play."
+msgstr "进行的轮数。"
+
+msgid "Pause between rounds, in seconds."
+msgstr "回合之间的暂停（以秒为单位）。"
+
+msgid "How often the pool is matched, in seconds."
+msgstr "池匹配的频率（以秒为单位）。"
+
+msgid "Time limit for each round, in seconds."
+msgstr "每轮的时间限制，以秒为单位。"
+
+msgid "Total time for the whole tournament, in seconds."
+msgstr "整个比赛的总时间（以秒为单位）。"
+
+msgid "Advanced JSON configuration. Leave as {} if unsure."
+msgstr "高级 JSON 配置。如果不确定，请保留为 {}。"
+
+msgid ""
+"Players are paired each round against opponents with a similar score. Runs "
+"for a fixed number of rounds — good for balanced, bracket-style events."
+msgstr "玩家每轮都会与得分相似的对手配对。运行固定轮数——适合平衡的、括号式的赛事。"
+
+msgid ""
+"Continuous pool matchmaking. \"Rounds Limit\" is the number of matching "
+"rounds; \"Round Timeout\" is the matching interval. Timeout and score are "
+"fixed (per-task, static base score)."
+msgstr "持续的池配对。 “轮数限制”是匹配轮数； “Round Timeout”是匹配间隔。超时和分数是固定的（每个题目，静态基本分数）。"
+
+msgid "Tasks are picked automatically from the chosen difficulty level."
+msgstr "题目是从所选难度级别自动挑选的。"
+
+msgid "Tasks come from a fixed task pack, played in the pack's order."
+msgstr "题目来自固定题目集，按照包的顺序进行。"
+
+msgid "Tasks are picked by the given tags and difficulty level."
+msgstr "题目是根据给定的标签和难度级别来选择的。"
+
+msgid "Each player gets tasks in a random order."
+msgstr "每个玩家都会以随机顺序获得题目。"
+
+msgid "All players get tasks in the same fixed order."
+msgstr "所有玩家都以相同的固定顺序获得题目。"
+
+msgid ""
+"Score is based on the 75th percentile of solve times — faster solutions "
+"score higher."
+msgstr "分数基于解决时间的第 75 个百分位数 - 更快的解法得分更高。"
+
+msgid "Each task gives a fixed base score regardless of the player's solve time."
+msgstr "无论玩家的解决时间如何，每个题目都会给出固定的基本分数。"
+
+msgid "Only the match result counts — a win or a loss, with no partial score."
+msgstr "只有比赛结果才算数——胜利或失败，没有部分得分。"
+
+msgid "Players are ranked individually."
+msgstr "玩家单独排名。"
+
+msgid "Players are grouped and ranked by their clan."
+msgstr "玩家按其战队进行分组和排名。"
+
+msgid "Anyone can find and join this tournament."
+msgstr "任何人都可以找到并参加这个锦标赛。"
+
+msgid "Only players who have the invite link can join."
+msgstr "只有拥有邀请链接的玩家才能加入。"
+
+msgid ""
+"Each game uses the task's own time limit. Different tasks may have "
+"different timeouts."
+msgstr "每个游戏都使用题目自己的时间限制。不同的题目可能有不同的超时时间。"
+
+msgid "All games in a round share a fixed timeout. One task per round."
+msgstr "一轮中的所有比赛都有一个固定的暂停。每轮一个题目。"
+
+msgid ""
+"Each round has a fixed timeout. Players play multiple tasks (rematches) "
+"within the round until time runs out."
+msgstr "每轮都有固定的暂停时间。玩家在一轮内完成多个题目（重赛），直到时间耗尽。"
+
+msgid ""
+"One global timeout for the entire tournament. Games use the remaining "
+"tournament time. Tournament ends automatically when time expires."
+msgstr "整场比赛有一次全球暂停。比赛使用剩余的锦标赛时间。比赛时间到时自动结束。"
+
+msgid "Submitting..."
+msgstr "正在提交..."
+
+msgid "Create Tournament"
+msgstr "创建锦标赛"
+
+msgid "Update Tournament"
+msgstr "更新比赛"
+
+msgid ""
+"Approximate start time shown to players. The creator or a moderator starts "
+"the tournament manually."
+msgstr "向玩家显示的大致开始时间。创建者或主持人手动开始锦标赛。"
+
+msgid ""
+"Moderators can start and cancel the tournament, kick or ban players, and "
+"manage rounds. Enter user IDs separated by commas or spaces. You are always "
+"a moderator and do not need to be listed here."
+msgstr "主持人可以开始和取消锦标赛、踢出或禁止玩家以及管理回合。输入以逗号或空格分隔的用户 ID。您始终是版主，不需要列在此处。"
+
+msgid "Options"
+msgstr "选项"
+
+msgid ""
+"- ✅ Solve each task correctly to earn points\n"
+"- ⚡ Faster solutions rank higher\n"
+"- 🤝 Be respectful to other players\n"
+"\n"
+"Good luck and have fun! 🚀"
+msgstr ""
+"- ✅正确解决每项题目即可赚取积分\n"
+"- ⚡ 更快的解法排名更高\n"
+"- 🤝 尊重其他玩家\n"
+"\n"
+"祝你好运，玩得开心！ 🚀"
+
+msgid "Code Rumble"
+msgstr "代码隆隆声"
+
+msgid "Byte Brawl"
+msgstr "字节乱斗"
+
+msgid "Algo Arena Showdown"
+msgstr "Algo 竞技场对决"
+
+msgid "The Great Bug Hunt"
+msgstr "昆虫大狩猎"
+
+msgid "Syntax Smackdown"
+msgstr "语法打击"
+
+msgid "Midnight Code Clash"
+msgstr "午夜密码冲突"
+
+msgid "Turbo Loop Rumble"
+msgstr "涡轮循环隆隆声"
+
+msgid "Hack & Slash"
+msgstr "黑客与砍杀"
+
+msgid "Recursion Rampage"
+msgstr "递归狂暴"
+
+msgid "Stack Overflow Showdown"
+msgstr "堆栈溢出对决"
+
+msgid "View Hall of Fame"
+msgstr "查看名人堂"
+
+msgid "Contests History"
+msgstr "比赛历史"
+
+msgid "My Tournaments"
+msgstr "我的锦标赛"
+
+msgid "Create a Tournament"
+msgstr "创建锦标赛"
+
+msgid "Achievements"
+msgstr "成就"
+
+msgid "Calendar"
+msgstr "日历"
+
+msgid "Task packs"
+msgstr "题目集"
+
+msgid "Task Packs"
+msgstr "题目集"
+
+msgid "Create new task pack"
+msgstr "创建新题目集"
+
+msgid "Clans"
+msgstr "战队"
+
+msgid "Total clans:"
+msgstr "战队总数："
+
+msgid "Creator"
+msgstr "创作者"
+
+msgid "Created at"
+msgstr "创建于"
+
+msgid "Game Type"
+msgstr "游戏类型"
+
+msgid "Time control"
+msgstr "时间控制"
+
+msgid "Choose task by name or tags"
+msgstr "按名称或标签选择题目"
+
+msgid "With other user"
+msgstr "与其他用户"
+
+msgid "With a friend"
+msgstr "和朋友一起"
+
+msgid "With a bot"
+msgstr "使用机器人"
+
+msgid "Create battle"
+msgstr "创建对战"
+
+msgid "Feedback"
+msgstr "反馈意见"
+
+msgid "Send feedback"
+msgstr "发送反馈"
+
+msgid "Message"
+msgstr "留言"
+
+msgid "Bug"
+msgstr "错误"
+
+msgid "Suggestion"
+msgstr "建议"
+
+msgid "Question"
+msgstr "问题"
+
+msgid "Opponent has left"
+msgstr "对手已离开"
+
+msgid "Are you sure you want to give up?"
+msgstr "你确定要放弃吗？"
+
+msgid "Rematch"
+msgstr "再来一局"
+
+msgid "Rematch?"
+msgstr "复赛？"
+
+msgid "Accept"
+msgstr "接受"
+
+msgid "Decline"
+msgstr "拒绝"
+
+msgid "Rejected Offer"
+msgstr "拒绝报价"
+
+msgid "Wait For An Answer..."
+msgstr "等待答案..."
+
+msgid "Opponent Left The Game"
+msgstr "对手离开比赛"
+
+msgid "There are no active games right now."
+msgstr "目前没有正在进行的游戏。"
+
+msgid "Waiting Players"
+msgstr "等待玩家"
+
+msgid "QR code for the invite link"
+msgstr "邀请链接二维码"
+
+msgid "Scan the QR code to join the game"
+msgstr "扫描二维码即可加入游戏"
+
+msgid "Show QR"
+msgstr "显示二维码"
+
+msgid "Hide QR"
+msgstr "隐藏二维码"
+
+msgid "Next round"
+msgstr "下一轮"
+
+msgid "Round in progress"
+msgstr "回合正在进行中"
+
+msgid "Final round"
+msgstr "决赛"
+
+msgid "Pairing players"
+msgstr "配对玩家"
+
+msgid "Wrapping up"
+msgstr "总结"
+
+msgid "Round %{round} starts in"
+msgstr "第 %{round} 轮开始于"
+
+msgid "Round %{round} ends in"
+msgstr "回合 %{round} 结束于"
+
+msgid "Final games end in"
+msgstr "最终比赛结束于"
+
+msgid "Matching opponents…"
+msgstr "匹配对手..."
+
+msgid "Waiting for the last games"
+msgstr "等待最后几场比赛"
+
+msgid "Players still in a game skip the round"
+msgstr "仍在游戏中的玩家跳过该回合"
+
+msgid "Take a breath — new pairs are made when the break ends"
+msgstr "喘口气——休息结束后会制作新的鞋子"
+
+msgid "No new pairs — results are final when these games end"
+msgstr "没有新的配对 - 当这些比赛结束时，结果是最终的"
+
+msgid "Round %{round} of %{total}"
+msgstr "%{total} 的第 %{round} 轮"
+
+msgid "Rounds: %{count}"
+msgstr "回合：%{count}"
+
+msgid "Round %{round} · %{time}"
+msgstr "圆形 %{round} · %{time}"
+
+msgid "Round %{round}"
+msgstr "圆形 %{round}"
+
+msgid "Rounds left: %{count}"
+msgstr "左轮：%{count}"
+
+msgid "Last round"
+msgstr "最后一轮"
+
+msgid "Ends by %{time}"
+msgstr "结束于 %{time}"
+
+msgid "Your game is live"
+msgstr "你的对局已开始"
+
+msgid "You have played your last round — final standings come soon"
+msgstr "您已打完最后一轮 - 最终排名即将公布"
+
+msgid "You're in the pool — you'll get an opponent when the next round starts"
+msgstr "你在池子里——下一轮开始时你会遇到一个对手"
+
+msgid "Final round — no new pairs after this game"
+msgstr "最后一轮——本场比赛后没有新的配对"
+
+msgid "That was your last game in this tournament"
+msgstr "那是你在本次锦标赛中的最后一场比赛"
+
+msgid "Round %{round} is the last one — finish before the countdown ends to play it"
+msgstr "第 %{round} 轮是最后一轮 — 在倒计时结束前完成"
+
+msgid "Finish before the countdown ends to play round %{round}"
+msgstr "在 %{round} 轮倒计时结束前完成"
+
+msgid "You'll get a new opponent when round %{round} starts"
+msgstr "当第 %{round} 轮开始时，你将遇到一个新对手"
+
+msgid "Starts at %{time}"
+msgstr "从 %{time} 开始"
+
+msgid "up to %{duration}"
+msgstr "最多 %{duration}"
+
+msgid "Your round"
+msgstr "你的回合"
+
+msgid "Game round"
+msgstr "游戏回合"
+
+msgid ""
+"Fresh challenges. Fierce competition. Your shot at glory. Everyone is "
+"welcome — bring your best code and make your mark!"
+msgstr "新的挑战。竞争激烈。你的荣耀之战。欢迎大家——带上你最好的代码并留下你的印记！"
+
+msgid "Ranking Points_one"
+msgstr "排名积分_one"
+
+msgid "Ranking Points_few"
+msgstr "排名积分_few"
+
+msgid "Ranking Points_many"
+msgstr "排名积分_many"
+
+msgid "Ranking Points_other"
+msgstr "排名积分_other"
+
+msgid "This task is not available."
+msgstr "该题目不可用。"
+
+msgid "Reload page"
+msgstr "重新加载页面"
+
+msgid "Offer %{name} a rematch"
+msgstr "为 %{name} 提供重赛机会"
+
+msgid "Want another round?"
+msgstr "还想再来一轮吗？"
+
+msgid "A new task against the same opponent, it starts once you accept."
+msgstr "对抗同一个对手的新题目，一旦你接受，它就会开始。"
+
+msgid "Rematch %{name} on a new task, it starts right away."
+msgstr "在新题目上重新匹配 %{name}，它会立即开始。"
+
+msgid "Rematch %{name} on a new task, they get an offer to accept."
+msgstr "在新题目上与 %{name} 重新匹配，他们收到要接受的邀请。"
+
+msgid "Back to the game"
+msgstr "回到游戏"
+
+msgid "Who wants to battle?"
+msgstr "谁想来一场对战？"
+
+msgid "Invite posted to the lobby chat"
+msgstr "邀请已发布到大厅聊天"
+
+msgid "Could not post to the lobby chat. Try again."
+msgstr "无法发布到大厅聊天。再试一次。"
+
+msgid "Share in the lobby chat"
+msgstr "在大厅聊天中分享"
+
+msgid "Shared in the lobby chat"
+msgstr "在大厅聊天中分享"
+
+msgid "You?"
+msgstr "你？"
+
+msgid "Free seat"
+msgstr "免费座位"
+
+msgid "Join the battle"
+msgstr "加入战斗"
+
+msgid "Time is up"
+msgstr "时间到了"
+
+msgid "Ladder tournament"
+msgstr "天梯赛"
+
+msgid "Swiss tournament"
+msgstr "瑞士锦标赛"
+
+msgid "Grand slam"
+msgstr "大满贯"
+
+msgid "%{first} vs %{second}: live"
+msgstr "%{first} 与 %{second}：直播"
+
+msgid "%{winner} beat %{loser}"
+msgstr "%{winner} 击败 %{loser}"
+
+msgid "Coding battle"
+msgstr "编码战"
+
+msgid "%{first} vs %{second}"
+msgstr "%{first} 与 %{second}"
+
+msgid ""
+"%{name} (%{player}) is waiting for an opponent. Take the free seat and "
+"solve the task first!"
+msgstr "%{name} (%{player}) 正在等待对手。抢占空位，先解决题目！"
+
+msgid ""
+"%{first} (%{first_meta}) and %{second} (%{second_meta}) are solving the "
+"same task right now. Watch live!"
+msgstr "%{first} (%{first_meta}) 和 %{second} (%{second_meta}) 现在正在解决相同的题目。观看直播！"
+
+msgid "The battle is over. Think you can solve it faster? Play on Codebattle."
+msgstr "战斗结束了。你认为你能更快地解决它吗？玩Codebattle。"
+
+msgid ""
+"%{name} solved the task first in %{lang}. Think you can do better? Play on "
+"Codebattle."
+msgstr "%{name} 首先在 %{lang} 中解决了该题目。你认为你可以做得更好吗？玩Codebattle。"
+
+msgid ""
+"Time ran out before anyone solved the task. Think you can? Play on "
+"Codebattle."
+msgstr "时间已经过去了，还没有人解决这个题目。你认为你可以吗？玩Codebattle。"
+
+msgid "A head-to-head coding battle on Codebattle."
+msgstr "Codebattle 上的一场面对面的编码大战。"
+
+msgid "Starts %{date} UTC. Join and battle for the top!"
+msgstr "开始 %{date} UTC。加入并争夺巅峰！"
+
+msgid "Live now: watch the battles."
+msgstr "现在直播：观看战斗。"
+
+msgid "Finished: see the results."
+msgstr "完成：查看结果。"
+
+msgid "This game has already started. You can watch it."
+msgstr "这场比赛已经开始了。你可以观看。"
+
+msgid "You are already in this game."
+msgstr "你已经在这个游戏中了。"
+
+msgid ""
+"You are already in another game. Finish or cancel it before joining a new "
+"one."
+msgstr "您已经在另一场比赛中了。在加入新的之前完成或取消它。"
+
+msgid "Pasting from outside the editor is disabled in battles"
+msgstr "在战斗中禁用从编辑器外部粘贴"
+
+msgid "Search language"
+msgstr "搜索语言"
+
+msgid "Nothing found"
+msgstr "没有找到任何内容"
+
+msgid ""
+"This game is closed, a rematch is no longer possible. Start a new game from "
+"the lobby."
+msgstr "这场比赛已经结束，不可能再进行重赛。从大厅开始新游戏。"
+
+msgid "One of the players is already in another game."
+msgstr "其中一名玩家已经在另一场比赛中。"
+
+msgid "Could not start a rematch. Try again."
+msgstr "无法开始重赛。再试一次。"
+
+msgid "Hide the tests"
+msgstr "隐藏测试"
+
+msgid "Show the tests"
+msgstr "显示测试"
+
+msgid "Report this player for cheating"
+msgstr "举报该玩家作弊"
+
+msgid "Banned in this tournament"
+msgstr "本次比赛被禁赛"
+
+msgid "You are banned in this tournament"
+msgstr "您已被禁止参加本次锦标赛"
+
+msgid ""
+"Your editor is locked and solutions can no longer be submitted. If you "
+"think this is a mistake, contact the organizers."
+msgstr "您的编辑器已被锁定，无法再提交解法。如果您认为这是一个错误，请联系组织者。"
+
+msgid "Battle created"
+msgstr "已创建对战"
+
+msgid ""
+"The link is posted to the lobby chat. The game starts as soon as someone "
+"joins."
+msgstr "该链接已发布到大厅聊天室。只要有人加入，游戏就开始。"
+
+msgid "Game canceled"
+msgstr "比赛取消"
+
+msgid "Game expired"
+msgstr "游戏已过期"
+
+msgid "Nobody joined before the time ran out."
+msgstr "时间耗尽之前没有人加入。"
+
+msgid "The game was canceled before anyone joined."
+msgstr "在有人加入之前，比赛就被取消了。"
+
+msgid "%{name} canceled the game before anyone joined."
+msgstr "%{name} 在任何人加入之前取消了游戏。"
+
+msgid "Cancel rematch"
+msgstr "取消再战"
+
+msgid "Passed tests (%{count})"
+msgstr "通过测试 (%{count})"
+
+msgid "%{count} players · %{share}%"
+msgstr "%{count} 玩家 · %{share}%"
+
+msgid "Only an admin, or the creator of a clan with no players, can delete it"
+msgstr "只有管理员或没有玩家的战队创建者才能删除它"
+
+msgid "Stream mode"
+msgstr "流模式"
+
+msgid "Bot detection (ML)"
+msgstr "机器人检测 (ML)"
+
+msgid "The report opens once the game is over"
+msgstr "比赛结束后报告将打开"
+
+msgid "Privacy Policy"
+msgstr "隐私政策"
+
+msgid "Last updated: %{date}"
+msgstr "最后更新：%{date}"
+
+msgid ""
+"This policy explains what personal data we collect when you use Codebattle, "
+"why, and what control you have over it. It applies to everyone, wherever "
+"you live: every user gets the same rights, whether or not local law "
+"requires them."
+msgstr ""
+"本政策解释了当您使用 Codebattle "
+"时我们收集哪些个人数据、原因以及您对其拥有哪些控制权。它适用于每个人，无论您居住在何处：每个用户都享有相同的权利，无论当地法律是否要求。"
+
+msgid "Who is responsible"
+msgstr "谁负责"
+
+msgid "The controller (operator) of your personal data is %{operator}."
+msgstr "您的个人数据的控制者（运营商）是%{operator}。"
+
+msgid ""
+"For any privacy question or request, use the \"Send feedback\" form in the "
+"user menu (choose \"Question\")."
+msgstr "对于任何隐私问题或请求，请使用用户菜单中的“发送反馈”表单（选择“问题”）。"
+
+msgid ""
+"Codebattle is open-source software. If you use an instance run by someone "
+"else, that operator is responsible for your data there."
+msgstr "Codebattle 是开源软件。如果您使用其他人运行的实例，则该操作员将对您的数据负责。"
+
+msgid "What we collect"
+msgstr "我们收集什么"
+
+msgid "Account"
+msgstr "账户"
+
+msgid ""
+"name, email and password (stored only as a hash), or, if you sign in with "
+"GitHub, Discord or a partner platform, your ID, username and avatar there."
+msgstr "姓名、电子邮件和密码（仅存储为哈希值），或者，如果您使用 GitHub、Discord 或合作伙伴平台登录，则显示您的 ID、用户名和头像。"
+
+msgid "Profile and settings"
+msgstr "个人资料和设置"
+
+msgid ""
+"programming language, clan, editor and sound preferences, interface "
+"language, time zone."
+msgstr "编程语言、战队、编辑器和声音偏好、界面语言、时区。"
+
+msgid ""
+"games, the code you write and submit, results, ratings, tournaments, "
+"achievements and chat messages."
+msgstr "游戏、您编写和提交的代码、结果、评级、锦标赛、成就和聊天消息。"
+
+msgid "Fair-play data"
+msgstr "公平竞赛数据"
+
+msgid ""
+"during games we record summaries of editor activity (such as typing pace "
+"and pastes) and analyze submitted code to detect bots and cheating."
+msgstr "在游戏期间，我们记录编辑器活动的摘要（例如打字速度和粘贴）并分析提交的代码以检测机器人和作弊。"
+
+msgid "Technical data"
+msgstr "技术数据"
+
+msgid ""
+"the IP address and browser (user agent) of each signed-in session, server "
+"logs and error reports."
+msgstr "每个登录会话的 IP 地址和浏览器（用户代理）、服务器日志和错误报告。"
+
+msgid "Guests"
+msgstr "嘉宾"
+
+msgid "a random guest ID in the session cookie, nothing else."
+msgstr "会话 cookie 中的随机访客 ID，仅此而已。"
+
+msgid ""
+"We do not collect sensitive data (health, beliefs, biometrics and the "
+"like), we do not buy data about you, and we do not build advertising "
+"profiles."
+msgstr "我们不收集敏感数据（健康、信仰、生物识别等），我们不购买有关您的数据，也不建立广告资料。"
+
+msgid "Why we use it"
+msgstr "我们为什么使用它"
+
+msgid "To provide the service"
+msgstr "提供服务"
+
+msgid "performance of our agreement with you"
+msgstr "履行我们与您之间的协议"
+
+msgid "accounts, games, ratings, tournaments and events."
+msgstr "帐户、游戏、评级、锦标赛和活动。"
+
+msgid "To keep it secure and fair"
+msgstr "确保其安全和公平"
+
+msgid "legitimate interests"
+msgstr "合法权益"
+
+msgid "sign-in sessions, abuse and rate limiting, cheating and bot detection."
+msgstr "登录会话、滥用和速率限制、作弊和机器人检测。"
+
+msgid "To fix bugs"
+msgstr "修复错误"
+
+msgid "error reports."
+msgstr "错误报告。"
+
+msgid "To meet legal obligations"
+msgstr "履行法律义务"
+
+msgid "when the law requires us to keep or disclose data."
+msgstr "当法律要求我们保留或披露数据时。"
+
+msgid ""
+"We never sell your personal data, never share it for cross-context "
+"behavioral advertising, and never use it for targeted ads. If fair-play "
+"checks flag one of your results and you think that is wrong, contact us and "
+"a person will review it."
+msgstr ""
+"我们绝不会出售您的个人数据，绝不会为了跨情境行为广告而共享您的个人数据，也绝不会将其用于有针对性的广告。如果公平竞赛检查标记了您的某个结果，并且您认为该"
+"结果有误，请联系我们，我们将派专人对其进行审核。"
+
+msgid "What other users can see"
+msgstr "其他用户可以看到什么"
+
+msgid ""
+"Your name, avatar, rating, clan, achievements and games, including the code "
+"written in them and game chat messages, are visible to other users. Your "
+"email, sessions and settings are not."
+msgstr "其他用户可以看到您的姓名、头像、评级、战队、成就和游戏，包括其中编写的代码和游戏聊天消息。您的电子邮件、会话和设置都不是。"
+
+msgid "Cookies and local storage"
+msgstr "Cookie 和本地存储"
+
+msgid "Purpose"
+msgstr "目的"
+
+msgid "Lifetime"
+msgstr "终身"
+
+msgid ""
+"Signed, HTTP-only session cookie: keeps you signed in, holds your guest ID "
+"and language."
+msgstr "签名的、仅限 HTTP 的会话 cookie：让您保持登录状态，保存您的访客 ID 和语言。"
+
+msgid "%{count} days"
+msgstr "%{count} 天"
+
+msgid "Local storage"
+msgstr "本地存储"
+
+msgid ""
+"Preferences you choose (theme, editor, sound, layouts) and that this notice "
+"was dismissed. Never sent to us."
+msgstr "您选择的首选项（主题、编辑器、声音、布局）并且此通知已被驳回。从未发送给我们。"
+
+msgid "Until you clear it"
+msgstr "直到你清除为止"
+
+msgid ""
+"All of these are strictly necessary for the site to work, so they need no "
+"consent. We use no analytics, advertising or third-party tracking cookies, "
+"and fonts are served from our own servers. The only exception: profile "
+"pictures of users who signed in with GitHub, Discord or a partner platform "
+"load from those services, which see your IP address. You can delete cookies "
+"and local storage in your browser at any time; you will be signed out. "
+"Since we do not track you, Global Privacy Control and Do Not Track are "
+"effectively always honored."
+msgstr ""
+"所有这些都是网站正常运行所必需的，因此不需要他们的同意。我们不使用分析、广告或第三方跟踪 "
+"cookie，并且字体由我们自己的服务器提供。唯一的例外：使用 GitHub、Discord "
+"或合作伙伴平台登录的用户的个人资料图片会从这些服务加载，这些服务会看到您的 IP "
+"地址。您可以随时删除浏览器中的cookies和本地存储；您将被注销。由于我们不会跟踪您，因此全球隐私控制和“不跟踪”实际上始终受到尊重。"
+
+msgid "Service providers"
+msgstr "服务提供商"
+
+msgid ""
+"We share data only with providers that help run the service, under "
+"contracts that limit its use to our instructions:"
+msgstr "我们仅与帮助运行服务的提供商共享数据，并且合同的使用仅限于我们的指示："
+
+msgid "our hosting provider, which stores the database and runs the servers;"
+msgstr "我们的托管提供商，存储数据库并运行服务器；"
+
+msgid ""
+"Google Firebase Authentication, for email and password sign-in and "
+"verification emails;"
+msgstr "Google Firebase 身份验证，用于电子邮件和密码登录以及验证电子邮件；"
+
+msgid "Sentry, for error reports;"
+msgstr "Sentry，用于错误报告；"
+
+msgid "GitHub and Discord, only if you choose to sign in with them;"
+msgstr "GitHub 和 Discord，仅当您选择使用它们登录时；"
+
+msgid "partner learning platforms, only for events you join through them."
+msgstr "合作伙伴学习平台，仅适用于您通过它们参加的活动。"
+
+msgid ""
+"Some providers process data outside your country. Where the law requires "
+"it, such transfers rely on appropriate safeguards, such as the EU Standard "
+"Contractual Clauses. We may also disclose data when required by law."
+msgstr "一些提供商在您所在国家/地区之外处理数据。在法律要求的情况下，此类转让依赖于适当的保障措施，例如欧盟标准合同条款。我们还可能根据法律要求披露数据。"
+
+msgid "How long we keep it"
+msgstr "我们保留它多久"
+
+msgid "Account and activity data: until you delete your account."
+msgstr "帐户和活动数据：直到您删除帐户。"
+
+msgid ""
+"After deletion: your name is anonymized; email, avatar, linked accounts and "
+"session IP addresses are erased. Games and tournament results stay without "
+"your name, because other players’ results and ratings depend on them."
+msgstr "删除后：您的姓名将被匿名化；电子邮件、头像、链接帐户和会话 IP 地址将被删除。游戏和锦标赛结果不会显示您的名字，因为其他玩家的结果和评分取决于它们。"
+
+msgid ""
+"Sign-in sessions: up to %{days} days; ended sessions, with their IP address "
+"and browser, are deleted %{stale} days later."
+msgstr "登录会话：最多 %{days} 天；结束的会话及其 IP 地址和浏览器将在 %{stale} 天后删除。"
+
+msgid ""
+"Error reports and backups: a limited period, after which they are "
+"overwritten."
+msgstr "错误报告和备份：有一定期限，之后将被覆盖。"
+
+msgid "Your rights"
+msgstr "你的权利"
+
+msgid "Wherever you live, you can:"
+msgstr "无论您住在哪里，您都可以："
+
+msgid ""
+"get a copy of your data in a portable format: ask us through the feedback "
+"form;"
+msgstr "获取可移植格式的数据副本：通过反馈表询问我们；"
+
+msgid "correct it: Settings → Profile;"
+msgstr "更正：设置→个人资料；"
+
+msgid "delete it: Settings → Danger zone → Archive account;"
+msgstr "删除：设置→危险区域→存档帐户；"
+
+msgid "object to or restrict processing, and withdraw any consent you gave;"
+msgstr "反对或限制处理，并撤回您给予的任何同意；"
+
+msgid "complain to your data protection authority."
+msgstr "向您的数据保护机构投诉。"
+
+msgid ""
+"For anything you cannot do in Settings, contact us. We answer within 30 "
+"days, free of charge, and you will never be treated differently for using "
+"these rights."
+msgstr "对于您无法在“设置”中执行的任何操作，请联系我们。我们将在 30 天内免费答复，并且您绝不会因使用这些权利而受到区别对待。"
+
+msgid "Children"
+msgstr "儿童"
+
+msgid ""
+"Codebattle is not directed at children under 13. If you are under the age "
+"at which you can consent to data processing in your country (between 13 and "
+"16 in most places), ask a parent or guardian before signing up. Parents can "
+"contact us to have a child’s account deleted."
+msgstr ""
+"Codebattle 不针对 13 岁以下的儿童。如果您未达到您所在国家/地区可以同意数据处理的年龄（大多数地方为 13 岁到 16 "
+"岁之间），请在注册前询问父母或监护人。家长可以联系我们删除孩子的帐户。"
+
+msgid ""
+"Connections are encrypted (HTTPS), passwords and session tokens are stored "
+"only as hashes, and session cookies are signed and unreadable by scripts. "
+"No system is perfectly secure; if a breach affects your data, we will "
+"notify you and the authorities as the law requires."
+msgstr ""
+"连接经过加密 (HTTPS)，密码和会话令牌仅存储为哈希值，会话 cookie "
+"已签名且无法被脚本读取。没有一个系统是绝对安全的；如果违规行为影响您的数据，我们将按照法律要求通知您和当局。"
+
+msgid "Changes"
+msgstr "变化"
+
+msgid ""
+"When this policy changes, we update the date at the top. Significant "
+"changes are announced on the site before they take effect."
+msgstr "当此政策发生变化时，我们会更新顶部的日期。重大变更会在生效前在网站上宣布。"
+
+msgid "Cookies"
+msgstr "Cookie"
+
+msgid ""
+"We use only essential cookies and local storage: to keep you signed in and "
+"remember your settings. No ads, no tracking."
+msgstr "我们仅使用必要的 cookie 和本地存储：让您保持登录状态并记住您的设置。没有广告，没有跟踪。"
+
+msgid "Got it"
+msgstr "明白了"
+
+msgid "By signing up, you confirm that you have read the"
+msgstr "注册即表示您确认已阅读"
+
+msgid "Your email and password sign-in is deleted"
+msgstr "您的电子邮件和登录密码已被删除"
+
+msgid "Leaders right now"
+msgstr "现在的领导者"
+
+msgid "What is Codebattle"
+msgstr "什么是 Codebattle"
+
+msgid "Head-to-head battles"
+msgstr "正面交锋"
+
+msgid ""
+"You and your opponent get the same task. The first correct solution wins "
+"the round."
+msgstr "你和你的对手得到同样的题目。第一个正确的解法赢得了这一轮。"
+
+msgid "Seasons and Elo"
+msgstr "赛季与 Elo"
+
+msgid "Join this tournament"
+msgstr "参加本次比赛"
+
+msgid ""
+"Create a free account or sign in to take your seat. It takes less than a "
+"minute."
+msgstr "创建一个免费帐户或登录以就座。需要不到一分钟的时间。"
+
+msgid "The battles are live"
+msgstr "战斗正在进行中"
+
+msgid ""
+"Sign in to watch the games, follow the standings, and get ready for the "
+"next tournament."
+msgstr "登录观看比赛、关注积分榜并为下一场比赛做好准备。"
+
+msgid "This tournament is over"
+msgstr "本次比赛结束了"
+
+msgid "Sign in to see the full results and join the next tournament."
+msgstr "登录查看完整结果并参加下一场比赛。"
+
+msgid "Join Codebattle"
+msgstr "加入代码之战"
+
+msgid "Sign in to follow this tournament and battle in the next ones."
+msgstr "登录即可关注本次锦标赛并参加下一场锦标赛。"
+
+msgid ""
+"Counts toward the %{season} season: the winner takes %{points} season "
+"points."
+msgstr "计入 %{season} 赛季：获胜者获得 %{points} 赛季积分。"
+
+msgid "A Codebattle League tournament: the winner takes %{points} season points."
+msgstr "Codebattle 联盟锦标赛：获胜者获得 %{points} 赛季积分。"
+
+msgid "Sign up and take your seat before the tournament starts."
+msgstr "在比赛开始前报名并入座。"
+
+msgid "Warm up with a quick match against a bot."
+msgstr "通过与机器人的快速比赛来热身。"
+
+msgid "Play your first battle"
+msgstr "开始你的第一场对战"
+
+msgid "Code. Compete. Learn together."
+msgstr "编程、竞技、共同进步。"
+
+msgid "A coding challenge. Two players. One winner."
+msgstr "一道编程题。两位选手。一位赢家。"
+
+msgid ""
+"Solve the same task in your favorite language. See your opponent’s code "
+"live and race to pass the tests."
+msgstr "使用你喜欢的编程语言解答同一道题，实时查看对手的代码，争取率先通过测试。"
+
+msgid "Start with a practice bot. No signup. No rating changes."
+msgstr "从练习机器人开始。没有注册。没有评级变化。"
+
+msgid "Choose your language"
+msgstr "选择您的语言"
+
+msgid "Preview the task"
+msgstr "预览题目"
+
+msgid "Practice bot"
+msgstr "练习机器人"
+
+msgid "Already play here? Sign in"
+msgstr "已经在这里玩了吗？登录"
+
+msgid "How a coding battle works"
+msgstr "编码战如何进行"
+
+msgid "One task. Two editors."
+msgstr "一道题目，两个编辑器。"
+
+msgid "Example battle"
+msgstr "战斗示例"
+
+msgid "Count the unique letters in a word."
+msgstr "计算单词中唯一的字母。"
+
+msgid "Your opponent"
+msgstr "你的对手"
+
+msgid "The first correct solution wins. Watch each other code live."
+msgstr "率先提交正确解法即可获胜。实时观看彼此编写代码。"
+
+msgid "Your first battle, step by step"
+msgstr "你的第一次战斗，一步一步来"
+
+msgid "Choose a language, preview the task, and start when you’re ready."
+msgstr "选择编程语言，预览题目，准备好后即可开始。"
+
+msgid ""
+"Preview an approachable task before starting. Your practice opponent is a "
+"bot."
+msgstr "在开始之前预览一项容易完成的题目。你的练习对手是一个机器人。"
+
+msgid "Write it. Run it."
+msgstr "编写代码，运行测试。"
+
+msgid ""
+"Fill in the solution and run the tests. Use the results to improve your "
+"code."
+msgstr "填写解法并运行测试。使用结果来改进您的代码。"
+
+msgid "Play again or meet a rival"
+msgstr "再次玩或遇到对手"
+
+msgid "Try another task, then create an account to challenge real players."
+msgstr "尝试另一个题目，然后创建一个帐户来挑战真正的玩家。"
+
+msgid "Explore seasons and tournaments"
+msgstr "探索赛季和锦标赛"
+
+msgid "Your first coding battle"
+msgstr "你的第一场编程对战"
+
+msgid "Which language do you want to use?"
+msgstr "你想使用哪种编程语言？"
+
+msgid "Unrated"
+msgstr "不计分"
+
+msgid ""
+"Write your solution on the left. Watch the bot on the right. Run tests as "
+"often as you like."
+msgstr "在左侧编写解法，在右侧观察机器人。你可以随时运行测试。"
+
+msgid ""
+"The first correct solution wins. You can keep solving after the bot "
+"finishes."
+msgstr "率先提交正确解法即可获胜。机器人完成后，你仍可继续解题。"
+
+msgid "Start practice battle"
+msgstr "开始练习对战"
+
+msgid "No signup required. Your rating stays unchanged."
+msgstr "无需注册，也不会影响你的等级分。"
+
+msgid "Your practice task"
+msgstr "你的练习题目"
+
+msgid "Practice is unavailable right now. Please try again later."
+msgstr "目前无法进行练习。请稍后重试。"
+
+msgid "Choose an available programming language."
+msgstr "选择可用的编程语言。"
+
+msgid "Hide tips"
+msgstr "隐藏提示"
+
+msgid "Show tips"
+msgstr "显示提示"
+
+msgid "You solved it! Ready for another challenge?"
+msgstr "你解决了！准备好迎接另一个挑战了吗？"
+
+msgid "Use the test results to improve your solution, then run it again."
+msgstr "使用测试结果改进您的解法，然后再次运行它。"
+
+msgid "Read the task, write your solution on the left, then press Run to check it."
+msgstr "阅读题目，在左侧写下您的解法，然后按“运行”进行检查。"
+
+msgid ""
+"Keep the function signature and return your answer. The bot is on the "
+"right; you can keep solving after it finishes."
+msgstr "保留函数签名并返回您的答案。机器人在右边；完成后可以继续求解。"
+
+msgid "Practice again"
+msgstr "再练习一下"
+
+msgid "Create an account to play people"
+msgstr "创建一个帐户来玩人"
+
+msgid "Practice complete!"
+msgstr "练习完毕！"
+
+msgid "Keep practicing"
+msgstr "继续练习"
+
+msgid ""
+"You passed the tests and solved the challenge. Try another task or create "
+"an account to play against people."
+msgstr "您通过了测试并解决了挑战。尝试其他题目或创建一个帐户来与人对战。"
+
+msgid ""
+"The battle is over, but you can keep editing and running tests. Take a look "
+"at the bot’s solution if you need an idea."
+msgstr "战斗已经结束，但您可以继续编辑和运行测试。如果您需要想法，请查看机器人的解法。"
+
+msgid "Review the code"
+msgstr "查看代码"
+
+msgid "Keep solving"
+msgstr "继续解决"
+
+msgid ""
+"Cookies keep you signed in and remember your settings. We measure "
+"onboarding on our own servers. No ads or third-party tracking."
+msgstr "Cookie 让您保持登录状态并记住您的设置。我们在自己的服务器上衡量入职情况。没有广告或第三方跟踪。"
+
+msgid ""
+"a random guest ID in the session cookie. We reuse it to count landing "
+"visits, practice setup, test runs, solved practice tasks, another practice "
+"and sign-in. These onboarding records stay on our servers for up to 90 days "
+"and contain no IP address, browser details, account ID or submitted code."
+msgstr ""
+"会话 cookie 中的随机访客 "
+"ID。我们重用它来计算登陆访问、练习设置、测试运行、解决的练习题目、另一次练习和登录。这些登录记录在我们的服务器上保留最多 90 天，并且不包含 IP "
+"地址、浏览器详细信息、帐户 ID 或提交的代码。"
+
+msgid "To improve onboarding"
+msgstr "改善新手引导"
+
+msgid ""
+"first-party counts of the steps from landing to practice. We skip this "
+"measurement when your browser sends Do Not Track or Global Privacy Control."
+msgstr "第一方统计从着陆到练习的步骤。当您的浏览器发送“请勿跟踪”或“全球隐私控制”消息时，我们会跳过此测量。"
+
+msgid ""
+"We use no additional analytics cookies, advertising cookies or third-party "
+"trackers. First-party onboarding counts reuse the existing guest session "
+"and honor Do Not Track and Global Privacy Control. Fonts are served from "
+"our own servers. Profile pictures of users who signed in with GitHub, "
+"Discord or a partner platform load from those services, which see your IP "
+"address. You can delete cookies and local storage in your browser at any "
+"time; you will be signed out."
+msgstr ""
+"我们不使用额外的分析 cookie、广告 cookie "
+"或第三方跟踪器。第一方加入计数重复使用现有的访客会话并遵守“请勿跟踪”和“全球隐私控制”。字体由我们自己的服务器提供。使用 "
+"GitHub、Discord 或合作伙伴平台登录的用户的个人资料图片会从这些服务加载，这些服务会看到您的 IP "
+"地址。您可以随时删除浏览器中的cookies和本地存储；您将被注销。"
+
+msgid "languages to battle in"
+msgstr "战斗语言"
+
+msgid "real-time duels"
+msgstr "实时对决"
+
+msgid "players in a single tournament"
+msgstr "参加单场比赛的选手"
+
+msgid "ads or third-party trackers"
+msgstr "广告或第三方跟踪器"
+
+msgid "League tournaments will appear here soon."
+msgstr "联赛很快就会在这里举行。"
+
+msgid "Four Grand Slams every season. One champion."
+msgstr "每个赛季都有四个大满贯。一名冠军。"
+
+msgid "Add reaction"
+msgstr "添加反应"
+
+msgid "One reaction per message"
+msgstr "每条消息有一个反应"
+
+msgid "Laugh"
+msgstr "笑"
+
+msgid "Smile"
+msgstr "微笑"
+
+msgid "Heart"
+msgstr "心"
+
+msgid "Fire"
+msgstr "火"
+
+msgid "Rocket"
+msgstr "火箭"
+
+msgid "Applause"
+msgstr "掌声"
+
+msgid "Eyes"
+msgstr "眼睛"
+
+msgid "Thumbs up"
+msgstr "竖起大拇指"
+
+msgid "Deployed at (UTC)"
+msgstr "部署时间（UTC）"
+
+msgid "Deployed commit"
+msgstr "部署的提交"
+
+msgid ""
+"Deployment time was not supplied. The timestamp shows when this application "
+"was initialized."
+msgstr "未提供部署时间。此时间戳表示应用的启动时间。"
+
+msgid "Developer info"
+msgstr "开发者信息"
+
+msgid "Initialized at (UTC)"
+msgstr "应用启动时间（UTC）"
+
+msgid "Not available"
+msgstr "暂无"
+
+msgid "Release and runtime details for this instance."
+msgstr "此实例的版本和运行环境详情。"
+
+msgid "Release version"
+msgstr "发布版本"
+
+msgid "Runtime"
+msgstr "运行环境"
+
+msgid "Task description language"
+msgstr "题目描述语言"

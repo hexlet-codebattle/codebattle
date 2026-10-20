@@ -72,6 +72,8 @@ export interface Task {
   origin: string;
   description_en: string | null;
   description_ru: string | null;
+  description_es?: string | null;
+  description_zh?: string | null;
   creator_id: number | null;
   tags: string[];
 }

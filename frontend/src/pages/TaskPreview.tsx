@@ -16,6 +16,7 @@ import { AdminCard, DetailsCard, PlayCard } from '@/features/taskPage/components
 import { LevelBadge, StateBadge } from '@/features/tasks/shared';
 import { AppLayout } from '@/layout/AppLayout';
 import { useSharedProps } from '@/shared/useSharedProps';
+import { descriptionField } from '@/shared/taskDescription';
 
 // Props from TaskController.show (render_inertia("TaskPreview", ...)).
 interface TaskPreviewProps {
@@ -96,7 +97,7 @@ export default function TaskPreview() {
               <DescriptionCard
                 task={task}
                 canEdit={canEdit}
-                onSave={(lang, text) => save(lang === 'ru' ? { description_ru: text } : { description_en: text })}
+                onSave={(lang, text) => save({ [descriptionField(lang)]: text })}
               />
               <SignatureCard task={task} />
               <AssertsCards task={task} />

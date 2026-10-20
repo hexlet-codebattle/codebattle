@@ -22,6 +22,8 @@ defmodule Codebattle.Task do
              :creator_id,
              :description_en,
              :description_ru,
+             :description_es,
+             :description_zh,
              :examples,
              :examples_list,
              :generator_lang,
@@ -77,6 +79,8 @@ defmodule Codebattle.Task do
   schema "tasks" do
     field(:description_ru, :string)
     field(:description_en, :string)
+    field(:description_es, :string)
+    field(:description_zh, :string)
     field(:type, :string, default: @task_type)
     field(:name, :string)
     field(:level, :string)
@@ -114,6 +118,8 @@ defmodule Codebattle.Task do
       :creator_id,
       :description_en,
       :description_ru,
+      :description_es,
+      :description_zh,
       :disabled,
       :examples,
       :examples_list,
@@ -164,30 +170,31 @@ defmodule Codebattle.Task do
     |> changeset(params)
     |> Repo.insert!(
       on_conflict: [
-        set: [
-          arguments_generator: Map.get(params, :arguments_generator, ""),
-          asserts: params.asserts,
-          asserts_examples: Map.get(params, :asserts_examples, []),
-          base_score: Map.get(params, :base_score) || level_timing(params.level).base_score,
-          comment: Map.get(params, :comment),
-          creator_id: params[:creator_id],
-          description_en: params.description_en,
-          description_ru: Map.get(params, :description_ru, ""),
-          examples: params.examples,
-          generator_lang: Map.get(params, :generator_lang, "js"),
-          input_signature: params.input_signature,
-          level: params.level,
-          time_to_solve_sec: Map.get(params, :time_to_solve_sec) || level_timing(params.level).time_to_solve_sec,
-          origin: params.origin,
-          output_signature: params.output_signature,
-          solution: Map.get(params, :solution, ""),
-          solutions: Map.get(params, :solutions, %{}),
-          state: params.state,
-          tags: Map.get(params, :tags, []),
-          examples_list: Map.get(params, :examples_list, []),
-          updated_at: DateTime.utc_now(),
-          visibility: params.visibility
-        ]
+        set:
+          [
+            arguments_generator: Map.get(params, :arguments_generator, ""),
+            asserts: params.asserts,
+            asserts_examples: Map.get(params, :asserts_examples, []),
+            base_score: Map.get(params, :base_score) || level_timing(params.level).base_score,
+            comment: Map.get(params, :comment),
+            creator_id: params[:creator_id],
+            description_en: params.description_en,
+            description_ru: Map.get(params, :description_ru, ""),
+            examples: params.examples,
+            generator_lang: Map.get(params, :generator_lang, "js"),
+            input_signature: params.input_signature,
+            level: params.level,
+            time_to_solve_sec: Map.get(params, :time_to_solve_sec) || level_timing(params.level).time_to_solve_sec,
+            origin: params.origin,
+            output_signature: params.output_signature,
+            solution: Map.get(params, :solution, ""),
+            solutions: Map.get(params, :solutions, %{}),
+            state: params.state,
+            tags: Map.get(params, :tags, []),
+            examples_list: Map.get(params, :examples_list, []),
+            updated_at: DateTime.utc_now(),
+            visibility: params.visibility
+          ] ++ Map.to_list(Map.take(params, [:description_es, :description_zh]))
       ],
       conflict_target: :name
     )

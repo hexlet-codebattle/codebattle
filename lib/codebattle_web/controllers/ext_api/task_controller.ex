@@ -24,7 +24,8 @@ defmodule CodebattleWeb.ExtApi.TaskController do
   defp process_payload(conn, payload, origin, visibility) do
     with {:ok, gzipped_data} <- decode_base64(payload),
          {:ok, json_data} <- decompress_gzip(gzipped_data),
-         {:ok, tasks_list} <- Jason.decode(json_data) do
+         {:ok, tasks_list} <- Jason.decode(json_data),
+         true <- is_list(tasks_list) and Enum.all?(tasks_list, &is_map/1) do
       results = Enum.map(tasks_list, &process_task(&1, origin, visibility))
 
       errors =
@@ -56,7 +57,7 @@ defmodule CodebattleWeb.ExtApi.TaskController do
         |> json(%{success: success_count, errors: errors})
       end
     else
-      {:error, _reason} ->
+      _invalid_payload ->
         conn
         |> put_status(:bad_request)
         |> json(%{errors: %{payload: "Invalid gzipped payload format"}})
@@ -69,12 +70,14 @@ defmodule CodebattleWeb.ExtApi.TaskController do
     _ -> {:error, :invalid_gzip}
   end
 
-  defp decode_base64(data) do
+  defp decode_base64(data) when is_binary(data) do
     case Base.decode64(data) do
       {:ok, decoded} -> {:ok, decoded}
       :error -> {:error, :invalid_base64}
     end
   end
+
+  defp decode_base64(_data), do: {:error, :invalid_base64}
 
   defp process_task(task_params, origin, visibility) do
     params =
@@ -88,7 +91,17 @@ defmodule CodebattleWeb.ExtApi.TaskController do
   end
 
   defp save_task(params, task_params) do
-    case Codebattle.Task.changeset(%Codebattle.Task{}, params) do
+    changeset =
+      Enum.reduce([:input_signature, :output_signature], Codebattle.Task.changeset(%Codebattle.Task{}, params), fn
+        field, changeset ->
+          if is_nil(params[field]) do
+            Ecto.Changeset.add_error(changeset, field, "can't be blank")
+          else
+            changeset
+          end
+      end)
+
+    case changeset do
       %{valid?: true} ->
         Codebattle.Task.upsert!(params)
         {:ok, task_params}

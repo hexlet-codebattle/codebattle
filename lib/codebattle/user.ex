@@ -18,7 +18,7 @@ defmodule Codebattle.User do
   @guest_id 0
 
   @subscription_types ~w(banned free premium moderator admin)a
-  @valid_locales ~w(en ru)
+  @valid_locales ~w(en ru es zh)
   @style_langs ~w(css less sass stylus)
   @db_types ~w(postgresql mysql mongodb)
   @derive {Jason.Encoder,

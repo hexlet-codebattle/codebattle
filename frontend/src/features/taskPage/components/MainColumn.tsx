@@ -5,7 +5,6 @@ import {
   Code,
   Group,
   ScrollArea,
-  SegmentedControl,
   SimpleGrid,
   Stack,
   Table,
@@ -19,34 +18,37 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UserCard } from '@/features/users/UserCard';
+import { type Locale, normalizeLocale, SUPPORTED_LOCALES } from '@/i18n';
 import { LangIcon } from '@/shared/LangIcon';
+import { LocaleSelect } from '@/shared/LocaleSelect';
 import { Markdown } from '@/shared/Markdown';
+import { availableDescriptionLocales, descriptionField, taskDescriptionLocale } from '@/shared/taskDescription';
 
 import { type Assert, formatDuration, type Task, type TaskStats, typeName } from '../api';
 
 import classes from './TaskPage.module.css';
 
-type DescriptionLang = 'en' | 'ru';
-
 interface DescriptionCardProps {
   task: Task;
   canEdit: boolean;
   /** Saves one description; rejects on failure (the caller shows the error). */
-  onSave: (lang: DescriptionLang, text: string) => Promise<void>;
+  onSave: (lang: Locale, text: string) => Promise<void>;
 }
 
 export function DescriptionCard({ task, canEdit, onSave }: DescriptionCardProps) {
   const { t, i18n } = useTranslation();
-  const hasRu = Boolean(task.description_ru?.trim());
+  const availableLocales = availableDescriptionLocales(task);
   // Default to the UI language when that description exists.
-  const [lang, setLang] = useState<DescriptionLang>(i18n.language === 'ru' && hasRu ? 'ru' : 'en');
+  const [selectedLang, setLang] = useState<Locale | null>(null);
+  const wanted = selectedLang ?? normalizeLocale(i18n.language);
+  const lang = canEdit && selectedLang ? selectedLang : taskDescriptionLocale(task, wanted);
   const [draft, setDraft] = useState<string | null>(null);
   const [preview, setPreview] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const text = (lang === 'ru' ? task.description_ru : task.description_en) ?? '';
-  // Editors can add a Russian description even if there is none yet.
-  const showToggle = hasRu || canEdit;
+  const text = task[descriptionField(lang)] ?? '';
+  // Editors can add translations; readers only choose descriptions that exist.
+  const locales = canEdit ? SUPPORTED_LOCALES : availableLocales;
 
   const save = async () => {
     if (draft == null) return;
@@ -64,22 +66,28 @@ export function DescriptionCard({ task, canEdit, onSave }: DescriptionCardProps)
       <Group justify="space-between" mb="sm">
         <Title order={4}>{t('Description')}</Title>
         <Group gap="xs">
-          {showToggle && (
-            <SegmentedControl
-              size="xs"
+          {(locales.length > 1 || canEdit) && (
+            <LocaleSelect
               value={lang}
               onChange={(value) => {
-                setLang(value as DescriptionLang);
+                setLang(value);
                 setDraft(null);
               }}
-              data={[
-                { value: 'en', label: 'EN' },
-                { value: 'ru', label: 'RU' },
-              ]}
+              locales={locales}
+              disabled={saving}
+              label={t('Task description language')}
             />
           )}
           {canEdit && draft == null && (
-            <Button size="compact-sm" variant="subtle" leftSection={<IconPencil size={14} />} onClick={() => setDraft(text)}>
+            <Button
+              size="compact-sm"
+              variant="subtle"
+              leftSection={<IconPencil size={14} />}
+              onClick={() => {
+                setLang(lang);
+                setDraft(text);
+              }}
+            >
               {t('Edit')}
             </Button>
           )}
@@ -122,7 +130,7 @@ export function DescriptionCard({ task, canEdit, onSave }: DescriptionCardProps)
         <Markdown>{text}</Markdown>
       ) : (
         <Text size="sm" c="dimmed">
-          {lang === 'ru' ? t('No Russian description yet.') : t('No description yet.')}
+          {t('No description yet.')}
         </Text>
       )}
     </Card>

@@ -9,6 +9,7 @@ import { createInvite, inviteErrorText } from '@/features/invites/actions';
 import type { InviteUser } from '@/features/invites/store';
 import { t as translate } from '@/i18n';
 import { useSharedProps } from '@/shared/useSharedProps';
+import { taskDescription } from '@/shared/taskDescription';
 
 import { LEVELS, levelLabel } from '../format';
 import type { GameLevel, Task } from '../types';
@@ -62,7 +63,7 @@ function taskTagGroups(task: Task, popular: string[]) {
 
 // First line of the description: a hint under the task name in the picker.
 function taskSummary(task: Task, locale: string) {
-  const description = (locale === 'ru' ? task.description_ru : task.description_en) ?? task.description_en ?? '';
+  const description = taskDescription(task, locale);
 
   return description
     .split('\n')

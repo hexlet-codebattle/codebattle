@@ -7,6 +7,8 @@ defmodule CodebattleWeb.Api.TaskView do
       name: task.name,
       description_en: task.description_en,
       description_ru: task.description_ru,
+      description_es: task.description_es,
+      description_zh: task.description_zh,
       level: task.level,
       origin: task.origin,
       creator_id: task.creator_id,

@@ -34,6 +34,8 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                  "id" => t1.id,
                  "description_en" => "test sum",
                  "description_ru" => "проверка суммы",
+                 "description_es" => nil,
+                 "description_zh" => nil,
                  "level" => "easy",
                  "name" => "1",
                  "origin" => "user",
@@ -44,6 +46,8 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                  "id" => t2.id,
                  "description_en" => "test sum",
                  "description_ru" => "проверка суммы",
+                 "description_es" => nil,
+                 "description_zh" => nil,
                  "level" => "easy",
                  "name" => "2",
                  "origin" => "user",
@@ -54,6 +58,8 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                  "id" => t3.id,
                  "description_en" => "test sum",
                  "description_ru" => "проверка суммы",
+                 "description_es" => nil,
+                 "description_zh" => nil,
                  "level" => "easy",
                  "name" => "3",
                  "origin" => "user",
@@ -62,6 +68,26 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
              ] ==
                tasks
     end
+  end
+
+  test "saves and exposes Spanish and Chinese task descriptions", %{conn: conn} do
+    owner = insert(:user)
+    task = insert(:task, creator_id: owner.id)
+
+    response =
+      conn
+      |> log_in_user(owner.id)
+      |> patch(Routes.api_v1_task_path(conn, :update, task.id), %{
+        task: %{description_es: "Suma dos números.", description_zh: "计算两个数的和。"}
+      })
+      |> json_response(200)
+
+    assert response["task"]["description_es"] == "Suma dos números."
+    assert response["task"]["description_zh"] == "计算两个数的和。"
+
+    response = conn |> get(Routes.api_v1_task_path(conn, :show, task.id)) |> json_response(200)
+    assert response["task"]["description_es"] == "Suma dos números."
+    assert response["task"]["description_zh"] == "计算两个数的和。"
   end
 
   describe ".show" do

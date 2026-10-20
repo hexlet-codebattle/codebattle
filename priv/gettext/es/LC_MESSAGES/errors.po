@@ -1,0 +1,94 @@
+# Initial machine-assisted translations. Core interface terminology reviewed in context.
+msgid ""
+msgstr ""
+"Project-Id-Version: Codebattle\n"
+"Language: es\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "can't be blank"
+msgstr "no puede estar en blanco"
+
+msgid "has already been taken"
+msgstr "ya ha sido tomado"
+
+msgid "is invalid"
+msgstr "es inválido"
+
+msgid "has invalid format"
+msgstr "tiene formato no válido"
+
+msgid "has an invalid entry"
+msgstr "tiene una entrada inválida"
+
+msgid "is reserved"
+msgstr "esta reservado"
+
+msgid "does not match confirmation"
+msgstr "no coincide con la confirmación"
+
+msgid "is still associated to this entry"
+msgstr "todavía está asociado a esta entrada"
+
+msgid "are still associated to this entry"
+msgstr "todavía están asociados a esta entrada"
+
+msgid "should be %{count} character(s)"
+msgid_plural "should be %{count} character(s)"
+msgstr[0] "debe ser %{count} carácter(es)"
+msgstr[1] "debe ser %{count} carácter(es)"
+
+msgid "should have %{count} item(s)"
+msgid_plural "should have %{count} item(s)"
+msgstr[0] "debe tener %{count} artículo(s)"
+msgstr[1] "debe tener %{count} artículo(s)"
+
+msgid "should be at least %{count} character(s)"
+msgid_plural "should be at least %{count} character(s)"
+msgstr[0] "debe tener al menos %{count} caracteres"
+msgstr[1] "debe tener al menos %{count} caracteres"
+
+msgid "should have at least %{count} item(s)"
+msgid_plural "should have at least %{count} item(s)"
+msgstr[0] "debe tener al menos %{count} artículos"
+msgstr[1] "debe tener al menos %{count} artículos"
+
+msgid "should be at most %{count} character(s)"
+msgid_plural "should be at most %{count} character(s)"
+msgstr[0] "debe tener como máximo %{count} caracteres"
+msgstr[1] "debe tener como máximo %{count} caracteres"
+
+msgid "should have at most %{count} item(s)"
+msgid_plural "should have at most %{count} item(s)"
+msgstr[0] "debe tener como máximo %{count} artículos"
+msgstr[1] "debe tener como máximo %{count} artículos"
+
+msgid "must be less than %{number}"
+msgstr "debe ser menor que %{number}"
+
+msgid "must be greater than %{number}"
+msgstr "debe ser mayor que %{number}"
+
+msgid "must be less than or equal to %{number}"
+msgstr "debe ser menor o igual a %{number}"
+
+msgid "must be greater than or equal to %{number}"
+msgstr "debe ser mayor o igual a %{number}"
+
+msgid "must be equal to %{number}"
+msgstr "debe ser igual a %{number}"
+
+msgid "You are already in game"
+msgstr "Ya estas en el juego"
+
+msgid "You are not player of this game"
+msgstr "No eres jugador de este juego."
+
+msgid "Game is already playing"
+msgstr "El juego ya esta jugando"
+
+msgid "You cannot check result after win"
+msgstr "No puedes comprobar el resultado después de ganar."
+
+msgid "Game is over"
+msgstr "El juego ha terminado"

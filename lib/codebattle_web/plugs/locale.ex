@@ -4,7 +4,7 @@ defmodule CodebattleWeb.Plugs.Locale do
   """
   import Plug.Conn
 
-  @valid_locales ~w(en ru)
+  @valid_locales ~w(en ru es zh)
 
   def init(_opts), do: nil
 

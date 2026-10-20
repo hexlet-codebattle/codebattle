@@ -694,7 +694,7 @@
   user-select: none;
 }
 
-/* EN/RU and Preview, stacked in the description's top-right corner. */
+/* Language and Preview, stacked in the description's top-right corner. */
 .taskCorner {
   float: right;
   display: flex;
@@ -734,11 +734,6 @@
       width: auto;
     }
   }
-}
-
-.langSwitch {
-  padding: 1px;
-  margin-bottom: 2px;
 }
 
 /* Task / Tests in the top bar: each shows its pane in the strip, or hides the strip when already shown. */

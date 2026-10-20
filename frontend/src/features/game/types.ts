@@ -60,6 +60,8 @@ export interface GameTask {
   level: string;
   description_en: string | null;
   description_ru: string | null;
+  description_es?: string | null;
+  description_zh?: string | null;
   examples: string | null;
   input_signature?: { argument_name: string; type: unknown }[];
   output_signature?: { type: unknown };

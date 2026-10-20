@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Modal, SegmentedControl, Stack, Text, Tooltip } from '@mantine/core';
+import { Badge, Button, Group, Modal, Stack, Text, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBrandGithub, IconWindowMaximize } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -6,7 +6,10 @@ import { useTranslation } from 'react-i18next';
 
 import { LEVEL_COLORS, levelLabel } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
+import { isLocale, type Locale, normalizeLocale } from '@/i18n';
+import { LocaleSelect } from '@/shared/LocaleSelect';
 import { Markdown } from '@/shared/Markdown';
+import { availableDescriptionLocales, descriptionField, taskDescriptionLocale } from '@/shared/taskDescription';
 
 import type { GameTask } from '../types';
 import classes from '../GameRoom.module.css';
@@ -23,22 +26,19 @@ const codeBlock = (examples: string) => {
 const taskSourceUrl = (task: GameTask) =>
   `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags?.[0]}/${task.name}.toml`;
 
-/** The task description (EN/RU when both exist) and its examples; the name and level live in the top bar. */
-type DescriptionLang = 'en' | 'ru';
-
-// The EN/RU pick outlives the game: the next task (e.g. the next tournament round) opens in it.
+// The language pick outlives the game: the next tournament task opens in it when available.
 const LANG_KEY = 'cb.taskDescriptionLang';
 
-function storedLang(): DescriptionLang | null {
+function storedLang(): Locale | null {
   try {
     const value = window.localStorage.getItem(LANG_KEY);
-    return value === 'en' || value === 'ru' ? value : null;
+    return isLocale(value) ? value : null;
   } catch {
     return null;
   }
 }
 
-function storeLang(lang: DescriptionLang) {
+function storeLang(lang: Locale) {
   try {
     window.localStorage.setItem(LANG_KEY, lang);
   } catch {
@@ -51,8 +51,8 @@ interface TaskPanelProps {
   /** A Preview button opening the task in a modal (which shares this panel's language). */
   withPreview?: boolean;
   /** Controlled language, so the strip and its preview switch together. */
-  lang?: DescriptionLang;
-  onLangChange?: (lang: DescriptionLang) => void;
+  lang?: Locale;
+  onLangChange?: (lang: Locale) => void;
   /** Leave the examples out (shown in a pane of their own on the broadcast). */
   hideExamples?: boolean;
   /** Leave out the "send a PR" link of GitHub tasks (the broadcast). */
@@ -72,21 +72,20 @@ export function TaskPanel({
 }: TaskPanelProps) {
   const { t, i18n } = useTranslation();
   const [preview, { open, close }] = useDisclosure(false);
-  const hasRu = Boolean(task.description_ru?.trim());
-  const hasEn = Boolean(task.description_en?.trim());
-  const [ownLang, setOwnLang] = useState<DescriptionLang>(() => storedLang() ?? (i18n.language === 'ru' ? 'ru' : 'en'));
-  const wanted = controlledLang ?? ownLang;
+  const availableLocales = availableDescriptionLocales(task);
+  const [ownLang, setOwnLang] = useState<Locale | null>(storedLang);
+  const wanted = controlledLang ?? ownLang ?? normalizeLocale(i18n.language);
   // A task without the wanted language shows the one it has (the pick itself is kept).
-  const lang: DescriptionLang = wanted === 'ru' ? (hasRu || !hasEn ? 'ru' : 'en') : hasEn || !hasRu ? 'en' : 'ru';
-  const setLang = (next: DescriptionLang) => {
+  const lang = taskDescriptionLocale(task, wanted);
+  const setLang = (next: Locale) => {
     storeLang(next);
     (onLangChange ?? setOwnLang)(next);
   };
-  const description = (lang === 'ru' ? task.description_ru : task.description_en) ?? '';
+  const description = task[descriptionField(lang)] ?? '';
   // No "Examples:" heading: the code block right under the description speaks for itself.
   const examples = !hideExamples && task.examples?.trim() ? `\n\n${codeBlock(task.examples)}` : '';
   const withContribution = task.origin === 'github' && Boolean(task.tags?.length) && !hideContribution;
-  const withControls = (hasRu && hasEn) || withPreview || withContribution;
+  const withControls = availableLocales.length > 1 || withPreview || withContribution;
 
   return (
     <div className={classes.task}>
@@ -106,18 +105,12 @@ export function TaskPanel({
           {/* One control per row, all as wide as the widest; kept quiet next to the description. */}
           {withControls && (
             <div className={classes.taskControls}>
-              {hasRu && hasEn && (
-                <SegmentedControl
-                  size="xs"
-                  fullWidth
-                  className={classes.langSwitch}
-                  vars={() => ({ root: { '--sc-padding': '1px 6px', '--sc-font-size': '10px' } })}
+              {availableLocales.length > 1 && (
+                <LocaleSelect
                   value={lang}
-                  onChange={(value) => setLang(value as DescriptionLang)}
-                  data={[
-                    { value: 'en', label: 'EN' },
-                    { value: 'ru', label: 'RU' },
-                  ]}
+                  onChange={setLang}
+                  locales={availableLocales}
+                  label={t('Task description language')}
                 />
               )}
               {withPreview && (
@@ -177,7 +170,7 @@ export function TaskPanel({
             </Group>
           }
         >
-          <TaskPanel task={task} lang={lang} onLangChange={setLang} hideContribution={hideContribution} />
+          <TaskPanel task={task} lang={wanted} onLangChange={setLang} hideContribution={hideContribution} />
         </Modal>
       )}
     </div>

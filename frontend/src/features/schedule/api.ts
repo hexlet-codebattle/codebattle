@@ -92,8 +92,8 @@ export const sameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 export const dayKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 
-/** Weeks start on Monday in Russian, Sunday in English. */
-export const weekStart = (locale: string) => (locale === 'ru' ? 1 : 0);
+/** Spanish, Chinese and Russian calendars start on Monday; English on Sunday. */
+export const weekStart = (locale: string) => (['ru', 'es', 'zh'].includes(locale) ? 1 : 0);
 
 /** The 6-week grid shown for `month` (first day of it). */
 export function monthGrid(month: Date, firstWeekday: number) {

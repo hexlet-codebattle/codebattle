@@ -1,0 +1,22 @@
+[
+  {
+    "name": "upload_example_sum",
+    "description_en": "Return the sum of two numbers.",
+    "description_ru": "Верните сумму двух чисел.",
+    "description_es": "Devuelve la suma de dos números.",
+    "description_zh": "返回两个数的和。",
+    "level": "easy",
+    "tags": ["math"],
+    "input_signature": [
+      {"argument_name": "a", "type": {"name": "integer"}},
+      {"argument_name": "b", "type": {"name": "integer"}}
+    ],
+    "output_signature": {"type": {"name": "integer"}},
+    "asserts": [
+      {"arguments": [1, 2], "expected": 3},
+      {"arguments": [-2, 5], "expected": 3}
+    ],
+    "examples": "solution(1, 2) == 3",
+    "examples_list": ["solution(1, 2) == 3"]
+  }
+]

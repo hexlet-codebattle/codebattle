@@ -6850,3 +6850,6 @@ msgstr "Глаза"
 
 msgid "Thumbs up"
 msgstr "Палец вверх"
+
+msgid "Task description language"
+msgstr "Язык описания задачи"

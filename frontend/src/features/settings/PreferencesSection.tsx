@@ -1,11 +1,12 @@
 import { router } from '@inertiajs/react';
-import { Center, SegmentedControl, SimpleGrid, Stack, Text, useMantineColorScheme } from '@mantine/core';
+import { Center, SegmentedControl, Select, SimpleGrid, Stack, Text, useMantineColorScheme } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconCode, IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react';
 import i18next from 'i18next';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isLocale, LOCALE_LABELS, normalizeLocale, SUPPORTED_LOCALES } from '@/i18n';
 import { LangIcon, langName } from '@/shared/LangIcon';
 
 import { type AccountUser, type SettingsResponse, type SettingsUpdate, updateSettings } from './api';
@@ -119,14 +120,13 @@ export function PreferencesSection({ account, onChange, onSaved }: PreferencesSe
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
           <Stack gap="xs">
             <Text className={classes.subhead}>{t('Language')}</Text>
-            <SegmentedControl
-              fullWidth
-              value={i18n.language === 'ru' ? 'ru' : 'en'}
-              onChange={changeLocale}
-              data={[
-                { value: 'en', label: 'English' },
-                { value: 'ru', label: 'Русский' },
-              ]}
+            <Select
+              value={normalizeLocale(i18n.language)}
+              onChange={(value) => {
+                if (isLocale(value)) void changeLocale(value);
+              }}
+              data={SUPPORTED_LOCALES.map((value) => ({ value, label: LOCALE_LABELS[value] }))}
+              allowDeselect={false}
               aria-label={t('Locale')}
             />
           </Stack>

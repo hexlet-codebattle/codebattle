@@ -18,7 +18,8 @@ defmodule CodebattleWeb.OnboardingController do
     |> render_inertia("Onboarding", %{
       "practice_langs" => langs,
       "practice_lang" => selected && selected.slug,
-      "practice_task" => task && Map.take(task, [:name, :description_en, :description_ru, :examples])
+      "practice_task" =>
+        task && Map.take(task, [:name, :description_en, :description_ru, :description_es, :description_zh, :examples])
     })
   end
 end

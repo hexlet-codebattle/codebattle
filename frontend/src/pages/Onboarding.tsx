@@ -8,11 +8,12 @@ import { AppLayout } from '@/layout/AppLayout';
 import { langName } from '@/shared/LangIcon';
 import { Markdown } from '@/shared/Markdown';
 import { useSharedProps } from '@/shared/useSharedProps';
+import { taskDescription } from '@/shared/taskDescription';
 
 interface OnboardingProps {
   practice_langs: { slug: string; name: string }[];
   practice_lang: string | null;
-  practice_task: { name: string; description_en: string | null; description_ru: string | null; examples: string | null } | null;
+  practice_task: { name: string; description_en: string | null; description_ru: string | null; description_es?: string | null; description_zh?: string | null; examples: string | null } | null;
 }
 
 export default function Onboarding() {
@@ -20,7 +21,7 @@ export default function Onboarding() {
   const { practice_langs: langs, practice_lang: preferred, practice_task: task, locale } = useSharedProps<OnboardingProps>();
   const [lang, setLang] = useState<string | null>(preferred);
   const [starting, setStarting] = useState(false);
-  const description = task && ((locale === 'ru' ? task.description_ru : task.description_en) || task.description_en || task.description_ru);
+  const description = task && taskDescription(task, locale);
 
   return (
     <AppLayout>

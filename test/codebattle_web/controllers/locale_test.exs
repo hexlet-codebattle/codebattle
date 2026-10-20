@@ -23,6 +23,42 @@ defmodule CodebattleWeb.LocaleTest do
     assert get_session(conn, :locale) == "ru"
   end
 
+  for locale <- ~w(es zh) do
+    @locale locale
+
+    test "remembers #{@locale} for guests and signed-in users", %{conn: conn} do
+      locale = @locale
+      response = patch(conn, "/api/v1/locale", %{locale: locale})
+      assert json_response(response, 200) == %{"locale" => locale}
+
+      response = response |> recycle() |> get("/")
+      assert get_session(response, :locale) == locale
+      assert Gettext.get_locale(CodebattleWeb.Gettext) == locale
+
+      user = insert(:user, locale: "en")
+
+      response =
+        conn
+        |> log_in_user(user.id)
+        |> patch("/api/v1/locale", %{locale: locale})
+
+      assert json_response(response, 200) == %{"locale" => locale}
+      assert Repo.get!(User, user.id).locale == locale
+
+      response = conn |> log_in_user(user.id) |> get("/")
+      assert get_session(response, :locale) == locale
+    end
+
+    test "honors a forced #{@locale} locale", %{conn: conn} do
+      Application.put_env(:codebattle, :force_locale, @locale)
+      response = conn |> put_session(:locale, "en") |> get("/")
+      assert get_session(response, :locale) == @locale
+
+      response = patch(conn, "/api/v1/locale", %{locale: "en"})
+      assert json_response(response, 403) == %{"error" => "Locale is fixed for this deployment"}
+    end
+  end
+
   test "falls back to default locale for anonymous user", %{conn: conn} do
     conn = get(conn, Routes.root_path(conn, :index))
 

@@ -23,6 +23,8 @@ export interface Task {
   tags: string[];
   description_en: string | null;
   description_ru: string | null;
+  description_es?: string | null;
+  description_zh?: string | null;
   input_signature: { argument_name: string; type: ArgType }[];
   output_signature: { type: ArgType } | null;
   asserts: Assert[];

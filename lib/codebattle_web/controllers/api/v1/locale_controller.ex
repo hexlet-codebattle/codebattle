@@ -5,7 +5,7 @@ defmodule CodebattleWeb.Api.V1.LocaleController do
   alias Codebattle.User
   alias CodebattleWeb.Plugs.Locale
 
-  def update(conn, %{"locale" => locale}) when locale in ["en", "ru"] do
+  def update(conn, %{"locale" => locale}) when locale in ["en", "ru", "es", "zh"] do
     cond do
       Locale.forced?() ->
         conn

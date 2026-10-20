@@ -14,6 +14,8 @@ defmodule Codebattle.SqlTask do
              :name,
              :level,
              :description_ru,
+             :description_es,
+             :description_zh,
              :description_en,
              :tags,
              :state,
@@ -32,6 +34,8 @@ defmodule Codebattle.SqlTask do
   schema "sql_tasks" do
     field(:description_ru, :string)
     field(:description_en, :string)
+    field(:description_es, :string)
+    field(:description_zh, :string)
     field(:type, :string, default: @task_type)
     field(:name, :string)
     field(:level, :string, default: "elementary")
@@ -51,6 +55,8 @@ defmodule Codebattle.SqlTask do
     struct
     |> cast(params, [
       :description_ru,
+      :description_es,
+      :description_zh,
       :description_en,
       :name,
       :type,

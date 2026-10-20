@@ -129,6 +129,22 @@ and update `.devcontainer/devcontainer.json`'s `runServices` list to match.
 
 ### Profile js bundle
 
+### Translations
+
+The interface supports English (`en`), Russian (`ru`), Spanish (`es`), and
+Simplified Chinese (`zh`). Phoenix and React share the catalogs under
+`priv/gettext/<locale>/LC_MESSAGES/`. Add frontend messages to each `default.po`;
+Gettext extraction does not scan React files. Keep `%{placeholder}` names intact.
+
+Task descriptions are translated separately. Task editors can use the description
+language dropdown to add a translation. Players see the translations available
+for that task, with English as the fallback when their preferred translation is
+missing. Task imports accept `description_es` and `description_zh`; omitting these
+fields preserves translations already saved on the platform.
+
+See [Uploading tasks](docs/task-upload.md) for the API format and a working
+multilingual example.
+
 ### Support
 
 - [https://t.me/hexletcommunity](https://t.me/hexletcommunity/5) channel: codebattle
