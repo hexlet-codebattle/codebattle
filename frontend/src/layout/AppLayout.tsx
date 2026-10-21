@@ -283,10 +283,11 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
                   <>
                     <GithubStars />
                     <OnlineCount />
-                    <InvitesMenu />
                   </>
                 )}
               </HeaderTools>
+              {/* Never folded into the phone settings popover: an invite must be seen. */}
+              {!user.is_guest && !branding.hide_invites && <InvitesMenu />}
               <UserMenu />
             </Group>
           </Group>

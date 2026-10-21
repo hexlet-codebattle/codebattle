@@ -30,6 +30,14 @@ export function RematchControls({ game, api, me, variant = 'bar' }: RematchContr
 
   if (game.rematch_state === 'in_approval') {
     if (game.rematch_initiator_id === me) {
+      // The banner already says it's waiting, and its ✕ hides it: a second ✕ for cancel was a riddle.
+      if (variant === 'banner') {
+        return (
+          <Button size="compact-sm" variant="default" onClick={api.cancelRematch}>
+            {t('Cancel rematch')}
+          </Button>
+        );
+      }
       return (
         <Group gap={6} wrap="nowrap">
           <Text size={modal ? 'sm' : 'xs'} c="dimmed">
@@ -133,7 +141,9 @@ export function RematchBanner({ game, api, me }: Omit<RematchControlsProps, 'var
   const opponent = useGameStore((state) => Object.values(state.players).find((player) => player.id !== me));
 
   if (dismissed || !opponent || game.rematch_state === 'rejected' || game.rematch_state === 'accepted') return null;
-  const incoming = game.rematch_state === 'in_approval' && game.rematch_initiator_id !== me;
+  const pending = game.rematch_state === 'in_approval';
+  const incoming = pending && game.rematch_initiator_id !== me;
+  const outgoing = pending && !incoming;
 
   return (
     <Paper p="xs" px="sm" className={classes.rematchBanner} data-incoming={incoming || undefined} role="region" aria-label={t('Rematch')}>
@@ -144,12 +154,18 @@ export function RematchBanner({ game, api, me }: Omit<RematchControlsProps, 'var
           </ThemeIcon>
           <div style={{ minWidth: 0 }}>
             <Text size="sm" fw={700} truncate>
-              {incoming ? t('%{name} offers a rematch', { name: opponent.name }) : t('Want another round?')}
+              {incoming
+                ? t('%{name} offers a rematch', { name: opponent.name })
+                : outgoing
+                  ? t('Rematch offered, waiting…')
+                  : t('Want another round?')}
             </Text>
             <Text size="xs" c="dimmed" truncate>
               {incoming
                 ? t('A new task against the same opponent, it starts once you accept.')
-                : opponent.is_bot
+                : outgoing
+                  ? t('Waiting for %{name} to accept.', { name: opponent.name })
+                  : opponent.is_bot
                   ? t('Rematch %{name} on a new task, it starts right away.', { name: opponent.name })
                   : t('Rematch %{name} on a new task, they get an offer to accept.', { name: opponent.name })}
             </Text>

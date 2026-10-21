@@ -4068,6 +4068,9 @@ msgstr "%{name} 提供重赛"
 msgid "Rematch offered, waiting…"
 msgstr "提供重赛，等待……"
 
+msgid "Waiting for %{name} to accept."
+msgstr "等待 %{name} 接受。"
+
 msgid "Reset code"
 msgstr "重置密码"
 

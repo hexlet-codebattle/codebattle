@@ -4069,6 +4069,9 @@ msgstr "%{name} offers a rematch"
 msgid "Rematch offered, waiting…"
 msgstr ""
 
+msgid "Waiting for %{name} to accept."
+msgstr ""
+
 msgid "Reset code"
 msgstr ""
 

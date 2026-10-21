@@ -266,9 +266,9 @@ export function TopBar({
             </Indicator>
           </Tooltip>
         )}
+        {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
         <HeaderTools breakpoint="lg" menuActions={secondaryActions}>
           {!me.is_guest && <FollowMenu />}
-          {!me.is_guest && !branding.hide_invites && <InvitesMenu />}
           <Tooltip label={fullscreen ? t('Exit full screen') : t('Full screen')}>
             <ActionIcon size="md" variant="default" onClick={() => void toggle()} aria-label={t('Full screen')}>
               {fullscreen ? <IconMinimize size={16} /> : <IconMaximize size={16} />}

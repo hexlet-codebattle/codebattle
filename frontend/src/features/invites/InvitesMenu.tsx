@@ -58,9 +58,16 @@ export function InvitesMenu() {
           color={incoming ? 'red' : 'slate'}
           disabled={invites.length === 0}
           offset={4}
+          withBorder
         >
           <Tooltip label={t('Invites')}>
-            <ActionIcon size="md" aria-label={t('Invites')}>
+            {/* Outlined like its header neighbours; filled red while someone waits for my answer. */}
+            <ActionIcon
+              size="md"
+              variant={incoming ? 'filled' : invites.length ? 'light' : 'default'}
+              color={incoming ? 'red' : invites.length ? 'green' : 'gray'}
+              aria-label={t('Invites')}
+            >
               <IconSwords size={18} />
             </ActionIcon>
           </Tooltip>

@@ -5310,6 +5310,9 @@ msgstr "Реванш с %{name} на новой задаче, соперник �
 msgid "Rematch offered, waiting…"
 msgstr "Реванш предложен, ждём ответа…"
 
+msgid "Waiting for %{name} to accept."
+msgstr "Ждём, пока %{name} примет."
+
 msgid "Reset code"
 msgstr "Сбросить код"
 

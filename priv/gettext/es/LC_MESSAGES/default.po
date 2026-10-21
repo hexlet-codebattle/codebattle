@@ -4181,6 +4181,9 @@ msgstr "%{name} ofrece revancha"
 msgid "Rematch offered, waiting…"
 msgstr "Se ofrece revancha, esperando…"
 
+msgid "Waiting for %{name} to accept."
+msgstr "Esperando a que %{name} acepte."
+
 msgid "Reset code"
 msgstr "Restablecer código"
 

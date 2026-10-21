@@ -455,24 +455,22 @@
   flex: none;
   min-width: 0;
 
+  /* One row while player and controls fit; the controls drop below only when they don't. */
   @media (max-width: $mantine-breakpoint-lg) {
     flex-wrap: wrap;
-    padding: 6px;
-
-    & .paneActions {
-      flex: 1 1 100%;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
+    row-gap: 4px;
+    padding: 3px 6px;
   }
 }
 
 .paneActions {
   flex: none;
+  margin-left: auto;
 }
 
 .playerChip {
-  flex: 1;
+  /* Content-sized, so the bar wraps the controls instead of squeezing the chip under them. */
+  flex: 1 1 auto;
 
   & > * {
     flex-shrink: 0;
