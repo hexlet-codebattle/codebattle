@@ -128,6 +128,6 @@ defmodule Codebattle.Bot.ChatClient do
   # end
 
   defp send_text(chat_channel, text) do
-    PhoenixClient.Channel.push_async(chat_channel, "chat:add_msg", %{"text" => text})
+    Codebattle.Bot.Socket.push_async(chat_channel, "chat:add_msg", %{"text" => text})
   end
 end

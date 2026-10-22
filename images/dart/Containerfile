@@ -7,7 +7,8 @@ FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM dart:${DART_TAG}
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends make \
+  && apt-get install -y --no-install-recommends make ca-certificates \
+  && update-ca-certificates --fresh \
   && rm -rf /var/lib/apt/lists/*
 
 # app user

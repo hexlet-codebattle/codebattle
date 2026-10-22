@@ -8,7 +8,7 @@ FROM --platform=$TARGETPLATFORM elixir:${ELIXIR_TAG}
 ENV ERL_MAX_PORTS=1024 \
   MIX_ENV=test
 
-RUN apk add --update --no-cache make
+RUN apk add "ca-certificates>=20261020-r0" --update --no-cache make
 
 # keep tooling as root, then drop later
 RUN mix local.hex --force && mix local.rebar --force

@@ -9,7 +9,7 @@ defmodule CodebattleWeb.SessionController do
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def external_signup(conn, _params) do
-    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
+    conn = put_meta_tags(conn, Application.fetch_env!(:codebattle, :meta_tags))
 
     if FunWithFlags.enabled?(:use_only_external_oauth) do
       render(conn, "external_signup.html")
@@ -23,7 +23,7 @@ defmodule CodebattleWeb.SessionController do
   end
 
   def new(conn, _params) do
-    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
+    conn = put_meta_tags(conn, Application.fetch_env!(:codebattle, :meta_tags))
 
     # The external / local-password pages embed admin-provided HTML (with scripts), so they
     # stay server-rendered on the bare app layout; the rest is the Auth page.

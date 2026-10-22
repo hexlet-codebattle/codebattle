@@ -12,7 +12,7 @@ defmodule Codebattle.Bot.Server do
   @port Application.compile_env(:codebattle, :ws_port, 4000)
 
   @type status :: :initial | :playing | :finished
-  @type channel :: pid() | nil
+  @type channel :: Bot.Socket.channel() | nil
   @type state :: %{
           required(:state) => status(),
           required(:game) => Game.t(),
@@ -185,11 +185,10 @@ defmodule Codebattle.Bot.Server do
   @spec init_socket(state()) :: state()
   defp init_socket(state) do
     socket_opts = [
-      json_library: Codebattle.Bot.SocketJson,
       url: "ws://localhost:#{@port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot_id)}"
     ]
 
-    {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts)
+    {:ok, socket} = Bot.Socket.start_link(socket_opts)
 
     game_topic = "game:#{state.game.id}"
 
@@ -271,7 +270,7 @@ defmodule Codebattle.Bot.Server do
   defp do_join_channel(_socket, _topic, 7), do: {:error, :to_many_attempts}
 
   defp do_join_channel(socket, topic, n) do
-    case PhoenixClient.Channel.join(socket, topic) do
+    case Bot.Socket.join(socket, topic) do
       {:ok, _response, pid} ->
         {:ok, pid}
 

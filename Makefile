@@ -336,7 +336,7 @@ runner-js:
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/js:26.12.0
+	    ghcr.io/hexlet-codebattle/js:26.12.1
 
 runner-dart:
 	 docker run --rm -p 4040:4040 \
@@ -371,7 +371,7 @@ runner-golang:
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/golang:1.27.2
+	    ghcr.io/hexlet-codebattle/golang:1.27.3
 
 runner-php:
 	 docker run --rm -p 4040:4040 \

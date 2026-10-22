@@ -1,11 +1,11 @@
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG NODE_TAG=26.12.0-alpine3.24
+ARG NODE_TAG=26.12.1-alpine3.24
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM node:${NODE_TAG}
 
-RUN apk add --no-cache make
+RUN apk add "ca-certificates>=20261020-r0" --no-cache make
 
   # Match the runner's slot UID (RUN_UID_BASE+slot, default 10001+slot) so
   # build-time and runtime ownership line up. Real HOME is required because

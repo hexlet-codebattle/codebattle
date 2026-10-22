@@ -73,12 +73,12 @@ defmodule Codebattle.Runner.Languages do
       generate_checker?: false,
       name: "Node.js",
       slug: "js",
-      version: "26.12.0",
+      version: "26.12.1",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      image: "ghcr.io/hexlet-codebattle/js:26.12.0",
+      image: "ghcr.io/hexlet-codebattle/js:26.12.1",
       solution_template: """
       const _ = require("lodash");
       const R = require("rambda");
@@ -128,7 +128,7 @@ defmodule Codebattle.Runner.Languages do
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      image: "ghcr.io/hexlet-codebattle/js:26.12.0",
+      image: "ghcr.io/hexlet-codebattle/js:26.12.1",
       solution_template: """
       import * as _ from "lodash";
       import * as R from "rambda";
@@ -438,12 +438,12 @@ defmodule Codebattle.Runner.Languages do
       name: "golang",
       slug: "golang",
       output_version: 2,
-      version: "1.27.2",
+      version: "1.27.3",
       container_run_timeout: "20s",
       check_dir: "check",
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
-      image: "ghcr.io/hexlet-codebattle/golang:1.27.2",
+      image: "ghcr.io/hexlet-codebattle/golang:1.27.3",
       solution_template: """
       // import "fmt"
 

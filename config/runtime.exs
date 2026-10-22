@@ -179,6 +179,17 @@ config :codebattle, :logo_title, logo_title
 config :codebattle, :logo_title_position, logo_title_position
 config :codebattle, :main_event_slug, System.get_env("CODEBATTLE_MAIN_EVENT_SLUG")
 
+config :codebattle, :meta_tags,
+  title: opengraph_title,
+  description: opengraph_description,
+  url: codebattle_url,
+  image: opengraph_image,
+  "og:type": "website",
+  "og:site_name": "Codebattle",
+  twitter: %{
+    card: "summary_large_image"
+  }
+
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
@@ -217,17 +228,6 @@ config :codebattle,
     |> System.get_env("")
     |> String.split(",", trim: true)
     |> Enum.map(&String.trim/1)
-
-config :phoenix_meta_tags,
-  title: opengraph_title,
-  description: opengraph_description,
-  url: codebattle_url,
-  image: opengraph_image,
-  "og:type": "website",
-  "og:site_name": "Codebattle",
-  twitter: %{
-    card: "summary_large_image"
-  }
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),

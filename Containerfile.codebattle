@@ -1,5 +1,5 @@
 # The frontend: its own package and Vite build.
-FROM node:24.15-alpine AS frontend-image
+FROM node:24.22.1-alpine AS frontend-image
 
 # Mirrors the repo layout: the app imports translations from ../priv/gettext.
 WORKDIR /tmp/codebattle/frontend
@@ -18,7 +18,7 @@ ENV MIX_ENV=prod
 
 WORKDIR /opt/app
 
-RUN apk update && apk add --no-cache build-base git ca-certificates make curl brotli gzip \
+RUN apk update && apk add --no-cache build-base git "ca-certificates>=20261020-r0" make curl brotli gzip \
   && mix local.hex --force \
   && mix local.rebar --force
 
@@ -72,7 +72,7 @@ CMD ["/opt/nginx-assets-entrypoint.sh"]
 
 FROM elixir:1.20.4-otp-29-alpine AS runtime-image
 
-RUN apk add --no-cache ca-certificates chromium git make curl vim
+RUN apk add --no-cache "ca-certificates>=20261020-r0" chromium git make curl vim
 
 ARG GIT_HASH
 

@@ -8,6 +8,7 @@ FROM --platform=${TARGETPLATFORM} babashka/babashka:${BB_TAG}
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends make ca-certificates \
+  && update-ca-certificates --fresh \
   && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd --system --gid 10001 app \

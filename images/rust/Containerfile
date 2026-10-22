@@ -5,7 +5,7 @@ ARG TARGETPLATFORM
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM rust:${RUST_TAG}
 
-RUN apk add --no-cache make libc-dev
+RUN apk add "ca-certificates>=20261020-r0" --no-cache make libc-dev
 
 # rustup + cargo state under /opt so it survives the sandbox masks (which
 # shadow /tmp and /app, force-set HOME=/sandbox, and strip env down to an

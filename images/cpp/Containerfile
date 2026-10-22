@@ -6,7 +6,7 @@ ARG TARGETPLATFORM
 # 1) builder – PCH + prebuilt runtime.o
 ########################################
 FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG} AS pch-builder
-RUN apk add --no-cache clang gcc mold lld libc++ make
+RUN apk add "ca-certificates>=20261020-r0" --no-cache clang gcc mold lld libc++ make
 
 # Compiler flags must match the per-run flags in Makefile, otherwise clang
 # rejects the PCH / object file as incompatible.

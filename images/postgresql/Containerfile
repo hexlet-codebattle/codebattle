@@ -5,7 +5,7 @@ ARG TARGETPLATFORM
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM postgres:${PG_TAG}
 
-RUN apk add --no-cache make
+RUN apk add "ca-certificates>=20261020-r0" --no-cache make
 
 ENV POSTGRES_DB=db \
   POSTGRES_USER=user \

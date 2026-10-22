@@ -14,8 +14,23 @@ ARG TARGETPLATFORM
 ENV KOTLIN_VERSION=${KOTLIN_VERSION} \
   KOTLIN_HOME=/usr/share/kotlin
 
-RUN apk add --update --no-cache bash make curl \
-  && apk add --no-cache --virtual=build-deps wget ca-certificates unzip \
+
+# Java has a separate trust store. Remove the incident's trust anchors even
+# when an existing Corretto tag still contains its older bundled certificates.
+RUN keytool -list -v -cacerts -storepass changeit > /tmp/java-certs \
+  && awk '/^Alias name: / {alias=substr($0,13)} \
+    /SHA256:/ {gsub(":", "", $2); \
+      if ($2 == "7DD78D5F4F13459A83DFF9ABBBA62EDBAF6F2D102BF257FD712F4D9F2746ED8D" || \
+          $2 == "D7A7A0FB5D7E2731D771E9484EBCDEF71D5F0C3E0A2948782BC83EE0EA699EF4" || \
+          $2 == "86A1ECBA089C4A8D3BBE2734C612BA341D813E043CF9E8A862CD5C57A36BBE6B") print alias}' \
+    /tmp/java-certs > /tmp/distrusted-aliases \
+  && while IFS= read -r alias; do \
+    keytool -delete -cacerts -storepass changeit -alias "$alias" || exit 1; \
+  done < /tmp/distrusted-aliases \
+  && rm /tmp/java-certs /tmp/distrusted-aliases
+
+RUN apk add --update --no-cache bash make curl "ca-certificates>=20261020-r0" \
+  && apk add --no-cache --virtual=build-deps wget unzip \
   && cd /tmp \
   && wget "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip" \
   && unzip "kotlin-compiler-${KOTLIN_VERSION}.zip" \

@@ -64,7 +64,7 @@ defmodule CodebattleWeb.PublicEventController do
   end
 
   defp public_event_meta_tags(conn, event) do
-    defaults = Application.get_all_env(:phoenix_meta_tags)
+    defaults = Application.fetch_env!(:codebattle, :meta_tags)
 
     title =
       event.title

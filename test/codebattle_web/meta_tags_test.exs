@@ -4,6 +4,29 @@ defmodule CodebattleWeb.MetaTagsTest do
   alias CodebattleWeb.MetaTags
   alias CodebattleWeb.OgImage
 
+  describe "render_tags_all/1" do
+    test "escapes text and attributes while preserving social overrides and nested tags" do
+      html =
+        %{
+          title: "<script>alert(1)</script> & title",
+          description: ~s(A "quoted" description),
+          og: %{title: "Social title", image: "https://example.com/card.png"},
+          twitter: %{title: "Twitter title", creator: "@codebattle"}
+        }
+        |> MetaTags.render_tags_all()
+        |> Phoenix.HTML.Safe.to_iodata()
+        |> IO.iodata_to_binary()
+
+      assert html =~ "<title>&lt;script&gt;alert(1)&lt;/script&gt; &amp; title</title>"
+      assert html =~ ~s(content="A &quot;quoted&quot; description" name="description")
+      assert html =~ ~s(content="Social title" property="og:title")
+      assert html =~ ~s(content="Twitter title" name="twitter:title")
+      assert html =~ ~s(content="@codebattle" name="twitter:creator")
+      assert html =~ ~s(content="https://example.com/card.png" property="og:image")
+      refute html =~ "<script>"
+    end
+  end
+
   describe "build/2" do
     test "falls back to the site defaults with this page as og:url" do
       tags = MetaTags.build(build_conn(:get, "/hall_of_fame"), %{title: "Hall of Fame"})

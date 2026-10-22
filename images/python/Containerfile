@@ -5,7 +5,8 @@ ARG TARGETPLATFORM
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM python:${PY_TAG}
 
-RUN apk add --no-cache make
+RUN apk add "ca-certificates>=20261020-r0" --no-cache make \
+  && python -m pip install --no-cache-dir --upgrade "pip>=26.2.2" "certifi>=2026.10.19"
 
   # Match the runner's slot UID (RUN_UID_BASE+slot, default 10001+slot). Real
   # HOME = /home/app rather than /nonexistent so any tool that writes under

@@ -106,6 +106,17 @@ config :codebattle, :firebase,
 config :codebattle, :logo_title, "Hexlet Codebattle"
 config :codebattle, :logo_title_position, "right"
 
+config :codebattle, :meta_tags,
+  title: "Hexlet Codebattle • Game for programmers",
+  description: "Real-time 1v1 coding battles, tournaments and a league. Free and open source.",
+  url: "https://codebattle.hexlet.io",
+  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.jpg",
+  "og:type": "website",
+  "og:site_name": "Codebattle",
+  twitter: %{
+    card: "summary_large_image"
+  }
+
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
@@ -169,17 +180,6 @@ config :logger, :console,
   metadata: [:request_id]
 
 config :phoenix, :json_library, Jason
-
-config :phoenix_meta_tags,
-  title: "Hexlet Codebattle • Game for programmers",
-  description: "Real-time 1v1 coding battles, tournaments and a league. Free and open source.",
-  url: "https://codebattle.hexlet.io",
-  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.jpg",
-  "og:type": "website",
-  "og:site_name": "Codebattle",
-  twitter: %{
-    card: "summary_large_image"
-  }
 
 config :porcelain, goon_warn_if_missing: false
 

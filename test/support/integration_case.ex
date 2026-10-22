@@ -6,7 +6,6 @@ defmodule Codebattle.IntegrationCase do
   using do
     quote do
       use CodebattleWeb.ConnCase
-      use PhoenixIntegration
 
       import CodebattleWeb.Factory
       import CodebattleWeb.Router.Helpers

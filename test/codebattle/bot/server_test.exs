@@ -20,7 +20,7 @@ defmodule Codebattle.Bot.ServerTest do
     assert stopped_state.state == :finished
 
     assert_receive {:"$gen_cast",
-                    {:push, "chat:add_msg",
+                    {:push, "chat:g_1", "chat:add_msg",
                      %{
                        "text" =>
                          "Congratulations! You win training game. Now you can register and fight for a place in the ranking."
@@ -28,7 +28,7 @@ defmodule Codebattle.Bot.ServerTest do
 
     assert {:noreply, ^stopped_state} = Server.handle_info(:next_bot_step, stopped_state)
     assert {:noreply, ^stopped_state} = Server.handle_info(:say_about_code, stopped_state)
-    refute_receive {:"$gen_cast", {:push, _event, _payload}}
+    refute_receive {:"$gen_cast", {:push, _topic, _event, _payload}}
   end
 
   test "does not congratulate when the bot wins" do
@@ -40,7 +40,7 @@ defmodule Codebattle.Bot.ServerTest do
 
     assert {:noreply, stopped_state} = Server.handle_info(event, state())
     assert stopped_state.state == :finished
-    refute_receive {:"$gen_cast", {:push, "chat:add_msg", _payload}}
+    refute_receive {:"$gen_cast", {:push, "chat:g_1", "chat:add_msg", _payload}}
   end
 
   test "does not congratulate when the game times out without a winner" do
@@ -52,7 +52,7 @@ defmodule Codebattle.Bot.ServerTest do
 
     assert {:noreply, stopped_state} = Server.handle_info(event, state())
     assert stopped_state.state == :finished
-    refute_receive {:"$gen_cast", {:push, "chat:add_msg", _payload}}
+    refute_receive {:"$gen_cast", {:push, "chat:g_1", "chat:add_msg", _payload}}
   end
 
   defp state(game_params \\ %{}) do
@@ -60,8 +60,8 @@ defmodule Codebattle.Bot.ServerTest do
       state: :playing,
       game: struct!(Game, Map.merge(%{id: 1}, game_params)),
       bot_id: @bot_id,
-      game_channel: self(),
-      chat_channel: self(),
+      game_channel: {self(), "game:1"},
+      chat_channel: {self(), "chat:g_1"},
       playbook_params: nil
     }
   end

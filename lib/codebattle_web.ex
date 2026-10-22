@@ -29,9 +29,9 @@ defmodule CodebattleWeb do
   def controller do
     quote do
       use Phoenix.Controller, formats: [:html, :json]
-      use PhoenixMetaTags.TagController
       use Gettext, backend: CodebattleWeb.Gettext
 
+      import CodebattleWeb.MetaTags, only: [put_meta_tags: 2]
       import Ecto
       import Ecto.Query
       import Inertia.Controller
@@ -52,7 +52,6 @@ defmodule CodebattleWeb do
         root: "lib/codebattle_web/templates",
         namespace: CodebattleWeb
 
-      use PhoenixMetaTags.TagView
       use Gettext, backend: CodebattleWeb.Gettext
 
       import CodebattleWeb.ErrorHelpers
@@ -78,7 +77,6 @@ defmodule CodebattleWeb do
         root: "lib/codebattle_web/templates",
         namespace: CodebattleWeb
 
-      use PhoenixMetaTags.TagView
       use Gettext, backend: CodebattleWeb.Gettext
 
       import CodebattleWeb.ErrorHelpers

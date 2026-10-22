@@ -6,7 +6,7 @@ FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM mysql:${MYSQL_TAG}
 
 # mysql official (Oracle Linux) uses microdnf
-RUN microdnf install -y make && microdnf clean all
+RUN microdnf upgrade -y ca-certificates && microdnf install -y make && microdnf clean all
 
 ENV MYSQL_DATABASE=db \
   MYSQL_USER=user \

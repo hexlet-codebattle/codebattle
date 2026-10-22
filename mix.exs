@@ -67,7 +67,6 @@ defmodule Codebattle.MixProject do
       {:chromic_pdf, "~> 1.17"},
       {:delta, github: "slab/delta-elixir"},
       {:diff_match_patch, "~> 0.3.0"},
-      {:hackney, "~> 4.5", override: true},
       {:mdex, "~> 0.14.2"},
       {:ecto_psql_extras, "~> 0.2"},
       {:ecto_sql, "~> 3.6"},
@@ -81,19 +80,19 @@ defmodule Codebattle.MixProject do
       {:oban_web, "~> 2.11"},
       {:nimble_csv, "~> 1.1"},
       {:phoenix, "~> 1.8"},
-      {:phoenix_client, github: "vtm9/phoenix_client"},
+      {:mint_web_socket, "~> 1.0.6"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.3"},
+      {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_dashboard, "~> 0.9.1"},
       {:phoenix_live_view, "~> 1.1"},
-      {:phoenix_meta_tags, github: "vtm9/phoenix_meta_tags"},
       {:phoenix_view, "~> 2.0"},
       {:plug, "~> 1.14"},
       {:porcelain, "~> 2.0"},
       {:postgrex, ">= 0.0.0"},
       {:recon, "~> 2.5"},
       {:req, "~> 0.5"},
-      {:sentry, "~> 13.0"},
+      {:sentry, "~> 14.0"},
       {:statistics, "~> 0.6"},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},
@@ -115,8 +114,7 @@ defmodule Codebattle.MixProject do
       {:excoveralls, "~> 0.13", only: :test},
       {:floki, "~> 0.29", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
-      {:mimic, "~> 2.3", only: :test},
-      {:phoenix_integration, github: "jaimeiniesta/phoenix_integration", branch: "relax-phoenix-html", only: :test}
+      {:mimic, "~> 2.3", only: :test}
     ]
   end
 

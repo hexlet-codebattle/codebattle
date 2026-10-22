@@ -13,7 +13,7 @@ defmodule CodebattleWeb.RootController do
   plug(:put_layout, html: {LayoutView, :app})
 
   def index(conn, params) do
-    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
+    conn = put_meta_tags(conn, Application.fetch_env!(:codebattle, :meta_tags))
 
     current_user = conn.assigns.current_user
     event_slug = Application.get_env(:codebattle, :main_event_slug)

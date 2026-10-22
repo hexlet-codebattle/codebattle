@@ -6,7 +6,7 @@ FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 
 FROM --platform=$TARGETPLATFORM ruby:${RUBY_TAG}
 
-RUN apk add --no-cache make
+RUN apk add "ca-certificates>=20261020-r0" --no-cache make
 
 # Create system group+user for workspace ownership
 RUN addgroup -S app -g 10001 \

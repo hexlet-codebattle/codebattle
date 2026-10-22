@@ -138,13 +138,13 @@ zigRunners:
       image: ghcr.io/hexlet-codebattle/elixir:1.20.4
       replicaCount: 1
     - name: golang
-      image: ghcr.io/hexlet-codebattle/golang:1.27.2
+      image: ghcr.io/hexlet-codebattle/golang:1.27.3
       replicaCount: 1
     - name: java
       image: ghcr.io/hexlet-codebattle/java:27.0.0
       replicaCount: 1
     - name: js
-      image: ghcr.io/hexlet-codebattle/js:26.12.0
+      image: ghcr.io/hexlet-codebattle/js:26.12.1
       replicaCount: 1
     - name: kotlin
       image: ghcr.io/hexlet-codebattle/kotlin:2.4.21
@@ -167,7 +167,7 @@ zigRunners:
       image: ghcr.io/hexlet-codebattle/swift:6.4.1
       replicaCount: 1
     - name: ts
-      image: ghcr.io/hexlet-codebattle/js:26.12.0
+      image: ghcr.io/hexlet-codebattle/js:26.12.1
       replicaCount: 1
     - name: zig
       image: ghcr.io/hexlet-codebattle/zig:0.17.0

@@ -106,5 +106,3 @@ config :fun_with_flags, :cache, enabled: false
 config :fun_with_flags, :cache_bust_notifications, enabled: false
 
 config :logger, :console, level: :error
-
-config :phoenix_integration, endpoint: CodebattleWeb.Endpoint

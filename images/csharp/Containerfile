@@ -37,6 +37,7 @@ WORKDIR /usr/src/app
 # System deps
 RUN apt-get update \
   && apt-get install -y --no-install-recommends make curl ca-certificates \
+  && update-ca-certificates --fresh \
   && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user + writable workdir. UID matches RUN_UID_BASE+slot
