@@ -944,10 +944,14 @@
   min-width: 0;
 }
 
-/* Verdict and squares stay in view while the list scrolls. */
+/* Pin the verdict beside the tests, but keep it in flow when stacked above them. */
 .outPinned {
   position: sticky;
   top: 0;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    position: static;
+  }
 }
 
 .testDetailHead {
