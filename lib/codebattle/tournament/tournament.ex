@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament do
   @ranking_types ~w(by_clan by_user)
   @score_strategies ~w(75_percentile static_base_score win_loss)
   @states ~w(upcoming waiting_participants canceled active timeout finished)
-  @task_providers ~w(level task_pack all)
+  @task_providers ~w(level level_progression task_pack all)
   @task_strategies ~w(random sequential per_round_pair)
   @timeout_modes ~w(per_task per_round_fixed per_round_with_rematch per_tournament)
   @types ~w(swiss ladder)

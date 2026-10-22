@@ -55,6 +55,17 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
   end
 
   @impl true
+  def handle_event("update_tournaments", _params, socket) do
+    {:ok, counts} = SeasonTournamentGeneratorRunner.update_upcoming_tournaments(socket.assigns.season)
+
+    message =
+      "Updated #{counts.updated} upcoming tournaments with the current generator params " <>
+        "(#{counts.unchanged} already up to date, #{counts.unmatched} not in the schedule, #{counts.failed} failed)"
+
+    {:noreply, put_flash(socket, if(counts.failed > 0, do: :error, else: :info), message)}
+  end
+
+  @impl true
   def handle_event("drop_tournaments", _params, socket) do
     season = socket.assigns.season
     start_datetime = DateTime.new!(season.starts_at, ~T[00:00:00], "Etc/UTC")
@@ -122,6 +133,21 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
         >
           <i class="bi bi-arrow-left"></i> Back to List
         </a>
+      </div>
+
+      <%!-- The admin layout has no flash area: show this page's results here. --%>
+      <div
+        :for={
+          {kind, message} <- [
+            info: Phoenix.Flash.get(@flash, :info),
+            error: Phoenix.Flash.get(@flash, :error)
+          ]
+        }
+        :if={message}
+        class={"alert #{if kind == :error, do: "alert-danger", else: "alert-success"}"}
+        role="alert"
+      >
+        {message}
       </div>
 
       <div class="card cb-card shadow-sm mb-4 border cb-border-color">
@@ -218,6 +244,15 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
               data-confirm="This will create all tournaments for this season. Continue?"
             >
               <i class="bi bi-plus-circle"></i> Create Season Tournaments
+            </button>
+
+            <button
+              class="btn btn-secondary cb-btn-secondary cb-rounded"
+              phx-click="update_tournaments"
+              data-confirm="This will re-apply the current generator params (type, task levels, breaks, limits, descriptions) to every upcoming tournament of this season. Live and finished tournaments are not touched. Continue?"
+              disabled={@tournament_count == 0}
+            >
+              <i class="bi bi-arrow-repeat"></i> Update Upcoming Tournaments
             </button>
 
             <button

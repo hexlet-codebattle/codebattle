@@ -10,6 +10,32 @@ defmodule Codebattle.Tournament.ContextTest do
   alias Codebattle.Tournament.TournamentUserResult
   alias Codebattle.UserGameReport
 
+  test "finds the next season tournament and recent season tournament players" do
+    now = DateTime.utc_now(:second)
+    user = insert(:user)
+
+    insert(:tournament, grade: "open", state: "upcoming", starts_at: DateTime.add(now, 10, :minute))
+    insert(:tournament, grade: "rookie", state: "upcoming", starts_at: DateTime.add(now, -10, :minute))
+    later = insert(:tournament, grade: "pro", state: "upcoming", starts_at: DateTime.add(now, 3, :hour))
+    next = insert(:tournament, grade: "rookie", state: "waiting_participants", starts_at: DateTime.add(now, 1, :hour))
+
+    assert Tournament.Context.get_next_season_tournament().id == next.id
+    refute Tournament.Context.get_next_season_tournament().id == later.id
+
+    week_ago = DateTime.add(now, -7, :day)
+    old = insert(:tournament, grade: "rookie", state: "finished", started_at: DateTime.add(now, -8, :day))
+    open = insert(:tournament, grade: "open", state: "finished", started_at: DateTime.add(now, -1, :day))
+    Repo.insert!(%TournamentUserResult{tournament_id: old.id, user_id: user.id})
+    Repo.insert!(%TournamentUserResult{tournament_id: open.id, user_id: user.id})
+
+    refute TournamentUserResult.played_season_tournament_since?(user.id, week_ago)
+
+    recent = insert(:tournament, grade: "challenger", state: "finished", started_at: DateTime.add(now, -2, :day))
+    Repo.insert!(%TournamentUserResult{tournament_id: recent.id, user_id: user.id})
+
+    assert TournamentUserResult.played_season_tournament_since?(user.id, week_ago)
+  end
+
   test "fetches persisted tournaments and checks game pass codes" do
     tournament = insert(:tournament, state: "finished", meta: %{game_passwords: ["secret"]})
 

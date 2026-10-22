@@ -4995,6 +4995,9 @@ msgstr "Ссылка-приглашение"
 msgid "It may be private: open it with the invite link from the organizer."
 msgstr "Возможно, он приватный: откройте его по ссылке от организатора."
 
+msgid "You're not registered yet. Press Join to take part, we'll notify you when it starts."
+msgstr "Вы ещё не участвуете. Нажмите «Присоединиться», чтобы занять место, — мы сообщим о старте."
+
 msgid "Join now and get notified when it starts."
 msgstr "Присоединяйтесь сейчас — мы сообщим о старте."
 
@@ -6856,3 +6859,90 @@ msgstr "Палец вверх"
 
 msgid "Task description language"
 msgstr "Язык описания задачи"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hi! I'll solve this in about %{minutes} min. Think you can beat me?"
+msgstr "Привет! Я решу эту задачу примерно за %{minutes} мин. Думаешь, обгонишь меня?"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hey! My solution will be ready in about %{minutes} min. Good luck!"
+msgstr "Привет! Моё решение будет готово примерно через %{minutes} мин. Удачи!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Let's go! I need about %{minutes} min for this one. Race you!"
+msgstr "Поехали! Мне на эту задачу нужно около %{minutes} мин. Наперегонки!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "This one is too tough for me. It's all yours!"
+msgstr "Эта задача мне не по зубам. Она вся твоя!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "I have no idea how to solve this one. Show me how it's done!"
+msgstr "Понятия не имею, как это решить. Покажи, как надо!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Congratulations, you won the training game! Sign up to fight for a place in the ranking."
+msgstr "Поздравляю с победой в тренировочной игре! Зарегистрируйся, чтобы побороться за место в рейтинге."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG WP!"
+msgstr "GG WP!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Well played! I'll get my revenge next time."
+msgstr "Хорошо сыграно! В следующий раз отыграюсь."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You got me this time. Good job!"
+msgstr "На этот раз победа за тобой. Отличная работа!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Tough one? Give it another try, practice makes perfect!"
+msgstr "Сложная попалась? Попробуй ещё раз, практика — путь к мастерству!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "No worries, the next task will be yours."
+msgstr "Не переживай, следующая задача будет твоей."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG! Beating a bot is a nice warm-up, now try real people. The next tournament starts %{when}: %{url}"
+msgstr "GG! Победить бота — хорошая разминка, теперь попробуй против людей. Следующий турнир начнётся %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You beat me! I bet you'd do great in a tournament too. The next one starts %{when}: %{url}"
+msgstr "Победа твоя! Спорим, в турнире ты тоже покажешь класс. Следующий начнётся %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Bots are fun, but people are more fun 😉 The next tournament starts %{when}: %{url}"
+msgstr "С ботами весело, а с людьми ещё веселее 😉 Следующий турнир начнётся %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Want a real challenge? Join the next tournament, it starts %{when}: %{url}"
+msgstr "Хочешь настоящий вызов? Присоединяйся к следующему турниру, он начнётся %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{minutes} min"
+msgstr "через %{minutes} мин"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h"
+msgstr "через %{hours} ч"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h %{minutes} min"
+msgstr "через %{hours} ч %{minutes} мин"
+
+msgid "Live games"
+msgstr "Живые игры"
+
+msgid "No games are being played right now."
+msgstr "Сейчас никто не играет."
+
+msgid "Level progression"
+msgstr "Нарастающая сложность"
+
+msgid "Hardest level"
+msgstr "Максимальный уровень"
+
+msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
+msgstr "Раунды усложняются: сначала элементарные задачи, потом лёгкие и средние. С уровнем «Сложный» последний раунд — сложная задача."

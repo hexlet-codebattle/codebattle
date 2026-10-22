@@ -79,6 +79,15 @@ defmodule Codebattle.Tournament.TournamentUserResult do
   # Postgres caps a statement at 65_535 bind params; rows have ~15 fields.
   @insert_chunk_size 2_000
 
+  @doc "Whether the user has results in a season (non-open grade) tournament started since `since`."
+  @spec played_season_tournament_since?(integer(), DateTime.t()) :: boolean()
+  def played_season_tournament_since?(user_id, since) do
+    __MODULE__
+    |> join(:inner, [tur], t in Tournament, on: tur.tournament_id == t.id)
+    |> where([tur, t], tur.user_id == ^user_id and t.grade != "open" and t.started_at >= ^since)
+    |> Repo.exists?()
+  end
+
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
   def upsert_results(%{type: type} = tournament) when type in ["swiss", "ladder"] do
     # Clean + insert atomically so readers never see an empty leaderboard.

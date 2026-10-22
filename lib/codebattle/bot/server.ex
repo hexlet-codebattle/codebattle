@@ -6,10 +6,18 @@ defmodule Codebattle.Bot.Server do
 
   alias Codebattle.Bot
   alias Codebattle.Game
+  alias Codebattle.Tournament
+  alias Codebattle.Tournament.TournamentUserResult
+  alias Codebattle.User
 
   require Logger
 
   @port Application.compile_env(:codebattle, :ws_port, 4000)
+
+  # Invite players who skipped season tournaments this long, at most once per cooldown.
+  @tournament_absence_days 7
+  @tournament_invite_cooldown to_timeout(hour: 6)
+  @invite_cache :bot_chat_cache
 
   @type status :: :initial | :playing | :finished
   @type channel :: Bot.Socket.channel() | nil
@@ -17,17 +25,20 @@ defmodule Codebattle.Bot.Server do
           required(:state) => status(),
           required(:game) => Game.t(),
           required(:bot_id) => integer(),
+          # SERVER
           required(:game_channel) => channel(),
           required(:chat_channel) => channel(),
-          required(:playbook_params) => Bot.PlaybookPlayer.Params.t() | nil
+          required(:playbook_params) => Bot.PlaybookPlayer.Params.t() | nil,
+          optional(:locale) => String.t(),
+          optional(:opponent_id) => integer() | nil,
+          optional(:tournament_invite) => %{tournament_id: integer(), starts_at: DateTime.t()} | nil,
+          optional(:said_goodbye) => boolean()
         }
 
   @spec start_link(%{game: Game.t(), bot_id: integer()}) :: GenServer.on_start()
   def start_link(%{game: game, bot_id: bot_id} = params) do
     GenServer.start_link(__MODULE__, params, name: server_name(game.id, bot_id))
   end
-
-  # SERVER
 
   @impl GenServer
   def init(params) do
@@ -42,7 +53,11 @@ defmodule Codebattle.Bot.Server do
        bot_id: params.bot_id,
        game_channel: nil,
        chat_channel: nil,
-       playbook_params: nil
+       playbook_params: nil,
+       locale: default_locale(),
+       opponent_id: nil,
+       tournament_invite: nil,
+       said_goodbye: false
      }}
   end
 
@@ -51,10 +66,9 @@ defmodule Codebattle.Bot.Server do
     :timer.sleep(1000)
     state = init_socket(state)
     state = init_playbook_player(state)
+    state = init_chat_context(state)
 
     send_init_chat_message(state)
-    prepare_to_commenting_code()
-    send_start_chat_message(state)
 
     if not is_nil(state.playbook_params) do
       do_playbook_step(state)
@@ -82,28 +96,25 @@ defmodule Codebattle.Bot.Server do
 
   @impl GenServer
   def handle_info(%{event: "game:finished", payload: %{winner_id: winner_id}}, %{bot_id: bot_id} = state) do
-    if winner_id && winner_id != bot_id do
-      send_chat_message(state, :congratulate_opponent, %{game_mode: state.game.mode})
-    end
+    opponent_won = not is_nil(winner_id) and winner_id != bot_id
+    farewell = if opponent_won, do: {:congratulate_opponent, %{game_mode: state.game.mode}}
 
-    {:noreply, %{state | state: :finished}}
+    # TODO: only for loadTests on prod
+    # @impl GenServer
+    # def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
+    #   send_start_chat_message(state)
+    #   do_playbook_step(state)
+    # end
+
+    {:noreply, %{say_goodbye(state, farewell, opponent_won) | state: :finished}}
   end
-
-  # TODO: only for loadTests on prod
-  # @impl GenServer
-  # def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
-  #   send_start_chat_message(state)
-  #   do_playbook_step(state)
-  # end
 
   @impl GenServer
   def handle_info(%{event: "editor:data"}, state), do: {:noreply, state}
 
   @impl GenServer
   def handle_info(%{event: "user:give_up"}, state) do
-    send_chat_message(state, :advice_on_give_up)
-
-    {:noreply, %{state | state: :finished}}
+    {:noreply, %{say_goodbye(state, {:advice_on_give_up, %{}}, false) | state: :finished}}
   end
 
   @impl GenServer
@@ -112,31 +123,7 @@ defmodule Codebattle.Bot.Server do
   end
 
   @impl GenServer
-  def handle_info(%{event: "user:check_complete", payload: %{"check_result" => %{"status" => "ok"}}}, state) do
-    send_chat_message(state, :advice_on_check_complete_success)
-
-    {:noreply, state}
-  end
-
-  @impl GenServer
-  def handle_info(%{event: "user:check_complete"}, state) do
-    if rem(:rand.uniform(7), 7) == 0 do
-      send_chat_message(state, :advice_on_check_complete_failure)
-    end
-
-    {:noreply, state}
-  end
-
-  @impl GenServer
-  def handle_info(:say_about_code, %{state: :finished} = state), do: {:noreply, state}
-
-  @impl GenServer
-  def handle_info(:say_about_code, state) do
-    send_message_about_code(state)
-    Process.send_after(self(), :say_about_code, to_timeout(minute: Enum.random(7..10)))
-
-    {:noreply, state}
-  end
+  def handle_info(%{event: "user:check_complete"}, state), do: {:noreply, state}
 
   @impl GenServer
   def handle_info(%{event: "chat:user_joined"}, state) do
@@ -228,39 +215,90 @@ defmodule Codebattle.Bot.Server do
   defp send_game_message(game_channel, :check_result, editor_params),
     do: Bot.GameClient.send(game_channel, :check_result, editor_params)
 
+  # The opponent's locale for everything the bot says, and a tournament invite when
+  # they haven't played a season tournament lately. Tournament games have no bot chat.
+  @spec init_chat_context(state()) :: state()
+  defp init_chat_context(%{game: %Game{is_tournament: true}} = state), do: state
+
+  defp init_chat_context(%{game: game, bot_id: bot_id} = state) do
+    case Enum.find(game.players || [], &(&1.id != bot_id and not &1.is_bot)) do
+      %{is_guest: false, id: user_id} ->
+        user = User.get(user_id)
+
+        %{
+          state
+          | locale: (user && user.locale) || default_locale(),
+            opponent_id: user_id,
+            tournament_invite: tournament_invite(user_id)
+        }
+
+      _guest_or_nobody ->
+        state
+    end
+  end
+
+  defp tournament_invite(user_id) do
+    since = DateTime.add(DateTime.utc_now(), -@tournament_absence_days, :day)
+
+    with {:ok, nil} <- Cachex.get(@invite_cache, user_id),
+         false <- TournamentUserResult.played_season_tournament_since?(user_id, since),
+         %Tournament{id: id, starts_at: starts_at} = next <- Tournament.Context.get_next_season_tournament(),
+         false <- already_joined?(next, user_id) do
+      %{tournament_id: id, starts_at: starts_at}
+    else
+      _ -> nil
+    end
+  end
+
+  # Only a live (waiting_participants) tournament takes registrations.
+  defp already_joined?(%Tournament{state: "waiting_participants", id: id}, user_id) do
+    id |> Tournament.Context.get_tournament_info() |> Tournament.Helpers.player?(user_id)
+  end
+
+  defp already_joined?(_tournament, _user_id), do: false
+
   defp send_init_chat_message(%{playbook_params: nil} = state) do
     send_chat_message(state, :excuse)
   end
 
   defp send_init_chat_message(state) do
-    send_chat_message(state, :greet_opponent)
+    total_time_min = max(div(state.playbook_params.bot_time_ms || 60_000, 60_000), 1)
+    send_chat_message(state, :greet_opponent, %{total_time_min: total_time_min})
   end
 
-  defp send_start_chat_message(%{playbook_params: nil}), do: :noop
+  # One closing message per game: the tournament invite when there is one, the usual
+  # farewell (if any) otherwise.
+  defp say_goodbye(%{said_goodbye: true} = state, _farewell, _opponent_won), do: state
 
-  defp send_start_chat_message(state) do
-    total_time_min = div(state.playbook_params.bot_time_ms || 60_000, 60_000)
-    send_chat_message(state, :start_code, %{total_time_min: total_time_min})
+  defp say_goodbye(%{tournament_invite: %{} = invite} = state, _farewell, opponent_won) do
+    if state[:opponent_id], do: Cachex.put(@invite_cache, state.opponent_id, true, expire: @tournament_invite_cooldown)
+    send_chat_message(state, :invite_to_tournament, Map.put(invite, :opponent_won, opponent_won))
+    Map.put(state, :said_goodbye, true)
   end
 
-  defp send_message_about_code(state) do
-    send_chat_message(state, :say_about_code)
+  defp say_goodbye(state, nil, _opponent_won), do: Map.put(state, :said_goodbye, true)
+
+  defp say_goodbye(state, {type, params}, _opponent_won) do
+    send_chat_message(state, type, params)
+    Map.put(state, :said_goodbye, true)
   end
 
   defp send_chat_message(state, type, params \\ %{})
   defp send_chat_message(%{chat_channel: nil}, _type, _params), do: :noop
   defp send_chat_message(%{game: %Game{is_tournament: true}}, _type, _params), do: :noop
 
-  defp send_chat_message(%{chat_channel: chat_channel}, type, params) do
-    Bot.ChatClient.send(chat_channel, type, params)
+  defp send_chat_message(%{chat_channel: chat_channel} = state, type, params) do
+    Bot.ChatClient.send(chat_channel, type, Map.get(state, :locale, default_locale()), params)
   end
+
+  defp default_locale, do: Application.get_env(:codebattle, :default_locale, "en")
 
   defp server_name(game_id, bot_id) do
     {:via, Registry, {Codebattle.Registry, "bot:#{game_id}_#{bot_id}"}}
   end
 
   defp bot_token(bot_id) do
-    bot = Codebattle.User.get!(bot_id)
+    bot = User.get!(bot_id)
     {:ok, token} = Codebattle.UserSession.create_socket_token(bot, %{user_agent: "Codebattle bot"})
     token
   end
@@ -279,9 +317,5 @@ defmodule Codebattle.Bot.Server do
         Logger.warning("#{__MODULE__} cannot connect to #{topic}, #{n} attempt")
         do_join_channel(socket, topic, n + 1)
     end
-  end
-
-  defp prepare_to_commenting_code do
-    Process.send_after(self(), :say_about_code, to_timeout(minute: 1))
   end
 end

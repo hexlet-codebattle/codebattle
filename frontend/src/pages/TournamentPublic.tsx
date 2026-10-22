@@ -8,7 +8,7 @@ import { DevSignIn, SocialButtons, withNext } from '@/features/auth/AuthForms';
 import classes from '@/features/landing/Landing.module.css';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import { LeagueBanner } from '@/features/lobby/components/LeagueBanner';
-import { formatStartsAt, gradeLabel, levelLabel, rankingPoints, tournamentTitle } from '@/features/lobby/format';
+import { formatStartsAt, gradeLabel, rankingPoints, taskLevelsLabel, tournamentTitle } from '@/features/lobby/format';
 import type { GameLevel, TournamentGrade, TournamentState } from '@/features/lobby/types';
 import roomClasses from '@/features/tournament/components/Room.module.css';
 import { TournamentStateBadge } from '@/features/tournament/components/TournamentHeader';
@@ -116,7 +116,7 @@ function Facts({ tournament }: { tournament: PublicTournament }) {
       {(tournament.task_provider === 'task_pack' && tournament.task_pack_name) || tournament.level ? (
         <Group gap={6} wrap="nowrap">
           <IconChecklist size={16} />
-          <Text inherit>{tournament.task_provider === 'task_pack' && tournament.task_pack_name ? tournament.task_pack_name : levelLabel(tournament.level as GameLevel)}</Text>
+          <Text inherit>{tournament.task_provider === 'task_pack' && tournament.task_pack_name ? tournament.task_pack_name : taskLevelsLabel(tournament.task_provider, tournament.level as GameLevel)}</Text>
         </Group>
       ) : null}
       {isOpenForJoin(tournament.state) && tournament.starts_at && (

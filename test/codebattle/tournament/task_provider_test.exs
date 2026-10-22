@@ -132,6 +132,51 @@ defmodule Codebattle.Tournament.TaskProviderTest do
     assert TaskProvider.get_task(%{tournament | current_round_position: 5}, nil) == nil
   end
 
+  describe "level_progression" do
+    test "plans rounds from elementary up to the tournament level" do
+      plan = &TaskProvider.level_plan(%{rounds_limit: &1, level: &2})
+
+      assert plan.(4, "medium") == ~w(elementary easy easy medium)
+      assert plan.(6, "medium") == ~w(elementary easy easy easy medium medium)
+      assert plan.(8, "medium") == ~w(elementary elementary easy easy easy medium medium medium)
+      assert plan.(10, "hard") == ~w(elementary elementary easy easy easy easy medium medium medium hard)
+      assert plan.(4, "easy") == ~w(elementary elementary easy easy)
+      assert plan.(5, "easy") == ~w(elementary elementary elementary easy easy)
+      assert plan.(1, "hard") == ~w(elementary)
+      assert plan.(0, "hard") == []
+    end
+
+    test "preloads tasks per planned level and orders round tasks by the plan" do
+      elementary = insert(:task, level: "elementary")
+      [easy1, easy2] = insert_list(2, :task, level: "easy")
+      medium = insert(:task, level: "medium")
+      insert_list(2, :task, level: "hard")
+
+      tournament =
+        build_ets_tournament(%{task_provider: "level_progression", level: "medium", rounds_limit: 4})
+
+      tasks = TaskProvider.get_all_tasks(tournament)
+      assert tasks |> Enum.map(& &1.id) |> Enum.sort() == Enum.sort([elementary.id, easy1.id, easy2.id, medium.id])
+
+      Tournament.Tasks.put_tasks(tournament, tasks)
+
+      assert TaskProvider.get_task_ids(tournament) == [elementary.id, easy1.id, easy2.id, medium.id]
+    end
+
+    test "fills a short level with any unused task so every round has one" do
+      [easy1, easy2, easy3] = insert_list(3, :task, level: "easy")
+      medium = insert(:task, level: "medium")
+
+      tournament =
+        build_ets_tournament(%{task_provider: "level_progression", level: "medium", rounds_limit: 4})
+
+      Tournament.Tasks.put_tasks(tournament, [easy1, easy2, easy3, medium])
+
+      # No elementary task: the first round borrows the easy task left over after the plan.
+      assert TaskProvider.get_task_ids(tournament) == [easy3.id, easy1.id, easy2.id, medium.id]
+    end
+  end
+
   defp build_ets_tournament(attrs) do
     tournament_id = System.unique_integer([:positive, :monotonic])
 

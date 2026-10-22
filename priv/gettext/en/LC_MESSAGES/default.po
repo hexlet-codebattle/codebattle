@@ -3769,6 +3769,9 @@ msgstr "Invite link"
 msgid "It may be private: open it with the invite link from the organizer."
 msgstr "It may be private: open it with the invite link from the organizer."
 
+msgid "You're not registered yet. Press Join to take part, we'll notify you when it starts."
+msgstr "You're not registered yet. Press Join to take part, we'll notify you when it starts."
+
 msgid "Join now and get notified when it starts."
 msgstr "Join now and get notified when it starts."
 
@@ -4968,3 +4971,90 @@ msgstr ""
 
 msgid "Score: %{score}"
 msgstr ""
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hi! I'll solve this in about %{minutes} min. Think you can beat me?"
+msgstr "Hi! I'll solve this in about %{minutes} min. Think you can beat me?"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hey! My solution will be ready in about %{minutes} min. Good luck!"
+msgstr "Hey! My solution will be ready in about %{minutes} min. Good luck!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Let's go! I need about %{minutes} min for this one. Race you!"
+msgstr "Let's go! I need about %{minutes} min for this one. Race you!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "This one is too tough for me. It's all yours!"
+msgstr "This one is too tough for me. It's all yours!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "I have no idea how to solve this one. Show me how it's done!"
+msgstr "I have no idea how to solve this one. Show me how it's done!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Congratulations, you won the training game! Sign up to fight for a place in the ranking."
+msgstr "Congratulations, you won the training game! Sign up to fight for a place in the ranking."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG WP!"
+msgstr "GG WP!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Well played! I'll get my revenge next time."
+msgstr "Well played! I'll get my revenge next time."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You got me this time. Good job!"
+msgstr "You got me this time. Good job!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Tough one? Give it another try, practice makes perfect!"
+msgstr "Tough one? Give it another try, practice makes perfect!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "No worries, the next task will be yours."
+msgstr "No worries, the next task will be yours."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG! Beating a bot is a nice warm-up, now try real people. The next tournament starts %{when}: %{url}"
+msgstr "GG! Beating a bot is a nice warm-up, now try real people. The next tournament starts %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You beat me! I bet you'd do great in a tournament too. The next one starts %{when}: %{url}"
+msgstr "You beat me! I bet you'd do great in a tournament too. The next one starts %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Bots are fun, but people are more fun 😉 The next tournament starts %{when}: %{url}"
+msgstr "Bots are fun, but people are more fun 😉 The next tournament starts %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Want a real challenge? Join the next tournament, it starts %{when}: %{url}"
+msgstr "Want a real challenge? Join the next tournament, it starts %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{minutes} min"
+msgstr "in %{minutes} min"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h"
+msgstr "in %{hours} h"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h %{minutes} min"
+msgstr "in %{hours} h %{minutes} min"
+
+msgid "Live games"
+msgstr "Live games"
+
+msgid "No games are being played right now."
+msgstr "No games are being played right now."
+
+msgid "Level progression"
+msgstr "Level progression"
+
+msgid "Hardest level"
+msgstr "Hardest level"
+
+msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
+msgstr "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."

@@ -12,8 +12,9 @@ import { useTournamentStore } from '../store';
 import type { Tournament } from '../types';
 import type { TournamentApi } from '../useTournament';
 
-import { ClanRankingPanel, ClansBubblePanel, LangsPanel, TaskAdvancedPanel, TasksRankingPanel } from './AnalyticsPanels';
+import { ClanRankingPanel, LangsPanel, TaskAdvancedPanel, TasksRankingPanel } from './AnalyticsPanels';
 import { PanelMessage } from './common';
+import { LiveGamesPanel } from './LiveGamesPanel';
 import { CheatersPanel, ReportsPanel } from './ModerationPanels';
 import { allowedPanels, groupOf, PANEL_GROUPS, PANEL_TITLES, PanelMode, type PanelModeId } from './modes';
 import { PlayerPanel } from './PlayerPanel';
@@ -89,8 +90,6 @@ export function TournamentPanels({ tournament, api }: { tournament: Tournament; 
             }}
           />
         );
-      case PanelMode.clansBubble:
-        return <ClansBubblePanel tournament={tournament} api={api} />;
       case PanelMode.langs:
         return <LangsPanel tournament={tournament} api={api} />;
       case PanelMode.taskAdvanced:
@@ -103,12 +102,14 @@ export function TournamentPanels({ tournament, api }: { tournament: Tournament; 
             onSelectUser={selectUser}
           />
         );
+      case PanelMode.live:
+        return <LiveGamesPanel api={api} />;
       case PanelMode.reports:
         return <ReportsPanel api={api} />;
       case PanelMode.cheaters:
         return <CheatersPanel api={api} />;
       default:
-        return <About tournament={tournament} />;
+        return <About tournament={tournament} api={api} />;
     }
   })();
 

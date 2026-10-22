@@ -3,6 +3,8 @@ defmodule Codebattle.Tournament.TaskProvider do
   alias Codebattle.TaskPack
   alias Codebattle.Tournament.Tasks
 
+  @levels ~w(elementary easy medium hard)
+
   def get_all_tasks(%{task_provider: "all"} = tournament) do
     Codebattle.Task.get_all_visible()
     |> Enum.shuffle()
@@ -14,6 +16,18 @@ defmodule Codebattle.Tournament.TaskProvider do
     |> Codebattle.Task.get_tasks_by_level()
     |> Enum.shuffle()
     |> Enum.take(tasks_needed_count(tournament))
+  end
+
+  def get_all_tasks(%{task_provider: "level_progression"} = tournament) do
+    tournament
+    |> level_plan()
+    |> Enum.frequencies()
+    |> Enum.flat_map(fn {level, count} ->
+      level
+      |> Codebattle.Task.get_tasks_by_level()
+      |> Enum.shuffle()
+      |> Enum.take(count)
+    end)
   end
 
   def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name} = tournament) when not is_nil(tp_name) do
@@ -51,8 +65,71 @@ defmodule Codebattle.Tournament.TaskProvider do
     |> Enum.take(tasks_needed_count(tournament))
   end
 
+  # The preloaded tasks in plan order: each round takes a task of its planned level; a level
+  # that ran short borrows any unused task so every round still has one.
+  def get_task_ids(%{task_provider: "level_progression"} = tournament) do
+    pools =
+      tournament
+      |> Tasks.get_tasks()
+      |> Enum.sort_by(& &1.id)
+      |> Enum.group_by(& &1.level, & &1.id)
+
+    {planned, pools} =
+      tournament
+      |> level_plan()
+      |> Enum.map_reduce(pools, fn level, pools ->
+        case Map.get(pools, level, []) do
+          [id | rest] -> {id, Map.put(pools, level, rest)}
+          [] -> {nil, pools}
+        end
+      end)
+
+    spare = pools |> Map.values() |> List.flatten()
+
+    planned
+    |> Enum.map_reduce(spare, fn
+      nil, [id | rest] -> {id, rest}
+      id, spare -> {id, spare}
+    end)
+    |> elem(0)
+    |> Enum.reject(&is_nil/1)
+  end
+
   def get_task_ids(tournament) do
     Tasks.get_task_ids(tournament)
+  end
+
+  @doc """
+  Task level per round for `level_progression`: rounds get harder, never above the
+  tournament's `level`. With "easy" the rounds split evenly, elementary first. Otherwise a
+  quarter elementary, then easy, then about 3/8 medium; with "hard" the last round is hard.
+  4 rounds with "easy" → 2 elementary, 2 easy; 4 with "medium" → elementary, easy, easy,
+  medium; 10 with "hard" → 2 elementary, 4 easy, 3 medium, 1 hard.
+  """
+  @spec level_plan(map()) :: [String.t()]
+  def level_plan(%{rounds_limit: rounds, level: "easy"}) when is_integer(rounds) and rounds > 0 do
+    elementary = div(rounds + 1, 2)
+    List.duplicate("elementary", elementary) ++ List.duplicate("easy", rounds - elementary)
+  end
+
+  def level_plan(%{rounds_limit: rounds, level: top}) when is_integer(rounds) and rounds > 0 do
+    hard = if top == "hard" and rounds >= 4, do: 1, else: 0
+    elementary = max(div(rounds, 4), 1)
+    medium = if rounds >= 3, do: max(div(rounds * 3, 8), 1), else: 0
+    easy = rounds - elementary - medium - hard
+
+    [{"elementary", elementary}, {"easy", easy}, {"medium", medium}, {"hard", hard}]
+    |> Enum.flat_map(fn {level, count} -> List.duplicate(level, count) end)
+    |> Enum.map(&cap_level(&1, top))
+  end
+
+  def level_plan(_tournament), do: []
+
+  defp cap_level(level, top) do
+    case Enum.find_index(@levels, &(&1 == top)) do
+      nil -> level
+      top_index -> Enum.at(@levels, min(Enum.find_index(@levels, &(&1 == level)), top_index))
+    end
   end
 
   # TODO: implement custom rounds with rematches

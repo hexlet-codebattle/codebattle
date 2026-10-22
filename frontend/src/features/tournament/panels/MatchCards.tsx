@@ -152,8 +152,8 @@ function TaskCell({ match, task }: { match: Match; task: { name: string; level: 
 interface MatchCardsProps {
   api: TournamentApi;
   matches: Match[];
-  /** Whose matches these are: shown on the left. */
-  playerId: number;
+  /** Whose matches these are: shown on the left. Without it (live games) each match's first player is. */
+  playerId?: number;
   /** Ladder tournaments explain each score. */
   showScoreFormula?: boolean;
   emptyText?: string;
@@ -188,9 +188,10 @@ export function MatchCards({ api, matches, playerId, showScoreFormula = false, e
   return (
     <div className={classes.list}>
       {sorted.map((match) => {
-        const opponent = match.player_ids.find((id) => id !== playerId);
-        const outcome = outcomeOf(match, playerId);
-        const mine = match.player_results?.[playerId];
+        const left = playerId ?? match.player_ids[0];
+        const opponent = match.player_ids.find((id) => id !== left);
+        const outcome = outcomeOf(match, left);
+        const mine = match.player_results?.[left];
         const theirs = opponent != null ? match.player_results?.[opponent] : undefined;
         const started = time(match.started_at);
         const finished = time(match.finished_at);
@@ -211,11 +212,11 @@ export function MatchCards({ api, matches, playerId, showScoreFormula = false, e
             <TaskCell match={match} task={match.task_id != null ? tasks[match.task_id] : undefined} />
 
             <Side
-              id={playerId}
+              id={left}
               match={match}
               players={players}
               side="me"
-              winner={match.winner_id === playerId}
+              winner={match.winner_id === left}
               showFormula={showScoreFormula}
               formulaLabel={t('You')}
             />

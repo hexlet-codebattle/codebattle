@@ -3867,6 +3867,9 @@ msgstr "Enlace de invitación"
 msgid "It may be private: open it with the invite link from the organizer."
 msgstr "Puede ser privado: ábrelo con el enlace de invitación del organizador."
 
+msgid "You're not registered yet. Press Join to take part, we'll notify you when it starts."
+msgstr "Todavía no estás inscrito. Pulsa Unirse para participar; te avisaremos cuando comience."
+
 msgid "Join now and get notified when it starts."
 msgstr "Únase ahora y reciba una notificación cuando comience."
 
@@ -7462,3 +7465,90 @@ msgstr "Entorno de ejecución"
 
 msgid "Task description language"
 msgstr "Idioma de la descripción del problema"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hi! I'll solve this in about %{minutes} min. Think you can beat me?"
+msgstr "¡Hola! Resolveré esto en unos %{minutes} min. ¿Crees que puedes ganarme?"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hey! My solution will be ready in about %{minutes} min. Good luck!"
+msgstr "¡Hola! Mi solución estará lista en unos %{minutes} min. ¡Suerte!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Let's go! I need about %{minutes} min for this one. Race you!"
+msgstr "¡Vamos! Necesito unos %{minutes} min para esta. ¡A ver quién gana!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "This one is too tough for me. It's all yours!"
+msgstr "Esta es demasiado difícil para mí. ¡Toda tuya!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "I have no idea how to solve this one. Show me how it's done!"
+msgstr "No tengo ni idea de cómo resolver esta. ¡Enséñame cómo se hace!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Congratulations, you won the training game! Sign up to fight for a place in the ranking."
+msgstr "¡Felicidades, ganaste la partida de entrenamiento! Regístrate para luchar por un puesto en el ranking."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG WP!"
+msgstr "GG WP!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Well played! I'll get my revenge next time."
+msgstr "¡Bien jugado! La próxima vez me vengaré."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You got me this time. Good job!"
+msgstr "Esta vez me ganaste. ¡Buen trabajo!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Tough one? Give it another try, practice makes perfect!"
+msgstr "¿Difícil? Inténtalo de nuevo, ¡la práctica hace al maestro!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "No worries, the next task will be yours."
+msgstr "No te preocupes, la próxima tarea será tuya."
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG! Beating a bot is a nice warm-up, now try real people. The next tournament starts %{when}: %{url}"
+msgstr "¡GG! Ganarle a un bot es un buen calentamiento, ahora prueba con personas reales. El próximo torneo empieza %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You beat me! I bet you'd do great in a tournament too. The next one starts %{when}: %{url}"
+msgstr "¡Me ganaste! Seguro que también te iría genial en un torneo. El próximo empieza %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Bots are fun, but people are more fun 😉 The next tournament starts %{when}: %{url}"
+msgstr "Los bots son divertidos, pero las personas lo son más 😉 El próximo torneo empieza %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Want a real challenge? Join the next tournament, it starts %{when}: %{url}"
+msgstr "¿Quieres un reto de verdad? Únete al próximo torneo, empieza %{when}: %{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{minutes} min"
+msgstr "en %{minutes} min"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h"
+msgstr "en %{hours} h"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h %{minutes} min"
+msgstr "en %{hours} h %{minutes} min"
+
+msgid "Live games"
+msgstr "Partidas en vivo"
+
+msgid "No games are being played right now."
+msgstr "Ahora mismo no se está jugando ninguna partida."
+
+msgid "Level progression"
+msgstr "Dificultad progresiva"
+
+msgid "Hardest level"
+msgstr "Nivel máximo"
+
+msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
+msgstr "Las rondas se vuelven más difíciles: primero elementales, luego fáciles y medias. Con Duro, la última ronda es difícil."

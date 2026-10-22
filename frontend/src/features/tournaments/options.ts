@@ -26,12 +26,14 @@ export const ACCESS_TYPE_DESCRIPTIONS: Record<string, string> = {
 
 export const TASK_PROVIDERS = [
   { value: 'level', label: 'Level' },
+  { value: 'level_progression', label: 'Level progression' },
   { value: 'task_pack', label: 'Task Pack' },
   { value: 'tags', label: 'Tags' },
 ];
 
 export const TASK_PROVIDER_DESCRIPTIONS: Record<string, string> = {
   level: 'Tasks are picked automatically from the chosen difficulty level.',
+  level_progression: 'Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard.',
   task_pack: "Tasks come from a fixed task pack, played in the pack's order.",
   tags: 'Tasks are picked by the given tags and difficulty level.',
 };

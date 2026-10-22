@@ -17,6 +17,10 @@ export const capitalize = (value: string) => value.charAt(0).toUpperCase() + val
 /** "elementary" → "Elementary" / "Начальный". */
 export const levelLabel = (level: GameLevel) => t(capitalize(level));
 
+/** A tournament's task difficulty: one level, or "Elementary → Medium" when rounds get harder (level_progression). */
+export const taskLevelsLabel = (provider: string | null | undefined, level: GameLevel) =>
+  provider === 'level_progression' && level !== 'elementary' ? `${levelLabel('elementary')} → ${levelLabel(level)}` : levelLabel(level);
+
 /** "grand_slam" → "Grand Slam" / "Гранд-слэм". */
 export const gradeLabel = (grade: string) => t(grade.split('_').map(capitalize).join(' '));
 

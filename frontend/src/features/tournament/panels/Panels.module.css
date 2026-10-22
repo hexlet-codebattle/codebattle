@@ -10,36 +10,6 @@
   opacity: 0.6;
 }
 
-.swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  flex: none;
-}
-
-.chart {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-.grid {
-  stroke: var(--cb-border);
-  stroke-width: 1;
-}
-
-.axisLabel {
-  fill: var(--cb-text-muted);
-  font-size: 11px;
-  font-family: var(--mantine-font-family-monospace);
-}
-
-.axisTitle {
-  fill: var(--cb-text-muted);
-  font-size: 11px;
-  font-weight: 600;
-}
-
 /* Winners' solve-time histogram on a 0 … time-to-solve scale. */
 .durationChart {
   padding-top: 18px;

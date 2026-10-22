@@ -1,6 +1,8 @@
 defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
   use Codebattle.IntegrationCase
 
+  import Ecto.Query
+
   alias Codebattle.Tournament
   alias Codebattle.Tournament.SeasonTournamentGeneratorRunner
 
@@ -68,8 +70,8 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       first_rookie = List.first(rookie_tournaments)
       assert first_rookie.players_limit == 8
       assert first_rookie.level == "easy"
-      assert first_rookie.task_provider == "level"
-      assert first_rookie.task_strategy == "random"
+      assert first_rookie.task_provider == "level_progression"
+      assert first_rookie.task_strategy == "sequential"
       assert first_rookie.type == "ladder"
       assert first_rookie.round_timeout_seconds == 60
       assert first_rookie.access_type == "public"
@@ -85,9 +87,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       # Check first challenger tournament
       first_challenger = List.first(challenger_tournaments)
       assert first_challenger.players_limit == 16
-      assert first_challenger.level == "easy"
-      assert first_challenger.task_provider == "level"
-      assert first_challenger.task_strategy == "random"
+      assert first_challenger.level == "medium"
+      assert first_challenger.task_provider == "level_progression"
+      assert first_challenger.task_strategy == "sequential"
       assert String.contains?(first_challenger.name, "Daily Challenger")
 
       # All challenger tournaments should be at 16:00 UTC
@@ -110,9 +112,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       # Check first pro tournament
       first_pro = List.first(pro_tournaments)
       assert first_pro.players_limit == 32
-      assert first_pro.level == "easy"
-      assert first_pro.task_provider == "level"
-      assert first_pro.task_strategy == "random"
+      assert first_pro.level == "medium"
+      assert first_pro.task_provider == "level_progression"
+      assert first_pro.task_strategy == "sequential"
       assert first_pro.name == "Biweekly Pro"
 
       # All pro tournaments should be on the 14th or 28th at 16:00 UTC
@@ -138,9 +140,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       # Check first elite tournament
       first_elite = List.first(elite_tournaments)
       assert first_elite.players_limit == 64
-      assert first_elite.level == "medium"
-      assert first_elite.task_provider == "level"
-      assert first_elite.task_strategy == "random"
+      assert first_elite.level == "hard"
+      assert first_elite.task_provider == "level_progression"
+      assert first_elite.task_strategy == "sequential"
       assert first_elite.name == "Monthly Elite"
 
       # All elite tournaments should be on the 7th at 16:00 UTC
@@ -242,6 +244,44 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       starts_at = grand_slam_s2.starts_at
       date = DateTime.to_date(starts_at)
       assert date == ~D[2026-06-21]
+    end
+  end
+
+  describe "update_upcoming_tournaments/1" do
+    test "re-applies the generator params to upcoming season tournaments only" do
+      season = %Codebattle.Season{name: "Fall 2024", year: 2024, starts_at: ~D[2024-09-21], ends_at: ~D[2024-12-21]}
+      SeasonTournamentGeneratorRunner.generate_season(season)
+
+      old_params = %{type: "ladder", break_duration_seconds: 10, task_provider: "level", task_strategy: "random"}
+      [masters, live_masters] = Tournament |> where(grade: "masters") |> order_by(:id) |> Repo.all()
+      rookie = Tournament |> where(grade: "rookie") |> limit(1) |> Repo.one()
+
+      masters |> Ecto.Changeset.change(Map.put(old_params, :score_strategy, "static_base_score")) |> Repo.update!()
+      rookie |> Ecto.Changeset.change(Map.put(old_params, :level, "medium")) |> Repo.update!()
+
+      live_masters
+      |> Ecto.Changeset.change(Map.put(old_params, :state, "waiting_participants"))
+      |> Repo.update!()
+
+      insert(:tournament, grade: "pro", state: "upcoming", starts_at: ~U[2024-10-01 10:00:00Z])
+
+      assert {:ok, counts} = SeasonTournamentGeneratorRunner.update_upcoming_tournaments(season)
+      assert %{updated: 2, unmatched: 1, failed: 0} = counts
+
+      masters = Repo.reload!(masters)
+      assert masters.type == "swiss"
+      assert masters.break_duration_seconds == 5
+      assert masters.score_strategy == "75_percentile"
+      assert masters.task_provider == "task_pack"
+
+      rookie = Repo.reload!(rookie)
+      assert rookie.type == "ladder"
+      assert rookie.level == "easy"
+      assert rookie.task_provider == "level_progression"
+      assert rookie.task_strategy == "sequential"
+
+      # Live tournaments keep their params.
+      assert Repo.reload!(live_masters).type == "ladder"
     end
   end
 end

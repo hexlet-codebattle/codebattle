@@ -201,9 +201,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       first_elite = List.first(elite)
       assert Ecto.Changeset.get_field(first_elite, :players_limit) == 64
       assert Ecto.Changeset.get_field(first_elite, :rounds_limit) == 10
-      assert Ecto.Changeset.get_field(first_elite, :level) == "medium"
-      assert Ecto.Changeset.get_field(first_elite, :task_provider) == "level"
-      assert Ecto.Changeset.get_field(first_elite, :task_strategy) == "random"
+      assert Ecto.Changeset.get_field(first_elite, :level) == "hard"
+      assert Ecto.Changeset.get_field(first_elite, :task_provider) == "level_progression"
+      assert Ecto.Changeset.get_field(first_elite, :task_strategy) == "sequential"
     end
 
     test "Pro tournaments are scheduled on 14th and 28th of every month" do
@@ -252,9 +252,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       first_pro = List.first(pro)
       assert Ecto.Changeset.get_field(first_pro, :players_limit) == 32
       assert Ecto.Changeset.get_field(first_pro, :rounds_limit) == 8
-      assert Ecto.Changeset.get_field(first_pro, :level) == "easy"
-      assert Ecto.Changeset.get_field(first_pro, :task_provider) == "level"
-      assert Ecto.Changeset.get_field(first_pro, :task_strategy) == "random"
+      assert Ecto.Changeset.get_field(first_pro, :level) == "medium"
+      assert Ecto.Changeset.get_field(first_pro, :task_provider) == "level_progression"
+      assert Ecto.Changeset.get_field(first_pro, :task_strategy) == "sequential"
     end
 
     test "Challenger tournaments are daily at 16:00 except when higher priority runs" do
@@ -310,9 +310,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       first_challenger = List.first(challenger)
       assert Ecto.Changeset.get_field(first_challenger, :players_limit) == 16
       assert Ecto.Changeset.get_field(first_challenger, :rounds_limit) == 6
-      assert Ecto.Changeset.get_field(first_challenger, :level) == "easy"
-      assert Ecto.Changeset.get_field(first_challenger, :task_provider) == "level"
-      assert Ecto.Changeset.get_field(first_challenger, :task_strategy) == "random"
+      assert Ecto.Changeset.get_field(first_challenger, :level) == "medium"
+      assert Ecto.Changeset.get_field(first_challenger, :task_provider) == "level_progression"
+      assert Ecto.Changeset.get_field(first_challenger, :task_strategy) == "sequential"
     end
 
     test "Rookie tournaments run every 3 hours at 0,3,6,9,12,15,18,21" do
@@ -358,8 +358,8 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       assert Ecto.Changeset.get_field(first_rookie, :players_limit) == 8
       assert Ecto.Changeset.get_field(first_rookie, :rounds_limit) == 4
       assert Ecto.Changeset.get_field(first_rookie, :level) == "easy"
-      assert Ecto.Changeset.get_field(first_rookie, :task_provider) == "level"
-      assert Ecto.Changeset.get_field(first_rookie, :task_strategy) == "random"
+      assert Ecto.Changeset.get_field(first_rookie, :task_provider) == "level_progression"
+      assert Ecto.Changeset.get_field(first_rookie, :task_strategy) == "sequential"
     end
 
     test "generates correct season numbers for different periods" do
@@ -491,7 +491,11 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       # Check a sample of each type
       Enum.each(tournaments, fn changeset ->
         assert Ecto.Changeset.get_field(changeset, :state) == "upcoming"
-        assert Ecto.Changeset.get_field(changeset, :type) == "ladder"
+        grade = Ecto.Changeset.get_field(changeset, :grade)
+        expected_type = if grade in ["masters", "grand_slam"], do: "swiss", else: "ladder"
+
+        assert Ecto.Changeset.get_field(changeset, :type) == expected_type
+        assert Ecto.Changeset.get_field(changeset, :break_duration_seconds) == 5
         assert Ecto.Changeset.get_field(changeset, :access_type) == "public"
         assert Ecto.Changeset.get_field(changeset, :use_chat) == true
         assert Ecto.Changeset.get_field(changeset, :use_timer) == true

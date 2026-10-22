@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
-import { formatDate, formatTime, gradeLabel, levelLabel, rankingPoints, tournamentTitle } from '@/features/lobby/format';
+import { formatDate, formatTime, gradeLabel, rankingPoints, taskLevelsLabel, tournamentTitle } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
 
 import type { Tournament } from '../types';
@@ -113,7 +113,7 @@ export function TournamentHeader({ tournament, action, clock, footer }: Tourname
                 <Text inherit truncate>
                   {tournament.task_provider === 'task_pack' && tournament.task_pack_name
                     ? tournament.task_pack_name
-                    : levelLabel(tournament.level as GameLevel)}
+                    : taskLevelsLabel(tournament.task_provider, tournament.level as GameLevel)}
                 </Text>
               </Group>
             ) : null}

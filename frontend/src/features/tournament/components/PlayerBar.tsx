@@ -25,25 +25,20 @@ export function useMyLiveMatch(userId: number): Match | null {
 }
 
 /**
- * Join / leave, and where the player stands right now (live game, waiting) — one row
- * of the room's control bar. Returns null when there's nothing to say or do.
+ * Sends join / leave and spins until the result arrives. They never reply: the result
+ * comes as tournament:player:joined / left, which flips the player's membership and ends
+ * the spinner; with no answer in 5 s the server dropped it (e.g. the tournament is full
+ * or its process isn't running), so say so instead of spinning forever.
  */
-export function PlayerRow({ tournament, api }: { tournament: Tournament; api: TournamentApi }) {
+export function useMembershipAction(api: TournamentApi, joined: boolean) {
   const { t } = useTranslation();
-  const { current_user: me } = useSharedProps();
-  const player = useTournamentStore((state) => state.players[me.id]);
-  const liveMatch = useMyLiveMatch(me.id);
   const [busy, setBusy] = useState(false);
-  const joined = Boolean(player);
 
-  // player:joined / left arrived: the request is done.
   const [wasJoined, setWasJoined] = useState(joined);
   if (wasJoined !== joined) {
     setWasJoined(joined);
     setBusy(false);
   }
-  // No player:joined / left within 5 s: the server dropped it (e.g. the tournament is full
-  // or its process isn't running) — say so instead of spinning forever.
   useEffect(() => {
     if (!busy) return undefined;
     const timer = window.setTimeout(() => {
@@ -52,6 +47,35 @@ export function PlayerRow({ tournament, api }: { tournament: Tournament; api: To
     }, 5000);
     return () => window.clearTimeout(timer);
   }, [busy, t]);
+
+  const act = (event: 'tournament:join' | 'tournament:leave') => {
+    setBusy(true);
+    api.cast(event);
+  };
+
+  return { busy, setBusy, act };
+}
+
+/** Whether the viewer can join right now: signed in, not in yet, and the tournament takes players. */
+export function useCanJoin(tournament: Tournament, api: TournamentApi) {
+  const { current_user: me } = useSharedProps();
+  const joined = useTournamentStore((state) => Boolean(state.players[me.id]));
+  const open = tournament.state === 'waiting_participants' || tournament.state === 'active';
+  const full = tournament.players_limit > 0 && tournament.players_count >= tournament.players_limit;
+  return !me.is_guest && !joined && open && !full && tournament.is_live && api.status === 'joined';
+}
+
+/**
+ * Join / leave, and where the player stands right now (live game, waiting) — one row
+ * of the room's control bar. Returns null when there's nothing to say or do.
+ */
+export function PlayerRow({ tournament, api }: { tournament: Tournament; api: TournamentApi }) {
+  const { t } = useTranslation();
+  const { current_user: me } = useSharedProps();
+  const player = useTournamentStore((state) => state.players[me.id]);
+  const liveMatch = useMyLiveMatch(me.id);
+  const joined = Boolean(player);
+  const { busy, setBusy, act } = useMembershipAction(api, joined);
 
   // Event stages link here with ?auto_join=1: join once the channel is up, then drop the flag.
   const [autoJoin, setAutoJoin] = useState<'wait' | 'send' | 'done'>(() =>
@@ -89,13 +113,6 @@ export function PlayerRow({ tournament, api }: { tournament: Tournament; api: To
 
   const open = tournament.state === 'waiting_participants' || tournament.state === 'active';
   const full = tournament.players_limit > 0 && tournament.players_count >= tournament.players_limit;
-
-  // join / leave never reply; the result arrives as tournament:player:joined / left,
-  // which flips `player` above and ends the spinner (or the fallback does).
-  const act = (event: 'tournament:join' | 'tournament:leave') => {
-    setBusy(true);
-    api.cast(event);
-  };
 
   let status: ReactNode = null;
   let action: ReactNode = null;
@@ -135,19 +152,22 @@ export function PlayerRow({ tournament, api }: { tournament: Tournament; api: To
 
   if (!player) {
     if (!open) return null;
+    // Visitors kept missing that they have to press Join to take part: spell it out.
     status = (
-      <Text size="xs" c="dimmed">
+      <Text size="xs" c={full ? 'dimmed' : undefined}>
         {tournament.state === 'active'
           ? t('The tournament is running, you can still jump in.')
           : full
             ? t('The tournament is full.')
-            : t('Join now and get notified when it starts.')}
+            : t("You're not registered yet. Press Join to take part, we'll notify you when it starts.")}
       </Text>
     );
     action = (
       <Button
         size="md"
         variant="filled"
+        color="green"
+        className={full ? undefined : classes.joinGlow}
         leftSection={<IconUserPlus size={18} />}
         loading={busy}
         disabled={full || api.status !== 'joined'}

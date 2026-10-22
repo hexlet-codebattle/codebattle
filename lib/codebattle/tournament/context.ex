@@ -228,6 +228,23 @@ defmodule Codebattle.Tournament.Context do
     Map.get(player, :is_bot) == true || Map.get(player, "is_bot") == true
   end
 
+  @doc """
+  The soonest season (non-open grade) tournament that hasn't started yet: the one
+  to invite a player to.
+  """
+  @spec get_next_season_tournament() :: Tournament.t() | nil
+  def get_next_season_tournament do
+    now = DateTime.utc_now(:second)
+
+    Repo.one(
+      from(t in Tournament,
+        where: t.state in ["upcoming", "waiting_participants"] and t.grade != "open" and t.starts_at > ^now,
+        order_by: [t.starts_at, t.id],
+        limit: 1
+      )
+    )
+  end
+
   @spec get_one_upcoming_tournament_for_each_grade() :: list(Tournament.t())
   def get_one_upcoming_tournament_for_each_grade do
     cte_query =

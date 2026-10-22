@@ -42,6 +42,7 @@ defmodule Codebattle.Application do
           {Cachex, name: :email_change_rate_limit_cache},
           id: :email_change_rate_limit_cache
         ),
+        Supervisor.child_spec({Cachex, name: :bot_chat_cache}, id: :bot_chat_cache),
         {Codebattle.UsersPointsAndRankServer, []},
         {Codebattle.UserAchievementsServer, []},
         {Codebattle.Bot.GameCreator, []},

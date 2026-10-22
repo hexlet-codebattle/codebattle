@@ -3762,6 +3762,9 @@ msgstr "邀请链接"
 msgid "It may be private: open it with the invite link from the organizer."
 msgstr "它可能是私人的：使用组织者提供的邀请链接打开它。"
 
+msgid "You're not registered yet. Press Join to take part, we'll notify you when it starts."
+msgstr "您尚未报名。点击“加入”即可参赛，比赛开始时我们会通知您。"
+
 msgid "Join now and get notified when it starts."
 msgstr "立即加入并在活动开始时收到通知。"
 
@@ -7106,3 +7109,90 @@ msgstr "运行环境"
 
 msgid "Task description language"
 msgstr "题目描述语言"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hi! I'll solve this in about %{minutes} min. Think you can beat me?"
+msgstr "嗨！我大约 %{minutes} 分钟就能解出这道题。你觉得能赢我吗？"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Hey! My solution will be ready in about %{minutes} min. Good luck!"
+msgstr "嘿！我的解法大约 %{minutes} 分钟后就绪。祝你好运！"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Let's go! I need about %{minutes} min for this one. Race you!"
+msgstr "开始吧！这道题我需要大约 %{minutes} 分钟。来比比看！"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "This one is too tough for me. It's all yours!"
+msgstr "这道题对我来说太难了。交给你了！"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "I have no idea how to solve this one. Show me how it's done!"
+msgstr "我完全不知道这道题怎么解。给我示范一下吧！"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Congratulations, you won the training game! Sign up to fight for a place in the ranking."
+msgstr "恭喜你赢得了训练赛！注册后即可争夺排行榜名次。"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG WP!"
+msgstr "GG WP!"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Well played! I'll get my revenge next time."
+msgstr "打得好！下次我一定要报仇。"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You got me this time. Good job!"
+msgstr "这次你赢了。干得漂亮！"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Tough one? Give it another try, practice makes perfect!"
+msgstr "有点难？再试一次吧，熟能生巧！"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "No worries, the next task will be yours."
+msgstr "别担心，下一道题就是你的了。"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "GG! Beating a bot is a nice warm-up, now try real people. The next tournament starts %{when}: %{url}"
+msgstr "GG！赢过机器人只是热身，现在去挑战真人吧。下一场锦标赛%{when}开始：%{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "You beat me! I bet you'd do great in a tournament too. The next one starts %{when}: %{url}"
+msgstr "你赢了我！我打赌你在锦标赛里也会表现出色。下一场%{when}开始：%{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Bots are fun, but people are more fun 😉 The next tournament starts %{when}: %{url}"
+msgstr "和机器人对战很有趣，和真人对战更有趣 😉 下一场锦标赛%{when}开始：%{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "Want a real challenge? Join the next tournament, it starts %{when}: %{url}"
+msgstr "想要真正的挑战吗？加入下一场锦标赛，它将在%{when}开始：%{url}"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{minutes} min"
+msgstr "%{minutes} 分钟后"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h"
+msgstr "%{hours} 小时后"
+
+#: lib/codebattle/bot/chat_client.ex
+msgid "in %{hours} h %{minutes} min"
+msgstr "%{hours} 小时 %{minutes} 分钟后"
+
+msgid "Live games"
+msgstr "实时对局"
+
+msgid "No games are being played right now."
+msgstr "当前没有正在进行的对局。"
+
+msgid "Level progression"
+msgstr "难度递进"
+
+msgid "Hardest level"
+msgstr "最高难度"
+
+msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
+msgstr "每轮难度递增：先是入门题，然后是简单和中等题。选择困难时，最后一轮为困难题。"

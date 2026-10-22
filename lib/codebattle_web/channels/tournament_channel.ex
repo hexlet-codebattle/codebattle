@@ -8,6 +8,7 @@ defmodule CodebattleWeb.TournamentChannel do
   alias Codebattle.Tournament.TournamentUserResult
 
   @ranking_push_delay_ms 2_000
+  @live_matches_limit 100
 
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
@@ -179,6 +180,23 @@ defmodule CodebattleWeb.TournamentChannel do
     opponents = Helpers.get_players(tournament_info, opponent_ids)
 
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
+  end
+
+  # Live games tab: games being played right now (newest first, capped) with their players,
+  # so anyone, players done with their own games included, can pick one to watch.
+  def handle_in("tournament:matches:request_live", _params, socket) do
+    tournament_info = socket.assigns.tournament_info
+
+    matches =
+      tournament_info
+      |> Helpers.get_matches("playing")
+      |> Enum.sort_by(& &1.id, :desc)
+      |> Enum.take(@live_matches_limit)
+
+    player_ids = matches |> Enum.flat_map(& &1.player_ids) |> Enum.reject(&is_nil/1) |> Enum.uniq()
+    players = tournament_info |> Helpers.get_players(player_ids) |> Enum.reject(&is_nil/1)
+
+    {:reply, {:ok, %{matches: matches, players: players}}, socket}
   end
 
   def handle_in("tournament:matches:request_for_round", _params, socket) do

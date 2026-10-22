@@ -34,7 +34,7 @@ import {
 import { type FormEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatStartsIn, levelLabel, LEVELS, parseUtc } from '@/features/lobby/format';
+import { formatStartsIn, levelLabel, LEVELS, parseUtc, taskLevelsLabel } from '@/features/lobby/format';
 import { t as translate } from '@/i18n';
 import { Markdown } from '@/shared/Markdown';
 import { useNow } from '@/shared/useNow';
@@ -434,7 +434,7 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
                 ) : (
                   <Stack gap={4}>
                     <Text size="sm" fw={500}>
-                      {t('Level')}
+                      {values.task_provider === 'level_progression' ? t('Hardest level') : t('Level')}
                     </Text>
                     <SegmentedControl
                       fullWidth
@@ -598,7 +598,7 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
                   value={
                     values.task_provider === 'task_pack'
                       ? values.task_pack_name || '—'
-                      : levelLabel(values.level as (typeof LEVELS)[number])
+                      : taskLevelsLabel(values.task_provider, values.level as (typeof LEVELS)[number])
                   }
                 />
               </SimpleGrid>

@@ -6,11 +6,36 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
   from the SeasonTournamentGenerator module.
   """
 
+  import Ecto.Query
+
   alias Codebattle.Repo
   alias Codebattle.Season
+  alias Codebattle.Tournament
   alias Codebattle.Tournament.SeasonTournamentGenerator
 
   require Logger
+
+  # What the generator decides about a tournament; re-applied to already generated ones.
+  @synced_fields [
+    :name,
+    :description,
+    :type,
+    :players_limit,
+    :rounds_limit,
+    :level,
+    :task_provider,
+    :task_strategy,
+    :task_pack_name,
+    :break_duration_seconds,
+    :timeout_mode,
+    :round_timeout_seconds,
+    :match_timeout_seconds,
+    :score_strategy,
+    :ranking_type,
+    :access_type,
+    :use_chat,
+    :use_timer
+  ]
 
   @doc """
   Generate and insert all tournaments for a given season.
@@ -60,6 +85,69 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
     Logger.info("Failed to insert: #{failed_count}")
 
     {:ok, success_count, failed_count}
+  end
+
+  @doc """
+  Re-applies the generator's current params to the season's tournaments that are still
+  `upcoming` (not yet live, so no players or server). Each one is matched to the generated
+  tournament with the same grade and start time; ones without a match (added or moved by
+  hand) are left alone.
+  """
+  @spec update_upcoming_tournaments(Season.t()) ::
+          {:ok,
+           %{
+             updated: non_neg_integer(),
+             unchanged: non_neg_integer(),
+             unmatched: non_neg_integer(),
+             failed: non_neg_integer()
+           }}
+  def update_upcoming_tournaments(%Season{} = season) do
+    generated =
+      season
+      |> SeasonTournamentGenerator.generate_season_tournaments()
+      |> Map.new(fn changeset ->
+        tournament = Ecto.Changeset.apply_changes(changeset)
+        {{tournament.grade, DateTime.to_unix(tournament.starts_at)}, Map.take(tournament, @synced_fields)}
+      end)
+
+    season
+    |> upcoming_season_tournaments()
+    |> Enum.reduce(%{updated: 0, unchanged: 0, unmatched: 0, failed: 0}, fn tournament, counts ->
+      case Map.fetch(generated, {tournament.grade, DateTime.to_unix(tournament.starts_at)}) do
+        {:ok, params} -> Map.update!(counts, update_tournament(tournament, params), &(&1 + 1))
+        :error -> Map.update!(counts, :unmatched, &(&1 + 1))
+      end
+    end)
+    |> then(&{:ok, &1})
+  end
+
+  defp upcoming_season_tournaments(season) do
+    from_datetime = DateTime.new!(season.starts_at, ~T[00:00:00], "Etc/UTC")
+    to_datetime = DateTime.new!(season.ends_at, ~T[23:59:59], "Etc/UTC")
+
+    Repo.all(
+      from(t in Tournament,
+        where: t.state == "upcoming" and t.grade != "open",
+        where: t.starts_at >= ^from_datetime and t.starts_at <= ^to_datetime,
+        order_by: t.id
+      )
+    )
+  end
+
+  defp update_tournament(tournament, params) do
+    changeset = Tournament.changeset(tournament, params)
+
+    cond do
+      changeset.changes == %{} ->
+        :unchanged
+
+      match?({:ok, _}, Repo.update(changeset)) ->
+        :updated
+
+      true ->
+        Logger.warning("Season tournament #{tournament.id} not updated: #{inspect(changeset.errors)}")
+        :failed
+    end
   end
 
   @doc """

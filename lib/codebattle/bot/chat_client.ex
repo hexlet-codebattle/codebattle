@@ -1,133 +1,100 @@
 defmodule Codebattle.Bot.ChatClient do
   @moduledoc """
-  Process for playing playbooks of tasks
+  What the bot says in a game chat, in the opponent's locale.
+
+  The bot can't read the chat, so it speaks only at the start and at the end of a
+  game: anything said in between lands next to people's messages and reads like a
+  confused reply.
   """
-  def send(chat_channel, :greet_opponent, _params) do
-    send_text(chat_channel, greet_opponent_text())
+  use Gettext, backend: CodebattleWeb.Gettext
+
+  alias Codebattle.Bot.Socket
+
+  @type message ::
+          :greet_opponent
+          | :excuse
+          | :congratulate_opponent
+          | :advice_on_give_up
+          | :invite_to_tournament
+
+  @spec send(Socket.channel(), message(), String.t(), map()) :: :ok
+  def send(chat_channel, type, locale, params \\ %{}) do
+    text = Gettext.with_locale(CodebattleWeb.Gettext, locale, fn -> text(type, params) end)
+    Socket.push_async(chat_channel, "chat:add_msg", %{"text" => text})
   end
 
-  def send(chat_channel, :congratulate_opponent, %{game_mode: game_mode}) do
-    send_text(chat_channel, congratulate_opponent_text(game_mode))
-  end
-
-  def send(chat_channel, :advice_on_give_up, _params) do
-    send_text(chat_channel, advice_on_give_up_text())
-  end
-
-  def send(chat_channel, :advice_on_win, _params) do
-    send_text(chat_channel, advice_on_win())
-  end
-
-  def send(chat_channel, :advice_on_check_complete_success, _params) do
-    send_text(chat_channel, advice_on_check_complete_success())
-  end
-
-  def send(chat_channel, :advice_on_check_complete_failure, _params) do
-    send_text(chat_channel, advice_on_check_complete_failure())
-  end
-
-  def send(chat_channel, :say_about_code, _params) do
-    send_text(chat_channel, say_about_code())
-  end
-
-  def send(chat_channel, :excuse, _params) do
-    send_text(chat_channel, excuse_text())
-  end
-
-  def send(chat_channel, :start_code, %{total_time_min: total_time_min}) do
-    send_text(chat_channel, start_code_text(total_time_min))
-  end
-
-  defp excuse_text do
+  @doc false
+  @spec text(message(), map()) :: String.t()
+  def text(:greet_opponent, %{total_time_min: minutes}) do
     Enum.random([
-      "You lucky. I don't have a clue, how solve it",
-      "Perhaps, you can solve this better than I can",
-      "Dame it!!!! It's hard task...",
-      "It's X0xl0ma, Argh!!! I knew she would do something",
-      "Irkin, fix me",
-      "Vtm, Master, Guide Me",
-      "Huge Lebowski, where are you man?!",
-      "Lera-Valera Help!!!111",
-      "RedBrother, HELP me, please!!!!",
-      "I seem to remember how to solve this task in Clojure...",
-      "Ruby or not to Ruby?..."
+      gettext("Hi! I'll solve this in about %{minutes} min. Think you can beat me?", minutes: minutes),
+      gettext("Hey! My solution will be ready in about %{minutes} min. Good luck!", minutes: minutes),
+      gettext("Let's go! I need about %{minutes} min for this one. Race you!", minutes: minutes)
     ])
   end
 
-  defp congratulate_opponent_text("training") do
-    "Congratulations! You win training game. Now you can register and fight for a place in the ranking."
-  end
-
-  defp congratulate_opponent_text(_) do
+  def text(:excuse, _params) do
     Enum.random([
-      "GG WP",
-      "Good job!",
-      "Well played!",
-      "Vtm, you are a bad teacher.",
-      "I'll be back next time!",
-      "I will return!!111",
-      "I'll get my revenge next time!"
+      gettext("This one is too tough for me. It's all yours!"),
+      gettext("I have no idea how to solve this one. Show me how it's done!")
     ])
   end
 
-  defp advice_on_give_up_text do
+  def text(:congratulate_opponent, %{game_mode: "training"}) do
+    gettext("Congratulations, you won the training game! Sign up to fight for a place in the ranking.")
+  end
+
+  def text(:congratulate_opponent, _params) do
     Enum.random([
-      "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!",
-      "Hey, there! Learn JS and be happy!",
-      "Maybe you should pick Ruby for this task?",
-      "You know that PHP has levenshtein distance calculation function?",
-      "You know that Ruby has functions for calculating complex numbers?"
+      gettext("GG WP!"),
+      gettext("Well played! I'll get my revenge next time."),
+      gettext("You got me this time. Good job!")
     ])
   end
 
-  defp advice_on_win do
-    Enum.random(["Nice shot!", "GG WP!", "Good job!", "Good one!", "Nice one!"])
-  end
-
-  defp advice_on_check_complete_success do
-    Enum.random(["Nice try", "Wow", "Easy", "Ez"])
-  end
-
-  defp advice_on_check_complete_failure do
-    Enum.random(["Oh snap", "Take it easy"])
-  end
-
-  defp greet_opponent_text do
+  def text(:advice_on_give_up, _params) do
     Enum.random([
-      "Hey, I'll join when you start writing code",
-      "Hey there! I will wait... Until you start coding.",
-      "I won't start writing code. Only after you :)"
+      gettext("Tough one? Give it another try, practice makes perfect!"),
+      gettext("No worries, the next task will be yours.")
     ])
   end
 
-  defp start_code_text(total_time_min) do
-    "I'll solve this task in about #{total_time_min} minutes. Good luck!"
+  def text(:invite_to_tournament, %{tournament_id: id, starts_at: starts_at} = params) do
+    url = "/tournaments/#{id}"
+    starts_in = starts_in(starts_at)
+
+    if params[:opponent_won] do
+      Enum.random([
+        gettext("GG! Beating a bot is a nice warm-up, now try real people. The next tournament starts %{when}: %{url}",
+          when: starts_in,
+          url: url
+        ),
+        gettext("You beat me! I bet you'd do great in a tournament too. The next one starts %{when}: %{url}",
+          when: starts_in,
+          url: url
+        )
+      ])
+    else
+      Enum.random([
+        gettext("Bots are fun, but people are more fun 😉 The next tournament starts %{when}: %{url}",
+          when: starts_in,
+          url: url
+        ),
+        gettext("Want a real challenge? Join the next tournament, it starts %{when}: %{url}",
+          when: starts_in,
+          url: url
+        )
+      ])
+    end
   end
 
-  defp say_about_code do
-    Enum.random([
-      "Your code looks very strange...",
-      "I'll be nice, once, then I won't",
-      "What did you just type? Looks strange...",
-      "What is this?...",
-      "Hmmmm...",
-      "Whaaaaat?...",
-      "¯\_(ツ)_/¯"
-    ])
-  end
+  defp starts_in(starts_at) do
+    minutes = max(DateTime.diff(starts_at, DateTime.utc_now(), :minute), 1)
 
-  # TODO: add this event
-  # defp time_is_up_message() do
-  #   [
-  #     "Sorry, can't wait much longer. I'll start now.",
-  #     "I'm done with waiting",
-  #     "Come on, time is running out",
-  #     "Tic-toc, time is up! "
-  #   ]
-  #   |> Enum.random()
-  # end
-
-  defp send_text(chat_channel, text) do
-    Codebattle.Bot.Socket.push_async(chat_channel, "chat:add_msg", %{"text" => text})
+    case {div(minutes, 60), rem(minutes, 60)} do
+      {0, minutes} -> gettext("in %{minutes} min", minutes: minutes)
+      {hours, 0} -> gettext("in %{hours} h", hours: hours)
+      {hours, minutes} -> gettext("in %{hours} h %{minutes} min", hours: hours, minutes: minutes)
+    end
   end
 end

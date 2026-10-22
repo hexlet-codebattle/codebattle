@@ -11,6 +11,13 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
   - Rookie: Every 3 hours at 0,3,6,9,12,15,18,21 UTC every day
 
   Priority: grand_slam > masters > elite > pro > challenger > rookie
+
+  Masters and Grand Slam are swiss (everyone plays every round on the curated task
+  pack); the rest are ladders.
+
+  Rookie to Elite tasks get harder round by round (`level_progression`): Rookie plays
+  elementary then easy; Challenger and Pro go elementary, easy, medium; Elite ends on one
+  hard task.
   """
 
   alias Codebattle.Season
@@ -24,7 +31,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
 
   @default_tournament_params %{
     creator_id: nil,
-    break_duration_seconds: 10,
+    break_duration_seconds: 5,
     timeout_mode: "per_task",
     round_timeout_seconds: 60,
     match_timeout_seconds: nil,
@@ -34,6 +41,8 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
     use_chat: true,
     use_timer: true
   }
+
+  @swiss_tournament_params Map.put(@default_tournament_params, :type, "swiss")
 
   # Grade configurations
   @grade_config %{
@@ -111,13 +120,13 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
             Map.merge(
               %{
                 name: "Rookie",
-                description: "Rookie tournament - easy tasks, grind-friendly",
+                description: "Rookie tournament - elementary and easy tasks, grind-friendly",
                 grade: "rookie",
                 starts_at: starts_at,
                 players_limit: @grade_config["rookie"].players_limit,
                 level: "easy",
-                task_provider: "level",
-                task_strategy: "random",
+                task_provider: "level_progression",
+                task_strategy: "sequential",
                 rounds_limit: @grade_config["rookie"].rounds_limit
               },
               @default_tournament_params
@@ -155,9 +164,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
               grade: "challenger",
               starts_at: starts_at,
               players_limit: @grade_config["challenger"].players_limit,
-              level: "easy",
-              task_provider: "level",
-              task_strategy: "random",
+              level: "medium",
+              task_provider: "level_progression",
+              task_strategy: "sequential",
               rounds_limit: @grade_config["challenger"].rounds_limit
             },
             @default_tournament_params
@@ -196,9 +205,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
               grade: "pro",
               starts_at: starts_at,
               players_limit: @grade_config["pro"].players_limit,
-              level: "easy",
-              task_provider: "level",
-              task_strategy: "random",
+              level: "medium",
+              task_provider: "level_progression",
+              task_strategy: "sequential",
               rounds_limit: @grade_config["pro"].rounds_limit
             },
             @default_tournament_params
@@ -234,9 +243,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
               grade: "elite",
               starts_at: starts_at,
               players_limit: @grade_config["elite"].players_limit,
-              level: "medium",
-              task_provider: "level",
-              task_strategy: "random",
+              level: "hard",
+              task_provider: "level_progression",
+              task_strategy: "sequential",
               rounds_limit: @grade_config["elite"].rounds_limit
             },
             @default_tournament_params
@@ -287,7 +296,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
               task_pack_name: task_pack_name,
               task_strategy: "sequential"
             },
-            @default_tournament_params
+            @swiss_tournament_params
           )
         )
       end)
@@ -323,7 +332,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
             task_strategy: "sequential",
             rounds_limit: @grade_config["grand_slam"].rounds_limit
           },
-          @default_tournament_params
+          @swiss_tournament_params
         )
       )
 
