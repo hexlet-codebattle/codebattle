@@ -391,38 +391,40 @@ defmodule Codebattle.Tournament.ContextTest do
       assert result == nil
     end
 
-    test "returns nil when tournament already started (in the past)" do
+    test "returns an upcoming tournament missed one minute ago" do
       # Tournament that should have started 1 minute ago
       starts_at =
         DateTime.utc_now()
         |> DateTime.add(-1, :minute)
         |> DateTime.truncate(:second)
 
-      insert(:tournament,
-        state: "upcoming",
-        grade: "rookie",
-        starts_at: starts_at
-      )
+      tournament =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
 
       result = Tournament.Context.get_upcoming_to_live_candidate(7)
-      assert result == nil
+      assert result.id == tournament.id
     end
 
-    test "returns nil when tournament started 1 second ago" do
-      # Tournament that started 1 second ago
+    test "returns an upcoming tournament missed one second ago" do
+      # Tournament whose start was missed 1 second ago
       starts_at =
         DateTime.utc_now()
         |> DateTime.add(-1, :second)
         |> DateTime.truncate(:second)
 
-      insert(:tournament,
-        state: "upcoming",
-        grade: "rookie",
-        starts_at: starts_at
-      )
+      tournament =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
 
       result = Tournament.Context.get_upcoming_to_live_candidate(7)
-      assert result == nil
+      assert result.id == tournament.id
     end
 
     test "ignores open grade tournaments" do

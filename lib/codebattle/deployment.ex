@@ -307,7 +307,7 @@ defmodule Codebattle.Deployment do
   end
 
   defp ensure_tournament_started(tournament) do
-    case Tournament.GlobalSupervisor.start_tournament(tournament) do
+    case Tournament.GlobalSupervisor.start_tournament(tournament, restoring: true) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _pid}} -> :ok
       {:error, {:already_present, _child}} -> :ok

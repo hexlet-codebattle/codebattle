@@ -21,13 +21,13 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
     Supervisor.init([], strategy: :one_for_one)
   end
 
-  def start_tournament(tournament) do
+  def start_tournament(tournament, opts \\ []) do
     Supervisor.start_child(
       __MODULE__,
       %{
         id: to_string(tournament.id),
         restart: :transient,
-        start: {Tournament.Supervisor, :start_link, [tournament]}
+        start: {Tournament.Supervisor, :start_link, [tournament, opts]}
       }
     )
   end

@@ -124,19 +124,26 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
+  @doc """
+  The earliest upcoming grade tournament within the given number of minutes of
+  now, including overdue starts within that window after a missed poll/restart.
+  Older schedules are left alone.
+  """
   @spec get_upcoming_to_live_candidate(non_neg_integer()) :: Tournament.t() | nil
   def get_upcoming_to_live_candidate(starts_at_delay_mins) do
     now = DateTime.utc_now(:second)
     delay_time = DateTime.add(now, starts_at_delay_mins, :minute)
+    # Recover a missed poll/restart without reviving old season schedules.
+    earliest_start = DateTime.add(now, -starts_at_delay_mins, :minute)
 
     Repo.one(
       from(t in Tournament,
         limit: 1,
-        order_by: t.id,
+        order_by: [t.starts_at, t.id],
         where:
           t.state == "upcoming" and
             t.grade != "open" and
-            t.starts_at >= ^now and
+            t.starts_at >= ^earliest_start and
             t.starts_at <= ^delay_time
       )
     )
@@ -837,7 +844,7 @@ defmodule Codebattle.Tournament.Context do
   end
 
   defp ensure_tournament_started(tournament) do
-    case Tournament.GlobalSupervisor.start_tournament(tournament) do
+    case Tournament.GlobalSupervisor.start_tournament(tournament, restoring: true) do
       {:ok, _pid} -> :ok
       {:error, {reason, _child}} when reason in [:already_started, :already_present] -> :ok
       {:error, reason} -> {:error, reason}

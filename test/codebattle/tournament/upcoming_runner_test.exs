@@ -5,8 +5,8 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
   alias Codebattle.Tournament.UpcomingRunner
 
   describe "run_upcoming/0" do
-    test "moves upcoming tournament to live when starts_at is within 7 minutes" do
-      # Create a tournament that starts in 6 minutes (within the 7-minute threshold)
+    test "moves upcoming tournament to live when starts_at is within 10 minutes" do
+      # Create a tournament that starts in 6 minutes (within the 10-minute threshold)
       starts_at =
         DateTime.utc_now()
         |> DateTime.add(6, :minute)
@@ -28,8 +28,8 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
       assert updated_tournament.state == "waiting_participants"
     end
 
-    test "does not move upcoming tournament to live when starts_at is more than 7 minutes away" do
-      # Create a tournament that starts in 8 minutes (outside the 7-minute threshold)
+    test "does not move upcoming tournament to live when starts_at is more than 10 minutes away" do
+      # Create a tournament that starts in 11 minutes (outside the 10-minute threshold)
       starts_at =
         DateTime.utc_now()
         |> DateTime.add(11, :minute)
@@ -155,21 +155,42 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
       assert result == nil
     end
 
-    test "returns nil when tournament already started (in the past)" do
-      # Tournament that should have started 1 minute ago
-      starts_at =
-        DateTime.utc_now()
-        |> DateTime.add(-1, :minute)
-        |> DateTime.truncate(:second)
+    test "recovers an upcoming tournament whose start was missed" do
+      tournament =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: DateTime.add(DateTime.utc_now(:second), -1, :minute)
+        )
 
+      assert Tournament.Context.get_upcoming_to_live_candidate(7).id == tournament.id
+    end
+
+    test "does not revive an old missed tournament" do
       insert(:tournament,
         state: "upcoming",
         grade: "rookie",
-        starts_at: starts_at
+        starts_at: DateTime.add(DateTime.utc_now(:second), -1, :hour)
       )
 
-      result = Tournament.Context.get_upcoming_to_live_candidate(7)
-      assert result == nil
+      assert Tournament.Context.get_upcoming_to_live_candidate(10) == nil
+    end
+
+    test "prioritizes scheduled time over insertion order" do
+      insert(:tournament,
+        state: "upcoming",
+        grade: "rookie",
+        starts_at: DateTime.add(DateTime.utc_now(:second), 5, :minute)
+      )
+
+      earlier =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "pro",
+          starts_at: DateTime.add(DateTime.utc_now(:second), 1, :minute)
+        )
+
+      assert Tournament.Context.get_upcoming_to_live_candidate(10).id == earlier.id
     end
 
     test "ignores open grade tournaments" do

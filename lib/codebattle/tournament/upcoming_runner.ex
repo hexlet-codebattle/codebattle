@@ -1,7 +1,8 @@
 defmodule Codebattle.Tournament.UpcomingRunner do
   @moduledoc """
-  This module is responsible for running every minute tournaments from schedule
-  and for canceling tournaments that stayed in waiting_participants for too long
+  Polls scheduled tournaments every 15 seconds, opening registration 10 minutes
+  before starts_at and recovering starts missed by up to 10 minutes. Also cancels
+  tournaments that stayed in waiting_participants for too long.
   """
   use GenServer
 

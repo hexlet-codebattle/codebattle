@@ -49,8 +49,8 @@ defmodule Codebattle.Tournament.Server do
     :results_synced_round_position
   ]
   # API
-  def start_link(tournament_id) do
-    GenServer.start_link(__MODULE__, tournament_id, name: server_name(tournament_id))
+  def start_link(tournament_id, opts \\ []) do
+    GenServer.start_link(__MODULE__, {tournament_id, opts}, name: server_name(tournament_id))
   end
 
   @doc "Writes a pending debounced snapshot now (before a graceful stop)."
@@ -176,7 +176,9 @@ defmodule Codebattle.Tournament.Server do
   end
 
   # SERVER
-  def init(tournament_id) do
+  def init(tournament_id) when is_integer(tournament_id), do: init({tournament_id, []})
+
+  def init({tournament_id, opts}) do
     if :ets.whereis(@tournament_info_table) == :undefined do
       :ets.new(@tournament_info_table, [
         :set,
@@ -201,7 +203,6 @@ defmodule Codebattle.Tournament.Server do
     db_tournament = Tournament.Context.get_from_db!(tournament_id)
     # Players live in ETS; the jsonb snapshot maps are kept out of the state so that
     # get_tournament calls and task closures don't copy them.
-    snapshot_players_count = map_size(db_tournament.players || %{})
 
     tournament =
       db_tournament
@@ -213,11 +214,6 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:tasks_table, tasks_table)
       |> plan_ladder()
 
-    if tournament.grade != "open" and tournament.state == "waiting_participants" do
-      time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
-      Process.send_after(self(), :start_grade_tournament, max(time_diff_ms, 0))
-    end
-
     update_tournament_info_cache(tournament)
 
     if restarted? and tournament.state in ["waiting_participants", "active"] do
@@ -225,7 +221,7 @@ defmodule Codebattle.Tournament.Server do
     end
 
     {:ok,
-     %{
+     schedule_grade_start(%{
        tournament: tournament,
        frozen: false,
        break_timer_expired: false,
@@ -233,8 +229,9 @@ defmodule Codebattle.Tournament.Server do
        matchmaking_timer_ref: nil,
        matchmaking_timer_kind: nil,
        persist_timer_ref: nil,
-       snapshot_players_count: snapshot_players_count
-     }}
+       grade_start_timer_ref: nil,
+       restoring_players: Keyword.get(opts, :restoring, false) or restarted?
+     })}
   end
 
   def handle_cast({:fire_event, event_type, params}, state) do
@@ -257,7 +254,7 @@ defmodule Codebattle.Tournament.Server do
       update_tournament_info_cache(merged_tournament)
 
       broadcast_tournament_update(merged_tournament)
-      {:reply, :ok, %{state | tournament: merged_tournament}}
+      {:reply, :ok, schedule_grade_start(%{state | tournament: merged_tournament})}
     end
   end
 
@@ -298,7 +295,9 @@ defmodule Codebattle.Tournament.Server do
       |> load_ets_snapshot(Map.get(snapshot, :ets, %{}))
 
     update_tournament_info_cache(imported_tournament)
-    {:reply, :ok, %{state | tournament: imported_tournament, frozen: false}}
+
+    {:reply, :ok,
+     schedule_grade_start(%{state | tournament: imported_tournament, frozen: false, restoring_players: false})}
   end
 
   def handle_call({:finish_round_after, round_position, timeout_in_seconds}, _from, state) do
@@ -443,8 +442,17 @@ defmodule Codebattle.Tournament.Server do
     if state.frozen do
       defer_message(:start_grade_tournament, "start_grade_tournament", state)
     else
-      maybe_start_grade_tournament(tournament, Map.get(state, :snapshot_players_count, 0))
-      {:noreply, %{state | tournament: tournament}}
+      cond do
+        state.restoring_players ->
+          {:noreply, state}
+
+        DateTime.after?(tournament.starts_at, DateTime.utc_now()) ->
+          {:noreply, schedule_grade_start(state)}
+
+        true ->
+          maybe_start_grade_tournament(tournament)
+          {:noreply, state}
+      end
     end
   end
 
@@ -688,17 +696,27 @@ defmodule Codebattle.Tournament.Server do
 
   def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
 
-  # Only a tournament still waiting may auto-start/cancel. players_count is virtual and
-  # is 0 right after a boot/crash restore, so count from ETS and the persisted snapshot.
-  defp maybe_start_grade_tournament(%{state: "waiting_participants"} = tournament, snapshot_players_count) do
-    if max(players_count(tournament), snapshot_players_count) > 0 do
-      cast_event(tournament.id, :start, %{})
-    else
-      cast_event(tournament.id, :cancel, %{})
-    end
+  # Re-arm after edits and imports. Queued messages recheck starts_at so an old
+  # timer cannot start a tournament early after its schedule changes.
+  defp schedule_grade_start(%{tournament: tournament} = state) do
+    if state.grade_start_timer_ref, do: Process.cancel_timer(state.grade_start_timer_ref)
+
+    timer_ref =
+      if tournament.grade != "open" and tournament.state == "waiting_participants" and
+           not state.restoring_players do
+        delay = max(DateTime.diff(tournament.starts_at, DateTime.utc_now(), :millisecond), 0)
+        Process.send_after(self(), :start_grade_tournament, delay)
+      end
+
+    %{state | grade_start_timer_ref: timer_ref}
   end
 
-  defp maybe_start_grade_tournament(_tournament, _snapshot_players_count), do: :noop
+  defp maybe_start_grade_tournament(%{grade: grade, state: "waiting_participants"} = tournament) when grade != "open" do
+    event = if players_count(tournament) > 0, do: :start, else: :cancel
+    cast_event(tournament.id, event, %{})
+  end
+
+  defp maybe_start_grade_tournament(_tournament), do: :noop
 
   defp retry_missing_match(%{payload: payload} = message, %{tournament: tournament} = state) do
     retries = Map.get(message, :retries, 0)

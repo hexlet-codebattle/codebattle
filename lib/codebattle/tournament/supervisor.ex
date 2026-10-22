@@ -2,11 +2,11 @@ defmodule Codebattle.Tournament.Supervisor do
   @moduledoc false
   use Supervisor
 
-  def start_link(tournament) do
-    Supervisor.start_link(__MODULE__, [tournament], name: supervisor_name(tournament.id))
+  def start_link(tournament, opts \\ []) do
+    Supervisor.start_link(__MODULE__, [tournament, opts], name: supervisor_name(tournament.id))
   end
 
-  def init([tournament]) do
+  def init([tournament, opts]) do
     children = [
       %{
         id: "Codebattle.Tournament.TaskSupervisor.#{tournament.id}",
@@ -16,7 +16,7 @@ defmodule Codebattle.Tournament.Supervisor do
       %{
         id: "Codebattle.Tournament.Server.#{tournament.id}",
         restart: :transient,
-        start: {Codebattle.Tournament.Server, :start_link, [tournament.id]}
+        start: {Codebattle.Tournament.Server, :start_link, [tournament.id, opts]}
       },
       %{
         id: "Codebattle.Chat.Tournament.#{tournament.id}",
