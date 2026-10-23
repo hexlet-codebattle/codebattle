@@ -65,7 +65,7 @@ defmodule Codebattle.MixProject do
       {:bcrypt_elixir, "~> 3.0"},
       {:cachex, "~> 4.1"},
       {:chromic_pdf, "~> 1.17"},
-      {:delta, github: "slab/delta-elixir"},
+      {:delta, "~> 0.4.2"},
       {:diff_match_patch, "~> 0.3.0"},
       {:mdex, "~> 0.14.2"},
       {:ecto_psql_extras, "~> 0.2"},
