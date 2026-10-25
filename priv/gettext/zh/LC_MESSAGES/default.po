@@ -5039,7 +5039,7 @@ msgid "Tournament"
 msgstr "锦标赛"
 
 msgid "Join Discord"
-msgstr "加入不和谐"
+msgstr "加入 Discord"
 
 msgid "Pause"
 msgstr "暂停"
