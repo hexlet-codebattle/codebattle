@@ -171,7 +171,7 @@ msgid "Master sound"
 msgstr "主音"
 
 msgid "Profile"
-msgstr "公司简介"
+msgstr "个人资料"
 
 msgid "Manage your public identity and coding preferences."
 msgstr "管理您的公共身份和编码偏好。"
@@ -619,7 +619,7 @@ msgid "Timeout"
 msgstr "超时"
 
 msgid "Playing"
-msgstr "演奏"
+msgstr "对局中"
 
 msgid "Canceled"
 msgstr "取消"
@@ -682,7 +682,7 @@ msgid "Direct duel history with profile links, live status, and every shared gam
 msgstr "通过个人资料链接、实时状态和每个共享游戏直接查看决斗历史记录。"
 
 msgid "Matches"
-msgstr "火柴"
+msgstr "对局"
 
 msgid "No winner"
 msgstr "没有赢家"
@@ -745,7 +745,7 @@ msgid "Time"
 msgstr "时间"
 
 msgid "Lang"
-msgstr "郎"
+msgstr "语言"
 
 msgid "Date"
 msgstr "日期"
@@ -1507,7 +1507,7 @@ msgid "Medium"
 msgstr "中等"
 
 msgid "Hard"
-msgstr "硬"
+msgstr "困难"
 
 msgid "Tournament: %{name}"
 msgstr "比赛：%{name}"
@@ -1669,7 +1669,7 @@ msgid "Report on player"
 msgstr "举报玩家"
 
 msgid "Reporter"
-msgstr "记者"
+msgstr "举报人"
 
 msgid "Reports"
 msgstr "报告"
@@ -1814,7 +1814,7 @@ msgid "Edit layout"
 msgstr "编辑布局"
 
 msgid "Editor height"
-msgstr "编辑身高"
+msgstr "编辑器高度"
 
 msgid "Editor mode"
 msgstr "编辑器模式"
@@ -1880,7 +1880,7 @@ msgid "Open H2H"
 msgstr "开放式在线"
 
 msgid "Open Record Player"
-msgstr "打开电唱机"
+msgstr "打开对局回放器"
 
 msgid "Other actions"
 msgstr "其他行动"
@@ -2093,7 +2093,7 @@ msgid "Timing"
 msgstr "时机"
 
 msgid "Uniform"
-msgstr "制服"
+msgstr "等间隔"
 
 msgid "Want to subscribe?"
 msgstr "想订阅吗？"
@@ -2135,7 +2135,7 @@ msgid "AVG Tests"
 msgstr "平均测试"
 
 msgid "AVG Tests:"
-msgstr "平均电压测试："
+msgstr "平均测试次数："
 
 msgid "AVG Duration:"
 msgstr "平均持续时间："
@@ -2402,7 +2402,7 @@ msgid "Hide bots"
 msgstr "隐藏机器人"
 
 msgid "ID"
-msgstr "身份证号"
+msgstr "ID"
 
 msgid "Language"
 msgstr "语言"
