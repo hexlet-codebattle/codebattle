@@ -71,9 +71,22 @@ interface LeaderboardTableProps {
   caption?: string;
 }
 
-/** Season standings: search, clan/language filters, sortable field-name columns, paging, "find me". */
+/** Season standings: search, clan/language filters, sortable columns, paging, "find me". */
 export function LeaderboardTable({ results, onInsights, title, caption }: LeaderboardTableProps) {
   const { t } = useTranslation();
+  const labels: Record<Column, string> = {
+    place: t('Place'),
+    user_name: t('Player'),
+    clan_name: t('Clan'),
+    total_points: t('Points'),
+    total_wins_count: t('Wins'),
+    total_games_count: t('Games'),
+    total_score: t('Score'),
+    tournaments_count: t('Tournaments'),
+    avg_place: t('Avg Place'),
+    best_place: t('Best Finish'),
+    total_time: t('Time Played'),
+  };
   const { current_user: me } = useSharedProps();
   const [query, setQuery] = useState('');
   const [clan, setClan] = useState<string | null>(null);
@@ -199,17 +212,17 @@ export function LeaderboardTable({ results, onInsights, title, caption }: Leader
           <Table.Thead>
             <Table.Tr>
               <SortTh column="place" sort={sort} onSort={toggle} w={70}>
-                place
+                {labels.place}
               </SortTh>
               <SortTh column="user_name" sort={sort} onSort={toggle}>
-                user_name
+                {labels.user_name}
               </SortTh>
               <SortTh column="clan_name" sort={sort} onSort={toggle}>
-                clan_name
+                {labels.clan_name}
               </SortTh>
               {NUMERIC.map((column) => (
                 <SortTh key={column} column={column} sort={sort} onSort={toggle} ta="right">
-                  {column}
+                  {labels[column]}
                 </SortTh>
               ))}
               <Table.Th w={44} />
