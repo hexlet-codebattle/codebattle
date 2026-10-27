@@ -2217,7 +2217,7 @@ msgid "Best"
 msgstr "Mejor"
 
 msgid "Best Finish"
-msgstr "Mejor acabado"
+msgstr "Mejor puesto"
 
 msgid "Better than %{percent}% of players"
 msgstr "Mejor que el %{percent}% de los jugadores"

@@ -2147,7 +2147,7 @@ msgid "Best"
 msgstr "最佳"
 
 msgid "Best Finish"
-msgstr "最佳完成度"
+msgstr "最佳排名"
 
 msgid "Better than %{percent}% of players"
 msgstr "优于 %{percent}% 的玩家"
@@ -5129,7 +5129,7 @@ msgid "Total number of teams %{count}"
 msgstr "团队总数%{count}"
 
 msgid "Place"
-msgstr "地点"
+msgstr "排名"
 
 msgid "Score"
 msgstr "分数"
