@@ -273,6 +273,26 @@ defmodule CodebattleWeb.GameControllerTest do
     end
   end
 
+  describe "POST games/:id/ml/reviews" do
+    test "only moderators can record a decision; it is hidden from ordinary viewers", %{conn: conn} do
+      [first, second] = insert_list(2, :user)
+      admin = insert(:admin)
+      {:ok, game} = Game.Context.create_game(%{state: "game_over", players: [first, second], task: insert(:task)})
+      assert {:ok, _} = Game.BotDetection.analyze_and_persist(game.id)
+      attrs = %{user_id: first.id, outcome: "legitimate", reason: "Checked the replay and Vim commands"}
+      forbidden = conn |> log_in_user(first.id) |> post("/games/#{game.id}/ml/reviews", attrs)
+      assert response(forbidden, 403)
+      saved = conn |> log_in_user(admin.id) |> post("/games/#{game.id}/ml/reviews", attrs)
+      assert redirected_to(saved) == "/games/#{game.id}/ml"
+      public = conn |> log_in_user(first.id) |> get("/games/#{game.id}/ml")
+      assert inertia_props(public)["reviews"] == []
+      private = conn |> log_in_user(admin.id) |> get("/games/#{game.id}/ml")
+      assert [%{outcome: "legitimate"}] = inertia_props(private)["reviews"]
+      invalid = conn |> log_in_user(admin.id) |> post("/games/#{game.id}/ml/reviews", %{user_id: "invalid"})
+      assert response(invalid, 422)
+    end
+  end
+
   describe "GET games/:id/ml" do
     test "opens the report for any user once the game is over, without Re-analyze", %{conn: conn} do
       [first, second] = insert_list(2, :user)

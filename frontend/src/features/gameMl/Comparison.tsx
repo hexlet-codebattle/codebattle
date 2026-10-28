@@ -47,9 +47,22 @@ function PlayerHeader({ column }: { column: MlColumn }) {
   const { t } = useTranslation();
   const { player } = column;
   const report = player.report;
-  const risk = RISK[report?.level ?? 'none'] ?? RISK.none;
+  const hasActivity = report?.stats && (report.stats.total_key_events > 0 || report.stats.total_content_changes > 0);
+  const risk = hasActivity ? RISK[report?.level ?? 'none'] ?? RISK.none : { label: 'Insufficient telemetry', color: 'gray' };
   const score = report?.score ?? 0;
   const signals = report?.signals ?? [];
+  const qualityIssues: Record<string, string> = {
+    missing_batch_identity: t('Missing telemetry batch identity'),
+    missing_batch_sequence: t('Missing telemetry batches'),
+    multiple_collector_sessions: t('Multiple editor sessions'),
+    incomplete_edit_coverage: t('Incomplete edit coverage'),
+    excluded_post_game_batches: t('Batches outside competitive play excluded'),
+    legacy_collector: t('Legacy telemetry'),
+    inconsistent_key_timing: t('Conflicting timing counters'),
+    outside_game_window: t('Timing exceeds game duration'),
+    overlapping_key_windows: t('Overlapping telemetry windows'),
+    incomplete_key_boundaries: t('Missing key timing boundaries'),
+  };
 
   return (
     <div className={classes.playerHead} style={colorStyle(column.color)}>
@@ -73,17 +86,19 @@ function PlayerHeader({ column }: { column: MlColumn }) {
           </Stack>
         </Group>
         {report && (
-          <Tooltip label={t('Risk score: 1+ low, 5+ suspicious, 10+ likely bot')}>
+          <Tooltip label={t('Heuristic score, not a probability. 5+ suggests review; 10+ indicates stronger signals.')}>
             <Stack gap={4} align="flex-end">
               <Badge size="md" variant="light" color={risk.color}>
                 {t(risk.label)}
               </Badge>
-              <Group gap={6} wrap="nowrap">
-                <Progress value={Math.min(100, (score / HIGH_SCORE) * 100)} color={risk.color} size="sm" w={64} aria-label={t('Risk score')} />
-                <Text size="xs" c="dimmed" ff="monospace">
-                  {score}
-                </Text>
-              </Group>
+              {(hasActivity || score > 0) && (
+                <Group gap={6} wrap="nowrap">
+                  <Progress value={Math.min(100, (score / HIGH_SCORE) * 100)} color={risk.color} size="sm" w={64} aria-label={t('Risk score')} />
+                  <Text size="xs" c="dimmed" ff="monospace">
+                    {score}
+                  </Text>
+                </Group>
+              )}
             </Stack>
           </Tooltip>
         )}
@@ -95,9 +110,18 @@ function PlayerHeader({ column }: { column: MlColumn }) {
         </Text>
       )}
 
-      {report && !report.stats && (
-        <Alert variant="light" color="orange" icon={<IconAlertTriangle size={16} />} py={6} mt="sm" title={t('No telemetry batches recorded.')}>
-          {t('Either the player never typed, or their solution was injected via WebSocket without using the editor.')}
+      {report && !hasActivity && (
+        <Alert variant="light" color="orange" icon={<IconAlertTriangle size={16} />} py={6} mt="sm" title={t('Insufficient telemetry')}>
+          {t('Missing telemetry does not establish automation. Check the replay for connection gaps and editor activity.')}
+        </Alert>
+      )}
+
+      {hasActivity && Boolean(report?.stats?.quality_issues?.length) && (
+        <Alert variant="light" color="gray" icon={<IconInfoCircle size={16} />} py={6} mt="sm" title={t('Telemetry limitations')}>
+          <Text size="xs">{t('Unreliable timing features are excluded from scoring.')}</Text>
+          <Text size="xs" c="dimmed">
+            {report?.stats?.quality_issues?.map((issue) => qualityIssues[issue] ?? t('Incomplete telemetry')).join(', ')}
+          </Text>
         </Alert>
       )}
 
@@ -105,14 +129,17 @@ function PlayerHeader({ column }: { column: MlColumn }) {
         <Alert variant="light" color={risk.color} icon={<IconAlertTriangle size={16} />} py={6} mt="sm" title={t('Signals')}>
           {/* Reasons are the risk scorer's English text. */}
           <ul className={classes.signals}>
-            {signals.map((signal) => (
-              <li key={signal}>{signal}</li>
+            {(report?.evidence?.length ? report.evidence : signals.map(message => ({ message, code: 'legacy', weight: 0, replay_offset_ms: null }))).map((signal, index) => (
+              <li key={`${signal.code}-${index}`}>
+                {signal.message}
+                {signal.replay_offset_ms != null && <> · {Math.round(signal.replay_offset_ms / 1000)} s</>}
+              </li>
             ))}
           </ul>
         </Alert>
       )}
 
-      {report && report.stats && signals.length === 0 && (
+      {hasActivity && signals.length === 0 && (
         <Group gap={6} mt="sm" c="dimmed">
           <IconInfoCircle size={14} />
           <Text size="xs">{t('No signals.')}</Text>
@@ -181,15 +208,15 @@ function useMetricGroups(): MetricGroup[] {
           },
           { label: t('Effective added length'), cell: report((r) => count(r.effective_added_length)) },
           {
-            label: t('Typed coverage'),
-            help: t('Chars typed in the editor against the code added on top of the template.'),
+            label: t('Recorded edit coverage'),
+            help: t('Gross inserted characters compared with final added length. Includes editor assistance and repeated replacements.'),
             cell: report((r) => {
               const added = r.effective_added_length ?? 0;
               const typed = r.stats?.total_chars_inserted;
               if (!isNum(typed) || added <= 0) return { value: '—' };
               const coverage = typed / added;
               const low = added >= 60 && coverage < 0.6;
-              return { value: `${(coverage * 100).toFixed(0)}%`, bar: coverage, warn: low, hint: low ? t('low → likely injected/pasted') : undefined };
+              return { value: `${(coverage * 100).toFixed(0)}%`, bar: coverage, warn: low, hint: low ? t('Incomplete telemetry or unrecorded edits') : undefined };
             }),
           },
           { label: t('Total chars / lines'), cell: code((c) => ({ value: pair(c.total_chars, c.total_lines), bar: c.total_chars })) },
@@ -205,7 +232,7 @@ function useMetricGroups(): MetricGroup[] {
               const phrases = c.gpt_phrase_matches ?? [];
               return {
                 ...count(c.gpt_phrase_hits),
-                warn: phrases.length > 0,
+
                 hint: phrases.length > 0 ? `“${phrases.slice(0, 2).join('”, “')}”${phrases.length > 2 ? ', …' : ''}` : undefined,
               };
             }),
@@ -216,7 +243,7 @@ function useMetricGroups(): MetricGroup[] {
         title: t('Keystrokes'),
         rows: [
           { label: t('Batches'), cell: stats((s) => count(s.batch_count)) },
-          { label: t('Total events'), cell: stats((s) => ({ ...count(s.total_events), hint: `${(s.events_per_sec ?? 0).toFixed(2)}/s` })) },
+          { label: t('Total events'), cell: stats((s) => ({ ...count(s.total_events), hint: s.timing_reliable === false ? undefined : `${(s.events_per_sec ?? 0).toFixed(2)}/s` })) },
           { label: t('Key events'), cell: stats((s) => count(s.total_key_events)) },
           { label: t('Printable keys'), cell: stats((s) => count(s.total_printable_keys)) },
           {
@@ -224,13 +251,18 @@ function useMetricGroups(): MetricGroup[] {
             cell: stats((s) => ({
               value: pair(s.total_chars_inserted, s.total_chars_deleted),
               bar: s.total_chars_inserted,
-              hint: t('%{rate} ins/s', { rate: (s.chars_per_sec ?? 0).toFixed(2) }),
+              hint: s.timing_reliable === false ? undefined : t('%{rate} ins/s', { rate: (s.chars_per_sec ?? 0).toFixed(2) }),
             })),
           },
           {
             label: t('Assisted chars / completions'),
             help: t('Inserted by the editor for a keystroke: auto-indent, closing brackets, accepted autocomplete. Not counted as pasted.'),
             cell: stats((s) => ({ value: pair(s.total_assisted_chars, s.total_completion_inserts), bar: s.total_assisted_chars ?? 0 })),
+          },
+          {
+            label: t('Editor command inserts'),
+            help: t('Edits attributed to editor commands, including Vim. An origin hint, not proof of fair play.'),
+            cell: stats((s) => count(s.total_command_inserts)),
           },
           {
             label: t('Pasted chars'),
@@ -254,13 +286,13 @@ function useMetricGroups(): MetricGroup[] {
       {
         title: t('Timing and edits'),
         rows: [
-          { label: t('Session length'), cell: stats((s) => ({ value: formatMs(s.elapsed_ms), bar: s.elapsed_ms })) },
-          { label: t('Avg key delta'), cell: stats((s) => ({ value: formatMs(s.avg_key_delta_ms), bar: s.avg_key_delta_ms })) },
+          { label: t('Session length'), cell: stats((s) => s.timing_reliable === false ? { value: '—' } : { value: formatMs(s.elapsed_ms), bar: s.elapsed_ms }) },
+          { label: t('Avg key delta'), cell: stats((s) => s.timing_reliable === false ? { value: '—' } : { value: formatMs(s.avg_key_delta_ms), bar: s.avg_key_delta_ms }) },
           {
             label: t('Min / Max key delta'),
-            cell: stats((s) => ({ value: `${formatMs(s.min_key_delta_ms)} / ${formatMs(s.max_key_delta_ms)}`, bar: s.max_key_delta_ms })),
+            cell: stats((s) => s.timing_reliable === false ? { value: '—' } : { value: `${formatMs(s.min_key_delta_ms)} / ${formatMs(s.max_key_delta_ms)}`, bar: s.max_key_delta_ms }),
           },
-          { label: t('Idle pauses >2s'), cell: stats((s) => count(s.total_idle_pauses)) },
+          { label: t('Idle pauses >2s'), cell: stats((s) => s.idle_pauses_reliable ? count(s.total_idle_pauses) : { value: '—' }) },
           {
             label: t('Multi-char inserts / deletes'),
             cell: stats((s) => ({ value: pair(s.total_multi_char_inserts, s.total_multi_char_deletes), bar: s.total_multi_char_inserts })),
@@ -272,19 +304,16 @@ function useMetricGroups(): MetricGroup[] {
               value: pair(s.max_single_insert_len, s.max_single_delete_len),
               bar: s.max_single_insert_len,
               warn: s.max_single_insert_len >= 8,
-              hint: s.max_single_insert_len >= 8 ? t('≥8 → likely paste') : undefined,
+              hint: s.max_single_insert_len >= 8 ? t('Bulk edit; review its origin') : undefined,
             })),
           },
           { label: t('Large inserts (≥50)'), cell: stats((s) => ({ ...count(s.total_large_inserts), warn: s.total_large_inserts > 0 })) },
           {
             label: t('Content changes / printable keys'),
             cell: stats((s) => {
-              const programmatic = s.total_content_changes > s.total_printable_keys + 1;
               return {
                 value: pair(s.total_content_changes, s.total_printable_keys),
                 bar: s.total_content_changes,
-                warn: programmatic,
-                hint: programmatic ? t('more changes than keys → programmatic') : undefined,
               };
             }),
           },
@@ -294,11 +323,11 @@ function useMetricGroups(): MetricGroup[] {
         title: t('Focus and the server copy'),
         rows: [
           {
-            label: t('Left the game / time away'),
-            help: t('Switches to another tab or window while playing.'),
+            label: t('Page focus loss / time unfocused'),
+            help: t('Browser focus or visibility changes, including other windows and dialogs. Context only; does not affect the score.'),
             cell: stats((s) =>
-              isNum(s.total_blurs)
-                ? { value: `${formatNumber(s.total_blurs)} / ${formatMs(s.total_away_ms)}`, bar: s.total_away_ms ?? 0, warn: (s.total_away_ms ?? 0) >= 30_000 }
+              s.focus_tracked && isNum(s.total_blurs)
+                ? { value: `${formatNumber(s.total_blurs)} / ${formatMs(s.total_away_ms)}`, bar: s.total_away_ms ?? 0 }
                 : { value: '—' },
             ),
           },
@@ -309,11 +338,11 @@ function useMetricGroups(): MetricGroup[] {
           },
           {
             label: t('Largest jump between updates'),
-            help: t('Most characters (not counting spaces) one update added. Typing adds a few; a big jump without a paste was not typed.'),
+            help: t('Most inserted characters (excluding spaces) in one received update. Connection gaps, undo and editor commands can also produce large updates.'),
             cell: report((r) => {
               if (!r.editor_history) return { value: '—' };
               const jump = r.editor_history.max_jump;
-              return { ...count(jump), warn: jump >= 80, hint: jump >= 80 ? t('≥80 → not typed') : undefined };
+              return { ...count(jump), warn: jump >= 80, hint: jump >= 80 ? t('Large update; check the replay') : undefined };
             }),
           },
         ],

@@ -96,6 +96,23 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
+  def review(conn, %{"id" => id} = params) do
+    if User.admin_or_moderator?(conn.assigns.current_user) do
+      with {game_id, ""} when game_id > 0 <- Integer.parse(id),
+           {user_id, ""} when user_id > 0 <- Integer.parse(to_string(params["user_id"])),
+           {:ok, _review} <- BotDetection.Review.record(conn.assigns.current_user, game_id, user_id, params) do
+        redirect(conn, to: Routes.game_path(conn, :ml, id))
+      else
+        _ ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> text("A report, outcome and reason of at least 10 characters are required")
+      end
+    else
+      conn |> put_status(:forbidden) |> text("Forbidden")
+    end
+  end
+
   defp render_ml_for_game(conn, game, user, params) do
     can_manage = User.admin_or_moderator?(user)
 
@@ -114,6 +131,7 @@ defmodule CodebattleWeb.GameController do
     |> render_inertia("GameMl", %{
       "game_id" => game.id,
       "can_manage" => can_manage,
+      "reviews" => if(can_manage, do: BotDetection.Review.list(game.id), else: []),
       "players" => Enum.map(players, &serialize_ml_player(&1, analyses_by_user)),
       "batches" => Enum.map(batches, &serialize_batch/1)
     })
@@ -136,8 +154,8 @@ defmodule CodebattleWeb.GameController do
       rank: Map.get(player, :rank),
       lang: Map.get(player, :editor_lang) || Map.get(player, :lang),
       is_bot: Map.get(player, :is_bot, false),
-      editor_text: Map.get(player, :editor_text),
-      editor_lang: Map.get(player, :editor_lang),
+      editor_text: if(analysis, do: analysis.final_text, else: Map.get(player, :editor_text)),
+      editor_lang: if(analysis, do: analysis.final_lang, else: Map.get(player, :editor_lang)),
       report: serialize_analysis(analysis)
     }
   end
@@ -149,6 +167,7 @@ defmodule CodebattleWeb.GameController do
       score: a.score,
       level: Atom.to_string(a.level),
       signals: a.signals,
+      evidence: a.evidence,
       stats: a.stats,
       code_analysis: a.code_analysis,
       editor_history: a.editor_history,

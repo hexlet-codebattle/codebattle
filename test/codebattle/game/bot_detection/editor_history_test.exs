@@ -7,6 +7,17 @@ defmodule Codebattle.Game.BotDetection.EditorHistoryTest do
   defp update(id, text, lang \\ "js"), do: %{type: :update_editor_data, id: id, editor_text: text, editor_lang: lang}
 
   describe "summarize_records/2 — live (raw) records" do
+    test "post-game practice updates are excluded at the first completion marker" do
+      records = [
+        %{type: :init, id: 1, editor_text: "", editor_lang: "js"},
+        %{type: :update_editor_data, id: 1, editor_text: "abc", editor_lang: "js"},
+        %{type: :game_over},
+        %{type: :update_editor_data, id: 1, editor_text: String.duplicate("x", 500), editor_lang: "js"}
+      ]
+
+      assert %{1 => %{updates: 1, max_jump: 3}} = EditorHistory.summarize_records(records)
+    end
+
     test "typing adds a few chars per update" do
       records = [
         init(1, "const solution = () => {\n};"),
@@ -61,6 +72,15 @@ defmodule Codebattle.Game.BotDetection.EditorHistoryTest do
     test "added_chars counts the inserted middle without whitespace" do
       assert EditorHistory.added_chars("ab", "a  x y\nb") == 2
       assert EditorHistory.added_chars("same", "same") == 0
+    end
+
+    test "separate small edits do not count the unchanged code between them" do
+      middle = String.duplicate("unchanged_code();\n", 50)
+      before = "let first = 1;\n" <> middle <> "let last = 2;"
+      next = "let first = 3;\n" <> middle <> "let last = 4;"
+
+      assert EditorHistory.added_chars(before, next) == 2
+      assert %{1 => %{max_jump: 2}} = EditorHistory.summarize_records([init(1, before), update(1, next)])
     end
 
     test "added_chars keeps multi-byte characters whole" do

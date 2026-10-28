@@ -82,7 +82,7 @@ defmodule Codebattle.Game.EditorEventBatch do
   def create(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(on_conflict: :nothing)
   end
 
   def list_by_game(game_id) do
@@ -90,6 +90,24 @@ defmodule Codebattle.Game.EditorEventBatch do
     |> where([batch], batch.game_id == ^game_id)
     |> order_by([batch], asc: batch.inserted_at, asc: batch.id)
     |> Repo.all()
+  end
+
+  @doc "The immutable batches included in an analysis (including the empty case)."
+  def snapshot(batches) do
+    %{
+      "count" => length(batches),
+      "last_id" => batches |> Enum.map(&(Map.get(&1, :id) || 0)) |> Enum.max(fn -> 0 end)
+    }
+  end
+
+  @doc "Current batch snapshots per player without loading the JSON payloads."
+  def snapshots_by_user(game_id) do
+    __MODULE__
+    |> where([b], b.game_id == ^game_id)
+    |> group_by([b], b.user_id)
+    |> select([b], {b.user_id, count(b.id), max(b.id)})
+    |> Repo.all()
+    |> Map.new(fn {user_id, count, last_id} -> {user_id, %{"count" => count, "last_id" => last_id}} end)
   end
 
   defp validate_window_offsets(changeset) do

@@ -1,5 +1,5 @@
-import { Head } from '@inertiajs/react';
-import { Alert, Button, Stack } from '@mantine/core';
+import { Head, router } from '@inertiajs/react';
+import { Alert, Button, NativeSelect, NumberInput, Paper, Stack, Textarea } from '@mantine/core';
 import { IconAlertTriangle, IconArrowLeft, IconRefresh } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,12 +18,13 @@ interface GameMlProps {
   can_manage?: boolean;
   players: MlPlayer[];
   batches: MlBatch[];
+  reviews?: { id: number; user_id: number; reviewer_id: number; outcome: string; reason: string; replay_offset_ms: number | null }[];
 }
 
 /** Bot/human signal review of a game: each player's risk report from editor telemetry. */
 export default function GameMl() {
   const { t } = useTranslation();
-  const { game_id: gameId, can_manage: canManage = false, players = [], batches = [] } = useSharedProps<GameMlProps>();
+  const { game_id: gameId, can_manage: canManage = false, players = [], batches = [], reviews = [] } = useSharedProps<GameMlProps>();
 
   // One column per player, left to right: verdict, per-batch charts, the metrics head to head, code.
   const columns = useMemo<MlColumn[]>(() => {
@@ -43,7 +44,7 @@ export default function GameMl() {
       <PageHeader
         title={t('Game #%{id}: bot/human signal review', { id: gameId })}
         subtitle={t(
-          'Higher risk score / more signals → more bot-like. Always confirm by playing back the editor history. Reports are computed once and cached; Re-analyze forces a fresh run.',
+          'Review aid, not a bot verdict. Missing signals do not prove fair play. Confirm against the replay before taking action.',
         )}
         actions={
           <>
@@ -69,6 +70,28 @@ export default function GameMl() {
           <BatchCharts columns={columns} />
           <VersusTable columns={columns} />
           <CodeColumns columns={columns} />
+          {canManage && players.filter(player => !player.is_bot).map(player => (
+            <form key={player.id} onSubmit={event => {
+              event.preventDefault();
+              const data = Object.fromEntries(new FormData(event.currentTarget));
+              router.post(`/games/${gameId}/ml/reviews`, { ...data, user_id: player.id });
+            }}>
+              <Paper withBorder p="md"><Stack gap="xs">
+                <strong>{t('Moderator review')}: {player.name}</strong>
+                <NativeSelect name="outcome" label={t('Outcome')} required data={[
+                  { value: 'inconclusive', label: t('Inconclusive') },
+                  { value: 'legitimate', label: t('Legitimate') },
+                  { value: 'confirmed_assistance', label: t('Confirmed unauthorized assistance') },
+                ]} />
+                <NumberInput label={t('Replay position (ms)')} name="replay_offset_ms" min={0} allowDecimal={false} />
+                <Textarea label={t('Reason')} name="reason" required minLength={10} maxLength={5000} />
+                <Button type="submit">{t('Save review')}</Button>
+                {reviews.filter(review => review.user_id === player.id).map(review => (
+                  <div key={review.id}>{review.outcome}: {review.reason} ({t('Reviewer')} #{review.reviewer_id}, {review.replay_offset_ms ?? '—'} ms)</div>
+                ))}
+              </Stack></Paper>
+            </form>
+          ))}
         </Stack>
       )}
     </AppLayout>

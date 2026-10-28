@@ -29,6 +29,10 @@ defmodule Codebattle.Game.Context do
   @active_game_candidates_limit 20
 
   @allowed_summary_integer_fields ~w(
+    batch_sequence collector_version
+    first_key_offset_ms
+    last_key_offset_ms
+    command_insert_count
     key_event_count
     printable_key_count
     modifier_shortcut_count
@@ -426,14 +430,32 @@ defmodule Codebattle.Game.Context do
             "window_end_offset_ms" => end_offset
           },
           fn key, acc ->
-            Map.put(acc, key, summary |> map_get(key) |> normalize_non_negative_integer())
+            maybe_put_summary_integer(acc, key, map_get(summary, key))
           end
         )
         # Deleting more than inserting makes it negative.
         |> Map.put("net_text_delta", summary |> map_get("net_text_delta") |> normalize_integer())
+        |> maybe_put_string("collector_session", map_get(summary, "collector_session"), 64)
+        |> Map.put("edit_evidence", sanitize_edit_evidence(map_get(summary, "edit_evidence")))
         |> maybe_put_string("lang_slug", map_get(summary, "lang_slug"), 32)
     end
   end
+
+  defp sanitize_edit_evidence(events) when is_list(events) do
+    events
+    |> Enum.take(100)
+    |> Enum.filter(&is_map/1)
+    |> Enum.map(fn event ->
+      Map.new(~w(offset_ms inserted_chars assisted_chars paste_chars printable_keys), fn key ->
+        {key, normalize_non_negative_integer(map_get(event, key))}
+      end)
+    end)
+  end
+
+  defp sanitize_edit_evidence(_), do: []
+
+  defp maybe_put_summary_integer(acc, _key, nil), do: acc
+  defp maybe_put_summary_integer(acc, key, value), do: Map.put(acc, key, normalize_non_negative_integer(value))
 
   defp get_editor_batch_bounds(game, start_offset_ms, end_offset_ms) do
     anchor = get_editor_batch_anchor(game)

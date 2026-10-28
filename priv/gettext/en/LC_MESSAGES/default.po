@@ -5058,3 +5058,12 @@ msgstr "Hardest level"
 
 msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
 msgstr "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
+
+msgid "Season tournaments"
+msgstr "Season tournaments"
+
+msgid "Custom tournaments"
+msgstr "Custom tournaments"
+
+msgid "No open custom tournaments right now."
+msgstr "No open custom tournaments right now."

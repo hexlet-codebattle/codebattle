@@ -19,16 +19,24 @@ defmodule Codebattle.Game.BotDetection.BatchAggregator do
   every batch reports them, so the scorer needs no blanket paste discount.
   """
 
+  alias Codebattle.Game.BotDetection.TelemetryQuality
+
   @type batch :: map()
   @type stats :: map()
 
   @doc "Returns the aggregated stats map, or `nil` for an empty batch list."
-  @spec aggregate([batch()]) :: stats() | nil
-  def aggregate([]), do: nil
+  @spec aggregate([batch()], keyword()) :: stats() | nil
+  def aggregate(batches, opts \\ [])
+  def aggregate([], _opts), do: nil
 
-  def aggregate(batches) when is_list(batches) do
+  def aggregate(batches, opts) when is_list(batches) do
+    batches = Enum.sort_by(batches, &num(summary(&1), "window_start_offset_ms"))
+    quality = batches |> Enum.map(&summary/1) |> TelemetryQuality.analyze(opts)
+    gaps = quality.boundary_deltas
+    initial = {Enum.sum(gaps), length(gaps), Enum.min(gaps, fn -> nil end), Enum.max(gaps, fn -> 0 end)}
+
     {weighted_avg_numer, weighted_avg_denom, min_key_delta_acc, max_key_delta_acc} =
-      Enum.reduce(batches, {0, 0, nil, 0}, fn batch, {wa_n, wa_d, min_d, max_d} ->
+      Enum.reduce(batches, initial, fn batch, {wa_n, wa_d, min_d, max_d} ->
         s = summary(batch)
         samples = num(s, "key_delta_sample_count")
         avg = num(s, "avg_key_delta_ms")
@@ -74,13 +82,20 @@ defmodule Codebattle.Game.BotDetection.BatchAggregator do
       total_paste_attempts: sum(batches, "paste_shortcut_attempt_count"),
       total_assisted_chars: sum(batches, "assisted_chars"),
       total_completion_inserts: sum(batches, "completion_insert_count"),
+      total_command_inserts: sum(batches, "command_insert_count"),
       total_paste_chars: sum(batches, "paste_chars"),
       paste_tracked: Enum.all?(batches, &Map.has_key?(summary(&1), "paste_chars")),
+      focus_tracked:
+        Enum.all?(batches, &(Map.has_key?(summary(&1), "blur_count") and Map.has_key?(summary(&1), "away_ms"))),
       total_blurs: sum(batches, "blur_count"),
       total_away_ms: sum(batches, "away_ms"),
       total_copy_shortcuts: sum(batches, "copy_shortcut_count"),
       total_cut_shortcuts: sum(batches, "cut_shortcut_count"),
-      total_idle_pauses: sum(batches, "idle_pause_over_2s_count"),
+      total_idle_pauses: sum(batches, "idle_pause_over_2s_count") + Enum.count(gaps, &(&1 >= 2_000)),
+      timing_reliable: quality.timing_reliable,
+      idle_pauses_reliable: quality.idle_pauses_reliable,
+      quality_issues: quality.quality_issues,
+      collector_versions: quality.collector_versions,
       total_backspace: sum(batches, "backspace_count"),
       total_delete: sum(batches, "delete_count"),
       total_arrows: sum(batches, "arrow_key_count"),
@@ -100,7 +115,7 @@ defmodule Codebattle.Game.BotDetection.BatchAggregator do
     }
   end
 
-  def aggregate(_), do: nil
+  def aggregate(_, _opts), do: nil
 
   # ── internals ─────────────────────────────────────────────────────────
 

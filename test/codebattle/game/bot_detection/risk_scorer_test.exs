@@ -33,6 +33,34 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
     Enum.any?(result.signals, &String.contains?(&1, substring))
   end
 
+  test "a paste in a separate window cannot discount an unexplained edit" do
+    paste = batch(%{"chars_inserted" => 200, "paste_chars" => 200, "paste_shortcut_attempt_count" => 1})
+    injected = batch(%{"chars_inserted" => 100, "printable_key_count" => 0, "key_event_count" => 0})
+    result = RiskScorer.score(%{stats: aggregate([paste, injected]), batches: [paste, injected]})
+    assert result.level == :high
+    assert Enum.any?(result.evidence, &(&1.code == "unexplained_insertions"))
+  end
+
+  test "modern evidence explains only the matching edit and preserves its replay offset" do
+    explained = %{
+      "offset_ms" => 1000,
+      "inserted_chars" => 200,
+      "assisted_chars" => 200,
+      "paste_chars" => 0,
+      "printable_keys" => 1
+    }
+
+    unexplained = %{explained | "offset_ms" => 5000, "assisted_chars" => 0}
+    b = batch(%{"collector_version" => 3, "edit_evidence" => [explained, unexplained]})
+    result = RiskScorer.score(%{stats: aggregate([b]), batches: [b], editor_history: %{max_jump: 200}})
+    assert [evidence] = result.evidence
+    assert evidence.code == "unexplained_edit"
+    assert evidence.replay_offset_ms == 5000
+    assert result.score == 8
+    b = batch(%{"collector_version" => 3, "edit_evidence" => [explained]})
+    assert RiskScorer.score(%{stats: aggregate([b]), batches: [b], editor_history: %{max_jump: 200}}).score == 0
+  end
+
   # ──────────────────────────────────────────────────────────────────────
   # Genuine humans — must NOT be flagged
   # ──────────────────────────────────────────────────────────────────────
@@ -65,13 +93,12 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
   # ──────────────────────────────────────────────────────────────────────
   # Tier 1 — programmatic injection
   # ──────────────────────────────────────────────────────────────────────
-  describe "WebSocket-only bot (no telemetry batches at all)" do
-    test "flagged as :high when no telemetry but solution > template" do
+  describe "Missing telemetry" do
+    test "missing batches cannot distinguish injection from a collection failure" do
       result = score(nil, final_length: 300, template_length: 170)
-      assert result.level == :high
-      assert result.score >= 10
-      assert signal_present?(result, "No keyboard telemetry recorded")
-      assert signal_present?(result, "via WebSocket without typing")
+      assert result.level == :none
+      assert result.score == 0
+      assert result.signals == []
     end
 
     test "not flagged when no telemetry and no real solution either" do
@@ -89,8 +116,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
 
       assert result.level == :high
       assert result.score >= 12
-      assert signal_present?(result, "looks programmatic")
-      assert signal_present?(result, "AI/extension/autotyper")
+      assert signal_present?(result, "unexplained edit window")
+      assert signal_present?(result, "review the replay and input method")
     end
   end
 
@@ -114,7 +141,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
       result = score(stats, final_length: 250, template_length: 170)
 
       assert result.level in [:medium, :high]
-      assert signal_present?(result, "fully programmatic")
+      assert signal_present?(result, "zero recorded keypresses")
     end
   end
 
@@ -246,7 +273,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
 
       # Effective = 100 - 20 = 80; typed = 20 → 25% coverage
       result = score(stats, final_length: 100, template_length: 20)
-      assert signal_present?(result, "typed 20 chars but added 80 chars")
+      refute signal_present?(result, "recorded edits cover 20 of 80 added chars")
     end
 
     test "moderate coverage (30–59%) emits a softer signal" do
@@ -261,7 +288,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
         ])
 
       result = score(stats, final_length: 120, template_length: 20)
-      assert signal_present?(result, "possible large paste")
+      refute signal_present?(result, "telemetry may be incomplete")
     end
 
     test "no signal when effective length < 60 (template ≈ final)" do
@@ -271,7 +298,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
         ])
 
       result = score(stats, final_length: 175, template_length: 170)
-      refute signal_present?(result, "possible large paste")
+      refute signal_present?(result, "telemetry may be incomplete")
       refute signal_present?(result, "typed")
     end
   end
@@ -293,15 +320,16 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
   # Tier 2 — LLM-style content
   # ──────────────────────────────────────────────────────────────────────
   describe "GPT-style code (English)" do
-    test "high comment ratio + many GPT phrases → flagged" do
+    test "comment style alone cannot reach the review threshold" do
       code = CodeAnalyzer.analyze(gpt_style_code())
       stats = aggregate(human_batches(count: 4, chars_per_batch: 40, keys_per_batch: 40))
 
       result = score(stats, code: code, final_length: 800, template_length: 170)
 
-      assert result.score >= 10
-      assert signal_present?(result, "GPT-style phrase")
-      assert signal_present?(result, "comment")
+      assert result.score == 0
+      assert result.level == :none
+      refute signal_present?(result, "GPT-style phrase")
+      refute signal_present?(result, "comment")
     end
   end
 
@@ -312,8 +340,9 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
 
       result = score(stats, code: code, final_length: 800, template_length: 170)
 
-      assert signal_present?(result, "GPT-style phrase")
-      assert result.score >= 5
+      refute signal_present?(result, "GPT-style phrase")
+      assert result.score <= 4
+      assert result.level == :none
     end
   end
 
@@ -339,8 +368,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
 
       result = score(%{}, code: code, final_length: 200, template_length: 100)
 
-      assert signal_present?(result, "high comment ratio")
-      assert signal_present?(result, "1 GPT-style phrase")
+      refute signal_present?(result, "high comment ratio")
+      refute signal_present?(result, "1 GPT-style phrase")
     end
 
     test "low comment ratios and no GPT phrases add no content signals" do
@@ -419,7 +448,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
         ])
 
       result = score(stats)
-      assert signal_present?(result, "zero idle pauses")
+      refute signal_present?(result, "zero idle pauses")
     end
   end
 
@@ -438,7 +467,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
         ])
 
       result = score(stats)
-      assert signal_present?(result, "no backspace/delete")
+      refute signal_present?(result, "no backspace/delete")
     end
 
     test "a short solution typed without mistakes → not flagged" do
@@ -501,7 +530,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
         ])
 
       result = score(stats)
-      assert signal_present?(result, "looks programmatic")
+      assert signal_present?(result, "unexplained edit window")
       refute signal_present?(result, "could be self-paste")
     end
 
@@ -513,18 +542,13 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
     end
   end
 
-  describe "Leaving the game" do
-    test "a short look away is fine" do
-      stats = aggregate([batch(%{"blur_count" => 2, "away_ms" => 10_000})])
-      refute signal_present?(score(stats), "left the game")
-    end
-
-    test "half a minute away is a weak signal, minutes a stronger one" do
-      short = score(aggregate([batch(%{"blur_count" => 1, "away_ms" => 40_000})]))
-      long = score(aggregate([batch(%{"blur_count" => 3, "away_ms" => 180_000})]))
-
-      assert signal_present?(short, "left the game 1 time(s), 40 s away")
-      assert long.score > short.score
+  describe "Browser focus is context only" do
+    test "neither brief nor long focus loss adds suspicion" do
+      for away <- [10_000, 40_000, 180_000] do
+        result = score(aggregate([batch(%{"blur_count" => 3, "away_ms" => away})]))
+        assert result.score == 0
+        assert result.signals == []
+      end
     end
   end
 
@@ -533,13 +557,13 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
       result = score(aggregate([batch(%{"paste_chars" => 0})]), history: %{updates: 10, max_jump: 150})
 
       assert signal_present?(result, "150 chars arrived in one editor update")
-      assert signal_present?(result, "not typed in the editor")
+      assert signal_present?(result, "review the replay and connection gaps")
       assert result.level in [:medium, :high]
     end
 
     test "flagged even without any telemetry" do
       result = score(nil, history: %{"updates" => 3, "max_jump" => 120})
-      assert signal_present?(result, "not typed in the editor")
+      assert signal_present?(result, "review the replay and connection gaps")
     end
 
     test "a paste of own code that big explains it" do
@@ -548,8 +572,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
           history: %{updates: 10, max_jump: 150}
         )
 
-      assert signal_present?(result, "explained by pasting")
-      refute signal_present?(result, "not typed in the editor")
+      assert signal_present?(result, "editor update")
+      assert result.score == 8
     end
 
     test "an undo makes it only a maybe" do
@@ -558,7 +582,7 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
           history: %{updates: 10, max_jump: 150}
         )
 
-      assert signal_present?(result, "maybe an undo")
+      assert signal_present?(result, "editor update")
     end
 
     test "small jumps (typing, completions) are ignored" do
@@ -597,6 +621,58 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
       stats = aggregate([batch(%{"multi_line_insert_count" => 1, "enter_count" => 1, "assisted_chars" => 4})])
 
       assert signal_present?(score(stats), "1 multi-line insert")
+    end
+  end
+
+  describe "Independent evidence and false-positive regressions" do
+    test "one large multiline edit is not counted as multiple independent signals" do
+      stats = aggregate(human_batches(count: 3, chars_per_batch: 100, keys_per_batch: 100))
+      stats = Map.merge(stats, %{total_large_inserts: 1, total_multi_line_inserts: 1, max_single_insert_len: 80})
+
+      result = score(stats, history: %{updates: 30, max_jump: 80})
+
+      assert result.score == 8
+      assert result.level == :medium
+      assert signal_present?(result, "large insert")
+      assert signal_present?(result, "multi-line insert")
+    end
+
+    test "many bulk counters alone cannot become high risk by repetition" do
+      stats = aggregate(human_batches(count: 3, chars_per_batch: 100, keys_per_batch: 100))
+      stats = Map.merge(stats, %{total_large_inserts: 100, total_multi_line_inserts: 100})
+      assert score(stats).score == 8
+    end
+
+    test "tracked self-paste with no keydowns is not programmatic injection" do
+      stats =
+        aggregate([
+          batch(%{
+            "key_event_count" => 0,
+            "printable_key_count" => 0,
+            "chars_inserted" => 200,
+            "paste_chars" => 200,
+            "content_change_count" => 1,
+            "multi_char_delete_count" => 1
+          })
+        ])
+
+      assert score(stats, history: %{updates: 4, max_jump: 200}).score == 8
+    end
+
+    test "editor-assisted edits explain an editor jump even with no keydowns" do
+      stats =
+        aggregate([
+          batch(%{
+            "key_event_count" => 0,
+            "printable_key_count" => 0,
+            "chars_inserted" => 200,
+            "assisted_chars" => 200,
+            "content_change_count" => 1,
+            "multi_char_delete_count" => 1
+          })
+        ])
+
+      assert score(stats, history: %{updates: 4, max_jump: 200}).score == 8
     end
   end
 

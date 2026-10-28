@@ -5,7 +5,7 @@ import { useLatest } from '@/shared/useLatest';
 import type { EditorTelemetry } from './CodeEditor';
 import { addEvent, EVENT_LIMIT, finalize, WINDOW_MS } from './telemetry';
 
-type Send = (summary: NonNullable<ReturnType<typeof finalize>>, lang: string) => void;
+type Send = (summary: NonNullable<ReturnType<typeof finalize>> & { collector_session: string; batch_sequence: number }, lang: string) => void;
 
 /**
  * Collects my editor's telemetry into windows (≤ 10 s / ≤ 100 events, one language each)
@@ -13,6 +13,8 @@ type Send = (summary: NonNullable<ReturnType<typeof finalize>>, lang: string) =>
  */
 export function useEditorTelemetry({ enabled, lang, startedAtMs, send }: { enabled: boolean; lang: string; startedAtMs: number; send: Send }) {
   const windowRef = useRef<ReturnType<typeof addEvent> | null>(null);
+  const collectorSession = useRef(crypto.randomUUID());
+  const sequence = useRef(0);
   const timer = useRef<number | null>(null);
   const sendRef = useLatest(send);
 
@@ -23,7 +25,7 @@ export function useEditorTelemetry({ enabled, lang, startedAtMs, send }: { enabl
     }
     const summary = finalize(windowRef.current);
     windowRef.current = null;
-    if (summary) sendRef.current(summary, summary.lang_slug);
+    if (summary) sendRef.current({ ...summary, collector_session: collectorSession.current, batch_sequence: sequence.current++ }, summary.lang_slug);
   }, [sendRef]);
 
   const add = useCallback(

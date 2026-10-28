@@ -2,9 +2,8 @@ defmodule Codebattle.Game.BotDetection.EditorHistory do
   @moduledoc """
   The server's own record of each player's editor: the text updates it received
   (`editor:data`, sent by the client at most every 250 ms), replayed from the
-  game's playbook. Unlike the client telemetry it can't be faked by sending
-  made-up summaries: code that shows up here without the keystrokes to match was
-  not typed in the editor.
+  game's playbook. This confirms what code reached the server, not how it was
+  entered: network gaps, undo and editor commands can also create large updates.
 
   Per player it reports how many updates came in and the largest jump: the most
   non-whitespace characters one update added. Language switches and resets to
@@ -25,17 +24,32 @@ defmodule Codebattle.Game.BotDetection.EditorHistory do
   @doc "A `summary` per player id, for players with editor records in the game."
   @spec summarize(map()) :: %{optional(integer()) => summary()}
   def summarize(game) do
-    game
-    |> records()
-    |> summarize_records(Map.get(game, :task))
+    snapshot(game).summaries
+  end
+
+  @doc "Read the replay once, keeping code and evidence at the same competitive boundary."
+  def snapshot(game) do
+    records = records(game)
+    completed = Map.get(game, :state) in ["game_over", "timeout"]
+
+    markers =
+      if completed and is_nil(Map.get(game, :tournament_id)),
+        do: ["game_over", "timeout", "give_up"],
+        else: ["game_over", "timeout"]
+
+    competitive = Enum.take_while(records, &(type(&1) not in markers))
+    {texts, summaries} = Enum.reduce(competitive, {%{}, %{}}, &replay(&1, &2, Map.get(game, :task)))
+    %{texts: texts, summaries: summaries}
   end
 
   @doc "Same, from records in playbook order (oldest first)."
   @spec summarize_records([map()], map() | nil) :: %{optional(integer()) => summary()}
   def summarize_records(records, task \\ nil) do
-    {_texts, summaries} = Enum.reduce(records, {%{}, %{}}, &replay(&1, &2, task))
+    {_texts, summaries} = Enum.reduce(competitive_records(records), {%{}, %{}}, &replay(&1, &2, task))
     summaries
   end
+
+  defp competitive_records(records), do: Enum.take_while(records, &(type(&1) not in ["game_over", "timeout"]))
 
   # `texts`: each player's editor text and language so far.
   defp replay(record, {texts, summaries}, task) do
@@ -43,7 +57,7 @@ defmodule Codebattle.Game.BotDetection.EditorHistory do
       {"init", id} when not is_nil(id) ->
         {Map.put(texts, id, {get(record, :editor_text) || "", get(record, :editor_lang)}), summaries}
 
-      {"update_editor_data", id} when not is_nil(id) ->
+      {kind, id} when kind in ["update_editor_data", "check_complete"] and not is_nil(id) ->
         {before, lang} = Map.get(texts, id, {"", nil})
         {next, next_lang} = next_text(record, before, lang)
         {Map.put(texts, id, {next, next_lang}), count_update(summaries, id, jump(before, next, lang, next_lang, task))}
@@ -103,27 +117,16 @@ defmodule Codebattle.Game.BotDetection.EditorHistory do
     IO.iodata_to_binary([Enum.reverse(out), rest])
   end
 
-  # Non-whitespace characters of the text that replaced the changed middle part.
+  # Inserted non-whitespace characters; unchanged text between separate edits is excluded.
   @doc false
   def added_chars(before, next) do
-    prefix = char_start(next, :binary.longest_common_prefix([before, next]), -1)
-    max_suffix = min(byte_size(before), byte_size(next)) - prefix
-    suffix = min(:binary.longest_common_suffix([before, next]), max_suffix)
-    # The common parts are byte runs: move both cuts to character starts.
-    suffix = byte_size(next) - char_start(next, byte_size(next) - suffix, 1)
-    middle = binary_part(next, prefix, byte_size(next) - prefix - suffix)
-
-    middle |> String.split() |> Enum.join() |> String.length()
+    before
+    |> String.myers_difference(next)
+    |> Enum.reduce(0, fn
+      {:ins, text}, count -> count + (text |> String.split() |> Enum.join() |> String.length())
+      _, count -> count
+    end)
   end
-
-  # The nearest offset (stepping by `step`) that doesn't fall inside a UTF-8 character.
-  defp char_start(text, offset, step) do
-    if offset > 0 and offset < byte_size(text) and continuation?(:binary.at(text, offset)),
-      do: char_start(text, offset + step, step),
-      else: offset
-  end
-
-  defp continuation?(byte), do: Bitwise.band(byte, 0xC0) == 0x80
 
   defp template?(_text, nil, _lang), do: false
   defp template?(_text, _task, nil), do: false

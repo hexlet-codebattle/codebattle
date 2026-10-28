@@ -1,10 +1,10 @@
 import type { RiskLevel } from './types';
 
 export const RISK: Record<RiskLevel, { label: string; color: string }> = {
-  none: { label: 'Looks human', color: 'green' },
-  low: { label: 'Low risk', color: 'blue' },
-  medium: { label: 'Suspicious', color: 'orange' },
-  high: { label: 'Likely bot', color: 'red' },
+  none: { label: 'No suspicious signals', color: 'gray' },
+  low: { label: 'Weak signals', color: 'blue' },
+  medium: { label: 'Review suggested', color: 'orange' },
+  high: { label: 'Strong signals', color: 'red' },
 };
 
 /** The score at which the risk scorer says "high" (RiskScorer.classify/1). */

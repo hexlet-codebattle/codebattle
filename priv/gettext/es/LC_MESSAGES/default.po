@@ -7217,8 +7217,8 @@ msgstr ""
 "Obtenga una vista previa de una tarea accesible antes de comenzar. Tu "
 "oponente de práctica es un robot."
 
-msgid "Write it. Run it."
-msgstr "Escríbelo. Ejecútalo."
+msgid "Write code and run tests"
+msgstr "Escribe código y ejecuta las pruebas"
 
 msgid ""
 "Fill in the solution and run the tests. Use the results to improve your "
@@ -7552,3 +7552,132 @@ msgstr "Nivel máximo"
 
 msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
 msgstr "Las rondas se vuelven más difíciles: primero elementales, luego fáciles y medias. Con Duro, la última ronda es difícil."
+
+msgid "No suspicious signals"
+msgstr "Sin señales sospechosas"
+
+msgid "Weak signals"
+msgstr "Señales débiles"
+
+msgid "Review suggested"
+msgstr "Se recomienda revisar"
+
+msgid "Strong signals"
+msgstr "Señales fuertes"
+
+msgid "Insufficient telemetry"
+msgstr "Telemetría insuficiente"
+
+msgid "Heuristic score, not a probability. 5+ suggests review; 10+ indicates stronger signals."
+msgstr "Puntuación heurística, no una probabilidad. Desde 5 se recomienda revisar; desde 10 hay señales más fuertes."
+
+msgid "Missing telemetry does not establish automation. Check the replay for connection gaps and editor activity."
+msgstr "La falta de telemetría no demuestra automatización. Revisa la repetición para comprobar cortes de conexión y actividad en el editor."
+
+msgid "Bulk edit; review its origin"
+msgstr "Edición en bloque; revisa su origen"
+
+msgid "Page focus loss / time unfocused"
+msgstr "Pérdidas de foco / tiempo sin foco"
+
+msgid "Browser focus or visibility changes, including other windows and dialogs. Context only; does not affect the score."
+msgstr "Cambios de foco o visibilidad del navegador, incluidas otras ventanas y diálogos. Solo contexto; no afectan a la puntuación."
+
+msgid "Most inserted characters (excluding spaces) in one received update. Connection gaps, undo and editor commands can also produce large updates."
+msgstr "Máximo de caracteres insertados, sin espacios, en una actualización recibida. Los cortes de conexión, deshacer y los comandos del editor también pueden producir actualizaciones grandes."
+
+msgid "Large update; check the replay"
+msgstr "Actualización grande; revisa la repetición"
+
+msgid "Review aid, not a bot verdict. Missing signals do not prove fair play. Confirm against the replay before taking action."
+msgstr "Ayuda para la revisión, no un veredicto de bot. La ausencia de señales no demuestra juego limpio. Comprueba la repetición antes de tomar medidas."
+
+msgid "Fair play review"
+msgstr "Revisión de juego limpio"
+
+msgid "Season tournaments"
+msgstr "Torneos de temporada"
+
+msgid "Custom tournaments"
+msgstr "Torneos personalizados"
+
+msgid "No open custom tournaments right now."
+msgstr "No hay torneos personalizados abiertos en este momento."
+
+msgid "Legacy telemetry"
+msgstr "Telemetría antigua"
+
+msgid "Conflicting timing counters"
+msgstr "Contadores de tiempo contradictorios"
+
+msgid "Timing exceeds game duration"
+msgstr "El tiempo registrado supera la duración de la partida"
+
+msgid "Overlapping telemetry windows"
+msgstr "Ventanas de telemetría superpuestas"
+
+msgid "Missing key timing boundaries"
+msgstr "Faltan los límites de tiempo de las pulsaciones"
+
+msgid "Telemetry limitations"
+msgstr "Limitaciones de la telemetría"
+
+msgid "Unreliable timing features are excluded from scoring."
+msgstr "Los indicadores de tiempo poco fiables se excluyen de la puntuación."
+
+msgid "Incomplete telemetry"
+msgstr "Telemetría incompleta"
+
+msgid "Recorded edit coverage"
+msgstr "Cobertura de ediciones registradas"
+
+msgid "Gross inserted characters compared with final added length. Includes editor assistance and repeated replacements."
+msgstr "Total de caracteres insertados frente a la longitud final añadida. Incluye ayuda del editor y sustituciones repetidas."
+
+msgid "Incomplete telemetry or unrecorded edits"
+msgstr "Telemetría incompleta o ediciones no registradas"
+
+msgid "Editor command inserts"
+msgstr "Inserciones de comandos del editor"
+
+msgid "Edits attributed to editor commands, including Vim. An origin hint, not proof of fair play."
+msgstr "Ediciones atribuidas a comandos del editor, incluido Vim. Una pista de origen, no una prueba de juego limpio."
+
+msgid "Missing telemetry batch identity"
+msgstr "Falta la identidad del lote de telemetría"
+
+msgid "Missing telemetry batches"
+msgstr "Faltan lotes de telemetría"
+
+msgid "Multiple editor sessions"
+msgstr "Varias sesiones del editor"
+
+msgid "Incomplete edit coverage"
+msgstr "Registro de cambios incompleto"
+
+msgid "Batches outside competitive play excluded"
+msgstr "Se excluyeron lotes fuera de la partida"
+
+msgid "Moderator review"
+msgstr "Revisión del moderador"
+
+msgid "Outcome"
+msgstr "Resultado de la revisión"
+
+msgid "Inconclusive"
+msgstr "No concluyente"
+
+msgid "Legitimate"
+msgstr "Juego legítimo"
+
+msgid "Confirmed unauthorized assistance"
+msgstr "Asistencia no autorizada confirmada"
+
+msgid "Replay position (ms)"
+msgstr "Posición de la repetición (ms)"
+
+msgid "Save review"
+msgstr "Guardar revisión"
+
+msgid "Reviewer"
+msgstr "Revisor"

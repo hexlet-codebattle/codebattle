@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Card, Group, Popover, SimpleGrid, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { ActionIcon, Badge, Button, Card, Group, Popover, SimpleGrid, Stack, Tabs, Text, Title, Tooltip } from '@mantine/core';
 import { useInterval } from '@mantine/hooks';
 import { IconCalendarUser, IconClockFilled, IconHistory, IconInfoCircle, IconPlus, IconUsers, IconUserStar } from '@tabler/icons-react';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
@@ -184,6 +184,8 @@ export function Tournaments({ isAdmin }: { isAdmin: boolean }) {
       ({ state }) => state !== 'finished' && state !== 'canceled',
     );
   }, [live, upcoming]);
+  const seasonTournaments = tournaments.filter(({ grade }) => grade !== 'open');
+  const customTournaments = tournaments.filter(({ grade }) => grade === 'open');
 
   return (
     <Stack gap="sm">
@@ -201,19 +203,48 @@ export function Tournaments({ isAdmin }: { isAdmin: boolean }) {
           </Button>
         </Group>
       </Stack>
-      {tournaments.length === 0 ? (
-        <Card>
-          <Text c="dimmed" ta="center" py="md">
-            {t("Competition hasn't started yet. Check the schedule for upcoming tournaments.")}
-          </Text>
-        </Card>
-      ) : (
-        <SimpleGrid cols={{ base: 1, xs: 2, lg: 3 }} spacing="sm">
-          {tournaments.map((tournament) => (
-            <TournamentCard key={tournament.id} tournament={tournament} isAdmin={isAdmin} />
-          ))}
-        </SimpleGrid>
-      )}
+      <Tabs defaultValue="season" keepMounted={false}>
+        <Tabs.List mb="sm">
+          <Tabs.Tab value="season">{t('Season tournaments')}</Tabs.Tab>
+          <Tabs.Tab
+            value="custom"
+            rightSection={customTournaments.length > 0 ? <Badge size="xs" variant="light">{customTournaments.length}</Badge> : undefined}
+          >
+            {t('Custom tournaments')}
+          </Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="season">
+          {seasonTournaments.length === 0 ? (
+            <Card>
+              <Text c="dimmed" ta="center" py="md">
+                {t("Competition hasn't started yet. Check the schedule for upcoming tournaments.")}
+              </Text>
+            </Card>
+          ) : (
+            <SimpleGrid cols={{ base: 1, xs: 2, lg: 3 }} spacing="sm">
+              {seasonTournaments.map((tournament) => (
+                <TournamentCard key={tournament.id} tournament={tournament} isAdmin={isAdmin} />
+              ))}
+            </SimpleGrid>
+          )}
+        </Tabs.Panel>
+        <Tabs.Panel value="custom">
+          {customTournaments.length === 0 ? (
+            <Card>
+              <Text c="dimmed" ta="center" py="md">{t('No open custom tournaments right now.')}</Text>
+              <Button component="a" href="/tournaments#create" variant="subtle" size="compact-sm" mx="auto">
+                {t('Create tournament')}
+              </Button>
+            </Card>
+          ) : (
+            <SimpleGrid cols={{ base: 1, xs: 2, lg: 3 }} spacing="sm">
+              {customTournaments.map((tournament) => (
+                <TournamentCard key={tournament.id} tournament={tournament} isAdmin={isAdmin} />
+              ))}
+            </SimpleGrid>
+          )}
+        </Tabs.Panel>
+      </Tabs>
     </Stack>
   );
 }
