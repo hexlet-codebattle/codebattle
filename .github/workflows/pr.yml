@@ -127,6 +127,10 @@ jobs:
         run: pnpm run typecheck
         working-directory: ./frontend
 
+      - name: Frontend telemetry tests
+        run: pnpm run test:telemetry
+        working-directory: ./frontend
+
       - name: Frontend build
         run: pnpm run build
         working-directory: ./frontend

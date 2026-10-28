@@ -108,6 +108,7 @@ check-js:
 	$(DEV) pnpm --dir frontend run check
 
 check-frontend:
+	$(DEV) pnpm --dir frontend run test:telemetry
 	$(DEV) pnpm --dir frontend run typecheck
 	$(DEV) pnpm --dir frontend run build
 

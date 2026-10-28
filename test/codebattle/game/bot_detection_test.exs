@@ -74,7 +74,7 @@ defmodule Codebattle.Game.BotDetectionTest do
 
       assert Enum.any?(
                a.signals,
-               &String.contains?(&1, "looks programmatic")
+               &String.contains?(&1, "unexplained edit window")
              )
     end
 
@@ -164,7 +164,42 @@ defmodule Codebattle.Game.BotDetectionTest do
   end
 
   describe "get_or_analyze/1" do
-    test "first call computes + persists; second call reads from DB", %{game: game} do
+    test "finished reports retain competitive code after practice edits and cache reuse", %{game: game, user1: user} do
+      lang = Enum.find(game.players, &(&1.id == user.id)).editor_lang
+      {:ok, _} = Context.update_editor_data(game.id, user, "competitive_solution", lang)
+      {:ok, _} = Context.trigger_timeout(game.id)
+      {:ok, _} = Context.update_editor_data(game.id, user, "post_game_practice", lang)
+      assert {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(analyses, &(&1.user_id == user.id)).final_text == "competitive_solution"
+      report = BotDetection.get_report(game.id, user.id)
+      assert report.final_text == "competitive_solution"
+      assert {:ok, cached} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(cached, &(&1.user_id == user.id)).final_text == "competitive_solution"
+    end
+
+    test "post-game telemetry windows do not contribute suspicion", %{game: game, user1: user} do
+      {:ok, _} = Context.store_editor_summary(game.id, user, late_summary(), "js")
+      {:ok, _} = Context.trigger_timeout(game.id)
+
+      later =
+        Map.merge(late_summary(), %{
+          "window_start_offset_ms" => 100_000,
+          "window_end_offset_ms" => 101_000,
+          "chars_inserted" => 500,
+          "printable_key_count" => 0
+        })
+
+      {:ok, _} = Context.store_editor_summary(game.id, user, later, "js")
+      assert {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      analysis = Enum.find(analyses, &(&1.user_id == user.id))
+      assert analysis.score == 0
+      assert analysis.stats.batch_count == 1
+      assert analysis.stats.excluded_batch_count == 1
+      assert "excluded_post_game_batches" in analysis.stats.quality_issues
+      assert analysis.telemetry_snapshot["count"] == 2
+    end
+
+    test "first call computes + persists; repeated calls return analyses", %{game: game} do
       assert BotDetection.list_reports(game.id) == []
 
       assert {:ok, analyses1} = BotDetection.get_or_analyze(game.id)
@@ -173,6 +208,70 @@ defmodule Codebattle.Game.BotDetectionTest do
 
       assert {:ok, analyses2} = BotDetection.get_or_analyze(game.id)
       assert length(analyses2) == 2
+    end
+
+    test "finished reports are reused until a late batch arrives", %{game: game, user1: user} do
+      {:ok, _} = Context.trigger_timeout(game.id)
+      {:ok, _} = BotDetection.get_or_analyze(game.id)
+      report = BotDetection.get_report(game.id, user.id)
+      assert %{"count" => 0, "last_id" => 0, "game_state" => "timeout"} = report.telemetry_snapshot
+
+      # A marker proves that an unchanged finished report is read, not recomputed.
+      report |> Ecto.Changeset.change(score: 99) |> Codebattle.Repo.update!()
+      {:ok, cached} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(cached, &(&1.user_id == user.id)).score == 99
+
+      {:ok, batch} = Context.store_editor_summary(game.id, user, late_summary(), "js")
+      {:ok, fresh} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(fresh, &(&1.user_id == user.id)).score != 99
+      assert %{"count" => 1, "last_id" => last_id} = BotDetection.get_report(game.id, user.id).telemetry_snapshot
+      assert last_id == batch.id
+    end
+
+    test "a batch arriving between analysis and persistence invalidates the snapshot", %{game: game, user1: user} do
+      {:ok, _} = Context.trigger_timeout(game.id)
+      {:ok, old} = BotDetection.analyze_game(game.id)
+      {:ok, batch} = Context.store_editor_summary(game.id, user, late_summary(), "js")
+      {:ok, _} = BotDetection.persist_analyses(old)
+
+      {:ok, fresh} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(fresh, &(&1.user_id == user.id)).stats.batch_count == 1
+      assert BotDetection.get_report(game.id, user.id).telemetry_snapshot["last_id"] == batch.id
+    end
+
+    test "missing player reports are recomputed even when other reports are current", %{game: game, user1: user} do
+      {:ok, _} = Context.trigger_timeout(game.id)
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+      Codebattle.Repo.delete!(BotDetection.get_report(game.id, user.id))
+      {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      assert length(analyses) == 2
+      assert BotDetection.get_report(game.id, user.id)
+    end
+
+    test "live editor history is refreshed even without new telemetry", %{game: game, user1: user} do
+      {:ok, _} = BotDetection.get_or_analyze(game.id)
+      lang = Enum.find(game.players, &(&1.id == user.id)).editor_lang
+      {:ok, _} = Context.update_editor_data(game.id, user, "x", lang)
+      {:ok, _} = Context.update_editor_data(game.id, user, "x" <> String.duplicate("a", 120), lang)
+
+      {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(analyses, &(&1.user_id == user.id)).editor_history.max_jump == 120
+    end
+
+    test "finishing the game invalidates reports computed while it was playing", %{game: game, user1: user} do
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+      old = BotDetection.get_report(game.id, user.id)
+      assert old.telemetry_snapshot["game_state"] == "playing"
+      {:ok, _} = Context.trigger_timeout(game.id)
+      # Simulate a slow live analysis completing after the game-finished worker.
+      old
+      |> Ecto.Changeset.change(score: 99)
+      |> Ecto.Changeset.force_change(:telemetry_snapshot, old.telemetry_snapshot)
+      |> Codebattle.Repo.update!()
+
+      {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+      assert Enum.find(analyses, &(&1.user_id == user.id)).score != 99
+      assert BotDetection.get_report(game.id, user.id).telemetry_snapshot["game_state"] == "timeout"
     end
 
     test "a player without telemetry reads back with no stats", %{game: game, user1: user} do
@@ -245,6 +344,17 @@ defmodule Codebattle.Game.BotDetectionTest do
         assert analysis.code_analysis == nil
       end
     end
+  end
+
+  defp late_summary do
+    %{
+      "event_count" => 4,
+      "key_event_count" => 2,
+      "printable_key_count" => 2,
+      "chars_inserted" => 2,
+      "window_start_offset_ms" => 100,
+      "window_end_offset_ms" => 200
+    }
   end
 
   describe "schedule_analysis/2 + Worker" do

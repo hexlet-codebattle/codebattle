@@ -6894,8 +6894,8 @@ msgid ""
 "bot."
 msgstr "在开始之前预览一项容易完成的题目。你的练习对手是一个机器人。"
 
-msgid "Write it. Run it."
-msgstr "编写代码，运行测试。"
+msgid "Write code and run tests"
+msgstr "编写代码并运行测试"
 
 msgid ""
 "Fill in the solution and run the tests. Use the results to improve your "
@@ -7196,3 +7196,132 @@ msgstr "最高难度"
 
 msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
 msgstr "每轮难度递增：先是入门题，然后是简单和中等题。选择困难时，最后一轮为困难题。"
+
+msgid "No suspicious signals"
+msgstr "未发现可疑信号"
+
+msgid "Weak signals"
+msgstr "弱信号"
+
+msgid "Review suggested"
+msgstr "建议复核"
+
+msgid "Strong signals"
+msgstr "强信号"
+
+msgid "Insufficient telemetry"
+msgstr "遥测数据不足"
+
+msgid "Heuristic score, not a probability. 5+ suggests review; 10+ indicates stronger signals."
+msgstr "启发式评分，并非概率。5分以上建议复核；10分以上表示信号较强。"
+
+msgid "Missing telemetry does not establish automation. Check the replay for connection gaps and editor activity."
+msgstr "缺少遥测数据不能证明自动化。请检查回放中的连接中断和编辑器活动。"
+
+msgid "Bulk edit; review its origin"
+msgstr "批量编辑；请核查来源"
+
+msgid "Page focus loss / time unfocused"
+msgstr "页面失焦次数 / 失焦时长"
+
+msgid "Browser focus or visibility changes, including other windows and dialogs. Context only; does not affect the score."
+msgstr "浏览器焦点或可见性变化，包括其他窗口和对话框。仅供参考，不影响评分。"
+
+msgid "Most inserted characters (excluding spaces) in one received update. Connection gaps, undo and editor commands can also produce large updates."
+msgstr "单次收到的更新中插入的最多非空白字符数。连接中断、撤销和编辑器命令也可能产生大幅更新。"
+
+msgid "Large update; check the replay"
+msgstr "大幅更新；请检查回放"
+
+msgid "Review aid, not a bot verdict. Missing signals do not prove fair play. Confirm against the replay before taking action."
+msgstr "这是复核辅助工具，并非机器人判定。没有信号不能证明公平游戏。采取措施前请核对回放。"
+
+msgid "Fair play review"
+msgstr "公平游戏复核"
+
+msgid "Season tournaments"
+msgstr "赛季锦标赛"
+
+msgid "Custom tournaments"
+msgstr "自定义锦标赛"
+
+msgid "No open custom tournaments right now."
+msgstr "目前没有开放的自定义锦标赛。"
+
+msgid "Legacy telemetry"
+msgstr "旧版遥测"
+
+msgid "Conflicting timing counters"
+msgstr "计时计数相互矛盾"
+
+msgid "Timing exceeds game duration"
+msgstr "遥测时间超出对局时长"
+
+msgid "Overlapping telemetry windows"
+msgstr "遥测时间窗口重叠"
+
+msgid "Missing key timing boundaries"
+msgstr "缺少按键计时边界"
+
+msgid "Telemetry limitations"
+msgstr "遥测局限"
+
+msgid "Unreliable timing features are excluded from scoring."
+msgstr "不可靠的计时特征不参与评分。"
+
+msgid "Incomplete telemetry"
+msgstr "遥测数据不完整"
+
+msgid "Recorded edit coverage"
+msgstr "已记录编辑的覆盖率"
+
+msgid "Gross inserted characters compared with final added length. Includes editor assistance and repeated replacements."
+msgstr "累计插入字符数与最终新增代码长度之比，包含编辑器辅助和重复替换。"
+
+msgid "Incomplete telemetry or unrecorded edits"
+msgstr "遥测不完整或存在未记录的编辑"
+
+msgid "Editor command inserts"
+msgstr "编辑器命令插入"
+
+msgid "Edits attributed to editor commands, including Vim. An origin hint, not proof of fair play."
+msgstr "归因于编辑器命令的编辑，包括 Vim。仅提示来源，不能证明公平游戏。"
+
+msgid "Missing telemetry batch identity"
+msgstr "遥测批次标识缺失"
+
+msgid "Missing telemetry batches"
+msgstr "遥测批次缺失"
+
+msgid "Multiple editor sessions"
+msgstr "多个编辑器会话"
+
+msgid "Incomplete edit coverage"
+msgstr "编辑记录不完整"
+
+msgid "Batches outside competitive play excluded"
+msgstr "已排除对局之外的批次"
+
+msgid "Moderator review"
+msgstr "版主审核"
+
+msgid "Outcome"
+msgstr "审核结果"
+
+msgid "Inconclusive"
+msgstr "无法确定"
+
+msgid "Legitimate"
+msgstr "正常游戏"
+
+msgid "Confirmed unauthorized assistance"
+msgstr "已确认使用未经允许的辅助"
+
+msgid "Replay position (ms)"
+msgstr "回放位置（毫秒）"
+
+msgid "Save review"
+msgstr "保存审核"
+
+msgid "Reviewer"
+msgstr "审核人"

@@ -23,9 +23,13 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
              :score,
              :level,
              :signals,
+             :evidence,
              :stats,
              :code_analysis,
              :editor_history,
+             :telemetry_snapshot,
+             :final_text,
+             :final_lang,
              :final_length,
              :template_length,
              :effective_added_length,
@@ -40,11 +44,15 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
 
     field(:score, :integer, default: 0)
     field(:level, :string, default: "none")
+    field(:evidence, {:array, :map}, default: [])
     field(:signals, {:array, :string}, default: [])
     field(:stats, :map, default: %{})
     field(:code_analysis, :map, default: %{})
     # BotDetection.EditorHistory: the editor updates the server received.
     field(:editor_history, :map, default: %{})
+    field(:telemetry_snapshot, :map, default: %{})
+    field(:final_text, :string)
+    field(:final_lang, :string)
     field(:final_length, :integer, default: 0)
     field(:template_length, :integer, default: 0)
     field(:effective_added_length, :integer, default: 0)
@@ -62,9 +70,13 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
       :score,
       :level,
       :signals,
+      :evidence,
       :stats,
       :code_analysis,
       :editor_history,
+      :telemetry_snapshot,
+      :final_text,
+      :final_lang,
       :final_length,
       :template_length,
       :effective_added_length,
@@ -90,9 +102,13 @@ defmodule Codebattle.Game.BotDetection.PlayerReport do
       score: a.score,
       level: Atom.to_string(a.level),
       signals: a.signals,
+      evidence: a.evidence,
       stats: a.stats || %{},
       code_analysis: a.code_analysis || %{},
       editor_history: a.editor_history || %{},
+      telemetry_snapshot: a.telemetry_snapshot,
+      final_text: a.final_text,
+      final_lang: a.final_lang,
       final_length: a.final_length,
       template_length: a.template_length,
       effective_added_length: a.effective_added_length

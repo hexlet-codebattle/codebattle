@@ -6707,8 +6707,8 @@ msgstr "Выберите язык, прочитайте задачу и начн
 msgid "Preview an approachable task before starting. Your practice opponent is a bot."
 msgstr "Прочитайте несложную задачу перед началом. Ваш тренировочный соперник — бот."
 
-msgid "Write it. Run it."
-msgstr "Напишите код. Запустите тесты."
+msgid "Write code and run tests"
+msgstr "Напишите код и запустите тесты"
 
 msgid "Fill in the solution and run the tests. Use the results to improve your code."
 msgstr "Допишите решение и запустите тесты. Используйте результаты, чтобы улучшить код."
@@ -6946,3 +6946,132 @@ msgstr "Максимальный уровень"
 
 msgid "Rounds get harder: elementary first, then easy and medium. With Hard, the last round is hard."
 msgstr "Раунды усложняются: сначала элементарные задачи, потом лёгкие и средние. С уровнем «Сложный» последний раунд — сложная задача."
+
+msgid "No suspicious signals"
+msgstr "Подозрительных признаков нет"
+
+msgid "Weak signals"
+msgstr "Слабые признаки"
+
+msgid "Review suggested"
+msgstr "Рекомендуется проверка"
+
+msgid "Strong signals"
+msgstr "Сильные признаки"
+
+msgid "Insufficient telemetry"
+msgstr "Недостаточно телеметрии"
+
+msgid "Heuristic score, not a probability. 5+ suggests review; 10+ indicates stronger signals."
+msgstr "Эвристический балл, а не вероятность. От 5 — рекомендуется проверка; от 10 — более сильные признаки."
+
+msgid "Missing telemetry does not establish automation. Check the replay for connection gaps and editor activity."
+msgstr "Отсутствие телеметрии не доказывает автоматизацию. Проверьте запись игры: разрывы соединения и работу в редакторе."
+
+msgid "Bulk edit; review its origin"
+msgstr "Массовая правка: проверьте источник"
+
+msgid "Page focus loss / time unfocused"
+msgstr "Потери фокуса страницы / время без фокуса"
+
+msgid "Browser focus or visibility changes, including other windows and dialogs. Context only; does not affect the score."
+msgstr "Изменения фокуса или видимости браузера, включая другие окна и диалоги. Только для контекста: не влияют на балл."
+
+msgid "Most inserted characters (excluding spaces) in one received update. Connection gaps, undo and editor commands can also produce large updates."
+msgstr "Максимум вставленных символов без пробелов в одном полученном обновлении. Крупные обновления возможны при разрыве связи, отмене правок и командах редактора."
+
+msgid "Large update; check the replay"
+msgstr "Крупное обновление: проверьте запись"
+
+msgid "Review aid, not a bot verdict. Missing signals do not prove fair play. Confirm against the replay before taking action."
+msgstr "Помощь в проверке, а не вердикт о боте. Отсутствие признаков не доказывает честную игру. Перед принятием мер проверьте запись игры."
+
+msgid "Fair play review"
+msgstr "Проверка честной игры"
+
+msgid "Season tournaments"
+msgstr "Турниры сезона"
+
+msgid "Custom tournaments"
+msgstr "Пользовательские турниры"
+
+msgid "No open custom tournaments right now."
+msgstr "Сейчас нет открытых пользовательских турниров."
+
+msgid "Legacy telemetry"
+msgstr "Устаревшая телеметрия"
+
+msgid "Conflicting timing counters"
+msgstr "Противоречивые счётчики времени"
+
+msgid "Timing exceeds game duration"
+msgstr "Время телеметрии превышает длительность игры"
+
+msgid "Overlapping telemetry windows"
+msgstr "Пересекающиеся интервалы телеметрии"
+
+msgid "Missing key timing boundaries"
+msgstr "Нет границ интервалов нажатий"
+
+msgid "Telemetry limitations"
+msgstr "Ограничения телеметрии"
+
+msgid "Unreliable timing features are excluded from scoring."
+msgstr "Ненадёжные временные показатели исключены из оценки."
+
+msgid "Incomplete telemetry"
+msgstr "Неполная телеметрия"
+
+msgid "Recorded edit coverage"
+msgstr "Покрытие записанными правками"
+
+msgid "Gross inserted characters compared with final added length. Includes editor assistance and repeated replacements."
+msgstr "Все вставленные символы в сравнении с итоговым добавленным кодом. Включает помощь редактора и повторные замены."
+
+msgid "Incomplete telemetry or unrecorded edits"
+msgstr "Неполная телеметрия или незаписанные правки"
+
+msgid "Editor command inserts"
+msgstr "Вставки командами редактора"
+
+msgid "Edits attributed to editor commands, including Vim. An origin hint, not proof of fair play."
+msgstr "Правки, отнесённые к командам редактора, включая Vim. Подсказка об источнике, а не доказательство честной игры."
+
+msgid "Missing telemetry batch identity"
+msgstr "Нет идентификатора пакета телеметрии"
+
+msgid "Missing telemetry batches"
+msgstr "Пропущены пакеты телеметрии"
+
+msgid "Multiple editor sessions"
+msgstr "Несколько сессий редактора"
+
+msgid "Incomplete edit coverage"
+msgstr "Неполная запись изменений"
+
+msgid "Batches outside competitive play excluded"
+msgstr "Пакеты за пределами боя исключены"
+
+msgid "Moderator review"
+msgstr "Проверка модератора"
+
+msgid "Outcome"
+msgstr "Результат проверки"
+
+msgid "Inconclusive"
+msgstr "Недостаточно данных"
+
+msgid "Legitimate"
+msgstr "Честная игра"
+
+msgid "Confirmed unauthorized assistance"
+msgstr "Подтверждена запрещённая помощь"
+
+msgid "Replay position (ms)"
+msgstr "Позиция в записи (мс)"
+
+msgid "Save review"
+msgstr "Сохранить проверку"
+
+msgid "Reviewer"
+msgstr "Модератор"

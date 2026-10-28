@@ -24,6 +24,7 @@ export interface TelemetryEvent {
   large_insert_count?: number;
   assisted_chars?: number;
   completion_insert_count?: number;
+  command_insert_count?: number;
   paste_chars?: number;
   /** focus_return: how long the page was hidden or unfocused. */
   away_ms?: number;
@@ -31,9 +32,13 @@ export interface TelemetryEvent {
 
 export const WINDOW_MS = 10_000;
 export const EVENT_LIMIT = 100;
+// Version 2 records key boundaries so pauses between batches remain observable.
+export const COLLECTOR_VERSION = 3;
 
 interface TelemetryWindow {
+  edit_evidence: { offset_ms: number; inserted_chars: number; assisted_chars: number; paste_chars: number; printable_keys: number }[];
   event_count: number;
+  collector_version: number;
   window_start_offset_ms: number;
   window_end_offset_ms: number;
   lang_slug: string;
@@ -64,6 +69,7 @@ interface TelemetryWindow {
   large_insert_count: number;
   assisted_chars: number;
   completion_insert_count: number;
+  command_insert_count: number;
   paste_chars: number;
   blur_count: number;
   away_ms: number;
@@ -74,10 +80,13 @@ interface TelemetryWindow {
   max_key_delta_ms: number;
   idle_pause_over_2s_count: number;
   last_key_offset_ms: number | null;
+  first_key_offset_ms: number | null;
 }
 
 const newWindow = (event: TelemetryEvent): TelemetryWindow => ({
+  edit_evidence: [],
   event_count: 0,
+  collector_version: COLLECTOR_VERSION,
   window_start_offset_ms: event.offset_ms,
   window_end_offset_ms: event.offset_ms,
   lang_slug: event.lang_slug,
@@ -108,6 +117,7 @@ const newWindow = (event: TelemetryEvent): TelemetryWindow => ({
   large_insert_count: 0,
   assisted_chars: 0,
   completion_insert_count: 0,
+  command_insert_count: 0,
   paste_chars: 0,
   blur_count: 0,
   away_ms: 0,
@@ -118,6 +128,7 @@ const newWindow = (event: TelemetryEvent): TelemetryWindow => ({
   max_key_delta_ms: 0,
   idle_pause_over_2s_count: 0,
   last_key_offset_ms: null,
+  first_key_offset_ms: null,
 });
 
 const ARROWS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
@@ -132,6 +143,7 @@ export function addEvent(current: TelemetryWindow | null, event: TelemetryEvent)
 
   switch (event.type) {
     case 'keydown': {
+      if (w.first_key_offset_ms == null) w.first_key_offset_ms = event.offset_ms;
       w.key_event_count += 1;
       const modifier = event.ctrl_key || event.meta_key;
       if (typeof event.key === 'string' && event.key.length === 1 && !modifier && !event.alt_key) w.printable_key_count += 1;
@@ -167,6 +179,11 @@ export function addEvent(current: TelemetryWindow | null, event: TelemetryEvent)
       w.drop_blocked_count += 1;
       break;
     case 'content_change':
+      if ((event.inserted_chars ?? 0) >= 8) w.edit_evidence.push({
+        offset_ms: event.offset_ms, inserted_chars: event.inserted_chars ?? 0,
+        assisted_chars: event.assisted_chars ?? 0, paste_chars: event.paste_chars ?? 0,
+        printable_keys: w.last_key_offset_ms != null && event.offset_ms - w.last_key_offset_ms <= 500 ? 1 : 0,
+      });
       w.content_change_count += event.change_count ?? 0;
       w.chars_inserted += event.inserted_chars ?? 0;
       w.chars_deleted += event.deleted_chars ?? 0;
@@ -179,6 +196,7 @@ export function addEvent(current: TelemetryWindow | null, event: TelemetryEvent)
       w.large_insert_count += event.large_insert_count ?? 0;
       w.assisted_chars += event.assisted_chars ?? 0;
       w.completion_insert_count += event.completion_insert_count ?? 0;
+      w.command_insert_count += event.command_insert_count ?? 0;
       w.paste_chars += event.paste_chars ?? 0;
       break;
     case 'focus_return':
@@ -195,7 +213,7 @@ export function addEvent(current: TelemetryWindow | null, event: TelemetryEvent)
 /** The summary pushed to the server; null for an empty window. */
 export function finalize(w: TelemetryWindow | null) {
   if (!w || w.event_count <= 0) return null;
-  const { last_key_offset_ms: _last, key_delta_total_ms: total, ...rest } = w;
+  const { key_delta_total_ms: total, ...rest } = w;
   return { ...rest, avg_key_delta_ms: w.key_delta_sample_count > 0 ? Math.round(total / w.key_delta_sample_count) : 0 };
 }
 
@@ -226,16 +244,20 @@ export interface ContentChangeEvent {
 /** The `executeEdits` source of our own text syncs (language switch, reset, the server's copy). */
 export const SYNC_EDIT_SOURCE = 'cb-sync';
 
-type EditOrigin = 'sync' | 'typed' | 'completion' | 'command' | 'paste' | 'other';
+type EditOrigin = 'sync' | 'composition' | 'typed' | 'completion' | 'command' | 'paste' | 'other';
 
 const originOf = (reason: EditReason | undefined, event: ContentChangeEvent): EditOrigin => {
   if (event.isFlush) return 'sync';
   if (event.isUndoing || event.isRedoing) return 'command';
   const { source, kind, name } = reason?.metadata ?? {};
   if (source === 'setValue' || (source === 'unknown' && name === SYNC_EDIT_SOURCE)) return 'sync';
+  // Our installed Vim adapter uses executeEdits('vim') for normal-mode commands.
+  // This is an origin hint, not a trusted assertion that the player is human.
+  if (source === 'unknown' && name === 'vim') return 'command';
   if (source === 'suggest' || source === 'snippet') return 'completion';
   if (source === 'cursor') {
-    if (kind === 'type' || kind === 'compositionType' || kind === 'compositionEnd') return 'typed';
+    if (kind === 'compositionType' || kind === 'compositionEnd') return 'composition';
+    if (kind === 'type') return 'typed';
     // Tab / indent / comment toggles and the like.
     if (kind === 'executeCommand' || kind === 'executeCommands') return 'command';
     // The paste guard only lets through text copied from this editor (pasteGuard.ts).
@@ -278,6 +300,7 @@ export function contentMetrics(event: ContentChangeEvent) {
     large_insert_count: 0,
     assisted_chars: 0,
     completion_insert_count: 0,
+    command_insert_count: 0,
     paste_chars: 0,
   };
 
@@ -294,7 +317,7 @@ export function contentMetrics(event: ContentChangeEvent) {
 
     // One key, more text: auto-indent ("\n" + spaces) or an auto-closed pair.
     const keyAssisted = origin === 'typed' && (inserted <= 2 || change.text.trim() === '');
-    const assisted = keyAssisted || origin === 'completion' || origin === 'command';
+    const assisted = keyAssisted || origin === 'completion' || origin === 'command' || origin === 'composition';
     if (origin === 'paste') {
       metrics.paste_chars += inserted;
       return;
@@ -303,6 +326,7 @@ export function contentMetrics(event: ContentChangeEvent) {
       if (origin === 'typed') metrics.max_single_insert_len = Math.max(metrics.max_single_insert_len, Math.min(inserted, 1));
       metrics.assisted_chars += origin === 'typed' ? Math.max(0, inserted - 1) : inserted;
       if (origin === 'completion') metrics.completion_insert_count += 1;
+      if (origin === 'command' && inserted > 0) metrics.command_insert_count += 1;
       return;
     }
 

@@ -494,6 +494,7 @@ defmodule CodebattleWeb.Router do
 
     get("/games/:id/stream", GameController, :stream)
     get("/games/:id/ml", GameController, :ml)
+    post("/games/:id/ml/reviews", GameController, :review)
 
     scope "/games" do
       post("/training", GameController, :create_training)

@@ -16,6 +16,15 @@ defmodule Codebattle.Game.BotDetection.BatchAggregatorTest do
     end
   end
 
+  describe "focus telemetry availability" do
+    test "old or mixed batches are unknown rather than evidence of zero focus loss" do
+      tracked = batch(%{"blur_count" => 0, "away_ms" => 0})
+      assert BatchAggregator.aggregate([tracked]).focus_tracked
+      refute BatchAggregator.aggregate([batch()]).focus_tracked
+      refute BatchAggregator.aggregate([batch(), tracked]).focus_tracked
+    end
+  end
+
   describe "aggregate/1 — single batch" do
     test "propagates fields from one batch" do
       stats = BatchAggregator.aggregate([batch()])
@@ -26,7 +35,7 @@ defmodule Codebattle.Game.BotDetection.BatchAggregatorTest do
       assert stats.total_printable_keys == 7
       assert stats.total_chars_inserted == 7
       assert stats.total_chars_deleted == 1
-      assert stats.total_idle_pauses == 1
+      assert stats.total_idle_pauses == 0
       assert stats.max_single_insert_len == 1
       assert stats.max_single_delete_len == 1
       assert stats.elapsed_ms == 10_000

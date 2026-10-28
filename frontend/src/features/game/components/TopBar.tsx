@@ -165,8 +165,8 @@ export function TopBar({
         </ActionIcon>
       </Tooltip>
       {(canManage || over) && (
-        <Tooltip label={t('Bot detection (ML)')}>
-          <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Bot detection (ML)')}>
+        <Tooltip label={t('Fair play review')}>
+          <ActionIcon component="a" href={`/games/${game.id}/ml`} size="sm" variant="default" aria-label={t('Fair play review')}>
             <IconRobot size={14} />
           </ActionIcon>
         </Tooltip>

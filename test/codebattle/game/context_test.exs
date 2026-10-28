@@ -106,6 +106,35 @@ defmodule Codebattle.Game.ContextTest do
       assert batch.summary["printable_key_count"] == 3
       assert batch.summary["chars_inserted"] == 7
       refute Map.has_key?(batch.summary, "lang_slug")
+      refute Map.has_key?(batch.summary, "assisted_chars")
+      refute Map.has_key?(batch.summary, "paste_chars")
+      refute Map.has_key?(batch.summary, "blur_count")
+      refute Map.has_key?(batch.summary, "collector_version")
+    end
+
+    test "preserves explicit zero-valued capabilities and collector key boundaries", %{user: user, game: game} do
+      summary = %{
+        "eventCount" => 1,
+        "windowStartOffsetMs" => 0,
+        "windowEndOffsetMs" => 100,
+        "collectorVersion" => 2,
+        "firstKeyOffsetMs" => 0,
+        "lastKeyOffsetMs" => 100,
+        "assistedChars" => 0,
+        "pasteChars" => 0,
+        "blurCount" => 0,
+        "awayMs" => 0,
+        "commandInsertCount" => 1
+      }
+
+      assert {:ok, batch} = Game.Context.store_editor_summary(game.id, user, summary, "js")
+      assert batch.summary["collector_version"] == 2
+      assert batch.summary["first_key_offset_ms"] == 0
+      assert batch.summary["last_key_offset_ms"] == 100
+      assert batch.summary["assisted_chars"] == 0
+      assert batch.summary["paste_chars"] == 0
+      assert batch.summary["blur_count"] == 0
+      assert batch.summary["command_insert_count"] == 1
     end
 
     test "persists batch when summary uses snake_case keys", %{user: user, game: game} do

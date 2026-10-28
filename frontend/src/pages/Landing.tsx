@@ -254,7 +254,7 @@ export default function Landing() {
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg">
             {[
               [t('Choose your language'), t('Preview an approachable task before starting. Your practice opponent is a bot.')],
-              [t('Write it. Run it.'), t('Fill in the solution and run the tests. Use the results to improve your code.')],
+              [t('Write code and run tests'), t('Fill in the solution and run the tests. Use the results to improve your code.')],
               [t('Play again or meet a rival'), t('Try another task, then create an account to challenge real players.')],
             ].map(([title, text], index) => (
               <Card key={title} className={classes.step} padding="lg" style={{ '--medal': `var(--cb-medal-${index + 1})` } as CSSProperties}>

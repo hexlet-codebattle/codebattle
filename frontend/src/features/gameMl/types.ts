@@ -21,9 +21,15 @@ export interface MlStats {
   /** Auto-indent, auto-closed pairs, accepted completions (newer telemetry only). */
   total_assisted_chars?: number;
   total_completion_inserts?: number;
+  total_command_inserts?: number;
+  collector_versions?: number[];
+  quality_issues?: string[];
+  timing_reliable?: boolean;
+  idle_pauses_reliable?: boolean;
   /** Pastes (of the player's own code) and leaving the game (newer telemetry only). */
   total_paste_chars?: number;
   paste_tracked?: boolean;
+  focus_tracked?: boolean;
   total_blurs?: number;
   total_away_ms?: number;
   total_paste_attempts: number;
@@ -62,6 +68,7 @@ export interface MlReport {
   level: RiskLevel;
   /** Human-readable reasons from the risk scorer (server English). */
   signals: string[];
+  evidence?: { code: string; category: string; weight: number; message: string; evidence: Record<string, unknown>; replay_offset_ms: number | null }[];
   stats: MlStats | null;
   code_analysis: MlCodeAnalysis | null;
   /** BotDetection.EditorHistory: the editor updates the server received. */
