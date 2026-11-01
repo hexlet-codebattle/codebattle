@@ -5067,3 +5067,6 @@ msgstr "Custom tournaments"
 
 msgid "No open custom tournaments right now."
 msgstr "No open custom tournaments right now."
+
+msgid "Nickname is already taken"
+msgstr "Nickname is already taken"

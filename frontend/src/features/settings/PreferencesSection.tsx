@@ -90,7 +90,7 @@ export function PreferencesSection({ account, onChange, onSaved }: PreferencesSe
   return (
     <Section
       id="preferences"
-      label={t('Preferences')}
+      label="Preferences"
       icon={<IconCode size={18} />}
       title={t('Coding preferences')}
       description={t('Weapon and locale changes are saved automatically.')}

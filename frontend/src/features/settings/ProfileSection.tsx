@@ -6,6 +6,7 @@ import { type FormEvent, useState } from 'react';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
+import { nicknameError } from '@/shared/nicknameError';
 import { LangIcon } from '@/shared/LangIcon';
 import { UserAvatar } from '@/shared/UserAvatar';
 
@@ -39,7 +40,7 @@ export function ProfileSection({ account, onSaved }: ProfileSectionProps) {
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
-  const nameError = validateName(name, account.name, t) ?? serverErrors.name;
+  const nameError = validateName(name, account.name, t) ?? nicknameError(serverErrors.name);
   const changed = name !== account.name || clan.trim() !== (account.clan ?? '');
 
   const submit = async (event: FormEvent) => {
@@ -64,7 +65,7 @@ export function ProfileSection({ account, onSaved }: ProfileSectionProps) {
   return (
     <Section
       id="profile"
-      label={t('Profile')}
+      label="Profile"
       icon={<IconUser size={18} />}
       title={t('Profile')}
       description={t('Manage your public identity.')}

@@ -20,6 +20,10 @@ defmodule Codebattle.Tournament.Helpers do
   def get_tasks(%{tasks_table: nil} = _tournament), do: []
   def get_tasks(tournament), do: Tournament.Tasks.get_tasks(tournament)
 
+  def players_count(%{state: "finished", ranking_type: "by_user"} = tournament) do
+    tournament |> Tournament.Ranking.get_page(1, 1) |> Map.fetch!(:total_entries)
+  end
+
   def players_count(%{players_table: nil} = tournament) do
     tournament |> get_players() |> Enum.count()
   end
@@ -302,10 +306,17 @@ defmodule Codebattle.Tournament.Helpers do
       :tasks_table
     ])
     |> Map.update(:meta, %{}, &public_meta/1)
+    |> put_finished_players_count(tournament)
     |> Map.put(:current_round_timeout_seconds, current_round_timeout_seconds(tournament))
     # Lets clients correct their clock before counting down to server timestamps.
     |> Map.put(:server_time, DateTime.utc_now(:millisecond))
   end
+
+  defp put_finished_players_count(json, %{state: "finished", ranking_type: "by_user"} = tournament) do
+    Map.put(json, :players_count, players_count(tournament))
+  end
+
+  defp put_finished_players_count(json, _tournament), do: json
 
   # Game pass codes unlock locked tournament games, so they must never reach clients.
   def public_meta(meta) when is_map(meta), do: Map.drop(meta, [:game_passwords, "game_passwords"])

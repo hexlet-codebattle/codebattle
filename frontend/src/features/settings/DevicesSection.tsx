@@ -93,7 +93,7 @@ export function DevicesSection({ sessions, onRevoked }: DevicesSectionProps) {
   return (
     <Section
       id="devices"
-      label={t('Active devices')}
+      label="Active devices"
       icon={<IconDeviceLaptop size={18} />}
       title={t('Active devices')}
       description={t('Review and remove signed-in sessions.')}

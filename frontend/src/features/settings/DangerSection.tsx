@@ -44,7 +44,7 @@ export function DangerSection({ requiresPassword }: { requiresPassword: boolean 
   return (
     <Section
       id="danger"
-      label={t('Danger zone')}
+      label="Danger zone"
       icon={<IconAlertTriangle size={18} />}
       title={t('Danger zone')}
       danger

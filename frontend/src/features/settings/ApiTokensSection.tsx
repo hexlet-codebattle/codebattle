@@ -91,7 +91,7 @@ export function ApiTokensSection({ tokens, availableScopes, onChange }: ApiToken
   return (
     <Section
       id="api-tokens"
-      label={t('API tokens')}
+      label="API tokens"
       icon={<IconKey size={18} />}
       title={t('API tokens')}
       description={t('Personal tokens for bots, CLI and devices.')}

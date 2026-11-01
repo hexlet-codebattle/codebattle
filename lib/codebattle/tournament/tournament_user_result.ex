@@ -48,6 +48,24 @@ defmodule Codebattle.Tournament.TournamentUserResult do
     |> Repo.all()
   end
 
+  @doc "Final standings, including players who left before the tournament ended."
+  def get_ranking_page(tournament_id, page, page_size) do
+    __MODULE__
+    |> where([tr], tr.tournament_id == ^tournament_id)
+    |> order_by([tr], asc: tr.place, asc: tr.user_id)
+    |> select([tr], %{
+      id: tr.user_id,
+      place: tr.place,
+      score: tr.score,
+      lang: tr.user_lang,
+      name: tr.user_name,
+      clan_id: tr.clan_id,
+      clan: tr.clan_name,
+      wins_count: tr.wins_count
+    })
+    |> Repo.paginate(%{page: page, page_size: page_size, total: true})
+  end
+
   @spec get_user_history(integer() | String.t(), pos_integer(), pos_integer()) :: map()
   def get_user_history(user_id, page \\ 1, page_size \\ 20) do
     __MODULE__

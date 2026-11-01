@@ -115,7 +115,7 @@ export function RankingPanel({ api }: { api: TournamentApi }) {
                     </Text>
                   </Table.Td>
                   <Table.Td ta="right" ff="monospace" c="dimmed">
-                    {players[entry.id]?.wins_count ?? '—'}
+                    {entry.wins_count ?? players[entry.id]?.wins_count ?? '—'}
                   </Table.Td>
                   <Table.Td ta="right" ff="monospace" fw={700} c="bright">
                     {entry.score}

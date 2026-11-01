@@ -6,6 +6,7 @@ defmodule Codebattle.Tournament.Ranking do
   alias Codebattle.Tournament.Ranking.ByClan
   alias Codebattle.Tournament.Ranking.ByUser
   alias Codebattle.Tournament.Storage.Ranking
+  alias Codebattle.Tournament.TournamentUserResult
 
   @spec get_first(tournament :: Tournament.t(), limit :: pos_integer()) :: list(map())
   def get_first(%{ranking_table: nil}, _num), do: []
@@ -42,7 +43,16 @@ defmodule Codebattle.Tournament.Ranking do
           map()
   def get_page(tournament, page, page_size \\ 10)
 
-  def get_page(%{ranking_table: nil} = tournament, page, page_size) do
+  def get_page(%{state: "finished", ranking_type: "by_user"} = tournament, page, page_size) do
+    case TournamentUserResult.get_ranking_page(tournament.id, page, page_size) do
+      %{total_entries: 0} -> get_current_page(tournament, page, page_size)
+      ranking -> Map.take(ranking, [:entries, :total_entries, :page_number, :page_size])
+    end
+  end
+
+  def get_page(tournament, page, page_size), do: get_current_page(tournament, page, page_size)
+
+  defp get_current_page(%{ranking_table: nil} = tournament, page, page_size) do
     case tournament.ranking_type do
       "by_user" ->
         tournament
@@ -54,7 +64,7 @@ defmodule Codebattle.Tournament.Ranking do
     end
   end
 
-  def get_page(tournament, page, page_size) do
+  defp get_current_page(tournament, page, page_size) do
     get_module(tournament).get_page(tournament, page, page_size)
   end
 

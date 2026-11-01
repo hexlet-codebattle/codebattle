@@ -64,7 +64,7 @@ export default function Settings() {
                 history.replaceState(null, '', `#${heading.id}`);
               }}
             >
-              {heading.value}
+              {t(heading.value)}
             </a>
           ))}
         </nav>

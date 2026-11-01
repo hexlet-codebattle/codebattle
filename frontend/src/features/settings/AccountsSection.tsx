@@ -21,7 +21,7 @@ export function AccountsSection({ account }: { account: AccountUser }) {
   return (
     <Section
       id="accounts"
-      label={t('Connected accounts')}
+      label="Connected accounts"
       icon={<IconLink size={18} />}
       title={t('Connected accounts')}
       description={t('Manage the services you use to sign in.')}

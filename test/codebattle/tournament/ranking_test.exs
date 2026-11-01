@@ -5,6 +5,7 @@ defmodule Codebattle.Tournament.RankingTest do
   alias Codebattle.Tournament.Player
   alias Codebattle.Tournament.Ranking
   alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.Tournament.TournamentUserResult
 
   test "get_page/3 falls back to player ordering when ranking table is absent" do
     tournament =
@@ -44,6 +45,54 @@ defmodule Codebattle.Tournament.RankingTest do
              page_size: 3,
              entries: []
            }
+  end
+
+  test "finished standings include departed players and use persisted places, scores and wins" do
+    tournament = insert(:tournament, state: "finished", ranking_type: "by_user")
+    remaining_user = insert(:user, name: "remaining")
+    departed_user = insert(:user, name: "departed")
+    remaining_id = remaining_user.id
+    departed_id = departed_user.id
+    remaining = Player.new!(%{id: remaining_id, name: "remaining", place: 1, score: 0})
+    tournament = %{tournament | players: %{remaining_id => remaining}, players_count: 0}
+
+    for {id, name, place, score, wins} <- [
+          {departed_id, "departed", 1, 54, 1},
+          {remaining_id, "remaining", 2, 0, 0}
+        ] do
+      Repo.insert!(%TournamentUserResult{
+        tournament_id: tournament.id,
+        user_id: id,
+        user_name: name,
+        user_lang: "python",
+        place: place,
+        score: score,
+        wins_count: wins
+      })
+    end
+
+    first = Ranking.get_page(tournament, 1, 1)
+    second = Ranking.get_page(tournament, 2, 1)
+
+    assert first.total_entries == 2
+    assert first.page_number == 1
+    assert first.page_size == 1
+    assert [%{id: ^departed_id, name: "departed", place: 1, score: 54, wins_count: 1}] = first.entries
+    assert [%{id: ^remaining_id, place: 2, score: 0, wins_count: 0}] = second.entries
+
+    assert Enum.map(Ranking.get_page(tournament, 1, 10).entries, & &1.id) ==
+             tournament.id |> TournamentUserResult.get_leaderboard() |> Enum.map(& &1.user_id)
+
+    assert Tournament.Helpers.players_count(tournament) == 2
+    assert Tournament.Helpers.prepare_to_json(tournament).players_count == 2
+  end
+
+  test "finished tournaments without saved results retain the player ranking fallback" do
+    tournament = insert(:tournament, state: "finished", ranking_type: "by_user")
+    player = Player.new!(%{id: 1, name: "remaining", place: 1, score: 5})
+    tournament = %{tournament | players: %{1 => player}}
+
+    assert %{total_entries: 1, entries: [%{id: 1, score: 5}]} = Ranking.get_page(tournament, 1, 10)
   end
 
   test "by_user ranking wrapper manages ETS ranking and applies round results once" do

@@ -7325,3 +7325,6 @@ msgstr "保存审核"
 
 msgid "Reviewer"
 msgstr "审核人"
+
+msgid "Nickname is already taken"
+msgstr "该昵称已被使用"

@@ -3,6 +3,7 @@ import { IconBrandDiscord, IconBrandGithub, IconCircleCheck, IconMailCheck } fro
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { nicknameError } from '@/shared/nicknameError';
 import { HttpError, requestJson } from '@/shared/http';
 import { MethodButton } from '@/shared/MethodButton';
 
@@ -136,7 +137,7 @@ export function SignUpForm({ next }: { next: string }) {
   const field = (key: keyof typeof form) => ({
     value: form[key],
     onChange: (event: { currentTarget: { value: string } }) => setForm({ ...form, [key]: event.currentTarget.value }),
-    error: errors[key],
+    error: key === 'name' ? nicknameError(errors[key]) : errors[key],
   });
 
   return (

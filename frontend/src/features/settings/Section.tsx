@@ -8,7 +8,7 @@ import classes from './Settings.module.css';
 interface SectionProps {
   /** Anchor id; the side nav links to it. */
   id: string;
-  /** Short name in the side nav. */
+  /** Untranslated key for the side nav, translated on each render. */
   label: string;
   icon: ReactNode;
   title: string;

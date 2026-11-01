@@ -181,7 +181,7 @@ export function SecuritySection({ account, onPasswordChanged }: SecuritySectionP
   return (
     <Section
       id="security"
-      label={t('Security')}
+      label="Security"
       icon={<IconLock size={18} />}
       title={t('Sign-in & security')}
       description={t('Password and email you sign in with.')}

@@ -7681,3 +7681,6 @@ msgstr "Guardar revisión"
 
 msgid "Reviewer"
 msgstr "Revisor"
+
+msgid "Nickname is already taken"
+msgstr "Este apodo ya está en uso"

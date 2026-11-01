@@ -142,7 +142,7 @@ export function SoundSection({ account, onSaved }: SoundSectionProps) {
   return (
     <Section
       id="sound"
-      label={t('Sound')}
+      label="Sound"
       icon={<IconVolume size={18} />}
       title={t('Sound settings')}
       description={t('Set the volume of game and tournament sounds.')}

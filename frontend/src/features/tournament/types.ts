@@ -99,6 +99,7 @@ export interface Match {
 }
 
 export interface RankingEntry {
+  wins_count?: number;
   id: number;
   place: number;
   score: number;

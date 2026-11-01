@@ -7075,3 +7075,6 @@ msgstr "Сохранить проверку"
 
 msgid "Reviewer"
 msgstr "Модератор"
+
+msgid "Nickname is already taken"
+msgstr "Этот никнейм уже занят"
