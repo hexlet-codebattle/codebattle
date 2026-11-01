@@ -44,7 +44,7 @@ defmodule Codebattle.Game.BotDetection do
   alias Codebattle.User
 
   # Bump when the scoring or the stats change: older persisted reports are recomputed on read.
-  @report_version 6
+  @report_version 7
   @after_game_delay_sec 10
 
   @doc """

@@ -6,7 +6,6 @@ import { UserAvatar } from '@/shared/UserAvatar';
 import { LangIcon } from '@/shared/LangIcon';
 
 import { formatDate } from '../format';
-import type { LobbyGame } from '../types';
 import { gameUrl } from '../useLobbyChannel';
 
 import classes from './ProfileCard.module.css';
@@ -26,10 +25,10 @@ function Stat({ label, value }: { label: string; value: string | number }) {
 
 interface ProfileCardProps {
   /**
-   * The current user's unfinished lobby game, if any: the main button continues it, or
-   * (still waiting for an opponent) reopens the create modal, which shares it.
+   * The current user's unfinished game, if any (a tournament one too): the main button continues
+   * it, or (a lobby game still waiting for an opponent) reopens the create modal, which shares it.
    */
-  activeGame: LobbyGame | undefined;
+  activeGame: { id: number; state: string } | undefined;
   online: boolean;
   /** Joinable/watchable games, shown on the "Join a battle" button. */
   gamesCount: number;

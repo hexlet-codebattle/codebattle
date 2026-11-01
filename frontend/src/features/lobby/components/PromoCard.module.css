@@ -1,0 +1,36 @@
+/* Lobby sidebar promo card with a faint wash of its accent: the Grand Slam gold by default. */
+.banner {
+  --promo-color: var(--cb-grade-grand_slam);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-sm);
+  border: 1px solid color-mix(in srgb, var(--promo-color) 40%, var(--cb-border));
+  border-radius: var(--cb-radius);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--promo-color) 14%, transparent), transparent 70%),
+    var(--cb-panel);
+}
+
+.mcp {
+  --promo-color: var(--mantine-color-teal-6);
+}
+
+/* Keeps the title clear of the carousel arrows; Promos sets the space when it shows them. */
+.title {
+  padding-inline-end: var(--promo-controls-space, 0);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--promo-color);
+}
+
+/* Pinned to the bottom: carousel slides stretch to the tallest card. */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mantine-spacing-xs);
+  margin-top: auto;
+}

@@ -271,6 +271,9 @@ defmodule CodebattleWeb.GameChannel do
     user = socket.assigns.current_user
 
     broadcast_from!(socket, "user:start_check", %{user_id: user.id})
+    # The check below blocks until it's done; tell the player now that their run arrived,
+    # so a long wait reads as the checker's and not the connection's.
+    push(socket, "user:check_received", %{})
 
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
 

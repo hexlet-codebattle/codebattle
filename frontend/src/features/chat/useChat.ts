@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useChannel } from '@/api/useChannel';
 import { t } from '@/i18n';
@@ -11,6 +11,11 @@ import type { ChatMessage, ChatUserRef, PrivateRoom } from './types';
 
 export const MAX_MESSAGE_LENGTH = 1024;
 const ROOM_TTL_MS = 10 * 24 * 60 * 60 * 1000;
+// The lobby keeps 8 hours of history and every row is costly to render on weak devices;
+// older messages drop off the client.
+const MAX_MESSAGES = 200;
+
+const capped = (messages: ChatMessage[]) => (messages.length > MAX_MESSAGES ? messages.slice(-MAX_MESSAGES) : messages);
 
 const isPrivate = (message: ChatMessage) => message.meta?.type === 'private';
 
@@ -52,10 +57,10 @@ export function useChat(topic: string) {
   }, []);
 
   const { status, cast } = useChannel(topic, {
-    onJoin: ({ messages: history }: { messages: ChatMessage[] }) => setMessages(history),
+    onJoin: ({ messages: history }: { messages: ChatMessage[] }) => setMessages(capped(history)),
     events: {
       'chat:new_msg': (message: ChatMessage) => {
-        setMessages((current) => [...current, message]);
+        setMessages((current) => capped([...current, message]));
 
         if (isPrivate(message) && message.user_id !== user.id && message.meta?.target_user_id === user.id) {
           touchRoom({ id: message.user_id!, name: message.name ?? 'user' });
@@ -73,35 +78,38 @@ export function useChat(topic: string) {
     },
   });
 
-  const send = (text: string, to?: ChatUserRef) => {
-    const trimmed = text.trim().slice(0, MAX_MESSAGE_LENGTH);
-    if (!trimmed) return;
+  // Stable actions: the lobby re-renders on every game update, and memoized rows must not notice.
+  const actions = useMemo(
+    () => ({
+      openRoom: touchRoom,
+      closeRoom: (userId: number) => setRooms((current) => current.filter((room) => room.userId !== userId)),
+      send: (text: string, to?: ChatUserRef) => {
+        const trimmed = text.trim().slice(0, MAX_MESSAGE_LENGTH);
+        if (!trimmed) return;
 
-    if (to) touchRoom(to);
+        if (to) touchRoom(to);
 
-    cast('chat:add_msg', {
-      text: trimmed,
-      meta: to ? { type: 'private', target_user_id: to.id } : { type: 'general' },
-    });
-  };
+        cast('chat:add_msg', {
+          text: trimmed,
+          meta: to ? { type: 'private', target_user_id: to.id } : { type: 'general' },
+        });
+      },
+      /** Invite everyone to `gameId` (General room); the server drops it if the game is canceled. */
+      shareGame: (gameId: number) => {
+        cast('chat:add_msg', gameInviteMessage(gameId));
+        markShared(gameId);
+      },
+      deleteMessage: (id: number) => cast('chat:delete_msg', { id }),
+      react: (id: number, reaction: string) => cast('chat:react', { id, reaction }),
+      ban: (target: ChatUserRef) => cast('chat:command', { type: 'ban', name: target.name, user_id: target.id }),
+      cleanBanned: () => cast('chat:command', { type: 'clean_banned' }),
+    }),
+    [cast, touchRoom],
+  );
 
-  return {
-    online: status === 'joined',
-    messages,
-    rooms,
-    openRoom: touchRoom,
-    closeRoom: (userId: number) => setRooms((current) => current.filter((room) => room.userId !== userId)),
-    send,
-    /** Invite everyone to `gameId` (General room); the server drops it if the game is canceled. */
-    shareGame: (gameId: number) => {
-      cast('chat:add_msg', gameInviteMessage(gameId));
-      markShared(gameId);
-    },
-    deleteMessage: (id: number) => cast('chat:delete_msg', { id }),
-    react: (id: number, reaction: string) => cast('chat:react', { id, reaction }),
-    ban: (target: ChatUserRef) => cast('chat:command', { type: 'ban', name: target.name, user_id: target.id }),
-    cleanBanned: () => cast('chat:command', { type: 'clean_banned' }),
-  };
+  const online = status === 'joined';
+
+  return useMemo(() => ({ online, messages, rooms, ...actions }), [online, messages, rooms, actions]);
 }
 
 export type ChatApi = ReturnType<typeof useChat>;

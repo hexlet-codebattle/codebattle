@@ -1,6 +1,6 @@
 import { Badge, Group, ScrollArea, Stack, Text, Tooltip } from '@mantine/core';
 import { IconSwords, IconTrophy } from '@tabler/icons-react';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { OnlineUser, PresenceState } from '@/features/presence/store';
@@ -46,7 +46,23 @@ function ActivityPill({ link }: { link: string | null }) {
   );
 }
 
-function OnlineUserRow({ user, onDirectMessage }: { user: OnlineUser; onDirectMessage: (user: ChatUserRef) => void }) {
+interface OnlineUserRowProps {
+  user: OnlineUser;
+  onDirectMessage: (user: ChatUserRef) => void;
+}
+
+// Every presence diff rebuilds all user objects; compare by value so only changed rows re-render.
+const sameRow = (a: OnlineUserRowProps, b: OnlineUserRowProps) =>
+  a.onDirectMessage === b.onDirectMessage &&
+  a.user.id === b.user.id &&
+  a.user.name === b.user.name &&
+  a.user.lang === b.user.lang &&
+  a.user.avatar_url === b.user.avatar_url &&
+  a.user.is_bot === b.user.is_bot &&
+  a.user.state === b.user.state &&
+  a.user.link === b.user.link;
+
+const OnlineUserRow = memo(function OnlineUserRow({ user, onDirectMessage }: OnlineUserRowProps) {
   return (
     <div className={classes.row}>
       <LangIcon lang={user.lang} size={18} />
@@ -58,10 +74,10 @@ function OnlineUserRow({ user, onDirectMessage }: { user: OnlineUser; onDirectMe
       <ActivityPill link={user.link} />
     </div>
   );
-}
+}, sameRow);
 
 /** Who is online, grouped by what they're doing; the side panel of the lobby chat. */
-export function OnlinePlayers({ onDirectMessage }: { onDirectMessage: (user: ChatUserRef) => void }) {
+export const OnlinePlayers = memo(function OnlinePlayers({ onDirectMessage }: { onDirectMessage: (user: ChatUserRef) => void }) {
   const { t } = useTranslation();
   const users = usePresenceStore((state) => state.users);
   const groups = useMemo(
@@ -104,4 +120,4 @@ export function OnlinePlayers({ onDirectMessage }: { onDirectMessage: (user: Cha
       </ScrollArea>
     </div>
   );
-}
+});

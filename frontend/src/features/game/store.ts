@@ -24,6 +24,8 @@ interface GameStore {
   cursors: Record<number, RemoteCursor>;
   /** Players whose solution is being checked right now. */
   checking: Record<number, boolean>;
+  /** Me, while my run is on its way: the server hasn't confirmed it yet (user:check_received). */
+  sendingId: number | null;
   outputs: Record<number, CheckResult>;
   /** The last "X gave up!" / result message. */
   message: string | null;
@@ -45,7 +47,7 @@ interface GameStore {
   mergeTournament: (patch: Partial<GameTournamentInfo>) => void;
   /** The channel join failed (e.g. "Game not found"). */
   joinError: string | null;
-  set: (patch: Partial<Pick<GameStore, 'currentPlayer' | 'activeGameId' | 'waitType' | 'joinError'>>) => void;
+  set: (patch: Partial<Pick<GameStore, 'currentPlayer' | 'activeGameId' | 'waitType' | 'joinError' | 'sendingId'>>) => void;
   /** Empty the store (a view switching to another game). */
   reset: () => void;
 }
@@ -58,6 +60,7 @@ const INITIAL = {
   editors: {},
   cursors: {},
   checking: {},
+  sendingId: null as number | null,
   outputs: {},
   message: null,
   tournament: null,

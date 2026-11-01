@@ -23,10 +23,10 @@ export function NextMatchModal() {
 
   const { game_id: gameId } = match;
   // Keyed by game: every new match starts its own countdown.
-  return <Countdown key={gameId} gameId={gameId} onStay={() => setDismissed((current) => new Set(current).add(gameId))} />;
+  return <MatchCountdown key={gameId} gameId={gameId} onStay={() => setDismissed((current) => new Set(current).add(gameId))} />;
 }
 
-function Countdown({ gameId, onStay }: { gameId: number; onStay: () => void }) {
+export function MatchCountdown({ gameId, onStay }: { gameId: number; onStay: () => void }) {
   const { t } = useTranslation();
   const [left, setLeft] = useState(COUNTDOWN_S);
 

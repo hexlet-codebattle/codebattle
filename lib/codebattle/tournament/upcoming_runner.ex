@@ -2,7 +2,8 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   @moduledoc """
   Polls scheduled tournaments every 15 seconds, opening registration 10 minutes
   before starts_at and recovering starts missed by up to 10 minutes. Also cancels
-  tournaments that stayed in waiting_participants for too long.
+  tournaments that stayed in waiting_participants for too long, and active ones
+  abandoned long ago (their server died and was never restored).
   """
   use GenServer
 
@@ -17,6 +18,8 @@ defmodule Codebattle.Tournament.UpcomingRunner do
 
   @stale_check_timeout to_timeout(minute: 10)
   @stale_waiting_after_hours 12
+  # Far longer than any tournament runs.
+  @stale_active_after_days 7
 
   @spec start_link([]) :: GenServer.on_start()
   def start_link(_) do
@@ -27,7 +30,7 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   def init(_state) do
     if @tournament_run_upcoming do
       Process.send_after(self(), :run_upcoming, @worker_timeout)
-      Process.send_after(self(), :cancel_stale_waiting, @stale_check_timeout)
+      Process.send_after(self(), :cancel_stale, @stale_check_timeout)
     end
 
     {:ok, :noop}
@@ -42,10 +45,10 @@ defmodule Codebattle.Tournament.UpcomingRunner do
     {:noreply, state}
   end
 
-  def handle_info(:cancel_stale_waiting, state) do
-    cancel_stale_waiting()
+  def handle_info(:cancel_stale, state) do
+    cancel_stale()
 
-    Process.send_after(self(), :cancel_stale_waiting, @stale_check_timeout)
+    Process.send_after(self(), :cancel_stale, @stale_check_timeout)
 
     {:noreply, state}
   end
@@ -64,14 +67,17 @@ defmodule Codebattle.Tournament.UpcomingRunner do
     end
   end
 
-  def cancel_stale_waiting do
-    cutoff = DateTime.add(DateTime.utc_now(:second), -@stale_waiting_after_hours, :hour)
+  def cancel_stale do
+    now = DateTime.utc_now(:second)
 
-    cutoff
-    |> Tournament.Context.get_stale_waiting_tournaments()
+    [
+      {"waiting_participants", DateTime.add(now, -@stale_waiting_after_hours, :hour)},
+      {"active", DateTime.add(now, -@stale_active_after_days, :day)}
+    ]
+    |> Enum.flat_map(fn {state, cutoff} -> Tournament.Context.get_stale_tournaments(state, cutoff) end)
     |> Enum.map(fn tournament ->
       Tournament.Context.cancel_stale_tournament(tournament)
-      Logger.info("Tournament #{tournament.id} canceled: waiting for participants too long")
+      Logger.info("Tournament #{tournament.id} canceled: stale in #{tournament.state}")
       tournament.id
     end)
   end

@@ -22,7 +22,7 @@ const EMOJI_REACTIONS = [
   { id: 'thumbs_up', emoji: '👍', label: 'Thumbs up' },
 ];
 
-export function MessageReactions({ message, chat }: { message: ChatMessage; chat: ChatApi }) {
+export function MessageReactions({ message, chat }: { message: ChatMessage; chat: Pick<ChatApi, 'online' | 'react'> }) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const [opened, setOpened] = useState(false);

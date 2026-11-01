@@ -13,6 +13,8 @@ import type { CheckResult, Game, GamePlayer, GameTournamentInfo, HeadToHead, Tou
 
 const EDITOR_SYNC_MS = 250;
 const CURSOR_MS = 120;
+// How long a run may go unconfirmed (user:check_received) before we call it lost.
+const SEND_TIMEOUT_MS = 15_000;
 
 interface JoinReply {
   game?: Game;
@@ -85,6 +87,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
 
   // Whether I edited my code on this page (see onJoin).
   const typedHere = useRef(false);
+  const sendTimer = useRef<number>(undefined);
 
   const { status, push, cast } = useChannel(`game:${gameId}`, {
     onJoin: (reply: JoinReply) => {
@@ -118,6 +121,8 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
         // Only players hear their opponent's runs; spectators would get a tick per player.
         if (userId !== me.id && store().players[me.id]) sound('opponent_check', { overlap: true });
       },
+      // The server got my run and starts checking it: from here on, a wait is the checker's.
+      'user:check_received': () => store().set({ sendingId: null }),
       'user:check_complete': (payload: {
         user_id: number;
         solution_status: boolean;
@@ -131,6 +136,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
         store().setPlayers(payload.players);
         store().setOutput(payload.user_id, { ...payload.check_result, post_timeout: Boolean(payload.post_timeout) });
         store().setChecking(payload.user_id, false);
+        if (payload.user_id === me.id) store().set({ sendingId: null });
         store().patchGame({ state: payload.state, award: payload.award });
 
         // Every all-green run gets the victory sound, not just the one that won the game.
@@ -265,10 +271,22 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
       flush();
     }
     store().setChecking(me.id, true);
+    store().set({ sendingId: me.id });
     if (!embedded) playGameSound('check');
+    // No user:check_received in time: the run never reached the server (connection trouble),
+    // so stop spinning and say so instead of looking like a slow checker.
+    window.clearTimeout(sendTimer.current);
+    sendTimer.current = window.setTimeout(() => {
+      if (store().sendingId !== me.id) return;
+      store().set({ sendingId: null });
+      store().setChecking(me.id, false);
+      store().setOutput(me.id, { status: 'not_sent' });
+    }, SEND_TIMEOUT_MS);
     // Success has no reply (the result comes as user:check_complete), so a push timeout means nothing.
     push('check_result', { editor_text: editor.text, lang_slug: editor.lang }).catch((error: { reason?: string } | Error) => {
       if (error instanceof Error) return;
+      window.clearTimeout(sendTimer.current);
+      store().set({ sendingId: null });
       // After a timeout the game lives on briefly; once it is gone checks are refused.
       if (error?.reason === 'game_is_dead' || error?.reason === 'game_timeout') store().setOutput(me.id, { status: 'game_is_dead' });
       store().setChecking(me.id, false);

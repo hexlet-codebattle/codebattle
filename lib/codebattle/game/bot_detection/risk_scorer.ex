@@ -4,7 +4,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
   individual edit evidence. Legacy counters are scored per collection window,
   so a paste in another window cannot explain an unrelated insertion.
   Overlapping edit rules use their maximum; rhythm and blocked-paste clues are
-  capped below the review threshold. Code style, focus loss, absent pauses,
+  capped below the review threshold. Rhythm is read per collection window as well
+  as game-wide. Code style, focus loss, absent pauses,
   missing deletions and incomplete telemetry never contribute suspicion.
   """
 
@@ -15,6 +16,8 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
   @fast_typing_min_keys 30
   @uniform_timing_max_diff_ms 10
   @uniform_timing_min_keys 30
+  # Held Backspace, Delete and arrows auto-repeat at a steady, fast rate.
+  @repeat_key_max_share 0.2
   @jump_min_chars 80
 
   @type input :: %{
@@ -39,12 +42,13 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
     results = Enum.map(batches, &score_batch(&1, input))
 
     supporting_stats = Map.get(input, :stats)
+    cadences = cadences(supporting_stats, batches)
 
     supporting =
       []
       |> apply_rule(paste_blocked(supporting_stats))
-      |> apply_rule(fast_typing(supporting_stats))
-      |> apply_rule(uniform_timing(supporting_stats))
+      |> apply_rule(fast_typing(cadences))
+      |> apply_rule(uniform_timing(cadences))
 
     supporting_result = %{
       score: supporting |> Enum.map(& &1.weight) |> Enum.sum() |> min(4),
@@ -91,11 +95,13 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
 
     # Rhythm and blocked pastes are supporting clues,
     # not enough on their own to flag a player for moderator review.
+    cadences = cadences(stats, [])
+
     supporting =
       []
       |> apply_rule(paste_blocked(stats))
-      |> apply_rule(fast_typing(stats))
-      |> apply_rule(uniform_timing(stats))
+      |> apply_rule(fast_typing(cadences))
+      |> apply_rule(uniform_timing(cadences))
       |> Enum.reverse()
 
     edit_score = edits |> Enum.map(& &1.weight) |> Enum.max(fn -> 0 end)
@@ -333,27 +339,55 @@ defmodule Codebattle.Game.BotDetection.RiskScorer do
 
   # ── Tier 3: typing rhythm anomalies ──────────────────────────────────
 
-  defp fast_typing(nil), do: nil
+  # The game as a whole plus each collection window. Game-wide figures alone miss a scripted
+  # burst: one thinking pause sets the maximum interval and slower typing dilutes the average.
+  defp cadences(nil, _batches), do: []
 
-  defp fast_typing(stats) do
-    avg = get(stats, :avg_key_delta_ms)
-    keys = get(stats, :total_key_events)
+  defp cadences(stats, batches) do
+    if timing_reliable?(stats) do
+      game = %{
+        avg: get(stats, :avg_key_delta_ms),
+        max: get(stats, :max_key_delta_ms),
+        keys: get(stats, :total_key_events),
+        repeatable: get(stats, :total_backspace) + get(stats, :total_delete) + get(stats, :total_arrows)
+      }
 
-    if timing_reliable?(stats) and avg > 0 and avg < @fast_typing_max_avg_ms and keys > @fast_typing_min_keys do
-      contrib("fast_typing", 3, "very fast typing — avg key delta #{round(avg)} ms")
+      windows =
+        Enum.map(batches, fn %{summary: summary} ->
+          %{
+            avg: get(summary, :avg_key_delta_ms),
+            max: get(summary, :max_key_delta_ms),
+            keys: get(summary, :key_event_count),
+            repeatable: get(summary, :backspace_count) + get(summary, :delete_count) + get(summary, :arrow_key_count)
+          }
+        end)
+
+      Enum.filter([game | windows], &(&1.avg > 0 and &1.max > 0 and &1.repeatable <= &1.keys * @repeat_key_max_share))
+    else
+      []
     end
   end
 
-  defp uniform_timing(nil), do: nil
+  defp fast_typing(cadences) do
+    fast = Enum.filter(cadences, &(&1.avg < @fast_typing_max_avg_ms and &1.keys > @fast_typing_min_keys))
 
-  defp uniform_timing(stats) do
-    avg = get(stats, :avg_key_delta_ms)
-    max_d = get(stats, :max_key_delta_ms)
-    keys = get(stats, :total_key_events)
+    if fast != [] do
+      contrib("fast_typing", 3, "very fast typing — avg key delta #{round(Enum.min_by(fast, & &1.avg).avg)} ms")
+    end
+  end
 
-    if timing_reliable?(stats) and avg > 0 and max_d > 0 and abs(avg - max_d) < @uniform_timing_max_diff_ms and
-         keys > @uniform_timing_min_keys do
-      contrib("uniform_timing", 2, "key timing is suspiciously uniform")
+  defp uniform_timing(cadences) do
+    uniform =
+      Enum.filter(cadences, &(abs(&1.avg - &1.max) < @uniform_timing_max_diff_ms and &1.keys > @uniform_timing_min_keys))
+
+    if uniform != [] do
+      steadiest = Enum.min_by(uniform, & &1.max)
+
+      contrib(
+        "uniform_timing",
+        2,
+        "key timing is suspiciously uniform — no key interval above #{round(steadiest.max)} ms"
+      )
     end
   end
 

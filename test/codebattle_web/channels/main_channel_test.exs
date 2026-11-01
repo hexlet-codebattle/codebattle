@@ -2,6 +2,7 @@ defmodule CodebattleWeb.MainChannelTest do
   use CodebattleWeb.ChannelCase
 
   alias Codebattle.Game
+  alias Codebattle.PubSub.UserEvents
   alias CodebattleWeb.MainChannel
   alias CodebattleWeb.Presence
   alias CodebattleWeb.UserSocket
@@ -132,6 +133,29 @@ defmodule CodebattleWeb.MainChannelTest do
       event: "user:game_created",
       payload: %{active_game_id: _}
     }
+  end
+
+  test "tells the player their tournament match started, but not about other games", %{creator: creator} = ctx do
+    {:ok, _response, _socket} = subscribe_and_join(ctx.creator_socket, MainChannel, "main", %{state: "lobby"})
+    tournament = insert(:tournament)
+
+    Codebattle.PubSub.broadcast("game:created", %{
+      game: build(:game, id: 7, state: "playing", tournament_id: tournament.id, players: [creator])
+    })
+
+    Codebattle.PubSub.broadcast("game:created", %{game: build(:game, id: 8, state: "playing", players: [creator])})
+
+    assert_push("tournament:match_started", %{game_id: 7, tournament_id: tournament_id})
+    assert tournament_id == tournament.id
+    refute_push("tournament:match_started", %{game_id: 8})
+
+    Phoenix.PubSub.broadcast(Codebattle.PubSub, UserEvents.topic(creator.id), %Codebattle.PubSub.Message{
+      topic: UserEvents.topic(creator.id),
+      event: "game.finished",
+      payload: %{game: build(:game, id: 7, state: "game_over")}
+    })
+
+    assert_push("user:game_over", %{game_id: 7})
   end
 
   describe "presence_link/1" do

@@ -55,25 +55,24 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
     json(conn, %{tournaments: tournaments})
   end
 
-  # Tournaments running right now or open for joining, whatever their starts_at:
-  # public ones plus private ones the user created, moderates or plays in.
+  # A persisted state can outlive its tournament process. Use the same live source
+  # as the lobby, including current ETS players, rather than abandoned DB rows.
   def live(conn, _params) do
     user = conn.assigns.current_user
-    user_id = Integer.to_string(user.id)
 
     tournaments =
-      from(t in Tournament,
-        where: t.state in @live_states,
-        where:
-          t.access_type == "public" or t.creator_id == ^user.id or ^user.id in t.moderator_ids or
-            fragment("((? #>> '{}')::jsonb) \\? ?", t.players, ^user_id),
-        order_by: [desc: t.id],
-        limit: 100
-      )
-      |> Repo.all()
+      Tournament.Context.get_live_tournaments()
+      |> Enum.filter(&(&1.state in @live_states and live_visible?(&1, user)))
+      |> Enum.sort_by(& &1.id, :desc)
+      |> Enum.take(100)
       |> Enum.map(&JSON.tournament(&1, user))
 
     conn |> no_store() |> json(%{tournaments: tournaments})
+  end
+
+  defp live_visible?(tournament, user) do
+    tournament.access_type == "public" or tournament.creator_id == user.id or
+      user.id in tournament.moderator_ids or Helpers.player?(tournament, user.id)
   end
 
   def show(conn, %{"id" => id}) do

@@ -24,6 +24,7 @@ import { isAbandoned, isGameOver, useGameStore } from '@/features/game/store';
 import type { Game, GamePageProps, GamePlayer } from '@/features/game/types';
 import { type GameApi, useGame } from '@/features/game/useGame';
 import { InviteDialog } from '@/features/invites/InviteDialog';
+import { MatchStartedAlert } from '@/features/tournament/components/MatchStartedAlert';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { useMainChannel } from '@/features/main/useMainChannel';
 import { CookieNotice } from '@/features/privacy/CookieNotice';
@@ -330,6 +331,7 @@ export default function GameRoom() {
     <>
       {props.is_record ? <HistoryRoom props={props} /> : <LiveRoom props={props} />}
       {invites && <InviteDialog />}
+      {invites && <MatchStartedAlert tournamentId={game.tournament_id} />}
     </>
   );
 }

@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 import { Alert, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlugConnectedX } from '@tabler/icons-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LobbyChat } from '@/features/chat/components/LobbyChat';
@@ -11,16 +11,16 @@ import { useChat } from '@/features/chat/useChat';
 import { useInviteDialog } from '@/features/invites/dialog';
 import { ActiveGamesModal } from '@/features/lobby/components/ActiveGamesModal';
 import { CreateGameModal, type CreateGameParams } from '@/features/lobby/components/CreateGameModal';
-import { LeagueBanner } from '@/features/lobby/components/LeagueBanner';
 import { Leaderboard } from '@/features/lobby/components/Leaderboard';
 import { ProfileCard } from '@/features/lobby/components/ProfileCard';
+import { Promos } from '@/features/lobby/components/Promos';
 import { Tournaments } from '@/features/lobby/components/Tournaments';
 import { isPlayer } from '@/features/lobby/format';
 import { useLobbyStore } from '@/features/lobby/store';
 import type { LobbyJoinReply } from '@/features/lobby/types';
 import { gameUrl, useLobbyChannel } from '@/features/lobby/useLobbyChannel';
-import { useVisibleGames } from '@/features/lobby/useVisibleGames';
 import classes from '@/features/lobby/Lobby.module.css';
+import { useActiveGame } from '@/features/main/store';
 import { AppLayout } from '@/layout/AppLayout';
 import { useSharedProps } from '@/shared/useSharedProps';
 
@@ -43,10 +43,18 @@ export default function Lobby() {
   const online = status === 'joined';
   const [createOpened, createModal] = useDisclosure(false);
   const [joinOpened, joinModal] = useDisclosure(false);
-  const visibleGames = useVisibleGames(user.id);
-
-  const games = useLobbyStore((state) => state.games);
-  const activeGame = useMemo(() => games.find((game) => isPlayer(game, user.id)), [games, user.id]);
+  // Narrow selectors: the lobby's games change on every check run, and this page holds the chat.
+  const activeGame = useLobbyStore((state) => state.games.find((game) => isPlayer(game, user.id)));
+  // The lobby always holds a few bot games waiting for a player; count only the rest.
+  const gamesCount = useLobbyStore(
+    (state) =>
+      state.games.filter(
+        (game) => game.state === 'playing' || (game.state === 'waiting_opponent' && !game.is_bot),
+      ).length,
+  );
+  // Tournament games aren't in the lobby list, but block creating another one all the same.
+  const otherGame = useActiveGame();
+  const currentGame = activeGame ?? (otherGame?.state === 'playing' ? otherGame : undefined);
 
   // The random-player game we are waiting in. Right after creation it may not be in the
   // store yet, so remember its id until the channel delivers it.
@@ -120,18 +128,15 @@ export default function Lobby() {
         </Stack>
         <div className={classes.profile}>
           <ProfileCard
-            activeGame={activeGame}
+            activeGame={currentGame}
             online={online}
-            gamesCount={
-              // The lobby always holds a few bot games waiting for a player; count only the rest.
-              visibleGames.filter((game) => !(game.is_bot && game.state === 'waiting_opponent')).length
-            }
+            gamesCount={gamesCount}
             onCreate={createModal.open}
             onJoin={joinModal.open}
           />
         </div>
         <Stack gap="lg" className={classes.extras}>
-          <LeagueBanner />
+          <Promos />
           <Leaderboard />
         </Stack>
       </div>

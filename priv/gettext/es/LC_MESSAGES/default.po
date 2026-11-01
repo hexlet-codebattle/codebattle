@@ -6468,16 +6468,16 @@ msgstr ""
 "Todos son bienvenidos: ¡trae tu mejor código y deja tu huella!"
 
 msgid "Ranking Points_one"
-msgstr "Puntos de clasificación_uno"
+msgstr "punto de clasificación"
 
 msgid "Ranking Points_few"
-msgstr "Puntos de clasificación_pocos"
+msgstr "puntos de clasificación"
 
 msgid "Ranking Points_many"
-msgstr "Puntos de clasificación_muchos"
+msgstr "puntos de clasificación"
 
 msgid "Ranking Points_other"
-msgstr "Puntos de clasificación_otros"
+msgstr "puntos de clasificación"
 
 msgid "This task is not available."
 msgstr "Esta tarea no está disponible."
@@ -7745,3 +7745,179 @@ msgstr "Gestionar tus torneos privados"
 #: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
 msgid "Stay connected without asking you to sign in again"
 msgstr "Mantener la conexión sin volver a iniciar sesión"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._one"
+msgstr "%{count} herramienta. Una sola conexión."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._few"
+msgstr "%{count} herramientas. Una sola conexión."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._many"
+msgstr "%{count} herramientas. Una sola conexión."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._other"
+msgstr "%{count} herramientas. Una sola conexión."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your next battle starts with a prompt."
+msgstr "Tu próxima batalla empieza con un prompt."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Connect your AI assistant to Codebattle. Find challenges, start games, and run tournaments right from your conversation."
+msgstr "Conecta tu asistente de IA a Codebattle. Encuentra retos, inicia partidas y organiza torneos directamente desde tu conversación."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Connect your assistant"
+msgstr "Conecta tu asistente"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Explore the API"
+msgstr "Explora la API"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Example conversation"
+msgstr "Ejemplo de conversación"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Find an easy task and start a game with a bot."
+msgstr "Busca una tarea fácil y empieza una partida contra un bot."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your assistant"
+msgstr "Tu asistente"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your game is ready."
+msgstr "Tu partida está lista."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Easy task · Bot opponent · 10 minutes"
+msgstr "Tarea fácil · Rival: bot · 10 minutos"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Less setup. More time to code."
+msgstr "Menos configuración. Más tiempo para programar."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Find your next battle"
+msgstr "Encuentra tu próxima batalla"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Discover tasks, create a game with a bot, or invite a friend. Just ask your assistant."
+msgstr "Descubre tareas, crea una partida contra un bot o invita a un amigo. Solo pídeselo a tu asistente."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Bring everyone together"
+msgstr "Reúne a todos"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Create a private tournament, invite players, and manage it from your conversation."
+msgstr "Crea un torneo privado, invita a jugadores y gestiónalo desde tu conversación."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Stay in the game"
+msgstr "Sigue en el juego"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Check your active game, upcoming tournaments, invitations, and rankings without switching tabs."
+msgstr "Consulta tu partida activa, los próximos torneos, las invitaciones y las clasificaciones sin cambiar de pestaña."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Add the server"
+msgstr "Añade el servidor"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "In your MCP client, add a remote server with the URL below. Choose Streamable HTTP and OAuth if prompted."
+msgstr "En tu cliente MCP, añade un servidor remoto con la URL de abajo. Si te lo pide, elige Streamable HTTP y OAuth."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Sign in to Codebattle"
+msgstr "Inicia sesión en Codebattle"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your client opens Codebattle in the browser. Sign in with your existing account."
+msgstr "Tu cliente abre Codebattle en el navegador. Inicia sesión con tu cuenta."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Choose what to allow"
+msgstr "Elige qué permitir"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Review the requested permissions and approve access. Your assistant is ready to use Codebattle."
+msgstr "Revisa los permisos solicitados y aprueba el acceso. Tu asistente ya puede usar Codebattle."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "FROM PROMPT TO PLAY"
+msgstr "DEL PROMPT AL JUEGO"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "One URL. Three steps. You’re in."
+msgstr "Una URL. Tres pasos. Ya estás dentro."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Use a client that supports remote MCP servers and OAuth. No API token to copy."
+msgstr "Usa un cliente compatible con servidores MCP remotos y OAuth. No hace falta copiar ningún token de API."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "MCP server URL"
+msgstr "URL del servidor MCP"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Copy URL"
+msgstr "Copiar URL"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your account. Your permissions."
+msgstr "Tu cuenta. Tus permisos."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Start with read-only access. Approve extra permissions for games or tournament management when you need them. Disconnect any application in Settings, at any time."
+msgstr "Empieza con acceso de solo lectura. Aprueba permisos adicionales para partidas o gestión de torneos cuando los necesites. Desconecta cualquier aplicación en Ajustes cuando quieras."
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "New"
+msgstr "Nuevo"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Connect your AI assistant to find tasks, start games, and run tournaments right from the chat."
+msgstr "Conecta tu asistente de IA para encontrar tareas, iniciar partidas y organizar torneos desde el chat."
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Learn more"
+msgstr "Más información"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Connect"
+msgstr "Conectar"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "What’s new"
+msgstr "Novedades"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Slide %{index}"
+msgstr "Diapositiva %{index}"
+
+#: frontend/src/features/users/UserCard.tsx
+msgid "Head-to-head"
+msgstr "Cara a cara"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Sending…"
+msgstr "Enviando…"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Sending your solution…"
+msgstr "Enviando tu solución…"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Your solution didn’t reach the server"
+msgstr "Tu solución no llegó al servidor"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Check your connection and run it again."
+msgstr "Comprueba tu conexión y vuelve a ejecutarlo."

@@ -1,6 +1,6 @@
 import { ActionIcon, Badge, Button, CloseButton, Group, ScrollArea, Text, Tooltip } from '@mantine/core';
 import { IconLock, IconSend2, IconTrash } from '@tabler/icons-react';
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSharedProps } from '@/shared/useSharedProps';
@@ -16,15 +16,23 @@ import { MessageReactions } from './MessageReactions';
 import { UserCard } from '@/features/users/UserCard';
 import { LangIcon } from '@/shared/LangIcon';
 import { usePresenceStore } from '@/features/presence/store';
+import { useLatest } from '@/shared/useLatest';
 
 const timeFormat = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
 
+/** What a row needs from the chat; stable while the connection state holds, so rows can be memoized. */
+type RowActions = Pick<ChatApi, 'online' | 'react' | 'deleteMessage' | 'ban'>;
+
 interface MessageRowProps {
   message: ChatMessage;
-  chat: ChatApi;
+  actions: RowActions;
   canDelete: boolean;
   /** Continues the previous message's author run: name hidden, time shown on hover. */
   grouped: boolean;
+  /** The author's current language while they're online, else the one the message was sent with. */
+  lang: string | null | undefined;
+  /** Peer name of the private room a message of yours went to, when that room is open. */
+  privateTo: string | undefined;
   onDirectMessage: (user: ChatUserRef) => void;
 }
 
@@ -39,16 +47,20 @@ const continuesRun = (previous: ChatMessage | undefined, message: ChatMessage) =
   previous.meta?.target_user_id === message.meta?.target_user_id &&
   (message.time ?? 0) - (previous.time ?? 0) < GROUP_WINDOW_SECONDS;
 
-function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: MessageRowProps) {
-  // The author's current language while they're online, else the one the message was sent with.
-  const onlineLang = usePresenceStore((state) => state.users.find(({ id }) => id === message.user_id)?.lang);
-  const lang = onlineLang ?? message.lang;
+// Memoized: the panel re-renders on every keystroke, presence diff and (in the lobby) game update.
+const MessageRow = memo(function MessageRow({
+  message,
+  actions,
+  canDelete,
+  grouped,
+  lang,
+  privateTo,
+  onDirectMessage,
+}: MessageRowProps) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const isText = message.type === 'text' && message.user_id != null;
   const mentioned = isText && message.user_id !== me.id && mentions(message.text, me.name);
-  const privateTo =
-    message.meta?.type === 'private' ? chat.rooms.find((room) => room.userId === message.meta?.target_user_id) : undefined;
 
   return (
     <div className={classes.message} data-chat-message data-grouped={grouped || undefined} data-mentioned={mentioned || undefined}>
@@ -66,7 +78,7 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
                 <UserCard
                   user={{ id: message.user_id!, name: message.name ?? '' }}
                   onDirectMessage={onDirectMessage}
-                  onBan={chat.ban}
+                  onBan={actions.ban}
                 >
                   <Text span fw={700} size="sm" c="bright">
                     {message.name}
@@ -74,13 +86,13 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
                 </UserCard>
                 {message.meta?.type === 'private' && (
                   <Badge size="xs" variant="light" color="violet" leftSection={<IconLock size={10} />} ml={6}>
-                    {privateTo ? t('to %{name}', { name: privateTo.name }) : t('private')}
+                    {privateTo ? t('to %{name}', { name: privateTo }) : t('private')}
                   </Badge>
                 )}{' '}
               </>
             )}
             <MessageText text={message.text} />
-            <MessageReactions message={message} chat={chat} />
+            <MessageReactions message={message} chat={actions} />
           </>
         ) : (
           <Text span size="sm" c="dimmed" fs="italic">
@@ -95,7 +107,7 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
             color="red"
             variant="subtle"
             className={classes.delete}
-            onClick={() => chat.deleteMessage(message.id)}
+            onClick={() => actions.deleteMessage(message.id)}
             aria-label={t('Delete message')}
           >
             <IconTrash size={14} />
@@ -103,6 +115,50 @@ function MessageRow({ message, chat, canDelete, grouped, onDirectMessage }: Mess
         </Tooltip>
       )}
     </div>
+  );
+});
+
+interface ComposerProps {
+  chat: ChatApi;
+  /** Private room peer, or null for General. */
+  room: { userId: number; name: string } | null;
+  onSent: () => void;
+}
+
+// The draft lives here so typing doesn't re-render the message list.
+function Composer({ chat, room, onSent }: ComposerProps) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState('');
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    chat.send(draft, room ? { id: room.userId, name: room.name } : undefined);
+    setDraft('');
+    onSent();
+  };
+
+  return (
+    <form onSubmit={submit} className={classes.composer}>
+      <ChatInput
+        flex={1}
+        value={draft}
+        onValueChange={setDraft}
+        messages={chat.messages}
+        maxLength={MAX_MESSAGE_LENGTH}
+        disabled={!chat.online}
+        placeholder={
+          !chat.online
+            ? t('Connecting...')
+            : room
+              ? t('Private message to %{name}', { name: room.name })
+              : t('Be nice in chat!')
+        }
+        aria-label={t('Message')}
+      />
+      <ActionIcon type="submit" size="lg" color="green" variant="filled" disabled={!chat.online || !draft.trim()} aria-label={t('Send')}>
+        <IconSend2 size={18} />
+      </ActionIcon>
+    </form>
   );
 }
 
@@ -119,25 +175,28 @@ interface ChatPanelProps {
 export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, onDirectMessage, height = 360 }: ChatPanelProps) {
   const { t } = useTranslation();
   const { current_user: user } = useSharedProps();
-  const [draft, setDraft] = useState('');
   const viewport = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
 
   const activeRoom = chat.rooms.find((room) => room.userId === activeRoomId) ?? null;
   const visible = useMemo(() => roomMessages(chat.messages, activeRoom, user.id), [chat.messages, activeRoom, user.id]);
 
+  // One lookup table per presence diff instead of a store subscription per row.
+  const onlineUsers = usePresenceStore((state) => state.users);
+  const onlineLangs = useMemo(() => new Map(onlineUsers.map(({ id, lang }) => [id, lang])), [onlineUsers]);
+
+  const { online, react, deleteMessage, ban } = chat;
+  const actions = useMemo(() => ({ online, react, deleteMessage, ban }), [online, react, deleteMessage, ban]);
+
+  // Parents may pass a fresh callback each render; rows get a stable one.
+  const latestDirectMessage = useLatest(onDirectMessage);
+  const directMessage = useCallback((peer: ChatUserRef) => latestDirectMessage.current(peer), [latestDirectMessage]);
+
   // Follow new messages unless the user scrolled up to read history.
   useEffect(() => {
     const element = viewport.current;
     if (element && stickToBottom.current) element.scrollTo({ top: element.scrollHeight });
   }, [visible.length, activeRoomId]);
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    chat.send(draft, activeRoom ? { id: activeRoom.userId, name: activeRoom.name } : undefined);
-    setDraft('');
-    stickToBottom.current = true;
-  };
 
   return (
     <div className={classes.panel} data-fill={height === 'fill' || undefined}>
@@ -205,8 +264,14 @@ export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, o
                 key={message.id}
                 message={message}
                 grouped={continuesRun(visible[index - 1], message)}
-                chat={chat}
-                onDirectMessage={onDirectMessage}
+                actions={actions}
+                lang={(message.user_id != null ? onlineLangs.get(message.user_id) : null) ?? message.lang}
+                privateTo={
+                  message.meta?.type === 'private'
+                    ? chat.rooms.find((room) => room.userId === message.meta?.target_user_id)?.name
+                    : undefined
+                }
+                onDirectMessage={directMessage}
                 canDelete={message.type === 'text' && (Boolean(user.is_admin) || message.user_id === user.id)}
               />
             ))
@@ -214,27 +279,13 @@ export function ChatPanel({ chat, activeRoomId, onRoomChange: setActiveRoomId, o
         </div>
       </ScrollArea>
 
-      <form onSubmit={submit} className={classes.composer}>
-        <ChatInput
-          flex={1}
-          value={draft}
-          onValueChange={setDraft}
-          messages={chat.messages}
-          maxLength={MAX_MESSAGE_LENGTH}
-          disabled={!chat.online}
-          placeholder={
-            !chat.online
-              ? t('Connecting...')
-              : activeRoom
-                ? t('Private message to %{name}', { name: activeRoom.name })
-                : t('Be nice in chat!')
-          }
-          aria-label={t('Message')}
-        />
-        <ActionIcon type="submit" size="lg" color="green" variant="filled" disabled={!chat.online || !draft.trim()} aria-label={t('Send')}>
-          <IconSend2 size={18} />
-        </ActionIcon>
-      </form>
+      <Composer
+        chat={chat}
+        room={activeRoom}
+        onSent={() => {
+          stickToBottom.current = true;
+        }}
+      />
     </div>
   );
 }

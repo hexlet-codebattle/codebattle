@@ -129,6 +129,15 @@ defmodule CodebattleWeb.Router do
     get("/oauth-protected-resource/mcp", OauthController, :resource_metadata)
   end
 
+  pipeline :mcp_browser do
+    plug(CodebattleWeb.Plugs.McpBrowserRequest)
+  end
+
+  scope "/", CodebattleWeb.Mcp do
+    pipe_through([:mcp_browser, :browser])
+    get("/mcp", PageController, :show)
+  end
+
   scope "/mcp" do
     forward("/", CodebattleWeb.Plugs.McpTransport)
   end

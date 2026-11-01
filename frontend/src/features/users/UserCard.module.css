@@ -62,6 +62,26 @@
   background: var(--cb-sunken);
 }
 
+/* The head-to-head row is a link: the score plus a way into the duel page. */
+.h2h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mantine-spacing-xs);
+  padding-inline: var(--mantine-spacing-sm);
+  color: var(--cb-text-strong);
+  transition: border-color 120ms ease;
+
+  &:hover {
+    border-color: var(--cb-text-muted);
+  }
+}
+
+.h2hIcon {
+  flex-shrink: 0;
+  color: var(--cb-text-muted);
+}
+
 .gradeWins {
   color: var(--cb-text-strong);
 

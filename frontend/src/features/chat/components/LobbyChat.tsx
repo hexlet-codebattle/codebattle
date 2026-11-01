@@ -1,5 +1,7 @@
 import { Card } from '@mantine/core';
-import { forwardRef } from 'react';
+import { forwardRef, useCallback } from 'react';
+
+import { useLatest } from '@/shared/useLatest';
 
 import type { ChatUserRef } from '../types';
 import type { ChatApi } from '../useChat';
@@ -17,11 +19,15 @@ interface LobbyChatProps {
 
 /** Lobby chat with the online list beside it; chat state lives in the page. */
 export const LobbyChat = forwardRef<HTMLDivElement, LobbyChatProps>(function LobbyChat(props, ref) {
+  // The lobby re-renders on every game update with a fresh callback; keep the online list out of it.
+  const latestDirectMessage = useLatest(props.onDirectMessage);
+  const onDirectMessage = useCallback((user: ChatUserRef) => latestDirectMessage.current(user), [latestDirectMessage]);
+
   return (
     <Card padding={0} ref={ref} className={classes.card}>
       <ChatPanel {...props} height="fill" />
       <aside className={classes.online}>
-        <OnlinePlayers onDirectMessage={props.onDirectMessage} />
+        <OnlinePlayers onDirectMessage={onDirectMessage} />
       </aside>
     </Card>
   );

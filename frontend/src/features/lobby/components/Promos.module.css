@@ -1,0 +1,116 @@
+.carousel {
+  position: relative;
+}
+
+/* Every slide sits in the same grid cell, so the slot keeps the tallest card's height and never jumps. */
+.track {
+  display: grid;
+}
+
+/* --promo-dir (1 or -1) sends the new card in from the right and the old one out to the left, or back. */
+.slide {
+  --promo-shift: 40px;
+
+  display: flex;
+  flex-direction: column;
+  grid-area: 1 / 1;
+  visibility: hidden;
+
+  & > * {
+    flex: 1;
+  }
+
+  &[data-state='active'] {
+    visibility: visible;
+  }
+
+  &[data-animate][data-state='active'] {
+    animation: promoIn 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  &[data-animate][data-state='leaving'] {
+    animation: promoOut 500ms cubic-bezier(0.4, 0, 0.6, 1) both;
+  }
+
+  /* Cross-fade only. */
+  @media (prefers-reduced-motion: reduce) {
+    --promo-shift: 0px;
+  }
+}
+
+@keyframes promoIn {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--promo-dir) * var(--promo-shift)));
+  }
+}
+
+@keyframes promoOut {
+  from {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  to {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(calc(var(--promo-dir) * var(--promo-shift) * -1));
+  }
+}
+
+.controls {
+  position: absolute;
+  top: 8px;
+  right: 6px;
+}
+
+/* A 6px dot (a pill for the active slide) with a 16px-high hit area. */
+.dot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  padding: 5px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cb-text-muted) 40%, transparent);
+  background-clip: content-box;
+  cursor: pointer;
+  transition:
+    width 300ms ease,
+    background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--cb-text-muted);
+  }
+
+  &[data-active] {
+    width: 30px;
+    background-color: color-mix(in srgb, var(--cb-text-muted) 30%, transparent);
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mantine-primary-color-filled);
+    outline-offset: 1px;
+  }
+}
+
+/* Time left on the active slide; its animationend rotates the carousel. */
+.progress {
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  background: var(--cb-text-muted);
+  transform-origin: left center;
+  animation: promoProgress 7s linear both;
+
+  &[data-paused] {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes promoProgress {
+  from {
+    transform: scaleX(0);
+  }
+}

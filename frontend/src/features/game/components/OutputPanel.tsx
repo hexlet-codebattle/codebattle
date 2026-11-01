@@ -148,6 +148,14 @@ export function OutputPanel({ output, checking, summaryOnly = false, leftBefore 
 
   if (output.status === 'game_is_dead') return withExtra(<Alert color="gray">{t('Time for checking after the game is over')}</Alert>);
 
+  if (output.status === 'not_sent') {
+    return withExtra(
+      <Alert color="yellow" title={t('Your solution didn’t reach the server')}>
+        {t('Check your connection and run it again.')}
+      </Alert>,
+    );
+  }
+
   if (['client_timeout', 'service_timeout'].includes(output.status)) {
     return withExtra(
       <Alert color="yellow" title={t('We could not verify your solution')}>

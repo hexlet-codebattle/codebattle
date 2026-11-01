@@ -16,7 +16,7 @@ export interface AssertResult {
 
 /** Codebattle.CodeCheck.Result.V2 (+ client-only statuses). */
 export interface CheckResult {
-  status: 'initial' | 'started' | 'ok' | 'failure' | 'error' | 'memory_leak' | 'timeout' | 'service_timeout' | 'service_failure' | 'client_timeout' | 'game_is_dead' | string;
+  status: 'initial' | 'started' | 'ok' | 'failure' | 'error' | 'memory_leak' | 'timeout' | 'service_timeout' | 'service_failure' | 'client_timeout' | 'game_is_dead' | 'not_sent' | string;
   exit_code?: number;
   success_count?: number;
   asserts_count?: number;

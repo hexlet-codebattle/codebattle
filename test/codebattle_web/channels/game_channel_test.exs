@@ -162,6 +162,19 @@ defmodule CodebattleWeb.GameChannelTest do
     end
   end
 
+  describe "handle_in(check_result)" do
+    test "confirms receipt to the player before the check completes", %{user1: user1, user2: user2, socket1: socket1} do
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+
+      push(socket1, "check_result", %{editor_text: "x", lang_slug: "js"})
+
+      assert_push("user:check_received", %{})
+      assert_broadcast("user:check_complete", %{user_id: user_id})
+      assert user_id == user1.id
+    end
+  end
+
   describe "handle_in(editor:data)" do
     test "broadcasts editor:data", %{
       user1: user1,

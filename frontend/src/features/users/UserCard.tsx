@@ -1,9 +1,10 @@
-import { ActionIcon, Anchor, Button, Group, Popover, SimpleGrid, Skeleton, Stack, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Anchor, Button, Group, Popover, SimpleGrid, Skeleton, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 import {
   IconBan,
   IconBinoculars,
   IconBinocularsFilled,
+  IconChevronRight,
   IconCopy,
   IconEye,
   IconMessage,
@@ -55,6 +56,7 @@ interface CardActions {
   onBan?: (user: CardUser) => void;
 }
 
+/** Their score against the viewer; the whole row opens the duel page (/h2h). */
 function HeadToHeadScore({ user }: { user: CardUser }) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
@@ -66,37 +68,43 @@ function HeadToHeadScore({ user }: { user: CardUser }) {
   });
   const myWins = data?.players.find(({ id }) => id === me.id)?.wins ?? 0;
   const opponentWins = data?.players.find(({ id }) => id === user.id)?.wins ?? 0;
-  const score = `${myWins} : ${opponentWins}`;
+  const label = t('Head-to-head');
 
-  if (!isPending && !isError && !data) return null;
-
-  return (
-    <Group justify="space-between" wrap="nowrap" className={classes.stats} px="sm">
-      <Text size="xs" c="dimmed">H2H</Text>
-      {isPending ? (
-        <Skeleton h={18} w={60} />
-      ) : isError ? (
+  if (isError) {
+    return (
+      <Group justify="space-between" wrap="nowrap" className={classes.stats} px="sm">
+        <Text size="xs" c="dimmed">{label}</Text>
         <Tooltip label={t("Couldn't load the results.")}>
           <Anchor component="button" size="xs" onClick={() => void refetch()}>{t('Retry')}</Anchor>
         </Tooltip>
-      ) : (
-        <Tooltip label={`${t('You')} : ${user.name}`}>
-          {myWins + opponentWins > 0 ? (
-            <Anchor
-              href={`/h2h/${me.id}/${user.id}`}
-              size="sm"
-              ff="monospace"
-              fw={700}
-              aria-label={`${t('Open H2H')}: ${me.name} ${myWins} : ${opponentWins} ${user.name}`}
-            >
-              {score}
-            </Anchor>
-          ) : (
-            <Text size="sm" ff="monospace" c="dimmed">{score}</Text>
-          )}
-        </Tooltip>
-      )}
-    </Group>
+      </Group>
+    );
+  }
+
+  return (
+    <UnstyledButton
+      component="a"
+      href={`/h2h/${me.id}/${user.id}`}
+      className={`${classes.stats} ${classes.h2h}`}
+      aria-label={`${t('Open H2H')}: ${me.name} ${myWins} : ${opponentWins} ${user.name}`}
+    >
+      <Group gap={6} wrap="nowrap">
+        <IconSwords size={14} className={classes.h2hIcon} />
+        <Text size="xs" fw={600}>{label}</Text>
+      </Group>
+      <Group gap={4} wrap="nowrap">
+        {isPending ? (
+          <Skeleton h={18} w={44} />
+        ) : (
+          <Tooltip label={`${t('You')} : ${user.name}`}>
+            <Text size="sm" ff="monospace" fw={700} c={myWins + opponentWins > 0 ? 'bright' : 'dimmed'}>
+              {myWins} : {opponentWins}
+            </Text>
+          </Tooltip>
+        )}
+        <IconChevronRight size={14} className={classes.h2hIcon} />
+      </Group>
+    </UnstyledButton>
   );
 }
 

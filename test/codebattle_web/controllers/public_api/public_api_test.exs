@@ -483,15 +483,36 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
   end
 
   describe "tournaments/live" do
-    test "lists live public and related private tournaments regardless of starts_at", %{conn: conn} do
+    test "lists running public and related private tournaments regardless of starts_at", %{conn: conn} do
       user = old_user()
       token = token(user)
       long_ago = DateTime.add(DateTime.utc_now(:second), -3, :day)
 
-      public = insert(:tournament, state: "waiting_participants", access_type: "public", starts_at: long_ago)
-      mine = insert(:token_tournament, state: "active", creator_id: user.id, starts_at: long_ago)
-      _foreign = insert(:token_tournament, state: "waiting_participants", starts_at: long_ago)
-      _finished = insert(:tournament, state: "finished", access_type: "public")
+      create = fn attrs ->
+        {:ok, tournament} =
+          %{
+            "creator" => user,
+            "name" => "Live cup",
+            "description" => "Live tournament",
+            "type" => "swiss",
+            "starts_at" => Calendar.strftime(long_ago, "%Y-%m-%dT%H:%M:%S")
+          }
+          |> Map.merge(attrs)
+          |> Tournament.Context.create()
+
+        tournament
+      end
+
+      public = create.(%{"access_type" => "public", "creator" => old_user()})
+      mine = create.(%{"access_type" => "token"})
+      moderated = create.(%{"access_type" => "token", "creator" => old_user(), "moderator_ids" => [user.id]})
+      participant = create.(%{"access_type" => "token", "creator" => old_user()})
+      Tournament.Context.handle_event(participant.id, :join, %{user: user})
+      _foreign = create.(%{"access_type" => "token", "creator" => old_user()})
+      finished = create.(%{"access_type" => "public"})
+      Tournament.Context.handle_event(finished.id, :cancel, %{user: user})
+      _abandoned = insert(:tournament, state: "active", access_type: "public", starts_at: long_ago)
+      _abandoned_private = insert(:token_tournament, state: "waiting_participants", creator_id: user.id)
 
       ids =
         conn
@@ -501,7 +522,31 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
         |> Map.fetch!("tournaments")
         |> Enum.map(& &1["id"])
 
-      assert ids == [mine.id, public.id]
+      assert ids == Enum.sort([public.id, mine.id, moderated.id, participant.id], :desc)
+    end
+
+    test "uses live participants and excludes newer orphaned rows before limiting results", %{conn: conn} do
+      user = old_user()
+
+      {:ok, live} =
+        Tournament.Context.create(%{
+          "creator" => user,
+          "name" => "Real cup",
+          "description" => "Real cup",
+          "type" => "swiss",
+          "access_type" => "public"
+        })
+
+      Tournament.Context.handle_event(live.id, :join, %{user: user})
+
+      for _ <- 1..101 do
+        insert(:tournament, state: "active", access_type: "public", starts_at: ~U[2023-01-01 00:00:00Z])
+      end
+
+      assert %{"tournaments" => [%{"id" => id, "players_count" => 1}]} =
+               conn |> api(token(user)) |> get("/public_api/v1/tournaments/live") |> json_response(200)
+
+      assert id == live.id
     end
   end
 

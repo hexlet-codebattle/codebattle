@@ -432,6 +432,80 @@ defmodule Codebattle.Game.BotDetection.RiskScorerTest do
     end
   end
 
+  describe "Per-window rhythm" do
+    # Modelled on game 325977: ~50-key windows with no interval above 50 ms, then a slower
+    # stretch with a 2.26 s pause that hides the burst in game-wide figures.
+    defp rhythm_window(id, overrides) do
+      batch(
+        Map.merge(
+          %{
+            "event_count" => 100,
+            "key_event_count" => 51,
+            "printable_key_count" => 49,
+            "chars_inserted" => 49,
+            "backspace_count" => 0,
+            "key_delta_sample_count" => 50,
+            "window_start_offset_ms" => id * 5_000,
+            "window_end_offset_ms" => (id + 1) * 5_000
+          },
+          overrides
+        ),
+        %{id: id, window_start_offset_ms: id * 5_000, window_end_offset_ms: (id + 1) * 5_000}
+      )
+    end
+
+    defp score_windows(batches), do: RiskScorer.score(%{stats: aggregate(batches), batches: batches})
+
+    test "a scripted burst hidden by a later pause is flagged from its own window" do
+      burst = rhythm_window(1, %{"avg_key_delta_ms" => 41, "min_key_delta_ms" => 1, "max_key_delta_ms" => 50})
+
+      slower =
+        rhythm_window(2, %{
+          "avg_key_delta_ms" => 127,
+          "min_key_delta_ms" => 1,
+          "max_key_delta_ms" => 2260,
+          "idle_pause_over_2s_count" => 1
+        })
+
+      assert score(aggregate([burst, slower])).signals == []
+
+      result = score_windows([burst, slower])
+      assert signal_present?(result, "suspiciously uniform — no key interval above 50 ms")
+      # Rhythm stays a supporting clue, below the review threshold.
+      assert result.score == 2
+      assert result.level == :low
+    end
+
+    test "a window typed faster than 30 ms per key is flagged" do
+      fast = rhythm_window(1, %{"avg_key_delta_ms" => 29, "min_key_delta_ms" => 0, "max_key_delta_ms" => 48})
+      slower = rhythm_window(2, %{"avg_key_delta_ms" => 250, "min_key_delta_ms" => 80, "max_key_delta_ms" => 900})
+
+      result = score_windows([fast, slower])
+      assert signal_present?(result, "very fast typing — avg key delta 29 ms")
+      refute signal_present?(result, "suspiciously uniform")
+    end
+
+    test "held Backspace auto-repeat is not machine typing" do
+      held =
+        rhythm_window(1, %{
+          "printable_key_count" => 2,
+          "chars_inserted" => 2,
+          "backspace_count" => 48,
+          "chars_deleted" => 48,
+          "avg_key_delta_ms" => 25,
+          "min_key_delta_ms" => 24,
+          "max_key_delta_ms" => 30
+        })
+
+      assert score_windows([held]).signals == []
+    end
+
+    test "ordinary human windows stay unflagged" do
+      batches = human_batches(count: 6, chars_per_batch: 50, keys_per_batch: 50)
+      assert score_windows(batches).score == 0
+    end
+  end
+
   describe "Zero idle pauses in long session" do
     test "no pauses with > 50 keys and session > 30s → flagged" do
       stats =

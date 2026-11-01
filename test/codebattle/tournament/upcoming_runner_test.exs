@@ -253,7 +253,7 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
     end
   end
 
-  describe "cancel_stale_waiting/0" do
+  describe "cancel_stale/0" do
     test "cancels a live tournament nobody started long after starts_at" do
       creator = insert(:user)
       long_ago = DateTime.add(DateTime.utc_now(:second), -2, :day)
@@ -273,7 +273,7 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
         set: [inserted_at: DateTime.to_naive(long_ago)]
       )
 
-      assert UpcomingRunner.cancel_stale_waiting() == [tournament.id]
+      assert UpcomingRunner.cancel_stale() == [tournament.id]
       assert Tournament.Context.get_from_db!(tournament.id).state == "canceled"
       assert Tournament.Server.get_tournament(tournament.id) == nil
     end
@@ -288,11 +288,21 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
           inserted_at: DateTime.to_naive(long_ago)
         )
 
-      assert UpcomingRunner.cancel_stale_waiting() == [tournament.id]
+      assert UpcomingRunner.cancel_stale() == [tournament.id]
       assert Tournament.Context.get_from_db!(tournament.id).state == "canceled"
     end
 
-    test "keeps recently created, future and non-waiting tournaments" do
+    test "cancels an active tournament abandoned for a week" do
+      week_ago = DateTime.add(DateTime.utc_now(:second), -8, :day)
+
+      tournament =
+        insert(:tournament, state: "active", starts_at: week_ago, inserted_at: DateTime.to_naive(week_ago))
+
+      assert UpcomingRunner.cancel_stale() == [tournament.id]
+      assert Tournament.Context.get_from_db!(tournament.id).state == "canceled"
+    end
+
+    test "keeps recently created, future and recently active tournaments" do
       now = DateTime.utc_now(:second)
       long_ago = DateTime.add(now, -2, :day)
 
@@ -313,7 +323,7 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
       active =
         insert(:tournament, state: "active", starts_at: long_ago, inserted_at: DateTime.to_naive(long_ago))
 
-      assert UpcomingRunner.cancel_stale_waiting() == []
+      assert UpcomingRunner.cancel_stale() == []
 
       for {t, state} <- [{recent, "waiting_participants"}, {future, "waiting_participants"}, {active, "active"}] do
         assert Tournament.Context.get_from_db!(t.id).state == state

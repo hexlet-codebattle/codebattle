@@ -150,18 +150,18 @@ defmodule Codebattle.Tournament.Context do
   end
 
   @doc """
-  Tournaments still waiting for participants although both their creation time and
-  `starts_at` are older than `cutoff`: nobody started them and nobody will.
+  Tournaments still in `state` although both their creation time and `starts_at` are
+  older than `cutoff`: a waiting one nobody started, or an active one that lost its server.
   """
-  @spec get_stale_waiting_tournaments(DateTime.t()) :: list(Tournament.t())
-  def get_stale_waiting_tournaments(cutoff) do
+  @spec get_stale_tournaments(String.t(), DateTime.t()) :: list(Tournament.t())
+  def get_stale_tournaments(state, cutoff) do
     naive_cutoff = DateTime.to_naive(cutoff)
 
     Repo.all(
       from(t in Tournament,
         order_by: t.id,
         where:
-          t.state == "waiting_participants" and
+          t.state == ^state and
             t.starts_at < ^cutoff and
             t.inserted_at < ^naive_cutoff
       )
@@ -169,15 +169,15 @@ defmodule Codebattle.Tournament.Context do
   end
 
   @doc """
-  Cancels a stale waiting tournament through its server; if the server is gone,
-  marks the DB row canceled so it stops showing up as waiting.
+  Cancels a stale tournament through its server; if the server is gone, marks the
+  DB row canceled so it stops showing up as live.
   """
   @spec cancel_stale_tournament(Tournament.t()) :: :ok
   def cancel_stale_tournament(%Tournament{id: id}) do
     handle_event(id, :cancel, %{})
 
     Repo.update_all(
-      from(t in Tournament, where: t.id == ^id and t.state == "waiting_participants"),
+      from(t in Tournament, where: t.id == ^id and t.state in ^@states_from_restore),
       set: [state: "canceled", updated_at: NaiveDateTime.utc_now(:second)]
     )
 

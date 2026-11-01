@@ -4,7 +4,7 @@ import { emitMainEvent, MAIN_RELAYED_EVENTS } from '@/api/mainEvents';
 import { useChannel } from '@/api/useChannel';
 import { type PresenceState, usePresenceStore } from '@/features/presence/store';
 
-import { useDeployStore, useFollowStore, useMainChannelStore } from './store';
+import { useActiveGameStore, useDeployStore, useFollowStore, useMainChannelStore } from './store';
 
 const gameUrl = (gameId: number) => `/games/${gameId}`;
 const onGamePage = (gameId: number) => window.location.pathname.replace(/\/$/, '') === gameUrl(gameId);
@@ -29,6 +29,14 @@ export function useMainChannel(state: PresenceState) {
       presence_state: syncState,
       presence_diff: syncDiff,
       ...Object.fromEntries(MAIN_RELAYED_EVENTS.map((event) => [event, (payload: unknown) => emitMainEvent(event, payload)])),
+
+      // The user's own games: a tournament match started (pages away from it offer to open it) or a game ended.
+      'tournament:match_started': (payload: { game_id: number; tournament_id: number }) => {
+        useActiveGameStore.setState({ started: { id: payload.game_id, state: 'playing' } });
+        emitMainEvent('tournament:match_started', payload);
+      },
+      'user:game_over': ({ game_id: gameId }: { game_id: number }) =>
+        useActiveGameStore.setState(({ ended }) => ({ ended: new Set(ended).add(gameId) })),
 
       // A followed user started a game.
       'user:game_created': ({ active_game_id: gameId }: { active_game_id: number | null }) => {

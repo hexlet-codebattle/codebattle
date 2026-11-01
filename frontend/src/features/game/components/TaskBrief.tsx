@@ -74,6 +74,7 @@ function TestsBody({ playerId, opponentId }: { playerId: number; opponentId: num
   const { t } = useTranslation();
   const output = useGameStore((state) => state.outputs[playerId]);
   const checking = useGameStore((state) => Boolean(state.checking[playerId]));
+  const sending = useGameStore((state) => state.sendingId === playerId);
   const opponentName = useGameStore((state) => (opponentId != null ? state.players[opponentId]?.name : undefined));
   const opponentOutput = useGameStore((state) => (opponentId != null ? state.outputs[opponentId] : undefined));
   const opponentChecking = useGameStore((state) => (opponentId != null ? Boolean(state.checking[opponentId]) : false));
@@ -115,7 +116,14 @@ function TestsBody({ playerId, opponentId }: { playerId: number; opponentId: num
     );
   }
 
-  return <OutputPanel output={output} checking={checking} leftExtra={opponent} />;
+  return (
+    <OutputPanel
+      output={output}
+      checking={checking}
+      checkingTitle={sending ? t('Sending your solution…') : undefined}
+      leftExtra={opponent}
+    />
+  );
 }
 
 interface TaskBriefProps {

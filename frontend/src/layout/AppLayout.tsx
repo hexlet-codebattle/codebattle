@@ -28,6 +28,8 @@ import { FollowMenu } from '@/features/main/FollowMenu';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
 import { DeployBanner } from '@/features/main/DeployBanner';
+import { useActiveGame } from '@/features/main/store';
+import { MatchStartedAlert } from '@/features/tournament/components/MatchStartedAlert';
 import { CookieNotice } from '@/features/privacy/CookieNotice';
 import { useMainChannel } from '@/features/main/useMainChannel';
 import { type PresenceState, usePresenceStore } from '@/features/presence/store';
@@ -118,7 +120,7 @@ function OnlineCount() {
 /** Quick way back into the game the user plays or waits in; hidden on that game's page. */
 function ActiveGameLink() {
   const { t } = useTranslation();
-  const { active_game: game } = useSharedProps();
+  const game = useActiveGame();
 
   if (!game || window.location.pathname.replace(/\/$/, '') === `/games/${game.id}`) return null;
 
@@ -271,6 +273,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
   return (
     <AppShell header={{ height: 56 }}>
       <DeployBanner />
+      {!user.is_guest && <MatchStartedAlert />}
       <AppShell.Header className={classes.header}>
         <Container size="xl" h="100%">
           <Group h="100%" justify="space-between" wrap="nowrap" gap="xs">

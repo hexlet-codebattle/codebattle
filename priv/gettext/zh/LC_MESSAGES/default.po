@@ -3021,7 +3021,7 @@ msgid "until %{date}"
 msgstr "直到 %{date}"
 
 msgid "in %{time}"
-msgstr "在 %{time}"
+msgstr "%{time} 后"
 
 msgid "%{name} accepted your invite. Starting the battle…"
 msgstr "%{name} 接受了您的邀请。开始战斗……"
@@ -7389,3 +7389,179 @@ msgstr "管理你的私人锦标赛"
 #: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
 msgid "Stay connected without asking you to sign in again"
 msgstr "保持连接，无需再次登录"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._one"
+msgstr "%{count} 个工具，一次连接。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._few"
+msgstr "%{count} 个工具，一次连接。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._many"
+msgstr "%{count} 个工具，一次连接。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._other"
+msgstr "%{count} 个工具，一次连接。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your next battle starts with a prompt."
+msgstr "你的下一场对战，从一句提示开始。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Connect your AI assistant to Codebattle. Find challenges, start games, and run tournaments right from your conversation."
+msgstr "将你的 AI 助手连接到 Codebattle，直接在对话中查找挑战、开始对局、举办锦标赛。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Connect your assistant"
+msgstr "连接你的助手"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Explore the API"
+msgstr "浏览 API"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Example conversation"
+msgstr "对话示例"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Find an easy task and start a game with a bot."
+msgstr "找一道简单的题，和机器人开一局。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your assistant"
+msgstr "你的助手"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your game is ready."
+msgstr "对局已就绪。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Easy task · Bot opponent · 10 minutes"
+msgstr "简单题目 · 机器人对手 · 10 分钟"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Less setup. More time to code."
+msgstr "少些设置，多些编码时间。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Find your next battle"
+msgstr "找到下一场对战"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Discover tasks, create a game with a bot, or invite a friend. Just ask your assistant."
+msgstr "发现题目、创建人机对局或邀请好友——只需告诉你的助手。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Bring everyone together"
+msgstr "召集所有人"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Create a private tournament, invite players, and manage it from your conversation."
+msgstr "创建私人锦标赛、邀请玩家，并在对话中管理它。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Stay in the game"
+msgstr "随时掌握赛况"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Check your active game, upcoming tournaments, invitations, and rankings without switching tabs."
+msgstr "无需切换标签页，即可查看进行中的对局、即将开始的锦标赛、邀请和排名。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Add the server"
+msgstr "添加服务器"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "In your MCP client, add a remote server with the URL below. Choose Streamable HTTP and OAuth if prompted."
+msgstr "在你的 MCP 客户端中，用下方 URL 添加远程服务器。如有提示，请选择 Streamable HTTP 和 OAuth。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Sign in to Codebattle"
+msgstr "登录 Codebattle"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your client opens Codebattle in the browser. Sign in with your existing account."
+msgstr "客户端会在浏览器中打开 Codebattle，使用你现有的账号登录即可。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Choose what to allow"
+msgstr "选择授权范围"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Review the requested permissions and approve access. Your assistant is ready to use Codebattle."
+msgstr "查看所请求的权限并批准访问，你的助手即可使用 Codebattle。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "FROM PROMPT TO PLAY"
+msgstr "从提示到对战"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "One URL. Three steps. You’re in."
+msgstr "一个 URL，三步即可开始。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Use a client that supports remote MCP servers and OAuth. No API token to copy."
+msgstr "使用支持远程 MCP 服务器和 OAuth 的客户端，无需复制 API 令牌。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "MCP server URL"
+msgstr "MCP 服务器 URL"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Copy URL"
+msgstr "复制 URL"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your account. Your permissions."
+msgstr "你的账号，你的权限。"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Start with read-only access. Approve extra permissions for games or tournament management when you need them. Disconnect any application in Settings, at any time."
+msgstr "从只读权限开始，需要时再批准对局或锦标赛管理等额外权限。你可以随时在设置中断开任何应用。"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "New"
+msgstr "新"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Connect your AI assistant to find tasks, start games, and run tournaments right from the chat."
+msgstr "连接你的 AI 助手，直接在聊天中查找题目、开始对局、举办锦标赛。"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Learn more"
+msgstr "了解更多"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Connect"
+msgstr "连接"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "What’s new"
+msgstr "最新动态"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Slide %{index}"
+msgstr "第 %{index} 张"
+
+#: frontend/src/features/users/UserCard.tsx
+msgid "Head-to-head"
+msgstr "交手记录"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Sending…"
+msgstr "发送中…"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Sending your solution…"
+msgstr "正在发送你的解答…"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Your solution didn’t reach the server"
+msgstr "你的解答未能送达服务器"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Check your connection and run it again."
+msgstr "请检查网络连接后重新运行。"

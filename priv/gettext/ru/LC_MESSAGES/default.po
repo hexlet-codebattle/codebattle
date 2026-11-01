@@ -7139,3 +7139,179 @@ msgstr "Управлять вашими приватными турнирами"
 #: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
 msgid "Stay connected without asking you to sign in again"
 msgstr "Сохранять подключение без повторного входа"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._one"
+msgstr "%{count} инструмент. Одно подключение."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._few"
+msgstr "%{count} инструмента. Одно подключение."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._many"
+msgstr "%{count} инструментов. Одно подключение."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "%{count} tools. One connection._other"
+msgstr "%{count} инструмента. Одно подключение."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your next battle starts with a prompt."
+msgstr "Твой следующий батл начинается с промпта."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Connect your AI assistant to Codebattle. Find challenges, start games, and run tournaments right from your conversation."
+msgstr "Подключи ИИ-ассистента к Codebattle. Находи задачи, запускай игры и проводи турниры прямо из диалога."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Connect your assistant"
+msgstr "Подключить ассистента"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Explore the API"
+msgstr "Документация API"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Example conversation"
+msgstr "Пример диалога"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Find an easy task and start a game with a bot."
+msgstr "Найди простую задачу и начни игру с ботом."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your assistant"
+msgstr "Твой ассистент"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your game is ready."
+msgstr "Игра готова."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Easy task · Bot opponent · 10 minutes"
+msgstr "Простая задача · Соперник — бот · 10 минут"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Less setup. More time to code."
+msgstr "Меньше настроек — больше времени на код."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Find your next battle"
+msgstr "Найди следующий батл"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Discover tasks, create a game with a bot, or invite a friend. Just ask your assistant."
+msgstr "Ищи задачи, создавай игру с ботом или зови друга. Просто попроси ассистента."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Bring everyone together"
+msgstr "Собери всех вместе"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Create a private tournament, invite players, and manage it from your conversation."
+msgstr "Создай приватный турнир, пригласи игроков и управляй им прямо из диалога."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Stay in the game"
+msgstr "Будь в игре"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Check your active game, upcoming tournaments, invitations, and rankings without switching tabs."
+msgstr "Проверяй текущую игру, ближайшие турниры, приглашения и рейтинги, не переключая вкладки."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Add the server"
+msgstr "Добавь сервер"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "In your MCP client, add a remote server with the URL below. Choose Streamable HTTP and OAuth if prompted."
+msgstr "В своём MCP-клиенте добавь удалённый сервер с адресом ниже. Если спросят, выбери Streamable HTTP и OAuth."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Sign in to Codebattle"
+msgstr "Войди в Codebattle"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your client opens Codebattle in the browser. Sign in with your existing account."
+msgstr "Клиент откроет Codebattle в браузере. Войди в свой аккаунт."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Choose what to allow"
+msgstr "Выбери, что разрешить"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Review the requested permissions and approve access. Your assistant is ready to use Codebattle."
+msgstr "Проверь запрошенные разрешения и подтверди доступ. Ассистент готов к работе с Codebattle."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "FROM PROMPT TO PLAY"
+msgstr "ОТ ПРОМПТА К ИГРЕ"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "One URL. Three steps. You’re in."
+msgstr "Один адрес. Три шага. И ты в игре."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Use a client that supports remote MCP servers and OAuth. No API token to copy."
+msgstr "Нужен клиент с поддержкой удалённых MCP-серверов и OAuth. Копировать API-токен не придётся."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "MCP server URL"
+msgstr "Адрес MCP-сервера"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Copy URL"
+msgstr "Скопировать адрес"
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Your account. Your permissions."
+msgstr "Твой аккаунт. Твои разрешения."
+
+#: frontend/src/pages/Mcp.tsx
+msgid "Start with read-only access. Approve extra permissions for games or tournament management when you need them. Disconnect any application in Settings, at any time."
+msgstr "Начни с доступа только на чтение. Дополнительные разрешения для игр и управления турнирами подтверждай, когда они понадобятся. Отключить любое приложение можно в настройках в любой момент."
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "New"
+msgstr "Новинка"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Connect your AI assistant to find tasks, start games, and run tournaments right from the chat."
+msgstr "Подключи ИИ-ассистента: находи задачи, запускай игры и проводи турниры прямо из чата."
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Learn more"
+msgstr "Подробнее"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Connect"
+msgstr "Подключить"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "What’s new"
+msgstr "Что нового"
+
+#: frontend/src/features/lobby/components/McpBanner.tsx frontend/src/features/lobby/components/Promos.tsx
+msgid "Slide %{index}"
+msgstr "Слайд %{index}"
+
+#: frontend/src/features/users/UserCard.tsx
+msgid "Head-to-head"
+msgstr "Личные встречи"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Sending…"
+msgstr "Отправка…"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Sending your solution…"
+msgstr "Отправляем решение…"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Your solution didn’t reach the server"
+msgstr "Решение не дошло до сервера"
+
+#: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
+msgid "Check your connection and run it again."
+msgstr "Проверь подключение и запусти ещё раз."

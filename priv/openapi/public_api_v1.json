@@ -1268,7 +1268,7 @@
     "/tournaments/live": {
       "get": {
         "summary": "Tournaments running now or open for joining",
-        "description": "Tournaments in `waiting_participants` or `active` state regardless of `starts_at`: all public ones plus private ones you created, moderate or play in. Newest first, at most 100.",
+        "description": "Currently running tournament processes in `waiting_participants` or `active` state: public ones plus private ones you created, moderate or play in. Uses live state and participant counts, excluding abandoned database records. A running tournament can have an old `starts_at`. Newest first, at most 100.",
         "security": [
           {
             "bearerAuth": [

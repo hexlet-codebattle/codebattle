@@ -1,0 +1,84 @@
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 0 48px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 32px 0 52px;
+}
+
+.heroCopy { min-width: 0; }
+
+.title {
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  max-width: 600px;
+  margin: 18px 0;
+  text-wrap: balance;
+}
+
+.subtitle { color: var(--mantine-color-dimmed); line-height: 1.7; }
+
+.conversation {
+  border: 1px solid color-mix(in srgb, var(--mantine-color-teal-6) 28%, var(--cb-border));
+  border-radius: 16px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--mantine-color-teal-6) 6%, transparent), transparent 65%), var(--cb-panel);
+  box-shadow: 0 18px 70px color-mix(in srgb, var(--mantine-color-teal-6) 7%, transparent);
+  overflow: hidden;
+}
+
+.conversationHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--cb-border);
+  color: var(--mantine-color-dimmed);
+}
+
+.conversationHeader > svg { margin-left: auto; }
+.statusDot { width: 7px; height: 7px; border-radius: 50%; background: var(--mantine-color-teal-6); }
+.chatBody { display: flex; flex-direction: column; gap: 14px; padding: 24px; }
+.speaker { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mantine-color-dimmed); }
+.prompt { font-size: 18px; font-weight: 500; line-height: 1.55; }
+.toolCall { display: flex; align-items: center; gap: 8px; color: var(--mantine-color-teal-6); font-size: 11px; margin: 2px 0 12px; flex-wrap: wrap; }
+.toolCall code { font-family: var(--mantine-font-family-monospace); }
+.gamePreview { display: flex; align-items: center; gap: 12px; padding: 18px 14px; border: 1px solid var(--cb-border); border-radius: 10px; background: var(--cb-panel); }
+.gamePreview > svg:first-child { flex-shrink: 0; color: var(--mantine-color-teal-6); }
+.gamePreview > svg:last-child { margin-left: auto; flex-shrink: 0; }
+
+.features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding: 28px 0 52px; border-top: 1px solid var(--cb-border); }
+.feature { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.featureIcon { color: var(--mantine-color-teal-6); margin-bottom: 4px; }
+.feature p { line-height: 1.7; }
+.connect { padding: 32px; border: 1px solid var(--cb-border); border-radius: 16px; background: var(--cb-panel); scroll-margin-top: 90px; }
+.eyebrow { font-size: 10px; letter-spacing: 0.14em; font-weight: 700; color: var(--mantine-color-teal-6); }
+.serverUrl { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 26px 0 30px; padding: 16px 18px; border: 1px solid var(--cb-border); border-radius: 10px; background: color-mix(in srgb, var(--mantine-color-teal-6) 4%, var(--cb-panel)); }
+.urlContent { min-width: 0; }
+.urlContent code { display: block; font-family: var(--mantine-font-family-monospace); font-size: 15px; overflow-wrap: anywhere; margin-top: 4px; }
+.serverUrl button { flex-shrink: 0; }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding: 0; margin: 0; list-style: none; }
+.step { display: flex; align-items: flex-start; gap: 12px; }
+.stepNumber { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--cb-border); border-radius: 50%; flex-shrink: 0; font-family: var(--mantine-font-family-monospace); font-size: 12px; color: var(--mantine-color-teal-6); }
+.permissions { display: flex; align-items: center; gap: 18px; padding: 30px 8px 0; }
+.permissions > svg { flex-shrink: 0; color: var(--mantine-color-teal-6); }
+.permissions > div { flex: 1; }
+.permissions > a { flex-shrink: 0; }
+
+@media (max-width: 48em) {
+  .page { padding-top: 0; }
+  .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 16px; }
+  .features, .steps { grid-template-columns: 1fr; }
+  .features { gap: 28px; }
+  .connect { padding: 22px 18px; }
+  .serverUrl { align-items: flex-start; flex-direction: column; }
+  .permissions { align-items: flex-start; flex-wrap: wrap; }
+  .permissions > div { flex-basis: calc(100% - 50px); }
+  .permissions > a { margin-left: 48px; }
+}

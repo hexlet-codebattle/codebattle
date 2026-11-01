@@ -8,10 +8,10 @@ import { useSharedProps } from '@/shared/useSharedProps';
 
 import { formatStartsAt, gradeLabel, promotedTournament, tournamentTitle } from '../format';
 import { useLobbyStore } from '../store';
-import type { TournamentGrade } from '../types';
+import type { LobbyTournament, TournamentGrade } from '../types';
 
 import { GradeIcon } from './GradeIcon';
-import classes from './LeagueBanner.module.css';
+import classes from './PromoCard.module.css';
 
 // Season points by final place; everyone else who finished gets 2 (legacy league rules).
 export const LEAGUE_GRADES: { grade: TournamentGrade; players: number; rounds: number; points: number[] }[] = [
@@ -105,11 +105,9 @@ export function RulesModal({ opened, onClose }: { opened: boolean; onClose: () =
   );
 }
 
-/** Promote the next weekly event, or introduce newcomers to the seasonal league. */
-export function LeagueBanner() {
-  const { t } = useTranslation();
+/** The weekly event to promote, if any, and whether the league card has anything to say. */
+export function useLeaguePromo() {
   const { current_user: user } = useSharedProps();
-  const [rulesOpened, rules] = useDisclosure(false);
   const live = useLobbyStore((state) => state.liveTournaments);
   const upcoming = useLobbyStore((state) => state.seasonTournaments);
   const [now, setNow] = useState(() => Date.now());
@@ -124,14 +122,26 @@ export function LeagueBanner() {
   const tournament = promotedTournament([...live, ...upcoming.filter(({ id }) => !liveIds.has(id))], now);
 
   // The general league pitch is for newcomers; a big event is an invitation to everyone.
-  if (user.points && !tournament) return null;
+  return { tournament, visible: Boolean(tournament || !user.points) };
+}
+
+/** Promote the next weekly event, or introduce newcomers to the seasonal league. */
+export function LeagueBanner() {
+  const { tournament, visible } = useLeaguePromo();
+
+  return visible ? <LeagueCard tournament={tournament} /> : null;
+}
+
+export function LeagueCard({ tournament }: { tournament: LobbyTournament | undefined }) {
+  const { t } = useTranslation();
+  const [rulesOpened, rules] = useDisclosure(false);
 
   return (
     <div className={classes.banner}>
       <Group gap="sm" wrap="nowrap">
         <GradeIcon grade={tournament?.grade ?? 'grand_slam'} size={36} />
         <Stack gap={0} miw={0} flex={1}>
-          <Text fw={700} c="bright">
+          <Text fw={700} c="bright" className={classes.title}>
             {tournament ? tournamentTitle(tournament.name, tournament.grade, tournament.name_translations) : t('Codebattle League')}
           </Text>
           {tournament?.starts_at && (

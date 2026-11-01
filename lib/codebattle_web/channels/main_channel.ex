@@ -3,6 +3,8 @@ defmodule CodebattleWeb.MainChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game
+  alias Codebattle.PubSub.Message
+  alias Codebattle.PubSub.UserEvents
   alias Codebattle.Tournament
   alias Codebattle.User
   alias CodebattleWeb.Presence
@@ -21,6 +23,7 @@ defmodule CodebattleWeb.MainChannel do
       if !current_user.is_guest do
         topic = "main:#{current_user.id}"
         Codebattle.PubSub.subscribe(topic)
+        Codebattle.PubSub.subscribe(UserEvents.topic(current_user.id))
         Codebattle.PubSub.subscribe("main")
         Codebattle.PubSub.subscribe("season")
 
@@ -147,6 +150,24 @@ defmodule CodebattleWeb.MainChannel do
 
     {:noreply, socket}
   end
+
+  # The user's tournament match started: pages away from the tournament offer to open it.
+  def handle_info(%Message{event: "game.started", payload: %{game: %{tournament_id: tournament_id} = game}}, socket)
+      when not is_nil(tournament_id) do
+    push(socket, "tournament:match_started", %{game_id: game.id, tournament_id: tournament_id})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%Message{event: event, payload: %{game: game}}, socket)
+      when event in ["game.finished", "game.canceled"] do
+    push(socket, "user:game_over", %{game_id: game.id})
+
+    {:noreply, socket}
+  end
+
+  # The rest of the user's event stream is for the public API.
+  def handle_info(%Message{topic: "user_events:" <> _}, socket), do: {:noreply, socket}
 
   def handle_info(%{event: "tournament:activated", payload: %{tournament: tournament}}, socket) do
     push(socket, "tournament:activated", %{

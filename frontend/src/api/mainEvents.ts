@@ -6,7 +6,7 @@ import { useLatest } from '@/shared/useLatest';
 // that need its other pushes subscribe here instead of joining it again —
 // Phoenix closes a duplicate join of the same topic on one socket.
 
-export const MAIN_RELAYED_EVENTS = ['tournament:activated', 'tournament:canceled'] as const;
+export const MAIN_RELAYED_EVENTS = ['tournament:activated', 'tournament:canceled', 'tournament:match_started'] as const;
 
 export type MainEvent = (typeof MAIN_RELAYED_EVENTS)[number];
 

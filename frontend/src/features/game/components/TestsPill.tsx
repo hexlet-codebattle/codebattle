@@ -7,7 +7,8 @@ import classes from '../GameRoom.module.css';
 
 import { OutputPanel } from './OutputPanel';
 
-const ERROR_STATUSES = ['error', 'memory_leak', 'timeout', 'service_failure'];
+// Runs that produced no test results (not_sent: never reached the server).
+const ERROR_STATUSES = ['error', 'memory_leak', 'timeout', 'service_failure', 'not_sent'];
 
 /**
  * A player's last check in their editor header: "✔ 5/8" with a thin bar. Mine jumps to the
@@ -17,6 +18,7 @@ export function TestsPill({ playerId, onOpen }: { playerId: number; onOpen?: () 
   const { t } = useTranslation();
   const output = useGameStore((state) => state.outputs[playerId]);
   const checking = useGameStore((state) => Boolean(state.checking[playerId]));
+  const sending = useGameStore((state) => state.sendingId === playerId);
 
   const ran = output && !['initial', 'started'].includes(output.status);
   const isError = ran && ERROR_STATUSES.includes(output.status);
@@ -38,7 +40,7 @@ export function TestsPill({ playerId, onOpen }: { playerId: number; onOpen?: () 
       ) : (
         <IconCircleXFilled size={13} />
       )}
-      <span className={classes.testsPillText}>{checking ? t('Checking…') : !ran ? t('No runs yet') : isError ? t('Error') : `${passed}/${total}`}</span>
+      <span className={classes.testsPillText}>{sending ? t('Sending…') : checking ? t('Checking…') : !ran ? t('No runs yet') : isError ? t('Error') : `${passed}/${total}`}</span>
       {ran && !isError && !checking && (
         <span className={classes.testsPillBar}>
           <span style={{ width: `${percent}%` }} />
