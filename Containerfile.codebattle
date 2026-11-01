@@ -1,7 +1,7 @@
 # The frontend: its own package and Vite build.
 FROM node:24.22.1-alpine AS frontend-image
 
-# Mirrors the repo layout: the app imports translations from ../priv/gettext.
+# Mirrors the repo layout: the app imports translations and tournament templates from ../priv.
 WORKDIR /tmp/codebattle/frontend
 
 RUN npm install --global pnpm@11.18.0
@@ -10,6 +10,7 @@ COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml 
 RUN pnpm install --frozen-lockfile
 
 COPY priv/gettext ../priv/gettext
+COPY priv/tournament_templates.json ../priv/tournament_templates.json
 COPY frontend ./
 RUN pnpm run build
 
