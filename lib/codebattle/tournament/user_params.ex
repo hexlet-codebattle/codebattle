@@ -19,10 +19,12 @@ defmodule Codebattle.Tournament.UserParams do
     access_type
     break_duration_seconds
     description
+    description_translations
     level
     match_timeout_seconds
     moderator_ids
     name
+    name_translations
     players_limit
     ranking_type
     round_timeout_seconds

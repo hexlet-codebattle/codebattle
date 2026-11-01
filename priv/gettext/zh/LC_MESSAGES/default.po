@@ -6005,34 +6005,34 @@ msgstr ""
 "祝你好运，玩得开心！ 🚀"
 
 msgid "Code Rumble"
-msgstr "代码隆隆声"
+msgstr "代码大乱斗"
 
 msgid "Byte Brawl"
-msgstr "字节乱斗"
+msgstr "字节大乱斗"
 
 msgid "Algo Arena Showdown"
-msgstr "Algo 竞技场对决"
+msgstr "算法竞技场对决"
 
 msgid "The Great Bug Hunt"
-msgstr "昆虫大狩猎"
+msgstr "终极捉虫行动"
 
 msgid "Syntax Smackdown"
-msgstr "语法打击"
+msgstr "语法争霸赛"
 
 msgid "Midnight Code Clash"
-msgstr "午夜密码冲突"
+msgstr "午夜代码对决"
 
 msgid "Turbo Loop Rumble"
-msgstr "涡轮循环隆隆声"
+msgstr "极速循环大乱斗"
 
 msgid "Hack & Slash"
-msgstr "黑客与砍杀"
+msgstr "代码闯关战"
 
 msgid "Recursion Rampage"
-msgstr "递归狂暴"
+msgstr "递归风暴"
 
 msgid "Stack Overflow Showdown"
-msgstr "堆栈溢出对决"
+msgstr "栈溢出巅峰对决"
 
 msgid "View Hall of Fame"
 msgstr "查看名人堂"
@@ -6259,16 +6259,16 @@ msgid ""
 msgstr "新的挑战。竞争激烈。你的荣耀之战。欢迎大家——带上你最好的代码并留下你的印记！"
 
 msgid "Ranking Points_one"
-msgstr "排名积分_one"
+msgstr "排名积分"
 
 msgid "Ranking Points_few"
-msgstr "排名积分_few"
+msgstr "排名积分"
 
 msgid "Ranking Points_many"
-msgstr "排名积分_many"
+msgstr "排名积分"
 
 msgid "Ranking Points_other"
-msgstr "排名积分_other"
+msgstr "排名积分"
 
 msgid "This task is not available."
 msgstr "该题目不可用。"
@@ -7328,3 +7328,64 @@ msgstr "审核人"
 
 msgid "Nickname is already taken"
 msgstr "该昵称已被使用"
+
+msgid "🎉 Welcome to the code party!\n\n- 🧠 Bring your favorite language and your boldest ideas.\n- ✅ Solve tasks, earn points, and try again when a test bites back.\n- 🤝 Play fair, cheer for your rivals, and share the good vibes.\n\nReady, set, code! 🚀"
+msgstr "🎉 欢迎参加代码派对！\n\n- 🧠 带上你最爱的语言和最大胆的想法。\n- ✅ 解题、得分，测试不通过就再试一次。\n- 🤝 公平竞技，为对手加油，一起分享快乐。\n\n预备，开始写代码！🚀"
+
+msgid "Tournament languages"
+msgstr "比赛语言"
+
+msgid "Add a name and description in each language. Missing translations use English or the original text."
+msgstr "为每种语言添加名称和描述。缺少翻译时，将显示英语或原文。"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Connect an application"
+msgstr "连接应用"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "%{name} is requesting access to your Codebattle account."
+msgstr "%{name} 正在请求访问你的 Codebattle 账户。"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Application names are provided by their developers. Check the return address:"
+msgstr "应用名称由开发者提供。请核对返回地址："
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "You can disconnect this application at any time in Settings → Connected applications."
+msgstr "你可以随时在设置 → 已连接的应用中断开此应用。"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Allow access"
+msgstr "允许访问"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Connected applications"
+msgstr "已连接的应用"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Applications with access to your Codebattle account. Disconnecting stops their access immediately."
+msgstr "可以访问你的 Codebattle 账户的应用。断开连接后会立即撤销访问权限。"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "No connected applications"
+msgstr "暂无已连接的应用"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Disconnect"
+msgstr "断开连接"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "View your profile, games and tournaments"
+msgstr "查看你的个人资料、对局和锦标赛"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Create and join games, send invites and join tournaments"
+msgstr "创建和加入对局、发送邀请以及参加锦标赛"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Manage your private tournaments"
+msgstr "管理你的私人锦标赛"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Stay connected without asking you to sign in again"
+msgstr "保持连接，无需再次登录"

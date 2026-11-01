@@ -4,12 +4,13 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { levelLabel, parseUtc } from '@/features/lobby/format';
+import type { TournamentTranslations } from '@/shared/tournamentText';
+import { levelLabel, parseUtc, tournamentTitle } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
 import { StateBadge } from '@/features/schedule/EventModal';
 import { getLocale } from '@/i18n';
 
-interface CreatedTournament {
+interface CreatedTournament extends TournamentTranslations {
   id: number;
   name: string;
   type: string;
@@ -87,7 +88,7 @@ export function CreatedTournaments({ onCreate }: { onCreate: () => void }) {
                 <Table.Tr key={tournament.id}>
                   <Table.Td maw={280}>
                     <Anchor href={`/tournaments/${tournament.id}`} fw={600} c="bright" size="sm" truncate>
-                      {tournament.name}
+                      {tournamentTitle(tournament.name, 'open', tournament.name_translations)}
                     </Anchor>
                   </Table.Td>
                   <Table.Td>

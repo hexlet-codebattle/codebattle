@@ -1,3 +1,5 @@
+import { Markdown } from '@/shared/Markdown';
+import { tournamentDescription } from '@/shared/tournamentText';
 import { ActionIcon, Badge, Button, Card, Group, Popover, SimpleGrid, Stack, Tabs, Text, Title, Tooltip } from '@mantine/core';
 import { useInterval } from '@mantine/hooks';
 import { IconCalendarUser, IconClockFilled, IconHistory, IconInfoCircle, IconPlus, IconUsers, IconUserStar } from '@tabler/icons-react';
@@ -89,7 +91,7 @@ function TournamentCard({ tournament, isAdmin }: { tournament: LobbyTournament; 
         <Stack gap={2} miw={0} flex={1}>
           <Group gap="xs" wrap="nowrap" justify="space-between">
             <Text fw={700} c="bright" truncate>
-              {tournamentTitle(tournament.name, tournament.grade)}
+              {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
             </Text>
             {(live || tournament.state === 'finished') && (
               <Tooltip label={t('Players: %{count}', { count: tournament.players_count })}>
@@ -151,7 +153,7 @@ function TournamentCard({ tournament, isAdmin }: { tournament: LobbyTournament; 
                 {live ? t('Join') : t('Show')}
               </Button>
             )}
-            {tournament.description && (
+            {tournamentDescription(tournament) && (
               <Popover width={320} position="bottom-end" withArrow>
                 <Popover.Target>
                   <ActionIcon size="sm" aria-label={t('About this tournament')}>
@@ -159,9 +161,7 @@ function TournamentCard({ tournament, isAdmin }: { tournament: LobbyTournament; 
                   </ActionIcon>
                 </Popover.Target>
                 <Popover.Dropdown>
-                  <Text size="sm" style={{ whiteSpace: 'pre-line' }}>
-                    {tournament.description}
-                  </Text>
+                  <Markdown>{tournamentDescription(tournament)}</Markdown>
                 </Popover.Dropdown>
               </Popover>
             )}

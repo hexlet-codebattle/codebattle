@@ -2,6 +2,7 @@ import { Box, Button, Group, Paper, Text } from '@mantine/core';
 import { IconUserPlus } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 
+import { tournamentDescription } from '@/shared/tournamentText';
 import { Markdown } from '@/shared/Markdown';
 
 import type { Tournament } from '../types';
@@ -49,7 +50,7 @@ export function About({ tournament, api }: { tournament: Tournament; api: Tourna
   return (
     <Box p="md">
       {canJoin && <JoinCallout tournament={tournament} api={api} />}
-      {tournament.description ? <Markdown>{tournament.description}</Markdown> : <Text c="dimmed">{t('No description yet.')}</Text>}
+      {tournamentDescription(tournament) ? <Markdown>{tournamentDescription(tournament)}</Markdown> : <Text c="dimmed">{t('No description yet.')}</Text>}
     </Box>
   );
 }

@@ -53,7 +53,7 @@ defmodule CodebattleWeb.RootController do
     league_tournaments =
       Tournament.Context.get_one_upcoming_tournament_for_each_grade()
       |> Enum.sort_by(& &1.starts_at, DateTime)
-      |> Enum.map(&Map.take(&1, [:id, :name, :grade, :starts_at]))
+      |> Enum.map(&Map.take(&1, [:id, :name, :name_translations, :grade, :starts_at]))
 
     conn
     |> CodebattleWeb.OnboardingTracking.landing()

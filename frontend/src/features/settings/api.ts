@@ -54,6 +54,16 @@ export interface ApiToken {
   inserted_at: string;
 }
 
+export interface OauthConnection {
+  id: string;
+  name: string;
+  scopes: string[];
+  last_used_at: string | null;
+  inserted_at: string;
+}
+
+export const disconnectApplication = (id: string) => request<{ status: 'ok' }>('DELETE', `/api/v1/settings/connections/${id}`);
+
 /** Server validation errors: field → messages. */
 export type FieldErrors = Record<string, string[]>;
 

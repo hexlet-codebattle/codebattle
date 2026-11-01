@@ -4,6 +4,7 @@ import { IconBook2, IconChevronRight, IconCrown, IconTrophy } from '@tabler/icon
 import { type CSSProperties, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { TournamentTranslations } from '@/shared/tournamentText';
 import { formatCountdown, formatStartsIn, gradeLabel, msUntil, rankingPoints, tournamentTitle } from '@/features/lobby/format';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import { RulesModal } from '@/features/lobby/components/LeagueBanner';
@@ -12,7 +13,7 @@ import { LangIcon } from '@/shared/LangIcon';
 
 import classes from './Landing.module.css';
 
-export interface LeagueTournament {
+export interface LeagueTournament extends TournamentTranslations {
   id: number;
   name: string;
   grade: TournamentGrade;
@@ -71,7 +72,7 @@ function UpcomingTournaments({ tournaments }: { tournaments: LeagueTournament[] 
               <GradeIcon grade={tournament.grade} size={32} />
               <Stack gap={0} miw={0} flex={1}>
                 <Text fw={700} c="bright" truncate>
-                  {tournamentTitle(tournament.name, tournament.grade)}
+                  {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
                 </Text>
                 <Text size="xs" c="dimmed" truncate>
                   <StartsIn startsAt={tournament.starts_at} />

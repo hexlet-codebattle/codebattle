@@ -65,7 +65,7 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
 
       case Game.Context.create_game(game_params) do
         {:ok, game} ->
-          ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "game.create", "game", game.id)
+          audit(conn, "game.create", "game", game.id)
 
           conn
           |> put_status(:created)
@@ -95,7 +95,7 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
          :ok <- if(game.state == "waiting_opponent", do: :ok, else: {:error, :not_waiting_opponent}),
          {:ok, _game} <- Game.Context.join_game(id, user),
          {:ok, game} <- Game.Context.fetch_game(id) do
-      ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "game.join", "game", id)
+      audit(conn, "game.join", "game", id)
       json(conn, %{game: JSON.game(game, user.id)})
     else
       {:error, :not_waiting_opponent} ->
@@ -122,7 +122,7 @@ defmodule CodebattleWeb.PublicApi.V1.GameController do
          {:ok, game} <- Game.Context.fetch_game(id),
          true <- Game.Helpers.player?(game, user.id),
          :ok <- Game.Context.cancel_game(id, user) do
-      ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "game.cancel", "game", id)
+      audit(conn, "game.cancel", "game", id)
       json(conn, %{game: %{id: id, state: "canceled"}})
     else
       {:error, :only_waiting_opponent} ->

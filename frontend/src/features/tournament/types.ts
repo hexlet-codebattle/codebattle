@@ -1,3 +1,4 @@
+import type { TournamentTranslations } from '@/shared/tournamentText';
 import type { TournamentGrade } from '@/features/lobby/types';
 
 // Payloads of the `tournament:<id>` / `tournament_admin:<id>` channels
@@ -6,7 +7,7 @@ import type { TournamentGrade } from '@/features/lobby/types';
 
 export type TournamentState = 'upcoming' | 'waiting_participants' | 'active' | 'finished' | 'canceled' | 'timeout';
 
-export interface Tournament {
+export interface Tournament extends TournamentTranslations {
   id: number;
   name: string;
   description: string | null;

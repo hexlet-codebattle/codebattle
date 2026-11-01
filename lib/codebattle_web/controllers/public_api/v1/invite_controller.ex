@@ -3,7 +3,6 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
 
   import CodebattleWeb.PublicApi.V1.Helpers
 
-  alias Codebattle.ApiAuditEvent
   alias Codebattle.Invite
   alias Codebattle.Repo
   alias Codebattle.User
@@ -31,13 +30,8 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
   def index(conn, params) do
     user = conn.assigns.current_user
 
-    case parse_wait(params["wait"]) do
-      {:ok, wait} ->
-        if wait > 0 and params["version"] == version(user) do
-          Codebattle.PubSub.subscribe("invites:#{user.id}")
-          await_invite_event(wait * 1000)
-        end
-
+    case wait_for_change(user, params) do
+      :ok ->
         invites = Invite.list_active_invites(user.id)
 
         conn
@@ -50,6 +44,26 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
 
       {:error, errors} ->
         validation_failed(conn, errors)
+    end
+  end
+
+  @doc false
+  def wait_for_change(user, params) do
+    with {:ok, wait} <- parse_wait(params["wait"]) do
+      if wait > 0 and params["version"] == version(user), do: await_change(user, params["version"], wait)
+      :ok
+    end
+  end
+
+  defp await_change(user, previous_version, wait) do
+    topic = "invites:#{user.id}"
+    Codebattle.PubSub.subscribe(topic)
+
+    try do
+      # Recheck after subscribing so an invite arriving during subscribe isn't lost.
+      if previous_version == version(user), do: await_invite_event(wait * 1000)
+    after
+      Codebattle.PubSub.unsubscribe(topic)
     end
   end
 
@@ -69,7 +83,7 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
 
       case Invite.Actions.create(user, params) do
         {:ok, invite} ->
-          ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "invite.create", "invite", invite.id)
+          audit(conn, "invite.create", "invite", invite.id)
           conn |> put_status(:created) |> json(%{invite: JSON.invite(invite, user.id)})
 
         {:error, reason} when reason in [:invalid_recipient, :recipient_not_found] ->
@@ -88,7 +102,7 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
 
     with {:ok, id} <- parse_id(id),
          {:ok, invite} <- Invite.Actions.accept(id, user) do
-      ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "invite.accept", "invite", id)
+      audit(conn, "invite.accept", "invite", id)
       json(conn, %{invite: JSON.invite(invite, user.id)})
     else
       {:error, :not_found} -> ErrorJSON.not_found(conn)
@@ -103,7 +117,7 @@ defmodule CodebattleWeb.PublicApi.V1.InviteController do
 
     with {:ok, id} <- parse_id(id),
          {:ok, invite} <- Invite.Actions.cancel(id, user) do
-      ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "invite.cancel", "invite", id)
+      audit(conn, "invite.cancel", "invite", id)
       json(conn, %{invite: JSON.invite(invite, user.id)})
     else
       {:error, :not_found} -> ErrorJSON.not_found(conn)

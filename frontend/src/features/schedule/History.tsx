@@ -42,7 +42,7 @@ export function History() {
       (tournament) =>
         (grades.length === 0 || grades.includes(tournament.grade)) &&
         (!needle ||
-          tournamentTitle(tournament.name, tournament.grade).toLowerCase().includes(needle) ||
+          tournamentTitle(tournament.name, tournament.grade, tournament.name_translations).toLowerCase().includes(needle) ||
           tournament.winner?.name.toLowerCase().includes(needle)),
     );
   }, [data, grades, query]);
@@ -121,7 +121,7 @@ export function History() {
                         <GradeIcon grade={tournament.grade} size={24} />
                         <Stack gap={0} miw={0}>
                           <Anchor href={`/tournaments/${tournament.id}`} c="bright" fw={600} size="sm" truncate>
-                            {tournamentTitle(tournament.name, tournament.grade)}
+                            {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
                           </Anchor>
                           <Text size="xs" c="dimmed">
                             {gradeLabel(tournament.grade)}

@@ -760,6 +760,44 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
   end
 
   describe "#create permissions" do
+    test "regular users can create and edit localized copy, exposed to spectators", %{conn: conn} do
+      user = insert(:user)
+      names = %{"en" => "Code party", "ru" => "Битва кода", "es" => "Fiesta del código", "zh" => "代码派对"}
+      descriptions = %{"en" => "Welcome aboard!", "ru" => "Добро пожаловать!", "es" => "¡Bienvenidos!", "zh" => "欢迎参赛！"}
+      signed_in = log_in_user(conn, user.id)
+
+      response =
+        post(signed_in, Routes.api_v1_tournament_path(conn, :create), %{
+          "tournament" =>
+            tournament_form_params(%{
+              "name" => names["en"],
+              "description" => descriptions["en"],
+              "name_translations" => names,
+              "description_translations" => descriptions
+            })
+        })
+
+      assert %{"tournament" => %{"id" => id, "name_translations" => ^names, "description_translations" => ^descriptions}} =
+               json_response(response, 201)
+
+      assert Context.get_from_db!(id).name_translations == names
+      assert Context.get_from_db!(id).description_translations == descriptions
+
+      public = conn |> get(Routes.api_v1_tournament_path(conn, :show, id)) |> json_response(200)
+      assert public["tournament"]["name_translations"] == names
+      assert public["tournament"]["description_translations"] == descriptions
+
+      updated = Map.put(names, "zh", "算法派对")
+
+      signed_in
+      |> put(Routes.api_v1_tournament_path(conn, :update, id), %{"tournament" => %{"name_translations" => updated}})
+      |> json_response(200)
+
+      assert Context.get_from_db!(id).name_translations == updated
+      assert Context.get!(id).name_translations == updated
+      assert Context.get_from_db!(id).description_translations == descriptions
+    end
+
     test "ignores fields a regular user must not set", %{conn: conn} do
       user = insert(:user)
       event = insert(:event, title: "Season event")

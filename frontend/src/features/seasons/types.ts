@@ -1,3 +1,4 @@
+import type { TournamentText } from '@/shared/tournamentText';
 import { getLocale, t } from '@/i18n';
 
 import type { TournamentGrade } from '@/features/lobby/types';
@@ -53,6 +54,7 @@ export interface PlayerStats {
   recent_tournaments: {
     tournament_id: number;
     tournament_name: string | null;
+    tournament_name_translations?: TournamentText;
     grade: TournamentGrade;
     started_at: string;
     place: number;

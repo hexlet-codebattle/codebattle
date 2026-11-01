@@ -154,7 +154,10 @@ defmodule CodebattleWeb.MainChannel do
       state: tournament.state,
       grade: tournament.grade,
       starts_at: tournament.starts_at,
-      description: tournament.description
+      description: tournament.description,
+      name: tournament.name,
+      name_translations: tournament.name_translations,
+      description_translations: tournament.description_translations
     })
 
     {:noreply, socket}

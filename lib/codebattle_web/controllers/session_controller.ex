@@ -51,10 +51,13 @@ defmodule CodebattleWeb.SessionController do
         |> redirect(to: "/session/new")
 
       user ->
+        next = AuthPage.safe_next(get_session(conn, :mcp_return_to))
+
         conn
         |> UserAuth.log_in_user(user)
+        |> delete_session(:mcp_return_to)
         |> put_flash(:info, gettext("Welcome to Codebattle!"))
-        |> redirect(to: "/")
+        |> redirect(to: next)
     end
   end
 

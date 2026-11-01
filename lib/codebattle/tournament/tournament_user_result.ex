@@ -75,6 +75,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
     |> select([tur, t], %{
       tournament_id: t.id,
       tournament_name: t.name,
+      tournament_name_translations: t.name_translations,
       tournament_grade: t.grade,
       tournament_type: t.type,
       tournament_state: t.state,

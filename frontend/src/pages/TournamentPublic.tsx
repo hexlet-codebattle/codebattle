@@ -4,6 +4,8 @@ import { IconCalendar, IconChecklist, IconLogin, IconStack2, IconSwords, IconTro
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { tournamentDescription } from '@/shared/tournamentText';
+import type { TournamentTranslations } from '@/shared/tournamentText';
 import { DevSignIn, SocialButtons, withNext } from '@/features/auth/AuthForms';
 import classes from '@/features/landing/Landing.module.css';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
@@ -19,7 +21,7 @@ import { MethodButton } from '@/shared/MethodButton';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 // Props from TournamentController.show for guests (render_public_tournament/2).
-interface PublicTournament {
+interface PublicTournament extends TournamentTranslations {
   id: number;
   name: string;
   description: string | null;
@@ -162,7 +164,7 @@ export default function TournamentPublic() {
   const { tournament, top_players: topPlayers, season, next, dev_sign_in: devSignIn } = useSharedProps<TournamentPublicProps>();
   const league = tournament.grade !== 'open';
   const points = league ? rankingPoints(tournament.grade) : null;
-  const title = tournamentTitle(tournament.name, tournament.grade);
+  const title = tournamentTitle(tournament.name, tournament.grade, tournament.name_translations);
 
   return (
     <AppLayout wide>
@@ -193,7 +195,7 @@ export default function TournamentPublic() {
                 )}
               </Group>
               <Facts tournament={tournament} />
-              {tournament.description && <Markdown>{tournament.description}</Markdown>}
+              {tournamentDescription(tournament) && <Markdown>{tournamentDescription(tournament)}</Markdown>}
               {league && points != null && (
                 <Text size="sm" c="dimmed">
                   {season

@@ -4,6 +4,7 @@ defmodule CodebattleWeb.TournamentController do
   alias Codebattle.Season
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.Localization
   alias Codebattle.Tournament.Ranking
   alias Codebattle.User
   alias CodebattleWeb.LinkPreview
@@ -170,7 +171,7 @@ defmodule CodebattleWeb.TournamentController do
     put_meta_tags(
       conn,
       Map.merge(OgImage.meta_image(image), %{
-        title: "🏆 #{tournament.name} · Codebattle",
+        title: "🏆 #{Localization.name(tournament, Gettext.get_locale(CodebattleWeb.Gettext))} · Codebattle",
         description: tournament_meta_description(tournament),
         url: Routes.tournament_url(conn, :show, tournament.id)
       })
@@ -209,7 +210,9 @@ defmodule CodebattleWeb.TournamentController do
     |> Map.take([
       :id,
       :name,
+      :name_translations,
       :description,
+      :description_translations,
       :type,
       :grade,
       :state,
@@ -263,7 +266,9 @@ defmodule CodebattleWeb.TournamentController do
     %{
       type: tournament.type,
       name: tournament.name,
+      name_translations: tournament.name_translations,
       description: tournament.description,
+      description_translations: tournament.description_translations,
       access_type: tournament.access_type,
       task_provider: tournament.task_provider,
       task_strategy: tournament.task_strategy,
@@ -295,7 +300,11 @@ defmodule CodebattleWeb.TournamentController do
 
     summary = Enum.join(Enum.filter([type, level, players], &is_binary/1), " · ")
 
-    [summary <> ".", tournament_meta_call(tournament), tournament.description]
+    [
+      summary <> ".",
+      tournament_meta_call(tournament),
+      Localization.description(tournament, Gettext.get_locale(CodebattleWeb.Gettext))
+    ]
     |> Enum.filter(&(is_binary(&1) and String.trim(&1) != ""))
     |> Enum.join(" ")
   end

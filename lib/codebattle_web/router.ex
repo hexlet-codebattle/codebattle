@@ -10,6 +10,7 @@ defmodule CodebattleWeb.Router do
   alias CodebattleWeb.Plugs.AnonymousRateLimit
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.MaintenanceMode
+  alias CodebattleWeb.Plugs.McpOauthRateLimit
   alias CodebattleWeb.Plugs.PublicApi.RateLimit
   alias CodebattleWeb.Plugs.PublicApi.TokenAuth
   alias CodebattleWeb.Plugs.RescrictAccess
@@ -65,6 +66,12 @@ defmodule CodebattleWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :oauth_api do
+    plug(:accepts, ["json"])
+    plug(:put_secure_browser_headers)
+    plug(McpOauthRateLimit)
+  end
+
   # Public API v1: personal token required everywhere, per-user limits. Kept separate from
   # :public_api, where group_task_solutions reads its own Bearer tokens.
   pipeline :public_api_v1 do
@@ -113,6 +120,34 @@ defmodule CodebattleWeb.Router do
   # Chrome DevTools IDE integration (dev only)
   scope "/.well-known/appspecific", CodebattleWeb do
     get("/com.chrome.devtools.json", DevToolsController, :index)
+  end
+
+  scope "/.well-known", CodebattleWeb.Mcp do
+    pipe_through(:oauth_api)
+    get("/oauth-authorization-server", OauthController, :metadata)
+    get("/oauth-protected-resource", OauthController, :resource_metadata)
+    get("/oauth-protected-resource/mcp", OauthController, :resource_metadata)
+  end
+
+  scope "/mcp" do
+    forward("/", CodebattleWeb.Plugs.McpTransport)
+  end
+
+  scope "/oauth", CodebattleWeb.Mcp do
+    pipe_through(:oauth_api)
+    post("/register", OauthController, :register)
+    post("/token", OauthController, :token)
+    post("/revoke", OauthController, :revoke)
+  end
+
+  scope "/oauth", CodebattleWeb.Mcp do
+    pipe_through([:browser, McpOauthRateLimit])
+    get("/authorize", OauthController, :authorize)
+  end
+
+  scope "/oauth", CodebattleWeb.Mcp do
+    pipe_through([:browser, :require_auth, McpOauthRateLimit])
+    post("/authorize", OauthController, :consent)
   end
 
   scope "/admin" do
@@ -397,6 +432,8 @@ defmodule CodebattleWeb.Router do
       get("/settings/api_tokens", SettingsController, :api_tokens)
       post("/settings/api_tokens", SettingsController, :create_api_token)
       delete("/settings/api_tokens/:id", SettingsController, :delete_api_token)
+      get("/settings/connections", SettingsController, :connections)
+      delete("/settings/connections/:id", SettingsController, :delete_connection)
       resources("/tasks", TaskController, only: [:index, :show, :update])
       get("/tasks/:id/stats", TaskController, :stats)
       get("/tournaments/history", TournamentController, :history)

@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Api.V1.SettingsController do
   use CodebattleWeb, :controller
 
+  alias Codebattle.Mcp.Oauth
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserApiToken
@@ -270,6 +271,31 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
   def present_api_token(token) do
     Map.take(token, [:id, :name, :token_prefix, :scopes, :last_used_at, :expires_at, :inserted_at])
+  end
+
+  def connections(conn, _params) do
+    json(conn, %{connections: present_connections(conn.assigns.current_user.id)})
+  end
+
+  def delete_connection(conn, %{"id" => id}) do
+    case Oauth.disconnect(conn.assigns.current_user.id, id) do
+      :ok -> json(conn, %{status: "ok"})
+      {:error, _reason} -> conn |> put_status(:not_found) |> json(%{error: "connection not found"})
+    end
+  end
+
+  def present_connections(user_id) do
+    user_id
+    |> Oauth.connections()
+    |> Enum.map(fn connection ->
+      %{
+        id: connection.id,
+        name: connection.client.name,
+        scopes: connection.scopes,
+        last_used_at: connection.last_used_at,
+        inserted_at: connection.inserted_at
+      }
+    end)
   end
 
   def available_scopes(user), do: Enum.filter(UserApiToken.scopes(), &UserApiToken.can_use_scope?(user, &1))

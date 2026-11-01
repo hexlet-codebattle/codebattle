@@ -67,7 +67,9 @@ defmodule Codebattle.Application do
         %{
           id: Codebattle.Chat.Lobby,
           start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}
-        }
+        },
+        Hermes.Server.Registry,
+        {Codebattle.Mcp.Server, transport: {:streamable_http, start: true}}
       ] ++ [{CodebattleWeb.Endpoint, []}]
 
     # PubSub for internal messages

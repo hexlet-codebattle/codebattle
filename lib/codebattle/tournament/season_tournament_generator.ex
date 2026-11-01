@@ -22,6 +22,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
 
   alias Codebattle.Season
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Localization
 
   # Constants
   @tournament_hour 16
@@ -84,6 +85,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
     |> add_rookie_tournaments(start_date, end_date, season_num)
   end
 
+  defp season_changeset(tournament, params) do
+    Tournament.changeset(tournament, Map.merge(params, Localization.season_attrs(params.grade)))
+  end
+
   # Fetch season from DB if ID is provided, otherwise use the season struct
   defp get_season(%Season{} = season), do: season
 
@@ -115,12 +120,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
         Enum.map(@rookie_hours, fn hour ->
           starts_at = DateTime.new!(date, Time.new!(hour, 0, 0), @timezone)
 
-          Tournament.changeset(
+          season_changeset(
             %Tournament{},
             Map.merge(
               %{
-                name: "Rookie",
-                description: "Rookie tournament - elementary and easy tasks, grind-friendly",
                 grade: "rookie",
                 starts_at: starts_at,
                 players_limit: @grade_config["rookie"].players_limit,
@@ -155,12 +158,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
             @timezone
           )
 
-        Tournament.changeset(
+        season_changeset(
           %Tournament{},
           Map.merge(
             %{
-              name: "Daily Challenger",
-              description: "Daily challenger tournament - the backbone of our competitive calendar",
               grade: "challenger",
               starts_at: starts_at,
               players_limit: @grade_config["challenger"].players_limit,
@@ -196,12 +197,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
             @timezone
           )
 
-        Tournament.changeset(
+        season_changeset(
           %Tournament{},
           Map.merge(
             %{
-              name: "Biweekly Pro",
-              description: "Pro tournament - for skilled competitors",
               grade: "pro",
               starts_at: starts_at,
               players_limit: @grade_config["pro"].players_limit,
@@ -234,12 +233,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
             @timezone
           )
 
-        Tournament.changeset(
+        season_changeset(
           %Tournament{},
           Map.merge(
             %{
-              name: "Monthly Elite",
-              description: "Elite tournament - for top-tier competitors",
               grade: "elite",
               starts_at: starts_at,
               players_limit: @grade_config["elite"].players_limit,
@@ -281,12 +278,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
 
         task_pack_name = "masters_s#{season_num}_#{year}_#{index}"
 
-        Tournament.changeset(
+        season_changeset(
           %Tournament{},
           Map.merge(
             %{
-              name: "Masters",
-              description: "Masters tournament - elite competition with curated tasks",
               grade: "masters",
               starts_at: starts_at,
               players_limit: @grade_config["masters"].players_limit,
@@ -317,12 +312,10 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
     task_pack_name = "grand_slam_s#{season_num}_#{end_date.year}"
 
     grand_slam =
-      Tournament.changeset(
+      season_changeset(
         %Tournament{},
         Map.merge(
           %{
-            name: "Grand Slam",
-            description: "Season finale - the ultimate championship tournament with the highest stakes",
             grade: "grand_slam",
             starts_at: starts_at,
             players_limit: @grade_config["grand_slam"].players_limit,

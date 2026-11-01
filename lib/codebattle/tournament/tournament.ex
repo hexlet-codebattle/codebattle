@@ -24,6 +24,7 @@ defmodule Codebattle.Tournament do
              :current_round_timeout_seconds,
              :current_round_position,
              :description,
+             :description_translations,
              :event_id,
              :exclude_banned_players,
              :group_tournament_id,
@@ -37,6 +38,7 @@ defmodule Codebattle.Tournament do
              :meta,
              :moderator_ids,
              :name,
+             :name_translations,
              :next_round_at,
              :round_durations,
              :players,
@@ -91,6 +93,7 @@ defmodule Codebattle.Tournament do
     field(:current_round_position, :integer, default: 0)
     field(:current_round_timeout_seconds, :integer, virtual: true)
     field(:description, :string)
+    field(:description_translations, :map, default: %{})
     field(:finished_at, :utc_datetime)
     field(:exclude_banned_players, :boolean, default: false)
     field(:grade, :string, default: "open")
@@ -110,6 +113,7 @@ defmodule Codebattle.Tournament do
     field(:meta, AtomizedMap, default: %{})
     field(:moderator_ids, {:array, :integer}, default: [])
     field(:name, :string)
+    field(:name_translations, :map, default: %{})
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
     field(:ranking_type, :string, default: "by_user")
@@ -168,6 +172,7 @@ defmodule Codebattle.Tournament do
       :current_round_id,
       :current_round_position,
       :description,
+      :description_translations,
       :event_id,
       :exclude_banned_players,
       :grade,
@@ -180,6 +185,7 @@ defmodule Codebattle.Tournament do
       :meta,
       :moderator_ids,
       :name,
+      :name_translations,
       :players,
       :players_count,
       :players_limit,
@@ -221,8 +227,43 @@ defmodule Codebattle.Tournament do
     |> validate_required([:name, :starts_at, :description])
     |> validate_round_timeout_for_mode()
     |> validate_length(:description, min: 3, max: 7531)
+    |> validate_translations(:name_translations, 1, 80)
+    |> validate_translations(:description_translations, 3, 7531)
     |> validate_event_id(params["event_id"] || params[:event_id])
     |> add_creator(params["creator"] || params[:creator])
+  end
+
+  defp validate_translations(changeset, field, min, max) do
+    case fetch_change(changeset, field) do
+      {:ok, translations} when is_map(translations) ->
+        Enum.reduce(translations, put_change(changeset, field, %{}), fn translation, acc ->
+          put_translation(acc, field, translation, min, max)
+        end)
+
+      {:ok, nil} ->
+        put_change(changeset, field, %{})
+
+      _ ->
+        changeset
+    end
+  end
+
+  defp put_translation(changeset, field, {locale, text}, min, max) do
+    locale = if is_atom(locale), do: Atom.to_string(locale), else: locale
+
+    cond do
+      locale not in ~w(en ru es zh) or not (is_binary(text) or is_nil(text)) ->
+        add_error(changeset, field, "must contain text for en, ru, es or zh")
+
+      is_nil(text) or String.trim(text) == "" ->
+        changeset
+
+      String.length(String.trim(text)) not in min..max ->
+        add_error(changeset, field, "translation length must be between %{min} and %{max}", min: min, max: max)
+
+      true ->
+        put_change(changeset, field, Map.put(get_field(changeset, field), locale, String.trim(text)))
+    end
   end
 
   # Ladder is a continuous pool-matchmaking format. Games time out on the task clock

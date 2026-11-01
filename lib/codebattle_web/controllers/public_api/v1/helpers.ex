@@ -8,11 +8,23 @@ defmodule CodebattleWeb.PublicApi.V1.Helpers do
 
   @doc "Function plug: `plug :require_scope, \"read\" when action in [...]`."
   def require_scope(conn, scope) do
-    if scope in conn.assigns.api_token.scopes do
+    scopes = if conn.assigns[:api_token], do: conn.assigns.api_token.scopes, else: conn.assigns.oauth_scopes
+
+    if scope in scopes do
       conn
     else
       ErrorJSON.halt_with(conn, 403, "insufficient_scope", "The token lacks the #{scope} scope")
     end
+  end
+
+  @doc "Keep REST and MCP writes in the same audit and per-user quota ledger."
+  def audit(conn, action, resource_type, resource_id) do
+    token = conn.assigns[:api_token]
+    connection = conn.assigns[:oauth_connection]
+
+    Codebattle.ApiAuditEvent.log!(conn.assigns.current_user.id, token && token.id, action, resource_type, resource_id,
+      oauth_connection_id: connection && connection.id
+    )
   end
 
   def parse_id(id) do

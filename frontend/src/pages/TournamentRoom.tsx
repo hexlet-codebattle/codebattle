@@ -74,7 +74,7 @@ export default function TournamentRoom() {
 
   return (
     <AppLayout wide>
-      <Head title={tournamentTitle(tournament.name, tournament.grade)} />
+      <Head title={tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)} />
       {api.status !== 'joined' && (
         <Alert color="yellow" p="xs" mb="sm">
           {t('Reconnecting…')}

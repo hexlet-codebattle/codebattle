@@ -70,7 +70,7 @@ export function TournamentHeader({ tournament, action, clock, footer }: Tourname
               {league ? <GradeIcon grade={tournament.grade} size={26} /> : <IconTrophy size={20} stroke={1.5} />}
             </div>
             <Title order={4} lh={1.15} style={{ wordBreak: 'break-word' }}>
-              {tournamentTitle(tournament.name, tournament.grade)}
+              {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
             </Title>
             {tournament.access_type === 'token' && (
               <Tooltip label={t('Private: joins by invite link')}>

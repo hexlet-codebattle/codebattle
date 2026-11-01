@@ -66,7 +66,7 @@ function TournamentInvite({ id, href }: { id: number; href: string }) {
     <a href={href} className={classes.invite}>
       <IconTrophy size={14} className={classes.inviteIcon} />
       <span className={classes.inviteTitle}>
-        {tournament ? tournamentTitle(tournament.name, tournament.grade) : t('Tournament #%{id}', { id })}
+        {tournament ? tournamentTitle(tournament.name, tournament.grade, tournament.name_translations) : t('Tournament #%{id}', { id })}
       </span>
       <span className={classes.inviteAction} data-color="gray">
         {t('Open')}

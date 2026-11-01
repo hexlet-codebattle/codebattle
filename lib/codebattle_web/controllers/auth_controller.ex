@@ -12,13 +12,15 @@ defmodule CodebattleWeb.AuthController do
 
   def token(conn, params) do
     token = params |> Map.get("t", "") |> String.trim()
+    next = AuthPage.safe_next(get_session(conn, :mcp_return_to))
 
     case Codebattle.Auth.User.find_by_token(token) do
       {:ok, user} ->
         conn
         |> UserAuth.log_in_user(user)
+        |> delete_session(:mcp_return_to)
         |> put_flash(:info, gettext("Successfully authenticated"))
-        |> redirect(to: "/")
+        |> redirect(to: next)
 
       {:error, reason} ->
         Logger.debug("Failed to authenticate user with token: #{inspect(reason)}")
@@ -33,7 +35,7 @@ defmodule CodebattleWeb.AuthController do
     provider_name = params["provider"]
     redirect_uri = Routes.auth_url(conn, :callback, provider_name)
     # Where to land after the provider sends the user back (see callback/2).
-    conn = put_session(conn, :oauth_next, AuthPage.safe_next(params["next"]))
+    conn = put_session(conn, :oauth_next, AuthPage.safe_next(params["next"] || get_session(conn, :mcp_return_to)))
 
     case_result =
       case provider_name do
@@ -84,6 +86,8 @@ defmodule CodebattleWeb.AuthController do
       {:ok, user} ->
         conn
         |> UserAuth.log_in_user(user)
+        |> delete_session(:mcp_return_to)
+        |> delete_session(:oauth_next)
         |> put_flash(:info, gettext("Successfully authenticated"))
         |> redirect(to: next_path)
 

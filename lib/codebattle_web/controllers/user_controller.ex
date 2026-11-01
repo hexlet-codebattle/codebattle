@@ -42,6 +42,7 @@ defmodule CodebattleWeb.UserController do
     |> Frontend.put_layout()
     |> render_inertia("Settings", %{
       "api_tokens" => Enum.map(UserApiToken.list_active(user.id), &SettingsController.present_api_token/1),
+      "oauth_connections" => SettingsController.present_connections(user.id),
       "api_token_scopes" => SettingsController.available_scopes(user)
     })
   end

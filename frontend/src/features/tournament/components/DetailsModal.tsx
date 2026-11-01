@@ -2,7 +2,8 @@ import { Button, Code, Group, Modal, SimpleGrid, Stack, Text } from '@mantine/co
 import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { parseUtc } from '@/features/lobby/format';
+import { tournamentDescription } from '@/shared/tournamentText';
+import { parseUtc, tournamentTitle } from '@/features/lobby/format';
 import { t as translate } from '@/i18n';
 import { Markdown } from '@/shared/Markdown';
 
@@ -62,7 +63,7 @@ export function DetailsModal({ tournament, opened, onClose }: { tournament: Tour
       {
         title: t('Overview'),
         items: [
-          { label: t('Name'), value: formatValue(tournament.name) },
+          { label: t('Name'), value: tournamentTitle(tournament.name, tournament.grade, tournament.name_translations) },
           { label: t('State'), value: translated(tournament.state) },
           { label: t('Type'), value: translated(tournament.type) },
           { label: t('Level'), value: translated(tournament.level) },
@@ -116,12 +117,12 @@ export function DetailsModal({ tournament, opened, onClose }: { tournament: Tour
   return (
     <Modal opened={opened} onClose={onClose} title={t('Tournament details')} size="xl">
       <Stack gap="md">
-        {tournament.description && (
+        {tournamentDescription(tournament) && (
           <Stack gap={6} p="sm" style={{ background: 'var(--cb-sunken)', borderRadius: 'var(--cb-radius)' }}>
             <Text size="xs" fw={700} c="dimmed" tt="uppercase" lts="0.05em">
               {t('Description')}
             </Text>
-            <Markdown>{tournament.description}</Markdown>
+            <Markdown>{tournamentDescription(tournament)}</Markdown>
           </Stack>
         )}
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="sm">

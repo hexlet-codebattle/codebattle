@@ -5,6 +5,29 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
   alias Codebattle.Tournament.SeasonTournamentGenerator
 
   describe "generate_season_tournaments/1" do
+    test "every generated grade has lively names and descriptions in all four languages" do
+      season = %Season{starts_at: ~D[2026-09-21], ends_at: ~D[2026-12-21]}
+      tournaments = SeasonTournamentGenerator.generate_season_tournaments(season)
+
+      assert tournaments |> Enum.map(&Ecto.Changeset.get_field(&1, :grade)) |> Enum.uniq() |> length() == 6
+
+      for changeset <- tournaments do
+        assert changeset.valid?
+        names = Ecto.Changeset.get_field(changeset, :name_translations)
+        descriptions = Ecto.Changeset.get_field(changeset, :description_translations)
+        assert Enum.sort(Map.keys(names)) == ~w(en es ru zh)
+        assert Enum.sort(Map.keys(descriptions)) == ~w(en es ru zh)
+        assert Ecto.Changeset.get_field(changeset, :name) == names["en"]
+        assert Ecto.Changeset.get_field(changeset, :description) == descriptions["en"]
+
+        for locale <- ~w(en ru es zh) do
+          assert String.length(names[locale]) > 0
+          assert descriptions[locale] =~ "🤝"
+          assert descriptions[locale] =~ "\n\n"
+        end
+      end
+    end
+
     test "accepts a persisted season id and defaults non-quarter start dates to season zero" do
       season =
         Repo.insert!(%Season{

@@ -1,4 +1,5 @@
 import { getLocale, t } from '@/i18n';
+import { localizedTournamentText, seasonTemplate, type TournamentText } from '@/shared/tournamentText';
 import { parseServerDate } from '@/shared/date';
 
 import type { GameLevel, LobbyGame, LobbyPlayer, LobbyTournament, TournamentGrade } from './types';
@@ -37,7 +38,12 @@ const RANKING_POINTS: Partial<Record<TournamentGrade, number>> = {
 export const rankingPoints = (grade: TournamentGrade) => RANKING_POINTS[grade] ?? null;
 
 /** "pro" → "Pro", "elite tournament #12" → "Elite Tournament #12" (localized), anything else as is. */
-export function tournamentTitle(name: string, grade: TournamentGrade) {
+export function tournamentTitle(name: string, grade: TournamentGrade, translations?: TournamentText) {
+  if (translations && Object.values(translations).some((text) => text?.trim())) {
+    return localizedTournamentText(translations, name);
+  }
+  const template = seasonTemplate(name, grade);
+  if (template) return localizedTournamentText(template.name, name);
   const normalized = name.toLowerCase().replaceAll(' ', '_');
 
   if (normalized === grade) return gradeLabel(grade);

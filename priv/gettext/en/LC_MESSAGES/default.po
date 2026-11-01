@@ -5070,3 +5070,12 @@ msgstr "No open custom tournaments right now."
 
 msgid "Nickname is already taken"
 msgstr "Nickname is already taken"
+
+msgid "🎉 Welcome to the code party!\n\n- 🧠 Bring your favorite language and your boldest ideas.\n- ✅ Solve tasks, earn points, and try again when a test bites back.\n- 🤝 Play fair, cheer for your rivals, and share the good vibes.\n\nReady, set, code! 🚀"
+msgstr "🎉 Welcome to the code party!\n\n- 🧠 Bring your favorite language and your boldest ideas.\n- ✅ Solve tasks, earn points, and try again when a test bites back.\n- 🤝 Play fair, cheer for your rivals, and share the good vibes.\n\nReady, set, code! 🚀"
+
+msgid "Tournament languages"
+msgstr "Tournament languages"
+
+msgid "Add a name and description in each language. Missing translations use English or the original text."
+msgstr "Add a name and description in each language. Missing translations use English or the original text."

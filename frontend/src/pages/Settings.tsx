@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import { AccountsSection } from '@/features/settings/AccountsSection';
 import { ApiTokensSection } from '@/features/settings/ApiTokensSection';
-import type { AccountUser, ApiToken, SettingsResponse, UserSession } from '@/features/settings/api';
+import type { AccountUser, ApiToken, OauthConnection, SettingsResponse, UserSession } from '@/features/settings/api';
+import { ConnectionsSection } from '@/features/settings/ConnectionsSection';
 import { DangerSection } from '@/features/settings/DangerSection';
 import { DevicesSection } from '@/features/settings/DevicesSection';
 import { PreferencesSection } from '@/features/settings/PreferencesSection';
@@ -24,6 +25,7 @@ interface SettingsProps {
   user_sessions: UserSession[];
   api_tokens: ApiToken[];
   api_token_scopes: string[];
+  oauth_connections: OauthConnection[];
 }
 
 export default function Settings() {
@@ -32,6 +34,7 @@ export default function Settings() {
   const [account, setAccount] = useState<AccountUser>(props.current_user);
   const [sessions, setSessions] = useState(props.user_sessions);
   const [tokens, setTokens] = useState(props.api_tokens);
+  const [connections, setConnections] = useState(props.oauth_connections);
 
   const patch = (fields: Partial<AccountUser>) => setAccount((current) => ({ ...current, ...fields }));
   const saved = (fields: SettingsResponse) => patch(fields);
@@ -78,6 +81,7 @@ export default function Settings() {
             onPasswordChanged={() => {
               setSessions((current) => current.filter((session) => session.current));
               setTokens([]);
+              setConnections([]);
             }}
           />
           <AccountsSection account={account} />
@@ -86,6 +90,7 @@ export default function Settings() {
             onRevoked={(ids) => setSessions((current) => current.filter((session) => !ids.includes(session.id)))}
           />
           <ApiTokensSection tokens={tokens} availableScopes={props.api_token_scopes} onChange={setTokens} />
+          <ConnectionsSection connections={connections} onChange={setConnections} />
           <DangerSection requiresPassword={Boolean(account.has_firebase_auth)} />
         </div>
       </div>

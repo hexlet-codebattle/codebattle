@@ -10,6 +10,7 @@ defmodule Codebattle.ApiAuditEvent do
   schema "api_audit_events" do
     field(:user_id, :integer)
     field(:api_token_id, :binary_id)
+    field(:oauth_connection_id, :binary_id)
     field(:action, :string)
     field(:resource_type, :string)
     field(:resource_id, :integer)
@@ -17,10 +18,11 @@ defmodule Codebattle.ApiAuditEvent do
     timestamps(updated_at: false)
   end
 
-  def log!(user_id, api_token_id, action, resource_type, resource_id) do
+  def log!(user_id, api_token_id, action, resource_type, resource_id, opts \\ []) do
     Repo.insert!(%__MODULE__{
       user_id: user_id,
       api_token_id: api_token_id,
+      oauth_connection_id: opts[:oauth_connection_id],
       action: action,
       resource_type: resource_type,
       resource_id: resource_id

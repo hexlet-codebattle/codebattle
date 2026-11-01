@@ -19,11 +19,15 @@ defmodule Codebattle.Tournament.ContextAdditionalTest do
         type: "swiss",
         access_type: "token",
         access_token: "source-token",
+        name_translations: %{"ru" => "Турнир"},
+        description_translations: %{"ru" => "Описание турнира"},
         starts_at: DateTime.utc_now(:second)
       )
 
     assert {:ok, copies} = Tournament.Context.duplicate(source, creator, 2)
     assert Enum.map(copies, & &1.name) == ["#{source.name} #1", "#{source.name} #2"]
+    assert Enum.map(copies, & &1.name_translations) == [%{"ru" => "Турнир #1"}, %{"ru" => "Турнир #2"}]
+    assert Enum.all?(copies, &(&1.description_translations == source.description_translations))
     assert Enum.all?(copies, &(&1.access_type == "token"))
     assert Enum.all?(copies, &(is_binary(&1.access_token) and &1.access_token != source.access_token))
     assert copies |> Enum.map(& &1.access_token) |> Enum.uniq() |> length() == 2

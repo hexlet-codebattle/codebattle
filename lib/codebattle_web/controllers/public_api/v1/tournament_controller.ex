@@ -116,7 +116,7 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
          :ok <- check_create_quota(user),
          {:ok, permitted} <- body |> to_tournament_params() |> UserParams.permit(user),
          {:ok, tournament} <- permitted |> Map.merge(forced_params(user)) |> Tournament.Context.create() do
-      ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "tournament.create", "tournament", tournament.id)
+      audit(conn, "tournament.create", "tournament", tournament.id)
       conn |> put_status(:created) |> json(%{tournament: JSON.tournament(tournament, user)})
     else
       {:quota, message} -> quota_exceeded(conn, message)
@@ -135,7 +135,7 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
            {:ok, body} <- Params.validate(body, @tournament_spec),
            {:ok, permitted} <- body |> to_tournament_params() |> UserParams.permit(user, tournament),
            {:ok, updated} <- Tournament.Context.update(tournament, Map.merge(keep_params(tournament), permitted)) do
-        ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, "tournament.update", "tournament", tournament.id)
+        audit(conn, "tournament.update", "tournament", tournament.id)
         json(conn, %{tournament: JSON.tournament(updated, user)})
       else
         {:error, %Ecto.Changeset{} = changeset} -> validation_failed(conn, changeset_errors(changeset))
@@ -202,7 +202,7 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
     case Tournament.Context.handle_event(tournament.id, event, params) do
       %Tournament{} = updated ->
         if Helpers.player?(updated, user.id) == joined do
-          ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, action, "tournament", tournament.id)
+          audit(conn, action, "tournament", tournament.id)
           json(conn, %{tournament: JSON.tournament(updated, user)})
         else
           join_failed(conn, "rejected", "The tournament didn't accept the request; check its state and players_limit")
@@ -228,7 +228,7 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
         validation_failed(conn, %{"state" => "must be #{required_state}"})
       else
         Tournament.Context.handle_event(tournament.id, event, %{user: user})
-        ApiAuditEvent.log!(user.id, conn.assigns.api_token.id, action, "tournament", tournament.id)
+        audit(conn, action, "tournament", tournament.id)
         json(conn, %{tournament: JSON.tournament(Tournament.Context.get!(tournament.id), user)})
       end
     end)

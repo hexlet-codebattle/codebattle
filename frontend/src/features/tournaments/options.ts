@@ -1,3 +1,4 @@
+import type { TournamentTranslations } from '@/shared/tournamentText';
 // Option lists and per-option explanations for the tournament form. Labels and
 // descriptions are the legacy form's English strings, so the existing Russian
 // entries in ru/default.po translate them.
@@ -79,11 +80,13 @@ export const TIMEOUT_DESCRIPTIONS: Record<string, string> = {
 export const PLAYERS_LIMITS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384];
 
 // Pre-filled for new tournaments; the whole string is an i18n key.
-export const DEFAULT_DESCRIPTION = `- ✅ Solve each task correctly to earn points
-- ⚡ Faster solutions rank higher
-- 🤝 Be respectful to other players
+export const DEFAULT_DESCRIPTION = `🎉 Welcome to the code party!
 
-Good luck and have fun! 🚀`;
+- 🧠 Bring your favorite language and your boldest ideas.
+- ✅ Solve tasks, earn points, and try again when a test bites back.
+- 🤝 Play fair, cheer for your rivals, and share the good vibes.
+
+Ready, set, code! 🚀`;
 
 // Playful default names; `phrase` is an i18n key, the emoji is neutral.
 export const FUN_NAMES: { emoji: string; phrase: string }[] = [
@@ -100,7 +103,7 @@ export const FUN_NAMES: { emoji: string; phrase: string }[] = [
 ];
 
 /** Settings of the user's last tournament (TournamentController.index `last_tournament`). */
-export interface LastTournament {
+export interface LastTournament extends TournamentTranslations {
   type?: string;
   name?: string;
   description?: string;

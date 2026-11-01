@@ -430,6 +430,7 @@ defmodule Codebattle.SeasonResult do
           SELECT
             tur.*,
             t.name AS tournament_name,
+            t.name_translations AS tournament_name_translations,
             t.grade,
             t.started_at,
             ROW_NUMBER() OVER (
@@ -460,7 +461,8 @@ defmodule Codebattle.SeasonResult do
           qr.games_count,
           qr.wins_count,
           qr.total_time,
-          (SELECT COUNT(*) FROM tournament_user_results WHERE tournament_id = qr.tournament_id)::integer AS total_participants
+          (SELECT COUNT(*) FROM tournament_user_results WHERE tournament_id = qr.tournament_id)::integer AS total_participants,
+          qr.tournament_name_translations
         FROM qualified_results qr
         ORDER BY qr.started_at DESC
         LIMIT 10
@@ -480,7 +482,8 @@ defmodule Codebattle.SeasonResult do
         games_count: Enum.at(row, 7),
         wins_count: Enum.at(row, 8),
         total_time: Enum.at(row, 9),
-        total_participants: Enum.at(row, 10)
+        total_participants: Enum.at(row, 10),
+        tournament_name_translations: Enum.at(row, 11)
       }
     end)
   end

@@ -250,7 +250,7 @@ function TournamentsTable({ tournaments }: { tournaments: PlayerStats['recent_to
                   <GradeIcon grade={row.grade} size={18} />
                   <Anchor href={`/tournaments/${row.tournament_id}`} size="sm" c="bright" fw={600} truncate>
                     {row.tournament_name
-                      ? tournamentTitle(row.tournament_name, row.grade)
+                      ? tournamentTitle(row.tournament_name, row.grade, row.tournament_name_translations)
                       : t('Tournament #%{id}', { id: row.tournament_id })}
                   </Anchor>
                 </Group>

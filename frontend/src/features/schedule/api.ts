@@ -1,10 +1,11 @@
+import type { TournamentTranslations } from '@/shared/tournamentText';
 import { parseUtc } from '@/features/lobby/format';
 import type { TournamentGrade, TournamentState } from '@/features/lobby/types';
 
 // GET /api/v1/tournaments (Api.V1.TournamentController.index, @public_fields) and
 // GET /api/v1/tournaments/history. Only the fields the schedule reads are typed.
 
-export interface ScheduleTournament {
+export interface ScheduleTournament extends TournamentTranslations {
   id: number;
   name: string;
   grade: TournamentGrade;
@@ -21,7 +22,7 @@ export interface ScheduleTournament {
   task_pack_name: string | null;
 }
 
-export interface HistoryTournament {
+export interface HistoryTournament extends TournamentTranslations {
   id: number;
   name: string;
   grade: TournamentGrade;

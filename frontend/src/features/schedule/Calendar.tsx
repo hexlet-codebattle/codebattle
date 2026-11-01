@@ -54,11 +54,11 @@ function EventChip({ event, onSelect }: { event: ScheduleEvent; onSelect: (event
       data-state={tournament.state}
       style={{ '--grade': `var(--cb-grade-${tournament.grade}, var(--cb-text-muted))` } as CSSProperties}
       onClick={() => onSelect(event)}
-      title={tournamentTitle(tournament.name, tournament.grade)}
+      title={tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
     >
       {tournament.state === 'active' && <span className={classes.live} />}
       <span className={classes.eventTime}>{timeOf(event.start)}</span>
-      <span className={classes.eventName}>{tournamentTitle(tournament.name, tournament.grade)}</span>
+      <span className={classes.eventName}>{tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}</span>
     </button>
   );
 }
@@ -154,7 +154,7 @@ function Agenda({ days, today, onSelect }: { days: [Date, ScheduleEvent[]][]; to
                   )}
                   <Stack gap={0} style={{ flex: 1, minWidth: 0 }}>
                     <Text size="sm" fw={600} c="bright" truncate>
-                      {tournamentTitle(tournament.name, tournament.grade)}
+                      {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
                     </Text>
                     <Text size="xs" c="dimmed">
                       {tournament.grade === 'open' ? t('Custom tournament') : gradeLabel(tournament.grade)}

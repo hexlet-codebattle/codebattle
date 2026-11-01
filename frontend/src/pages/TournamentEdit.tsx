@@ -3,6 +3,7 @@ import { Button, Group } from '@mantine/core';
 import { IconArrowLeft, IconTrophy } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 
+import { tournamentTitle } from '@/features/lobby/format';
 import { StateBadge } from '@/features/schedule/EventModal';
 import { type EditableTournament, TournamentForm } from '@/features/tournaments/TournamentForm';
 import { UserCard } from '@/features/users/UserCard';
@@ -22,12 +23,12 @@ export default function TournamentEdit() {
 
   return (
     <AppLayout wide>
-      <Head title={t('Edit %{name}', { name: tournament.name ?? '' })} />
+      <Head title={t('Edit %{name}', { name: tournamentTitle(tournament.name ?? '', 'open', tournament.name_translations) })} />
       <PageHeader
         title={t('Edit Tournament')}
         subtitle={
           <Group gap={8} justify="center" component="span">
-            <span>{tournament.name}</span>
+            <span>{tournamentTitle(tournament.name ?? '', 'open', tournament.name_translations)}</span>
             <StateBadge state={tournament.state} />
             {tournament.creator && (
               <span>

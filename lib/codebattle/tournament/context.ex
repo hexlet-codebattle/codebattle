@@ -423,6 +423,8 @@ defmodule Codebattle.Tournament.Context do
     :break_duration_seconds,
     :break_state,
     :description,
+    :description_translations,
+    :name_translations,
     :event_id,
     :exclude_banned_players,
     :grade,
@@ -463,6 +465,12 @@ defmodule Codebattle.Tournament.Context do
         params =
           base_params
           |> Map.put(:name, "#{tournament.name} ##{index}")
+          |> Map.put(
+            :name_translations,
+            Map.new(tournament.name_translations, fn {locale, name} ->
+              {locale, "#{name} ##{index}"}
+            end)
+          )
           |> maybe_generate_access_token()
 
         changeset = Tournament.changeset(%Tournament{}, params)
@@ -673,7 +681,7 @@ defmodule Codebattle.Tournament.Context do
     params =
       params
       |> Map.delete("creator")
-      |> AtomizedMap.atomize()
+      |> atomize_tournament_params()
       |> Map.put(:creator, params["creator"] || %{})
       |> normalize_moderator_ids()
 
@@ -736,6 +744,14 @@ defmodule Codebattle.Tournament.Context do
       meta: parse_meta(params),
       show_results: show_results
     })
+  end
+
+  # Locale keys are user data, not schema fields. Keep them out of recursive atomization.
+  defp atomize_tournament_params(params) do
+    fields = [:name_translations, :description_translations, "name_translations", "description_translations"]
+    {translations, settings} = Map.split(params, fields)
+    translations = Map.new(translations, fn {field, texts} -> {AtomizedMap.key_to_atom(field), texts} end)
+    Map.merge(AtomizedMap.atomize(settings), translations)
   end
 
   # The UI form sends minutes ("2026-10-17T19:00"); the public API sends seconds as well.

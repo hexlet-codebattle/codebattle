@@ -6206,34 +6206,34 @@ msgstr ""
 "¡Buena suerte y diviértete! 🚀"
 
 msgid "Code Rumble"
-msgstr "Problema de código"
+msgstr "Batalla de código"
 
 msgid "Byte Brawl"
 msgstr "Pelea de bytes"
 
 msgid "Algo Arena Showdown"
-msgstr "Enfrentamiento de Algo Arena"
+msgstr "Duelo en la arena de algoritmos"
 
 msgid "The Great Bug Hunt"
-msgstr "La gran caza de insectos"
+msgstr "La gran caza de bugs"
 
 msgid "Syntax Smackdown"
 msgstr "Batalla de sintaxis"
 
 msgid "Midnight Code Clash"
-msgstr "Choque de código de medianoche"
+msgstr "Duelo de código a medianoche"
 
 msgid "Turbo Loop Rumble"
-msgstr "Retumbar del bucle turbo"
+msgstr "Bucles a toda velocidad"
 
 msgid "Hack & Slash"
-msgstr "Cortar y cortar"
+msgstr "Código y acción"
 
 msgid "Recursion Rampage"
-msgstr "Alboroto recursivo"
+msgstr "Furia recursiva"
 
 msgid "Stack Overflow Showdown"
-msgstr "Enfrentamiento de desbordamiento de pila"
+msgstr "Duelo de desbordamiento de pila"
 
 msgid "View Hall of Fame"
 msgstr "Ver Salón de la Fama"
@@ -7684,3 +7684,64 @@ msgstr "Revisor"
 
 msgid "Nickname is already taken"
 msgstr "Este apodo ya está en uso"
+
+msgid "🎉 Welcome to the code party!\n\n- 🧠 Bring your favorite language and your boldest ideas.\n- ✅ Solve tasks, earn points, and try again when a test bites back.\n- 🤝 Play fair, cheer for your rivals, and share the good vibes.\n\nReady, set, code! 🚀"
+msgstr "🎉 ¡Bienvenidos a la fiesta del código!\n\n- 🧠 Trae tu lenguaje favorito y tus ideas más atrevidas.\n- ✅ Resuelve tareas, suma puntos y vuelve a intentarlo si un test se resiste.\n- 🤝 Juega limpio, anima a tus rivales y comparte el buen ambiente.\n\n¡Preparados, listos, código! 🚀"
+
+msgid "Tournament languages"
+msgstr "Idiomas del torneo"
+
+msgid "Add a name and description in each language. Missing translations use English or the original text."
+msgstr "Añade un nombre y una descripción en cada idioma. Si falta una traducción, se muestra el inglés o el texto original."
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Connect an application"
+msgstr "Conectar una aplicación"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "%{name} is requesting access to your Codebattle account."
+msgstr "%{name} solicita acceso a tu cuenta de Codebattle."
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Application names are provided by their developers. Check the return address:"
+msgstr "Los desarrolladores indican el nombre de la aplicación. Comprueba la dirección de retorno:"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "You can disconnect this application at any time in Settings → Connected applications."
+msgstr "Puedes desconectar esta aplicación en cualquier momento en Ajustes → Aplicaciones conectadas."
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Allow access"
+msgstr "Permitir acceso"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Connected applications"
+msgstr "Aplicaciones conectadas"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Applications with access to your Codebattle account. Disconnecting stops their access immediately."
+msgstr "Aplicaciones con acceso a tu cuenta de Codebattle. Al desconectarlas, el acceso se revoca de inmediato."
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "No connected applications"
+msgstr "No hay aplicaciones conectadas"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Disconnect"
+msgstr "Desconectar"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "View your profile, games and tournaments"
+msgstr "Ver tu perfil, partidas y torneos"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Create and join games, send invites and join tournaments"
+msgstr "Crear y unirse a partidas, enviar invitaciones y participar en torneos"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Manage your private tournaments"
+msgstr "Gestionar tus torneos privados"
+
+#: frontend/src/pages/McpConsent.tsx frontend/src/features/settings/ConnectionsSection.tsx
+msgid "Stay connected without asking you to sign in again"
+msgstr "Mantener la conexión sin volver a iniciar sesión"

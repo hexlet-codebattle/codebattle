@@ -16,6 +16,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     :current_round_timeout_seconds,
     :current_round_position,
     :description,
+    :description_translations,
     :event_id,
     :exclude_banned_players,
     :group_tournament_id,
@@ -27,6 +28,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     :match_timeout_seconds,
     :moderator_ids,
     :name,
+    :name_translations,
     :players_count,
     :players_limit,
     :ranking_type,
@@ -90,6 +92,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     %{
       id: tournament.id,
       name: tournament.name,
+      name_translations: tournament.name_translations,
       type: tournament.type,
       level: tournament.level,
       state: tournament.state,
@@ -159,6 +162,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     %{
       id: tournament.id,
       name: tournament.name,
+      name_translations: tournament.name_translations,
       grade: tournament.grade,
       type: tournament.type,
       state: tournament.state,

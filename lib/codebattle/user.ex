@@ -8,6 +8,7 @@ defmodule Codebattle.User do
   import Ecto.Query
 
   alias Codebattle.Clan
+  alias Codebattle.Mcp.Oauth
   alias Codebattle.Repo
   alias Codebattle.User.SoundSettings
   alias Codebattle.UserSession
@@ -218,6 +219,7 @@ defmodule Codebattle.User do
       {:ok, {updated_user, session_data}} ->
         UserSession.disconnect_many(session_data.revoked_session_ids)
         Codebattle.UserApiToken.revoke_all(updated_user.id)
+        Oauth.revoke_all(updated_user.id)
         {:ok, updated_user, session_data}
 
       {:error, {:user, %Ecto.Changeset{} = changeset}} ->
@@ -491,6 +493,7 @@ defmodule Codebattle.User do
       {:ok, {archived_user, session_ids}} ->
         UserSession.disconnect_many(session_ids)
         Codebattle.UserApiToken.revoke_all(archived_user.id)
+        Oauth.revoke_all(archived_user.id)
         {:ok, archived_user}
 
       {:error, reason} ->
@@ -524,6 +527,7 @@ defmodule Codebattle.User do
 
     UserSession.revoke_all(user.id)
     Codebattle.UserApiToken.revoke_all(user.id)
+    Oauth.revoke_all(user.id)
     result
   end
 

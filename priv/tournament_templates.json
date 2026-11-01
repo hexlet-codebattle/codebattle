@@ -1,0 +1,92 @@
+{
+  "rookie": {
+    "name": {
+      "en": "Rookie",
+      "ru": "Новичок",
+      "es": "Principiantes",
+      "zh": "新手"
+    },
+    "description": {
+      "en": "🌱 Small steps, big brain energy! Your first tournament or your next warm-up — everyone is welcome.\n\n- 🎮 4 ladder rounds, from elementary to easy tasks.\n- ✅ Solve, score, repeat. Every challenge is a chance to learn!\n- 🤝 Cheer each other on and enjoy the climb. Ready, set, code! 🚀",
+      "ru": "🌱 Маленькие шаги, большие идеи! Первый турнир или разминка перед новым вызовом — рады всем.\n\n- 🎮 4 раунда ладдера: от начальных до простых задач.\n- ✅ Решай, набирай очки и пробуй снова. Каждая задача — шанс научиться новому!\n- 🤝 Поддерживай соперников и получай удовольствие. На старт, внимание, код! 🚀",
+      "es": "🌱 ¡Pequeños pasos, grandes ideas! Tu primer torneo o un buen calentamiento: aquí todo el mundo es bienvenido.\n\n- 🎮 4 rondas de ladder, de tareas elementales a fáciles.\n- ✅ Resuelve, suma puntos y repite. ¡Cada reto es una oportunidad para aprender!\n- 🤝 Anima a los demás y disfruta de la subida. ¡Preparados, listos, código! 🚀",
+      "zh": "🌱 小小一步，大大脑洞！无论是第一次参赛，还是来热热身，都欢迎加入。\n\n- 🎮 4 轮天梯赛，题目从入门到简单。\n- ✅ 解题、得分、再挑战，每道题都是学习的机会！\n- 🤝 为彼此加油，享受进步。预备，开始写代码！🚀"
+    },
+    "legacy_description": "Rookie tournament - elementary and easy tasks, grind-friendly"
+  },
+  "challenger": {
+    "name": {
+      "en": "Daily Challenger",
+      "ru": "Ежедневный вызов",
+      "es": "Desafío diario",
+      "zh": "每日挑战赛"
+    },
+    "description": {
+      "en": "⚡ A daily dose of code, a fresh chance to shine! Bring your favorite language and a curious mind.\n\n- 🎮 6 ladder rounds: elementary → easy → medium.\n- 🔥 Keep solving and build your season score.\n- 🤝 Friendly rivalry, clever solutions, good vibes. See you in the arena! 🚀",
+      "ru": "⚡ Ежедневная порция кода и новый шанс блеснуть! Бери любимый язык и любопытство.\n\n- 🎮 6 раундов ладдера: начальный → простой → средний уровень.\n- 🔥 Решай задачи и пополняй сезонный счёт.\n- 🤝 Дружеское соперничество, красивые решения и хорошее настроение. Встречаемся на арене! 🚀",
+      "es": "⚡ ¡Tu dosis diaria de código y una nueva oportunidad para brillar! Trae tu lenguaje favorito y mucha curiosidad.\n\n- 🎮 6 rondas de ladder: elemental → fácil → medio.\n- 🔥 Sigue resolviendo y suma puntos de temporada.\n- 🤝 Rivalidad amistosa, soluciones ingeniosas y buen ambiente. ¡Nos vemos en la arena! 🚀",
+      "zh": "⚡ 每日代码充电，今天也有闪耀的机会！带上你最爱的语言和好奇心。\n\n- 🎮 6 轮天梯赛：入门 → 简单 → 中等。\n- 🔥 持续解题，积累赛季积分。\n- 🤝 友好较量、巧妙解法、快乐参赛。竞技场见！🚀"
+    },
+    "legacy_description": "Daily challenger tournament - the backbone of our competitive calendar"
+  },
+  "pro": {
+    "name": {
+      "en": "Biweekly Pro",
+      "ru": "Профи: дважды в месяц",
+      "es": "Pro: dos veces al mes",
+      "zh": "每月双赛·专业赛"
+    },
+    "description": {
+      "en": "🔥 Time to turn those practice reps into a proper code showdown! Bring bold ideas and keep your cool.\n\n- 🎮 8 ladder rounds, building from elementary to medium tasks.\n- 🧠 Find the edge cases, chase clean solutions, climb the standings.\n- 🤝 Play fair and celebrate the clever stuff. Let the bytes fly! ⚔️",
+      "ru": "🔥 Пора превратить тренировки в настоящую битву кода! Бери смелые идеи и сохраняй хладнокровие.\n\n- 🎮 8 раундов ладдера: от начальных задач до среднего уровня.\n- 🧠 Лови крайние случаи, ищи красивые решения и поднимайся в рейтинге.\n- 🤝 Играй честно и радуйся крутым находкам. Пусть байты летят! ⚔️",
+      "es": "🔥 ¡Convierte la práctica en una auténtica batalla de código! Trae ideas atrevidas y mantén la calma.\n\n- 🎮 8 rondas de ladder, desde tareas elementales hasta nivel medio.\n- 🧠 Encuentra los casos límite, busca soluciones elegantes y sube en la clasificación.\n- 🤝 Juega limpio y celebra el ingenio. ¡Que vuelen los bytes! ⚔️",
+      "zh": "🔥 把日常练习变成一场真正的代码对决！大胆构思，冷静应战。\n\n- 🎮 8 轮天梯赛，题目从入门逐步升至中等。\n- 🧠 找到边界情况，写出漂亮解法，向排行榜上方冲刺。\n- 🤝 公平竞技，为好点子喝彩。让字节飞起来！⚔️"
+    },
+    "legacy_description": "Pro tournament - for skilled competitors"
+  },
+  "elite": {
+    "name": {
+      "en": "Monthly Elite",
+      "ru": "Ежемесячная элита",
+      "es": "Élite mensual",
+      "zh": "每月精英赛"
+    },
+    "description": {
+      "en": "💎 The monthly boss battle is here! Sharpen your algorithms and bring your best problem-solving energy.\n\n- 🎮 10 ladder rounds, from elementary tasks to a hard final challenge.\n- 🧠 Stay curious when the puzzles get spicy.\n- 🤝 Big plays, fair play, and plenty of respect. Make this one memorable! 🔥",
+      "ru": "💎 Ежемесячная битва с боссом уже здесь! Точи алгоритмы и готовь лучшие идеи.\n\n- 🎮 10 раундов ладдера: от начальных задач до сложного финального испытания.\n- 🧠 Не теряй любопытства, когда задачи становятся острее.\n- 🤝 Смелые решения, честная игра и уважение к соперникам. Пусть этот турнир запомнится! 🔥",
+      "es": "💎 ¡Llega la batalla mensual contra el jefe final! Afina tus algoritmos y trae tus mejores ideas.\n\n- 🎮 10 rondas de ladder, desde tareas elementales hasta un reto final difícil.\n- 🧠 Mantén la curiosidad cuando los problemas se pongan picantes.\n- 🤝 Grandes jugadas, juego limpio y mucho respeto. ¡Hagamos un torneo memorable! 🔥",
+      "zh": "💎 每月的首领挑战来了！磨练算法，带上你最棒的解题状态。\n\n- 🎮 10 轮天梯赛，从入门题一路挑战到困难的最终关卡。\n- 🧠 题目越有挑战，越要保持好奇心。\n- 🤝 精彩发挥、公平竞技、尊重对手。一起留下难忘的比赛！🔥"
+    },
+    "legacy_description": "Elite tournament - for top-tier competitors"
+  },
+  "masters": {
+    "name": {
+      "en": "Masters",
+      "ru": "Мастерс",
+      "es": "Maestros",
+      "zh": "大师赛"
+    },
+    "description": {
+      "en": "🧙 Clever minds, curated puzzles, and a little algorithmic magic. Welcome to Masters!\n\n- ♟️ 12 Swiss rounds with a hand-picked task pack.\n- 🧠 Each round brings a new chance to outthink the challenge.\n- 🤝 Respect your rivals, trust your ideas, and enjoy the craft. Cast your best code! ✨",
+      "ru": "🧙 Сильные идеи, отборные задачи и немного алгоритмической магии. Добро пожаловать на Мастерс!\n\n- ♟️ 12 раундов по швейцарской системе с подготовленным набором задач.\n- 🧠 Каждый раунд — новый шанс найти лучшее решение.\n- 🤝 Уважай соперников, доверяй своим идеям и наслаждайся мастерством. Покажи магию кода! ✨",
+      "es": "🧙 Mentes brillantes, problemas seleccionados y un poco de magia algorítmica. ¡Bienvenidos a Maestros!\n\n- ♟️ 12 rondas suizas con un paquete de tareas seleccionado.\n- 🧠 Cada ronda ofrece otra oportunidad para resolver un nuevo reto.\n- 🤝 Respeta a tus rivales, confía en tus ideas y disfruta del oficio. ¡Haz magia con tu código! ✨",
+      "zh": "🧙 聪明的头脑、精选的题目，再加一点算法魔法。欢迎来到大师赛！\n\n- ♟️ 12 轮瑞士制比赛，使用精心准备的题包。\n- 🧠 每一轮都是用巧思破解新挑战的机会。\n- 🤝 尊重对手，相信自己的想法，享受编程的乐趣。施展你的代码魔法！✨"
+    },
+    "legacy_description": "Masters tournament - elite competition with curated tasks"
+  },
+  "grand_slam": {
+    "name": {
+      "en": "Grand Slam",
+      "ru": "Большой шлем",
+      "es": "Grand Slam",
+      "zh": "大满贯"
+    },
+    "description": {
+      "en": "🏆 The season finale. The big stage. Your moment to make the code sing!\n\n- ♟️ 14 Swiss rounds with a curated championship task pack.\n- 🔥 Bring everything you learned this season and give the final push your best shot.\n- 🤝 Play fair, cheer loudly, and celebrate the journey together. One last epic showdown! 🚀",
+      "ru": "🏆 Финал сезона. Большая сцена. Твой момент заставить код зазвучать!\n\n- ♟️ 14 раундов по швейцарской системе с чемпионским набором задач.\n- 🔥 Собери всё, чему научился за сезон, и выложись в финальном рывке.\n- 🤝 Играй честно, поддерживай соперников и отмечай пройденный путь. Впереди эпичная развязка! 🚀",
+      "es": "🏆 La final de temporada. El gran escenario. ¡Tu momento para hacer cantar al código!\n\n- ♟️ 14 rondas suizas con un paquete de tareas de campeonato.\n- 🔥 Usa todo lo aprendido esta temporada y da lo mejor en el último esfuerzo.\n- 🤝 Juega limpio, anima con ganas y celebra el camino recorrido. ¡Un último duelo épico! 🚀",
+      "zh": "🏆 赛季决战，盛大舞台。让你的代码在此刻闪耀！\n\n- ♟️ 14 轮瑞士制比赛，使用精选的冠军题包。\n- 🔥 带上整个赛季的收获，为最后的冲刺全力以赴。\n- 🤝 公平竞技，为彼此喝彩，一起庆祝这段旅程。来一场史诗级的终极对决！🚀"
+    },
+    "legacy_description": "Season finale - the ultimate championship tournament with the highest stakes"
+  }
+}

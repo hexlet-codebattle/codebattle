@@ -35,7 +35,8 @@ import { type FormEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatStartsIn, levelLabel, LEVELS, parseUtc, taskLevelsLabel } from '@/features/lobby/format';
-import { t as translate } from '@/i18n';
+import i18n, { getLocale, LOCALE_LABELS, type Locale, normalizeLocale, SUPPORTED_LOCALES } from '@/i18n';
+import { localizedTournamentText } from '@/shared/tournamentText';
 import { Markdown } from '@/shared/Markdown';
 import { useNow } from '@/shared/useNow';
 import { useSharedProps } from '@/shared/useSharedProps';
@@ -65,6 +66,8 @@ interface Values {
   type: string;
   name: string;
   description: string;
+  name_translations: Record<Locale, string>;
+  description_translations: Record<Locale, string>;
   moderator_ids: string;
   starts_at: string;
   access_type: string;
@@ -85,18 +88,27 @@ interface Values {
   meta_json: string;
 }
 
-const funName = () => {
+const funNames = (): Record<Locale, string> => {
   const pick = FUN_NAMES[Math.floor(Math.random() * FUN_NAMES.length)];
-  return `${pick.emoji} ${translate(pick.phrase)}`;
+  return Object.fromEntries(SUPPORTED_LOCALES.map((locale) => [locale, `${pick.emoji} ${i18n.getFixedT(locale)(pick.phrase)}`])) as Record<Locale, string>;
 };
+
+const localizedDefaults = (original: string, translations?: Partial<Record<Locale, string | null>>) =>
+  Object.fromEntries(SUPPORTED_LOCALES.map((locale) => [locale, translations?.[locale] ?? (locale === 'en' ? original : '')])) as Record<Locale, string>;
 
 const inMinutes = (minutes: number) => toLocalInput(new Date(Date.now() + minutes * 60_000));
 
 function defaults(last?: LastTournament | null, editing?: EditableTournament | null): Values {
+  const names = last ? localizedDefaults(last.name ?? '', last.name_translations) : funNames();
+  const descriptions = last
+    ? localizedDefaults(last.description ?? '', last.description_translations)
+    : Object.fromEntries(SUPPORTED_LOCALES.map((locale) => [locale, i18n.getFixedT(locale)(DEFAULT_DESCRIPTION)])) as Record<Locale, string>;
   return {
     type: last?.type || 'ladder',
-    name: last?.name || funName(),
-    description: last?.description || translate(DEFAULT_DESCRIPTION),
+    name: names.en,
+    description: descriptions.en,
+    name_translations: names,
+    description_translations: descriptions,
     moderator_ids: (last?.moderator_ids ?? []).join(', '),
     starts_at: editing?.starts_at ? toLocalInput(parseUtc(editing.starts_at)) : inMinutes(5),
     access_type: last?.access_type || 'public',
@@ -205,6 +217,7 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
   const [values, setValues] = useState<Values>(() => defaults(editing, editing));
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [textLocale, setTextLocale] = useState<Locale>(getLocale);
   const [descriptionTab, setDescriptionTab] = useState<string | null>('write');
   const now = useNow(30_000);
   const [timezone] = useState(browserTimezone);
@@ -219,6 +232,22 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
       return next;
     });
     setErrors(({ [key]: _stale, ...rest }) => rest);
+  };
+
+  const setText = (field: 'name' | 'description', text: string) => {
+    const translations = field === 'name' ? 'name_translations' : 'description_translations';
+    setValues((current) => ({
+      ...current,
+      [translations]: { ...current[translations], [textLocale]: text },
+      ...(textLocale === 'en' ? { [field]: text } : {}),
+    }));
+    setErrors(({ [field]: _field, [translations]: _translations, ...rest }) => rest);
+  };
+
+  const randomizeNames = () => {
+    const names = funNames();
+    setValues((current) => ({ ...current, name: names.en, name_translations: names }));
+    setErrors(({ name: _name, name_translations: _translations, ...rest }) => rest);
   };
 
   const isLadder = values.type === 'ladder';
@@ -261,6 +290,7 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         const fallback = editing ? t('Failed to update tournament') : t('An error occurred while creating the tournament');
+        if (data.errors?.name || data.errors?.description) setTextLocale('en');
         setErrors(data.errors ? flattenErrors(data.errors) : { base: data.error ?? fallback });
         setSubmitting(false);
         return;
@@ -292,18 +322,28 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
 
             <FormSection title={t('Basic Information')}>
               <Stack gap="md">
+                <Tabs value={textLocale} onChange={(value) => setTextLocale(normalizeLocale(value))}>
+                  <Tabs.List aria-label={t('Tournament languages')}>
+                    {SUPPORTED_LOCALES.map((locale) => (
+                      <Tabs.Tab key={locale} value={locale}>{LOCALE_LABELS[locale]}</Tabs.Tab>
+                    ))}
+                  </Tabs.List>
+                </Tabs>
+                <Text size="xs" c="dimmed">
+                  {t('Add a name and description in each language. Missing translations use English or the original text.')}
+                </Text>
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
                   <TextInput
                     label={t('Tournament Name')}
                     description={t('Shown to players in the lobby and on the tournament page.')}
-                    value={values.name}
-                    onChange={(event) => set('name', event.currentTarget.value)}
-                    error={errors.name}
+                    value={values.name_translations[textLocale]}
+                    onChange={(event) => setText('name', event.currentTarget.value)}
+                    error={errors.name_translations || (textLocale === 'en' ? errors.name : undefined)}
                     maxLength={42}
-                    required
+                    required={textLocale === 'en'}
                     rightSection={
                       <Tooltip label={t('Random name')}>
-                        <ActionIcon variant="subtle" onClick={() => set('name', funName())} aria-label={t('Random name')}>
+                        <ActionIcon variant="subtle" onClick={randomizeNames} aria-label={t('Random name')}>
                           <IconDice5 size={16} />
                         </ActionIcon>
                       </Tooltip>
@@ -334,18 +374,18 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
                   </Group>
                   {descriptionTab === 'preview' ? (
                     <Card withBorder padding="sm" mih={150}>
-                      <Markdown>{values.description || '_…_'}</Markdown>
+                      <Markdown>{values.description_translations[textLocale] || '_…_'}</Markdown>
                     </Card>
                   ) : (
                     <Textarea
                       autosize
                       minRows={6}
                       maxRows={16}
-                      value={values.description}
-                      onChange={(event) => set('description', event.currentTarget.value)}
-                      error={errors.description}
+                      value={values.description_translations[textLocale]}
+                      onChange={(event) => setText('description', event.currentTarget.value)}
+                      error={errors.description_translations || (textLocale === 'en' ? errors.description : undefined)}
                       maxLength={7531}
-                      required
+                      required={textLocale === 'en'}
                       styles={{ input: { fontFamily: 'var(--mantine-font-family-monospace)', fontSize: 13 } }}
                     />
                   )}
@@ -570,7 +610,7 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
               <Title order={4}>{t('Summary')}</Title>
               <Stack gap={2}>
                 <Text fw={700} fz="lg" c="bright" lineClamp={2}>
-                  {values.name || '—'}
+                  {localizedTournamentText(values.name_translations, values.name) || '—'}
                 </Text>
                 <Group gap={6}>
                   <Badge variant="default" tt="none">

@@ -132,7 +132,7 @@ export function LeagueBanner() {
         <GradeIcon grade={tournament?.grade ?? 'grand_slam'} size={36} />
         <Stack gap={0} miw={0} flex={1}>
           <Text fw={700} c="bright">
-            {tournament ? tournamentTitle(tournament.name, tournament.grade) : t('Codebattle League')}
+            {tournament ? tournamentTitle(tournament.name, tournament.grade, tournament.name_translations) : t('Codebattle League')}
           </Text>
           {tournament?.starts_at && (
             <Text size="xs" fw={600} c="bright">

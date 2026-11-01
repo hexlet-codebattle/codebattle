@@ -1,3 +1,4 @@
+import type { TournamentTranslations } from '@/shared/tournamentText';
 // Shapes of the lobby payloads (snake_case, as sent by the server).
 // Games come from Game.Context.get_active_games/1 via the "lobby" channel and the
 // `active_games` page prop; only fields the UI reads are typed.
@@ -48,7 +49,7 @@ export type TournamentGrade = 'open' | 'rookie' | 'challenger' | 'pro' | 'elite'
 export type TournamentState = 'upcoming' | 'waiting_participants' | 'active' | 'finished' | 'canceled';
 
 // Tournament JSON (Jason.Encoder `only:` list in Codebattle.Tournament).
-export interface LobbyTournament {
+export interface LobbyTournament extends TournamentTranslations {
   id: number;
   name: string;
   grade: TournamentGrade;

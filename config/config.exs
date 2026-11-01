@@ -49,6 +49,7 @@ config :codebattle, Oban,
   # Privacy retention: drop expired/revoked browser sessions (IP, user agent).
   crontab: [
     {"17 3 * * *", Codebattle.Workers.UserSessionPurgeWorker},
+    {"22 3 * * *", Codebattle.Workers.McpOauthPurgeWorker},
     {"27 3 * * *", Codebattle.Workers.OnboardingPurgeWorker}
   ]
 
@@ -166,6 +167,10 @@ config :fun_with_flags, :persistence,
   repo: Codebattle.Repo,
   ecto_table_name: "feature_flags"
 
+# Hermes logs raw protocol payloads, including private tournament invite tokens.
+# Use Phoenix request status logs and the shared write audit instead.
+config :hermes_mcp, log: false
+
 config :inertia,
   endpoint: CodebattleWeb.Endpoint,
   # The asset version: changes with every frontend build, so stale tabs reload after a deploy.
@@ -179,6 +184,8 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# OAuth codes, PKCE verifiers and consent envelopes must not enter request logs.
+config :phoenix, :filter_parameters, ["password", "token", "code", "secret", "request", "authorization"]
 config :phoenix, :json_library, Jason
 
 config :porcelain, goon_warn_if_missing: false

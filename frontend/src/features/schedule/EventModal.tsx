@@ -3,6 +3,8 @@ import { IconChevronLeft, IconChevronRight, IconExternalLink } from '@tabler/ico
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Markdown } from '@/shared/Markdown';
+import { tournamentDescription } from '@/shared/tournamentText';
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
 import { LEAGUE_GRADES } from '@/features/lobby/components/LeagueBanner';
 import { formatCountdown, formatStartsIn, gradeLabel, tournamentTitle } from '@/features/lobby/format';
@@ -94,7 +96,7 @@ export function EventModal({ events, selected, onSelect }: EventModalProps) {
           <Stack gap={0}>
             <Group gap={8}>
               <Text fw={700} fz="lg" c="bright">
-                {tournamentTitle(tournament.name, tournament.grade)}
+                {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
               </Text>
               <StateBadge state={tournament.state} />
             </Group>
@@ -121,7 +123,9 @@ export function EventModal({ events, selected, onSelect }: EventModalProps) {
           {league && points && <Fact label={t('1st place')}>{t('%{points} points', { points: points.points[0] })}</Fact>}
         </SimpleGrid>
 
-        {league && points ? (
+        {tournamentDescription(tournament) && <Markdown>{tournamentDescription(tournament)}</Markdown>}
+
+        {league && points && (
           <Stack gap={4}>
             <Text size="xs" c="dimmed" fw={600} tt="uppercase" lts="0.05em">
               {t('Season points by place')}
@@ -137,12 +141,6 @@ export function EventModal({ events, selected, onSelect }: EventModalProps) {
               {t('Every other finisher gets 2 points.')}
             </Text>
           </Stack>
-        ) : (
-          tournament.description && (
-            <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-              {tournament.description}
-            </Text>
-          )
         )}
 
         {league && (
@@ -163,12 +161,12 @@ export function EventModal({ events, selected, onSelect }: EventModalProps) {
 
         <Group justify="space-between">
           <Group gap={4}>
-            <Tooltip label={previous ? tournamentTitle(previous.tournament.name, previous.tournament.grade) : t('Previous')}>
+            <Tooltip label={previous ? tournamentTitle(previous.tournament.name, previous.tournament.grade, previous.tournament.name_translations) : t('Previous')}>
               <ActionIcon variant="default" disabled={!previous} onClick={() => previous && onSelect(previous)} aria-label={t('Previous')}>
                 <IconChevronLeft size={16} />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label={next ? tournamentTitle(next.tournament.name, next.tournament.grade) : t('Next')}>
+            <Tooltip label={next ? tournamentTitle(next.tournament.name, next.tournament.grade, next.tournament.name_translations) : t('Next')}>
               <ActionIcon variant="default" disabled={!next} onClick={() => next && onSelect(next)} aria-label={t('Next')}>
                 <IconChevronRight size={16} />
               </ActionIcon>
