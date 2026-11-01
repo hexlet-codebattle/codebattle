@@ -2,4 +2,14 @@ User-agent: *
 Disallow: /api*
 Disallow: /auth*
 Disallow: /settings
+Disallow: /admin
+Disallow: /feature-flags
+
+# AI & MCP discovery
+Allow: /.well-known/
+Allow: /llms.txt
+Allow: /api-docs
+Allow: /mcp
+
 Sitemap: https://codebattle.hexlet.io/sitemap.xml
+
