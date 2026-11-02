@@ -31,8 +31,10 @@ defmodule Codebattle.Feedback do
     |> validate_length(:text, max: 10_000)
   end
 
-  def list_all do
-    Repo.all(from(f in Feedback, order_by: [desc: f.inserted_at]))
+  def update_changeset(%Feedback{} = feedback, attrs) do
+    feedback
+    |> cast(attrs, [:status, :text, :title_link])
+    |> validate_length(:text, max: 10_000)
   end
 
   @doc "Feedback visible to `user`: everything for admins, their own otherwise (newest first)."
@@ -44,5 +46,9 @@ defmodule Codebattle.Feedback do
     else
       where(query, [f], f.user_id == ^user.id)
     end
+  end
+
+  def list_all do
+    Repo.all(from(f in Feedback, order_by: [desc: f.inserted_at]))
   end
 end

@@ -1,6 +1,7 @@
 defmodule Codebattle.Mcp.Tools do
   @moduledoc "Allowlisted MCP operations and schemas derived from the Public API contract."
 
+  alias CodebattleWeb.Api.V1.FeedbackController
   alias CodebattleWeb.PublicApi.V1.GameController
   alias CodebattleWeb.PublicApi.V1.InviteController
   alias CodebattleWeb.PublicApi.V1.MeController
@@ -40,7 +41,7 @@ defmodule Codebattle.Mcp.Tools do
   ]
 
   def all do
-    Enum.map(@operations, &from_operation/1) ++ [snapshot(), leaderboard()]
+    Enum.map(@operations, &from_operation/1) ++ [snapshot(), leaderboard(), list_feedback(), update_feedback()]
   end
 
   def find(name), do: Enum.find(all(), &(&1.name == name))
@@ -87,6 +88,7 @@ defmodule Codebattle.Mcp.Tools do
       controller: controller,
       action: action,
       scope: scope,
+      admin_only?: false,
       description: description(operation, scope),
       schema: %{"type" => "object", "properties" => properties, "required" => required, "additionalProperties" => false}
     }
@@ -100,6 +102,7 @@ defmodule Codebattle.Mcp.Tools do
       controller: :snapshot,
       action: :hello,
       scope: "read",
+      admin_only?: false,
       description:
         "Get the event stream's current state: profile, active game, invites and tournaments. Call again to refresh; this tool does not open a subscription. Requires read.",
       schema: %{"type" => "object", "properties" => %{}, "required" => [], "additionalProperties" => false}
@@ -125,7 +128,48 @@ defmodule Codebattle.Mcp.Tools do
       controller: CodebattleWeb.Api.V1.Event.LeaderboardController,
       action: :show,
       scope: "read",
+      admin_only?: false,
       description: "Get an event's public clan or player leaderboard. Requires read.",
+      schema: %{"type" => "object", "properties" => fields, "required" => ["id"], "additionalProperties" => false}
+    }
+  end
+
+  defp list_feedback do
+    fields = %{
+      "page" => %{"type" => "integer", "minimum" => 1, "description" => "Page number"},
+      "page_size" => %{"type" => "integer", "minimum" => 1, "maximum" => 100, "description" => "Page size"}
+    }
+
+    %{
+      name: "list_feedback",
+      method: "GET",
+      path: "/api/v1/feedback",
+      controller: FeedbackController,
+      action: :index,
+      scope: "read",
+      admin_only?: true,
+      description: "List feedback items. Admin only. Requires read.",
+      schema: %{"type" => "object", "properties" => fields, "required" => [], "additionalProperties" => false}
+    }
+  end
+
+  defp update_feedback do
+    fields = %{
+      "id" => %{"type" => "integer", "minimum" => 1, "description" => "Feedback ID"},
+      "status" => %{"type" => "string", "description" => "Feedback status"},
+      "text" => %{"type" => "string", "maxLength" => 10_000, "description" => "Feedback content text"},
+      "title_link" => %{"type" => "string", "description" => "Feedback title link"}
+    }
+
+    %{
+      name: "update_feedback",
+      method: "PATCH",
+      path: "/api/v1/feedback/{id}",
+      controller: FeedbackController,
+      action: :update,
+      scope: "read",
+      admin_only?: true,
+      description: "Update feedback details. Admin only. Requires read.",
       schema: %{"type" => "object", "properties" => fields, "required" => ["id"], "additionalProperties" => false}
     }
   end

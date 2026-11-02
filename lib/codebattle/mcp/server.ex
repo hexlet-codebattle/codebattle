@@ -12,8 +12,23 @@ defmodule Codebattle.Mcp.Server do
 
   @impl true
   def handle_request(%{"method" => "tools/list"}, frame) do
+    user_auth =
+      Codebattle.Mcp.Oauth.connection_auth(
+        frame.assigns[:mcp_connection_id],
+        frame.assigns[:mcp_user_id],
+        frame.assigns[:mcp_scopes]
+      )
+
+    user =
+      case user_auth do
+        {:ok, auth} -> auth.user
+        _ -> nil
+      end
+
     tools =
-      Enum.map(Tools.all(), fn tool ->
+      Tools.all()
+      |> Enum.reject(&(&1.admin_only? and (is_nil(user) or not Codebattle.User.admin?(user))))
+      |> Enum.map(fn tool ->
         %{
           "name" => tool.name,
           "description" => tool.description,

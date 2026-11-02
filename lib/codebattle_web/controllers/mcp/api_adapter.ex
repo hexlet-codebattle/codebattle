@@ -34,6 +34,7 @@ defmodule CodebattleWeb.Mcp.ApiAdapter do
   defp allowed(tool, auth) do
     cond do
       FunWithFlags.enabled?(:public_api_disabled) -> {:error, "api_disabled"}
+      tool.admin_only? and not Codebattle.User.admin?(auth.user) -> {:error, "admin_required"}
       tool.scope not in auth.scopes -> {:error, "insufficient_scope"}
       tool.method != "GET" and FunWithFlags.enabled?(:public_api_writes_disabled) -> {:error, "api_disabled"}
       true -> :ok

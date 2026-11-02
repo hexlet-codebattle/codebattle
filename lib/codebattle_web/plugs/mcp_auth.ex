@@ -49,6 +49,9 @@ defmodule CodebattleWeb.Plugs.McpAuth do
       conn.halted ->
         conn
 
+      tool[:admin_only?] && not Codebattle.User.admin?(conn.assigns.current_user) ->
+        reject(conn, 403, "admin_required")
+
       tool.method != "GET" and FunWithFlags.enabled?(:public_api_writes_disabled) ->
         reject(conn, 503, "temporarily_unavailable")
 

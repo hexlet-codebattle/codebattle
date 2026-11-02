@@ -53,6 +53,44 @@ defmodule CodebattleWeb.Api.V1.FeedbackControllerTest do
     end
   end
 
+  describe "update" do
+    test "requires authentication", %{conn: conn} do
+      feedback = insert(:feedback)
+
+      conn
+      |> patch(Routes.api_v1_feedback_path(conn, :update, feedback.id), %{status: "resolved"})
+      |> json_response(401)
+    end
+
+    test "returns 403 for non-admin users", %{conn: conn} do
+      user = insert(:user)
+      feedback = insert(:feedback, user_id: user.id)
+
+      conn
+      |> log_in_user(user.id)
+      |> patch(Routes.api_v1_feedback_path(conn, :update, feedback.id), %{status: "resolved"})
+      |> json_response(403)
+    end
+
+    test "allows admin to update status and text", %{conn: conn} do
+      admin = insert(:admin)
+      feedback = insert(:feedback, status: "open", text: "Original")
+
+      response =
+        conn
+        |> log_in_user(admin.id)
+        |> patch(Routes.api_v1_feedback_path(conn, :update, feedback.id), %{
+          "status" => "resolved",
+          "text" => "Updated text"
+        })
+        |> json_response(200)
+
+      assert response["feedback"]["status"] == "resolved"
+      assert response["feedback"]["text"] == "Updated text"
+      assert Repo.get(Feedback, feedback.id).status == "resolved"
+    end
+  end
+
   describe "create" do
     test "oiblz without auth", %{conn: conn} do
       conn

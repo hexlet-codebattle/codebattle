@@ -19,6 +19,35 @@ defmodule CodebattleWeb.Api.V1.FeedbackController do
     })
   end
 
+  def update(conn, %{"id" => id} = params) do
+    if Codebattle.User.admin?(conn.assigns.current_user) do
+      case Repo.get(Feedback, id) do
+        nil ->
+          conn |> put_status(:not_found) |> json(%{error: %{code: "not_found", message: "Feedback not found"}})
+
+        feedback ->
+          update_feedback(conn, feedback, Map.get(params, "feedback", params))
+      end
+    else
+      conn |> put_status(:forbidden) |> json(%{error: %{code: "forbidden", message: "Forbidden"}})
+    end
+  end
+
+  defp update_feedback(conn, feedback, params) do
+    feedback
+    |> Feedback.update_changeset(params)
+    |> Repo.update()
+    |> case do
+      {:ok, updated} ->
+        json(conn, %{feedback: updated})
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: Ecto.Changeset.traverse_errors(changeset, fn {message, _opts} -> message end)})
+    end
+  end
+
   def create(conn, %{"attachments" => attachments}) do
     %{
       "fallback" => status,

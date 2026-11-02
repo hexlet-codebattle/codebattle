@@ -93,6 +93,8 @@ defmodule CodebattleWeb.Mcp.ToolsTest do
   end
 
   test "catalog covers every public API operation including the legacy event leaderboard" do
+    public_tools = Enum.reject(Tools.all(), & &1.admin_only?)
+
     routes =
       CodebattleWeb.Router.__routes__()
       |> Enum.filter(&String.starts_with?(&1.path, "/public_api/v1/"))
@@ -102,7 +104,7 @@ defmodule CodebattleWeb.Mcp.ToolsTest do
          &1.path |> String.replace_prefix("/public_api/v1", "") |> String.replace(":id", "{id}")}
       )
 
-    assert MapSet.new(Tools.all(), &{&1.method, &1.path}) == routes
+    assert MapSet.new(public_tools, &{&1.method, &1.path}) == routes
   end
 
   test "lists schemas, scopes and write annotations even for a read-only connection", %{conn: conn, user: user} do
@@ -155,7 +157,7 @@ defmodule CodebattleWeb.Mcp.ToolsTest do
   test "read-only grants cannot perform any write and receive an OAuth scope challenge", %{conn: conn, user: user} do
     client = open_client(conn, user, ["read"])
 
-    for tool <- Tools.all(), tool.method != "GET" do
+    for tool <- Tools.all(), tool.method != "GET", not tool.admin_only? do
       response = call(conn, client, tool.name)
       assert %{"error" => "insufficient_scope"} = json_response(response, 403)
       assert hd(get_resp_header(response, "www-authenticate")) =~ ~s(scope="#{tool.scope}")
@@ -262,7 +264,7 @@ defmodule CodebattleWeb.Mcp.ToolsTest do
     FunWithFlags.enable(:public_api_writes_disabled)
     on_exit(fn -> FunWithFlags.disable(:public_api_writes_disabled) end)
 
-    for tool <- Tools.all(), tool.method != "GET" do
+    for tool <- Tools.all(), tool.method != "GET", not tool.admin_only? do
       assert conn |> call(client, tool.name) |> json_response(503)
     end
 
@@ -297,6 +299,58 @@ defmodule CodebattleWeb.Mcp.ToolsTest do
 
     on_exit(fn -> Game.Context.terminate_game(id) end)
     assert conn |> call(client, "get_me") |> json_response(403)
+  end
+
+  test "admin-only feedback tools are accessible only by admins", %{conn: conn, user: regular_user} do
+    admin_user = insert(:admin)
+
+    feedback =
+      insert(:feedback,
+        user_id: regular_user.id,
+        text: "Initial text",
+        status: "open",
+        author_name: regular_user.name,
+        title_link: "http://example.com"
+      )
+
+    reg_client = open_client(conn, regular_user, ["read"])
+    admin_client = open_client(conn, admin_user, ["read"])
+
+    # Non-admin tools/list hides feedback tools
+    assert %{"result" => %{"tools" => reg_tools}} = conn |> rpc(reg_client, "tools/list", %{}) |> json_response(200)
+    refute Enum.any?(reg_tools, &(&1["name"] in ["list_feedback", "update_feedback"]))
+
+    # Admin tools/list includes feedback tools
+    assert %{"result" => %{"tools" => admin_tools}} = conn |> rpc(admin_client, "tools/list", %{}) |> json_response(200)
+    assert Enum.any?(admin_tools, &(&1["name"] == "list_feedback"))
+    assert Enum.any?(admin_tools, &(&1["name"] == "update_feedback"))
+
+    # Non-admin calling list_feedback returns admin_required error
+    assert %{"error" => "admin_required"} = conn |> call(reg_client, "list_feedback") |> json_response(403)
+
+    # Non-admin calling update_feedback returns admin_required error
+    assert %{"error" => "admin_required"} =
+             conn
+             |> call(reg_client, "update_feedback", %{"id" => feedback.id, "status" => "resolved"})
+             |> json_response(403)
+
+    # Admin list_feedback succeeds
+    assert %{"feedback" => feedback_list} = conn |> call(admin_client, "list_feedback") |> success()
+    assert Enum.any?(feedback_list, &(&1["id"] == feedback.id))
+
+    # Admin update_feedback succeeds
+    assert %{"feedback" => updated} =
+             conn
+             |> call(admin_client, "update_feedback", %{
+               "id" => feedback.id,
+               "status" => "resolved",
+               "text" => "Updated text"
+             })
+             |> success()
+
+    assert updated["id"] == feedback.id
+    assert updated["status"] == "resolved"
+    assert updated["text"] == "Updated text"
   end
 
   test "long polling does not block other MCP requests and unsubscribes after returning", %{conn: conn, user: user} do

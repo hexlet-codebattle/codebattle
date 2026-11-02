@@ -462,7 +462,7 @@ defmodule CodebattleWeb.Router do
     scope "/v1", V1, as: :v1 do
       pipe_through(:require_api_auth)
 
-      resources("/feedback", FeedbackController, only: [:index, :create])
+      resources("/feedback", FeedbackController, only: [:index, :create, :update])
       get("/:user_id/activity", ActivityController, :show)
 
       scope("/games") do
