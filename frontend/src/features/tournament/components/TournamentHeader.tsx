@@ -1,12 +1,15 @@
 import { Badge, Group, Stack, Text, Title, Tooltip } from '@mantine/core';
-import { IconCalendar, IconChecklist, IconLock, IconStack2, IconTrophy, IconUsers } from '@tabler/icons-react';
+import { IconCalendar, IconChecklist, IconClock, IconLock, IconStack2, IconTrophy, IconUsers } from '@tabler/icons-react';
 import type { CSSProperties, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GradeIcon } from '@/features/lobby/components/GradeIcon';
-import { formatDate, formatTime, gradeLabel, rankingPoints, taskLevelsLabel, tournamentTitle } from '@/features/lobby/format';
+import { formatCountdown, formatDate, formatTime, gradeLabel, rankingPoints, taskLevelsLabel, tournamentTitle } from '@/features/lobby/format';
 import type { GameLevel } from '@/features/lobby/types';
+import { parseServerDate } from '@/shared/date';
+import { useNow } from '@/shared/useNow';
 
+import { useTournamentStore } from '../store';
 import type { Tournament } from '../types';
 
 import classes from './Room.module.css';
@@ -40,6 +43,23 @@ export function TournamentStateBadge({
     <Badge variant="light" color={color} size={size}>
       {label}
     </Badge>
+  );
+}
+
+/** Mounted only while a scheduled tournament is waiting to start. */
+function StartCountdown({ startsAt }: { startsAt: string }) {
+  const { t } = useTranslation();
+  const now = useNow(1000);
+  const offset = useTournamentStore((state) => state.clockOffsetMs);
+  const remaining = parseServerDate(startsAt).getTime() - now - offset;
+
+  return (
+    <Group gap={6} wrap="nowrap">
+      <IconClock size={14} />
+      <Text inherit ff="monospace" fw={600}>
+        {remaining > 0 ? t('in %{time}', { time: formatCountdown(remaining) }) : t('Starting soon')}
+      </Text>
+    </Group>
   );
 }
 
@@ -118,10 +138,13 @@ export function TournamentHeader({ tournament, action, clock, footer }: Tourname
               </Group>
             ) : null}
             {(tournament.state === 'waiting_participants' || tournament.state === 'upcoming') && tournament.starts_at && (
-              <Group gap={6} wrap="nowrap">
-                <IconCalendar size={14} />
-                <Text inherit>{`${formatDate(tournament.starts_at)}, ${formatTime(tournament.starts_at)}`}</Text>
-              </Group>
+              <Stack gap={6}>
+                <Group gap={6} wrap="nowrap">
+                  <IconCalendar size={14} />
+                  <Text inherit>{`${formatDate(tournament.starts_at)}, ${formatTime(tournament.starts_at)}`}</Text>
+                </Group>
+                <StartCountdown startsAt={tournament.starts_at} />
+              </Stack>
             )}
           </div>
         </Stack>
