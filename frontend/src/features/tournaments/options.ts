@@ -121,6 +121,7 @@ export interface LastTournament extends TournamentTranslations {
   break_duration_seconds?: number;
   use_chat?: boolean;
   ranking_type?: string;
+  use_async_ranking?: boolean;
   score_strategy?: string;
   meta?: Record<string, unknown> | null;
 }

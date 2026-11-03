@@ -59,6 +59,7 @@ defmodule Codebattle.Tournament do
              :tournament_timeout_seconds,
              :type,
              :use_chat,
+             :use_async_ranking,
              :use_event_ranking,
              :use_infinite_break,
              :use_timer
@@ -132,6 +133,7 @@ defmodule Codebattle.Tournament do
     field(:tournament_timeout_seconds, :integer)
     field(:type, :string, default: "swiss")
     field(:use_chat, :boolean, default: true)
+    field(:use_async_ranking, :boolean, default: false)
     field(:use_event_ranking, :boolean, default: false)
     field(:use_infinite_break, :boolean, default: false)
     field(:use_timer, :boolean, default: true)
@@ -205,6 +207,7 @@ defmodule Codebattle.Tournament do
       :tournament_timeout_seconds,
       :type,
       :use_chat,
+      :use_async_ranking,
       :use_event_ranking,
       :use_infinite_break,
       :use_timer

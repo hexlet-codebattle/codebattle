@@ -52,6 +52,19 @@ defmodule Codebattle.Tournament.Ranking do
 
   def get_page(tournament, page, page_size), do: get_current_page(tournament, page, page_size)
 
+  def get_full(%{state: "finished"} = tournament), do: get_full_page(tournament)
+  def get_full(%{ranking_table: nil} = tournament), do: get_full_page(tournament)
+
+  def get_full(tournament) do
+    entries = Ranking.get_all(tournament)
+    %{total_entries: length(entries), page_number: 1, page_size: max(length(entries), 1), entries: entries}
+  end
+
+  defp get_full_page(tournament) do
+    %{total_entries: count} = get_page(tournament, 1, 1)
+    get_page(tournament, 1, max(count, 1))
+  end
+
   defp get_current_page(%{ranking_table: nil} = tournament, page, page_size) do
     case tournament.ranking_type do
       "by_user" ->

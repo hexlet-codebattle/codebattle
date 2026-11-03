@@ -6,7 +6,7 @@ import { useSharedProps } from '@/shared/useSharedProps';
 
 import { type BotAlert, showBotAlert } from './botAlert';
 import { canModerate, useTournamentStore } from './store';
-import type { JoinReply, Match, Player, Report, Tournament } from './types';
+import type { JoinReply, Match, Player, Ranking, Report, Tournament } from './types';
 
 type Push = <Reply = unknown>(event: string, payload?: Record<string, unknown>) => Promise<Reply>;
 
@@ -50,7 +50,10 @@ export function useTournament(id: number, accessToken: string | null) {
         removePlayer(playerId);
         merge(next);
       },
-      'tournament:ranking_update': () => bumpRanking(),
+      'tournament:ranking_update': ({ ranking }: { ranking: Ranking }) => {
+        store.getState().setRanking(ranking);
+        bumpRanking();
+      },
       // Admin channel: full refreshes after cancel / show results / ladder changes.
       'tournament:update': ({ tournament: next, players, matches }: { tournament: Partial<Tournament>; players?: Player[]; matches?: Match[] }) => {
         merge(next);

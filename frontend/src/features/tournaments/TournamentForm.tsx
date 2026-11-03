@@ -84,6 +84,7 @@ interface Values {
   break_duration_seconds: number;
   use_chat: boolean;
   ranking_type: string;
+  use_async_ranking: boolean;
   score_strategy: string;
   meta_json: string;
 }
@@ -125,6 +126,7 @@ function defaults(last?: LastTournament | null, editing?: EditableTournament | n
     break_duration_seconds: last?.break_duration_seconds ?? 10,
     use_chat: last?.use_chat ?? true,
     ranking_type: last?.ranking_type || 'by_user',
+    use_async_ranking: editing?.use_async_ranking ?? false,
     score_strategy: last?.score_strategy || '75_percentile',
     meta_json: last?.meta && Object.keys(last.meta).length > 0 ? JSON.stringify(last.meta, null, 2) : '{}',
   };
@@ -436,6 +438,14 @@ export function TournamentForm({ lastTournament = null, taskPackNames, editing =
                     checked={values.use_chat}
                     onChange={(event) => set('use_chat', event.currentTarget.checked)}
                   />
+                  {isAdmin && (
+                    <Switch
+                      label={t('Async ranking')}
+                      description={t('For heavy tournaments: delay ranking updates and load standings by page.')}
+                      checked={values.use_async_ranking}
+                      onChange={(event) => set('use_async_ranking', event.currentTarget.checked)}
+                    />
+                  )}
                 </Stack>
               </SimpleGrid>
             </FormSection>

@@ -811,6 +811,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
                      "grade" => "grand_slam",
                      "event_id" => event.id,
                      "use_event_ranking" => true,
+                     "use_async_ranking" => true,
                      "state" => "finished",
                      "task_ids" => [1, 2, 3],
                      "cheater_ids" => [user.id],
@@ -824,9 +825,19 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       assert tournament.grade == "open"
       assert tournament.event_id == nil
       assert tournament.use_event_ranking == false
+      assert tournament.use_async_ranking == false
       assert tournament.state == "waiting_participants"
       assert tournament.cheater_ids == []
       assert tournament.meta == %{}
+
+      conn
+      |> log_in_user(user.id)
+      |> put(Routes.api_v1_tournament_path(conn, :update, id), %{
+        "tournament" => %{"use_async_ranking" => true}
+      })
+      |> json_response(200)
+
+      refute Context.get_from_db!(id).use_async_ranking
     end
 
     test "lets an admin set the grade", %{conn: conn} do
@@ -836,11 +847,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
                conn
                |> log_in_user(admin.id)
                |> post(Routes.api_v1_tournament_path(conn, :create), %{
-                 "tournament" => tournament_form_params(%{"grade" => "masters"})
+                 "tournament" => tournament_form_params(%{"grade" => "masters", "use_async_ranking" => true})
                })
                |> json_response(201)
 
       assert Context.get_from_db!(id).grade == "masters"
+      assert Context.get_from_db!(id).use_async_ranking
     end
 
     test "rejects a hidden task pack of another user", %{conn: conn} do

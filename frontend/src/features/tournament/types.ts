@@ -44,6 +44,7 @@ export interface Tournament extends TournamentTranslations {
   match_timeout_seconds?: number | null;
   tournament_timeout_seconds?: number | null;
   ranking_type?: string | null;
+  use_async_ranking?: boolean;
   task_strategy?: string | null;
   event_id?: number | null;
   inserted_at?: string | null;

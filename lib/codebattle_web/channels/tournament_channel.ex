@@ -28,6 +28,7 @@ defmodule CodebattleWeb.TournamentChannel do
            Map.take(tournament, [
              :id,
              :ranking_type,
+             :use_async_ranking,
              :players,
              :matches,
              :players_table,
@@ -331,6 +332,15 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:info_updated", payload: payload}, socket) do
+    push(socket, "tournament:update", payload)
+
+    info =
+      Map.merge(socket.assigns.tournament_info, Map.take(payload.tournament, [:use_async_ranking, :ranking_type, :state]))
+
+    {:noreply, assign(socket, tournament_info: info)}
+  end
+
   def handle_info(%{event: "tournament:restarted", payload: _payload}, socket) do
     tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
@@ -340,6 +350,7 @@ defmodule CodebattleWeb.TournamentChannel do
           Map.take(tournament_info, [
             :id,
             :ranking_type,
+            :use_async_ranking,
             :players,
             :matches,
             :players_table,
@@ -360,21 +371,28 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  # Every channel used to rebuild and push its ranking page on each join/leave, i.e.
-  # O(N²) work while N players register. The event itself is pushed as is; the ranking
-  # page follows at most once per @ranking_push_delay_ms.
+  # Only heavy tournaments debounce ranking pages. Normal tournaments receive a
+  # complete ranking broadcast directly after the player event.
   def handle_info(%{event: event, payload: payload}, socket)
       when event in ["tournament:player:joined", "tournament:player:left"] do
     push(socket, event, payload)
 
-    {:noreply, schedule_ranking_push(socket)}
+    socket = if socket.assigns.tournament_info.use_async_ranking, do: schedule_ranking_push(socket), else: socket
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:ranking_update", payload: payload}, socket) do
+    push(socket, "tournament:ranking_update", payload)
+    {:noreply, socket}
   end
 
   def handle_info(:push_ranking, socket) do
     tournament = socket.assigns.tournament_info
-    ranking = get_nearest_ranking_for_user(tournament, socket.assigns.current_user)
 
-    push(socket, "tournament:ranking_update", %{ranking: ranking})
+    if tournament.use_async_ranking do
+      ranking = get_nearest_ranking_for_user(tournament, socket.assigns.current_user)
+      push(socket, "tournament:ranking_update", %{ranking: ranking})
+    end
 
     {:noreply, assign(socket, ranking_push_scheduled: false)}
   end
@@ -399,7 +417,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp get_tournament_join_payload(tournament, nil) do
-    ranking = Tournament.Ranking.get_page(tournament, 1, 16)
+    ranking = join_ranking(tournament, nil)
 
     players =
       if tournament.players_count > 256 do
@@ -436,7 +454,7 @@ defmodule CodebattleWeb.TournamentChannel do
         }
       end
 
-    nearest_ranking = get_nearest_ranking_for_player(tournament, current_player)
+    nearest_ranking = join_ranking(tournament, current_player)
 
     Map.merge(player_data, %{
       ranking: nearest_ranking,
@@ -444,6 +462,13 @@ defmodule CodebattleWeb.TournamentChannel do
       tournament: Helpers.prepare_to_json(tournament)
     })
   end
+
+  defp join_ranking(%{use_async_ranking: true} = tournament, nil), do: Tournament.Ranking.get_page(tournament, 1, 16)
+
+  defp join_ranking(%{use_async_ranking: true} = tournament, player),
+    do: get_nearest_ranking_for_player(tournament, player)
+
+  defp join_ranking(tournament, _player), do: Tournament.Ranking.get_full(tournament)
 
   # Client-supplied numbers feed raw SQL; only accept bounded integers.
   defp get_distribution(tournament, %{"type" => "clans_bubble_distribution"} = params) do

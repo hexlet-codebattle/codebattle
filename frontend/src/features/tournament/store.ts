@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { parseUtc } from '@/features/lobby/format';
 
-import type { JoinReply, Match, Player, Report, Tournament } from './types';
+import type { JoinReply, Match, Player, Ranking, Report, Tournament } from './types';
 
 // One tournament per page: the channels write here, the panels read.
 
@@ -14,6 +14,8 @@ interface TournamentStore {
   clockOffsetMs: number;
   /** Bumped when standings change, so ranking views refetch their page. */
   rankingVersion: number;
+  ranking: Ranking | null;
+  setRanking: (ranking: Ranking) => void;
   /** Admins only (tournament_admin join reply + report events). */
   reports: Report[];
   /** Task names/levels by id, loaded on demand (tournament:get_task) for match rows. */
@@ -40,19 +42,22 @@ export const useTournamentStore = create<TournamentStore>((set) => ({
   matches: {},
   clockOffsetMs: 0,
   rankingVersion: 0,
+  ranking: null,
+  setRanking: (ranking) => set({ ranking }),
   reports: [],
   tasks: {},
   setTask: (id, task) => set((state) => ({ tasks: { ...state.tasks, [id]: task } })),
   setReports: (reports) => set({ reports }),
   upsertReport: (report) =>
     set((state) => ({ reports: [report, ...state.reports.filter((item) => item.id !== report.id)] })),
-  load: ({ tournament, players, matches }) =>
+  load: ({ tournament, players, matches, ranking }) =>
     set((state) => ({
       tournament,
       players: { ...state.players, ...byId(players) },
       matches: { ...state.matches, ...byId(matches) },
       clockOffsetMs: offsetFrom(tournament, state.clockOffsetMs),
       rankingVersion: state.rankingVersion + 1,
+      ranking: !tournament.use_async_ranking && ranking?.entries.length === ranking?.total_entries ? ranking : state.ranking,
     })),
   merge: (tournament) =>
     set((state) => ({

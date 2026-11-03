@@ -282,6 +282,7 @@ defmodule CodebattleWeb.TournamentController do
       tournament_timeout_seconds: tournament.tournament_timeout_seconds,
       break_duration_seconds: tournament.break_duration_seconds,
       use_chat: tournament.use_chat,
+      use_async_ranking: tournament.use_async_ranking,
       ranking_type: tournament.ranking_type,
       score_strategy: tournament.score_strategy,
       meta: tournament.meta

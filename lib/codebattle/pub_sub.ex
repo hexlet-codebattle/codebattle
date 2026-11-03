@@ -32,6 +32,7 @@ defmodule Codebattle.PubSub do
     result =
       event_name
       |> Events.get_messages(params)
+      |> with_tournament_ranking(event_name, params)
       |> Enum.map(fn %{topic: topic} = message ->
         Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
       end)
@@ -54,6 +55,7 @@ defmodule Codebattle.PubSub do
 
     event_name
     |> Events.get_messages(params)
+    |> with_tournament_ranking(event_name, params)
     |> Enum.map(fn %{topic: topic} = message ->
       Phoenix.PubSub.broadcast_from(Codebattle.PubSub, from, topic, message)
     end)
@@ -62,6 +64,34 @@ defmodule Codebattle.PubSub do
   def subscribe(topic) do
     Phoenix.PubSub.subscribe(Codebattle.PubSub, topic)
   end
+
+  # Small tournaments send one complete snapshot with each standings change.
+  # Explicitly configured heavy tournaments keep the channel's debounced pages.
+  defp with_tournament_ranking(messages, event, %{tournament: tournament})
+       when event in [
+              "tournament:player:joined",
+              "tournament:player:left",
+              "tournament:round_created",
+              "tournament:round_finished",
+              "tournament:finished",
+              "tournament:restarted",
+              "tournament:updated"
+            ] do
+    if Map.get(tournament, :use_async_ranking, false) do
+      messages
+    else
+      messages ++
+        [
+          %Message{
+            topic: "tournament:#{tournament.id}:common",
+            event: "tournament:ranking_update",
+            payload: %{ranking: Codebattle.Tournament.Ranking.get_full(tournament)}
+          }
+        ]
+    end
+  end
+
+  defp with_tournament_ranking(messages, _event, _params), do: messages
 
   def unsubscribe(topic) do
     Phoenix.PubSub.unsubscribe(Codebattle.PubSub, topic)

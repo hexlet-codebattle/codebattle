@@ -29,7 +29,7 @@ defmodule Codebattle.Tournament.Perf.LargeTournamentPerfTest do
   defp run(type, n) do
     tasks = insert_list(3, :task, level: "easy", base_score: 300, time_to_solve_sec: 300)
     insert(:task_pack, name: "perf-#{type}", task_ids: Enum.map(tasks, & &1.id))
-    creator = insert(:user)
+    creator = insert(:admin)
     users = insert_users(n)
 
     {:ok, tournament} =
@@ -48,7 +48,8 @@ defmodule Codebattle.Tournament.Perf.LargeTournamentPerfTest do
         "round_timeout_seconds" => 600,
         "break_duration_seconds" => 0,
         "rounds_limit" => "3",
-        "players_limit" => n
+        "players_limit" => n,
+        "use_async_ranking" => true
       })
 
     id = tournament.id

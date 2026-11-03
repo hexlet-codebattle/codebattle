@@ -105,6 +105,11 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:updated", params) do
     [
       %Message{
+        topic: "tournament:#{params.tournament.id}:common",
+        event: "tournament:info_updated",
+        payload: %{tournament: Tournament.Helpers.prepare_to_json(params.tournament)}
+      },
+      %Message{
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:updated",
         payload: %{tournament: Tournament.Helpers.prepare_to_json(params.tournament)}

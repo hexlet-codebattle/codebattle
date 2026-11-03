@@ -15,36 +15,52 @@ import type { TournamentApi } from '../useTournament';
 
 const PAGE_SIZE = 20;
 
-/** Live standings, paged on the server (tournament:ranking:request); moderators can kick. */
+/** Normal tournaments paginate pushed standings locally; heavy ones request pages. */
 export function RankingPanel({ api }: { api: TournamentApi }) {
   const { t } = useTranslation();
   const { current_user: me } = useSharedProps();
   const version = useTournamentStore((state) => state.rankingVersion);
+  const asyncRanking = useTournamentStore((state) => Boolean(state.tournament?.use_async_ranking));
+  const snapshot = useTournamentStore((state) => state.ranking);
   const players = useTournamentStore((state) => state.players);
   const isPlayer = useTournamentStore((state) => Boolean(state.players[me.id]));
-  const [ranking, setRanking] = useState<Ranking | null>(null);
+  const [remoteRanking, setRanking] = useState<Ranking | null>(null);
   const [page, setPage] = useState(1);
   const [failed, setFailed] = useState(false);
 
   const load = useCallback(
-    (payload: Record<string, unknown>) =>
-      api
+    (payload: Record<string, unknown>) => {
+      if (!asyncRanking) {
+        const index = payload.nearest ? snapshot?.entries.findIndex((entry) => entry.id === me.id) ?? -1 : -1;
+        setPage(payload.nearest ? Math.floor(Math.max(0, index) / PAGE_SIZE) + 1 : Number(payload.page ?? 1));
+        return Promise.resolve();
+      }
+      return api
         .push<{ ranking: Ranking }>('tournament:ranking:request', { page_size: PAGE_SIZE, ...payload })
         .then(({ ranking: next }) => {
           setRanking(next);
           setPage(next.page_number);
           setFailed(false);
         })
-        .catch(() => setFailed(true)),
-    [api],
+        .catch(() => setFailed(true));
+    },
+    [api, asyncRanking, snapshot, me.id],
   );
 
   // Refetch the page on every standings change (joins, rounds, ladder ticks).
   useEffect(() => {
-    if (api.status === 'joined') void load({ page });
+    if (api.status === 'joined' && asyncRanking) void load({ page });
     // `page` changes come from user clicks, handled below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api.status, version, load]);
+  }, [api.status, version, load, asyncRanking]);
+
+  const localPage = Math.min(page, Math.max(1, Math.ceil((snapshot?.total_entries ?? 0) / PAGE_SIZE)));
+  const ranking = asyncRanking ? remoteRanking : snapshot && {
+    ...snapshot,
+    page_size: PAGE_SIZE,
+    page_number: localPage,
+    entries: snapshot.entries.slice((localPage - 1) * PAGE_SIZE, localPage * PAGE_SIZE),
+  };
 
   const kick = async (userId: number, name: string) => {
     if (!window.confirm(t('Kick %{name} from the tournament?', { name }))) return;
@@ -156,7 +172,7 @@ export function RankingPanel({ api }: { api: TournamentApi }) {
               <Pagination
                 size="xs"
                 total={pages}
-                value={page}
+                value={ranking.page_number}
                 onChange={(next) => {
                   setPage(next);
                   void load({ page: next });

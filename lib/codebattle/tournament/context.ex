@@ -446,6 +446,7 @@ defmodule Codebattle.Tournament.Context do
     :tournament_timeout_seconds,
     :type,
     :use_chat,
+    :use_async_ranking,
     :use_event_ranking,
     :use_infinite_break,
     :use_timer
@@ -458,6 +459,7 @@ defmodule Codebattle.Tournament.Context do
       tournament
       |> Map.take(@duplicated_fields)
       |> Map.put(:creator, creator)
+      |> Map.put(:use_async_ranking, tournament.use_async_ranking && User.admin?(creator))
       |> Map.put(:starts_at, tournament.starts_at)
 
     results =
