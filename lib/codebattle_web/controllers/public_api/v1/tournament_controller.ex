@@ -17,7 +17,6 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
   @schedule_states ~w(upcoming waiting_participants active)
   @live_states ~w(waiting_participants active)
   @editable_states ~w(upcoming waiting_participants)
-  @participant_top 20
 
   @tournament_spec %{
     "name" => {:string, length: {3, 100}},
@@ -85,26 +84,22 @@ defmodule CodebattleWeb.PublicApi.V1.TournamentController do
     user = conn.assigns.current_user
 
     with_related_tournament(conn, id, fn tournament ->
-      if Helpers.can_moderate?(tournament, user) do
-        page = params |> Map.get("page", "1") |> to_page()
-        page_size = params |> Map.get("page_size", "50") |> to_page() |> min(100)
-        ranking = Tournament.Ranking.get_page(tournament, page, page_size)
+      page = params |> Map.get("page", "1") |> to_page()
+      page_size = ranking_page_size(params, tournament)
+      ranking = Tournament.Ranking.get_page(tournament, page, page_size)
+      me = Tournament.Ranking.get_by_id(tournament, user.id)
 
-        json(conn, %{
-          ranking: Enum.map(ranking.entries, &JSON.ranking_entry/1),
-          page_info: %{page_number: page, page_size: page_size, total_entries: ranking.total_entries}
-        })
-      else
-        top = Tournament.Ranking.get_first(tournament, @participant_top)
-        me = Tournament.Ranking.get_by_id(tournament, user.id)
-
-        json(conn, %{
-          ranking: Enum.map(top, &JSON.ranking_entry/1),
-          me: me && JSON.ranking_entry(me)
-        })
-      end
+      json(conn, %{
+        ranking: Enum.map(ranking.entries, &JSON.ranking_entry/1),
+        me: me && JSON.ranking_entry(me),
+        page_info: %{page_number: page, page_size: page_size, total_entries: ranking.total_entries}
+      })
     end)
   end
+
+  defp ranking_page_size(%{"page_size" => value}, _tournament), do: value |> to_page() |> min(100)
+  defp ranking_page_size(%{"page" => _}, _tournament), do: 50
+  defp ranking_page_size(_params, tournament), do: max(Helpers.players_count(tournament), 1)
 
   def create(conn, params) do
     user = conn.assigns.current_user

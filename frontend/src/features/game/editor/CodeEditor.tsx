@@ -2,7 +2,7 @@ import './monaco';
 
 import MonacoEditor, { type OnMount } from '@monaco-editor/react';
 import { Loader, useComputedColorScheme, useMantineTheme } from '@mantine/core';
-import { initVimMode, type VimAdapterInstance } from 'monaco-vim';
+import type { VimAdapterInstance } from 'monaco-vim';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import type { RemoteCursor } from '@/features/game/store';
@@ -13,6 +13,7 @@ import { guardForeignEditor, guardOwnEditor } from './pasteGuard';
 import { useEditorPrefs } from './prefs';
 import { type ContentChangeEvent, contentMetrics, SYNC_EDIT_SOURCE, type TelemetryEvent } from './telemetry';
 import { resolveTheme } from './themes';
+import { initEditorVim } from './vim';
 import classes from './CodeEditor.module.css';
 
 type CodeEditorInstance = Parameters<OnMount>[0];
@@ -133,7 +134,7 @@ export function CodeEditor({
     node?.addEventListener('mouseenter', () => (hoveredRef.current = true));
     node?.addEventListener('mouseleave', () => (hoveredRef.current = false));
     if (!readOnly) editor.focus();
-    if (vim && !readOnly) vimRef.current = initVimMode(editor, statusRef.current);
+    if (vim && !readOnly) vimRef.current = initEditorVim(editor, statusRef.current);
   };
 
   // Telemetry for blocked pastes goes through the same channel as the keys and edits.
@@ -148,7 +149,7 @@ export function CodeEditor({
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
-    if (vim && !readOnly && !vimRef.current) vimRef.current = initVimMode(editor, statusRef.current);
+    if (vim && !readOnly && !vimRef.current) vimRef.current = initEditorVim(editor, statusRef.current);
     if ((!vim || readOnly) && vimRef.current) {
       vimRef.current.dispose();
       vimRef.current = null;

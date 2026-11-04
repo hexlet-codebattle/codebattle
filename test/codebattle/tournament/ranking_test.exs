@@ -28,9 +28,9 @@ defmodule Codebattle.Tournament.RankingTest do
     assert default_page == page
     assert Enum.map(page.entries, & &1.id) == [2, 3, 1, 5]
     assert Enum.map(page.entries, & &1.place) == [1, 2, 3, 4]
-    assert Ranking.get_first(tournament, 5) == []
+    assert Ranking.get_first(tournament, 5) == page.entries
     assert Ranking.get_by_player(tournament, hd(page.entries)) == nil
-    assert Ranking.get_by_id(tournament, 2) == nil
+    assert Ranking.get_by_id(tournament, 2) == hd(page.entries)
 
     assert Ranking.get_nearest_page_by_player(tournament, hd(page.entries)) == %{
              total_entries: 0,
@@ -84,6 +84,8 @@ defmodule Codebattle.Tournament.RankingTest do
              tournament.id |> TournamentUserResult.get_leaderboard() |> Enum.map(& &1.user_id)
 
     assert Tournament.Helpers.players_count(tournament) == 2
+    assert Ranking.get_by_id(tournament, departed_id) == hd(first.entries)
+    assert Ranking.get_first(tournament, 1) == first.entries
     assert Tournament.Helpers.prepare_to_json(tournament).players_count == 2
   end
 

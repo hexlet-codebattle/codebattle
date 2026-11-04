@@ -22,6 +22,27 @@ defmodule Codebattle.PubSub.UserEvents do
   }
 
   def topic(user_id), do: "user_events:#{user_id}"
+  def public_topic, do: "public_api_events:all"
+
+  def public_messages("game:created", %{game: game}) do
+    name = if game.state == "playing", do: "game.started", else: "game.created"
+    [%Message{topic: public_topic(), event: name, payload: %{game: game}}]
+  end
+
+  def public_messages("game:updated", %{game: %{state: "playing"}} = params),
+    do: public_game_message("game.started", params)
+
+  def public_messages("game:finished", params), do: public_game_message("game.finished", params)
+  def public_messages("game:terminated", params), do: public_game_message("game.canceled", params)
+
+  def public_messages(event, %{tournament: tournament}) when is_map_key(@tournament_events, event) do
+    [%Message{topic: public_topic(), event: @tournament_events[event], payload: %{tournament: tournament}}]
+  end
+
+  def public_messages(_event, _params), do: []
+
+  defp public_game_message(name, %{game: game}),
+    do: [%Message{topic: public_topic(), event: name, payload: %{game: game}}]
 
   @spec messages(String.t(), map()) :: [Message.t()]
   def messages("game:created", %{game: game}) do

@@ -1188,7 +1188,18 @@
     "/me/events": {
       "get": {
         "summary": "Live stream of everything that happens to you (SSE)",
-        "description": "A Server-Sent Events stream: one request that stays open. It starts with `hello` (your current state: active game, pending invites, unfinished tournaments), then sends one event per change: invites, your games, tournaments you play in or run. A `: ping` comment comes every 15 seconds. The server closes the stream after an hour with a `bye` event; reconnect and you get a fresh `hello`. At most 2 open streams per user. See **Event stream** above for every event and client examples.",
+        "description": "A Server-Sent Events stream: one request that stays open. It starts with `hello` (your current state: active game, pending invites, unfinished tournaments), then sends one event per change: invites, your games, tournaments you play in or run. With `scope=all`, also receive lifecycle events for other public games and public tournaments; hidden games and private tournaments stay private. Your own events are sent once. A `: ping` comment comes every 15 seconds. The server closes the stream after an hour with a `bye` event; reconnect and you get a fresh `hello`. Events are not replayed: reconnect if heartbeats stop, and refresh state from the new `hello` and REST endpoints. At most 2 open streams per user. See **Event stream** above for every event and client examples.",
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["me", "all"],
+              "default": "me"
+            }
+          }
+        ],
         "security": [
           {
             "bearerAuth": [
@@ -1216,6 +1227,9 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
           }
         }
       }
@@ -1618,7 +1632,7 @@
     },
     "/tournaments/{id}/ranking": {
       "get": {
-        "summary": "Ranking: full and paginated for the creator/moderators, top 20 plus your row for participants",
+        "summary": "Full ranking with optional pagination and your own row",
         "security": [
           {
             "bearerAuth": [
@@ -1649,11 +1663,11 @@
                           "type": "null"
                         }
                       ],
-                      "description": "Participants only: your own row"
+                      "description": "Your own row, or null when you have no ranking entry"
                     },
                     "page_info": {
                       "type": "object",
-                      "description": "Creator and moderators only",
+                      "description": "Pagination and total ranking size",
                       "properties": {
                         "page_number": {
                           "type": "integer"
@@ -1709,7 +1723,7 @@
             }
           }
         ],
-        "description": "The creator and moderators get the full ranking with `page` / `page_size` (max 100). Participants get the top 20 and their own row in `me`."
+        "description": "Participants, the creator and moderators get the full ranking by default. Optional `page` / `page_size` retain pagination (explicit page_size is capped at 100; page without page_size uses 50). Every response includes your own row in `me`, or null when you have no ranking entry."
       }
     },
     "/tournaments/{id}/start": {

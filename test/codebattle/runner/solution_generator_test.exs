@@ -186,6 +186,23 @@ defmodule Codebattle.Runner.SolutionGeneratorTest do
     assert SolutionGenerator.call(task, meta) == "value: Int | value | 0"
   end
 
+  test "escapes reserved and uppercase argument names without collisions" do
+    signature =
+      for name <- ["end", "End", "arg_end", "arg_End", "value"],
+          do: %{argument_name: name, type: %{name: "integer"}}
+
+    task = %Codebattle.Runner.Task{
+      input_signature: signature,
+      output_signature: %{type: %{name: "integer"}}
+    }
+
+    for lang <- ["elixir", "ruby"] do
+      solution = SolutionGenerator.call(task, Languages.meta(lang))
+      assert solution =~ "solution(arg_end, arg_End, arg_end_2, arg_End_2, value)"
+      if lang == "elixir", do: assert({:ok, _} = Code.string_to_quoted(solution))
+    end
+  end
+
   setup do
     task = %Codebattle.Runner.Task{
       asserts: [

@@ -4,9 +4,75 @@ defmodule Codebattle.Tournament.TournamenResultTest do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.Match
   alias Codebattle.Tournament.Matches
   alias Codebattle.Tournament.TournamentResult
   alias Codebattle.Tournament.TournamentUserResult
+
+  test "all Swiss scoring strategies copy persisted points into the match" do
+    for strategy <- ["75_percentile", "win_loss"] do
+      tournament =
+        insert(:tournament, type: "swiss", ranking_type: "by_user", score_strategy: strategy, current_round_position: 0)
+
+      task = insert(:task)
+      winner = insert(:user)
+      loser = insert(:user)
+
+      game =
+        insert(:game,
+          task: task,
+          tournament_id: tournament.id,
+          round_position: 0,
+          state: "game_over",
+          duration_sec: 20,
+          players: [
+            %{id: winner.id, name: winner.name, result_percent: 100.0, is_bot: false},
+            %{id: loser.id, name: loser.name, result_percent: 50.0, is_bot: false}
+          ]
+        )
+
+      tournament = %{tournament | matches_table: Matches.create_table(tournament.id)}
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:matches")
+
+      Matches.put_match(tournament, %Match{
+        id: 1,
+        game_id: game.id,
+        round_position: 0,
+        player_ids: [winner.id, loser.id],
+        player_results: %{winner.id => %{result: "won"}, loser.id => %{result: "lost"}},
+        state: "game_over"
+      })
+
+      TournamentResult.upsert_results(tournament)
+      match = Matches.get_match(tournament, 1)
+      rows = Repo.all(from r in TournamentResult, where: r.tournament_id == ^tournament.id)
+      assert length(rows) == 2
+
+      for row <- rows do
+        assert match.player_results[row.user_id].score == row.score
+      end
+
+      assert match.player_results[winner.id].score > 0
+      assert_receive %Codebattle.PubSub.Message{event: "tournament:match:upserted", payload: %{match: ^match}}
+
+      archived_results =
+        match.player_results |> Jason.encode!() |> Jason.decode!() |> Codebattle.Runner.AtomizedMap.atomize()
+
+      archived_match = %{match | player_results: archived_results}
+      stale_results = Map.new(archived_results, fn {id, result} -> {id, Map.delete(result, :score)} end)
+
+      saved = %{
+        tournament
+        | state: "finished",
+          matches_table: nil,
+          matches: %{Helpers.to_id(1) => %{match | player_results: stale_results}}
+      }
+
+      assert Helpers.get_matches(saved) == [archived_match]
+      assert Helpers.get_matches(saved, [1]) == [archived_match]
+    end
+  end
 
   describe "get_player_results" do
     test "upsert_results updates only current round and keeps previous rounds" do
@@ -1213,7 +1279,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       matches_table = Matches.create_table(tournament.id)
       live_tournament = %{tournament | matches_table: matches_table}
 
-      Matches.put_match(live_tournament, %Codebattle.Tournament.Match{
+      Matches.put_match(live_tournament, %Match{
         id: 7,
         game_id: game.id,
         round_position: tournament.current_round_position,

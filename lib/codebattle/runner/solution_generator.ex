@@ -5,6 +5,8 @@ defmodule Codebattle.Runner.SolutionGenerator do
 
   @spec call(Codebattle.Runner.Task.t(), Codebattle.Runner.LanguageMeta.t()) :: String.t()
   def call(task, lang_meta) do
+    input_signature = Codebattle.Runner.ArgumentNames.normalize(task.input_signature, lang_meta)
+
     binding =
       %{
         arguments: [],
@@ -13,8 +15,8 @@ defmodule Codebattle.Runner.SolutionGenerator do
         typespec: "lal",
         comment: task.comment || "use stdout to debug"
       }
-      |> add_arguments(lang_meta, task.input_signature)
-      |> add_typespec(lang_meta, task.input_signature)
+      |> add_arguments(lang_meta, input_signature)
+      |> add_typespec(lang_meta, input_signature)
       |> add_expected(lang_meta, task.output_signature)
       |> add_default_value(lang_meta, task.output_signature)
       |> Map.to_list()

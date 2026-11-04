@@ -19,6 +19,51 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
     |> put_req_header("content-type", "application/json")
   end
 
+  test "ranking defaults to the full standings and retains explicit pagination", %{conn: conn} do
+    user = old_user()
+
+    tournament =
+      insert(:tournament,
+        creator_id: user.id,
+        state: "finished",
+        ranking_type: "by_user",
+        players: %{user.id => Tournament.Player.new!(%{id: user.id, name: user.name})}
+      )
+
+    token = token(user)
+
+    for place <- 1..125 do
+      Codebattle.Repo.insert!(%Tournament.TournamentUserResult{
+        tournament_id: tournament.id,
+        user_id: if(place == 125, do: user.id, else: insert(:user).id),
+        user_name: "player #{place}",
+        place: place,
+        score: 126 - place
+      })
+    end
+
+    path = "/public_api/v1/tournaments/#{tournament.id}/ranking"
+    full = conn |> api(token) |> get(path) |> json_response(200)
+    assert length(full["ranking"]) == 125
+    assert full["page_info"]["total_entries"] == 125
+    assert full["me"]["id"] == user.id
+    assert full["me"]["place"] == 125
+
+    page = conn |> api(token) |> get(path, %{page: 2, page_size: 100}) |> json_response(200)
+    assert length(page["ranking"]) == 25
+    assert hd(page["ranking"])["place"] == 101
+    assert page["me"] == full["me"]
+    assert page["page_info"] == %{"page_number" => 2, "page_size" => 100, "total_entries" => 125}
+
+    tournament |> Ecto.Changeset.change(creator_id: insert(:user).id) |> Codebattle.Repo.update!()
+    participant = conn |> api(token) |> get(path) |> json_response(200)
+    assert participant == full
+    participant_page = conn |> api(token) |> get(path, %{page: 2, page_size: 100}) |> json_response(200)
+    assert participant_page == page
+
+    conn |> api(token(old_user())) |> get(path) |> json_response(404)
+  end
+
   describe "tokens" do
     test "stores only the hash and dies with the account", %{conn: _conn} do
       user = old_user()

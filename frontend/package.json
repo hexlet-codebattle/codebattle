@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:telemetry": "node --test test/telemetry.test.mjs",
+    "test:vim": "node test/vim.browser.test.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --deny-warnings",
     "check": "tsc --noEmit && oxlint --deny-warnings"

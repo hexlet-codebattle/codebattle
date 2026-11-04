@@ -9,10 +9,8 @@ defmodule Codebattle.Tournament.Ranking do
   alias Codebattle.Tournament.TournamentUserResult
 
   @spec get_first(tournament :: Tournament.t(), limit :: pos_integer()) :: list(map())
-  def get_first(%{ranking_table: nil}, _num), do: []
-
   def get_first(tournament, num) do
-    get_module(tournament).get_first(tournament, num)
+    get_page(tournament, 1, num).entries
   end
 
   @spec get_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
@@ -24,11 +22,25 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   @spec get_by_id(tournament :: Tournament.t(), player_id :: pos_integer()) :: map() | nil
-  def get_by_id(%{ranking_table: nil}, _player_id), do: nil
+  def get_by_id(%{state: "finished", ranking_type: "by_user"} = tournament, player_id) do
+    TournamentUserResult.get_ranking_entry(tournament.id, player_id) ||
+      current_entry(tournament, player_id)
+  end
+
+  def get_by_id(%{ranking_table: nil} = tournament, player_id) do
+    current_entry(tournament, player_id)
+  end
 
   def get_by_id(tournament, player_id) do
     Ranking.get_by_id(tournament, player_id)
   end
+
+  defp current_entry(%{ranking_type: "by_user", ranking_table: nil} = tournament, player_id) do
+    tournament |> build_user_entries() |> Enum.find(&(&1.id == player_id))
+  end
+
+  defp current_entry(%{ranking_table: nil}, _player_id), do: nil
+  defp current_entry(tournament, player_id), do: Ranking.get_by_id(tournament, player_id)
 
   @spec get_nearest_page_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
           map()

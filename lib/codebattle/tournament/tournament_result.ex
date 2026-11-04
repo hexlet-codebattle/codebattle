@@ -66,7 +66,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     game_has_cheater_sql = game_has_cheater_sql("g", tournament)
     clean_results(tournament.id, round_position)
 
-    Repo.query!("""
+    """
       with duration_percentile_for_tasks
       as (
       SELECT
@@ -162,7 +162,10 @@ defmodule Codebattle.Tournament.TournamentResult do
       round_position,
       was_cheated
       from stats
-    """)
+      returning game_id, user_id, score
+    """
+    |> Repo.query!()
+    |> then(&sync_match_scores(tournament, &1.rows))
 
     tournament
   end
@@ -301,7 +304,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     game_has_cheater_sql = game_has_cheater_sql("g", tournament)
     clean_results(tournament.id, round_position)
 
-    Repo.query!("""
+    """
       with stats as (
       select
       (p.player_info->>'result_percent')::numeric AS result_percent,
@@ -362,12 +365,35 @@ defmodule Codebattle.Tournament.TournamentResult do
       round_position,
       was_cheated
       from stats
-    """)
+      returning game_id, user_id, score
+    """
+    |> Repo.query!()
+    |> then(&sync_match_scores(tournament, &1.rows))
 
     tournament
   end
 
   def upsert_results(t), do: t
+
+  # Older finished tournament snapshots may predate copying scores into matches.
+  # Read their canonical result rows in one query without rewriting the snapshot.
+  def with_match_scores(_tournament, []), do: []
+
+  def with_match_scores(tournament, matches) do
+    game_ids = matches |> Enum.map(& &1.game_id) |> Enum.reject(&is_nil/1)
+
+    scores =
+      __MODULE__
+      |> where([r], r.tournament_id == ^tournament.id and r.game_id in ^game_ids)
+      |> select([r], [r.game_id, r.user_id, r.score])
+      |> Repo.all()
+      |> Enum.group_by(fn [game_id, _user_id, _score] -> game_id end)
+
+    Enum.map(matches, fn match ->
+      player_results = Enum.reduce(Map.get(scores, match.game_id, []), match.player_results, &put_player_score/2)
+      %{match | player_results: player_results}
+    end)
+  end
 
   defp sync_match_scores(%{matches_table: nil}, _rows), do: :noop
 
@@ -388,11 +414,19 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   defp sync_match_score_rows(tournament, match, score_rows) do
     player_results = Enum.reduce(score_rows, match.player_results, &put_player_score/2)
-    Tournament.Matches.put_match(tournament, %{match | player_results: player_results})
+
+    if player_results != match.player_results do
+      match = %{match | player_results: player_results}
+      Tournament.Matches.put_match(tournament, match)
+      Codebattle.PubSub.broadcast("tournament:match:upserted", %{tournament: tournament, match: match})
+    end
   end
 
   defp put_player_score([_game_id, user_id, score], results) do
-    Map.update(results, user_id, %{score: score}, &Map.put(&1, :score, score))
+    # AtomizedMap loads archived numeric JSON keys as atoms; preserve the
+    # existing key so encoding never produces two rows for the same player.
+    key = Enum.find(Map.keys(results), user_id, &(to_string(&1) == to_string(user_id)))
+    Map.update(results, key, %{score: score}, &Map.put(&1, :score, score))
   end
 
   defp static_winner_multiplier_sql("ladder", round_timeout) do

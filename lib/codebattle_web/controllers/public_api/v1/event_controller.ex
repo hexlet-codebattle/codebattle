@@ -12,10 +12,12 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
 
   import CodebattleWeb.PublicApi.V1.Helpers
 
+  alias Codebattle.Game
   alias Codebattle.Invite
   alias Codebattle.PubSub.Message
   alias Codebattle.PubSub.UserEvents
   alias Codebattle.Repo
+  alias Codebattle.Tournament
   alias CodebattleWeb.PublicApi.V1.ErrorJSON
   alias CodebattleWeb.PublicApi.V1.JSON
   alias CodebattleWeb.PublicApi.V1.Snapshot
@@ -25,15 +27,33 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
 
   plug(:require_scope, "read")
 
-  def stream(conn, _params) do
+  def stream(conn, params) do
     user = conn.assigns.current_user
 
-    if open_streams(user.id) >= @max_streams_per_user do
-      ErrorJSON.send_error(conn, 429, "rate_limited", "At most #{@max_streams_per_user} event streams per user")
-    else
-      {:ok, _} = Registry.register(Codebattle.Registry, {:public_api_events, user.id, make_ref()}, nil)
-      Codebattle.PubSub.subscribe(UserEvents.topic(user.id))
-      Codebattle.PubSub.subscribe("invites:#{user.id}")
+    cond do
+      Map.get(params, "scope", "me") not in ["me", "all"] ->
+        validation_failed(conn, %{"scope" => "must be me or all"})
+
+      open_streams(user.id) >= @max_streams_per_user ->
+        ErrorJSON.send_error(conn, 429, "rate_limited", "At most #{@max_streams_per_user} event streams per user")
+
+      true ->
+        open_stream(conn, user, params)
+    end
+  end
+
+  defp open_stream(conn, user, params) do
+    key = {:public_api_events, user.id, make_ref()}
+
+    topics =
+      [UserEvents.topic(user.id), "invites:#{user.id}"] ++
+        if(params["scope"] == "all", do: [UserEvents.public_topic()], else: [])
+
+    Enum.each(topics, &Codebattle.PubSub.subscribe/1)
+    {:ok, timer} = :timer.send_interval(config(:ping_ms, to_timeout(second: 15)), :public_api_events_ping)
+
+    try do
+      {:ok, _} = Registry.register(Codebattle.Registry, key, nil)
 
       conn =
         conn
@@ -51,6 +71,10 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
       else
         _ -> conn
       end
+    after
+      :timer.cancel(timer)
+      Enum.each(topics, &Codebattle.PubSub.unsubscribe/1)
+      Registry.unregister(Codebattle.Registry, key)
     end
   end
 
@@ -69,17 +93,20 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
     else
       receive do
         %Message{} = message ->
-          case event(message, user) do
+          case if(deliver?(message, user), do: event(message, user)) do
             nil -> loop(conn, user, deadline)
             {name, data} -> conn |> send_event(name, data) |> continue(conn, user, deadline)
           end
-      after
-        min(config(:ping_ms, to_timeout(second: 15)), remaining) ->
+
+        :public_api_events_ping ->
           conn |> chunk(": ping\n\n") |> continue(conn, user, deadline)
+      after
+        remaining -> loop(conn, user, deadline)
       end
     end
   end
 
+  ## Events
   defp continue({:ok, conn}, _previous, user, deadline), do: loop(conn, user, deadline)
   # the client went away
   defp continue({:error, _reason}, previous, _user, _deadline), do: previous
@@ -87,7 +114,26 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
   defp latest({:ok, conn}, _previous), do: conn
   defp latest({:error, _reason}, previous), do: previous
 
-  ## Events
+  defp deliver?(%Message{topic: "public_api_events:all", payload: %{game: game}}, user) do
+    game.visibility_type == "public" and not Game.Helpers.player?(game, user.id) and
+      public_tournament?(game.tournament_id)
+  end
+
+  defp deliver?(%Message{topic: "public_api_events:all", payload: %{tournament: tournament}}, user) do
+    tournament.access_type == "public" and tournament.creator_id != user.id and
+      user.id not in (tournament.moderator_ids || []) and not Tournament.Helpers.player?(tournament, user.id)
+  end
+
+  defp deliver?(_message, _user), do: true
+
+  defp public_tournament?(nil), do: true
+
+  defp public_tournament?(id) do
+    case Tournament.Context.get(id) do
+      %{access_type: "public"} -> true
+      _ -> false
+    end
+  end
 
   defp event(%Message{event: "invites:" <> action, payload: %{invite: %{id: id}}}, user) do
     case Repo.get(Invite, id) do

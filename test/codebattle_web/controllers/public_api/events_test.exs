@@ -21,7 +21,7 @@ defmodule CodebattleWeb.PublicApi.V1.EventsTest do
 
   # Opens the stream in another process, waits until it listens, runs `fun`, then returns the
   # finished response and its parsed events once the (short, test) lifetime runs out.
-  defp stream(conn, user, fun \\ fn -> :ok end) do
+  defp stream(conn, user, fun \\ fn -> :ok end, params \\ %{}) do
     token = token(user)
     before = EventController.open_streams(user.id)
 
@@ -30,7 +30,7 @@ defmodule CodebattleWeb.PublicApi.V1.EventsTest do
         conn
         |> put_req_header("authorization", "Bearer " <> token)
         |> put_req_header("accept", "text/event-stream")
-        |> get("/public_api/v1/me/events")
+        |> get("/public_api/v1/me/events", params)
       end)
 
     wait_until(fn -> EventController.open_streams(user.id) > before end)
@@ -62,6 +62,76 @@ defmodule CodebattleWeb.PublicApi.V1.EventsTest do
   end
 
   defp names(events), do: Enum.map(events, &elem(&1, 0))
+
+  test "heartbeats continue while unhandled messages keep arriving", %{conn: conn} do
+    user = old_user()
+
+    {conn, events} =
+      stream(conn, user, fn ->
+        for _ <- 1..50 do
+          Phoenix.PubSub.broadcast(
+            Codebattle.PubSub,
+            Codebattle.PubSub.UserEvents.topic(user.id),
+            %Codebattle.PubSub.Message{topic: "noise", event: "ignored", payload: %{}}
+          )
+
+          Process.sleep(25)
+        end
+      end)
+
+    assert length(String.split(conn.resp_body, ": ping")) >= 3
+    assert List.last(names(events)) == "bye"
+    assert EventController.open_streams(user.id) == 0
+  end
+
+  test "all scope includes public spectator games, hides private games and does not duplicate own events", %{conn: conn} do
+    insert(:task, level: "easy")
+    viewer = old_user()
+    other = old_user()
+    private = insert(:tournament, access_type: "token")
+
+    {_conn, events} =
+      stream(
+        conn,
+        viewer,
+        fn ->
+          for {id, visibility, tournament_id, players} <- [
+                {901, "public", nil, [other]},
+                {902, "hidden", nil, [other]},
+                {903, "public", private.id, [other]},
+                {904, "public", nil, [viewer]}
+              ] do
+            game =
+              build(:game,
+                id: id,
+                visibility_type: visibility,
+                tournament_id: tournament_id,
+                state: "playing",
+                players: Enum.map(players, &Codebattle.Game.Player.build/1)
+              )
+
+            Codebattle.PubSub.broadcast("game:created", %{game: game})
+          end
+        end,
+        %{"scope" => "all"}
+      )
+
+    ids = for {"game.started", %{"game" => game}} <- events, do: game["id"]
+    assert Enum.sort(ids) == [901, 904]
+    assert EventController.open_streams(viewer.id) == 0
+  end
+
+  test "invalid event scope is rejected before opening the stream", %{conn: conn} do
+    user = old_user()
+
+    conn =
+      conn
+      |> put_req_header("authorization", "Bearer " <> token(user))
+      |> get("/public_api/v1/me/events", %{scope: "invalid"})
+
+    assert %{"error" => %{"code" => "validation_failed"}} = json_response(conn, 422)
+    assert EventController.open_streams(user.id) == 0
+  end
 
   test "hello snapshot, invites as they happen, pings and a bye", %{conn: conn} do
     user = old_user()

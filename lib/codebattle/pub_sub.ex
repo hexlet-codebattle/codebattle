@@ -43,9 +43,11 @@ defmodule Codebattle.PubSub do
 
   # Per-user copies for the public API event stream; never break the domain broadcast.
   defp broadcast_user_events(event_name, params) do
-    event_name
-    |> UserEvents.messages(params)
-    |> Enum.each(fn %{topic: topic} = message -> Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message) end)
+    messages = UserEvents.messages(event_name, params) ++ UserEvents.public_messages(event_name, params)
+
+    Enum.each(messages, fn %{topic: topic} = message ->
+      Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
+    end)
   rescue
     error -> Logger.error("User events for #{event_name} failed: #{Exception.message(error)}")
   end

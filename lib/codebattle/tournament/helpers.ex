@@ -51,16 +51,27 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_match(tournament, id), do: Tournament.Matches.get_match(tournament, id)
 
-  def get_matches(%{matches_table: nil} = tournament), do: Map.values(tournament.matches)
+  def get_matches(%{matches_table: nil} = tournament) do
+    tournament.matches |> Map.values() |> with_match_scores(tournament)
+  end
+
   def get_matches(tournament), do: Tournament.Matches.get_matches(tournament)
 
-  def get_matches(tournament, ids) when is_list(ids), do: Enum.map(ids, &get_match(tournament, &1))
+  def get_matches(tournament, ids) when is_list(ids) do
+    ids |> Enum.map(&get_match(tournament, &1)) |> with_match_scores(tournament)
+  end
 
   def get_matches(%{matches_table: nil} = tournament, state) when is_binary(state) do
     tournament |> get_matches() |> Enum.filter(&(&1.state == state))
   end
 
   def get_matches(tournament, ids_or_state), do: Tournament.Matches.get_matches(tournament, ids_or_state)
+
+  defp with_match_scores(matches, %{state: "finished", matches_table: nil} = tournament) do
+    Tournament.TournamentResult.with_match_scores(tournament, Enum.reject(matches, &is_nil/1))
+  end
+
+  defp with_match_scores(matches, _tournament), do: matches
 
   def get_matches_by_players(tournament, player_ids) do
     matches_ids =
