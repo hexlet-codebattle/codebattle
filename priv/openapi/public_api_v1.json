@@ -353,6 +353,13 @@
               "null"
             ]
           },
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Player"
+            },
+            "description": "Current participants, ordered by id. SSE events carry the roster captured when the event was published."
+          },
           "players_limit": {
             "type": [
               "integer",
@@ -1188,7 +1195,7 @@
     "/me/events": {
       "get": {
         "summary": "Live stream of everything that happens to you (SSE)",
-        "description": "A Server-Sent Events stream: one request that stays open. It starts with `hello` (your current state: active game, pending invites, unfinished tournaments), then sends one event per change: invites, your games, tournaments you play in or run. With `scope=all`, also receive lifecycle events for other public games and public tournaments; hidden games and private tournaments stay private. Your own events are sent once. A `: ping` comment comes every 15 seconds. The server closes the stream after an hour with a `bye` event; reconnect and you get a fresh `hello`. Events are not replayed: reconnect if heartbeats stop, and refresh state from the new `hello` and REST endpoints. At most 2 open streams per user. See **Event stream** above for every event and client examples.",
+        "description": "A Server-Sent Events stream: one request that stays open. It starts with `hello` (your current state: active game, pending invites, unfinished tournaments), then sends one event per change: invites, your games, tournaments you play in or run. With `scope=all`, also receive events for other public games and public tournaments, including `tournament.created` and `tournament.activated` when registration opens and the tournament enters the live list. `tournament.updated` reports state, settings and break changes to participants and staff. Join/leave events reach the other participants too. Tournament cards include `players`; each event carries the roster captured at publication. Hidden games and private tournaments stay private. Your own events are sent once. A `: ping` comment comes every 15 seconds. The server closes the stream after an hour with a `bye` event; reconnect and you get a fresh `hello`. Events are not replayed: reconnect if heartbeats stop, and refresh state from the new `hello` and REST endpoints. At most 2 open streams per user. See **Event stream** above for every event and client examples.",
         "parameters": [
           {
             "name": "scope",

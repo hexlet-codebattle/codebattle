@@ -63,6 +63,86 @@ defmodule CodebattleWeb.PublicApi.V1.EventsTest do
 
   defp names(events), do: Enum.map(events, &elem(&1, 0))
 
+  test "all scope announces creation and registration opening as a tournament enters live", %{conn: conn} do
+    viewer = old_user()
+    creator = old_user()
+    tournament = insert(:tournament, state: "upcoming", creator_id: creator.id, access_type: "public")
+    private = insert(:tournament, state: "waiting_participants", creator_id: creator.id, access_type: "token")
+
+    {_conn, events} =
+      stream(
+        conn,
+        viewer,
+        fn ->
+          Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
+          Tournament.Context.move_upcoming_to_live(tournament)
+          Codebattle.PubSub.broadcast("tournament:activated", %{tournament: private})
+
+          live =
+            conn
+            |> put_req_header("authorization", "Bearer " <> token(viewer))
+            |> get("/public_api/v1/tournaments/live")
+            |> json_response(200)
+
+          assert Enum.any?(live["tournaments"], &(&1["id"] == tournament.id))
+        end,
+        %{"scope" => "all"}
+      )
+
+    assert {"tournament.created", %{"tournament" => %{"id" => id, "state" => "upcoming"}}} =
+             List.keyfind(events, "tournament.created", 0)
+
+    assert id == tournament.id
+    activated = for {"tournament.activated", %{"tournament" => t}} <- events, do: t
+    assert [%{"id" => ^id, "state" => "waiting_participants", "players" => []}] = activated
+  end
+
+  test "participants receive status and roster snapshots even after the live table disappears", %{conn: conn} do
+    viewer = old_user()
+    newcomer = old_user()
+    creator = old_user()
+    tournament = insert(:tournament, creator_id: creator.id, access_type: "public", state: "active")
+    tournament = %{tournament | players_table: Tournament.Players.create_table(tournament.id)}
+    me = Tournament.Player.new!(%{id: viewer.id, name: viewer.name})
+    other = Tournament.Player.new!(%{id: newcomer.id, name: newcomer.name})
+    Tournament.Players.put_player(tournament, me)
+
+    {_conn, events} =
+      stream(
+        conn,
+        viewer,
+        fn ->
+          Codebattle.PubSub.broadcast("tournament:updated", %{tournament: %{tournament | break_state: "off"}})
+          Tournament.Players.put_player(tournament, other)
+          Codebattle.PubSub.broadcast("tournament:player:joined", %{tournament: tournament, player: other})
+          Tournament.Players.drop_player(tournament, other.id)
+          Codebattle.PubSub.broadcast("tournament:player:left", %{tournament: tournament, player_id: other.id})
+          Codebattle.PubSub.broadcast("tournament:updated", %{tournament: %{tournament | break_state: "on"}})
+          Tournament.Players.drop_player(tournament, me.id)
+          Codebattle.PubSub.broadcast("tournament:player:left", %{tournament: tournament, player_id: me.id})
+          :ets.delete(tournament.players_table)
+        end,
+        %{"scope" => "all"}
+      )
+
+    updates = for {"tournament.updated", %{"tournament" => t}} <- events, do: t
+
+    assert [
+             %{"state" => "active", "break" => %{"active" => false}},
+             %{"state" => "active", "break" => %{"active" => true}}
+           ] = updates
+
+    joined = for {"tournament.player_joined", %{"tournament" => t}} <- events, do: t
+    assert [%{"players_count" => 2, "players" => players, "joined" => true}] = joined
+    assert Enum.map(players, & &1["id"]) == Enum.sort([viewer.id, newcomer.id])
+    left = for {"tournament.player_left", %{"tournament" => t}} <- events, do: t
+    assert [%{"players_count" => 1, "players" => [%{"id" => remaining}]}] = left
+    assert remaining == viewer.id
+    own_left = for {"tournament.left", %{"tournament" => t}} <- events, do: t
+    assert [%{"players" => [], "joined" => false}] = own_left
+    refute Enum.any?(players, &Map.has_key?(&1, "email"))
+  end
+
   test "heartbeats continue while unhandled messages keep arriving", %{conn: conn} do
     user = old_user()
 

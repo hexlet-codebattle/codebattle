@@ -141,6 +141,12 @@ an ordinary HTTP request that stays open: the server keeps writing events into t
 they happen. Use it instead of polling to react to invites, game starts and tournament rounds
 within a second.
 
+Use `GET /me/events?scope=all` to also discover public tournaments and observe public
+games. `tournament.created` announces a new tournament; `tournament.activated` announces
+registration opening (`waiting_participants`), when it becomes available in
+`GET /tournaments/live`. The default `scope=me` covers your own games and tournaments
+you play in or run. Private tournaments remain visible only to their participants and staff.
+
 ```bash
 curl -sN https://codebattle.hexlet.io/public_api/v1/me/events \
   -H "Authorization: Bearer $CODEBATTLE_TOKEN" \
@@ -190,8 +196,11 @@ At most 2 streams per user can be open at the same time; a third request gets `4
 | `game.canceled` | Your game was canceled before it finished | `game` |
 | `tournament.joined` | You joined a tournament | `tournament` |
 | `tournament.left` | You left a tournament | `tournament` |
-| `tournament.player_joined` | Someone joined a tournament you created or moderate | `tournament`, `player` (Player) |
-| `tournament.player_left` | Someone left a tournament you created or moderate | `tournament`, `player_id` |
+| `tournament.created` | A tournament was created (other public tournaments require `scope=all`) | `tournament` |
+| `tournament.activated` | Registration opened; the tournament enters the live list | `tournament` |
+| `tournament.updated` | Tournament state, settings or break status changed | `tournament` |
+| `tournament.player_joined` | Another player joined a tournament you play in or run; other public tournaments with `scope=all` | `tournament`, `player` (Player) |
+| `tournament.player_left` | Another player left a tournament you play in or run; other public tournaments with `scope=all` | `tournament`, `player_id` |
 | `tournament.started` | A tournament you play in or run started | `tournament` |
 | `tournament.round_started` | A new round began; your game arrives as `game.started` | `tournament` |
 | `tournament.round_finished` | A round ended; `tournament.break.active` and `ends_at` tell when the next round starts | `tournament` |
@@ -202,6 +211,11 @@ At most 2 streams per user can be open at the same time; a third request gets `4
 
 `game`, `tournament` and `invite` have the same fields as in the REST endpoints (see
 **Objects**). New event types may appear in v1; skip the ones you don't know.
+
+Every tournament card includes `players` (Player[]) as well as `players_count`.
+For an event, the roster is captured when the event is published, so a quick join followed
+by a leave still produces two snapshots with the correct participants. Player cards contain
+public profile fields, not account data such as emails.
 
 ### Clients
 

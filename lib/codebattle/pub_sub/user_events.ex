@@ -13,6 +13,9 @@ defmodule Codebattle.PubSub.UserEvents do
   alias Codebattle.Tournament
 
   @tournament_events %{
+    "tournament:created" => "tournament.created",
+    "tournament:activated" => "tournament.activated",
+    "tournament:updated" => "tournament.updated",
     "tournament:started" => "tournament.started",
     "tournament:round_created" => "tournament.round_started",
     "tournament:round_finished" => "tournament.round_finished",
@@ -36,7 +39,27 @@ defmodule Codebattle.PubSub.UserEvents do
   def public_messages("game:terminated", params), do: public_game_message("game.canceled", params)
 
   def public_messages(event, %{tournament: tournament}) when is_map_key(@tournament_events, event) do
-    [%Message{topic: public_topic(), event: @tournament_events[event], payload: %{tournament: tournament}}]
+    [%Message{topic: public_topic(), event: @tournament_events[event], payload: %{tournament: snapshot(tournament)}}]
+  end
+
+  def public_messages("tournament:player:joined", %{tournament: tournament, player: player}) do
+    [
+      %Message{
+        topic: public_topic(),
+        event: "tournament.player_joined",
+        payload: %{tournament: snapshot(tournament), player: player_card(player)}
+      }
+    ]
+  end
+
+  def public_messages("tournament:player:left", %{tournament: tournament, player_id: player_id}) do
+    [
+      %Message{
+        topic: public_topic(),
+        event: "tournament.player_left",
+        payload: %{tournament: snapshot(tournament), player_id: player_id}
+      }
+    ]
   end
 
   def public_messages(_event, _params), do: []
@@ -56,36 +79,54 @@ defmodule Codebattle.PubSub.UserEvents do
   def messages("game:terminated", %{game: game}), do: game_messages(game, "game.canceled")
 
   def messages("tournament:player:joined", %{tournament: tournament, player: player}) do
+    tournament = snapshot(tournament)
     joined = message(player.id, "tournament.joined", %{tournament: tournament})
 
-    staff =
+    others =
       tournament
-      |> staff_ids()
+      |> audience()
       |> Enum.reject(&(&1 == player.id))
       |> Enum.map(&message(&1, "tournament.player_joined", %{tournament: tournament, player: player_card(player)}))
 
-    [joined | staff]
+    [joined | others]
   end
 
   def messages("tournament:player:left", %{tournament: tournament, player_id: player_id}) do
+    tournament = snapshot(tournament)
     left = message(player_id, "tournament.left", %{tournament: tournament})
 
-    staff =
+    others =
       tournament
-      |> staff_ids()
+      |> audience()
       |> Enum.reject(&(&1 == player_id))
       |> Enum.map(&message(&1, "tournament.player_left", %{tournament: tournament, player_id: player_id}))
 
-    [left | staff]
+    [left | others]
   end
 
   def messages(event, %{tournament: tournament}) when is_map_key(@tournament_events, event) do
+    tournament = snapshot(tournament)
+
     tournament
     |> audience()
     |> Enum.map(&message(&1, @tournament_events[event], %{tournament: tournament}))
   end
 
   def messages(_event, _params), do: []
+
+  # ETS rows are mutable and may disappear when a tournament stops. A queued
+  # event must keep the roster and membership from the time it was published.
+  defp snapshot(tournament) do
+    players =
+      try do
+        Tournament.Helpers.get_players(tournament)
+      rescue
+        ArgumentError -> Map.values(tournament.players)
+      end
+
+    players = Map.new(players, &{Tournament.Helpers.to_id(&1.id), &1})
+    %{tournament | players: players, players_table: nil, players_count: map_size(players)}
+  end
 
   defp game_messages(game, event) do
     game

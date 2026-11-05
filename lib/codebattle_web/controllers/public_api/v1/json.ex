@@ -93,6 +93,7 @@ defmodule CodebattleWeb.PublicApi.V1.JSON do
       starts_at: time(tournament.starts_at),
       started_at: time(tournament.started_at),
       players_count: tournament.players_count,
+      players: tournament |> Helpers.get_players() |> Enum.sort_by(& &1.id) |> Enum.map(&player/1),
       players_limit: tournament.players_limit,
       rounds_limit: tournament.rounds_limit,
       current_round: current_round(tournament),

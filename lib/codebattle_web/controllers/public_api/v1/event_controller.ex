@@ -7,6 +7,9 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
   every few seconds so proxies keep the connection. The stream closes itself after
   `:public_api_events_lifetime_ms` (an hour), and clients reconnect; nothing is replayed, the
   new `hello` carries the current state instead.
+
+  `scope=all` also includes public game and tournament events, including tournament
+  creation and registration opening. Tournament payloads carry a roster snapshot.
   """
   use CodebattleWeb, :controller
 
@@ -118,6 +121,8 @@ defmodule CodebattleWeb.PublicApi.V1.EventController do
     game.visibility_type == "public" and not Game.Helpers.player?(game, user.id) and
       public_tournament?(game.tournament_id)
   end
+
+  defp deliver?(%Message{topic: "public_api_events:all", payload: %{player_id: id}}, %{id: id}), do: false
 
   defp deliver?(%Message{topic: "public_api_events:all", payload: %{tournament: tournament}}, user) do
     tournament.access_type == "public" and tournament.creator_id != user.id and

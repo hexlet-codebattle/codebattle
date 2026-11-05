@@ -588,10 +588,11 @@ defmodule CodebattleWeb.PublicApi.V1.PublicApiTest do
         insert(:tournament, state: "active", access_type: "public", starts_at: ~U[2023-01-01 00:00:00Z])
       end
 
-      assert %{"tournaments" => [%{"id" => id, "players_count" => 1}]} =
+      assert %{"tournaments" => [%{"id" => id, "players_count" => 1, "players" => [%{"id" => player_id}]}]} =
                conn |> api(token(user)) |> get("/public_api/v1/tournaments/live") |> json_response(200)
 
       assert id == live.id
+      assert player_id == user.id
     end
   end
 
