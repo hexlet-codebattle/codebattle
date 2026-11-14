@@ -7,6 +7,7 @@ import { LangIcon } from '@/shared/LangIcon';
 import { usePage } from '@/shared/usePage';
 import { useSharedProps } from '@/shared/useSharedProps';
 
+import { isBeforeStart } from '../components/RankingPanel';
 import { useTournamentStore } from '../store';
 import type { Match, Player, Tournament } from '../types';
 import type { TournamentApi } from '../useTournament';
@@ -70,6 +71,7 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
   const [page, setPage] = usePage(query);
   const [opened, setOpened] = useState<string | null>(searchedUserId != null ? String(searchedUserId) : null);
   const hideResults = !tournament.show_results && !api.moderator;
+  const beforeStart = isBeforeStart(tournament.state);
 
   // Current round matches, and the full roster when the channel sent only part of it (big tournaments).
   useEffect(() => {
@@ -121,9 +123,11 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
               <Accordion.Control py={4}>
                 <Group justify="space-between" wrap="nowrap" gap="sm">
                   <Group gap={8} wrap="nowrap" miw={0}>
-                    <Text size="sm" ff="monospace" c="dimmed" w={34}>
-                      #{player.place || '—'}
-                    </Text>
+                    {!beforeStart && (
+                      <Text size="sm" ff="monospace" c="dimmed" w={34}>
+                        #{player.place || '—'}
+                      </Text>
+                    )}
                     <LangIcon lang={player.lang} />
                     <Text size="sm" fw={600} c="bright" truncate>
                       {player.name}
@@ -140,7 +144,11 @@ export function PlayersMatchesPanel({ tournament, api, searchedUserId = null }: 
                     )}
                     {player.state === 'banned' && <IconBan size={14} color="var(--cb-danger)" />}
                   </Group>
-                  {!hideResults && (
+                  {beforeStart ? (
+                    <Text span fz="xs" c="dimmed">
+                      {t('Elo')}: <b>{player.rating ?? '—'}</b>
+                    </Text>
+                  ) : !hideResults && (
                     <Group gap="md" wrap="nowrap" fz="xs" c="dimmed">
                       <span>
                         {t('Score')}: <b>{player.score ?? 0}</b>

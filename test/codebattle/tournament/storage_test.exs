@@ -78,18 +78,43 @@ defmodule Codebattle.Tournament.StorageTest do
     assert Ranking.drop_player(tournament, 30) == 1
     assert Ranking.drop_player(tournament, 30) == 0
     assert Ranking.count(tournament) == 1
-    assert Ranking.next_place(tournament) == 3
-    assert Ranking.get_slice(tournament, 1, 2) == [Enum.at(reordered, 1)]
+    assert Ranking.next_place(tournament) == 2
+    assert Ranking.get_slice(tournament, 1, 2) == [%{id: 10, place: 1}]
 
-    Ranking.put_single_record(tournament, 2, %{id: 40, place: 2})
+    Ranking.put_single_record(tournament, 1, %{id: 40, place: 1})
     assert Ranking.get_by_id(tournament, 10) == nil
-    assert Ranking.get_by_id(tournament, 40) == %{id: 40, place: 2}
+    assert Ranking.get_by_id(tournament, 40) == %{id: 40, place: 1}
     assert Ranking.count(tournament) == 1
 
     Ranking.put_ranking(tournament, [])
     assert Ranking.count(tournament) == 0
     assert Ranking.get_all(tournament) == []
     assert Ranking.get_by_id(tournament, 40) == nil
+    assert Ranking.next_place(tournament) == 1
+  end
+
+  test "dropping a player moves everyone below up a place, so a later join leaves no gap" do
+    tournament = %{ranking_table: Ranking.create_table(System.unique_integer([:positive]))}
+    Enum.each(1..5, &Ranking.put_single_record(tournament, &1, %{id: &1 * 10, place: &1}))
+    places = fn -> tournament |> Ranking.get_all() |> Enum.map(&{&1.id, &1.place}) end
+
+    assert Ranking.drop_player(tournament, 20) == 1
+    assert places.() == [{10, 1}, {30, 2}, {40, 3}, {50, 4}]
+    assert Ranking.get_by_id(tournament, 50) == %{id: 50, place: 4}
+
+    assert Ranking.drop_player(tournament, 50) == 1
+    assert Ranking.drop_player(tournament, 10) == 1
+    assert places.() == [{30, 1}, {40, 2}]
+    assert Ranking.get_slice(tournament, 1, 10) == [%{id: 30, place: 1}, %{id: 40, place: 2}]
+    assert Ranking.count(tournament) == 2
+
+    Ranking.put_single_record(tournament, Ranking.next_place(tournament), %{id: 60, place: 3})
+    assert places.() == [{30, 1}, {40, 2}, {60, 3}]
+
+    assert Ranking.drop_player(tournament, 30) == 1
+    assert Ranking.drop_player(tournament, 40) == 1
+    assert Ranking.drop_player(tournament, 60) == 1
+    assert places.() == []
     assert Ranking.next_place(tournament) == 1
   end
 

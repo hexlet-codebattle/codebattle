@@ -83,11 +83,10 @@ export function useTournament(id: number, accessToken: string | null) {
         playTournamentSound('finished');
         events['tournament:finished'](payload);
       },
-      // Ladder ticks: refresh the caller's matches and the standings.
+      // Rescored results (ladder ticks, a swiss ban): refresh the caller's matches and the standings.
       'tournament:results_updated': () => {
         store.getState().bumpRanking();
-        const current = store.getState().tournament;
-        if (current?.type === 'ladder' && store.getState().players[me.id]) {
+        if (store.getState().players[me.id]) {
           void main
             .push<{ matches: Match[]; players: Player[] }>('tournament:matches:request', { player_id: me.id })
             .then(({ matches, players }) => {

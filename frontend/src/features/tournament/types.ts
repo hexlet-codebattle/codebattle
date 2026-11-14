@@ -107,6 +107,8 @@ export interface RankingEntry {
   score: number;
   lang: string | null;
   name: string;
+  /** Elo at join; sent before the tournament starts. */
+  rating?: number | null;
   clan_id: number | null;
   clan: string | null;
 }

@@ -6,7 +6,7 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
   alias Codebattle.Tournament.Ranking
   alias Codebattle.Tournament.Ranking.ByUser
 
-  test "a join after a departure appends without overwriting a remaining player's place" do
+  test "a departure closes its gap and a later join takes the next place, overwriting no one" do
     tournament = %{
       type: "ladder",
       ranking_type: "by_user",
@@ -18,9 +18,9 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
     Ranking.drop_player(tournament, 2)
     ByUser.add_new_player(tournament, Player.new!(%{id: 4, name: "p4"}))
 
-    assert Enum.map(Ranking.get_first(tournament, 10), & &1.id) == [1, 3, 4]
-    assert Ranking.get_by_id(tournament, 3).place == 3
-    assert Ranking.get_by_id(tournament, 4).place == 4
+    assert Enum.map(Ranking.get_first(tournament, 10), &{&1.id, &1.place}) == [{1, 1}, {3, 2}, {4, 3}]
+    assert Ranking.get_by_id(tournament, 3).place == 2
+    assert Ranking.get_by_id(tournament, 4).place == 3
   end
 
   test "a new round without results preserves cumulative score and duration ordering" do
@@ -130,7 +130,6 @@ defmodule Codebattle.Tournament.Ranking.ByUserTest do
     assert ByUser.get_nearest_page_by_player(tournament, nil).page_number == 1
     assert ByUser.get_nearest_page_by_player(tournament, player).page_number == 1
     assert ByUser.add_new_player(tournament, player) == tournament
-    assert ByUser.update_player_result(tournament, player, 10) == tournament
   end
 
   test "set_ranking applies only current round delta to cumulative standings" do

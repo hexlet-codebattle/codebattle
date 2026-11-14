@@ -4239,6 +4239,12 @@ msgstr "显示空白"
 msgid "Smooth cursor"
 msgstr "平滑光标"
 
+msgid "Autocomplete"
+msgstr "自动补全"
+
+msgid "Suggest keywords, builtins and names from the code as you type"
+msgstr "输入时提示关键字、内置函数和代码中的名称"
+
 msgid "Sticky scroll"
 msgstr "粘性滚动"
 
@@ -7565,3 +7571,11 @@ msgstr "你的解答未能送达服务器"
 #: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
 msgid "Check your connection and run it again."
 msgstr "请检查网络连接后重新运行。"
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Victory"
+msgstr "胜利"
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Defeat"
+msgstr "失败"

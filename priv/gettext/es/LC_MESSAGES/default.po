@@ -4352,6 +4352,12 @@ msgstr "Mostrar espacios en blanco"
 msgid "Smooth cursor"
 msgstr "Cursor suave"
 
+msgid "Autocomplete"
+msgstr "Autocompletado"
+
+msgid "Suggest keywords, builtins and names from the code as you type"
+msgstr "Sugerir palabras clave, funciones integradas y nombres del código al escribir"
+
 msgid "Sticky scroll"
 msgstr "Desplazamiento fijo"
 
@@ -7921,3 +7927,11 @@ msgstr "Tu solución no llegó al servidor"
 #: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
 msgid "Check your connection and run it again."
 msgstr "Comprueba tu conexión y vuelve a ejecutarlo."
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Victory"
+msgstr "Victoria"
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Defeat"
+msgstr "Derrota"

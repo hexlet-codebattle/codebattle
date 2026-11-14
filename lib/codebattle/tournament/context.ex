@@ -206,20 +206,44 @@ defmodule Codebattle.Tournament.Context do
   @finished_history_limit 200
 
   @doc """
-  Returns finished, non-cancelled season tournaments (non-open grade) across all time,
-  newest first. The virtual `players_count` field is populated from the persisted
-  players map (bots excluded) so the schedule history list can show it without
-  shipping the whole players payload.
+  Returns finished tournaments visible to the user across all time, newest first.
+  Visibility is applied before the history limit. The virtual `players_count`
+  field is populated from the persisted players map (bots excluded) so the
+  schedule history list can show it without shipping the whole players payload.
   """
-  @spec get_finished_season_tournaments() :: list(Tournament.t())
-  def get_finished_season_tournaments do
+  @spec get_finished_tournaments(User.t()) :: list(Tournament.t())
+  def get_finished_tournaments(user) do
     from(t in Tournament,
-      order_by: [desc: t.starts_at],
-      where: t.state == "finished" and t.grade != "open",
+      order_by: [desc: t.starts_at, desc: t.id],
+      where: t.state == "finished" and t.type in ^Tournament.types(),
       limit: @finished_history_limit
     )
+    |> scope_history(user)
     |> Repo.all()
     |> Enum.map(&put_human_players_count/1)
+  end
+
+  defp scope_history(query, user) do
+    public = dynamic([t], is_nil(t.access_type) or t.access_type != "token")
+
+    cond do
+      User.admin_or_moderator?(user) ->
+        query
+
+      user.is_guest ->
+        where(query, ^public)
+
+      true ->
+        visible =
+          dynamic(
+            [t],
+            ^public or t.creator_id == ^user.id or
+              ^user.id in t.moderator_ids or
+              fragment("((? #>> '{}')::jsonb) \\? ?", t.players, ^Integer.to_string(user.id))
+          )
+
+        where(query, ^visible)
+    end
   end
 
   defp put_human_players_count(%Tournament{players: players} = tournament) do

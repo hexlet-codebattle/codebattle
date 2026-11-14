@@ -4,6 +4,62 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
   alias Codebattle.Tournament.Context
   alias Codebattle.Tournament.Server
 
+  describe "#history" do
+    test "includes custom tournaments and scopes private history to authorized users", %{conn: conn} do
+      creator = insert(:user)
+      moderator = insert(:user)
+      player = insert(:user)
+      outsider = insert(:user)
+      admin = insert(:admin)
+      site_moderator = insert(:user, subscription_type: :moderator)
+      now = DateTime.utc_now(:second)
+
+      season = insert(:tournament, state: "finished", grade: "rookie", starts_at: DateTime.add(now, -2, :day))
+      custom = insert(:tournament, state: "finished", grade: "open", starts_at: DateTime.add(now, -1, :day))
+
+      private =
+        insert(:tournament,
+          creator_id: creator.id,
+          moderator_ids: [moderator.id],
+          state: "finished",
+          grade: "open",
+          access_type: "token",
+          access_token: "private-token",
+          starts_at: now,
+          winner_ids: [player.id],
+          players: %{
+            player.id => %{id: player.id, name: player.name, avatar_url: player.avatar_url, is_bot: false},
+            -1 => %{id: -1, name: "Bot", is_bot: true}
+          }
+        )
+
+      insert(:tournament, state: "active", grade: "open")
+      insert(:tournament, state: "canceled", grade: "open")
+
+      for user <- [creator, moderator, player, admin, site_moderator, outsider] do
+        response =
+          conn
+          |> log_in_user(user.id)
+          |> get(Routes.api_v1_tournament_path(conn, :history), access_token: private.access_token)
+          |> json_response(200)
+
+        tournaments = response["tournaments"]
+        expected_ids = if user == outsider, do: [custom.id, season.id], else: [private.id, custom.id, season.id]
+        assert Enum.map(tournaments, & &1["id"]) == expected_ids
+
+        if user != outsider do
+          assert hd(tournaments)["players_count"] == 1
+          assert hd(tournaments)["winner"]["id"] == player.id
+        end
+
+        for tournament <- tournaments do
+          refute Map.has_key?(tournament, "access_token")
+          refute Map.has_key?(tournament, "players")
+        end
+      end
+    end
+  end
+
   describe "#index" do
     test "shows empty tournaments", %{conn: conn} do
       user = insert(:user)

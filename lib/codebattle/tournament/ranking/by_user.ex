@@ -102,6 +102,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
       score: 0,
       lang: player.lang,
       name: player.name,
+      rating: player.rating,
       clan_id: player.clan_id,
       clan: player.clan
     })
@@ -110,8 +111,6 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   end
 
   def add_new_player(t, _player), do: t
-
-  def update_player_result(tournament, _player, _score), do: tournament
 
   def set_places_with_score_to_players(tournament, ranking) do
     Enum.each(ranking, fn %{id: id, place: place, score: score} ->
@@ -162,6 +161,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
         score: player.score || 0,
         lang: player.lang,
         name: player.name,
+        rating: player.rating,
         clan_id: player.clan_id,
         clan: player.clan
       }

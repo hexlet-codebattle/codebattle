@@ -892,6 +892,8 @@ defmodule Codebattle.Tournament.Server do
   end
 
   defp process_round_finish_completed(state, tournament, finished_tournament) do
+    finished_tournament = keep_cheater_changes(tournament, finished_tournament)
+
     if_result =
       if tournament.module.finish_tournament?(finished_tournament) do
         tournament.module.maybe_finish_tournament(finished_tournament)
@@ -917,6 +919,21 @@ defmodule Codebattle.Tournament.Server do
       broadcast_tournament_update(new_tournament)
       update_tournament_info_cache(new_tournament)
       {:noreply, %{state | tournament: new_tournament}}
+    end
+  end
+
+  # The round was scored from a snapshot taken before it ended. A ban or unban that landed
+  # meanwhile must survive the snapshot replacing the state, and its rounds are rebuilt now
+  # (the last round needs nothing more: the final standings replay every round).
+  defp keep_cheater_changes(%{cheater_ids: cheater_ids}, %{cheater_ids: cheater_ids} = finished), do: finished
+
+  defp keep_cheater_changes(tournament, finished_tournament) do
+    finished_tournament = %{finished_tournament | cheater_ids: tournament.cheater_ids}
+
+    if finished_tournament.type == "swiss" and not finished_tournament.module.finish_tournament?(finished_tournament) do
+      finished_tournament.module.rebuild_standings(finished_tournament, finished_tournament.current_round_position)
+    else
+      finished_tournament
     end
   end
 

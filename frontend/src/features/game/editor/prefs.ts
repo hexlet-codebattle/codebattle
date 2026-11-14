@@ -15,6 +15,8 @@ export interface Prefs {
   bracketColors: boolean;
   stickyScroll: boolean;
   smoothCursor: boolean;
+  /** Suggestions while typing (keywords, builtins, the file's words; JS/TS get the full language service). */
+  autocomplete: boolean;
   /** A name from EDITOR_THEMES; "auto" follows the site's light/dark. */
   theme: string;
 }
@@ -29,6 +31,7 @@ export const DEFAULT_PREFS: Prefs = {
   bracketColors: true,
   stickyScroll: false,
   smoothCursor: true,
+  autocomplete: true,
   theme: 'auto',
 };
 

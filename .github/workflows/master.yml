@@ -55,8 +55,8 @@ jobs:
       CODEBATTLE_DB_PASSWORD: postgres
       CODEBATTLE_DB_NAME: codebattle_test
       CODEBATTLE_DB_SSL: 'false'
-      OTP_VERSION: '29.0.3'
-      ELIXIR_VERSION: '1.20.4'
+      OTP_VERSION: '29.1.2'
+      ELIXIR_VERSION: '1.20.5'
 
     services:
       db:
@@ -133,8 +133,8 @@ jobs:
 
     env:
       MIX_ENV: test
-      OTP_VERSION: '29.0.3'
-      ELIXIR_VERSION: '1.20.4'
+      OTP_VERSION: '29.1.2'
+      ELIXIR_VERSION: '1.20.5'
 
     steps:
       - uses: actions/checkout@v4

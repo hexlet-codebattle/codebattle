@@ -2,9 +2,9 @@
 
 # Keep these versions aligned with mise.toml. Digests make rebuilding the
 # development toolchain an explicit, reviewable operation.
-FROM node:24.22.1-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS node
+FROM node:24.22.3-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5 AS node
 FROM golang:1.26.10-alpine@sha256:5cb67f19c5e7994dcb80c074f7cfca8aeeada45bbdca035f73df269cefdcce61 AS go
-FROM elixir:1.20.4-otp-29-alpine@sha256:4805a3bc4efcb7568f45036811b2885418cb1d0b37664dcaf6e47983453323cb
+FROM elixir:1.20.5-otp-29-alpine@sha256:a2f0fe1bfd8a2f9cc91d913f4a12e6430e27e618720f753a514e2fff3d35f5a7
 
 ARG USERNAME=codebattle
 ARG USER_UID=1000

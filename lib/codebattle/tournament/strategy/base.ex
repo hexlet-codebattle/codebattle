@@ -202,6 +202,7 @@ defmodule Codebattle.Tournament.Base do
           })
 
           new_tournament
+          |> refresh_standings_after_cheater_change()
           |> request_persist()
           |> tap(&broadcast_tournament_update/1)
           |> release_excluded_player_match(player.id)
@@ -229,8 +230,66 @@ defmodule Codebattle.Tournament.Base do
           game_ids: game_ids
         })
 
-        new_tournament |> request_persist() |> tap(&broadcast_tournament_update/1)
+        new_tournament
+        |> refresh_standings_after_cheater_change()
+        |> request_persist()
+        |> tap(&broadcast_tournament_update/1)
       end
+
+      # A ban or unban changes past results. Swiss scores a round when it ends, so the rounds
+      # already over are rebuilt right away; a round being scored at this moment is rebuilt
+      # once its scoring is done (see the server). Ladder rebuilds on its next tick.
+      def refresh_standings_after_cheater_change(%{type: "swiss", state: "active"} = tournament) do
+        case tournament.round_state do
+          "round_finishing" -> tournament
+          "break" -> rebuild_standings(tournament, tournament.current_round_position)
+          _playing -> rebuild_standings(tournament, tournament.current_round_position - 1)
+        end
+      end
+
+      def refresh_standings_after_cheater_change(tournament), do: tournament
+
+      # Rebuilds the results of rounds 0..last_round and ranks everyone by their totals. The
+      # round in play is scored when it ends; only its wins are counted already, as its
+      # games finish, so they are kept.
+      def rebuild_standings(tournament, last_round) do
+        Enum.each(0..last_round//1, fn round_position ->
+          tournament
+          |> update_struct(%{current_round_position: round_position})
+          |> Tournament.TournamentResult.upsert_results()
+        end)
+
+        totals =
+          tournament
+          |> Tournament.TournamentResult.get_user_totals()
+          |> add_unscored_round_wins(tournament, last_round)
+
+        tournament
+        |> update_struct(%{current_round_position: last_round})
+        |> Tournament.Ranking.set_ranking_from_totals(totals)
+
+        Codebattle.PubSub.broadcast("tournament:results_updated", %{tournament_id: tournament.id})
+        tournament
+      end
+
+      defp add_unscored_round_wins(totals, %{current_round_position: round_position} = tournament, last_round)
+           when last_round < round_position do
+        tournament
+        |> get_round_matches(round_position)
+        |> Enum.map(& &1.winner_id)
+        |> Enum.reject(&(is_nil(&1) or &1 in (tournament.cheater_ids || [])))
+        |> Enum.frequencies()
+        |> Enum.reduce(totals, fn {player_id, wins}, totals ->
+          Map.update(
+            totals,
+            player_id,
+            %{wins_count: wins},
+            &Map.update(&1, :wins_count, wins, fn count -> count + wins end)
+          )
+        end)
+      end
+
+      defp add_unscored_round_wins(totals, _tournament, _last_round), do: totals
 
       def toggle_ban_player(tournament, params), do: toggle_cheater_player(tournament, params)
 

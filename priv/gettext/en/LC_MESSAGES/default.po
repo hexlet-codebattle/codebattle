@@ -4240,6 +4240,12 @@ msgstr ""
 msgid "Smooth cursor"
 msgstr ""
 
+msgid "Autocomplete"
+msgstr ""
+
+msgid "Suggest keywords, builtins and names from the code as you type"
+msgstr ""
+
 msgid "Sticky scroll"
 msgstr ""
 
@@ -5079,3 +5085,11 @@ msgstr "Tournament languages"
 
 msgid "Add a name and description in each language. Missing translations use English or the original text."
 msgstr "Add a name and description in each language. Missing translations use English or the original text."
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Victory"
+msgstr "Victory"
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Defeat"
+msgstr "Defeat"

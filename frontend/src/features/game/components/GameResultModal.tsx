@@ -1,16 +1,19 @@
-import { Button, Group, Image, Modal, Stack, Text } from '@mantine/core';
-import { IconArrowRight } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { Button, CloseButton, Group, Image, Modal, Stack, Text } from '@mantine/core';
+import { IconArrowRight, IconCrown } from '@tabler/icons-react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RoundClock } from '@/features/tournament/components/RoundClock';
 import type { Tournament } from '@/features/tournament/types';
 import { useSharedProps } from '@/shared/useSharedProps';
 import { MethodButton } from '@/shared/MethodButton';
+import { UserAvatar } from '@/shared/UserAvatar';
 
 import { isGameOver, useGameStore } from '../store';
+import type { GamePlayer } from '../types';
 import type { GameApi } from '../useGame';
 
+import classes from './GameResultModal.module.css';
 import { RematchControls } from './RematchControls';
 
 // The legacy result animations (config/gifs.ts), served by Phoenix.
@@ -21,6 +24,63 @@ const GIFS = {
 } as const;
 
 type Outcome = keyof typeof GIFS;
+
+const CONFETTI_COLORS = ['var(--cb-grade-grand_slam)', 'var(--mantine-color-green-4)', 'var(--mantine-color-red-5)', 'var(--mantine-color-blue-4)', 'var(--mantine-color-violet-4)'];
+
+// A fixed scatter (golden-ratio steps) so the burst looks random but renders purely.
+const frac = (n: number) => n - Math.floor(n);
+const CONFETTI = Array.from({ length: 28 }, (_, index) => ({
+  left: `${frac(index * 0.618) * 100}%`,
+  background: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+  animationDelay: `${frac(index * 0.382 + 0.1) * 0.9}s`,
+  '--drift': `${Math.round(frac(index * 0.754) * 120 - 60)}px`,
+  '--spin': `${Math.round(frac(index * 0.291) * 720 - 360)}deg`,
+})) as CSSProperties[];
+
+/** A one-shot burst of confetti over the hero. */
+function Confetti() {
+  return (
+    <div className={classes.confetti} aria-hidden>
+      {CONFETTI.map((style, index) => (
+        <i key={index} style={style} />
+      ))}
+    </div>
+  );
+}
+
+/** One side of the scoreline: avatar (crowned for the winner), name, tests and rating change. */
+function PlayerSide({ player, side, label }: { player: GamePlayer; side: 'left' | 'right'; label: string }) {
+  const { t } = useTranslation();
+  const check = player.check_result;
+  const winner = player.result === 'won';
+  return (
+    <div className={classes.player} data-side={side}>
+      <div className={classes.avatarWrap} data-winner={winner || undefined}>
+        {winner && <IconCrown size={18} className={classes.crown} fill="currentColor" />}
+        <UserAvatar user={player} size={44} radius="xl" />
+      </div>
+      <div className={classes.playerMeta}>
+        <Text size="xs" c="dimmed" tt="uppercase" fw={600} lts="0.06em">
+          {label}
+        </Text>
+        <div className={classes.name}>{player.name}</div>
+        <div className={classes.stats}>
+          {check?.asserts_count ? (
+            <span>
+              {t('Tests')} {check.success_count ?? 0}/{check.asserts_count}
+            </span>
+          ) : null}
+          {player.rating_diff ? (
+            <Text span inherit fw={700} c={player.rating_diff > 0 ? 'green' : 'red'}>
+              {player.rating_diff > 0 ? '+' : ''}
+              {player.rating_diff}
+            </Text>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** The tournament line under the animation: what happens next. */
 function TournamentNext() {
@@ -89,6 +149,8 @@ export function GameResultModal({ api }: { api: GameApi }) {
   // A game with an award (e.g. a tournament prize) shows it instead of the dinosaur.
   const award = useGameStore((store) => store.game?.award);
   const nextGame = activeGameId && activeGameId !== gameId ? activeGameId : null;
+  const mine = useGameStore((store) => store.players[me.id]);
+  const opponent = useGameStore((store) => Object.values(store.players).find((player) => player.id !== me.id));
 
   if (practice) {
     return (
@@ -105,52 +167,73 @@ export function GameResultModal({ api }: { api: GameApi }) {
     );
   }
 
+  const title = award ? t('Award') : won ? t("Woohoo, you're Champion!!!!!") : t("If you read this you've lost the game");
+  const eyebrow = outcome === 'won' ? t('Victory') : outcome === 'gave_up' ? t('Gave up') : t('Defeat');
+
   return (
     <Modal
       opened={outcome != null}
       onClose={() => setOutcome(null)}
       centered
       size="md"
-      title={
-        <Text fw={800} size="lg">
-          {award ? t('Award') : won ? t("Woohoo, you're Champion!!!!!") : t("If you read this you've lost the game")}
-        </Text>
-      }
+      radius="lg"
+      withCloseButton={false}
+      classNames={{ content: `${classes.content} ${outcome ? (classes[outcome] ?? '') : ''}`, body: classes.body }}
+      aria-label={title}
     >
       {outcome && (
-        <Stack align="center" gap="md">
-          {award ? (
-            award.startsWith('http') ? (
-              <Image src={award} alt={t('Game award')} radius="md" maw={400} w="100%" />
-            ) : (
-              <Text fz={120} lh={1}>
-                {award}
-              </Text>
-            )
-          ) : (
-            <Image src={GIFS[outcome]} alt={t('animation')} radius="md" maw={400} w="100%" />
-          )}
-          <TournamentNext />
-          {rematch && incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
-          <Group justify={rematch && !incomingRematch ? 'space-between' : 'flex-end'} w="100%" gap="xs" mt="xs">
-            {rematch && !incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
-            <Group gap="xs">
-              {nextGame && (
-                <Button component="a" href={`/games/${nextGame}`} variant="filled" color="green" rightSection={<IconArrowRight size={14} />}>
-                  {t('Next game')}
-                </Button>
+        <>
+          <div className={classes.hero}>
+            {won && <div className={classes.rays} aria-hidden />}
+            {won && <Confetti />}
+            <CloseButton className={classes.close} onClick={() => setOutcome(null)} aria-label={t('Close')} />
+            <span className={classes.eyebrow}>
+              {won && <IconCrown size={14} />}
+              {eyebrow}
+            </span>
+            <div className={classes.title}>{title}</div>
+            <div className={classes.stage} data-outcome={outcome}>
+              {award ? (
+                award.startsWith('http') ? (
+                  <Image src={award} alt={t('Game award')} radius="md" />
+                ) : (
+                  <span className={classes.emoji}>{award}</span>
+                )
+              ) : (
+                <Image src={GIFS[outcome]} alt={t('animation')} />
               )}
-              {/* Secondary while a rematch or the next game is on offer. */}
-              <Button
-                variant={nextGame || rematch ? 'default' : 'filled'}
-                color={won ? 'green' : 'gray'}
-                onClick={() => setOutcome(null)}
-              >
-                {won ? t('GG') : t("I'll be back")}
-              </Button>
+            </div>
+          </div>
+          {mine && opponent && (
+            <div className={classes.scoreline}>
+              <PlayerSide player={mine} side="left" label={t('You')} />
+              <span className={classes.vs}>{t('vs')}</span>
+              <PlayerSide player={opponent} side="right" label={t('Opponent')} />
+            </div>
+          )}
+          <Stack align="center" gap="md" className={classes.footer}>
+            <TournamentNext />
+            {rematch && incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
+            <Group justify={rematch && !incomingRematch ? 'space-between' : 'flex-end'} w="100%" gap="xs">
+              {rematch && !incomingRematch && <RematchControls game={rematch} api={api} me={me.id} variant="modal" />}
+              <Group gap="xs">
+                {nextGame && (
+                  <Button component="a" href={`/games/${nextGame}`} variant="filled" color="green" rightSection={<IconArrowRight size={14} />}>
+                    {t('Next game')}
+                  </Button>
+                )}
+                {/* Secondary while a rematch or the next game is on offer. */}
+                <Button
+                  variant={nextGame || rematch ? 'default' : 'filled'}
+                  color={won ? 'green' : 'gray'}
+                  onClick={() => setOutcome(null)}
+                >
+                  {won ? t('GG') : t("I'll be back")}
+                </Button>
+              </Group>
             </Group>
-          </Group>
-        </Stack>
+          </Stack>
+        </>
       )}
     </Modal>
   );

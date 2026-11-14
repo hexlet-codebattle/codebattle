@@ -112,11 +112,13 @@ defmodule Codebattle.Tournament.TournamentResult do
       -- Handle timeout case where both players lost (including opponent of cheater in timeout)
       WHEN g.state = 'timeout' THEN
         0.5 * COALESCE(dt.base_score, 0) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
-      -- Normal scoring (includes opponent of cheater who won — gets normal win score)
+      -- Normal scoring (includes opponent of cheater who won — gets normal win score).
+      -- The multiplier is clamped to [1, 2]: games lost to a bot are excluded from the
+      -- min/max winner durations, so their duration can fall outside that range.
       ELSE
-        COALESCE(dt.base_score, 0) * (
+        COALESCE(dt.base_score, 0) * LEAST(2.0, GREATEST(1.0,
           2 - ((g.duration_sec - COALESCE(dt.min_duration, 0))::numeric / GREATEST(COALESCE(dt.max_duration - COALESCE(dt.min_duration, 0), 1), 1))
-        ) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+        )) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
       END AS score,
       g.level,
       g.task_id,

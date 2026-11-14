@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament do
   @grades ~w(open rookie challenger pro elite masters grand_slam)
   @levels ~w(elementary easy medium hard)
   @public_types ~w(swiss)
-  @ranking_types ~w(by_clan by_user)
+  @ranking_types ~w(by_user)
   @score_strategies ~w(75_percentile static_base_score win_loss)
   @states ~w(upcoming waiting_participants canceled active timeout finished)
   @task_providers ~w(level level_progression task_pack all)

@@ -6,7 +6,7 @@ import { FONT_SIZES, type LineNumbers, type Prefs, useEditorPrefs } from '../edi
 import { EDITOR_THEMES, themeSwatch } from '../editor/themes';
 import classes from '../GameRoom.module.css';
 
-type Toggle = keyof Pick<Prefs, 'wordWrap' | 'minimap' | 'whitespace' | 'bracketColors' | 'stickyScroll' | 'smoothCursor'>;
+type Toggle = keyof Pick<Prefs, 'wordWrap' | 'minimap' | 'whitespace' | 'bracketColors' | 'stickyScroll' | 'smoothCursor' | 'autocomplete'>;
 
 /** Every theme as a tiny preview (background + three coloured "code lines"); the name on hover. */
 function ThemeSwatches({ value, onChange }: { value: string; onChange: (theme: string) => void }) {
@@ -52,6 +52,7 @@ export function EditorSettings() {
     { key: 'bracketColors', label: t('Colored brackets'), hint: t('Matching pairs share a color') },
     { key: 'stickyScroll', label: t('Sticky scroll'), hint: t('The current function stays at the top') },
     { key: 'smoothCursor', label: t('Smooth cursor'), hint: t('The cursor glides and fades instead of jumping') },
+    { key: 'autocomplete', label: t('Autocomplete'), hint: t('Suggest keywords, builtins and names from the code as you type') },
   ];
 
   return (

@@ -117,7 +117,7 @@ defmodule Codebattle.SmallModulesTest do
     assert "token" in Tournament.access_types()
     assert "open" in Tournament.grades()
     assert "swiss" in Tournament.public_types()
-    assert "by_user" in Tournament.ranking_types()
+    assert Tournament.ranking_types() == ["by_user"]
     assert "75_percentile" in Tournament.score_strategies()
     assert "level" in Tournament.task_providers()
     assert "random" in Tournament.task_strategies()

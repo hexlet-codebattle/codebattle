@@ -10,6 +10,28 @@ defmodule Codebattle.Tournament.ContextTest do
   alias Codebattle.Tournament.TournamentUserResult
   alias Codebattle.UserGameReport
 
+  test "history scopes private tournaments before applying its limit" do
+    user = insert(:user)
+    now = DateTime.utc_now(:second)
+    public = insert(:tournament, state: "finished", grade: "open", starts_at: DateTime.add(now, -1, :day))
+
+    insert_list(200, :tournament,
+      creator_id: user.id,
+      state: "finished",
+      grade: "open",
+      starts_at: now,
+      access_type: "token",
+      access_token: "secret"
+    )
+
+    assert [%{id: id}] = Tournament.Context.get_finished_tournaments(Codebattle.User.build_guest())
+    assert id == public.id
+
+    outsider = insert(:user)
+    assert [%{id: ^id}] = Tournament.Context.get_finished_tournaments(outsider)
+    assert length(Tournament.Context.get_finished_tournaments(user)) == 200
+  end
+
   test "finds the next season tournament and recent season tournament players" do
     now = DateTime.utc_now(:second)
     user = insert(:user)
@@ -81,7 +103,7 @@ defmodule Codebattle.Tournament.ContextTest do
              & &1.id
            ) == [tournament.id]
 
-    assert [finished] = Tournament.Context.get_finished_season_tournaments()
+    assert [finished] = Tournament.Context.get_finished_tournaments(user)
     assert finished.id == tournament.id
     assert finished.players_count == 1
 

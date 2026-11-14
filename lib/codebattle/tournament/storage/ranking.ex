@@ -81,18 +81,38 @@ defmodule Codebattle.Tournament.Storage.Ranking do
       Logger.error("Error inserting single ranking record: #{inspect({place, record.id, record})}")
   end
 
+  # Everyone below the dropped player moves up a place, so places stay 1..n: a join after
+  # a leave takes the next free place instead of leaving a hole.
   def drop_player(tournament, player_id) do
     with_table(tournament, 0, fn table ->
       case :ets.lookup(table, {:id, player_id}) do
         [{{:id, ^player_id}, %{place: place}}] ->
-          :ets.delete(table, place)
-          :ets.delete(table, {:id, player_id})
+          drop_at_place(table, player_id, place)
           1
 
         [] ->
           0
       end
     end)
+  end
+
+  defp drop_at_place(table, player_id, place) do
+    max_place = :ets.lookup_element(table, :max_place, 2)
+
+    moved =
+      (place + 1)..max_place//1
+      |> Enum.flat_map(&records_at_place(table, &1))
+      |> Enum.flat_map(&records(%{&1 | place: &1.place - 1}))
+
+    :ets.delete(table, {:id, player_id})
+    :ets.delete(table, place)
+
+    if max_place > place do
+      :ets.insert(table, [{:max_place, max_place - 1} | moved])
+      :ets.delete(table, max_place)
+    else
+      :ets.insert(table, {:max_place, min(max_place, place - 1)})
+    end
   end
 
   def get_first(tournament, limit) do

@@ -24,7 +24,7 @@ defmodule Codebattle.Tournament.HelperTest do
         "break_duration_seconds" => 0,
         "task_provider" => "task_pack",
         "task_strategy" => "sequential",
-        "ranking_type" => "by_clan",
+        "ranking_type" => "by_user",
         "type" => "swiss",
         "state" => "waiting_participants",
         "rounds_limit" => "3",

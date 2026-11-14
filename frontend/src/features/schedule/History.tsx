@@ -14,7 +14,7 @@ import { UserAvatar } from '@/shared/UserAvatar';
 
 import { fetchHistory, type HistoryTournament } from './api';
 
-const GRADES: TournamentGrade[] = ['grand_slam', 'masters', 'elite', 'pro', 'challenger', 'rookie'];
+const GRADES: TournamentGrade[] = ['grand_slam', 'masters', 'elite', 'pro', 'challenger', 'rookie', 'open'];
 const PAGE_SIZE = 25;
 
 function duration(tournament: HistoryTournament) {
@@ -27,7 +27,7 @@ function duration(tournament: HistoryTournament) {
   return hours ? `${hours}h ${String(minutes % 60).padStart(2, '0')}m` : `${minutes}m`;
 }
 
-/** Finished league tournaments (latest 200), filterable by grade and name. */
+/** Finished tournaments visible to the viewer (latest 200), filterable by grade and name. */
 export function History() {
   const { t } = useTranslation();
   const [grades, setGrades] = useState<string[]>([]);
@@ -67,7 +67,7 @@ export function History() {
               <Chip key={grade} value={grade} size="xs" variant="outline">
                 <Group gap={4} wrap="nowrap">
                   <GradeIcon grade={grade} size={12} />
-                  {gradeLabel(grade)}
+                  {grade === 'open' ? t('Custom tournaments') : gradeLabel(grade)}
                   <Text span fz={10} c="dimmed" ff="monospace">
                     {counts.get(grade)}
                   </Text>
@@ -124,7 +124,7 @@ export function History() {
                             {tournamentTitle(tournament.name, tournament.grade, tournament.name_translations)}
                           </Anchor>
                           <Text size="xs" c="dimmed">
-                            {gradeLabel(tournament.grade)}
+                            {tournament.grade === 'open' ? t('Custom tournament') : gradeLabel(tournament.grade)}
                           </Text>
                         </Stack>
                       </Group>

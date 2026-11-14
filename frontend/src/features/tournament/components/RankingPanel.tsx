@@ -10,10 +10,13 @@ import { LangIcon } from '@/shared/LangIcon';
 import { useSharedProps } from '@/shared/useSharedProps';
 
 import { useTournamentStore } from '../store';
-import type { Ranking } from '../types';
+import type { Ranking, TournamentState } from '../types';
 import type { TournamentApi } from '../useTournament';
 
 const PAGE_SIZE = 20;
+
+/** Before the start there are no standings yet, only the players who joined. */
+export const isBeforeStart = (state: TournamentState | undefined) => state === 'upcoming' || state === 'waiting_participants';
 
 /** Normal tournaments paginate pushed standings locally; heavy ones request pages. */
 export function RankingPanel({ api }: { api: TournamentApi }) {
@@ -24,6 +27,7 @@ export function RankingPanel({ api }: { api: TournamentApi }) {
   const snapshot = useTournamentStore((state) => state.ranking);
   const players = useTournamentStore((state) => state.players);
   const isPlayer = useTournamentStore((state) => Boolean(state.players[me.id]));
+  const beforeStart = useTournamentStore((state) => isBeforeStart(state.tournament?.state));
   const [remoteRanking, setRanking] = useState<Ranking | null>(null);
   const [page, setPage] = useState(1);
   const [failed, setFailed] = useState(false);
@@ -101,20 +105,28 @@ export function RankingPanel({ api }: { api: TournamentApi }) {
           <Table verticalSpacing={5} horizontalSpacing="sm" fz="sm" highlightOnHover>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th w={60}>{t('Place')}</Table.Th>
+                {!beforeStart && <Table.Th w={60}>{t('Place')}</Table.Th>}
                 <Table.Th>{t('Player')}</Table.Th>
                 <Table.Th>{t('Clan')}</Table.Th>
-                <Table.Th ta="right">{t('Wins')}</Table.Th>
-                <Table.Th ta="right">{t('Score')}</Table.Th>
+                {beforeStart ? (
+                  <Table.Th ta="right">{t('Elo')}</Table.Th>
+                ) : (
+                  <>
+                    <Table.Th ta="right">{t('Wins')}</Table.Th>
+                    <Table.Th ta="right">{t('Score')}</Table.Th>
+                  </>
+                )}
                 {api.moderator && <Table.Th w={40} />}
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {ranking.entries.map((entry) => (
                 <Table.Tr key={entry.id} style={entry.id === me.id ? { background: 'color-mix(in srgb, var(--cb-success) 12%, transparent)' } : undefined}>
-                  <Table.Td>
-                    <PlaceChip place={entry.place} />
-                  </Table.Td>
+                  {!beforeStart && (
+                    <Table.Td>
+                      <PlaceChip place={entry.place} />
+                    </Table.Td>
+                  )}
                   <Table.Td maw={220}>
                     <Group gap={6} wrap="nowrap">
                       <LangIcon lang={entry.lang} />
@@ -130,12 +142,20 @@ export function RankingPanel({ api }: { api: TournamentApi }) {
                       {entry.clan ?? '—'}
                     </Text>
                   </Table.Td>
-                  <Table.Td ta="right" ff="monospace" c="dimmed">
-                    {entry.wins_count ?? players[entry.id]?.wins_count ?? '—'}
-                  </Table.Td>
-                  <Table.Td ta="right" ff="monospace" fw={700} c="bright">
-                    {entry.score}
-                  </Table.Td>
+                  {beforeStart ? (
+                    <Table.Td ta="right" ff="monospace" fw={700} c="bright">
+                      {entry.rating ?? players[entry.id]?.rating ?? '—'}
+                    </Table.Td>
+                  ) : (
+                    <>
+                      <Table.Td ta="right" ff="monospace" c="dimmed">
+                        {entry.wins_count ?? players[entry.id]?.wins_count ?? '—'}
+                      </Table.Td>
+                      <Table.Td ta="right" ff="monospace" fw={700} c="bright">
+                        {entry.score}
+                      </Table.Td>
+                    </>
+                  )}
                   {api.moderator && (
                     <Table.Td>
                       <Tooltip label={t('Kick')}>

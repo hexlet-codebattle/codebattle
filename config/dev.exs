@@ -71,7 +71,7 @@ if System.get_env("CODEBATTLE_DEVCONTAINER") == "1" do
   config :codebattle,
     white_list_lang_slugs:
       "CODEBATTLE_DEV_RUNNER_LANGS"
-      |> System.get_env("js,python")
+      |> System.get_env("js,python,cpp")
       |> String.split(",", trim: true)
       |> Enum.map(&String.trim/1)
 end

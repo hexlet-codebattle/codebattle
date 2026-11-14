@@ -29,7 +29,7 @@ if [ -z "${CODEBATTLE_DEV_RUNNER_LANGS:-}" ] && [ -f "$repo_dir/.env" ]; then
     }
   ' "$repo_dir/.env")
 fi
-CODEBATTLE_DEV_RUNNER_LANGS=${CODEBATTLE_DEV_RUNNER_LANGS:-js,python}
+CODEBATTLE_DEV_RUNNER_LANGS=${CODEBATTLE_DEV_RUNNER_LANGS:-js,python,cpp}
 export CODEBATTLE_DEV_RUNNER_LANGS
 
 # Validate before any container operations, including the startup retry.

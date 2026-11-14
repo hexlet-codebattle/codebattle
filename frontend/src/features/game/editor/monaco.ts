@@ -3,6 +3,7 @@
 import { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 
+import { registerCompletions } from './completions';
 import zig from './languages/zig';
 import { defineThemes } from './themes';
 import CssWorker from './workers/css.worker?worker';
@@ -53,6 +54,7 @@ monaco.languages.register({ id: 'zig', aliases: ['zig'] });
 monaco.languages.setMonarchTokensProvider('zig', zig as monaco.languages.IMonarchLanguage);
 
 defineThemes(monaco.editor);
+registerCompletions(monaco);
 
 // Monaco measures glyphs on mount; re-measure once the webfont (Source Code Pro) is in,
 // or the cursor and selections drift off the characters.

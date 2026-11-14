@@ -3,7 +3,6 @@ defmodule Codebattle.Tournament.Ranking do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
-  alias Codebattle.Tournament.Ranking.ByClan
   alias Codebattle.Tournament.Ranking.ByUser
   alias Codebattle.Tournament.Storage.Ranking
   alias Codebattle.Tournament.TournamentUserResult
@@ -18,11 +17,11 @@ defmodule Codebattle.Tournament.Ranking do
   def get_by_player(%{ranking_table: nil}, _player), do: nil
 
   def get_by_player(tournament, player) do
-    get_module(tournament).get_by_player(tournament, player)
+    ByUser.get_by_player(tournament, player)
   end
 
   @spec get_by_id(tournament :: Tournament.t(), player_id :: pos_integer()) :: map() | nil
-  def get_by_id(%{state: "finished", ranking_type: "by_user"} = tournament, player_id) do
+  def get_by_id(%{state: "finished"} = tournament, player_id) do
     TournamentUserResult.get_ranking_entry(tournament.id, player_id) ||
       current_entry(tournament, player_id)
   end
@@ -35,11 +34,10 @@ defmodule Codebattle.Tournament.Ranking do
     Ranking.get_by_id(tournament, player_id)
   end
 
-  defp current_entry(%{ranking_type: "by_user", ranking_table: nil} = tournament, player_id) do
+  defp current_entry(%{ranking_table: nil} = tournament, player_id) do
     tournament |> build_user_entries() |> Enum.find(&(&1.id == player_id))
   end
 
-  defp current_entry(%{ranking_table: nil}, _player_id), do: nil
   defp current_entry(tournament, player_id), do: Ranking.get_by_id(tournament, player_id)
 
   @spec get_nearest_page_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
@@ -48,14 +46,14 @@ defmodule Codebattle.Tournament.Ranking do
     do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
 
   def get_nearest_page_by_player(tournament, player) do
-    get_module(tournament).get_nearest_page_by_player(tournament, player)
+    ByUser.get_nearest_page_by_player(tournament, player)
   end
 
   @spec get_page(tournament :: Tournament.t(), page :: pos_integer(), page_size :: pos_integer()) ::
           map()
   def get_page(tournament, page, page_size \\ 10)
 
-  def get_page(%{state: "finished", ranking_type: "by_user"} = tournament, page, page_size) do
+  def get_page(%{state: "finished"} = tournament, page, page_size) do
     case TournamentUserResult.get_ranking_page(tournament.id, page, page_size) do
       %{total_entries: 0} -> get_current_page(tournament, page, page_size)
       ranking -> Map.take(ranking, [:entries, :total_entries, :page_number, :page_size])
@@ -78,19 +76,13 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   defp get_current_page(%{ranking_table: nil} = tournament, page, page_size) do
-    case tournament.ranking_type do
-      "by_user" ->
-        tournament
-        |> build_user_entries()
-        |> paginate(page, page_size)
-
-      _ ->
-        empty_page(page, page_size)
-    end
+    tournament
+    |> build_user_entries()
+    |> paginate(page, page_size)
   end
 
   defp get_current_page(tournament, page, page_size) do
-    get_module(tournament).get_page(tournament, page, page_size)
+    ByUser.get_page(tournament, page, page_size)
   end
 
   @spec set_ranking_from_totals(Tournament.t(), map()) :: Tournament.t()
@@ -102,36 +94,23 @@ defmodule Codebattle.Tournament.Ranking do
   def add_new_player(tournament, %{is_bot: true}), do: tournament
 
   def add_new_player(tournament, player) do
-    get_module(tournament).add_new_player(tournament, player)
+    ByUser.add_new_player(tournament, player)
   end
 
-  @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: nil | :ok | non_neg_integer()
+  @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: non_neg_integer()
   def drop_player(tournament, player_id) do
-    if get_module(tournament) == ByUser do
-      Ranking.drop_player(tournament, player_id)
-    end
-  end
-
-  @spec update_player_result(Tournament.t(), Tournament.Player.t(), non_neg_integer()) ::
-          Tournament.t()
-  def update_player_result(tournament, %{is_bot: true}, _score), do: tournament
-
-  def update_player_result(tournament, player, score) do
-    get_module(tournament).update_player_result(tournament, player, score)
+    Ranking.drop_player(tournament, player_id)
   end
 
   @spec set_ranking(Tournament.t()) :: Tournament.t()
   def set_ranking(tournament) do
-    get_module(tournament).set_ranking(tournament)
+    ByUser.set_ranking(tournament)
   end
 
   @spec create_table(pos_integer()) :: term()
   def create_table(tournament_id) do
     Ranking.create_table(tournament_id)
   end
-
-  defp get_module(%{ranking_type: "by_clan"}), do: ByClan
-  defp get_module(%{ranking_type: "by_user"}), do: ByUser
 
   defp build_user_entries(tournament) do
     tournament
@@ -146,6 +125,7 @@ defmodule Codebattle.Tournament.Ranking do
         score: player.score || 0,
         lang: player.lang,
         name: player.name,
+        rating: player.rating,
         clan_id: player.clan_id,
         clan: player.clan
       }
@@ -169,9 +149,5 @@ defmodule Codebattle.Tournament.Ranking do
       page_size: page_size,
       entries: Enum.slice(entries, start_index, page_size)
     }
-  end
-
-  defp empty_page(page, page_size) do
-    %{total_entries: 0, page_number: page, page_size: page_size, entries: []}
   end
 end

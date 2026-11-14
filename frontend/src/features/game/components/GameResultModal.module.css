@@ -1,0 +1,292 @@
+/*
+ * The game-over card: a hero tinted by the outcome (--accent), a scoreline, then what's next.
+ * Wins get slow light rays and falling confetti; motion stops under prefers-reduced-motion.
+ */
+.content {
+  --accent: var(--mantine-color-slate-3);
+
+  overflow: hidden;
+  background: var(--cb-panel-gradient);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--cb-border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 0 80px color-mix(in srgb, var(--accent) 18%, transparent);
+
+  &.won {
+    --accent: var(--cb-grade-grand_slam);
+  }
+
+  &.lost {
+    --accent: var(--mantine-color-red-6);
+  }
+}
+
+.body {
+  padding: 0;
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 28px 20px 20px;
+  text-align: center;
+  background:
+    radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 65%),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--cb-border));
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+}
+
+/* A slowly turning sunburst behind the dinosaur (wins only). */
+.rays {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  z-index: -1;
+  width: 640px;
+  height: 640px;
+  margin: -320px 0 0 -320px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--accent) 22%, transparent) 0deg 8deg,
+    transparent 8deg 22deg
+  );
+  mask-image: radial-gradient(circle, #000 0%, transparent 62%);
+  animation: spin 40s linear infinite;
+}
+
+.confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+
+  & i {
+    position: absolute;
+    top: -12px;
+    width: 7px;
+    height: 12px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: fall 3.2s cubic-bezier(0.25, 0.6, 0.5, 1) forwards;
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-family: var(--cb-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+  animation: pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.title {
+  margin: 12px auto 0;
+  max-width: 30ch;
+  font-family: var(--cb-font-display);
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--cb-text-strong);
+  text-wrap: balance;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 45%, transparent);
+  animation: rise 0.5s 0.08s ease-out both;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 14px auto 0;
+  width: min(240px, 70%);
+  aspect-ratio: 1;
+  animation: rise 0.6s 0.15s ease-out both;
+
+  /* The pedestal glow the art stands on. */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4%;
+    left: 12%;
+    right: 12%;
+    z-index: -1;
+    height: 14%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 55%, transparent), transparent);
+    filter: blur(6px);
+  }
+
+  & img {
+    max-height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+  }
+
+  &[data-outcome='won'] img {
+    animation: bob 2.4s ease-in-out infinite;
+  }
+}
+
+.emoji {
+  font-size: 128px;
+  line-height: 1;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+}
+
+/* ---------- scoreline ---------- */
+
+.scoreline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--cb-sunken);
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  &[data-side='right'] {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+}
+
+.avatarWrap {
+  position: relative;
+  flex: none;
+  border-radius: 50%;
+  padding: 2px;
+  background: var(--cb-border);
+
+  &[data-winner] {
+    background: linear-gradient(135deg, var(--cb-grade-grand_slam), color-mix(in srgb, var(--cb-grade-grand_slam) 40%, #fff));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--cb-grade-grand_slam) 55%, transparent);
+  }
+}
+
+.crown {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
+  color: var(--cb-grade-grand_slam);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+.playerMeta {
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-weight: 700;
+  color: var(--cb-text-strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--cb-text-muted);
+
+  [data-side='right'] & {
+    justify-content: flex-end;
+  }
+}
+
+.vs {
+  font-family: var(--cb-font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--cb-text-muted);
+}
+
+/* ---------- footer ---------- */
+
+.footer {
+  padding: 16px 20px 20px;
+}
+
+/* ---------- motion ---------- */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fall {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), 380px, 0) rotate(var(--spin));
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .confetti,
+  .eyebrow,
+  .title,
+  .stage,
+  .stage img {
+    animation: none !important;
+  }
+
+  .confetti {
+    display: none;
+  }
+}

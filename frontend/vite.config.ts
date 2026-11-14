@@ -73,6 +73,9 @@ export default defineConfig(({ command }) => {
       // Pages are served by Phoenix (:4000); asset URLs must point back at Vite.
       origin: `http://localhost:${port}`,
       hmr: { host: 'localhost', protocol: 'ws', port },
+      // The dev container's bind mount doesn't deliver file events for edits made on the host,
+      // so Vite would keep serving stale modules: poll instead.
+      watch: process.env.CODEBATTLE_DEVCONTAINER === '1' ? { usePolling: true, interval: 300 } : undefined,
     },
     build: {
       outDir: 'dist',

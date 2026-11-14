@@ -66,7 +66,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
   end
 
   def history(conn, _params) do
-    tournaments = Enum.map(Tournament.Context.get_finished_season_tournaments(), &history_item/1)
+    tournaments = Enum.map(Tournament.Context.get_finished_tournaments(conn.assigns.current_user), &history_item/1)
 
     json(conn, %{tournaments: tournaments})
   end

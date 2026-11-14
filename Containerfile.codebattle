@@ -1,5 +1,5 @@
 # The frontend: its own package and Vite build.
-FROM node:24.22.1-alpine AS frontend-image
+FROM node:24.22.3-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5 AS frontend-image
 
 # Mirrors the repo layout: the app imports translations and tournament templates from ../priv.
 WORKDIR /tmp/codebattle/frontend
@@ -14,7 +14,7 @@ COPY priv/tournament_templates.json ../priv/tournament_templates.json
 COPY frontend ./
 RUN pnpm run build
 
-FROM elixir:1.20.4-otp-29-alpine AS compile-image
+FROM elixir:1.20.5-otp-29-alpine@sha256:a2f0fe1bfd8a2f9cc91d913f4a12e6430e27e618720f753a514e2fff3d35f5a7 AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -38,25 +38,31 @@ COPY static ./static
 RUN mkdir -p priv/static/assets \
   && cp -R static/. priv/static/assets/ \
   && mv priv/static/assets/offline.html priv/static/assets/service-worker.js priv/static/
+# phx.digest only for what is looked up through the cache manifest: the static files
+# (CodebattleWeb.Vite.static_asset_path) and Vite's manifest, whose digest is Inertia's
+# asset version. Vite fingerprints its own files, so digesting them would only add
+# unused copies.
+COPY --from=frontend-image /tmp/codebattle/frontend/dist/manifest.json ./priv/static/assets/v2/manifest.json
+RUN mix phx.digest
+
 # Served at /assets/v2 by nginx and Phoenix (see CodebattleWeb.Frontend).
 COPY --from=frontend-image /tmp/codebattle/frontend/dist ./priv/static/assets/v2
 
-# phx.digest writes digested copies plus .gz for its gzippable extensions.
-# Add .br for every compressible file (and .gz where digest skipped it) so
-# nginx can serve precompressed variants via brotli_static/gzip_static.
-RUN mix phx.digest \
-  && find priv/static/assets -type f \( \
+# Add .br for every compressible file (and .gz where phx.digest did not write one)
+# so nginx can serve precompressed variants via brotli_static/gzip_static.
+RUN find priv/static/assets -type f \( \
     -name "*.js" -o -name "*.mjs" -o -name "*.css" -o -name "*.html" -o \
     -name "*.json" -o -name "*.map" -o -name "*.svg" -o -name "*.txt" -o \
     -name "*.xml" -o -name "*.csv" -o -name "*.ico" -o -name "*.ttf" -o \
-    -name "*.otf" -o -name "*.eot" \
+    -name "*.otf" -o -name "*.eot" -o -name "*.wasm" \
   \) -print0 \
   | xargs -0 -r -P "$(nproc)" -n 16 sh -c \
     'for f; do brotli -f -q 11 "$f"; [ -f "$f.gz" ] || gzip -k -9 "$f"; done' _ \
   && mix release codebattle \
   && mv _build/prod/rel/codebattle /opt/release
 
-FROM alpine:3.23 AS nginx-assets
+# Same Alpine release as the Elixir image.
+FROM alpine:3.24.4@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf AS nginx-assets
 
 RUN apk add --no-cache nginx nginx-mod-http-brotli
 
@@ -71,7 +77,7 @@ RUN chmod +x /opt/nginx-assets-entrypoint.sh
 
 CMD ["/opt/nginx-assets-entrypoint.sh"]
 
-FROM elixir:1.20.4-otp-29-alpine AS runtime-image
+FROM elixir:1.20.5-otp-29-alpine@sha256:a2f0fe1bfd8a2f9cc91d913f4a12e6430e27e618720f753a514e2fff3d35f5a7 AS runtime-image
 
 RUN apk add --no-cache "ca-certificates>=20261020-r0" chromium git make curl vim
 

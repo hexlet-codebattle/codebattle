@@ -451,6 +451,44 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       assert fair2_result.score == 200
     end
 
+    test "75_percentile: losing to a bot faster than every human winner keeps the multiplier at 2x" do
+      task = insert(:task, level: "easy")
+      winner = insert(:user, name: "winner")
+      loser = insert(:user, name: "loser")
+      bot_loser = insert(:user, name: "bot-loser")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "75_percentile",
+          current_round_position: 0
+        )
+
+      # The only human win sets base_score = min = max = 390s.
+      insert_game(task, tournament, winner, loser, 390, 100.0, 0.0)
+
+      # Bot won in 208s; bot-won games are left out of the min/max durations.
+      insert(:game,
+        state: "game_over",
+        level: task.level,
+        duration_sec: 208,
+        players: [
+          %{id: bot_loser.id, name: bot_loser.name, result_percent: 52.0, result: "lost", is_bot: false},
+          %{id: -1, name: "Codebot", result_percent: 100.0, result: "won", is_bot: true}
+        ],
+        tournament_id: tournament.id,
+        task: task
+      )
+
+      TournamentResult.upsert_results(tournament)
+
+      bot_loser_result = Enum.find(Repo.all(TournamentResult), &(&1.user_id == bot_loser.id))
+
+      # Unclamped this was 390 * (2 + 182) * 0.52 = 37_315.
+      assert bot_loser_result.score == round(390 * 2 * 0.52)
+    end
+
     test "75_percentile: game-level was_cheated flag penalizes both players" do
       task = insert(:task, level: "easy")
       user1 = insert(:user, name: "user-1")

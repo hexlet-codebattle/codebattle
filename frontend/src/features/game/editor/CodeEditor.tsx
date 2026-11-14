@@ -164,6 +164,24 @@ export function CodeEditor({
     [],
   );
 
+  // Pyright for an editable Python editor with autocomplete on (completions, hovers, signatures,
+  // errors). It loads in the background (a few MB, cached); the keyword completions cover the wait.
+  const pythonLsp = prefs.autocomplete && !readOnly && lang === 'python';
+  useEffect(() => {
+    const model = mounted?.getModel();
+    if (!pythonLsp || !model) return;
+    let detach: (() => void) | undefined;
+    let cancelled = false;
+    import('./pythonLsp')
+      .then(({ attachPythonLsp }) => attachPythonLsp(model))
+      .then((attached) => (cancelled ? attached() : (detach = attached)))
+      .catch((error: unknown) => console.warn('Python language server unavailable', error));
+    return () => {
+      cancelled = true;
+      detach?.();
+    };
+  }, [mounted, pythonLsp]);
+
   // The editor isn't controlled through @monaco-editor/react's `value`: it syncs in a passive
   // effect, which can run after the next keystroke with the previous render's text and then
   // replaces the whole model (lost or repeated characters, the cursor jumping, re-highlighting).
@@ -238,6 +256,10 @@ export function CodeEditor({
             cursorSmoothCaretAnimation: prefs.smoothCursor ? 'on' : 'off',
             cursorBlinking: prefs.smoothCursor ? 'smooth' : 'blink',
             smoothScrolling: prefs.smoothCursor,
+            quickSuggestions: prefs.autocomplete,
+            suggestOnTriggerCharacters: prefs.autocomplete,
+            wordBasedSuggestions: prefs.autocomplete ? 'currentDocument' : 'off',
+            parameterHints: { enabled: prefs.autocomplete },
             renderLineHighlight: readOnly ? 'none' : 'line',
             fixedOverflowWidgets: true,
             padding: { top: EDITOR_PADDING_TOP, bottom: EDITOR_PADDING_TOP },

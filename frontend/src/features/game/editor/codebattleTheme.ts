@@ -165,6 +165,8 @@ export const codebattleDark: editor.IStandaloneThemeData = {
   },
 };
 
+const LIGHT_PANEL = '#f7f8fb';
+
 export const codebattleLight: editor.IStandaloneThemeData = {
   base: 'vs',
   inherit: true,
@@ -212,15 +214,22 @@ export const codebattleLight: editor.IStandaloneThemeData = {
     'editorWhitespace.foreground': slate[1],
     'editorRuler.foreground': slate[0],
     'editorGutter.background': '#ffffff',
-    'editorWidget.background': '#ffffff',
-    'editorWidget.border': '#d5d9e3',
-    'editorSuggestWidget.background': '#ffffff',
-    'editorSuggestWidget.border': '#d5d9e3',
-    'editorSuggestWidget.selectedBackground': slate[0],
+    // Popups (suggestions, hovers, find) sit on a tinted panel with a shadow, and the selected
+    // suggestion gets a solid row, as in the dark theme; plain white vanished into the editor.
+    'editorWidget.background': LIGHT_PANEL,
+    'editorWidget.border': slate[1],
+    'widget.shadow': alpha(slate[9], 0.16),
+    'editorSuggestWidget.background': LIGHT_PANEL,
+    'editorSuggestWidget.border': slate[1],
+    'editorSuggestWidget.foreground': slate[9],
+    'editorSuggestWidget.selectedBackground': slate[1],
+    'editorSuggestWidget.selectedForeground': slate[9],
+    'editorSuggestWidget.selectedIconForeground': slate[8],
     'editorSuggestWidget.highlightForeground': green[7],
     'editorSuggestWidget.focusHighlightForeground': green[8],
-    'editorHoverWidget.background': '#ffffff',
-    'editorHoverWidget.border': '#d5d9e3',
+    'list.hoverBackground': slate[0],
+    'editorHoverWidget.background': LIGHT_PANEL,
+    'editorHoverWidget.border': slate[1],
     'editorError.foreground': red[6],
     'editorWarning.foreground': yellow[8],
     'editorInfo.foreground': blue[7],
@@ -229,7 +238,7 @@ export const codebattleLight: editor.IStandaloneThemeData = {
     'scrollbarSlider.background': alpha(slate[3], 0.25),
     'scrollbarSlider.hoverBackground': alpha(slate[3], 0.45),
     'scrollbarSlider.activeBackground': alpha(slate[4], 0.5),
-    'editorStickyScroll.background': '#f7f8fb',
+    'editorStickyScroll.background': LIGHT_PANEL,
     'editorStickyScrollHover.background': slate[0],
     'minimap.background': '#ffffff',
     'input.background': '#ffffff',

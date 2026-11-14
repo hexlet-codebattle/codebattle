@@ -1,5 +1,5 @@
 import { Badge, Card, Group, Tabs, Text } from '@mantine/core';
-import { IconListNumbers, IconMessages } from '@tabler/icons-react';
+import { IconListNumbers, IconMessages, IconUsers } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,17 @@ import { type ChatApi, useChat } from '@/features/chat/useChat';
 import type { Tournament } from '../types';
 import type { TournamentApi } from '../useTournament';
 
-import { RankingPanel } from './RankingPanel';
+import { isBeforeStart, RankingPanel } from './RankingPanel';
+
+/** The standings tab; before the start it only lists who joined. */
+function StandingsLabel({ tournament }: { tournament: Tournament }) {
+  const { t } = useTranslation();
+  return <>{isBeforeStart(tournament.state) ? t('Players') : t('Ranking')}</>;
+}
+
+function StandingsIcon({ tournament, size }: { tournament: Tournament; size: number }) {
+  return isBeforeStart(tournament.state) ? <IconUsers size={size} /> : <IconListNumbers size={size} />;
+}
 
 /** Messages that arrived while the chat tab wasn't open. */
 export function useUnread(chat: ChatApi, chatOpen: boolean) {
@@ -59,9 +69,9 @@ function WithChat({ tournament, api }: { tournament: Tournament; api: Tournament
     <Card padding={0}>
       <Tabs value={tab} onChange={setTab}>
         <Tabs.List px="sm" pt="xs">
-          <Tabs.Tab value="ranking" leftSection={<IconListNumbers size={15} />}>
+          <Tabs.Tab value="ranking" leftSection={<StandingsIcon tournament={tournament} size={15} />}>
             <Group gap={6} wrap="nowrap">
-              {t('Ranking')}
+              <StandingsLabel tournament={tournament} />
               <PlayersCount tournament={tournament} />
             </Group>
           </Tabs.Tab>
@@ -93,16 +103,16 @@ function WithChat({ tournament, api }: { tournament: Tournament; api: Tournament
 
 /** Standings card: ranking by default, the chat as a second tab with a new-messages counter. */
 export function StandingsCard({ tournament, api }: { tournament: Tournament; api: TournamentApi }) {
-  const { t } = useTranslation();
-
   if (tournament.use_chat && tournament.is_live) return <WithChat tournament={tournament} api={api} />;
 
   return (
     <Card padding={0}>
       <Group justify="space-between" px="md" pt="sm" pb={4}>
         <Group gap={6}>
-          <IconListNumbers size={16} />
-          <Text fw={700}>{t('Ranking')}</Text>
+          <StandingsIcon tournament={tournament} size={16} />
+          <Text fw={700}>
+            <StandingsLabel tournament={tournament} />
+          </Text>
         </Group>
         <PlayersCount tournament={tournament} />
       </Group>

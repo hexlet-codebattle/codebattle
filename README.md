@@ -92,7 +92,7 @@ Codebattle is a single Phoenix app: `lib/`, `test/`, `priv/`, `frontend/`, and
 `lib/codebattle/runner/`; language image sources live in `images/`.
 
 Solution checks use the Zig HTTP runner in separate language containers on the
-Compose network. `make dev-up` starts JavaScript and Python runners by default;
+Compose network. `make dev-up` starts JavaScript, Python and C++ runners by default;
 `make server` starts Phoenix and Vite. The runner services are privileged to
 create their per-request sandboxes, while the app container stays non-root and
 does not receive a Docker socket. Runner ports are not published to the host.

@@ -5481,6 +5481,12 @@ msgstr "Показывать пробелы"
 msgid "Smooth cursor"
 msgstr "Плавный курсор"
 
+msgid "Autocomplete"
+msgstr "Автодополнение"
+
+msgid "Suggest keywords, builtins and names from the code as you type"
+msgstr "Подсказывать ключевые слова, встроенные функции и имена из кода при наборе"
+
 msgid "Sticky scroll"
 msgstr "Липкая прокрутка"
 
@@ -7315,3 +7321,11 @@ msgstr "Решение не дошло до сервера"
 #: frontend/src/features/game/components/OutputPanel.tsx frontend/src/features/game/components/TestsPill.tsx frontend/src/features/game/components/TaskBrief.tsx
 msgid "Check your connection and run it again."
 msgstr "Проверь подключение и запусти ещё раз."
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Victory"
+msgstr "Победа"
+
+#: frontend/src/features/game/components/GameResultModal.tsx
+msgid "Defeat"
+msgstr "Поражение"
