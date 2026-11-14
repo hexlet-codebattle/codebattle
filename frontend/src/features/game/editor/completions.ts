@@ -82,36 +82,54 @@ function documentWords(model: Monaco.editor.ITextModel, typed: string) {
   return words;
 }
 
-export function registerCompletions(monaco: typeof Monaco) {
+/** Keywords and builtins of the grammar (unless `keywords` is off) and the file's other words. */
+export async function basicSuggestions(
+  monaco: typeof Monaco,
+  languageId: string,
+  model: Monaco.editor.ITextModel,
+  position: Monaco.Position,
+  { keywords = true, exclude = new Set<string>() }: { keywords?: boolean; exclude?: Set<string> } = {},
+) {
   const { CompletionItemKind } = monaco.languages;
+  const word = model.getWordUntilPosition(position);
+  const range = {
+    startLineNumber: position.lineNumber,
+    endLineNumber: position.lineNumber,
+    startColumn: word.startColumn,
+    endColumn: word.endColumn,
+  };
+  const builtins = keywords ? await loadGrammarWords(monaco, languageId) : [];
+  const known = new Set([...exclude, ...builtins.map(({ word: builtin }) => builtin)]);
 
+  const suggestions: Monaco.languages.CompletionItem[] = builtins
+    .filter(({ word: builtin }) => !exclude.has(builtin))
+    .map(({ word: builtin, isFunction }) => ({
+      label: builtin,
+      kind: isFunction ? CompletionItemKind.Function : CompletionItemKind.Keyword,
+      insertText: builtin,
+      range,
+    }));
+  for (const identifier of documentWords(model, word.word)) {
+    if (!known.has(identifier)) {
+      suggestions.push({ label: identifier, kind: CompletionItemKind.Text, insertText: identifier, range });
+    }
+  }
+  return suggestions;
+}
+
+/** After `.`, `->` or `::` a keyword can't follow. */
+export function afterAccessor(model: Monaco.editor.ITextModel, position: Monaco.Position) {
+  const { startColumn } = model.getWordUntilPosition(position);
+  const before = model.getLineContent(position.lineNumber).slice(0, startColumn - 1);
+  return /(\.|->|::)\s*$/.test(before);
+}
+
+export function registerCompletions(monaco: typeof Monaco) {
   for (const languageId of LANGUAGES) {
     monaco.languages.registerCompletionItemProvider(languageId, {
       async provideCompletionItems(model, position) {
         if (!useEditorPrefs.getState().autocomplete || languageServerModels.has(model)) return { suggestions: [] };
-
-        const word = model.getWordUntilPosition(position);
-        const range = {
-          startLineNumber: position.lineNumber,
-          endLineNumber: position.lineNumber,
-          startColumn: word.startColumn,
-          endColumn: word.endColumn,
-        };
-        const builtins = await loadGrammarWords(monaco, languageId);
-        const known = new Set(builtins.map(({ word: builtin }) => builtin));
-
-        const suggestions: Monaco.languages.CompletionItem[] = builtins.map(({ word: builtin, isFunction }) => ({
-          label: builtin,
-          kind: isFunction ? CompletionItemKind.Function : CompletionItemKind.Keyword,
-          insertText: builtin,
-          range,
-        }));
-        for (const identifier of documentWords(model, word.word)) {
-          if (!known.has(identifier)) {
-            suggestions.push({ label: identifier, kind: CompletionItemKind.Text, insertText: identifier, range });
-          }
-        }
-        return { suggestions };
+        return { suggestions: await basicSuggestions(monaco, languageId, model, position, { keywords: !afterAccessor(model, position) }) };
       },
     });
   }

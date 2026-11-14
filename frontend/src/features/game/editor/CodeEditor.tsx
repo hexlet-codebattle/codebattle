@@ -6,6 +6,7 @@ import type { VimAdapterInstance } from 'monaco-vim';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import type { RemoteCursor } from '@/features/game/store';
+import type { GameTask } from '@/features/game/types';
 import { useLatest } from '@/shared/useLatest';
 
 import { insertSpaces, monacoLanguage, tabSize } from './monaco';
@@ -19,6 +20,16 @@ import classes from './CodeEditor.module.css';
 type CodeEditorInstance = Parameters<OnMount>[0];
 
 const EDITOR_PADDING_TOP = 8;
+
+type Attach = (model: NonNullable<ReturnType<CodeEditorInstance['getModel']>>) => () => void;
+
+/** Lazily loaded completion helpers by language slug. */
+const TYPED_HELPERS: Record<string, () => Promise<Attach>> = {
+  cpp: () => import('./cpp').then((module) => module.attachCpp),
+  dlang: () => import('./d').then((module) => module.attachD),
+  java: () => import('./java').then((module) => module.attachJava),
+  golang: () => import('./go').then((module) => module.attachGo),
+};
 
 /** What the editor reports for bot detection (offset and language are added by the receiver). */
 export type EditorTelemetry = Omit<TelemetryEvent, 'offset_ms' | 'lang_slug'>;
@@ -54,6 +65,8 @@ interface CodeEditorProps {
   remoteCursor?: RemoteCursor | null;
   /** A Monaco theme name instead of the editor preference (e.g. `cb-stream` for OBS). */
   theme?: string;
+  /** The task's arguments: their types type `def solution(...)` for the Ruby completions. */
+  taskSignature?: GameTask['input_signature'];
 }
 
 export function CodeEditor({
@@ -70,6 +83,7 @@ export function CodeEditor({
   onTelemetry,
   onCursor,
   remoteCursor,
+  taskSignature,
 }: CodeEditorProps) {
   const scheme = useComputedColorScheme('dark');
   const { fontFamilyMonospace } = useMantineTheme();
@@ -181,6 +195,43 @@ export function CodeEditor({
       detach?.();
     };
   }, [mounted, pythonLsp]);
+
+  // C++, D, Java, Go: our own completions, parameter hints and hovers for the standard library.
+  const typedHelpers = prefs.autocomplete && !readOnly ? TYPED_HELPERS[lang] : undefined;
+  useEffect(() => {
+    const model = mounted?.getModel();
+    if (!typedHelpers || !model) return;
+    let detach: (() => void) | undefined;
+    let cancelled = false;
+    typedHelpers()
+      .then((attach) => {
+        if (!cancelled) detach = attach(model);
+      })
+      .catch((error: unknown) => console.warn(`${lang} completions unavailable`, error));
+    return () => {
+      cancelled = true;
+      detach?.();
+    };
+  }, [mounted, typedHelpers, lang]);
+
+  // Ruby: the same for the core library, with the task's argument types (./ruby).
+  const rubyHelpers = prefs.autocomplete && !readOnly && lang === 'ruby';
+  const signatureKey = JSON.stringify(taskSignature ?? []);
+  useEffect(() => {
+    const model = mounted?.getModel();
+    if (!rubyHelpers || !model) return;
+    let detach: (() => void) | undefined;
+    let cancelled = false;
+    import('./ruby')
+      .then(({ attachRuby }) => {
+        if (!cancelled) detach = attachRuby(model, JSON.parse(signatureKey) as NonNullable<GameTask['input_signature']>);
+      })
+      .catch((error: unknown) => console.warn('Ruby completions unavailable', error));
+    return () => {
+      cancelled = true;
+      detach?.();
+    };
+  }, [mounted, rubyHelpers, signatureKey]);
 
   // The editor isn't controlled through @monaco-editor/react's `value`: it syncs in a passive
   // effect, which can run after the next keystroke with the previous render's text and then

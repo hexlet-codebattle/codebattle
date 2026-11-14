@@ -195,6 +195,7 @@ export function EditorPane({
   // Bot detection: my editor's keys and edits while the game is played (page flag on).
   const { editor_summary_enabled: summaryEnabled } = useSharedProps<{ editor_summary_enabled?: boolean }>();
   const gameState = useGameStore((state) => state.game?.state);
+  const taskSignature = useGameStore((state) => state.game?.task?.input_signature);
   const startsAt = useGameStore((state) => state.game?.starts_at);
   // Fallback anchor when the game has no start time yet; fixed at mount so offsets stay stable.
   const [mountedAtMs] = useState(() => Date.now());
@@ -310,6 +311,7 @@ export function EditorPane({
         allowClipboard={allowClipboard && !editable}
         onChange={canType ? api?.changeText : undefined}
         onRun={canType ? api?.check : undefined}
+        taskSignature={taskSignature}
       />
       <Modal opened={confirm != null} onClose={() => setConfirm(null)} title={confirm ? confirmCopy[confirm].title : null} centered size="sm">
         <Text size="sm">{confirm ? confirmCopy[confirm].text : null}</Text>

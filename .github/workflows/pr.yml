@@ -131,6 +131,10 @@ jobs:
         run: pnpm run test:telemetry
         working-directory: ./frontend
 
+      - name: Frontend completion tests
+        run: pnpm run test:completions
+        working-directory: ./frontend
+
       - name: Frontend build
         run: pnpm run build
         working-directory: ./frontend
