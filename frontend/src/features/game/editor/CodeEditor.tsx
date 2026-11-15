@@ -29,6 +29,7 @@ const TYPED_HELPERS: Record<string, () => Promise<Attach>> = {
   dlang: () => import('./d').then((module) => module.attachD),
   java: () => import('./java').then((module) => module.attachJava),
   golang: () => import('./go').then((module) => module.attachGo),
+  php: () => import('./php').then((module) => module.attachPhp),
 };
 
 /** What the editor reports for bot detection (offset and language are added by the receiver). */
@@ -196,7 +197,7 @@ export function CodeEditor({
     };
   }, [mounted, pythonLsp]);
 
-  // C++, D, Java, Go: our own completions, parameter hints and hovers for the standard library.
+  // C++, D, Java, Go, PHP: our own completions, parameter hints and hovers for the standard library.
   const typedHelpers = prefs.autocomplete && !readOnly ? TYPED_HELPERS[lang] : undefined;
   useEffect(() => {
     const model = mounted?.getModel();

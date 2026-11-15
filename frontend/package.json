@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:telemetry": "node --test test/telemetry.test.mjs",
-    "test:completions": "node --test test/cppAnalysis.test.mjs test/javaAnalysis.test.mjs test/goAnalysis.test.mjs test/dAnalysis.test.mjs test/rubyAnalysis.test.mjs",
+    "test:completions": "node --test test/cppAnalysis.test.mjs test/javaAnalysis.test.mjs test/goAnalysis.test.mjs test/dAnalysis.test.mjs test/rubyAnalysis.test.mjs test/phpAnalysis.test.mjs",
     "test:vim": "node test/vim.browser.test.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --deny-warnings",
