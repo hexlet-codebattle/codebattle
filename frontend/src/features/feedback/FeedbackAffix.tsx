@@ -22,16 +22,31 @@ export function FeedbackAffix({ translucent = false }: { translucent?: boolean }
           radius="xl"
           variant="filled"
           color="slate"
-          leftSection={<IconMessageReport size={18} />}
+          title={t('Feedback')}
+          aria-label={t('Feedback')}
           onClick={() => setFeedbackOpen(true)}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{
             opacity: translucent && !hovered ? 0.5 : 1,
-            transition: 'opacity 0.2s',
+            transition: 'all 0.2s ease',
           }}
+          px={hovered ? 'md' : 10}
         >
-          {t('Feedback')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: hovered ? 8 : 0, transition: 'gap 0.2s ease' }}>
+            <IconMessageReport size={18} />
+            <span
+              style={{
+                maxWidth: hovered ? 120 : 0,
+                opacity: hovered ? 1 : 0,
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {t('Feedback')}
+            </span>
+          </div>
         </Button>
       </Affix>
     </>
