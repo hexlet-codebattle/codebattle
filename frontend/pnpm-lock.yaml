@@ -6,7 +6,7 @@ settings:
 
 overrides:
   dompurify: ^3.4.16
-  katex: ^0.19.0
+  katex: ^0.19.1
 
 importers:
 
