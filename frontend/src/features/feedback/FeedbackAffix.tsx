@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
 import { useSharedProps } from '@/shared/useSharedProps';
 
-export function FeedbackAffix({ translucent = false }: { translucent?: boolean }) {
+export function FeedbackAffix({ translucent = false, zIndex = 100 }: { translucent?: boolean; zIndex?: number }) {
   const { t } = useTranslation();
   const { current_user: user } = useSharedProps();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -16,7 +16,7 @@ export function FeedbackAffix({ translucent = false }: { translucent?: boolean }
   return (
     <>
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-      <Affix position={{ bottom: 20, right: 20 }}>
+      <Affix position={{ bottom: 20, right: 20 }} zIndex={zIndex}>
         <Button
           size="sm"
           radius="xl"
