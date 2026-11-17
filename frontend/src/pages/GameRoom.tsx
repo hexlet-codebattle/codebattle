@@ -1,3 +1,4 @@
+import { FeedbackAffix } from '@/features/feedback/FeedbackAffix';
 import { Center, Loader, Text, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -332,6 +333,7 @@ export default function GameRoom() {
       {props.is_record ? <HistoryRoom props={props} /> : <LiveRoom props={props} />}
       {invites && <InviteDialog />}
       {invites && <MatchStartedAlert tournamentId={game.tournament_id} />}
+      <FeedbackAffix translucent />
     </>
   );
 }

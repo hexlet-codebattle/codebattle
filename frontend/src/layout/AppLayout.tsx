@@ -27,6 +27,7 @@ import { InvitesMenu } from '@/features/invites/InvitesMenu';
 import { FollowMenu } from '@/features/main/FollowMenu';
 import { useInvitesChannel } from '@/features/invites/useInvitesChannel';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
+import { FeedbackAffix } from '@/features/feedback/FeedbackAffix';
 import { DeployBanner } from '@/features/main/DeployBanner';
 import { useActiveGame } from '@/features/main/store';
 import { MatchStartedAlert } from '@/features/tournament/components/MatchStartedAlert';
@@ -304,6 +305,7 @@ export function AppLayout({ children, presence = 'online', wide = false }: AppLa
       </AppShell.Main>
       {!user.is_guest && <InviteDialog />}
       <CookieNotice />
+      <FeedbackAffix />
     </AppShell>
   );
 }

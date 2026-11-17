@@ -1,0 +1,40 @@
+import { useState } from 'react';
+import { Affix, ActionIcon } from '@mantine/core';
+import { IconMessageReport } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+import { FeedbackModal } from '@/features/feedback/FeedbackModal';
+import { useSharedProps } from '@/shared/useSharedProps';
+
+export function FeedbackAffix({ translucent = false }: { translucent?: boolean }) {
+  const { t } = useTranslation();
+  const { current_user: user } = useSharedProps();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  if (user.is_guest) return null;
+
+  return (
+    <>
+      <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <Affix position={{ bottom: 20, right: 20 }}>
+        <ActionIcon
+          size="xl"
+          radius="xl"
+          variant="filled"
+          color="slate"
+          onClick={() => setFeedbackOpen(true)}
+          title={t('Send feedback')}
+          aria-label={t('Send feedback')}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            opacity: translucent && !hovered ? 0.5 : 1,
+            transition: 'opacity 0.2s',
+          }}
+        >
+          <IconMessageReport size={24} />
+        </ActionIcon>
+      </Affix>
+    </>
+  );
+}
