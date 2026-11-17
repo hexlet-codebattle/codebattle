@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Affix, ActionIcon } from '@mantine/core';
+import { Affix, Button } from '@mantine/core';
 import { IconMessageReport } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { FeedbackModal } from '@/features/feedback/FeedbackModal';
@@ -17,14 +17,13 @@ export function FeedbackAffix({ translucent = false }: { translucent?: boolean }
     <>
       <FeedbackModal opened={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       <Affix position={{ bottom: 20, right: 20 }}>
-        <ActionIcon
-          size="xl"
+        <Button
+          size="sm"
           radius="xl"
           variant="filled"
           color="slate"
+          leftSection={<IconMessageReport size={18} />}
           onClick={() => setFeedbackOpen(true)}
-          title={t('Send feedback')}
-          aria-label={t('Send feedback')}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{
@@ -32,8 +31,8 @@ export function FeedbackAffix({ translucent = false }: { translucent?: boolean }
             transition: 'opacity 0.2s',
           }}
         >
-          <IconMessageReport size={24} />
-        </ActionIcon>
+          {t('Feedback')}
+        </Button>
       </Affix>
     </>
   );
