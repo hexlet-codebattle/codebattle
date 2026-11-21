@@ -1,6 +1,5 @@
-import { Button, Group, ScrollArea, Stack, Table, Text } from '@mantine/core';
+import { Button, Group, ScrollArea, Table, Text } from '@mantine/core';
 import { IconCircleCheckFilled, IconCircleXFilled } from '@tabler/icons-react';
-import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatDuration, type ParticipantStage } from './participant';
@@ -41,14 +40,6 @@ function StageAction({ stage, onStart }: { stage: ParticipantStage; onStart: (st
     );
   }
 
-  if (stage.groupTournamentId) {
-    return (
-      <Button component="a" href={`/group_tournaments/${stage.groupTournamentId}`} size="compact-sm" variant="default">
-        {label}
-      </Button>
-    );
-  }
-
   if (stage.userStatus === 'started' && stage.tournamentId) {
     return (
       <Button component="a" href={`/tournaments/${stage.tournamentId}?auto_join=1`} size="compact-sm" variant="default">
@@ -61,16 +52,6 @@ function StageAction({ stage, onStart }: { stage: ParticipantStage; onStart: (st
     <Button size="compact-sm" variant="default" onClick={() => onStart(stage)}>
       {label}
     </Button>
-  );
-}
-
-/** A main value with an optional second line (legacy shows tournament and AI-round figures stacked). */
-function Pair({ main, secondary }: { main: ReactNode; secondary?: ReactNode }) {
-  return (
-    <Stack gap={0} align="center">
-      <span className={classes.num}>{main}</span>
-      {secondary && <span className={`${classes.num} ${classes.secondary}`}>{secondary}</span>}
-    </Stack>
   );
 }
 
@@ -99,8 +80,6 @@ export function StageTable({ stages, onStart }: StageTableProps) {
           {stages.map((stage) => {
             const isTournament = stage.type === 'tournament';
             const games = stage.gamesCount === null ? DASH : `${stage.winsCount ?? 0}/${stage.gamesCount}`;
-            const ai =
-              stage.aiScore === null ? null : `${stage.aiScore}${stage.maxScore !== null ? `/${stage.maxScore}` : ''}`;
 
             return (
               <Table.Tr key={stage.slug}>
@@ -119,16 +98,9 @@ export function StageTable({ stages, onStart }: StageTableProps) {
                 </Table.Td>
                 <Table.Td className={classes.num}>{isTournament ? (stage.placeInTotal ?? DASH) : DASH}</Table.Td>
                 <Table.Td className={classes.num}>{isTournament ? (stage.placeInCategory ?? DASH) : DASH}</Table.Td>
-                <Table.Td>{isTournament ? <Pair main={games} secondary={ai} /> : DASH}</Table.Td>
-                <Table.Td>
-                  {isTournament ? (
-                    <Pair
-                      main={formatDuration(stage.tournamentSeconds) ?? DASH}
-                      secondary={formatDuration(stage.groupTournamentSeconds)}
-                    />
-                  ) : (
-                    DASH
-                  )}
+                <Table.Td className={classes.num}>{isTournament ? games : DASH}</Table.Td>
+                <Table.Td className={classes.num}>
+                  {isTournament ? (formatDuration(stage.tournamentSeconds) ?? DASH) : DASH}
                 </Table.Td>
               </Table.Tr>
             );

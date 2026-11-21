@@ -129,7 +129,7 @@ defmodule CodebattleWeb.TournamentController do
         redirect_to_latest_game_or_tournament(conn, tournament, current_user, params)
 
       "finished" ->
-        redirect_finished_tournament(conn, tournament)
+        redirect(conn, to: Routes.root_path(conn, :index))
 
       _ ->
         render_tournament(conn, tournament, params)
@@ -141,14 +141,6 @@ defmodule CodebattleWeb.TournamentController do
       nil -> render_tournament(conn, tournament, params)
       latest_game_id -> redirect(conn, to: Routes.game_path(conn, :show, latest_game_id))
     end
-  end
-
-  defp redirect_finished_tournament(conn, %{group_tournament_id: nil}) do
-    redirect(conn, to: Routes.root_path(conn, :index))
-  end
-
-  defp redirect_finished_tournament(conn, tournament) do
-    redirect(conn, to: Routes.group_tournament_path(conn, :show, tournament.group_tournament_id))
   end
 
   # Scrapers come as guests; answer them with the tournament's preview, not the login redirect.

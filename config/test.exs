@@ -90,7 +90,6 @@ config :codebattle,
   ]
 
 config :codebattle, github_stars_refresh: false
-config :codebattle, group_tournament_slice_run_concurrency: 1
 config :codebattle, min_break_duration_seconds: 1
 config :codebattle, store_playbook_async: false
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer

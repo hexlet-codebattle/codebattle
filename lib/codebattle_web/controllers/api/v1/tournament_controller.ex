@@ -19,7 +19,6 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     :description_translations,
     :event_id,
     :exclude_banned_players,
-    :group_tournament_id,
     :grade,
     :id,
     :is_live,

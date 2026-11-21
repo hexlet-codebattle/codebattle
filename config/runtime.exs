@@ -130,30 +130,9 @@ config :codebattle, :external,
     )
 
 config :codebattle,
-       :external_platform_login_url,
-       System.get_env(
-         "CODEBATTLE_EXTERNAL_PLATFORM_LOGIN_URL",
-         "value"
-       )
-
-config :codebattle,
-       :external_platform_name,
-       System.get_env(
-         "CODEBATTLE_EXTERNAL_PLATFORM_NAME",
-         "External platform"
-       )
-
-config :codebattle,
        :external_platform_org_slug,
        System.get_env(
          "CODEBATTLE_EXTERNAL_PLATFORM_ORG_SLUG",
-         "value"
-       )
-
-config :codebattle,
-       :external_platform_profile_url_template,
-       System.get_env(
-         "CODEBATTLE_EXTERNAL_PLATFORM_PROFILE_URL_TEMPLATE",
          "value"
        )
 
@@ -168,12 +147,6 @@ config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
-
-config :codebattle,
-       :group_tournament_slice_run_concurrency,
-       "CODEBATTLE_GROUP_TOURNAMENT_SLICE_RUN_CONCURRENCY"
-       |> System.get_env("30")
-       |> String.to_integer()
 
 config :codebattle, :logo_title, logo_title
 config :codebattle, :logo_title_position, logo_title_position

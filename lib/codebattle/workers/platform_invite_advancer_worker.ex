@@ -2,10 +2,6 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   @moduledoc """
   Drives the platform invite state machine to a terminal state via Oban.
 
-  Replaces the previous in-process `Process.send_after` poller, which only ran
-  while a user had the tournament channel open. This worker runs out-of-band,
-  so an invite continues to advance even after the user disconnects.
-
   Snooze cadence escalates with the poll count to balance freshness and load:
     polls   1–60  → 5s    (≈5 min)
     polls  61–240 → 10s   (≈30 min)
@@ -28,7 +24,6 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
 
   alias Codebattle.ExternalPlatformInvite
   alias Codebattle.ExternalPlatformInvite.Advancer
-  alias Codebattle.PubSub.Message
   alias Codebattle.Repo
   alias Codebattle.User
 
@@ -46,12 +41,10 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     :ok
   end
 
-  def enqueue(%ExternalPlatformInvite{id: invite_id, user_id: user_id, group_tournament_id: tournament_id}) do
-    Logger.debug(
-      "[PlatformInviteAdvancerWorker] enqueue: invite_id=#{invite_id} user_id=#{user_id} group_tournament_id=#{inspect(tournament_id)}"
-    )
+  def enqueue(%ExternalPlatformInvite{id: invite_id, user_id: user_id}) do
+    Logger.debug("[PlatformInviteAdvancerWorker] enqueue: invite_id=#{invite_id} user_id=#{user_id}")
 
-    case %{invite_id: invite_id, user_id: user_id, group_tournament_id: tournament_id}
+    case %{invite_id: invite_id, user_id: user_id}
          |> new(schedule_in: 5)
          |> Oban.insert() do
       {:ok, job} ->
@@ -89,7 +82,6 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
       "[PlatformInviteAdvancerWorker] run: invite_id=#{invite.id} already terminal state=#{state} poll=#{poll}"
     )
 
-    if state == "accepted", do: broadcast_accepted(invite)
     :ok
   end
 
@@ -105,10 +97,6 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     )
 
     cond do
-      advanced.state == "accepted" ->
-        broadcast_accepted(advanced)
-        :ok
-
       advanced.state in @terminal_states ->
         Logger.debug(
           "[PlatformInviteAdvancerWorker] run: invite_id=#{advanced.id} reached terminal state=#{advanced.state}, stopping"
@@ -132,35 +120,6 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
 
         {:snooze, snooze}
     end
-  end
-
-  defp broadcast_accepted(%ExternalPlatformInvite{group_tournament_id: nil} = invite) do
-    Logger.debug(
-      "[PlatformInviteAdvancerWorker] broadcast_accepted skipped: invite_id=#{invite.id} has no group_tournament_id"
-    )
-
-    :ok
-  end
-
-  defp broadcast_accepted(%ExternalPlatformInvite{} = invite) do
-    payload = %{invite_id: invite.id, state: invite.state}
-
-    user_topic = "group_tournament:#{invite.group_tournament_id}:user:#{invite.user_id}"
-    tournament_topic = "group_tournament:#{invite.group_tournament_id}"
-
-    Logger.debug(
-      "[PlatformInviteAdvancerWorker] broadcast_accepted: invite_id=#{invite.id} topics=[#{user_topic}, #{tournament_topic}]"
-    )
-
-    Enum.each([user_topic, tournament_topic], fn topic ->
-      Phoenix.PubSub.broadcast(
-        Codebattle.PubSub,
-        topic,
-        %Message{topic: topic, event: "group_tournament:invite_updated", payload: payload}
-      )
-    end)
-
-    :ok
   end
 
   defp snooze_seconds(poll) when poll <= 60, do: 5

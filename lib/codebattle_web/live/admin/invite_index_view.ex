@@ -97,7 +97,7 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
     ExternalPlatformInvite
     |> apply_filter(state_filter)
     |> apply_sort(sort_by)
-    |> preload([:user, :group_tournament])
+    |> preload(:user)
     |> Repo.all()
   end
 
@@ -227,7 +227,6 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
               <tr class="cb-text small">
                 <th>ID</th>
                 <th>User</th>
-                <th>Tournament</th>
                 <th>State</th>
                 <th>Operation ID</th>
                 <th>Invite Link</th>
@@ -244,18 +243,6 @@ defmodule CodebattleWeb.Live.Admin.InviteIndexView do
                     <a href={"/admin/users/#{invite.user_id}"} class="text-info">
                       #{invite.user_id} {user_display(invite.user)}
                     </a>
-                  </td>
-                  <td class="text-white">
-                    <%= if invite.group_tournament do %>
-                      <a
-                        href={"/admin/group_tournaments/#{invite.group_tournament_id}"}
-                        class="text-info"
-                      >
-                        {invite.group_tournament.name}
-                      </a>
-                    <% else %>
-                      <span class="cb-text">–</span>
-                    <% end %>
                   </td>
                   <td>
                     <span class={invite_state_badge(invite.state)}>{invite.state}</span>

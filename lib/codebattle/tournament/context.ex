@@ -452,7 +452,6 @@ defmodule Codebattle.Tournament.Context do
     :event_id,
     :exclude_banned_players,
     :grade,
-    :group_tournament_id,
     :labels,
     :level,
     :match_timeout_seconds,

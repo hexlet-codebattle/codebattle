@@ -59,9 +59,6 @@ export function getPageLabel(path?: string | null) {
   if (p === '/tournaments') return 'Tournaments';
   if (/^\/tournaments\/[^/]+/.test(p)) return 'Tournament';
 
-  if (/^\/group_tournaments\/[^/]+\/admin/.test(p)) return 'Group Admin';
-  if (/^\/group_tournaments/.test(p)) return 'Group Tournament';
-  if (p === '/my-tournament') return 'My Tournament';
 
   if (p === '/schedule') return 'Schedule';
   if (p === '/hall_of_fame') return 'Hall of Fame';

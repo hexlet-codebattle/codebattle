@@ -19,7 +19,6 @@ defmodule Codebattle.User.DataExport do
   alias Codebattle.Feedback
   alias Codebattle.Game.BotDetection.PlayerReport
   alias Codebattle.Game.EditorEventBatch
-  alias Codebattle.GroupTournamentPlayer
   alias Codebattle.PremiumRequest
   alias Codebattle.Repo
   alias Codebattle.SeasonResult
@@ -29,7 +28,6 @@ defmodule Codebattle.User.DataExport do
   alias Codebattle.UserApiToken
   alias Codebattle.UserEvent
   alias Codebattle.UserGame
-  alias Codebattle.UserGroupTournament
   alias Codebattle.UserSession
 
   @secret_fields [:password_hash, :auth_token, :token_hash, :token]
@@ -43,8 +41,6 @@ defmodule Codebattle.User.DataExport do
     season_results: SeasonResult,
     tournament_results: TournamentUserResult,
     events: UserEvent,
-    group_tournaments: UserGroupTournament,
-    group_tournament_players: GroupTournamentPlayer,
     code_check_runs: Run,
     anti_cheat_reports: PlayerReport,
     editor_activity: EditorEventBatch,

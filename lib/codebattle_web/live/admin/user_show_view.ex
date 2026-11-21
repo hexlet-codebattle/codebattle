@@ -4,16 +4,12 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   import Ecto.Query
 
   alias Codebattle.Event
-  alias Codebattle.ExternalPlatform
   alias Codebattle.ExternalPlatformInvite
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
-  alias Codebattle.GroupTournament
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserEvent
   alias Codebattle.UserGame
-  alias Codebattle.UserGroupTournament
-  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
   alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
   @max_rating 2000
@@ -24,8 +20,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user_events = get_user_events(user.id)
     user_games = get_user_games(user.id)
     platform_invites = get_platform_invites(user.id)
-    user_group_tournaments = get_user_group_tournaments(user.id)
-    group_tournaments = get_group_tournaments()
 
     enrolled_event_ids = MapSet.new(user_events, & &1.id)
     all_events = Event.get_all()
@@ -37,11 +31,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        user_events: user_events,
        user_games: user_games,
        platform_invites: platform_invites,
-       user_group_tournaments: user_group_tournaments,
        expanded_invite_id: nil,
-       expanded_user_group_tournament_id: nil,
-       group_tournaments: group_tournaments,
-       action_result: nil,
        available_events: available_events,
        show_modal: false,
        current_user_event: nil,
@@ -84,12 +74,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
-  def handle_event("create_remote_invite", %{"group_tournament_id" => gt_id_str}, socket) do
+  def handle_event("create_remote_invite", _params, socket) do
     user = socket.assigns.user
     alias_name = user.external_oauth_login || user.name
-    group_tournament_id = if gt_id_str == "", do: nil, else: String.to_integer(gt_id_str)
 
-    invite = InviteContext.get_or_create_invite(user.id, group_tournament_id)
+    invite = InviteContext.get_or_create_invite(user.id)
 
     result =
       case invite.state do
@@ -155,208 +144,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
-  def handle_event("create_repo", %{"id" => ugt_id}, socket) do
-    user = socket.assigns.user
-    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
-    org_slug = default_org_slug()
-
-    cond do
-      is_nil(ugt.group_tournament) ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "No linked tournament"})}
-
-      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "User has no external_platform_login"})}
-
-      is_nil(ugt.group_tournament.template_id) || ugt.group_tournament.template_id == "" ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "Group tournament has no template_id"})}
-
-      true ->
-        repo_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
-
-        result =
-          ExternalPlatform.create_repo_from_template(
-            org_slug,
-            name: repo_slug,
-            slug: repo_slug,
-            description: ugt.group_tournament.description,
-            template_id: ugt.group_tournament.template_id
-          )
-
-        ugt = update_ugt_from_result(ugt, :repo, result)
-
-        {:noreply,
-         assign(socket,
-           user_group_tournaments: get_user_group_tournaments(user.id),
-           action_result: format_action_result(ugt.id, "Create repo", result)
-         )}
-    end
-  end
-
-  def handle_event("add_repo_role", %{"id" => ugt_id}, socket) do
-    user = socket.assigns.user
-    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
-    org_slug = default_org_slug()
-
-    cond do
-      is_nil(ugt.group_tournament) ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "No linked tournament"})}
-
-      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "User has no external_platform_login"})}
-
-      true ->
-        case resolve_platform_user_id(user) do
-          {:ok, platform_user_id} ->
-            repo_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
-            result = ExternalPlatform.add_repo_role(org_slug, repo_slug, platform_user_id, ugt.role || "developer")
-
-            ugt = update_ugt_from_result(ugt, :role, result)
-
-            {:noreply,
-             assign(socket,
-               user_group_tournaments: get_user_group_tournaments(user.id),
-               action_result: format_action_result(ugt.id, "Add role", result)
-             )}
-
-          {:error, reason} ->
-            {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
-        end
-    end
-  end
-
-  def handle_event("upsert_secret", %{"id" => ugt_id}, socket) do
-    user = socket.assigns.user
-    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
-    org_slug = default_org_slug()
-
-    cond do
-      is_nil(ugt.group_tournament) ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "No linked tournament"})}
-
-      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "User has no external_platform_login"})}
-
-      true ->
-        repo_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
-        secret_key = ugt.secret_key || "CODEBATTLE_AUTH_TOKEN"
-        secret_group = ugt.secret_group || "ci"
-
-        # Ensure token exists
-        {:ok, token_record} = UserGroupTournamentContext.get_or_create_token(ugt.group_tournament, user.id)
-        token_value = token_record.token
-
-        result =
-          ExternalPlatform.upsert_secret(org_slug, repo_slug, secret_key, token_value, secret_group: secret_group)
-
-        ugt = update_ugt_from_result(ugt, :secret, result)
-
-        {:noreply,
-         assign(socket,
-           user_group_tournaments: get_user_group_tournaments(user.id),
-           action_result: format_action_result(ugt.id, "Upsert secret", result)
-         )}
-    end
-  end
-
-  def handle_event("occupy_workplace", %{"id" => ugt_id}, socket) do
-    user = socket.assigns.user
-    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
-
-    case resolve_platform_user_id(user) do
-      {:ok, platform_user_id} ->
-        result = ExternalPlatform.occupy_code_assist_workplaces([platform_user_id])
-        ugt = update_ugt_from_result(ugt, :workplace, result)
-
-        {:noreply,
-         assign(socket,
-           user_group_tournaments: get_user_group_tournaments(user.id),
-           action_result: format_action_result(ugt.id, "Occupy workplace", result)
-         )}
-
-      {:error, reason} ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
-    end
-  end
-
-  def handle_event("release_workplace", %{"id" => ugt_id}, socket) do
-    user = socket.assigns.user
-    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
-
-    case resolve_platform_user_id(user) do
-      {:ok, platform_user_id} ->
-        result = ExternalPlatform.release_code_assist_workplaces([platform_user_id])
-        ugt = update_ugt_from_result(ugt, :release, result)
-
-        {:noreply,
-         assign(socket,
-           user_group_tournaments: get_user_group_tournaments(user.id),
-           action_result: format_action_result(ugt.id, "Release workplace", result)
-         )}
-
-      {:error, reason} ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
-    end
-  end
-
-  def handle_event("add_viewer_role", %{"id" => ugt_id}, socket) do
-    user = socket.assigns.user
-    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
-    org_slug = default_org_slug()
-
-    cond do
-      is_nil(ugt.group_tournament) ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "No linked tournament"})}
-
-      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
-        {:noreply, assign(socket, action_result: {:error, ugt.id, "User has no external_platform_login"})}
-
-      true ->
-        case resolve_platform_user_id(user) do
-          {:ok, platform_user_id} ->
-            repo_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
-            result = ExternalPlatform.add_repo_role(org_slug, repo_slug, platform_user_id, "viewer")
-
-            ugt = update_ugt_from_result(ugt, :viewer_role, result)
-
-            {:noreply,
-             assign(socket,
-               user_group_tournaments: get_user_group_tournaments(user.id),
-               action_result: format_action_result(ugt.id, "Add viewer role", result)
-             )}
-
-          {:error, reason} ->
-            {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
-        end
-    end
-  end
-
-  def handle_event("delete_user_group_tournament", %{"id" => id}, socket) do
-    user = socket.assigns.user
-    ugt = Repo.get!(UserGroupTournament, id)
-    Repo.delete!(ugt)
-
-    {:noreply,
-     socket
-     |> assign(user_group_tournaments: get_user_group_tournaments(user.id))
-     |> put_flash(:info, "User removed from tournament")}
-  end
-
-  def handle_event("update_ugt_repo_url", %{"ugt_id" => id, "repo_url" => repo_url}, socket) do
-    user = socket.assigns.user
-    ugt = Repo.get!(UserGroupTournament, id)
-    repo_url = String.trim(repo_url)
-    attrs = if repo_url == "", do: %{repo_url: nil}, else: %{repo_url: repo_url, repo_state: "completed"}
-
-    ugt
-    |> UserGroupTournament.changeset(attrs)
-    |> Repo.update!()
-
-    {:noreply,
-     socket
-     |> assign(user_group_tournaments: get_user_group_tournaments(user.id))
-     |> put_flash(:info, "Repo URL updated")}
-  end
-
   def handle_event("delete_platform_invite", %{"id" => id}, socket) do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
@@ -405,12 +192,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
 
     # Enqueue external setup job if this invite is tied to a tournament
-    if invite.group_tournament_id do
-      %{user_id: user.id, group_tournament_id: invite.group_tournament_id}
-      |> Codebattle.Workers.ExternalSetupWorker.new()
-      |> Oban.insert()
-    end
-
     refreshed_user = User.get!(user.id, preload: [:clan])
 
     {:noreply,
@@ -426,17 +207,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       if socket.assigns.expanded_invite_id == invite_id, do: nil, else: invite_id
 
     {:noreply, assign(socket, expanded_invite_id: new_id)}
-  end
-
-  def handle_event("toggle_user_group_tournament_details", %{"id" => id}, socket) do
-    user_group_tournament_id = String.to_integer(id)
-
-    new_id =
-      if socket.assigns.expanded_user_group_tournament_id == user_group_tournament_id,
-        do: nil,
-        else: user_group_tournament_id
-
-    {:noreply, assign(socket, expanded_user_group_tournament_id: new_id)}
   end
 
   def handle_event("update_platform_login", %{"external_platform_login" => login}, socket) do
@@ -755,105 +525,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     |> Repo.all()
   end
 
-  defp get_group_tournaments do
-    GroupTournament
-    |> order_by([gt], desc: gt.id)
-    |> Repo.all()
-  end
-
-  defp get_user_group_tournaments(user_id) do
-    UserGroupTournament
-    |> where([ugt], ugt.user_id == ^user_id)
-    |> order_by([ugt], desc: ugt.updated_at, desc: ugt.id)
-    |> preload(:group_tournament)
-    |> Repo.all()
-  end
-
-  defp resolve_platform_user_id(%{external_platform_id: id}) when is_binary(id) and id != "" do
-    {:ok, id}
-  end
-
-  defp resolve_platform_user_id(_user), do: {:error, :missing_external_platform_identity}
-
-  defp default_org_slug do
-    Application.get_env(:codebattle, :external_platform_org_slug)
-  end
-
-  defp update_ugt_from_result(ugt, step, result) do
-    attrs = maybe_finalize_ready(ugt, step_attrs(ugt, step, result))
-
-    ugt
-    |> UserGroupTournament.changeset(attrs)
-    |> Repo.update!()
-  end
-
-  defp step_attrs(_ugt, :repo, {:ok, response}) do
-    %{
-      state: "provisioning",
-      repo_state: "completed",
-      repo_url: extract_repo_url(response),
-      repo_response: response,
-      last_error: %{}
-    }
-  end
-
-  defp step_attrs(_ugt, :role, {:ok, response}),
-    do: %{state: "provisioning", role_state: "completed", role_response: response, last_error: %{}}
-
-  defp step_attrs(_ugt, :secret, {:ok, response}),
-    do: %{state: "provisioning", secret_state: "completed", secret_response: response, last_error: %{}}
-
-  defp step_attrs(_ugt, :workplace, {:ok, response}),
-    do: %{state: "provisioning", workplace_state: "completed", workplace_response: response, last_error: %{}}
-
-  defp step_attrs(_ugt, :release, {:ok, response}),
-    do: %{release_state: "completed", release_response: response, last_error: %{}}
-
-  defp step_attrs(_ugt, :viewer_role, {:ok, response}),
-    do: %{viewer_role_state: "completed", viewer_role_response: response, last_error: %{}}
-
-  defp step_attrs(_ugt, step, {:error, reason}) when step in [:release, :viewer_role] do
-    %{:"#{step}_state" => "failed", :last_error => serialize_error(reason)}
-  end
-
-  defp step_attrs(_ugt, step, {:error, reason}) do
-    %{:state => "failed", :"#{step}_state" => "failed", :last_error => serialize_error(reason)}
-  end
-
-  defp maybe_finalize_ready(ugt, %{repo_state: "completed"} = attrs) do
-    if ugt.role_state == "completed" && ugt.secret_state == "completed",
-      do: Map.put(attrs, :state, "ready"),
-      else: attrs
-  end
-
-  defp maybe_finalize_ready(ugt, %{role_state: "completed"} = attrs) do
-    if ugt.repo_state == "completed" && ugt.secret_state == "completed",
-      do: Map.put(attrs, :state, "ready"),
-      else: attrs
-  end
-
-  defp maybe_finalize_ready(ugt, %{secret_state: "completed"} = attrs) do
-    if ugt.repo_state == "completed" && ugt.role_state == "completed",
-      do: Map.put(attrs, :state, "ready"),
-      else: attrs
-  end
-
-  defp maybe_finalize_ready(_ugt, attrs), do: attrs
-
-  defp extract_repo_url(%{"web_url" => url}) when is_binary(url) and url != "", do: url
-  defp extract_repo_url(%{web_url: url}) when is_binary(url) and url != "", do: url
-  defp extract_repo_url(%{"repo_url" => url}) when is_binary(url) and url != "", do: url
-  defp extract_repo_url(%{repo_url: url}) when is_binary(url) and url != "", do: url
-  defp extract_repo_url(%{"url" => url}) when is_binary(url) and url != "", do: url
-  defp extract_repo_url(%{url: url}) when is_binary(url) and url != "", do: url
-  defp extract_repo_url(_), do: nil
-
-  defp serialize_error(reason) when is_map(reason), do: reason
-  defp serialize_error(reason), do: %{"error" => inspect(reason)}
-
-  defp format_action_result(ugt_id, action, {:ok, _}), do: {:ok, ugt_id, "#{action}: success"}
-  defp format_action_result(ugt_id, action, {:error, reason}), do: {:error, ugt_id, "#{action}: #{inspect(reason)}"}
-
   defp maybe_auto_poll(%ExternalPlatformInvite{state: "creating", operation_id: op_id} = invite) when is_binary(op_id) do
     Process.sleep(1_500)
 
@@ -903,7 +574,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     ExternalPlatformInvite
     |> where([i], i.user_id == ^user_id)
     |> order_by([i], desc: i.updated_at)
-    |> preload(:group_tournament)
     |> Repo.all()
   end
 
@@ -958,17 +628,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   defp invite_state_badge("failed"), do: "badge bg-danger"
   defp invite_state_badge("expired"), do: "badge bg-warning text-dark"
   defp invite_state_badge(_), do: "badge bg-secondary"
-
-  defp user_group_tournament_state_badge("pending"), do: "badge bg-secondary"
-  defp user_group_tournament_state_badge("provisioning"), do: "badge bg-info text-dark"
-  defp user_group_tournament_state_badge("ready"), do: "badge bg-success"
-  defp user_group_tournament_state_badge("failed"), do: "badge bg-danger"
-  defp user_group_tournament_state_badge(_), do: "badge bg-secondary"
-
-  defp provisioning_step_badge("pending"), do: "badge bg-secondary"
-  defp provisioning_step_badge("completed"), do: "badge bg-success"
-  defp provisioning_step_badge("failed"), do: "badge bg-danger"
-  defp provisioning_step_badge(_), do: "badge bg-secondary"
 
   defp format_invite_datetime(nil), do: "–"
 
@@ -1389,348 +1048,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
           <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div class="text-white">
-                <i class="bi bi-diagram-3"></i>
-                User Group Tournaments
-                <span class="badge bg-secondary ms-2">{length(@user_group_tournaments)}</span>
-              </div>
-            </div>
-            <%= if @user_group_tournaments == [] do %>
-              <div class="cb-text">No external setup records.</div>
-            <% else %>
-              <%= for ugt <- @user_group_tournaments do %>
-                <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="text-white fw-bold">#{ugt.id}</span>
-                        <%= if ugt.group_tournament do %>
-                          <a
-                            href={"/admin/group_tournaments/#{ugt.group_tournament_id}"}
-                            class="text-info"
-                          >
-                            {ugt.group_tournament.name}
-                          </a>
-                          <span class="cb-text small">({ugt.group_tournament.slug})</span>
-                        <% else %>
-                          <span class="cb-text">No linked tournament</span>
-                        <% end %>
-                      </div>
-                      <div class="d-flex align-items-center gap-2">
-                        <span class={user_group_tournament_state_badge(ugt.state)}>{ugt.state}</span>
-                        <span class="cb-text small">
-                          Updated: {format_invite_datetime(ugt.updated_at)}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="d-flex gap-1">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-success cb-rounded"
-                        phx-click="create_repo"
-                        phx-value-id={ugt.id}
-                        data-confirm="Create repository for this tournament from template?"
-                      >
-                        Create Repo
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-warning cb-rounded"
-                        phx-click="add_repo_role"
-                        phx-value-id={ugt.id}
-                        data-confirm="Grant repo role for this tournament?"
-                      >
-                        Add Role
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-info cb-rounded"
-                        phx-click="upsert_secret"
-                        phx-value-id={ugt.id}
-                        data-confirm="Upsert secret for this tournament?"
-                      >
-                        Add Secret
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-primary cb-rounded"
-                        phx-click="occupy_workplace"
-                        phx-value-id={ugt.id}
-                        data-confirm="Occupy code-assist workplace for this user?"
-                      >
-                        Occupy Workplace
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-danger cb-rounded"
-                        phx-click="release_workplace"
-                        phx-value-id={ugt.id}
-                        data-confirm="Release code-assist workplace for this user?"
-                      >
-                        Release Workplace
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-warning cb-rounded"
-                        phx-click="add_viewer_role"
-                        phx-value-id={ugt.id}
-                        data-confirm="Grant viewer role on this repo?"
-                      >
-                        Add Viewer Role
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-                        phx-click="toggle_user_group_tournament_details"
-                        phx-value-id={ugt.id}
-                      >
-                        Payloads
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger cb-rounded"
-                        phx-click="delete_user_group_tournament"
-                        phx-value-id={ugt.id}
-                        data-confirm="Remove this user from the tournament? This deletes the user_group_tournament record only — external repo/workplace are not touched."
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-
-                  <%= if @action_result && elem(@action_result, 1) == ugt.id do %>
-                    <div class={"small mb-2 " <> if(elem(@action_result, 0) == :ok, do: "text-success", else: "text-danger")}>
-                      {elem(@action_result, 2)}
-                    </div>
-                  <% end %>
-
-                  <div class="row g-2 mt-1">
-                    <div class="col-md-4">
-                      <div class="cb-bg-panel cb-border-color border cb-rounded p-2">
-                        <table class="table table-sm mb-0">
-                          <tbody>
-                            <tr>
-                              <td class="cb-text border-0 py-1" style="width: 90px;">Repo</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.repo_state)}>
-                                  {ugt.repo_state}
-                                </span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="cb-text border-0 py-1">Role</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.role_state)}>
-                                  {ugt.role_state}
-                                </span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="cb-text border-0 py-1">Secret</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.secret_state)}>
-                                  {ugt.secret_state}
-                                </span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="cb-text border-0 py-1">Workplace</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.workplace_state)}>
-                                  {ugt.workplace_state}
-                                </span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="cb-text border-0 py-1">Release</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.release_state)}>
-                                  {ugt.release_state}
-                                </span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="cb-text border-0 py-1">Viewer role</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.viewer_role_state)}>
-                                  {ugt.viewer_role_state}
-                                </span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="cb-text border-0 py-1">Dev role removal</td>
-                              <td class="border-0 py-1">
-                                <span class={provisioning_step_badge(ugt.dev_role_removal_state)}>
-                                  {ugt.dev_role_removal_state}
-                                </span>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="cb-bg-panel cb-border-color border cb-rounded p-2 small">
-                        <div class="mb-1">
-                          <span class="cb-text">Repo slug:</span>
-                          <%= if ugt.group_tournament do %>
-                            <code class="text-info">
-                              {UserGroupTournamentContext.repo_slug_for(@user, ugt.group_tournament)}
-                            </code>
-                          <% else %>
-                            <span class="cb-text">–</span>
-                          <% end %>
-                        </div>
-                        <div class="mb-1">
-                          <form
-                            phx-submit="update_ugt_repo_url"
-                            class="d-flex align-items-center gap-1"
-                          >
-                            <input type="hidden" name="ugt_id" value={ugt.id} />
-                            <span class="cb-text text-nowrap">Repo URL:</span>
-                            <input
-                              type="text"
-                              name="repo_url"
-                              value={ugt.repo_url || ""}
-                              placeholder="https://..."
-                              class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white py-0"
-                              style="font-size: 0.75rem;"
-                            />
-                            <button
-                              type="submit"
-                              class="btn btn-sm btn-outline-success cb-rounded py-0 px-1"
-                              style="font-size: 0.7rem;"
-                            >
-                              Save
-                            </button>
-                            <%= if ugt.repo_url do %>
-                              <a
-                                href={ugt.repo_url}
-                                target="_blank"
-                                rel="noopener"
-                                class="btn btn-sm btn-outline-info cb-rounded py-0 px-1"
-                                style="font-size: 0.7rem;"
-                                title={ugt.repo_url}
-                              >
-                                Open
-                              </a>
-                            <% end %>
-                          </form>
-                        </div>
-                        <div>
-                          <span class="cb-text">Token:</span>
-                          <%= if ugt.token do %>
-                            <code class="text-white text-break">{ugt.token}</code>
-                          <% else %>
-                            <span class="cb-text">–</span>
-                          <% end %>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="cb-bg-panel cb-border-color border cb-rounded p-2 small">
-                        <div class="mb-1">
-                          <span class="cb-text">Role:</span>
-                          <span class="text-white">{label_value(ugt.role)}</span>
-                        </div>
-                        <div class="mb-1">
-                          <span class="cb-text">Secret key:</span>
-                          <span class="text-white">{label_value(ugt.secret_key)}</span>
-                        </div>
-                        <div>
-                          <span class="cb-text">Secret group:</span>
-                          <span class="text-white">{label_value(ugt.secret_group)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <%= if @expanded_user_group_tournament_id == ugt.id do %>
-                    <div class="row g-3 mt-2">
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Repo Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.repo_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Role Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.role_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Secret Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.secret_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Workplace Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.workplace_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Release Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.release_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Viewer Role Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.viewer_role_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Dev Role Removal Response</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.dev_role_removal_response || %{}, pretty: true)}</code></pre>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="cb-text text-uppercase small mb-1">Last Error</div>
-                        <pre
-                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
-                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
-                        ><code>{Jason.encode!(ugt.last_error || %{}, pretty: true)}</code></pre>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="text-white">
                 <i class="bi bi-envelope"></i>
                 External Platform Invites
                 <span class="badge bg-secondary ms-2">{length(@platform_invites)}</span>
               </div>
               <form phx-submit="create_remote_invite" class="d-flex align-items-center gap-2">
-                <select
-                  name="group_tournament_id"
-                  class="form-select form-select-sm cb-bg-panel cb-border-color text-white"
-                  style="width: auto; min-width: 200px;"
-                >
-                  <option value="">No tournament</option>
-                  <%= for gt <- @group_tournaments do %>
-                    <option value={gt.id}>{gt.name} ({gt.slug})</option>
-                  <% end %>
-                </select>
                 <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
                   Create Remote Invite
                 </button>
@@ -1744,7 +1066,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                   <thead>
                     <tr class="cb-text small">
                       <th>ID</th>
-                      <th>Tournament</th>
                       <th>State</th>
                       <th>Operation ID</th>
                       <th>Invite Link</th>
@@ -1757,18 +1078,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     <%= for invite <- @platform_invites do %>
                       <tr>
                         <td class="text-white">{invite.id}</td>
-                        <td class="text-white">
-                          <%= if invite.group_tournament do %>
-                            <a
-                              href={"/admin/group_tournaments/#{invite.group_tournament_id}"}
-                              class="text-info"
-                            >
-                              {invite.group_tournament.name}
-                            </a>
-                          <% else %>
-                            <span class="cb-text">–</span>
-                          <% end %>
-                        </td>
                         <td>
                           <span class={invite_state_badge(invite.state)}>{invite.state}</span>
                         </td>
@@ -1876,7 +1185,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </tr>
                       <%= if @expanded_invite_id == invite.id do %>
                         <tr>
-                          <td colspan="8" class="p-3">
+                          <td colspan="7" class="p-3">
                             <%= if accepted = accepted_invite_payload(invite) do %>
                               <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
                                 <div class="text-white fw-bold mb-2">
@@ -2084,15 +1393,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                         Tournament #{user_stage.tournament_id}
                                       </a>
                                     <% end %>
-                                    <%= if user_stage.group_tournament_id do %>
-                                      <a
-                                        href={"/admin/group_tournaments/#{user_stage.group_tournament_id}"}
-                                        class="btn btn-sm btn-outline-warning cb-btn-outline-warning cb-rounded text-nowrap mt-1"
-                                      >
-                                        Group #{user_stage.group_tournament_id}
-                                      </a>
-                                    <% end %>
-                                    <%= if !user_stage.tournament_id && !user_stage.group_tournament_id do %>
+                                    <%= if !user_stage.tournament_id do %>
                                       <span class="cb-text">{user_stage.entrance_result}</span>
                                     <% end %>
                                   </div>

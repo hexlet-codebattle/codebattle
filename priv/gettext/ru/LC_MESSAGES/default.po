@@ -1451,9 +1451,6 @@ msgstr "зарегистрирован %{date}"
 msgid "Github account"
 msgstr "Аккаунт Github"
 
-msgid "Place: #%{place}"
-msgstr "Место: #%{place}"
-
 msgid "Place: pending"
 msgstr "Место: cкоро"
 
@@ -1790,23 +1787,11 @@ msgstr "Не удалось отправить приглашение. Попр�
 msgid "Retry"
 msgstr "Повторить"
 
-msgid "Could not retrieve your external platform credentials. Please contact support."
-msgstr "Не удалось получить учётные данные внешней платформы. Пожалуйста, обратитесь в поддержку."
-
-msgid "Group Tournament"
-msgstr "Групповой турнир"
-
 msgid "Support"
 msgstr "Тех поддержка"
 
-msgid "Execution History"
-msgstr "История запусков"
-
 msgid "Add Solution +"
 msgstr "Добавить решение +"
-
-msgid "Run Viewer"
-msgstr "Просмотр запуска"
 
 msgid "Description"
 msgstr "Описание"
@@ -1816,9 +1801,6 @@ msgstr "Описание для этого турнира не задано."
 
 msgid "Pick a run from the left panel to see its output."
 msgstr "Выбери запуск в левой панели, чтобы увидеть результат."
-
-msgid "No viewer HTML for this run."
-msgstr "Нет HTML для просмотра этого запуска."
 
 msgid "Tournament Overview"
 msgstr "Обзор турнира"
@@ -1835,9 +1817,6 @@ msgstr "Логов пока нет"
 msgid "... and %{count} more"
 msgstr "... и ещё %{count}"
 
-msgid "External Setup"
-msgstr "Внешняя настройка"
-
 msgid "Run Viewer Fullscreen"
 msgstr "Просмотр запуска — полный экран"
 
@@ -1847,12 +1826,6 @@ msgstr "Закрыть полный экран"
 msgid "Fullscreen"
 msgstr "Полный экран"
 
-msgid "Your next step is the AI-round group tournament. Click the button below to continue."
-msgstr "Теперь переходи к задаче с ИИ-ассистентом на платформе %{external_platform_name}."
-
-msgid "Go to AI-round group tournament"
-msgstr "Перейти к задаче"
-
 msgid "Later"
 msgstr "Позже"
 
@@ -1861,9 +1834,6 @@ msgstr "Этап завершён"
 
 msgid "%{name} stage finished"
 msgstr "Этап «%{name}» завершён"
-
-msgid "First qualification round finished"
-msgstr "Полуфинал еще не окончен"
 
 msgid "Accepted"
 msgstr "Принято"
@@ -1927,12 +1897,6 @@ msgstr "Раунд %{n}"
 
 msgid "Results run"
 msgstr "Результат запуска"
-
-msgid "Group assignment soon"
-msgstr "Скоро распределим в группы"
-
-msgid "Group contest soon"
-msgstr "Скоро баттл в группах"
 
 msgid "Return to game"
 msgstr "Вернуться к игре"
@@ -2694,17 +2658,8 @@ msgstr "..."
 msgid "%{state}"
 msgstr "%{state}"
 
-msgid "30 minutes to solve"
-msgstr "30 минут на решение"
-
-msgid "Accept invitation"
-msgstr "Принять приглашение"
-
 msgid "Ban player"
 msgstr "Заблокировать игрока"
-
-msgid "Before you begin:"
-msgstr "Перед началом:"
 
 msgid "Break"
 msgstr "Перерыв"
@@ -2742,9 +2697,6 @@ msgstr "Не удалось отправить обратную связь."
 msgid "Feedback sent successfully."
 msgstr "Обратная связь успешно отправлена."
 
-msgid "Find tournament details at"
-msgstr "Подробности о турнире:"
-
 msgid "Fuzzy search"
 msgstr "Нечёткий поиск"
 
@@ -2757,9 +2709,6 @@ msgstr "Сдался"
 msgid "Give Up"
 msgstr "Сдаться"
 
-msgid "Go to task"
-msgstr "Перейти к задаче"
-
 msgid "Have not an account?"
 msgstr "Нет аккаунта?"
 
@@ -2768,9 +2717,6 @@ msgstr "Если у вас есть аккаунт"
 
 msgid "Inserted At"
 msgstr "Дата создания"
-
-msgid "Join our External Platform organization to receive the task"
-msgstr "Вступите в организацию на внешней платформе, чтобы получить задачу"
 
 msgid "Link"
 msgstr "Ссылка"
@@ -2792,9 +2738,6 @@ msgstr "Данные рейтинга недоступны"
 
 msgid "Offender"
 msgstr "Нарушитель"
-
-msgid "Once all steps are complete, you can start solving"
-msgstr "После выполнения всех шагов можно приступать к решению"
 
 msgid "Player not found"
 msgstr "Игрок не найден"
@@ -2862,9 +2805,6 @@ msgstr "Что-то пошло не так"
 msgid "Start new game"
 msgstr "Начать новую игру"
 
-msgid "Task is solved in External Plaform"
-msgstr "Задача решается на внешней платформе"
-
 msgid "Test failed"
 msgstr "Тест не пройден"
 
@@ -2885,9 +2825,6 @@ msgstr "Лучшие игроки по задаче"
 
 msgid "tournament"
 msgstr "турнир"
-
-msgid "Tournament will start soon"
-msgstr "Турнир скоро начнётся"
 
 msgid "Type a player name"
 msgstr "Введите имя игрока"
@@ -5859,26 +5796,8 @@ msgstr "Средний интервал между клавишами (мс) п�
 msgid "Final submitted code (%{count} chars)"
 msgstr "Итоговый код (%{count} симв.)"
 
-msgid "Could not start the tournament, try again"
-msgstr "Не удалось запустить турнир, попробуйте ещё раз"
-
-msgid "Waiting for start"
-msgstr "Ожидание старта"
-
-msgid "Admin panel"
-msgstr "Панель администратора"
-
 msgid "Choose a language"
 msgstr "Выберите язык"
-
-msgid "Solutions are submitted on the external platform"
-msgstr "Решения отправляются на внешней платформе"
-
-msgid "The server did not respond, try again"
-msgstr "Сервер не ответил, попробуйте ещё раз"
-
-msgid "Could not submit the solution"
-msgstr "Не удалось отправить решение"
 
 msgid "Swap sides"
 msgstr "Поменять местами"
@@ -5930,9 +5849,6 @@ msgstr "Пересчитать"
 
 msgid "No players found for this game."
 msgstr "В этой игре нет игроков."
-
-msgid "Could not connect to the tournament"
-msgstr "Не удалось подключиться к турниру"
 
 msgid "Tournaments. Seasons. Code-first competition."
 msgstr "Турниры. Сезоны. Соревнования в коде."

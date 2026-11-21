@@ -167,12 +167,11 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       assert redirected_to(conn) == Routes.public_event_path(conn, :show, event.slug)
     end
 
-    test "redirects to configured global tournament and stores configured group tournament", %{
+    test "redirects to configured global tournament", %{
       conn: conn,
       user: user
     } do
       creator = insert(:user)
-      group_tournament = insert(:group_tournament)
 
       {:ok, tournament} =
         Tournament.Context.create(%{
@@ -198,8 +197,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
               status: :active,
               type: :tournament,
               playing_type: :global,
-              tournament_id: tournament.id,
-              group_tournament_id: group_tournament.id
+              tournament_id: tournament.id
             }
           ]
         )
@@ -224,13 +222,11 @@ defmodule CodebattleWeb.PublicEventControllerTest do
                %{
                  slug: "global-q",
                  status: :started,
-                 tournament_id: tournament_id,
-                 group_tournament_id: group_tournament_id
+                 tournament_id: tournament_id
                }
              ] = user_event.stages
 
       assert tournament_id == tournament.id
-      assert group_tournament_id == group_tournament.id
     end
 
     test "shows error when user has already passed the stage", %{

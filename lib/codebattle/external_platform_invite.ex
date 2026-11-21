@@ -5,7 +5,6 @@ defmodule Codebattle.ExternalPlatformInvite do
 
   import Ecto.Changeset
 
-  alias Codebattle.GroupTournament
   alias Codebattle.User
 
   @states ~w(pending creating invited accepted failed expired)
@@ -16,7 +15,6 @@ defmodule Codebattle.ExternalPlatformInvite do
            only: [
              :id,
              :user_id,
-             :group_tournament_id,
              :state,
              :operation_id,
              :status_url,
@@ -29,7 +27,6 @@ defmodule Codebattle.ExternalPlatformInvite do
 
   schema "external_platform_invites" do
     belongs_to(:user, User)
-    belongs_to(:group_tournament, GroupTournament)
 
     field(:state, :string, default: "pending")
     field(:operation_id, :string)
@@ -45,7 +42,6 @@ defmodule Codebattle.ExternalPlatformInvite do
     invite
     |> cast(attrs, [
       :user_id,
-      :group_tournament_id,
       :state,
       :operation_id,
       :status_url,
@@ -55,9 +51,7 @@ defmodule Codebattle.ExternalPlatformInvite do
     ])
     |> validate_required([:user_id, :state])
     |> validate_inclusion(:state, @states)
-    |> unique_constraint(:user_id, name: :external_platform_invites_user_id_group_tournament_id_index)
     |> foreign_key_constraint(:user_id)
-    |> foreign_key_constraint(:group_tournament_id)
   end
 
   def states, do: @states

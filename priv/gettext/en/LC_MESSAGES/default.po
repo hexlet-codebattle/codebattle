@@ -856,9 +856,6 @@ msgstr "joined at %{date}"
 msgid "Github account"
 msgstr "Github account"
 
-msgid "Place: #%{place}"
-msgstr "Place: #%{place}"
-
 msgid "Completed games"
 msgstr "Completed games"
 
@@ -1171,26 +1168,11 @@ msgstr "Invite failed. Please try again."
 msgid "Retry"
 msgstr "Retry"
 
-msgid "Could not retrieve your external platform credentials. Please contact support."
-msgstr "Could not retrieve your external platform credentials. Please contact support."
-
-msgid "Group Tournament"
-msgstr "Group Tournament"
-
 msgid "Support"
 msgstr "Support"
 
-msgid "Execution History"
-msgstr "Execution History"
-
 msgid "Add Solution +"
 msgstr "Add Solution +"
-
-msgid "Run Viewer"
-msgstr "Run Viewer"
-
-msgid "No viewer HTML for this run."
-msgstr "No viewer HTML for this run."
 
 msgid "Tournament Overview"
 msgstr "Tournament Overview"
@@ -1207,9 +1189,6 @@ msgstr "No logs yet"
 msgid "... and %{count} more"
 msgstr "... and %{count} more"
 
-msgid "External Setup"
-msgstr "External Setup"
-
 msgid "Run Viewer Fullscreen"
 msgstr "Run Viewer Fullscreen"
 
@@ -1218,12 +1197,6 @@ msgstr "Close Fullscreen"
 
 msgid "Tournament finished"
 msgstr "Tournament finished"
-
-msgid "Your next step is the AI-round group tournament. Click the button below to continue."
-msgstr "Your next step is the AI-round group tournament. Click the button below to continue."
-
-msgid "Go to AI-round group tournament"
-msgstr "Go to AI-round group tournament"
 
 msgid "Later"
 msgstr "Later"
@@ -1234,17 +1207,8 @@ msgstr "Stage finished"
 msgid "%{name} stage finished"
 msgstr "%{name} stage finished"
 
-msgid "First qualification round finished"
-msgstr "First qualification round finished"
-
 msgid "Accepted"
 msgstr "Accepted"
-
-msgid "Group assignment soon"
-msgstr "Group assignment soon"
-
-msgid "Group contest soon"
-msgstr "Group contest soon"
 
 msgid "Return to game"
 msgstr "Return to game"
@@ -1591,17 +1555,8 @@ msgstr "..."
 msgid "%{state}"
 msgstr "%{state}"
 
-msgid "30 minutes to solve"
-msgstr "30 minutes to solve"
-
-msgid "Accept invitation"
-msgstr "Accept invitation"
-
 msgid "Ban player"
 msgstr "Ban player"
-
-msgid "Before you begin:"
-msgstr "Before you begin:"
 
 msgid "Break"
 msgstr "Break"
@@ -1639,9 +1594,6 @@ msgstr "Feedback not sent."
 msgid "Feedback sent successfully."
 msgstr "Feedback sent successfully."
 
-msgid "Find tournament details at"
-msgstr "Find tournament details at"
-
 msgid "Fuzzy search"
 msgstr "Fuzzy search"
 
@@ -1654,9 +1606,6 @@ msgstr "Gave up"
 msgid "Give Up"
 msgstr "Give Up"
 
-msgid "Go to task"
-msgstr "Go to task"
-
 msgid "Have not an account?"
 msgstr "Have not an account?"
 
@@ -1665,9 +1614,6 @@ msgstr "If you have an account"
 
 msgid "Inserted At"
 msgstr "Inserted At"
-
-msgid "Join our External Platform organization to receive the task"
-msgstr "Join our External Platform organization to receive the task"
 
 msgid "Link"
 msgstr "Link"
@@ -1689,9 +1635,6 @@ msgstr "No leaderboard data available"
 
 msgid "Offender"
 msgstr "Offender"
-
-msgid "Once all steps are complete, you can start solving"
-msgstr "Once all steps are complete, you can start solving"
 
 msgid "Player not found"
 msgstr "Player not found"
@@ -1750,9 +1693,6 @@ msgstr "Sign up with Github"
 msgid "Start new game"
 msgstr "Start new game"
 
-msgid "Task is solved in External Plaform"
-msgstr "Task is solved in External Plaform"
-
 msgid "Test failed"
 msgstr "Test failed"
 
@@ -1773,9 +1713,6 @@ msgstr "Top users by task"
 
 msgid "tournament"
 msgstr "tournament"
-
-msgid "Tournament will start soon"
-msgstr "Tournament will start soon"
 
 msgid "Type a player name"
 msgstr "Type a player name"
@@ -4618,25 +4555,7 @@ msgstr ""
 msgid "Final submitted code (%{count} chars)"
 msgstr ""
 
-msgid "Could not start the tournament, try again"
-msgstr ""
-
-msgid "Waiting for start"
-msgstr ""
-
-msgid "Admin panel"
-msgstr ""
-
 msgid "Choose a language"
-msgstr ""
-
-msgid "Solutions are submitted on the external platform"
-msgstr ""
-
-msgid "The server did not respond, try again"
-msgstr ""
-
-msgid "Could not submit the solution"
 msgstr ""
 
 msgid "Swap sides"
@@ -4688,9 +4607,6 @@ msgid "Re-analyze"
 msgstr ""
 
 msgid "No players found for this game."
-msgstr ""
-
-msgid "Could not connect to the tournament"
 msgstr ""
 
 msgid "Tournaments. Seasons. Code-first competition."

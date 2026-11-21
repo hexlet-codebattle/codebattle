@@ -4,7 +4,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
   import Ecto.Query
 
   alias Codebattle.Event
-  alias Codebattle.GroupTournament
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.User
@@ -38,7 +37,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
        custom_from_input: format_input(from),
        custom_to_input: format_input(to),
        sort_tournaments: {:tournament_id, :desc},
-       sort_group_tournaments: {:group_tournament_id, :desc},
        sort_users: {:total_score, :desc},
        layout: {CodebattleWeb.LayoutView, :admin}
      )
@@ -100,7 +98,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
   end
 
   defp sort_assign_key("tournaments"), do: :sort_tournaments
-  defp sort_assign_key("group_tournaments"), do: :sort_group_tournaments
   defp sort_assign_key("users"), do: :sort_users
 
   defp flip_dir(:asc), do: :desc
@@ -130,7 +127,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
       slug_summary: load_slug_summary(event),
       stages_stats: load_stages_stats(event.id, from, to),
       tournament_rows: load_tournament_rows(event.id, from, to),
-      group_tournament_rows: load_group_tournament_rows(event.id, from, to),
       users_rows: load_users_rows(event.id, from, to),
       user_names: load_user_names_for_event(event.id)
     )
@@ -146,20 +142,9 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
       |> Repo.all()
       |> Map.new()
 
-    group_tournament_counts =
-      from(gt in GroupTournament,
-        where: gt.event_id == ^event_id,
-        group_by: gt.state,
-        select: {gt.state, count(gt.id)}
-      )
-      |> Repo.all()
-      |> Map.new()
-
     %{
       live_tournaments: Map.get(tournament_counts, "active", 0),
-      active_group_tournaments: Map.get(group_tournament_counts, "active", 0),
-      finished_tournaments: Map.get(tournament_counts, "finished", 0),
-      finished_group_tournaments: Map.get(group_tournament_counts, "finished", 0)
+      finished_tournaments: Map.get(tournament_counts, "finished", 0)
     }
   end
 
@@ -181,7 +166,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
         name: Map.get(stage, :name),
         status: Map.get(stage, :status),
         tournament_id: Map.get(stage, :tournament_id),
-        group_tournament_id: Map.get(stage, :group_tournament_id),
         user_count: Map.get(user_counts, stage.slug, 0)
       }
     end)
@@ -228,13 +212,10 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
           failed: sum(fragment("CASE WHEN ?::text = 'failed' THEN 1 ELSE 0 END", ues.status)),
           started: sum(fragment("CASE WHEN ?::text = 'started' THEN 1 ELSE 0 END", ues.status)),
           tournament_finished: sum(fragment("CASE WHEN ? THEN 1 ELSE 0 END", ues.tournament_finished)),
-          group_tournament_finished: sum(fragment("CASE WHEN ? THEN 1 ELSE 0 END", ues.group_tournament_finished)),
           avg_score: avg(ues.score),
           avg_time: avg(ues.time_spent_in_seconds),
           avg_wins: avg(ues.wins_count),
-          avg_games: avg(ues.games_count),
-          avg_gt_score: avg(ues.group_tournament_score),
-          avg_gt_time: avg(ues.group_tournament_time_spent_in_seconds)
+          avg_games: avg(ues.games_count)
         }
       )
     )
@@ -268,33 +249,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
     )
   end
 
-  defp load_group_tournament_rows(event_id, from, to) do
-    Repo.all(
-      from(ues in UserEventStage,
-        join: ue in UserEvent,
-        on: ue.id == ues.user_event_id,
-        where: ue.event_id == ^event_id,
-        where: not is_nil(ues.group_tournament_id),
-        where: ues.updated_at >= ^from and ues.updated_at <= ^to,
-        order_by: [desc: ues.group_tournament_id, desc: ues.group_tournament_score],
-        select: %{
-          group_tournament_id: ues.group_tournament_id,
-          user_id: ue.user_id,
-          slug: ues.slug,
-          status: ues.status,
-          group_tournament_score: ues.group_tournament_score,
-          group_tournament_total_score: ues.group_tournament_total_score,
-          group_tournament_time_spent_in_seconds: ues.group_tournament_time_spent_in_seconds,
-          place_in_total_rank: ues.place_in_total_rank,
-          place_in_category_rank: ues.place_in_category_rank,
-          group_tournament_finished: ues.group_tournament_finished,
-          started_at: ues.started_at,
-          finished_at: ues.finished_at
-        }
-      )
-    )
-  end
-
   defp load_users_rows(event_id, from, to) do
     Repo.all(
       from(ue in UserEvent,
@@ -314,9 +268,7 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
           finished_at: ue.finished_at,
           stages_count: count(ues.id),
           tournaments_completed: sum(fragment("CASE WHEN ? THEN 1 ELSE 0 END", ues.tournament_finished)),
-          group_tournaments_completed: sum(fragment("CASE WHEN ? THEN 1 ELSE 0 END", ues.group_tournament_finished)),
           total_score: sum(ues.score),
-          total_gt_score: sum(ues.group_tournament_score),
           total_wins: sum(ues.wins_count),
           total_games: sum(ues.games_count),
           total_time: sum(ues.time_spent_in_seconds)
@@ -412,22 +364,8 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
         </div>
         <div class="col-md-3 col-6">
           <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-            <div class="cb-text small text-uppercase">Active group tournaments</div>
-            <div class="text-white display-6">{@summary.active_group_tournaments}</div>
-            <div class="cb-text small">state = active</div>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
             <div class="cb-text small text-uppercase">Finished tournaments</div>
             <div class="text-white display-6">{@summary.finished_tournaments}</div>
-            <div class="cb-text small">all time</div>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-            <div class="cb-text small text-uppercase">Finished group tournaments</div>
-            <div class="text-white display-6">{@summary.finished_group_tournaments}</div>
             <div class="cb-text small">all time</div>
           </div>
         </div>
@@ -457,17 +395,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                       <span class="cb-text">tournament:</span>
                       <a href={"/tournaments/#{slug.tournament_id}"} class="text-info">
                         #{slug.tournament_id}
-                      </a>
-                    </div>
-                  <% end %>
-                  <%= if slug.group_tournament_id do %>
-                    <div>
-                      <span class="cb-text">group_tournament:</span>
-                      <a
-                        href={"/admin/group_tournaments/#{slug.group_tournament_id}"}
-                        class="text-info"
-                      >
-                        #{slug.group_tournament_id}
                       </a>
                     </div>
                   <% end %>
@@ -554,15 +481,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                         #{stage.tournament_id}
                       </a>
                     <% end %>
-                    <%= if stage.group_tournament_id do %>
-                      · group_tournament:
-                      <a
-                        href={"/admin/group_tournaments/#{stage.group_tournament_id}"}
-                        class="text-info"
-                      >
-                        #{stage.group_tournament_id}
-                      </a>
-                    <% end %>
                   </div>
                 <% end %>
                 <table class="table table-sm table-dark mb-0 small">
@@ -582,23 +500,15 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                     <tr>
                       <td class="cb-text">tour. finished</td>
                       <td class="text-white text-end">{int(stat.tournament_finished)}</td>
-                      <td class="cb-text">gt. finished</td>
-                      <td class="text-white text-end">{int(stat.group_tournament_finished)}</td>
                     </tr>
                     <tr>
                       <td class="cb-text">avg score</td>
                       <td class="text-white text-end">{avg_int(stat.avg_score)}</td>
-                      <td class="cb-text">avg gt score</td>
-                      <td class="text-white text-end">{avg_int(stat.avg_gt_score)}</td>
                     </tr>
                     <tr>
                       <td class="cb-text">avg time</td>
                       <td class="text-white text-end">
                         {format_duration(stat.avg_time && Decimal.to_float(stat.avg_time))}
-                      </td>
-                      <td class="cb-text">avg gt time</td>
-                      <td class="text-white text-end">
-                        {format_duration(stat.avg_gt_time && Decimal.to_float(stat.avg_gt_time))}
                       </td>
                     </tr>
                     <tr>
@@ -743,138 +653,6 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
       <% end %>
 
       <h2 class="text-white h4 mt-4 mb-3">
-        <i class="bi bi-people"></i>
-        Group Tournaments
-        <span class="badge bg-secondary ms-2">
-          {length(Enum.uniq_by(@group_tournament_rows, & &1.group_tournament_id))} group tournaments · {length(
-            @group_tournament_rows
-          )} rows
-        </span>
-      </h2>
-      <%= if @group_tournament_rows == [] do %>
-        <p class="cb-text">No user_event_stages with group_tournament_id in range.</p>
-      <% else %>
-        <div class="table-responsive">
-          <table class="table table-sm table-dark table-bordered align-middle">
-            <thead>
-              <tr class="cb-text small" style="cursor: pointer; user-select: none;">
-                <th
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="group_tournament_id"
-                >
-                  Group Tournament{sort_indicator(@sort_group_tournaments, :group_tournament_id)}
-                </th>
-                <th>User</th>
-                <th phx-click="sort_table" phx-value-table="group_tournaments" phx-value-column="slug">
-                  Stage{sort_indicator(@sort_group_tournaments, :slug)}
-                </th>
-                <th
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="status"
-                >
-                  Status{sort_indicator(@sort_group_tournaments, :status)}
-                </th>
-                <th
-                  class="text-end"
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="group_tournament_score"
-                >
-                  Score{sort_indicator(@sort_group_tournaments, :group_tournament_score)}
-                </th>
-                <th
-                  class="text-end"
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="group_tournament_total_score"
-                >
-                  Total Score{sort_indicator(@sort_group_tournaments, :group_tournament_total_score)}
-                </th>
-                <th
-                  class="text-end"
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="group_tournament_time_spent_in_seconds"
-                >
-                  Time{sort_indicator(
-                    @sort_group_tournaments,
-                    :group_tournament_time_spent_in_seconds
-                  )}
-                </th>
-                <th
-                  class="text-end"
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="place_in_total_rank"
-                >
-                  Place{sort_indicator(@sort_group_tournaments, :place_in_total_rank)}
-                </th>
-                <th
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="group_tournament_finished"
-                >
-                  ✓{sort_indicator(@sort_group_tournaments, :group_tournament_finished)}
-                </th>
-                <th
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="started_at"
-                >
-                  Started{sort_indicator(@sort_group_tournaments, :started_at)}
-                </th>
-                <th
-                  phx-click="sort_table"
-                  phx-value-table="group_tournaments"
-                  phx-value-column="finished_at"
-                >
-                  Finished{sort_indicator(@sort_group_tournaments, :finished_at)}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= for row <- apply_sort(@group_tournament_rows, @sort_group_tournaments) do %>
-                <tr>
-                  <td>
-                    <a
-                      href={"/admin/group_tournaments/#{row.group_tournament_id}"}
-                      class="text-info"
-                    >
-                      #{row.group_tournament_id}
-                    </a>
-                  </td>
-                  <td>
-                    <a href={"/admin/users/#{row.user_id}"} class="text-info">
-                      {display_user(@user_names, row.user_id)}
-                    </a>
-                  </td>
-                  <td class="text-white small"><code class="text-info">{row.slug}</code></td>
-                  <td class="text-white small">{row.status}</td>
-                  <td class="text-white text-end">{int(row.group_tournament_score)}</td>
-                  <td class="text-white text-end">{int(row.group_tournament_total_score)}</td>
-                  <td class="text-white text-end small">
-                    {format_duration(int(row.group_tournament_time_spent_in_seconds))}
-                  </td>
-                  <td class="text-white text-end small">{row.place_in_total_rank || "–"}</td>
-                  <td class="text-white small">
-                    <%= if row.group_tournament_finished do %>
-                      <span class="badge bg-success">yes</span>
-                    <% else %>
-                      <span class="badge bg-secondary">no</span>
-                    <% end %>
-                  </td>
-                  <td class="text-white small">{format_dt(row.started_at)}</td>
-                  <td class="text-white small">{format_dt(row.finished_at)}</td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% end %>
-
-      <h2 class="text-white h4 mt-4 mb-3">
         <i class="bi bi-person-lines-fill"></i>
         Users <span class="badge bg-secondary ms-2">{length(@users_rows)}</span>
       </h2>
@@ -910,25 +688,9 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                   class="text-end"
                   phx-click="sort_table"
                   phx-value-table="users"
-                  phx-value-column="group_tournaments_completed"
-                >
-                  Group T. ✓{sort_indicator(@sort_users, :group_tournaments_completed)}
-                </th>
-                <th
-                  class="text-end"
-                  phx-click="sort_table"
-                  phx-value-table="users"
                   phx-value-column="total_score"
                 >
                   Score{sort_indicator(@sort_users, :total_score)}
-                </th>
-                <th
-                  class="text-end"
-                  phx-click="sort_table"
-                  phx-value-table="users"
-                  phx-value-column="total_gt_score"
-                >
-                  GT Score{sort_indicator(@sort_users, :total_gt_score)}
                 </th>
                 <th
                   class="text-end"
@@ -962,9 +724,7 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
                     <code class="text-info">{row.current_stage_slug || "–"}</code>
                   </td>
                   <td class="text-white text-end">{int(row.tournaments_completed)}</td>
-                  <td class="text-white text-end">{int(row.group_tournaments_completed)}</td>
                   <td class="text-white text-end">{int(row.total_score)}</td>
-                  <td class="text-white text-end">{int(row.total_gt_score)}</td>
                   <td class="text-white text-end small">
                     {int(row.total_wins)} / {int(row.total_games)}
                   </td>

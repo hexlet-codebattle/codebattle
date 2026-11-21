@@ -791,9 +791,6 @@ msgstr "se unió en %{date}"
 msgid "Github account"
 msgstr "Cuenta github"
 
-msgid "Place: #%{place}"
-msgstr "Lugar: #%{place}"
-
 msgid "Completed games"
 msgstr "Juegos completados"
 
@@ -1170,30 +1167,11 @@ msgstr "La invitación falló. Por favor inténtalo de nuevo."
 msgid "Retry"
 msgstr "Reintentar"
 
-msgid ""
-"Could not retrieve your external platform credentials. Please contact "
-"support."
-msgstr ""
-"No se pudieron recuperar las credenciales de su plataforma externa. Por "
-"favor contacte al soporte."
-
-msgid "Group Tournament"
-msgstr "Torneo de grupo"
-
 msgid "Support"
 msgstr "Soporte"
 
-msgid "Execution History"
-msgstr "Historial de ejecución"
-
 msgid "Add Solution +"
 msgstr "Agregar solución +"
-
-msgid "Run Viewer"
-msgstr "Ejecutar visor"
-
-msgid "No viewer HTML for this run."
-msgstr "No hay HTML de visor para esta ejecución."
 
 msgid "Tournament Overview"
 msgstr "Descripción general del torneo"
@@ -1210,9 +1188,6 @@ msgstr "Aún no hay registros"
 msgid "... and %{count} more"
 msgstr "... y %{count} más"
 
-msgid "External Setup"
-msgstr "Configuración externa"
-
 msgid "Run Viewer Fullscreen"
 msgstr "Ejecutar visor en pantalla completa"
 
@@ -1221,16 +1196,6 @@ msgstr "Cerrar pantalla completa"
 
 msgid "Tournament finished"
 msgstr "Torneo terminado"
-
-msgid ""
-"Your next step is the AI-round group tournament. Click the button below to "
-"continue."
-msgstr ""
-"Tu siguiente paso es el torneo grupal de ronda AI. Haga clic en el botón de "
-"abajo para continuar."
-
-msgid "Go to AI-round group tournament"
-msgstr "Ir al torneo grupal de ronda AI"
 
 msgid "Later"
 msgstr "Más tarde"
@@ -1241,17 +1206,8 @@ msgstr "Etapa terminada"
 msgid "%{name} stage finished"
 msgstr "%{name} etapa terminada"
 
-msgid "First qualification round finished"
-msgstr "Finalizada la primera ronda de clasificación"
-
 msgid "Accepted"
 msgstr "Aceptado"
-
-msgid "Group assignment soon"
-msgstr "Asignación de grupo pronto"
-
-msgid "Group contest soon"
-msgstr "Próximamente concurso grupal"
 
 msgid "Return to game"
 msgstr "Volver al juego"
@@ -1604,17 +1560,8 @@ msgstr "..."
 msgid "%{state}"
 msgstr "%{state}"
 
-msgid "30 minutes to solve"
-msgstr "30 minutos para resolver"
-
-msgid "Accept invitation"
-msgstr "Aceptar invitación"
-
 msgid "Ban player"
 msgstr "Prohibir jugador"
-
-msgid "Before you begin:"
-msgstr "Antes de comenzar:"
 
 msgid "Break"
 msgstr "Descanso"
@@ -1652,9 +1599,6 @@ msgstr "Comentarios no enviados."
 msgid "Feedback sent successfully."
 msgstr "Comentarios enviados correctamente."
 
-msgid "Find tournament details at"
-msgstr "Encuentre detalles del torneo en"
-
 msgid "Fuzzy search"
 msgstr "Búsqueda difusa"
 
@@ -1667,9 +1611,6 @@ msgstr "Se rindió"
 msgid "Give Up"
 msgstr "Renunciar"
 
-msgid "Go to task"
-msgstr "Ir a la tarea"
-
 msgid "Have not an account?"
 msgstr "¿No tienes una cuenta?"
 
@@ -1678,9 +1619,6 @@ msgstr "Si tienes una cuenta"
 
 msgid "Inserted At"
 msgstr "Insertado en"
-
-msgid "Join our External Platform organization to receive the task"
-msgstr "Únase a nuestra organización de Plataforma Externa para recibir la tarea"
 
 msgid "Link"
 msgstr "Enlace"
@@ -1702,9 +1640,6 @@ msgstr "No hay datos de clasificación disponibles"
 
 msgid "Offender"
 msgstr "Delincuente"
-
-msgid "Once all steps are complete, you can start solving"
-msgstr "Una vez que se completen todos los pasos, puede comenzar a resolver"
 
 msgid "Player not found"
 msgstr "Jugador no encontrado"
@@ -1765,9 +1700,6 @@ msgstr "Regístrate con Github"
 msgid "Start new game"
 msgstr "Empezar nuevo juego"
 
-msgid "Task is solved in External Plaform"
-msgstr "La tarea se resuelve en plataforma externa."
-
 msgid "Test failed"
 msgstr "Prueba fallida"
 
@@ -1788,9 +1720,6 @@ msgstr "Usuarios principales por tarea"
 
 msgid "tournament"
 msgstr "torneo"
-
-msgid "Tournament will start soon"
-msgstr "El torneo comenzará pronto."
 
 msgid "Type a player name"
 msgstr "Escribe un nombre de jugador"
@@ -4746,26 +4675,8 @@ msgstr "Delta de clave promedio (ms) por lote"
 msgid "Final submitted code (%{count} chars)"
 msgstr "Código final enviado (caracteres %{count})"
 
-msgid "Could not start the tournament, try again"
-msgstr "No se pudo iniciar el torneo, inténtalo de nuevo."
-
-msgid "Waiting for start"
-msgstr "Esperando comenzar"
-
-msgid "Admin panel"
-msgstr "Panel de administración"
-
 msgid "Choose a language"
 msgstr "Elige un idioma"
-
-msgid "Solutions are submitted on the external platform"
-msgstr "Las soluciones se envían en la plataforma externa."
-
-msgid "The server did not respond, try again"
-msgstr "El servidor no respondió, inténtalo de nuevo."
-
-msgid "Could not submit the solution"
-msgstr "No se pudo enviar la solución"
 
 msgid "Swap sides"
 msgstr "Intercambiar lados"
@@ -4824,9 +4735,6 @@ msgstr "Volver a analizar"
 
 msgid "No players found for this game."
 msgstr "No se encontraron jugadores para este juego."
-
-msgid "Could not connect to the tournament"
-msgstr "No se pudo conectar al torneo"
 
 msgid "Tournaments. Seasons. Code-first competition."
 msgstr "Torneos. Estaciones. Competencia de código primero."

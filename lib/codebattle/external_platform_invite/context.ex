@@ -22,27 +22,24 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
 
   alias Codebattle.ExternalPlatform
   alias Codebattle.ExternalPlatformInvite
-  alias Codebattle.PubSub.Message
   alias Codebattle.Repo
   alias Codebattle.User
 
-  @spec get_invite(pos_integer(), pos_integer() | nil) :: ExternalPlatformInvite.t() | nil
-  def get_invite(user_id, group_tournament_id \\ nil) do
+  @spec get_invite(pos_integer()) :: ExternalPlatformInvite.t() | nil
+  def get_invite(user_id) do
     ExternalPlatformInvite
     |> where([i], i.user_id == ^user_id)
-    |> filter_by_tournament(group_tournament_id)
     |> Repo.one()
   end
 
-  @spec get_or_create_invite(pos_integer(), pos_integer() | nil) :: ExternalPlatformInvite.t()
-  def get_or_create_invite(user_id, group_tournament_id \\ nil) do
-    case get_invite(user_id, group_tournament_id) do
+  @spec get_or_create_invite(pos_integer()) :: ExternalPlatformInvite.t()
+  def get_or_create_invite(user_id) do
+    case get_invite(user_id) do
       nil ->
         {:ok, invite} =
           %ExternalPlatformInvite{}
           |> ExternalPlatformInvite.changeset(%{
             user_id: user_id,
-            group_tournament_id: group_tournament_id,
             state: "pending"
           })
           |> Repo.insert()
@@ -142,7 +139,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
         case ExternalPlatform.check_invite(platform_invite_id) do
           {:ok, body} ->
             _ = persist_platform_user(invite.user_id, resolve_platform_user(body))
-            accept_and_enqueue_setup(invite, body)
+            accept_invite(invite, body)
 
           {:error, :not_accepted} ->
             {:error, :not_accepted}
@@ -163,30 +160,12 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     end
   end
 
-  defp accept_and_enqueue_setup(invite, body) do
-    result =
-      update_invite(invite, %{
-        state: "accepted",
-        response: merge_accepted_response(invite.response, body)
-      })
-
-    case result do
-      {:ok, _updated_invite} ->
-        enqueue_external_setup(invite)
-        result
-
-      error ->
-        error
-    end
+  defp accept_invite(invite, body) do
+    update_invite(invite, %{
+      state: "accepted",
+      response: merge_accepted_response(invite.response, body)
+    })
   end
-
-  defp enqueue_external_setup(%{group_tournament_id: gt_id, user_id: user_id}) when not is_nil(gt_id) do
-    %{user_id: user_id, group_tournament_id: gt_id}
-    |> Codebattle.Workers.ExternalSetupWorker.new()
-    |> Oban.insert()
-  end
-
-  defp enqueue_external_setup(_invite), do: :ok
 
   @doc """
   Re-fetches the invite from External Platform (using the new GET /invites/{id} endpoint)
@@ -228,7 +207,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
 
   defp apply_platform_invite_status(invite, %{"status" => "accepted"} = body) do
     _ = persist_platform_user(invite.user_id, resolve_platform_user(body))
-    accept_and_enqueue_setup(invite, body)
+    accept_invite(invite, body)
   end
 
   defp apply_platform_invite_status(invite, %{"status" => "pending"} = body) do
@@ -313,39 +292,12 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     update_invite(invite, %{state: "failed", response: %{"error" => inspect(reason)}})
   end
 
-  @doc """
-  Single mutation entry point for an invite. Always go through this so subscribers
-  to `group_tournament:<id>:user:<user_id>` receive the `invite_updated` broadcast.
-  """
   @spec update_invite(ExternalPlatformInvite.t(), map()) ::
           {:ok, ExternalPlatformInvite.t()} | {:error, Ecto.Changeset.t()}
   def update_invite(invite, attrs) do
-    prev_state = invite.state
-
-    result =
-      invite
-      |> ExternalPlatformInvite.changeset(attrs)
-      |> Repo.update()
-
-    with {:ok, updated} <- result do
-      maybe_broadcast(updated, prev_state)
-      {:ok, updated}
-    end
-  end
-
-  defp maybe_broadcast(%ExternalPlatformInvite{group_tournament_id: nil}, _prev_state), do: :ok
-
-  defp maybe_broadcast(%ExternalPlatformInvite{state: state}, state), do: :ok
-
-  defp maybe_broadcast(%ExternalPlatformInvite{} = invite, _prev_state) do
-    message = %Message{
-      topic: "group_tournament:#{invite.group_tournament_id}:user:#{invite.user_id}",
-      event: "group_tournament:invite_updated",
-      payload: %{invite_id: invite.id, state: invite.state}
-    }
-
-    Phoenix.PubSub.broadcast(Codebattle.PubSub, message.topic, message)
-    :ok
+    invite
+    |> ExternalPlatformInvite.changeset(attrs)
+    |> Repo.update()
   end
 
   # When the External Platform platform confirms an invite acceptance, mirror the user's
@@ -389,12 +341,4 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   end
 
   defp parse_datetime(_), do: nil
-
-  defp filter_by_tournament(query, nil) do
-    where(query, [i], is_nil(i.group_tournament_id))
-  end
-
-  defp filter_by_tournament(query, group_tournament_id) do
-    where(query, [i], i.group_tournament_id == ^group_tournament_id)
-  end
 end

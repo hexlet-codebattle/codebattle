@@ -4,10 +4,6 @@ defmodule Codebattle.MiscContextsTest do
   alias Codebattle.Bot
   alias Codebattle.Customization
   alias Codebattle.Feedback
-  alias Codebattle.GroupTask
-  alias Codebattle.GroupTaskSolution
-  alias Codebattle.GroupTournament
-  alias Codebattle.GroupTournamentPlayer
   alias Codebattle.Task
 
   test "lists feedback entries" do
@@ -32,45 +28,6 @@ defmodule Codebattle.MiscContextsTest do
     assert Customization.get(key) == "first"
     assert {:ok, _} = Customization.upsert(key, "second")
     assert Customization.get(key) == "second"
-  end
-
-  test "normalizes optional group task fields" do
-    existing = %GroupTask{slug: "old", runner_url: "https://runner.test", time_to_solve_sec: 10}
-
-    nil_values = GroupTask.changeset(existing, %{slug: nil, runner_url: nil})
-    assert Ecto.Changeset.get_change(nil_values, :slug) == nil
-    assert Ecto.Changeset.get_change(nil_values, :runner_url) == nil
-
-    blank_url = GroupTask.changeset(%GroupTask{}, %{slug: "  SAMPLE  ", runner_url: "   ", time_to_solve_sec: 10})
-    assert Ecto.Changeset.get_change(blank_url, :slug) == "sample"
-    assert Ecto.Changeset.get_change(blank_url, :runner_url) == nil
-  end
-
-  test "allows optional group tournament and player strings to be cleared" do
-    tournament = %GroupTournament{
-      slug: "old",
-      template_id: "template",
-      task_description: "description",
-      local_folder: "folder"
-    }
-
-    tournament_changeset =
-      GroupTournament.changeset(tournament, %{
-        slug: nil,
-        template_id: nil,
-        task_description: nil,
-        local_folder: nil
-      })
-
-    assert Ecto.Changeset.get_change(tournament_changeset, :slug) == nil
-    assert Ecto.Changeset.get_change(tournament_changeset, :template_id) == nil
-    assert Ecto.Changeset.get_change(tournament_changeset, :task_description) == nil
-    assert Ecto.Changeset.get_change(tournament_changeset, :local_folder) == nil
-
-    player_changeset = GroupTournamentPlayer.changeset(%GroupTournamentPlayer{lang: "js"}, %{lang: nil})
-    solution_changeset = GroupTaskSolution.changeset(%GroupTaskSolution{lang: "js"}, %{lang: nil})
-    assert Ecto.Changeset.get_change(player_changeset, :lang) == nil
-    assert Ecto.Changeset.get_change(solution_changeset, :lang) == nil
   end
 
   test "filters public tasks, exposes admin visibility, and counts played games" do

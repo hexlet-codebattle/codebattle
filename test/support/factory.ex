@@ -4,10 +4,6 @@ defmodule CodebattleWeb.Factory do
 
   alias Codebattle.Feedback
   alias Codebattle.Game
-  alias Codebattle.GroupTask
-  alias Codebattle.GroupTaskSolution
-  alias Codebattle.GroupTournament
-  alias Codebattle.GroupTournamentPlayer
   alias Codebattle.Playbook
   alias Codebattle.Task
   alias Codebattle.TaskPack
@@ -239,45 +235,6 @@ defmodule CodebattleWeb.Factory do
 
   def feedback_factory do
     %Feedback{author_name: "name", status: "proposal", text: "text", title_link: "title_link"}
-  end
-
-  def group_task_factory do
-    %GroupTask{
-      slug: sequence(:group_task_slug, &"group-task-#{&1}"),
-      time_to_solve_sec: 600,
-      runner_url: "http://runner.example/api/v1/group_tasks/run"
-    }
-  end
-
-  def group_task_solution_factory do
-    %GroupTaskSolution{
-      user: build(:user),
-      group_task: build(:group_task),
-      lang: "python",
-      solution: "print('ok')"
-    }
-  end
-
-  def group_tournament_factory do
-    %GroupTournament{
-      creator: build(:user),
-      group_task: build(:group_task),
-      name: sequence(:group_tournament_name, &"Group Tournament #{&1}"),
-      slug: sequence(:group_tournament_slug, &"group-tournament-#{&1}"),
-      description: "Group tournament description",
-      starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
-      rounds_count: 1,
-      round_timeout_seconds: 60
-    }
-  end
-
-  def group_tournament_player_factory do
-    %GroupTournamentPlayer{
-      group_tournament: build(:group_tournament),
-      user: build(:user),
-      lang: "python",
-      state: "active"
-    }
   end
 
   defp unique(prefix), do: "#{prefix}#{System.unique_integer([:positive, :monotonic])}"

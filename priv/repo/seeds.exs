@@ -3,9 +3,6 @@ import Ecto.Query
 alias Codebattle.Clan
 alias Codebattle.Event
 alias Codebattle.Game
-alias Codebattle.GroupTask
-alias Codebattle.GroupTask.Context, as: GroupTaskContext
-alias Codebattle.GroupTaskSolution
 alias Codebattle.Repo
 alias Codebattle.Season
 alias Codebattle.TaskPack
@@ -315,92 +312,6 @@ for level <- levels do
     |> Repo.insert!()
 end
 
-seed_group_task = fn slug, time_to_solve_sec ->
-  case Repo.get_by(GroupTask, slug: slug) do
-    nil ->
-      {:ok, group_task} =
-        GroupTaskContext.create_group_task(%{
-          slug: slug,
-          time_to_solve_sec: time_to_solve_sec
-        })
-
-      group_task
-
-    group_task ->
-      group_task
-      |> GroupTask.changeset(%{time_to_solve_sec: time_to_solve_sec})
-      |> Repo.update!()
-  end
-end
-
-seed_group_task_solution = fn group_task, user, lang, solution_text ->
-  existing_solution =
-    Repo.get_by(GroupTaskSolution,
-      group_task_id: group_task.id,
-      user_id: user.id,
-      lang: String.downcase(lang),
-      solution: solution_text
-    )
-
-  if is_nil(existing_solution) do
-    {:ok, _solution} =
-      GroupTaskContext.create_solution(group_task.id, user.id, %{
-        "lang" => lang,
-        "solution" => solution_text
-      })
-  end
-end
-
-sample_group_task_users =
-  Repo.all(
-    from(u in User,
-      order_by: [asc: u.id],
-      limit: 3
-    )
-  )
-
-if length(sample_group_task_users) >= 3 do
-  sprint_group_task = seed_group_task.("group-task-sprint-demo", 900)
-  finals_group_task = seed_group_task.("group-task-finals-demo", 1_200)
-
-  [user_1, user_2, user_3] = sample_group_task_users
-
-  seed_group_task_solution.(
-    sprint_group_task,
-    user_1,
-    "python",
-    "def solution(nums):\n    return sum(nums)\n"
-  )
-
-  seed_group_task_solution.(
-    sprint_group_task,
-    user_2,
-    "javascript",
-    "const solution = (nums) => nums.reduce((acc, value) => acc + value, 0);\n"
-  )
-
-  seed_group_task_solution.(
-    sprint_group_task,
-    user_3,
-    "elixir",
-    "def solution(nums), do: Enum.sum(nums)\n"
-  )
-
-  seed_group_task_solution.(
-    finals_group_task,
-    user_1,
-    "python",
-    "def solution(matrix):\n    return [sum(row) for row in matrix]\n"
-  )
-
-  seed_group_task_solution.(
-    finals_group_task,
-    user_2,
-    "typescript",
-    "export const solution = (matrix: number[][]): number[] => matrix.map(row => row.reduce((a, b) => a + b, 0));\n"
-  )
-end
-
 # Build users for load tests with clans
 Enum.each(1..100, fn id ->
   Clan.find_or_create_by_clan("clan_#{id}", 1)
@@ -478,18 +389,6 @@ rescue
     Logger.error("Error seeding tokens: #{inspect(e)}")
 end
 
-qualification_group_task =
-  case Repo.get_by(GroupTask, slug: "group-task-sprint-demo") do
-    nil -> seed_group_task.("group-task-sprint-demo", 900)
-    existing -> existing
-  end
-
-finals_group_task =
-  case Repo.get_by(GroupTask, slug: "group-task-finals-demo") do
-    nil -> seed_group_task.("group-task-finals-demo", 1_200)
-    existing -> existing
-  end
-
 tournament_meta_default = %{
   type: "swiss",
   rounds_limit: 1,
@@ -511,19 +410,10 @@ stages =
       dates: "May 12-17",
       action_button_text: "Go",
       confirmation_text: "Confirm that you want to suffer 1 hour",
-      next_round_text:
-        "You finished the qualification tournament. Your next round is the AI-round group tournament — open it to continue.",
       status: :active,
       type: :tournament,
       playing_type: :single,
-      tournament_meta: tournament_meta_default,
-      group_tournament_meta: %{
-        group_task_id: qualification_group_task.id,
-        rounds_count: 2,
-        require_invitation: true,
-        round_timeout_seconds: 15 * 60,
-        include_bots: true
-      }
+      tournament_meta: tournament_meta_default
     },
     %{
       slug: "semifinal_entrance",
@@ -537,19 +427,10 @@ stages =
       dates: "May 31",
       action_button_text: "Go",
       confirmation_text: "Confirm that you want to suffer 1 hour",
-      next_round_text:
-        "You finished the semifinal. Your next round is the AI-round group tournament — open it to continue.",
       status: :active,
       type: :tournament,
       playing_type: :single,
-      tournament_meta: tournament_meta_default,
-      group_tournament_meta: %{
-        group_task_id: qualification_group_task.id,
-        rounds_count: 2,
-        require_invitation: true,
-        round_timeout_seconds: 20 * 60,
-        include_bots: true
-      }
+      tournament_meta: tournament_meta_default
     },
     %{
       slug: "final_entrance",
@@ -562,20 +443,11 @@ stages =
       name: "Final",
       action_button_text: "Go",
       confirmation_text: "Confirm that you want to suffer 1 hour",
-      next_round_text:
-        "You finished the final tournament. Your next round is the AI-round group tournament — open it to continue.",
       dates: "June 26",
       status: :active,
       type: :tournament,
       playing_type: :single,
-      tournament_meta: tournament_meta_default,
-      group_tournament_meta: %{
-        group_task_id: finals_group_task.id,
-        rounds_count: 2,
-        require_invitation: true,
-        round_timeout_seconds: 30 * 60,
-        include_bots: true
-      }
+      tournament_meta: tournament_meta_default
     }
   ]
 

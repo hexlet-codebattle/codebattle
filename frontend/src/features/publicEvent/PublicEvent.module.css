@@ -37,11 +37,6 @@
   white-space: nowrap;
 }
 
-.secondary {
-  color: var(--cb-text-muted);
-  font-size: var(--mantine-font-size-xs);
-}
-
 .passed {
   color: var(--cb-success);
 }

@@ -26,10 +26,7 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  # Force-redirect every non-admin user on the main channel to a URL. Used by
-  # the group tournament admin "Gather players" button. Admin filtering is done
-  # in MainChannel.handle_info/2 (we can't filter by topic because every user
-  # shares the same one), so the broadcast itself is unconditional.
+  # MainChannel filters out admins before forwarding redirects.
   def get_messages("main:redirect", %{user_ids: user_ids} = params) when is_list(user_ids) do
     payload = Map.delete(params, :user_ids)
 
@@ -226,8 +223,7 @@ defmodule Codebattle.PubSub.Events do
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
             current_round_position: params.tournament.current_round_position,
-            break_state: "off",
-            group_tournament_id: params.tournament.group_tournament_id
+            break_state: "off"
           }
         }
       }
@@ -690,91 +686,6 @@ defmodule Codebattle.PubSub.Events do
         topic: "game:#{params.game_id}",
         event: "game:unlocked",
         payload: %{}
-      }
-    ]
-  end
-
-  def get_messages("group_tournament:run_updated", params) do
-    # A run row belongs to exactly one user — the broadcast carries that
-    # user's score/place and should only land in that user's per-user topic.
-    # Fanning out to every player_id of a slice would send each row to all
-    # six players, leaving each panel with six duplicates per slice.
-    per_user =
-      case params[:user_id] do
-        user_id when is_integer(user_id) ->
-          [
-            %Message{
-              topic: "group_tournament:#{params.group_tournament_id}:user:#{user_id}",
-              event: "group_tournament:run_updated",
-              payload: params
-            }
-          ]
-
-        _ ->
-          []
-      end
-
-    # The tournament-wide topic is opt-in (admins/moderators on ranked,
-    # everyone on individual tournaments) and exists to give those listeners
-    # a live feed of *user-initiated* submissions. Slice/seed rounds finish
-    # ~slice_size rows at a time — broadcasting all of those to the wide
-    # topic would dump up to 1000 events on every admin per round when the
-    # status_updated event + per-user topics already cover what's useful.
-    tournament_wide =
-      if params[:kind] in ["user", :user] do
-        [
-          %Message{
-            topic: "group_tournament:#{params.group_tournament_id}",
-            event: "group_tournament:run_updated",
-            payload: params
-          }
-        ]
-      else
-        []
-      end
-
-    per_user ++ tournament_wide
-  end
-
-  def get_messages("group_tournament:status_updated", params) do
-    messages = [
-      %Message{
-        topic: "group_tournament:#{params.group_tournament_id}",
-        event: "group_tournament:status_updated",
-        payload: params
-      }
-    ]
-
-    if params[:user_ids] do
-      user_messages =
-        Enum.map(params.user_ids, fn user_id ->
-          %Message{
-            topic: "group_tournament:#{params.group_tournament_id}:user:#{user_id}",
-            event: "group_tournament:status_updated",
-            payload: params
-          }
-        end)
-
-      messages ++ user_messages
-    else
-      messages
-    end
-  end
-
-  # Smooth-start fan-out: one message to a dedicated per-user "smooth" topic.
-  # Used by Codebattle.GroupTournament.Server to spread status_updated pushes
-  # evenly over time so a large room doesn't all reload at once. Players are
-  # subscribed to this separate topic on channel join, so this never duplicates
-  # the normal status_updated broadcast above.
-  def get_messages("group_tournament:smooth_status_updated", params) do
-    [
-      %Message{
-        topic: "group_tournament:#{params.group_tournament_id}:smooth:#{params.user_id}",
-        event: "group_tournament:status_updated",
-        payload: %{
-          group_tournament_id: params.group_tournament_id,
-          status: params.status
-        }
       }
     ]
   end

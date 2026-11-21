@@ -172,17 +172,6 @@ ars-200:
 		-score-strategy 75_percentile \
 		-timeout-mode per_round_with_rematch"
 
-DIMA_ARGS ?=
-DIMA_GOCACHE ?= /workspace/tmp/dima-go-build
-DIMA_GOPATH ?= /workspace/tmp/dima-go
-DIMA_BIN ?= /workspace/tmp/dima
-
-dima:
-	$(DEV) sh -c 'mkdir -p $(DIMA_GOCACHE) $(DIMA_GOPATH) && cd tools/dima && GOCACHE=$(DIMA_GOCACHE) GOPATH=$(DIMA_GOPATH) go build -o $(DIMA_BIN) ./cmd/dima'
-
-huyach: dima
-	$(DEV) $(DIMA_BIN) $(DIMA_ARGS)
-
 terraform-vars-generate:
 	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
 

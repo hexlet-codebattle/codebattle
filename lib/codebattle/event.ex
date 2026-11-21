@@ -42,10 +42,7 @@ defmodule Codebattle.Event do
                only: [
                  :action_button_text,
                  :confirmation_text,
-                 :next_round_text,
                  :dates,
-                 :group_tournament_id,
-                 :group_tournament_meta,
                  :name,
                  :save_results,
                  :slug,
@@ -58,9 +55,7 @@ defmodule Codebattle.Event do
 
       field(:action_button_text, :string)
       field(:confirmation_text, :string)
-      field(:next_round_text, :string)
       field(:dates, :string)
-      field(:group_tournament_id, :integer)
       field(:name, :string)
       field(:save_results, :boolean, default: true)
       field(:slug, :string)
@@ -68,7 +63,6 @@ defmodule Codebattle.Event do
       field(:tournament_id, :integer)
       field(:playing_type, Ecto.Enum, values: [:single, :global])
       field(:tournament_meta, AtomizedMap)
-      field(:group_tournament_meta, AtomizedMap)
       field(:type, Ecto.Enum, values: [:tournament, :entrance])
     end
 
@@ -150,10 +144,7 @@ defmodule Codebattle.Event do
     |> cast(params, [
       :action_button_text,
       :confirmation_text,
-      :next_round_text,
       :dates,
-      :group_tournament_id,
-      :group_tournament_meta,
       :name,
       :save_results,
       :slug,

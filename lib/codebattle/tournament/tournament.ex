@@ -27,7 +27,6 @@ defmodule Codebattle.Tournament do
              :description_translations,
              :event_id,
              :exclude_banned_players,
-             :group_tournament_id,
              :grade,
              :id,
              :is_live,
@@ -98,7 +97,6 @@ defmodule Codebattle.Tournament do
     field(:finished_at, :utc_datetime)
     field(:exclude_banned_players, :boolean, default: false)
     field(:grade, :string, default: "open")
-    field(:group_tournament_id, :integer)
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
@@ -178,7 +176,6 @@ defmodule Codebattle.Tournament do
       :event_id,
       :exclude_banned_players,
       :grade,
-      :group_tournament_id,
       :last_round_ended_at,
       :last_round_started_at,
       :level,

@@ -3,6 +3,7 @@ defmodule Codebattle.DataCase do
   use ExUnit.CaseTemplate
 
   alias Codebattle.Repo
+  alias Codebattle.Tournament.GlobalSupervisor
   alias Ecto.Adapters.SQL.Sandbox
 
   using do
@@ -33,8 +34,7 @@ defmodule Codebattle.DataCase do
     FunWithFlags.enable(:async_game_score_on_join)
 
     on_exit(fn ->
-      terminate_supervisor_children(Codebattle.GroupTournament.GlobalSupervisor)
-      terminate_supervisor_children(Codebattle.Tournament.GlobalSupervisor)
+      terminate_supervisor_children(GlobalSupervisor)
       terminate_supervisor_children(Codebattle.Game.GlobalSupervisor)
       Sandbox.stop_owner(pid)
     end)
@@ -55,7 +55,7 @@ defmodule Codebattle.DataCase do
   # A tournament server that starts and finds its id in the info cache assumes it crashed
   # and restores itself in the background. Stopping servers between tests must not leave
   # such entries behind for a later tournament that gets the same id.
-  defp forget_tournament_info(Codebattle.Tournament.GlobalSupervisor, id) do
+  defp forget_tournament_info(GlobalSupervisor, id) do
     if :ets.whereis(:tournament_info_cache) != :undefined do
       :ets.delete(:tournament_info_cache, String.to_integer(id))
     end

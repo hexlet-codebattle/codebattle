@@ -5,7 +5,6 @@ defmodule CodebattleWeb.Router do
   import Oban.Web.Router
   import Phoenix.LiveDashboard.Router
 
-  alias CodebattleWeb.Admin.GroupTaskController
   alias CodebattleWeb.Admin.TournamentDuplicatorController
   alias CodebattleWeb.Plugs.AnonymousRateLimit
   alias CodebattleWeb.Plugs.AssignCurrentUser
@@ -72,8 +71,7 @@ defmodule CodebattleWeb.Router do
     plug(McpOauthRateLimit)
   end
 
-  # Public API v1: personal token required everywhere, per-user limits. Kept separate from
-  # :public_api, where group_task_solutions reads its own Bearer tokens.
+  # Public API v1: personal token required everywhere, per-user limits.
   pipeline :public_api_v1 do
     plug(:accepts, ["json"])
     plug(:put_secure_browser_headers)
@@ -104,9 +102,6 @@ defmodule CodebattleWeb.Router do
     post("/task_packs", TaskPackController, :create)
     get("/tournaments/:id", TournamentController, :show)
     post("/load_tests/scenarios", LoadTestController, :create_scenario)
-    post("/load_tests/group_scenarios", LoadTestController, :create_group_scenario)
-    post("/load_tests/group_scenarios/:id/start", LoadTestController, :start_group_scenario)
-    post("/load_tests/group_scenarios/:id/retry", LoadTestController, :retry_group_scenario)
     get("/load_tests/tasks/:id/solutions", LoadTestController, :task_solutions)
   end
 
@@ -181,139 +176,6 @@ defmodule CodebattleWeb.Router do
     post("/events/:id/enroll_all", CodebattleWeb.EventController, :enroll_all, as: :event_enroll_all)
 
     post("/events/:id/calculate_places", CodebattleWeb.EventController, :calculate_places, as: :event_calculate_places)
-    get("/group_tasks/:id/runs/:run_id/:part", GroupTaskController, :download_run_part, as: :group_task_run_part)
-
-    get("/group_tasks/:id/solutions/:solution_id/edit", GroupTaskController, :edit_solution,
-      as: :edit_group_task_solution
-    )
-
-    patch("/group_tasks/:id/solutions/:solution_id", GroupTaskController, :update_solution,
-      as: :update_group_task_solution
-    )
-
-    delete("/group_tasks/:id/solutions/:solution_id", GroupTaskController, :delete_solution, as: :group_task_solution)
-
-    resources("/group_tasks", GroupTaskController)
-
-    post("/group_tournaments/:id/start", CodebattleWeb.Admin.GroupTournamentController, :start,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/start_timer", CodebattleWeb.Admin.GroupTournamentController, :start_timer,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/smooth_start", CodebattleWeb.Admin.GroupTournamentController, :smooth_start,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/finish", CodebattleWeb.Admin.GroupTournamentController, :finish,
-      as: :admin_group_tournament
-    )
-
-    post(
-      "/group_tournaments/:id/force_finish_break",
-      CodebattleWeb.Admin.GroupTournamentController,
-      :force_finish_break,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/cancel", CodebattleWeb.Admin.GroupTournamentController, :cancel,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/check", CodebattleWeb.Admin.GroupTournamentController, :check,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/reset", CodebattleWeb.Admin.GroupTournamentController, :reset,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/retry", CodebattleWeb.Admin.GroupTournamentController, :retry,
-      as: :admin_group_tournament
-    )
-
-    post(
-      "/group_tournaments/:id/run_all_slices",
-      CodebattleWeb.Admin.GroupTournamentController,
-      :run_all_slices,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/run_top8", CodebattleWeb.Admin.GroupTournamentController, :run_top8,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/tokens", CodebattleWeb.Admin.GroupTournamentController, :create_token,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/add_user", CodebattleWeb.Admin.GroupTournamentController, :add_user,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/bulk_add_users", CodebattleWeb.Admin.GroupTournamentController, :bulk_add_users,
-      as: :admin_group_tournament
-    )
-
-    post(
-      "/group_tournaments/:id/bulk_external_setup",
-      CodebattleWeb.Admin.GroupTournamentController,
-      :bulk_external_setup,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/toggle_leaderboard", CodebattleWeb.Admin.GroupTournamentController, :toggle_leaderboard,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/toggle_visibility", CodebattleWeb.Admin.GroupTournamentController, :toggle_visibility,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/broadcast_redirect", CodebattleWeb.Admin.GroupTournamentController, :broadcast_redirect,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/hide_repos", CodebattleWeb.Admin.GroupTournamentController, :hide_repos,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/unveil_repos", CodebattleWeb.Admin.GroupTournamentController, :unveil_repos,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/delete_repos", CodebattleWeb.Admin.GroupTournamentController, :delete_repos,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/occupy_seats", CodebattleWeb.Admin.GroupTournamentController, :occupy_seats,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/release_seats", CodebattleWeb.Admin.GroupTournamentController, :release_seats,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/remove_dev_roles", CodebattleWeb.Admin.GroupTournamentController, :remove_dev_roles,
-      as: :admin_group_tournament
-    )
-
-    post("/group_tournaments/:id/add_viewer_roles", CodebattleWeb.Admin.GroupTournamentController, :add_viewer_roles,
-      as: :admin_group_tournament
-    )
-
-    get("/group_tournaments/:id/leaderboard", CodebattleWeb.Admin.GroupTournamentController, :leaderboard,
-      as: :admin_group_tournament
-    )
-
-    resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
-
-    get("/group_tournaments/:id/solution_tester", CodebattleWeb.Admin.GroupTournamentController, :solution_tester,
-      as: :admin_group_tournament
-    )
-
     live("/tournaments", CodebattleWeb.Live.Admin.TournamentIndexView, :index)
 
     get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)
@@ -327,10 +189,6 @@ defmodule CodebattleWeb.Router do
     get("/tournaments/:id/stream", Tournament.StreamController, :admin, as: :admin_tournament_stream)
 
     get("/tournaments/:id/stream/state", Tournament.StreamController, :json_state, as: :admin_tournament_stream_state)
-
-    get("/group_tournaments/:id/history.json", Admin.GroupTournamentJsonController, :history,
-      as: :admin_group_tournament_history_json
-    )
   end
 
   scope "/auth", CodebattleWeb do
@@ -452,11 +310,6 @@ defmodule CodebattleWeb.Router do
       post("/playbooks/reject", PlaybookController, :reject)
       get("/events/:id/leaderboard", Event.LeaderboardController, :show)
       get("/seasons/:season_id/players/:user_id/stats", SeasonResultController, :player_stats)
-      get("/group_tournaments/:id", GroupTournamentController, :show)
-      post("/group_tournaments/:id/join", GroupTournamentController, :join)
-      post("/group_tournaments/:id/submit_solution", GroupTournamentController, :submit_solution)
-      post("/group_tournaments/:id/tokens", GroupTournamentController, :create_token)
-      post("/group_tournaments/:id/confirm_invitation", GroupTournamentController, :confirm_invitation)
     end
 
     scope "/v1", V1, as: :v1 do
@@ -468,14 +321,6 @@ defmodule CodebattleWeb.Router do
       scope("/games") do
         resources("/:game_id/user_game_reports", UserGameReportController, only: [:create])
       end
-    end
-  end
-
-  scope "/api", CodebattleWeb.Api, as: :api do
-    pipe_through(:public_api)
-
-    scope "/v1", V1, as: :v1 do
-      post("/group_task_solutions", GroupTaskSolutionController, :create)
     end
   end
 
@@ -497,9 +342,6 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
 
     resources("/tournaments", TournamentController, only: [:index, :show, :edit])
-    get("/my-tournament", GroupTournamentController, :my_tournament)
-    get("/group_tournaments/:id", GroupTournamentController, :show)
-    get("/group_tournaments/:id/admin", GroupTournamentController, :admin, as: :group_tournament_admin)
 
     get("/schedule", TournamentsScheduleController, :index)
     get("/hall_of_fame", HallOfFameController, :index)

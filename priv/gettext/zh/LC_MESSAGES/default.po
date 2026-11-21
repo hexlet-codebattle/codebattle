@@ -780,9 +780,6 @@ msgstr "于 %{date} 加入"
 msgid "Github account"
 msgstr "Github账号"
 
-msgid "Place: #%{place}"
-msgstr "地点：#%{place}"
-
 msgid "Completed games"
 msgstr "已完成的游戏"
 
@@ -1127,28 +1124,11 @@ msgstr "邀请失败。请再试一次。"
 msgid "Retry"
 msgstr "重试"
 
-msgid ""
-"Could not retrieve your external platform credentials. Please contact "
-"support."
-msgstr "无法检索您的外部平台凭据。请联系支持人员。"
-
-msgid "Group Tournament"
-msgstr "团体赛"
-
 msgid "Support"
 msgstr "支持"
 
-msgid "Execution History"
-msgstr "执行历史"
-
 msgid "Add Solution +"
 msgstr "添加解法+"
-
-msgid "Run Viewer"
-msgstr "运行查看器"
-
-msgid "No viewer HTML for this run."
-msgstr "本次运行没有查看器 HTML。"
 
 msgid "Tournament Overview"
 msgstr "赛事概况"
@@ -1165,9 +1145,6 @@ msgstr "还没有日志"
 msgid "... and %{count} more"
 msgstr "...以及 %{count} 更多"
 
-msgid "External Setup"
-msgstr "外部设置"
-
 msgid "Run Viewer Fullscreen"
 msgstr "全屏运行查看器"
 
@@ -1176,14 +1153,6 @@ msgstr "关闭全屏"
 
 msgid "Tournament finished"
 msgstr "比赛结束"
-
-msgid ""
-"Your next step is the AI-round group tournament. Click the button below to "
-"continue."
-msgstr "下一步是 AI 轮小组赛。单击下面的按钮继续。"
-
-msgid "Go to AI-round group tournament"
-msgstr "前往AI轮小组赛"
 
 msgid "Later"
 msgstr "后来"
@@ -1194,17 +1163,8 @@ msgstr "舞台结束"
 msgid "%{name} stage finished"
 msgstr "%{name}阶段完成"
 
-msgid "First qualification round finished"
-msgstr "第一轮资格赛结束"
-
 msgid "Accepted"
 msgstr "已接受"
-
-msgid "Group assignment soon"
-msgstr "小组作业很快"
-
-msgid "Group contest soon"
-msgstr "团体赛即将进行"
 
 msgid "Return to game"
 msgstr "返回游戏"
@@ -1551,17 +1511,8 @@ msgstr "..."
 msgid "%{state}"
 msgstr "%{state}"
 
-msgid "30 minutes to solve"
-msgstr "30分钟解决"
-
-msgid "Accept invitation"
-msgstr "接受邀请"
-
 msgid "Ban player"
 msgstr "封禁玩家"
-
-msgid "Before you begin:"
-msgstr "开始之前："
 
 msgid "Break"
 msgstr "休息"
@@ -1599,9 +1550,6 @@ msgstr "反馈未发送。"
 msgid "Feedback sent successfully."
 msgstr "反馈发送成功。"
 
-msgid "Find tournament details at"
-msgstr "查找锦标赛详细信息，请访问"
-
 msgid "Fuzzy search"
 msgstr "模糊搜索"
 
@@ -1614,9 +1562,6 @@ msgstr "放弃"
 msgid "Give Up"
 msgstr "放弃"
 
-msgid "Go to task"
-msgstr "前往题目"
-
 msgid "Have not an account?"
 msgstr "还没有帐户？"
 
@@ -1625,9 +1570,6 @@ msgstr "如果您有帐户"
 
 msgid "Inserted At"
 msgstr "插入于"
-
-msgid "Join our External Platform organization to receive the task"
-msgstr "加入我们的外部平台组织来接收题目"
 
 msgid "Link"
 msgstr "链接"
@@ -1649,9 +1591,6 @@ msgstr "没有可用的排行榜数据"
 
 msgid "Offender"
 msgstr "罪犯"
-
-msgid "Once all steps are complete, you can start solving"
-msgstr "所有步骤完成后，就可以开始求解了"
 
 msgid "Player not found"
 msgstr "未找到玩家"
@@ -1710,9 +1649,6 @@ msgstr "使用 Github 注册"
 msgid "Start new game"
 msgstr "开始新游戏"
 
-msgid "Task is solved in External Plaform"
-msgstr "题目在外部平台解决"
-
 msgid "Test failed"
 msgstr "测试失败"
 
@@ -1733,9 +1669,6 @@ msgstr "按题目排名最高的用户"
 
 msgid "tournament"
 msgstr "锦标赛"
-
-msgid "Tournament will start soon"
-msgstr "比赛即将开始"
 
 msgid "Type a player name"
 msgstr "输入玩家姓名"
@@ -4625,26 +4558,8 @@ msgstr "每批次平均密钥增量（毫秒）"
 msgid "Final submitted code (%{count} chars)"
 msgstr "最终提交的代码（%{count} 字符）"
 
-msgid "Could not start the tournament, try again"
-msgstr "无法开始比赛，请重试"
-
-msgid "Waiting for start"
-msgstr "等待开始"
-
-msgid "Admin panel"
-msgstr "管理面板"
-
 msgid "Choose a language"
 msgstr "选择语言"
-
-msgid "Solutions are submitted on the external platform"
-msgstr "解法在外部平台提交"
-
-msgid "The server did not respond, try again"
-msgstr "服务器没有响应，请重试"
-
-msgid "Could not submit the solution"
-msgstr "无法提交解法"
 
 msgid "Swap sides"
 msgstr "交换双方"
@@ -4699,9 +4614,6 @@ msgstr "重新分析"
 
 msgid "No players found for this game."
 msgstr "没有找到该游戏的玩家。"
-
-msgid "Could not connect to the tournament"
-msgstr "无法连接到锦标赛"
 
 msgid "Tournaments. Seasons. Code-first competition."
 msgstr "锦标赛。赛季。代码优先竞赛。"

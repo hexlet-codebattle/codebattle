@@ -8,7 +8,6 @@ defmodule Codebattle.UserEventTest do
     event = insert(:event)
     first_tournament = insert(:tournament)
     second_tournament = insert(:tournament)
-    group_tournament = insert(:group_tournament)
 
     assert "pending" in UserEvent.statuses()
     assert {:ok, user_event} = UserEvent.create(%{user_id: user.id, event_id: event.id, status: "pending"})
@@ -29,12 +28,11 @@ defmodule Codebattle.UserEventTest do
     assert UserEvent.get_stage(staged, "one").status == :pending
 
     started =
-      UserEvent.mark_stage_as_started(staged, "one", first_tournament.id, group_tournament.id)
+      UserEvent.mark_stage_as_started(staged, "one", first_tournament.id)
 
     assert started.status == "in_progress"
     assert started.current_stage_slug == "one"
     assert UserEvent.get_stage(started, "one").tournament_id == first_tournament.id
-    assert UserEvent.get_stage(started, "one").group_tournament_id == group_tournament.id
 
     info = %{
       id: first_tournament.id,

@@ -4,20 +4,15 @@ defmodule Codebattle.Event.Context do
   import Ecto.Query
 
   alias Codebattle.Event
-  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
-  alias Codebattle.GroupTournament
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Server
   alias Codebattle.User
   alias Codebattle.UserEvent
   alias Codebattle.UserEvent.Stage, as: UserEventStage
-  alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
   require Logger
 
-  # TODO: support per-stage weights for tournament_score and group_tournament_score
-  # (e.g., final_score = w1 * score + w2 * group_tournament_score). For now both are summed equally.
   @spec calculate_places_for_stage(Event.t(), String.t()) :: {:ok, non_neg_integer()}
   def calculate_places_for_stage(event, stage_slug) do
     stages =
@@ -27,31 +22,25 @@ defmodule Codebattle.Event.Context do
       |> preload(user_event: :user)
       |> Repo.all()
 
-    scored =
-      Enum.map(stages, fn stage ->
-        total = (stage.score || 0) + (stage.group_tournament_score || 0)
-        {stage, total}
-      end)
-
     total_ranks =
-      scored
-      |> Enum.sort_by(fn {_, total} -> -total end)
+      stages
+      |> Enum.sort_by(fn stage -> -(stage.score || 0) end)
       |> Enum.with_index(1)
-      |> Map.new(fn {{stage, _}, rank} -> {stage.id, rank} end)
+      |> Map.new(fn {stage, rank} -> {stage.id, rank} end)
 
     category_ranks =
-      scored
-      |> Enum.group_by(fn {stage, _} -> stage.user_event.user.category end)
+      stages
+      |> Enum.group_by(& &1.user_event.user.category)
       |> Enum.flat_map(fn {_category, items} ->
         items
-        |> Enum.sort_by(fn {_, total} -> -total end)
+        |> Enum.sort_by(fn stage -> -(stage.score || 0) end)
         |> Enum.with_index(1)
-        |> Enum.map(fn {{stage, _}, rank} -> {stage.id, rank} end)
+        |> Enum.map(fn {stage, rank} -> {stage.id, rank} end)
       end)
       |> Map.new()
 
     updated =
-      Enum.reduce(scored, 0, fn {stage, _total}, acc ->
+      Enum.reduce(stages, 0, fn stage, acc ->
         case stage
              |> UserEventStage.changeset(%{
                place_in_total_rank: Map.get(total_ranks, stage.id),
@@ -172,7 +161,7 @@ defmodule Codebattle.Event.Context do
 
         case Tournament.Context.create(tournament_params) do
           {:ok, tournament} ->
-            start_single_stage(event, user, user_event, event_stage, tournament)
+            start_single_stage(user, user_event, event_stage, tournament)
 
           {:error, reason} ->
             Logger.error("Error starting tournament: #{inspect(reason)}")
@@ -191,8 +180,7 @@ defmodule Codebattle.Event.Context do
         UserEvent.mark_stage_as_started(
           user_event,
           event_stage.slug,
-          tournament_id,
-          event_stage.group_tournament_id
+          tournament_id
         )
 
         {:ok, tournament_id}
@@ -202,108 +190,17 @@ defmodule Codebattle.Event.Context do
     end
   end
 
-  defp start_single_stage(event, user, user_event, event_stage, tournament) do
-    group_tournament_id = setup_individual_group_tournament(event, event_stage, user, tournament)
-    tournament = link_group_tournament(tournament, group_tournament_id)
-
+  defp start_single_stage(user, user_event, event_stage, tournament) do
     Server.handle_event(tournament.id, :join, %{user: user})
-    Server.handle_event(tournament.id, :start, %{run_via: :admin})
 
     UserEvent.mark_stage_as_started(
       user_event,
       event_stage.slug,
-      tournament.id,
-      group_tournament_id
+      tournament.id
     )
+
+    Server.handle_event(tournament.id, :start, %{run_via: :admin})
 
     {:ok, tournament}
   end
-
-  defp setup_individual_group_tournament(event, event_stage, user, tournament) do
-    case create_individual_group_tournament(event, event_stage) do
-      {:ok, group_tournament} ->
-        GroupTournament.Server.join(group_tournament.id, user, user.lang || "js")
-        maybe_preseed_external_invite(group_tournament, user)
-        group_tournament.id
-
-      {:error, reason} ->
-        Logger.warning(
-          "Error creating individual group tournament for user #{user.id}, tournament #{tournament.id}: #{inspect(reason)}"
-        )
-
-        nil
-    end
-  end
-
-  defp link_group_tournament(tournament, nil), do: tournament
-
-  defp link_group_tournament(tournament, group_tournament_id) do
-    Tournament
-    |> where([t], t.id == ^tournament.id)
-    |> Repo.update_all(set: [group_tournament_id: group_tournament_id])
-
-    updated = %{tournament | group_tournament_id: group_tournament_id}
-    Server.update_tournament(updated)
-    updated
-  end
-
-  @doc """
-  Creates a group_tournament for an event stage by copying configurable fields
-  from the parent referenced by `event_stage.group_tournament_meta[:parent_id]`.
-
-  Returns `{:error, :missing_parent_id}` if the stage has no parent pointer, or
-  `{:error, {:parent_not_found, id}}` if the referenced parent is missing.
-  """
-  def create_individual_group_tournament(event, event_stage) do
-    stage_meta = event_stage.group_tournament_meta || %{}
-
-    case Map.get(stage_meta, :parent_id) do
-      nil ->
-        {:error, :missing_parent_id}
-
-      parent_id ->
-        case GroupTournament.Context.get_group_tournament(parent_id) do
-          nil -> {:error, {:parent_not_found, parent_id}}
-          parent -> create_from_parent(event, parent)
-        end
-    end
-  end
-
-  @copied_parent_fields ~w(
-    group_task_id
-    description
-    rounds_count
-    round_timeout_seconds
-    include_bots
-    require_invitation
-    run_on_external_platform
-    template_id
-    slice_size
-    slice_strategy
-    max_score
-    meta
-  )a
-
-  defp create_from_parent(event, parent) do
-    now = DateTime.truncate(DateTime.utc_now(), :second)
-
-    attrs =
-      parent
-      |> Map.take(@copied_parent_fields)
-      |> Map.put(:event_id, event.id)
-      |> Map.put(:name, parent.name)
-      |> Map.put(:slug, parent.slug)
-      |> Map.put(:starts_at, now)
-      |> Map.put(:state, "waiting_participants")
-
-    GroupTournament.Context.create_group_tournament(attrs)
-  end
-
-  defp maybe_preseed_external_invite(%GroupTournament{require_invitation: true} = group_tournament, user) do
-    invite = InviteContext.get_or_create_invite(user.id, group_tournament.id)
-    PlatformInviteAdvancerWorker.enqueue(invite)
-    :ok
-  end
-
-  defp maybe_preseed_external_invite(_group_tournament, _user), do: :ok
 end

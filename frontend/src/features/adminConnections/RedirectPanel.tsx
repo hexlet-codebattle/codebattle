@@ -8,10 +8,9 @@ import { useMainChannelStore } from '@/features/main/store';
 
 import { mergeUserIds, parseUserIds } from './connections';
 
-type RouteKey = 'group_tournaments' | 'games' | 'tournaments' | 'events';
+type RouteKey = 'games' | 'tournaments' | 'events';
 
 const ROUTES: Record<RouteKey, { label: string; placeholder: string; build: (id: string) => string }> = {
-  group_tournaments: { label: 'Group Tournament', placeholder: 'ID', build: (id) => `/group_tournaments/${id}` },
   games: { label: 'Game', placeholder: 'Game ID', build: (id) => `/games/${id}` },
   tournaments: { label: 'Tournament', placeholder: 'Tournament ID', build: (id) => `/tournaments/${id}` },
   events: { label: 'Event', placeholder: 'Event slug', build: (slug) => `/e/${slug}` },
@@ -29,7 +28,7 @@ export function RedirectPanel({ userIdsText, setUserIdsText, connectedUserIds }:
   const { t } = useTranslation();
   const push = useMainChannelStore((state) => state.push);
   const [tournamentId, setTournamentId] = useState('');
-  const [route, setRoute] = useState<RouteKey>('group_tournaments');
+  const [route, setRoute] = useState<RouteKey>('games');
   const [target, setTarget] = useState('');
   const [busy, setBusy] = useState<'fetch' | 'send' | null>(null);
 
