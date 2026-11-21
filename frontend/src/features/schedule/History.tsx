@@ -59,7 +59,7 @@ export function History() {
   const pages = Math.ceil(filtered.length / PAGE_SIZE);
 
   return (
-    <Card padding={0}>
+    <Card padding={0} miw={0}>
       <Group justify="space-between" p="md" gap="sm">
         <Chip.Group multiple value={grades} onChange={setGrades}>
           <Group gap={6}>
@@ -100,7 +100,15 @@ export function History() {
           {data.tournaments.length === 0 ? t('No finished tournaments yet') : t('Nothing matches your filters')}
         </Text>
       ) : (
-        <Table.ScrollContainer minWidth={720}>
+        <Table.ScrollContainer
+          minWidth={720}
+          type="native"
+          miw={0}
+          maw="100%"
+          tabIndex={0}
+          role="region"
+          aria-label={t('History')}
+        >
           <Table verticalSpacing={6} horizontalSpacing="md" fz="sm" highlightOnHover>
             <Table.Thead>
               <Table.Tr>
@@ -129,7 +137,7 @@ export function History() {
                         </Stack>
                       </Group>
                     </Table.Td>
-                    <Table.Td>
+                    <Table.Td style={{ whiteSpace: 'nowrap' }}>
                       <Text size="sm">{date.format(start)}</Text>
                       <Text size="xs" c="dimmed" ff="monospace">
                         {time.format(start)}
