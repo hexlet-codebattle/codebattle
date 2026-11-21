@@ -1,5 +1,5 @@
 import { Anchor, Group, Text } from '@mantine/core';
-import { IconTrophy } from '@tabler/icons-react';
+import { IconBroadcast, IconTrophy } from '@tabler/icons-react';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,7 @@ import type { Tournament } from '@/features/tournament/types';
 import { LangIcon } from '@/shared/LangIcon';
 import { useSharedProps } from '@/shared/useSharedProps';
 
-import { useGameStore } from '../store';
+import { isGameOver, useGameStore } from '../store';
 import type { GameTournamentInfo } from '../types';
 import classes from '../GameRoom.module.css';
 
@@ -24,7 +24,12 @@ export function TournamentBox({ info }: { info: GameTournamentInfo }) {
   const { current_user: me } = useSharedProps();
   const currentPlayer = useGameStore((state) => state.currentPlayer);
   const gameId = useGameStore((state) => state.game?.id);
+  const gameOver = useGameStore((state) => isGameOver(state.game?.state));
   const playerIds = useGameStore(useShallow((state) => state.game?.players.map((player) => player.id) ?? []));
+  const isPlayer = playerIds.includes(me.id);
+  const liveGames = (info.live_games ?? []).filter((game) => !isPlayer || game.game_id !== gameId);
+  const visibleGames = isPlayer ? liveGames.slice(0, 2) : liveGames;
+  const showLiveGames = !isPlayer || (gameOver && visibleGames.length > 0);
   const entries = [...(info.ranking?.entries ?? [])].sort((a, b) => a.place - b.place);
   const top = entries.filter((entry) => entry.place <= 5);
   const mine = entries.find((entry) => entry.id === me.id);
@@ -89,6 +94,44 @@ export function TournamentBox({ info }: { info: GameTournamentInfo }) {
           )}
         </ol>
       </div>
+
+      {showLiveGames && (
+        <div className={classes.liveGames} data-compact={isPlayer || undefined}>
+          <Text span size="xs" fw={700} c="dimmed" className={classes.standingsTitle}>
+            <IconBroadcast size={13} />
+            {t('Live games')}
+          </Text>
+          <ul className={classes.rankList}>
+            {visibleGames.map((game) => (
+              <li key={game.game_id}>
+                <Anchor
+                  href={`/games/${game.game_id}`}
+                  className={classes.liveGame}
+                  aria-current={game.game_id === gameId ? 'page' : undefined}
+                  size="xs"
+                  c="bright"
+                >
+                  <span className={classes.livePlayers}>
+                    {game.players.map((player, index) => (
+                      <span key={player.id} className={classes.livePlayer}>
+                        {index > 0 && <Text span c="dimmed" size="xs">vs</Text>}
+                        {!isPlayer && <LangIcon lang={player.lang} size={13} />}
+                        <Text span size="xs" truncate>{player.name}</Text>
+                      </span>
+                    ))}
+                  </span>
+                  {!isPlayer && <Text span size="xs" c="dimmed" ff="monospace">#{game.game_id}</Text>}
+                </Anchor>
+              </li>
+            ))}
+            {visibleGames.length === 0 && (
+              <Text component="li" size="xs" c="dimmed" py={6}>
+                {t('No games are being played right now.')}
+              </Text>
+            )}
+          </ul>
+        </div>
+      )}
 
       {gameId != null && (
         <div className={classes.tournamentWatchers}>

@@ -9,7 +9,7 @@ import { useSharedProps } from '@/shared/useSharedProps';
 import { parseServerDate } from '@/shared/date';
 
 import { isGameOver, useGameStore } from './store';
-import type { CheckResult, Game, GamePlayer, GameTournamentInfo, HeadToHead, TournamentPlayer, TournamentRankingEntry, WaitType } from './types';
+import type { CheckResult, Game, GamePlayer, GameTournamentInfo, HeadToHead, TournamentPlayer, TournamentRankingEntry, TournamentLiveGame, WaitType } from './types';
 
 const EDITOR_SYNC_MS = 250;
 const CURSOR_MS = 120;
@@ -214,9 +214,9 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
 
   const refreshRanking = useCallback(() => {
     if (!store().tournament) return;
-    push<{ ranking: { entries: TournamentRankingEntry[] }; current_player: TournamentPlayer | null }>('tournament:ranking')
-      .then(({ ranking, current_player: currentPlayer }) => {
-        store().mergeTournament({ ranking });
+    push<{ ranking: { entries: TournamentRankingEntry[] }; current_player: TournamentPlayer | null; live_games: TournamentLiveGame[] }>('tournament:ranking')
+      .then(({ ranking, current_player: currentPlayer, live_games: liveGames }) => {
+        store().mergeTournament({ ranking, live_games: liveGames });
         store().set({ currentPlayer });
       })
       .catch(() => undefined);
@@ -226,7 +226,7 @@ export function useGame(gameId: number, { embedded = false, extraEvents = {} }: 
   const isTournament = useGameStore((state) => state.tournament != null);
   useEffect(() => {
     if (embedded || !isTournament || status !== 'joined') return undefined;
-    const timer = window.setInterval(refreshRanking, 30_000);
+    const timer = window.setInterval(refreshRanking, 10_000);
     return () => window.clearInterval(timer);
   }, [embedded, isTournament, status, refreshRanking]);
 

@@ -4,6 +4,7 @@ defmodule CodebattleWeb.GameChannelTest do
   alias Codebattle.Game
   alias Codebattle.Game.EditorEventBatch
   alias Codebattle.Game.Player
+  alias Codebattle.Tournament.Match
   alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
   alias Phoenix.Socket.Broadcast
@@ -104,12 +105,27 @@ defmodule CodebattleWeb.GameChannelTest do
       assert response.tournament.tournament_id == tournament.id
     end
 
-    test "tournament:ranking returns fresh standings for a tournament game", %{
+    test "tournament:ranking returns fresh standings and only playing games", %{
       user1: user1,
       user2: user2,
       socket1: socket1
     } do
-      tournament = insert(:tournament, players: %{}, matches: %{}, players_count: 0)
+      players =
+        Map.new([user1, user2], fn user ->
+          {to_string(user.id), %Codebattle.Tournament.Player{id: user.id, name: user.name, lang: "js"}}
+        end)
+
+      matches = %{
+        "1" => %Match{
+          id: 1,
+          game_id: 123,
+          state: "playing",
+          player_ids: [user1.id, user2.id]
+        },
+        "2" => %Match{id: 2, game_id: 456, state: "game_over"}
+      }
+
+      tournament = insert(:tournament, players: players, matches: matches, players_count: 2)
 
       {:ok, game} =
         Game.Context.create_game(%{
@@ -119,11 +135,16 @@ defmodule CodebattleWeb.GameChannelTest do
           tournament_id: tournament.id
         })
 
-      {:ok, _response, socket} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+      {:ok, response, socket} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+
+      assert [%{game_id: 123, players: live_players}] = response.tournament.live_games
+      assert Enum.map(live_players, & &1.id) == [user1.id, user2.id]
+      assert Enum.all?(live_players, &(&1 |> Map.keys() |> Enum.sort() == [:id, :lang, :name]))
 
       ref = push(socket, "tournament:ranking", %{})
-      assert_reply(ref, :ok, %{ranking: %{entries: entries}, current_player: nil})
+      assert_reply(ref, :ok, %{ranking: %{entries: entries}, live_games: live_games})
       assert is_list(entries)
+      assert [%{game_id: 123}] = live_games
     end
 
     test "tournament:ranking is refused for a casual game", %{user1: user1, user2: user2, socket1: socket1} do

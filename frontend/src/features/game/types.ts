@@ -113,11 +113,17 @@ export interface TournamentRankingEntry {
   clan_id?: number | null;
 }
 
+export interface TournamentLiveGame {
+  game_id: number;
+  players: { id: number; name: string; lang: string | null }[];
+}
+
 /** The game channel's join reply `tournament` (GameChannel.join_tournament_game/3). */
 export interface GameTournamentInfo {
   event_id: number | null;
   tournament_id: number;
   ranking: { entries: TournamentRankingEntry[] };
+  live_games: TournamentLiveGame[];
   state: string;
   type: string;
   break_state: string;

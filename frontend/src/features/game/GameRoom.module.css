@@ -631,7 +631,7 @@
   border-top: 1px solid var(--cb-border);
 }
 
-/* Two rows: the round clock, then the standings (scroll inside when long). */
+/* Round clock, standings, live games and spectators; lists scroll inside. */
 .tournamentBox {
   display: flex;
   flex-direction: column;
@@ -1289,4 +1289,48 @@
     outline: 2px solid var(--cb-success);
     outline-offset: 1px;
   }
+}
+
+.liveGames {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-top: 6px;
+  border-top: 1px solid var(--cb-border);
+}
+
+.liveGames[data-compact] {
+  flex: none;
+  gap: 2px;
+
+  & .liveGame {
+    padding: 2px 6px;
+  }
+}
+
+.liveGame {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 5px;
+
+  &[aria-current='page'] {
+    background: color-mix(in srgb, var(--cb-success) 14%, transparent);
+  }
+}
+
+.livePlayers,
+.livePlayer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.livePlayers {
+  flex-wrap: wrap;
 }

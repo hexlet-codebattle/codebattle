@@ -82,6 +82,7 @@ defmodule CodebattleWeb.GameChannel do
          event_id: tournament.event_id,
          tournament_id: game.tournament_id,
          ranking: ranking,
+         live_games: live_games(tournament),
          state: tournament.state,
          type: tournament.type,
          meta: Tournament.Helpers.public_meta(tournament.meta),
@@ -120,6 +121,24 @@ defmodule CodebattleWeb.GameChannel do
       |> Enum.uniq_by(& &1.id)
 
     %{entries: entries}
+  end
+
+  # Keep the sidebar small and send only the public player fields it displays.
+  defp live_games(tournament) do
+    tournament
+    |> Tournament.Helpers.get_matches("playing")
+    |> Enum.reject(&is_nil(&1.game_id))
+    |> Enum.sort_by(& &1.id, :desc)
+    |> Enum.take(5)
+    |> Enum.map(fn match ->
+      players =
+        tournament
+        |> Tournament.Helpers.get_players(match.player_ids)
+        |> Enum.reject(&is_nil/1)
+        |> Enum.map(&Map.take(&1, [:id, :name, :lang]))
+
+      %{game_id: match.game_id, players: players}
+    end)
   end
 
   defp maybe_fetch_head_to_head(game) do
@@ -314,7 +333,13 @@ defmodule CodebattleWeb.GameChannel do
       %{} = tournament ->
         current_player = Tournament.Helpers.get_player(tournament, socket.assigns.current_user.id)
 
-        {:reply, {:ok, %{ranking: ranking_around(tournament, current_player), current_player: current_player}}, socket}
+        {:reply,
+         {:ok,
+          %{
+            ranking: ranking_around(tournament, current_player),
+            current_player: current_player,
+            live_games: live_games(tournament)
+          }}, socket}
 
       _ ->
         {:reply, {:error, %{reason: :tournament_not_found}}, socket}
