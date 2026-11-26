@@ -33,6 +33,7 @@ defmodule CodebattleWeb.AdminUserShowLiveTest do
     assert html =~ ~s(phx-submit="update_name")
     assert html =~ ~s(name="name")
     assert html =~ ~s(value="#{user.name}")
+    refute html =~ "External Platform Invites"
   end
 
   test "admin can update user name", _context do

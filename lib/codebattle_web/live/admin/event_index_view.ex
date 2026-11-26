@@ -5,11 +5,7 @@ defmodule CodebattleWeb.Live.Admin.EventIndexView do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     assign(socket,
-       events: Event.get_all(),
-       layout: {CodebattleWeb.LayoutView, :admin}
-     )}
+    {:ok, assign(socket, events: Event.get_all())}
   end
 
   @impl true

@@ -93,8 +93,6 @@ config :codebattle, :external,
   app_relogin_button: "Relogin with External ID",
   app_login_description: "Login with External system to play with your friends"
 
-config :codebattle, :external_platform_org_slug, "value"
-config :codebattle, :external_platform_service_url, "value"
 config :codebattle, :fake_html_to_image, true
 
 config :codebattle, :firebase,

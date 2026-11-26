@@ -15,7 +15,6 @@ defmodule Codebattle.User.DataExport do
 
   alias Codebattle.ApiAuditEvent
   alias Codebattle.CodeCheck.Run
-  alias Codebattle.ExternalPlatformInvite
   alias Codebattle.Feedback
   alias Codebattle.Game.BotDetection.PlayerReport
   alias Codebattle.Game.EditorEventBatch
@@ -45,8 +44,7 @@ defmodule Codebattle.User.DataExport do
     anti_cheat_reports: PlayerReport,
     editor_activity: EditorEventBatch,
     premium_requests: PremiumRequest,
-    feedback: Feedback,
-    external_platform_invites: ExternalPlatformInvite
+    feedback: Feedback
   ]
 
   @spec build(User.t()) :: map()

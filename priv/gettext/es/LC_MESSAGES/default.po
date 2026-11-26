@@ -6215,6 +6215,21 @@ msgstr "Comentarios"
 msgid "Send feedback"
 msgstr "Enviar comentarios"
 
+msgid "My feedback"
+msgstr "Mis comentarios"
+
+msgid "Read replies from the Codebattle team here."
+msgstr "Aquí puedes leer las respuestas del equipo de Codebattle."
+
+msgid "You have not sent any feedback yet."
+msgstr "Todavía no has enviado ningún comentario."
+
+msgid "Reply from Codebattle"
+msgstr "Respuesta de Codebattle"
+
+msgid "Awaiting reply"
+msgstr "Pendiente de respuesta"
+
 msgid "Message"
 msgstr "Mensaje"
 

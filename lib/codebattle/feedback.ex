@@ -19,6 +19,8 @@ defmodule Codebattle.Feedback do
     field(:status, :string)
     field(:text, :string)
     field(:title_link, :string)
+    field(:reply, :string)
+    field(:replied_at, :naive_datetime)
 
     timestamps()
   end
@@ -39,12 +41,30 @@ defmodule Codebattle.Feedback do
 
   @doc "Feedback visible to `user`: everything for admins, their own otherwise (newest first)."
   def visible_to(user) do
-    query = from(f in Feedback, order_by: [desc: f.id])
-
     if Codebattle.User.admin?(user) do
-      query
+      from(f in Feedback, order_by: [desc: f.id])
     else
-      where(query, [f], f.user_id == ^user.id)
+      by_author(user.id)
+    end
+  end
+
+  def by_author(user_id) do
+    from(f in Feedback, where: f.user_id == ^user_id, order_by: [desc: f.id])
+  end
+
+  def publish_reply(id, reply) do
+    reply = String.trim(reply)
+
+    if String.length(reply) in 1..10_000 do
+      now = NaiveDateTime.utc_now(:second)
+      query = from(f in Feedback, where: f.id == ^id and not is_nil(f.user_id) and is_nil(f.reply))
+
+      case Repo.update_all(query, set: [reply: reply, replied_at: now, updated_at: now]) do
+        {1, _} -> :ok
+        {0, _} -> {:error, :unavailable}
+      end
+    else
+      {:error, :invalid_reply}
     end
   end
 

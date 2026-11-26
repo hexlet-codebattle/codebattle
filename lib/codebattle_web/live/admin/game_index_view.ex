@@ -5,11 +5,7 @@ defmodule CodebattleWeb.Live.Admin.Game.IndexView do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     assign(socket,
-       games: list_online_games(),
-       layout: {CodebattleWeb.LayoutView, :admin}
-     )}
+    {:ok, assign(socket, games: list_online_games())}
   end
 
   @impl true

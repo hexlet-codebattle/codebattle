@@ -6018,6 +6018,21 @@ msgstr "反馈意见"
 msgid "Send feedback"
 msgstr "发送反馈"
 
+msgid "My feedback"
+msgstr "我的反馈"
+
+msgid "Read replies from the Codebattle team here."
+msgstr "你可以在这里查看 Codebattle 团队的回复。"
+
+msgid "You have not sent any feedback yet."
+msgstr "你还没有发送过反馈。"
+
+msgid "Reply from Codebattle"
+msgstr "Codebattle 团队的回复"
+
+msgid "Awaiting reply"
+msgstr "等待回复"
+
 msgid "Message"
 msgstr "留言"
 

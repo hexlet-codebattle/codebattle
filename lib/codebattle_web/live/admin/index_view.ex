@@ -39,7 +39,6 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       layout: {CodebattleWeb.LayoutView, :admin},
        stats: %{
          users: Repo.aggregate(User, :count, :id),
          tasks: Repo.aggregate(Task, :count, :id),

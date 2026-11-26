@@ -6,6 +6,7 @@ defmodule CodebattleWeb.Router do
   import Phoenix.LiveDashboard.Router
 
   alias CodebattleWeb.Admin.TournamentDuplicatorController
+  alias CodebattleWeb.Plugs.AdminOnly
   alias CodebattleWeb.Plugs.AnonymousRateLimit
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.MaintenanceMode
@@ -18,7 +19,7 @@ defmodule CodebattleWeb.Router do
 
   pipeline :admins_only do
     plug(AssignCurrentUser)
-    plug(CodebattleWeb.Plugs.AdminOnly)
+    plug(AdminOnly)
   end
 
   pipeline :require_auth do
@@ -159,25 +160,30 @@ defmodule CodebattleWeb.Router do
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
     oban_dashboard("/oban")
     get("/connections", CodebattleWeb.AdminController, :connections)
-    live("/", CodebattleWeb.Live.Admin.IndexView, :index)
-    live("/events", CodebattleWeb.Live.Admin.EventIndexView, :index)
-    live("/events/:id/dashboard", CodebattleWeb.Live.Admin.EventDashboardView, :show)
-    live("/games", CodebattleWeb.Live.Admin.Game.IndexView, :index)
-    live("/code-checks", CodebattleWeb.Live.Admin.CodeCheck.IndexView, :index)
-    live("/feedback", CodebattleWeb.Live.Admin.Feedback.IndexView, :index)
-    live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
-    live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
-    live("/clans", CodebattleWeb.Live.Admin.Clan.IndexView, :index)
-    live("/invites", CodebattleWeb.Live.Admin.InviteIndexView, :index)
-    live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
-    live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
-    live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
+
+    live_session :admin,
+      root_layout: {CodebattleWeb.LayoutView, :admin},
+      on_mount: AdminOnly do
+      live("/", CodebattleWeb.Live.Admin.IndexView, :index)
+      live("/events", CodebattleWeb.Live.Admin.EventIndexView, :index)
+      live("/events/:id/dashboard", CodebattleWeb.Live.Admin.EventDashboardView, :show)
+      live("/games", CodebattleWeb.Live.Admin.Game.IndexView, :index)
+      live("/code-checks", CodebattleWeb.Live.Admin.CodeCheck.IndexView, :index)
+      live("/feedback", CodebattleWeb.Live.Admin.Feedback.IndexView, :index)
+      live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
+      live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
+      live("/clans", CodebattleWeb.Live.Admin.Clan.IndexView, :index)
+      live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
+      live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
+      live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
+      live("/tournaments", CodebattleWeb.Live.Admin.TournamentIndexView, :index)
+    end
+
+    post("/feedback/:id/reply", CodebattleWeb.FeedbackController, :reply)
     resources("/events", CodebattleWeb.EventController, except: [:index])
     post("/events/:id/enroll_all", CodebattleWeb.EventController, :enroll_all, as: :event_enroll_all)
 
     post("/events/:id/calculate_places", CodebattleWeb.EventController, :calculate_places, as: :event_calculate_places)
-    live("/tournaments", CodebattleWeb.Live.Admin.TournamentIndexView, :index)
-
     get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)
 
     post("/tournament_duplicator", TournamentDuplicatorController, :create, as: :admin_tournament_duplicator)
@@ -365,6 +371,7 @@ defmodule CodebattleWeb.Router do
 
     resources("/users", UserController, only: [:new, :show])
     get("/settings", UserController, :edit, as: :user_setting)
+    get("/feedback", FeedbackController, :index)
 
     resources("/task_packs", TaskPackController) do
       patch("/activate", TaskPackController, :activate, as: :activate)

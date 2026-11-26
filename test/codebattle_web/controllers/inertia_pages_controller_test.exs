@@ -3,6 +3,24 @@ defmodule CodebattleWeb.InertiaPagesControllerTest do
 
   import Inertia.Testing
 
+  test "feedback history requires authentication", %{conn: conn} do
+    conn = get(conn, "/feedback")
+    assert redirected_to(conn) == "/session/new?next=%2Ffeedback"
+  end
+
+  test "feedback history shows only messages linked to the signed-in account", %{conn: conn} do
+    admin = insert(:admin)
+    own = insert(:feedback, user_id: admin.id, text: "My feedback")
+    insert(:feedback, user_id: insert(:user).id, reply: "Private reply")
+    insert(:feedback, user_id: nil, author_name: admin.name)
+
+    conn = conn |> log_in_user(admin) |> get("/feedback")
+
+    assert inertia_component(conn) == "MyFeedback"
+    assert [%{id: id, reply: nil}] = inertia_props(conn)["feedback"]
+    assert id == own.id
+  end
+
   test "renders the hall of fame with explicit props", %{conn: conn} do
     conn = get(conn, Routes.hall_of_fame_path(conn, :index))
 

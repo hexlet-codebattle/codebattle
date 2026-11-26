@@ -29,6 +29,7 @@ if (sidebarToggle && sidebarContent) {
 
   let desktopCollapsed = false;
   let mobileOpen = false;
+  let currentPath = window.location.pathname.replace(/\/+$/, '');
 
   try {
     desktopCollapsed = localStorage.getItem(storageKey) === '1';
@@ -76,6 +77,29 @@ if (sidebarToggle && sidebarContent) {
     }
     mobileOpen = false;
     updateSidebar();
+  });
+
+  window.addEventListener('phx:navigate', () => {
+    const path = window.location.pathname.replace(/\/+$/, '');
+    if (path === currentPath) return;
+
+    currentPath = path;
+    for (const link of sidebarContent.querySelectorAll<HTMLAnchorElement>('nav a')) {
+      const destination = link.pathname;
+      if (path === destination) {
+        link.setAttribute('aria-current', 'page');
+      } else if (destination !== '/admin' && path.startsWith(`${destination}/`)) {
+        link.setAttribute('aria-current', 'location');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    }
+
+    if (!desktop.matches && mobileOpen) {
+      mobileOpen = false;
+      updateSidebar();
+      document.getElementById('admin-main')?.focus({ preventScroll: true });
+    }
   });
 
   updateSidebar();

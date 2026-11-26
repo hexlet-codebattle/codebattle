@@ -4,13 +4,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   import Ecto.Query
 
   alias Codebattle.Event
-  alias Codebattle.ExternalPlatformInvite
-  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserEvent
   alias Codebattle.UserGame
-  alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
   @max_rating 2000
 
@@ -19,7 +16,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user = User.get!(id, preload: [:clan])
     user_events = get_user_events(user.id)
     user_games = get_user_games(user.id)
-    platform_invites = get_platform_invites(user.id)
 
     enrolled_event_ids = MapSet.new(user_events, & &1.id)
     all_events = Event.get_all()
@@ -30,8 +26,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        user: user,
        user_events: user_events,
        user_games: user_games,
-       platform_invites: platform_invites,
-       expanded_invite_id: nil,
        available_events: available_events,
        show_modal: false,
        current_user_event: nil,
@@ -39,8 +33,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        stages_json: "",
        progress: user_progress(user),
        event_page_enabled: FunWithFlags.enabled?(:allow_event_page, for: user),
-       is_moderator: User.moderator?(user),
-       layout: {CodebattleWeb.LayoutView, :admin}
+       is_moderator: User.moderator?(user)
      )}
   end
 
@@ -53,160 +46,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       {:error, _reason} ->
         {:noreply, socket}
     end
-  end
-
-  def handle_event("create_platform_invite", _params, socket) do
-    user = socket.assigns.user
-    alias_name = user.external_oauth_login || user.name
-
-    invite = InviteContext.get_or_create_invite(user.id)
-
-    case InviteContext.send_invite(invite, alias_name) do
-      {:ok, updated_invite} ->
-        updated_invite
-        |> maybe_auto_poll()
-        |> PlatformInviteAdvancerWorker.enqueue()
-
-        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
-
-      {:error, _reason} ->
-        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
-    end
-  end
-
-  def handle_event("create_remote_invite", _params, socket) do
-    user = socket.assigns.user
-    alias_name = user.external_oauth_login || user.name
-
-    invite = InviteContext.get_or_create_invite(user.id)
-
-    result =
-      case invite.state do
-        state when state in ["pending", "failed"] ->
-          InviteContext.send_invite(invite, alias_name)
-
-        _ ->
-          {:ok, invite}
-      end
-
-    case result do
-      {:ok, updated_invite} ->
-        updated_invite = maybe_auto_poll(updated_invite)
-        PlatformInviteAdvancerWorker.enqueue(updated_invite)
-
-        {:noreply,
-         socket
-         |> assign(platform_invites: get_platform_invites(user.id))
-         |> put_flash(:info, invite_flash_message(updated_invite))}
-
-      {:error, reason} ->
-        {:noreply,
-         socket
-         |> assign(platform_invites: get_platform_invites(user.id))
-         |> put_flash(:error, "Failed to create invite: #{inspect(reason)}")}
-    end
-  end
-
-  def handle_event("retry_invite", %{"id" => id}, socket) do
-    user = socket.assigns.user
-    alias_name = user.external_oauth_login || user.name
-    invite = Repo.get!(ExternalPlatformInvite, id)
-
-    case InviteContext.send_invite(invite, alias_name) do
-      {:ok, updated_invite} ->
-        updated_invite = maybe_auto_poll(updated_invite)
-        PlatformInviteAdvancerWorker.enqueue(updated_invite)
-
-        {:noreply,
-         socket
-         |> assign(platform_invites: get_platform_invites(user.id))
-         |> put_flash(:info, invite_flash_message(updated_invite))}
-
-      {:error, reason} ->
-        {:noreply,
-         socket
-         |> assign(platform_invites: get_platform_invites(user.id))
-         |> put_flash(:error, "Failed to retry invite: #{inspect(reason)}")}
-    end
-  end
-
-  def handle_event("poll_invite_status", %{"id" => id}, socket) do
-    user = socket.assigns.user
-    invite = Repo.get!(ExternalPlatformInvite, id)
-
-    case InviteContext.poll_status(invite) do
-      {:ok, updated} ->
-        PlatformInviteAdvancerWorker.enqueue(updated)
-        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
-
-      {:error, _reason} ->
-        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
-    end
-  end
-
-  def handle_event("delete_platform_invite", %{"id" => id}, socket) do
-    user = socket.assigns.user
-    invite = Repo.get!(ExternalPlatformInvite, id)
-    Repo.delete(invite)
-    {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
-  end
-
-  def handle_event("refresh_invite_via_api", %{"id" => id}, socket) do
-    user = socket.assigns.user
-    invite = Repo.get!(ExternalPlatformInvite, id)
-
-    flash =
-      case InviteContext.refresh_status_via_api(invite) do
-        {:ok, updated} ->
-          PlatformInviteAdvancerWorker.enqueue(updated)
-          {:info, "Platform status: #{updated.state}"}
-
-        {:error, :no_platform_invite_id} ->
-          {:error, "No platform invite ID found in response data"}
-
-        {:error, reason} ->
-          {:error, "Check failed: #{inspect(reason)}"}
-      end
-
-    {:noreply,
-     socket
-     |> assign(platform_invites: get_platform_invites(user.id))
-     |> put_flash(elem(flash, 0), elem(flash, 1))}
-  end
-
-  def handle_event("mark_invite_accepted", %{"id" => id}, socket) do
-    user = socket.assigns.user
-    invite = Repo.get!(ExternalPlatformInvite, id)
-
-    # Try to refresh from platform first to mirror identity.
-    # Regardless of result, force-accept as admin override.
-    case InviteContext.refresh_status_via_api(invite) do
-      {:ok, %{state: "accepted"}} ->
-        :ok
-
-      {:ok, refreshed} ->
-        InviteContext.update_invite(refreshed, %{state: "accepted"})
-
-      _ ->
-        InviteContext.update_invite(invite, %{state: "accepted"})
-    end
-
-    # Enqueue external setup job if this invite is tied to a tournament
-    refreshed_user = User.get!(user.id, preload: [:clan])
-
-    {:noreply,
-     socket
-     |> assign(user: refreshed_user, platform_invites: get_platform_invites(user.id))
-     |> put_flash(:info, "Invite marked as accepted")}
-  end
-
-  def handle_event("toggle_invite_details", %{"id" => id}, socket) do
-    invite_id = String.to_integer(id)
-
-    new_id =
-      if socket.assigns.expanded_invite_id == invite_id, do: nil, else: invite_id
-
-    {:noreply, assign(socket, expanded_invite_id: new_id)}
   end
 
   def handle_event("update_platform_login", %{"external_platform_login" => login}, socket) do
@@ -525,58 +364,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     |> Repo.all()
   end
 
-  defp maybe_auto_poll(%ExternalPlatformInvite{state: "creating", operation_id: op_id} = invite) when is_binary(op_id) do
-    Process.sleep(1_500)
-
-    case InviteContext.poll_status(invite) do
-      {:ok, updated} -> updated
-      {:error, _} -> invite
-    end
-  end
-
-  defp maybe_auto_poll(invite), do: invite
-
-  defp invite_flash_message(%ExternalPlatformInvite{state: "invited", invite_link: link})
-       when is_binary(link) and link != "" do
-    "Invite created! Link: #{link}"
-  end
-
-  defp invite_flash_message(%ExternalPlatformInvite{state: "creating"}) do
-    "Invite is being created on the platform. Click 'Poll Status' to check."
-  end
-
-  defp invite_flash_message(%ExternalPlatformInvite{state: state}) do
-    "Invite state: #{state}"
-  end
-
-  defp accepted_invite_payload(%ExternalPlatformInvite{response: %{"accepted_invite" => body}}) when is_map(body),
-    do: body
-
-  defp accepted_invite_payload(_), do: nil
-
-  defp accepted_invite_fields(body) do
-    subject = Map.get(body, "subject") || %{}
-
-    [
-      {"Status", Map.get(body, "status")},
-      {"Invite ID", Map.get(body, "id")},
-      {"Alias", Map.get(body, "alias")},
-      {"Subject ID", Map.get(subject, "id")},
-      {"Subject Type", Map.get(subject, "type")},
-      {"Created At", Map.get(body, "created_at")},
-      {"Expires At", Map.get(body, "expires_at")}
-    ]
-    |> Enum.reject(fn {_k, v} -> is_nil(v) or v == "" end)
-    |> Enum.map(fn {k, v} -> {k, to_string(v)} end)
-  end
-
-  defp get_platform_invites(user_id) do
-    ExternalPlatformInvite
-    |> where([i], i.user_id == ^user_id)
-    |> order_by([i], desc: i.updated_at)
-    |> Repo.all()
-  end
-
   defp user_progress(user) do
     Float.round(user.rating / @max_rating * 100, 1)
   end
@@ -619,24 +406,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
   defp format_short_datetime(%DateTime{} = datetime) do
     Calendar.strftime(datetime, "%d %b %Y")
-  end
-
-  defp invite_state_badge("pending"), do: "badge bg-secondary"
-  defp invite_state_badge("creating"), do: "badge bg-info text-dark"
-  defp invite_state_badge("invited"), do: "badge bg-primary"
-  defp invite_state_badge("accepted"), do: "badge bg-success"
-  defp invite_state_badge("failed"), do: "badge bg-danger"
-  defp invite_state_badge("expired"), do: "badge bg-warning text-dark"
-  defp invite_state_badge(_), do: "badge bg-secondary"
-
-  defp format_invite_datetime(nil), do: "–"
-
-  defp format_invite_datetime(%DateTime{} = dt) do
-    Calendar.strftime(dt, "%d %b %Y %H:%M")
-  end
-
-  defp format_invite_datetime(%NaiveDateTime{} = dt) do
-    dt |> DateTime.from_naive!("UTC") |> format_invite_datetime()
   end
 
   defp normalize_auth_token(nil), do: ""
@@ -1039,180 +808,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12 mb-4">
-          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="text-white">
-                <i class="bi bi-envelope"></i>
-                External Platform Invites
-                <span class="badge bg-secondary ms-2">{length(@platform_invites)}</span>
-              </div>
-              <form phx-submit="create_remote_invite" class="d-flex align-items-center gap-2">
-                <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
-                  Create Remote Invite
-                </button>
-              </form>
-            </div>
-            <%= if @platform_invites == [] do %>
-              <div class="cb-text">No platform invites.</div>
-            <% else %>
-              <div class="table-responsive">
-                <table class="table table-sm table-dark table-bordered align-middle mb-0">
-                  <thead>
-                    <tr class="cb-text small">
-                      <th>ID</th>
-                      <th>State</th>
-                      <th>Operation ID</th>
-                      <th>Invite Link</th>
-                      <th>Expires At</th>
-                      <th>Updated At</th>
-                      <th>Details</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <%= for invite <- @platform_invites do %>
-                      <tr>
-                        <td class="text-white">{invite.id}</td>
-                        <td>
-                          <span class={invite_state_badge(invite.state)}>{invite.state}</span>
-                        </td>
-                        <td class="text-white small text-break" style="max-width: 180px;">
-                          {label_value(invite.operation_id)}
-                        </td>
-                        <td class="small" style="max-width: 280px;">
-                          <%= if invite.invite_link do %>
-                            <div class="d-flex flex-column gap-1">
-                              <div class="d-flex gap-1">
-                                <a
-                                  href={invite.invite_link}
-                                  target="_blank"
-                                  rel="noopener"
-                                  class="btn btn-sm btn-success cb-rounded"
-                                  title={invite.invite_link}
-                                >
-                                  Open Invite
-                                </a>
-                                <button
-                                  type="button"
-                                  class="btn btn-sm btn-outline-info cb-rounded"
-                                  title="Copy invite link"
-                                  onclick="navigator.clipboard.writeText(this.dataset.link).then(() => this.textContent = 'Copied!')"
-                                  data-link={invite.invite_link}
-                                >
-                                  Copy
-                                </button>
-                              </div>
-                              <code class="text-info text-break small">{invite.invite_link}</code>
-                            </div>
-                          <% else %>
-                            <span class="cb-text">–</span>
-                          <% end %>
-                        </td>
-                        <td class="text-white small">
-                          {format_invite_datetime(invite.expires_at)}
-                        </td>
-                        <td class="text-white small">
-                          {format_invite_datetime(invite.updated_at)}
-                        </td>
-                        <td class="text-nowrap">
-                          <%= if invite.state == "failed" do %>
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-outline-warning cb-rounded me-1"
-                              phx-click="retry_invite"
-                              phx-value-id={invite.id}
-                              data-confirm="Retry creating this invite?"
-                              title="Resend invite to external platform"
-                            >
-                              Retry
-                            </button>
-                          <% end %>
-                          <%= if invite.state == "creating" do %>
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-outline-warning cb-rounded me-1"
-                              phx-click="poll_invite_status"
-                              phx-value-id={invite.id}
-                            >
-                              Poll Status
-                            </button>
-                          <% end %>
-                          <%= if invite.state in ["invited", "creating"] do %>
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-outline-primary cb-rounded me-1"
-                              phx-click="refresh_invite_via_api"
-                              phx-value-id={invite.id}
-                              title="Fetch latest status from External Platform (GET /invites/{id})"
-                            >
-                              Check on Platform
-                            </button>
-                          <% end %>
-                          <%= if invite.state != "accepted" do %>
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-outline-success cb-rounded me-1"
-                              phx-click="mark_invite_accepted"
-                              phx-value-id={invite.id}
-                              data-confirm="Mark this invite as accepted?"
-                            >
-                              Mark Accepted
-                            </button>
-                          <% end %>
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-outline-info cb-rounded"
-                            phx-click="toggle_invite_details"
-                            phx-value-id={invite.id}
-                          >
-                            Response
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-outline-danger cb-rounded ms-1"
-                            phx-click="delete_platform_invite"
-                            phx-value-id={invite.id}
-                            data-confirm="Delete this invite?"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                      <%= if @expanded_invite_id == invite.id do %>
-                        <tr>
-                          <td colspan="7" class="p-3">
-                            <%= if accepted = accepted_invite_payload(invite) do %>
-                              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
-                                <div class="text-white fw-bold mb-2">
-                                  <i class="bi bi-check-circle-fill text-success"></i> Accepted Invite
-                                </div>
-                                <dl class="row mb-0 small text-white">
-                                  <%= for {label, value} <- accepted_invite_fields(accepted) do %>
-                                    <dt class="col-sm-3 cb-text">{label}</dt>
-                                    <dd class="col-sm-9 text-break">
-                                      <code class="text-info">{value}</code>
-                                    </dd>
-                                  <% end %>
-                                </dl>
-                              </div>
-                            <% end %>
-                            <pre
-                              class="text-white mb-0 small"
-                              style="max-height: 300px; overflow: auto; white-space: pre-wrap;"
-                            ><code>{Jason.encode!(invite.response || %{}, pretty: true)}</code></pre>
-                          </td>
-                        </tr>
-                      <% end %>
-                    <% end %>
-                  </tbody>
-                </table>
-              </div>
-            <% end %>
           </div>
         </div>
       </div>

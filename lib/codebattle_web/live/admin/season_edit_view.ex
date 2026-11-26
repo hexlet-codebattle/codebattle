@@ -11,8 +11,7 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
     {:ok,
      assign(socket,
        season: season,
-       changeset: changeset,
-       layout: {CodebattleWeb.LayoutView, :admin}
+       changeset: changeset
      )}
   end
 

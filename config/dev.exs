@@ -62,7 +62,6 @@ config :codebattle, CodebattleWeb.Endpoint,
   ]
 
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY", "x-key")
-config :codebattle, :external_platform_adapter, Codebattle.ExternalPlatform.Fake
 config :codebattle, :tournament_run_upcoming, false
 config :codebattle, :zig_runner_url_template, System.get_env("CODEBATTLE_ZIG_RUNNER_URL_TEMPLATE")
 config :codebattle, checker_executor: checker_executor

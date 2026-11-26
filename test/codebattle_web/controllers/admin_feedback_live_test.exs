@@ -1,7 +1,10 @@
 defmodule CodebattleWeb.AdminFeedbackLiveTest do
   use CodebattleWeb.ConnCase, async: true
 
+  import Inertia.Testing
+
   alias Codebattle.CodeCheck.Run
+  alias Codebattle.Feedback
 
   test "admin can open feedback page", %{conn: conn} do
     admin = insert(:admin)
@@ -15,6 +18,50 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
     assert conn.status == 200
     assert response(conn, 200) =~ "Feedback"
     assert response(conn, 200) =~ "Broken button"
+  end
+
+  test "admin publishes one reply that appears in the author's feedback history", %{conn: conn} do
+    admin = insert(:admin)
+    author = insert(:user)
+    item = insert(:feedback, user_id: author.id, text: "Can I upload a task?")
+    path = "/admin/feedback/#{item.id}/reply"
+    admin_conn = log_in_user(conn, admin)
+
+    assert html_response(get(admin_conn, "/admin/feedback"), 200) =~ ~s(action="#{path}")
+
+    response = post(admin_conn, path, %{"reply" => "  Yes, from the tasks page.  "})
+    assert redirected_to(response) == "/admin/feedback#feedback-#{item.id}"
+    assert html_response(get(recycle(response), "/admin/feedback"), 200) =~ "Yes, from the tasks page."
+
+    response = post(admin_conn, path, %{"reply" => "Duplicate"})
+    assert redirected_to(response) == "/admin/feedback"
+    assert Repo.get!(Feedback, item.id).reply == "Yes, from the tasks page."
+
+    history = conn |> log_in_user(author) |> get("/feedback")
+    assert inertia_component(history) == "MyFeedback"
+
+    assert [
+             %{text: "Can I upload a task?", reply: "Yes, from the tasks page.", replied_at: %NaiveDateTime{}}
+           ] = inertia_props(history)["feedback"]
+  end
+
+  test "rejects replies from regular users and replies without a recipient or text", %{conn: conn} do
+    admin = insert(:admin)
+    author = insert(:user)
+    item = insert(:feedback, user_id: author.id)
+    legacy = insert(:feedback, user_id: nil)
+    path = "/admin/feedback/#{item.id}/reply"
+
+    assert conn |> log_in_user(author) |> post(path, %{"reply" => "Spoofed"}) |> redirected_to() == "/"
+
+    admin_conn = log_in_user(conn, admin)
+    assert admin_conn |> post(path, %{"reply" => "  "}) |> redirected_to() == "/admin/feedback"
+
+    assert admin_conn |> post("/admin/feedback/#{legacy.id}/reply", %{"reply" => "Hello"}) |> redirected_to() ==
+             "/admin/feedback"
+
+    assert Repo.get!(Feedback, item.id).reply == nil
+    assert Repo.get!(Feedback, legacy.id).reply == nil
   end
 
   test "admin can open admin overview page", %{conn: conn} do

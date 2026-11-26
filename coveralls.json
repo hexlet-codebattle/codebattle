@@ -7,7 +7,6 @@
     "lib/codebattle/bot/(chat_client|game_client|game_creator|playbook_player)\\.ex",
     "lib/codebattle/code_check/executor/",
     "lib/codebattle/code_check/run_logger\\.ex",
-    "lib/codebattle/(external_platform|external_platform_invite)(/|\\.ex)",
     "lib/codebattle/game/bot_detection/worker\\.ex",
     "lib/codebattle/pub_sub(/|\\.ex)",
     "lib/codebattle/tournament/simulator(/|\\.ex)",

@@ -16,8 +16,7 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
        clans: Clan.search(""),
        query: query,
        subscription_type: subscription_type,
-       users_source: :search,
-       layout: {CodebattleWeb.LayoutView, :admin}
+       users_source: :search
      )
      |> load_users()}
   end
@@ -136,7 +135,8 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
             name="query"
             value={@query}
             phx-debounce="300"
-            placeholder="Search by name"
+            placeholder="Search by name or email"
+            aria-label="Search by name or email"
           />
           <button class="btn btn-secondary cb-btn-secondary cb-rounded ml-2" type="submit">
             Search

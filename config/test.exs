@@ -43,9 +43,6 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, Oban, testing: :inline
 config :codebattle, :anonymous_rate_limit_enabled, false
 config :codebattle, :auth_rate_limit_enabled, false
-config :codebattle, :external_platform_adapter, Codebattle.ExternalPlatform.Fake
-config :codebattle, :external_platform_org_slug, "test-org"
-config :codebattle, :external_platform_service_url, "https://ext.test"
 
 config :codebattle, :firebase,
   sender_id: "ASDF",

@@ -12,8 +12,7 @@ defmodule CodebattleWeb.Live.Admin.Clan.IndexView do
        changeset: Clan.changeset(%Clan{}),
        form_mode: nil,
        query: "",
-       selected_clan: nil,
-       layout: {CodebattleWeb.LayoutView, :admin}
+       selected_clan: nil
      )
      |> load_clans()}
   end

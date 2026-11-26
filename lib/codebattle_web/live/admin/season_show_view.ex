@@ -19,8 +19,7 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
     {:ok,
      assign(socket,
        season: season,
-       tournament_count: tournament_count,
-       layout: {CodebattleWeb.LayoutView, :admin}
+       tournament_count: tournament_count
      )}
   end
 

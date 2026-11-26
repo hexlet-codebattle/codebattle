@@ -30,10 +30,10 @@
     <div class="admin-shell">
       <aside class="admin-sidebar">
         <div class="admin-sidebar-header">
-          <a class="admin-brand" href="/admin" aria-label="Codebattle admin overview">
+          <.link class="admin-brand" navigate="/admin" aria-label="Codebattle admin overview">
             <img src="/assets/images/favicons/favicon.svg" alt="" width="30" height="30" />
             <span>Codebattle <small>Admin</small></span>
-          </a>
+          </.link>
           <button
             id="admin-sidebar-toggle"
             class="admin-sidebar-toggle"
@@ -51,9 +51,9 @@
           <nav aria-label="Administration">
             <div :for={{group, links} <- admin_navigation()} class="admin-nav-group">
               <p :if={group} class="admin-nav-title">{group}</p>
-              <a
+              <.link
                 :for={{label, path, short} <- links}
-                href={path}
+                {admin_nav_destination(path)}
                 class="admin-nav-link"
                 aria-current={admin_nav_current(@conn.request_path, path)}
                 aria-label={label}
@@ -61,7 +61,7 @@
               >
                 <span class="admin-nav-short" aria-hidden="true">{short}</span>
                 <span class="admin-nav-label">{label}</span>
-              </a>
+              </.link>
             </div>
           </nav>
           <div class="admin-sidebar-footer">

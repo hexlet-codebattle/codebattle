@@ -2,6 +2,9 @@ defmodule CodebattleWeb.LayoutView do
   use CodebattleWeb, :view
 
   import Inertia.HTML
+  import Phoenix.Component, only: [link: 1]
+
+  alias CodebattleWeb.Router
 
   @doc "The page's meta tags over the site defaults, see `CodebattleWeb.MetaTags`."
   def page_meta_tags(conn, assigns), do: CodebattleWeb.MetaTags.build(conn, assigns[:meta_tags])
@@ -32,7 +35,6 @@ defmodule CodebattleWeb.LayoutView do
        [
          {"Users", "/admin/users", "US"},
          {"Clans", "/admin/clans", "CL"},
-         {"Invites", "/admin/invites", "IN"},
          {"Feedback", "/admin/feedback", "FB"}
        ]},
       {"Competition",
@@ -61,6 +63,13 @@ defmodule CodebattleWeb.LayoutView do
       current_path == path -> "page"
       path != "/admin" and String.starts_with?(current_path, path <> "/") -> "location"
       true -> nil
+    end
+  end
+
+  def admin_nav_destination(path) do
+    case Phoenix.Router.route_info(Router, "GET", path, "") do
+      %{phoenix_live_view: {_, _, _, %{name: :admin}}} -> %{navigate: path}
+      _ -> %{href: path}
     end
   end
 end

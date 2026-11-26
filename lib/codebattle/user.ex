@@ -338,10 +338,12 @@ defmodule Codebattle.User do
   end
 
   def search_users(query) do
+    email_query = String.replace(query, ["\\", "%", "_"], &("\\" <> &1))
+
     __MODULE__
     |> where([u], u.is_bot == false)
     |> where([u], is_nil(u.archived_at))
-    |> where([u], fragment("? ilike ?", u.name, ^"%#{query}%"))
+    |> where([u], ilike(u.name, ^"%#{query}%") or ilike(u.email, ^"%#{email_query}%"))
     |> limit(20)
     |> order_by([u], {:desc, :updated_at})
     |> Repo.all()

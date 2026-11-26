@@ -12,8 +12,7 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
      assign(socket,
        seasons: seasons,
        changeset: changeset,
-       show_form: false,
-       layout: {CodebattleWeb.LayoutView, :admin}
+       show_form: false
      )}
   end
 

@@ -46,7 +46,6 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
 
     socket =
       socket
-      |> assign(:layout, {CodebattleWeb.LayoutView, :admin})
       |> assign(:tab, tab)
       |> assign(:tabs, @tabs)
       |> assign(:tab_order, @tab_order)

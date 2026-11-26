@@ -37,8 +37,7 @@ defmodule CodebattleWeb.Live.Admin.EventDashboardView do
        custom_from_input: format_input(from),
        custom_to_input: format_input(to),
        sort_tournaments: {:tournament_id, :desc},
-       sort_users: {:total_score, :desc},
-       layout: {CodebattleWeb.LayoutView, :admin}
+       sort_users: {:total_score, :desc}
      )
      |> load_data()}
   end

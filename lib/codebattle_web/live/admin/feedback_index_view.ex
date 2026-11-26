@@ -5,11 +5,7 @@ defmodule CodebattleWeb.Live.Admin.Feedback.IndexView do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     assign(socket,
-       feedback: Feedback.list_all(),
-       layout: {CodebattleWeb.LayoutView, :admin}
-     )}
+    {:ok, assign(socket, feedback: Feedback.list_all())}
   end
 
   @impl true
@@ -32,6 +28,8 @@ defmodule CodebattleWeb.Live.Admin.Feedback.IndexView do
         </button>
       </div>
 
+      <p :if={@flash["error"]} class="alert alert-danger mt-3" role="alert">{@flash["error"]}</p>
+
       <%= if @feedback == [] do %>
         <p class="text-white mt-3 mb-0">No feedback yet.</p>
       <% else %>
@@ -48,7 +46,7 @@ defmodule CodebattleWeb.Live.Admin.Feedback.IndexView do
             </thead>
             <tbody>
               <%= for item <- @feedback do %>
-                <tr>
+                <tr id={"feedback-#{item.id}"}>
                   <td class="align-middle text-white cb-border-color">{item.id}</td>
                   <td class="align-middle text-white cb-border-color">{item.status}</td>
                   <td class="align-middle text-white cb-border-color">{item.author_name}</td>
@@ -69,7 +67,34 @@ defmodule CodebattleWeb.Live.Admin.Feedback.IndexView do
                 <tr>
                   <td class="align-middle text-white cb-border-color font-weight-bold">message</td>
                   <td class="align-middle text-white cb-border-color text-break" colspan="4">
-                    {item.text}
+                    <div style="white-space: pre-wrap;">{item.text}</div>
+                    <%= cond do %>
+                      <% item.reply -> %>
+                        <div class="border-top cb-border-color mt-2 pt-2">
+                          <strong>Reply</strong>
+                          <small class="cb-text ml-2">{format_inserted_at(item.replied_at)}</small>
+                          <div style="white-space: pre-wrap;">{item.reply}</div>
+                        </div>
+                      <% item.user_id -> %>
+                        <details class="mt-2">
+                          <summary>Reply</summary>
+                          <.form for={%{}} action={"/admin/feedback/#{item.id}/reply"}>
+                            <label for={"reply-#{item.id}"} class="sr-only">Reply to {item.author_name}</label>
+                            <textarea
+                              id={"reply-#{item.id}"}
+                              name="reply"
+                              class="form-control my-2"
+                              placeholder="Write a reply"
+                              rows="3"
+                              maxlength="10000"
+                              required
+                            ></textarea>
+                            <button type="submit" class="btn btn-primary btn-sm">Publish reply</button>
+                          </.form>
+                        </details>
+                      <% true -> %>
+                        <small class="cb-text d-block mt-2">No linked account</small>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

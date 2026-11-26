@@ -9,7 +9,6 @@ defmodule CodebattleWeb.Live.Admin.TournamentIndexView do
 
     {:ok,
      assign(socket,
-       layout: {CodebattleWeb.LayoutView, :admin},
        tournaments: list_tournaments(),
        duplicate_result: nil
      )}

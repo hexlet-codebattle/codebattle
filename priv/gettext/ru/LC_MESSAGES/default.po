@@ -2487,6 +2487,21 @@ msgstr "Обратная связь"
 msgid "Send feedback"
 msgstr "Отправить отзыв"
 
+msgid "My feedback"
+msgstr "Мои обращения"
+
+msgid "Read replies from the Codebattle team here."
+msgstr "Здесь можно прочитать ответы команды Codebattle."
+
+msgid "You have not sent any feedback yet."
+msgstr "Вы пока не отправляли обращений."
+
+msgid "Reply from Codebattle"
+msgstr "Ответ команды Codebattle"
+
+msgid "Awaiting reply"
+msgstr "Ожидает ответа"
+
 msgid "Message"
 msgstr "Сообщение"
 
