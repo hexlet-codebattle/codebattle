@@ -2,17 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <meta content="" name="author" />
-    <meta content="7b3f1e2c1757ecf0" name="yandex-verification" />
-    <link rel="canonical" href="https://codebattle.hexlet.io/" />
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-    {render_tags_all(page_meta_tags(@conn, assigns))}
+    <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml" />
+    <% meta_tags = Map.put_new(assigns[:meta_tags] || %{}, :title, "Codebattle Admin") %>
+    {render_tags_all(page_meta_tags(@conn, %{meta_tags: meta_tags}))}
     <meta name="csrf-token" content={csrf_token_value()} />
-    <title>{Application.get_env(:codebattle, :app_title)}</title>
 
-    <%!-- The admin entry of the new frontend: LiveView socket, phoenix_html, admin styles. --%>
     <%= if CodebattleWeb.Vite.dev?() do %>
       <script type="module" src={"#{CodebattleWeb.Frontend.dev_server_url()}/@vite/client"}>
       </script>
@@ -29,281 +24,66 @@
       <script :if={admin_assets.js} type="module" src={admin_assets.js}>
       </script>
     <% end %>
-    <style>
-      @media (min-width: 768px) {
-        .admin-shell {
-          display: flex;
-          flex-wrap: nowrap;
-          min-height: 100vh;
-        }
-
-        .admin-sidebar {
-          width: 260px;
-          flex: 0 0 260px;
-          transition: width 0.2s ease, flex-basis 0.2s ease, opacity 0.2s ease;
-          overflow: hidden;
-        }
-
-        .admin-main {
-          flex: 1 1 auto;
-          min-width: 0;
-          transition: margin 0.2s ease;
-        }
-
-        .admin-sidebar-panel {
-          min-height: 100vh;
-          position: sticky;
-          top: 0;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .admin-sidebar-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .admin-sidebar-title {
-          margin: 0;
-          white-space: nowrap;
-        }
-
-        .admin-nav-link {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          white-space: nowrap;
-        }
-
-        .admin-nav-short {
-          display: inline-flex;
-          width: 22px;
-          height: 22px;
-          border-radius: 6px;
-          align-items: center;
-          justify-content: center;
-          font-size: 11px;
-          font-weight: 700;
-          background: #2a2e39;
-          color: #d7dce8;
-          flex-shrink: 0;
-        }
-
-        .admin-nav-label {
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        body.admin-sidebar-collapsed .admin-sidebar {
-          width: 74px;
-          flex-basis: 74px;
-        }
-
-        body.admin-sidebar-collapsed .admin-sidebar-title,
-        body.admin-sidebar-collapsed .admin-user-card,
-        body.admin-sidebar-collapsed .admin-nav-label {
-          display: none;
-        }
-
-        body.admin-sidebar-collapsed .admin-sidebar-header {
-          justify-content: center;
-        }
-
-        body.admin-sidebar-collapsed .admin-sidebar-toggle {
-          margin: 0;
-        }
-
-        body.admin-sidebar-collapsed .admin-nav-link {
-          justify-content: center;
-          padding-left: 0.5rem;
-          padding-right: 0.5rem;
-        }
-
-        body.admin-sidebar-collapsed .admin-nav-short {
-          width: 26px;
-          height: 26px;
-        }
-      }
-    </style>
   </head>
-  <body class="cb-bg-dark">
-    <div class="container-fluid">
-      <div class="admin-shell">
-        <aside id="admin-sidebar" class="admin-sidebar px-0">
-          <div class="cb-bg-panel cb-border-color border-right p-3 admin-sidebar-panel">
-            <div class="admin-sidebar-header mb-3">
-              <h4 class="text-white admin-sidebar-title">Admin</h4>
-              <button
-                id="admin-sidebar-toggle"
-                class="btn btn-secondary cb-btn-secondary cb-rounded btn-sm admin-sidebar-toggle"
-                type="button"
-                aria-label="Toggle admin sidebar"
-                aria-expanded="true"
+  <body class="admin-body">
+    <a class="admin-skip-link" href="#admin-main">Skip to content</a>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-header">
+          <a class="admin-brand" href="/admin" aria-label="Codebattle admin overview">
+            <img src="/assets/images/favicons/favicon.svg" alt="" width="30" height="30" />
+            <span>Codebattle <small>Admin</small></span>
+          </a>
+          <button
+            id="admin-sidebar-toggle"
+            class="admin-sidebar-toggle"
+            type="button"
+            aria-controls="admin-sidebar-content"
+            aria-expanded="true"
+            hidden
+          >
+            <span class="admin-toggle-mobile">Menu</span>
+            <span class="admin-toggle-desktop" aria-hidden="true">‹</span>
+          </button>
+        </div>
+        <% admin_user = @conn.assigns[:current_user] %>
+        <div id="admin-sidebar-content" class="admin-sidebar-content">
+          <nav aria-label="Administration">
+            <div :for={{group, links} <- admin_navigation()} class="admin-nav-group">
+              <p :if={group} class="admin-nav-title">{group}</p>
+              <a
+                :for={{label, path, short} <- links}
+                href={path}
+                class="admin-nav-link"
+                aria-current={admin_nav_current(@conn.request_path, path)}
+                aria-label={label}
+                title={label}
               >
-                <span id="admin-sidebar-toggle-icon">‹</span>
-              </button>
+                <span class="admin-nav-short" aria-hidden="true">{short}</span>
+                <span class="admin-nav-label">{label}</span>
+              </a>
             </div>
-            <% admin_user =
-              assigns[:current_user] ||
-                (assigns[:socket] && assigns[:socket].assigns[:current_user]) %>
-            <nav class="d-flex flex-column">
-              <a
-                href="/admin/"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Dashboard"
-              >
-                <span class="admin-nav-short">DB</span>
-                <span class="admin-nav-label">Dashboard</span>
-              </a>
-              <a
-                href="/admin/users"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Users"
-              >
-                <span class="admin-nav-short">US</span>
-                <span class="admin-nav-label">Users</span>
-              </a>
-              <a
-                href="/admin/clans"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Clans"
-              >
-                <span class="admin-nav-short">CL</span>
-                <span class="admin-nav-label">Clans</span>
-              </a>
-              <a
-                href="/admin/invites"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Invites"
-              >
-                <span class="admin-nav-short">IN</span>
-                <span class="admin-nav-label">Invites</span>
-              </a>
-              <a
-                href="/admin/events"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Events"
-              >
-                <span class="admin-nav-short">EV</span>
-                <span class="admin-nav-label">Events</span>
-              </a>
-              <a
-                href="/admin/seasons"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Seasons"
-              >
-                <span class="admin-nav-short">SE</span>
-                <span class="admin-nav-label">Seasons</span>
-              </a>
-              <a
-                href="/admin/tournaments"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Tournaments"
-              >
-                <span class="admin-nav-short">TR</span>
-                <span class="admin-nav-label">Tournaments</span>
-              </a>
-              <a
-                href="/admin/feedback"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Feedback"
-              >
-                <span class="admin-nav-short">FB</span>
-                <span class="admin-nav-label">Feedback</span>
-              </a>
-              <a
-                href="/admin/games"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Online Games"
-              >
-                <span class="admin-nav-short">OG</span>
-                <span class="admin-nav-label">Online Games</span>
-              </a>
-              <a
-                href="/admin/code-checks"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Code Checks Live"
-              >
-                <span class="admin-nav-short">CC</span>
-                <span class="admin-nav-label">Code Checks Live</span>
-              </a>
-              <a
-                href="/admin/code-checks?tab=failures"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Code Check Run Failures"
-              >
-                <span class="admin-nav-short">CF</span>
-                <span class="admin-nav-label">Code Check Failures</span>
-              </a>
-              <a
-                href="/feature-flags"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Feature Flags"
-              >
-                <span class="admin-nav-short">FF</span>
-                <span class="admin-nav-label">Feature Flags</span>
-              </a>
-              <a
-                href="/admin/oban"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="Oban"
-              >
-                <span class="admin-nav-short">OB</span>
-                <span class="admin-nav-label">Oban</span>
-              </a>
-              <a
-                href="/admin/dashboard"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
-                title="LiveDashboard"
-              >
-                <span class="admin-nav-short">LD</span>
-                <span class="admin-nav-label">LiveDashboard</span>
-              </a>
-            </nav>
-            <%= if admin_user do %>
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 mt-auto admin-user-card">
-                <div class="text-white text-truncate">{admin_user.name}</div>
-                <div class="cb-text">ID: {admin_user.id}</div>
-              </div>
-            <% end %>
+          </nav>
+          <div class="admin-sidebar-footer">
+            <a
+              href="/"
+              class="admin-nav-link"
+              aria-label="Back to Codebattle"
+              title="Back to Codebattle"
+            >
+              <span class="admin-nav-short admin-nav-back" aria-hidden="true"></span>
+              <span class="admin-nav-label">Back to Codebattle</span>
+            </a>
+            <div :if={admin_user} class="admin-user">
+              <div class="admin-user-name">{admin_user.name}</div>
+              <small>Admin account · #{admin_user.id}</small>
+            </div>
           </div>
-        </aside>
-        <main class="admin-main py-3">
-          {@inner_content}
-        </main>
-      </div>
+        </div>
+      </aside>
+      <main id="admin-main" class="admin-main" tabindex="-1">
+        {@inner_content}
+      </main>
     </div>
-    <script>
-      (() => {
-        const storageKey = "adminSidebarCollapsed";
-        const body = document.body;
-        const btn = document.getElementById("admin-sidebar-toggle");
-        const icon = document.getElementById("admin-sidebar-toggle-icon");
-
-        if (!btn) return;
-
-        const setState = collapsed => {
-          if (collapsed) {
-            body.classList.add("admin-sidebar-collapsed");
-            if (icon) icon.textContent = "›";
-            btn.setAttribute("aria-expanded", "false");
-          } else {
-            body.classList.remove("admin-sidebar-collapsed");
-            if (icon) icon.textContent = "‹";
-            btn.setAttribute("aria-expanded", "true");
-          }
-        };
-
-        const saved = localStorage.getItem(storageKey);
-        setState(saved === "1");
-
-        btn.addEventListener("click", () => {
-          const collapsed = !body.classList.contains("admin-sidebar-collapsed");
-          setState(collapsed);
-          localStorage.setItem(storageKey, collapsed ? "1" : "0");
-        });
-      })();
-    </script>
   </body>
 </html>

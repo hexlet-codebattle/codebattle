@@ -11,28 +11,32 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   alias Codebattle.UserGame
   alias Phoenix.LiveView.AsyncResult
 
-  @chart_windows %{
-    "all_time" => %{label: "All Time", granularity: :month, bucket_label: "Monthly"},
-    "last_year" => %{label: "Last Year", granularity: :week, bucket_label: "Weekly"},
-    "last_three_months" => %{label: "Last 3 Months", granularity: :day, bucket_label: "Daily"},
-    "last_week" => %{label: "Last Week", granularity: :hour, bucket_label: "Hourly"}
-  }
-  @chart_window_order ["all_time", "last_year", "last_three_months", "last_week"]
-
+  @metrics [
+    {"registrations", "Registrations"},
+    {"games", "Games created"},
+    {"active_users", "Active players"}
+  ]
+  @chart_windows [
+    {"last_week", "7 days", :hour, "Hourly"},
+    {"last_three_months", "3 months", :day, "Daily"},
+    {"last_year", "1 year", :week, "Weekly"},
+    {"all_time", "All time", :month, "Monthly"}
+  ]
+  @default_metric "registrations"
   @default_chart_window "last_three_months"
-  @gold "#e0bf7a"
-  @silver "#c2c9d6"
-  @bronze "#c48a57"
-  @platinum "#a4aab3"
-  @steel "#8a919c"
-  @iron "#6f7782"
+  @chart_window_config Map.new(@chart_windows, fn {key, _label, granularity, bucket_label} ->
+                         {key, %{granularity: granularity, bucket_label: bucket_label}}
+                       end)
+
+  @chart_width 850
+  @chart_height 258
+  @chart_left 64
+  @chart_right 828
+  @chart_top 20
+  @chart_bottom 222
 
   @impl true
-  def mount(params, _session, socket) do
-    registrations_window = normalize_chart_window(params["registrations_window"])
-    games_window = normalize_chart_window(params["games_window"])
-    active_users_window = normalize_chart_window(params["active_users_window"])
-
+  def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
        layout: {CodebattleWeb.LayoutView, :admin},
@@ -42,186 +46,116 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
          games: Repo.aggregate(Game, :count, :id),
          tournaments: Repo.aggregate(Tournament, :count, :id)
        },
+       metrics: @metrics,
        chart_windows: @chart_windows,
-       chart_window_order: @chart_window_order,
-       registrations_window: registrations_window,
-       games_window: games_window,
-       active_users_window: active_users_window,
-       registrations_chart: AsyncResult.loading(),
-       games_chart: AsyncResult.loading(),
-       active_users_chart: AsyncResult.loading()
+       chart_selection: nil,
+       chart: AsyncResult.loading()
      )}
-  end
-
-  @impl true
-  def handle_event("set_chart_window", %{"window" => window, "target" => target}, socket) do
-    chart_window = normalize_chart_window(window)
-
-    {registrations_window, games_window, active_users_window} =
-      case target do
-        "registrations" ->
-          {chart_window, socket.assigns.games_window, socket.assigns.active_users_window}
-
-        "games" ->
-          {socket.assigns.registrations_window, chart_window, socket.assigns.active_users_window}
-
-        "active_users" ->
-          {socket.assigns.registrations_window, socket.assigns.games_window, chart_window}
-
-        _ ->
-          {socket.assigns.registrations_window, socket.assigns.games_window, socket.assigns.active_users_window}
-      end
-
-    {:noreply, push_patch(socket, to: chart_path(registrations_window, games_window, active_users_window))}
-  end
-
-  @impl true
-  def handle_event("set_chart_window", %{"window" => window}, socket) do
-    handle_event("set_chart_window", %{"window" => window, "target" => "registrations"}, socket)
   end
 
   @impl true
   def handle_params(params, _uri, socket) do
-    previous_registrations_window = socket.assigns.registrations_window
-    previous_games_window = socket.assigns.games_window
-    previous_active_users_window = socket.assigns.active_users_window
+    metric =
+      case List.keyfind(@metrics, params["metric"], 0) do
+        {key, _label} -> key
+        nil -> @default_metric
+      end
 
-    registrations_window = normalize_chart_window(params["registrations_window"])
-    games_window = normalize_chart_window(params["games_window"])
-    active_users_window = normalize_chart_window(params["active_users_window"])
+    windows =
+      Map.new(@metrics, fn {key, _label} ->
+        {key, normalize_chart_window(params[key <> "_window"])}
+      end)
 
-    {:noreply,
-     socket
-     |> assign(:registrations_window, registrations_window)
-     |> assign(:games_window, games_window)
-     |> assign(:active_users_window, active_users_window)
-     |> maybe_assign_registrations_chart_data_async(
-       registrations_window,
-       previous_registrations_window
-     )
-     |> maybe_assign_games_chart_data_async(games_window, previous_games_window)
-     |> maybe_assign_active_users_chart_data_async(
-       active_users_window,
-       previous_active_users_window
-     )}
-  end
+    window = Map.fetch!(windows, metric)
+    selection = {metric, window}
+    socket = assign(socket, metric: metric, windows: windows, bucket_label: @chart_window_config[window].bucket_label)
 
-  defp maybe_assign_registrations_chart_data_async(socket, chart_window, previous_window) do
-    should_refresh = previous_window != chart_window or not socket.assigns.registrations_chart.ok?
-
-    if should_refresh do
-      assign_registrations_chart_data_async(socket, chart_window)
+    if selection == socket.assigns.chart_selection do
+      {:noreply, socket}
     else
-      socket
+      {:noreply, load_chart(assign(socket, :chart_selection, selection))}
     end
   end
 
-  defp maybe_assign_games_chart_data_async(socket, chart_window, previous_window) do
-    should_refresh = previous_window != chart_window or not socket.assigns.games_chart.ok?
+  @impl true
+  def handle_event("retry_chart", _params, socket), do: {:noreply, load_chart(socket)}
 
-    if should_refresh do
-      assign_games_chart_data_async(socket, chart_window)
-    else
-      socket
-    end
+  defp load_chart(socket) do
+    {metric, window} = socket.assigns.chart_selection
+    assign_async(socket, :chart, fn -> {:ok, %{chart: build_chart(metric, window)}} end, reset: true)
   end
 
-  defp maybe_assign_active_users_chart_data_async(socket, chart_window, previous_window) do
-    should_refresh = previous_window != chart_window or not socket.assigns.active_users_chart.ok?
-
-    if should_refresh do
-      assign_active_users_chart_data_async(socket, chart_window)
-    else
-      socket
-    end
-  end
-
-  defp assign_registrations_chart_data_async(socket, chart_window) do
-    assign_async(
-      socket,
-      :registrations_chart,
-      fn ->
-        {:ok, %{registrations_chart: build_registrations_chart_data(chart_window)}}
-      end,
-      reset: true
-    )
-  end
-
-  defp assign_games_chart_data_async(socket, chart_window) do
-    assign_async(
-      socket,
-      :games_chart,
-      fn ->
-        {:ok, %{games_chart: build_games_chart_data(chart_window)}}
-      end,
-      reset: true
-    )
-  end
-
-  defp assign_active_users_chart_data_async(socket, chart_window) do
-    assign_async(
-      socket,
-      :active_users_chart,
-      fn ->
-        {:ok, %{active_users_chart: build_active_users_chart_data(chart_window)}}
-      end,
-      reset: true
-    )
-  end
-
-  defp build_registrations_chart_data(chart_window) do
-    %{joins: joins, from: joins_from, to: joins_to, granularity: granularity} = list_user_joins(chart_window)
-    max_joins = joins |> Enum.map(& &1.count) |> Enum.max(fn -> 1 end)
-
-    %{
-      granularity: granularity,
-      joins_from: joins_from,
-      joins_to: joins_to,
-      joins: joins,
-      total_joins: Enum.sum(Enum.map(joins, & &1.count)),
-      max_joins: max_joins,
-      joins_chart_path: build_chart_path(joins, max_joins)
-    }
-  end
-
-  defp build_games_chart_data(chart_window) do
-    %{joins: games, from: games_from, to: games_to, granularity: granularity} = list_game_creations(chart_window)
-    max_games = games |> Enum.map(& &1.count) |> Enum.max(fn -> 1 end)
-
-    %{
-      granularity: granularity,
-      games_from: games_from,
-      games_to: games_to,
-      games: games,
-      total_games: Enum.sum(Enum.map(games, & &1.count)),
-      max_games: max_games,
-      games_chart_path: build_chart_path(games, max_games)
-    }
-  end
-
-  defp build_active_users_chart_data(chart_window) do
-    %{joins: active_users, from: active_users_from, to: active_users_to, granularity: granularity} =
-      list_active_user_joins(chart_window)
-
-    max_active_users = active_users |> Enum.map(& &1.count) |> Enum.max(fn -> 1 end)
-
-    %{
-      granularity: granularity,
-      active_users_from: active_users_from,
-      active_users_to: active_users_to,
-      active_users: active_users,
-      total_active_users: Enum.sum(Enum.map(active_users, & &1.count)),
-      max_active_users: max_active_users,
-      active_users_chart_path: build_chart_path(active_users, max_active_users)
-    }
-  end
-
-  defp normalize_chart_window(nil), do: @default_chart_window
-  defp normalize_chart_window(window) when is_map_key(@chart_windows, window), do: window
+  defp normalize_chart_window(window) when is_map_key(@chart_window_config, window), do: window
   defp normalize_chart_window(_window), do: @default_chart_window
 
+  defp chart_path(metric, windows) do
+    params = for {key, window} <- windows, window != @default_chart_window, into: %{}, do: {key <> "_window", window}
+    params = if metric == @default_metric, do: params, else: Map.put(params, "metric", metric)
+
+    if map_size(params) == 0, do: "/admin", else: "/admin?" <> URI.encode_query(params)
+  end
+
+  defp build_chart(metric, window) do
+    %{joins: buckets, from: from, to: to, granularity: granularity} =
+      case metric do
+        "registrations" -> list_user_joins(window)
+        "games" -> list_game_creations(window)
+        "active_users" -> list_active_user_joins(window)
+      end
+
+    peak = buckets |> Enum.map(& &1.count) |> Enum.max(fn -> 0 end)
+    scale_step = max(ceil(peak / 4), 1)
+    points = chart_points(buckets, scale_step * 4)
+
+    %{
+      buckets: buckets,
+      from: from,
+      to: to,
+      granularity: granularity,
+      peak: peak,
+      summary: if(metric == "active_users", do: peak, else: Enum.sum_by(buckets, & &1.count)),
+      scale: for(index <- 0..4, do: %{value: scale_step * index, y: chart_y(index, 4)}),
+      ticks: chart_ticks(buckets, points, granularity),
+      points: Enum.map_join(points, " ", fn {x, y} -> "#{x},#{y}" end),
+      first: List.first(points),
+      last: List.last(points)
+    }
+  end
+
+  defp chart_points(buckets, scale_max) do
+    intervals = max(length(buckets) - 1, 1)
+
+    buckets
+    |> Enum.with_index()
+    |> Enum.map(fn {%{count: count}, index} ->
+      x = @chart_left + index / intervals * (@chart_right - @chart_left)
+      {Float.round(x, 2), chart_y(count, scale_max)}
+    end)
+  end
+
+  defp chart_y(count, scale_max) do
+    Float.round(@chart_bottom - count / scale_max * (@chart_bottom - @chart_top), 2)
+  end
+
+  defp chart_ticks([], _points, _granularity), do: []
+
+  defp chart_ticks(buckets, points, granularity) do
+    last_index = length(buckets) - 1
+    indices = Enum.uniq(for step <- 0..4, do: round(last_index * step / 4))
+
+    Enum.map(indices, fn index ->
+      {x, _y} = Enum.at(points, index)
+      %{bucket: bucket} = Enum.at(buckets, index)
+      %{x: x, label: format_axis_datetime(bucket, granularity), anchor: tick_anchor(index, last_index)}
+    end)
+  end
+
+  defp tick_anchor(0, _last_index), do: "start"
+  defp tick_anchor(index, index), do: "end"
+  defp tick_anchor(_index, _last_index), do: "middle"
+
   defp list_user_joins(window_key) do
-    config = @chart_windows[window_key]
+    config = @chart_window_config[window_key]
     granularity = config.granularity
 
     %{from: from_datetime, to: to_datetime, query_to: query_to_datetime} =
@@ -237,7 +171,7 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   end
 
   defp list_game_creations(window_key) do
-    config = @chart_windows[window_key]
+    config = @chart_window_config[window_key]
     granularity = config.granularity
 
     %{from: from_datetime, to: to_datetime, query_to: query_to_datetime} =
@@ -253,7 +187,7 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   end
 
   defp list_active_user_joins(window_key) do
-    config = @chart_windows[window_key]
+    config = @chart_window_config[window_key]
     granularity = config.granularity
 
     %{from: from_datetime, to: to_datetime, query_to: query_to_datetime} =
@@ -269,7 +203,7 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   end
 
   defp metric_time_window(window_key, granularity, schema) do
-    config = @chart_windows[window_key]
+    config = @chart_window_config[window_key]
     query_to_datetime = NaiveDateTime.utc_now()
     to_datetime = truncate_datetime(query_to_datetime, granularity)
 
@@ -457,547 +391,259 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   defp next_bucket(datetime, :week), do: NaiveDateTime.add(datetime, 7 * 24 * 60 * 60, :second)
   defp next_bucket(datetime, :month), do: datetime_months_ago(datetime, -1)
 
-  defp format_chart_datetime(datetime, :hour), do: Calendar.strftime(datetime, "%Y-%m-%d %H:%M")
-  defp format_chart_datetime(datetime, :day), do: Calendar.strftime(datetime, "%Y-%m-%d")
-  defp format_chart_datetime(datetime, :week), do: Calendar.strftime(datetime, "%Y-%m-%d")
-  defp format_chart_datetime(datetime, :month), do: Calendar.strftime(datetime, "%Y-%m")
+  defp format_chart_datetime(datetime, :hour), do: Calendar.strftime(datetime, "%b %-d, %Y %H:%M")
+  defp format_chart_datetime(datetime, :month), do: Calendar.strftime(datetime, "%b %Y")
+  defp format_chart_datetime(datetime, _granularity), do: Calendar.strftime(datetime, "%b %-d, %Y")
 
-  defp format_axis_datetime(datetime, :hour), do: Calendar.strftime(datetime, "%b %d")
-  defp format_axis_datetime(datetime, :day), do: Calendar.strftime(datetime, "%b %d")
-  defp format_axis_datetime(datetime, :week), do: Calendar.strftime(datetime, "%b %d")
-  defp format_axis_datetime(datetime, :month), do: Calendar.strftime(datetime, "%b %Y")
+  defp format_axis_datetime(datetime, :hour), do: Calendar.strftime(datetime, "%b %-d %H:%M")
+  defp format_axis_datetime(datetime, :month), do: Calendar.strftime(datetime, "%b '%y")
+  defp format_axis_datetime(datetime, _granularity), do: Calendar.strftime(datetime, "%b %-d")
 
-  defp peak_label(:hour), do: "Peak Hourly"
-  defp peak_label(:day), do: "Peak Daily"
-  defp peak_label(:week), do: "Peak Weekly"
-  defp peak_label(:month), do: "Peak Monthly"
-
-  defp chart_title(:hour), do: "User Registrations by Hour"
-  defp chart_title(:day), do: "User Registrations by Day"
-  defp chart_title(:week), do: "User Registrations by Week"
-  defp chart_title(:month), do: "User Registrations by Month"
-
-  defp games_chart_title(:hour), do: "Games Created by Hour"
-  defp games_chart_title(:day), do: "Games Created by Day"
-  defp games_chart_title(:week), do: "Games Created by Week"
-  defp games_chart_title(:month), do: "Games Created by Month"
-
-  defp active_users_chart_title(:hour), do: "Unique Active Users by Hour"
-  defp active_users_chart_title(:day), do: "Unique Active Users by Day"
-  defp active_users_chart_title(:week), do: "Unique Active Users by Week"
-  defp active_users_chart_title(:month), do: "Unique Active Users by Month"
-
-  defp chart_granularity(window_key), do: @chart_windows[window_key].granularity
-
-  defp chart_path(registrations_window, games_window, active_users_window) do
-    "/admin?" <>
-      URI.encode_query(%{
-        "registrations_window" => registrations_window,
-        "games_window" => games_window,
-        "active_users_window" => active_users_window
-      })
-  end
-
-  defp chart_series_color(:registrations), do: @gold
-  defp chart_series_color(:games), do: @silver
-  defp chart_series_color(:active_users), do: @bronze
-  defp chart_axis_text_color, do: @platinum
-  defp chart_grid_color, do: @steel
-  defp chart_secondary_text_color, do: @iron
-
-  defp window_button_class(window_key, active_window) do
-    base = "btn cb-rounded mr-2 mb-2"
-
-    if window_key == active_window do
-      "#{base} btn-secondary"
-    else
-      "#{base} btn-secondary cb-btn-secondary"
-    end
-  end
-
-  defp window_button_style(window_key, active_window, chart_type) do
-    if window_key == active_window do
-      color = chart_series_color(chart_type)
-      "background-color: #{color}; border-color: #{color}; color: #15151c;"
-    end
-  end
-
-  defp build_chart_coordinates(joins, max_joins) do
-    plot_width = chart_plot_width()
-    plot_height = chart_plot_height()
-    points_count = max(length(joins) - 1, 1)
-
-    joins
-    |> Enum.with_index()
-    |> Enum.map(fn {%{count: count}, index} ->
-      x = chart_left_padding() + index * (plot_width / points_count)
-      y = chart_top_padding() + (plot_height - count / max(max_joins, 1) * plot_height)
-      %{x: Float.round(x, 2), y: Float.round(y, 2)}
-    end)
-  end
-
-  defp build_chart_path(joins, max_joins) do
-    points = build_chart_coordinates(joins, max_joins)
-
-    case points do
-      [] ->
-        ""
-
-      [point] ->
-        "M #{point.x - 3} #{point.y} L #{point.x + 3} #{point.y}"
-
-      [first | _] ->
-        tail =
-          points
-          |> Enum.chunk_every(2, 1, :discard)
-          |> Enum.map_join(" ", fn [p0, p1] ->
-            cx = Float.round((p0.x + p1.x) / 2, 2)
-            "Q #{cx} #{p0.y} #{p1.x} #{p1.y}"
-          end)
-
-        "M #{first.x} #{first.y} #{tail}"
-    end
-  end
-
-  defp chart_scale_lines(max_value) do
-    steps = [1.0, 0.75, 0.5, 0.25, 0.0]
-    safe_max = max(max_value, 1)
-    plot_height = chart_plot_height()
-
-    Enum.map(steps, fn step ->
-      y = chart_top_padding() + (plot_height - step * plot_height)
-      %{value: round(safe_max * step), y: Float.round(y, 2)}
-    end)
-  end
-
-  defp chart_left_padding, do: 52
-  defp chart_right_padding, do: 24
-  defp chart_top_padding, do: 16
-  defp chart_bottom_padding, do: 24
-  defp chart_width, do: 940
-  defp chart_height, do: 240
-  defp chart_plot_width, do: chart_width() - chart_left_padding() - chart_right_padding()
-  defp chart_plot_height, do: chart_height() - chart_top_padding() - chart_bottom_padding()
-  defp chart_plot_end_x, do: chart_width() - chart_right_padding()
-  defp chart_plot_end_y, do: chart_height() - chart_bottom_padding()
-  defp chart_x_ticks_count, do: 11
-
-  defp chart_x_axis_ticks(from_datetime, to_datetime, granularity) do
-    total_seconds =
-      to_datetime
-      |> NaiveDateTime.diff(from_datetime, :second)
-      |> max(0)
-
-    ticks_count = chart_x_ticks_count()
-    max_index = max(ticks_count - 1, 1)
-
-    Enum.map(0..(ticks_count - 1), fn index ->
-      ratio = index / max_index
-      seconds_offset = round(total_seconds * ratio)
-      tick_datetime = NaiveDateTime.add(from_datetime, seconds_offset, :second)
-      x = Float.round(chart_left_padding() + ratio * chart_plot_width(), 2)
-
-      anchor =
-        cond do
-          index == 0 -> "start"
-          index == max_index -> "end"
-          true -> "middle"
-        end
-
-      %{x: x, anchor: anchor, label: format_axis_datetime(tick_datetime, granularity)}
-    end)
-  end
+  defp format_count(count), do: count |> Integer.to_string() |> String.replace(~r/\B(?=(\d{3})+(?!\d))/, ",")
 
   @impl true
   def render(assigns) do
     ~H"""
-    <% registrations_granularity = chart_granularity(@registrations_window) %>
-    <% games_granularity = chart_granularity(@games_window) %>
-    <% active_users_granularity = chart_granularity(@active_users_window) %>
-    <div class="container-fluid px-0">
-      <div class="cb-bg-panel cb-rounded cb-border-color border shadow-sm p-4">
-        <h1 class="text-white mb-1">Codebattle Admin Dashboard</h1>
-        <p class="cb-text mb-4">
-          Operational overview with real-time platform totals, user growth, and activity trends.
-        </p>
+    <div class="admin-overview">
+      <header class="admin-overview-header">
+        <h1>Admin overview</h1>
+        <a href="/admin/events/new" class="admin-action-primary"><span aria-hidden="true">+</span>
+        Create event</a>
+      </header>
 
-        <div class="row">
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Users</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">{@stats.users}</div>
-            </div>
+      <section class="admin-totals" aria-label="Platform totals">
+        <.total label="Users" count={@stats.users} href="/admin/users" />
+        <.total label="Tasks" count={@stats.tasks} href="/tasks" />
+        <.total
+          label="Games created"
+          count={@stats.games}
+          href="/admin/games"
+          link_label="View online games"
+        />
+        <.total label="Tournaments" count={@stats.tournaments} href="/admin/tournaments" />
+      </section>
+
+      <div class="admin-overview-grid">
+        <section class="admin-card admin-activity" aria-labelledby="admin-activity-title">
+          <div class="admin-card-header">
+            <h2 id="admin-activity-title">Platform activity</h2>
+            <nav class="admin-ranges" aria-label="Activity date range">
+              <.link
+                :for={{key, label, _granularity, _bucket_label} <- @chart_windows}
+                patch={chart_path(@metric, Map.put(@windows, @metric, key))}
+                aria-current={if @windows[@metric] == key, do: "true"}
+              >
+                {label}
+              </.link>
+            </nav>
           </div>
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Tasks</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">{@stats.tasks}</div>
-            </div>
-          </div>
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Games</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">{@stats.games}</div>
-            </div>
-          </div>
-          <div class="col-12 col-sm-6 col-xl-3 mb-3">
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 h-100">
-              <div class="cb-text text-uppercase">Tournaments</div>
-              <div class="text-white" style="font-size: 2rem; font-weight: 700;">
-                {@stats.tournaments}
+          <nav class="admin-metrics" aria-label="Activity metric">
+            <.link
+              :for={{key, label} <- @metrics}
+              patch={chart_path(key, @windows)}
+              aria-current={if @metric == key, do: "true"}
+            >
+              {label}
+            </.link>
+          </nav>
+          <.async_result :let={chart} assign={@chart}>
+            <:loading>
+              <div class="admin-chart-message" role="status">Loading activity…</div>
+            </:loading>
+            <:failed>
+              <div class="admin-chart-message" role="status">
+                <p>Activity data could not be loaded.</p>
+                <button type="button" class="admin-action-secondary" phx-click="retry_chart">Try again</button>
               </div>
+            </:failed>
+            <div id={"admin-chart-#{@metric}"} class="admin-chart">
+              <div class="admin-chart-header">
+                <div>
+                  <div class="admin-chart-value">{format_count(chart.summary)}</div>
+                  <div class="admin-chart-caption">
+                    {if @metric == "active_users", do: "#{@bucket_label} peak", else: "Total in range"}
+                  </div>
+                </div>
+                <div class="admin-chart-period">
+                  <span>{@bucket_label} · UTC</span>
+                  <span>
+                    {format_chart_datetime(chart.from, chart.granularity)} – {format_chart_datetime(
+                      chart.to,
+                      chart.granularity
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <div :if={chart.peak == 0} class="admin-chart-message">
+                No activity recorded in this range.
+              </div>
+              <.trend_plot
+                :if={chart.peak > 0}
+                chart={chart}
+                label={List.keyfind!(@metrics, @metric, 0) |> elem(1)}
+              />
+              <p :if={chart.peak > 0} class="admin-chart-caption mt-2 mb-0">
+                <%= if @metric == "active_users" do %>
+                  Unique players are counted separately in each interval.
+                <% else %>
+                  Peak per interval: {format_count(chart.peak)}
+                <% end %>
+              </p>
+              <details :if={chart.peak > 0} class="admin-chart-data">
+                <summary>View chart data</summary>
+                <div
+                  class="table-responsive admin-chart-table"
+                  tabindex="0"
+                  role="region"
+                  aria-label="Chart data"
+                >
+                  <table class="table mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">Interval start (UTC)</th><th scope="col">Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr :for={bucket <- Enum.reverse(chart.buckets)}>
+                        <th scope="row">{format_chart_datetime(bucket.bucket, chart.granularity)}</th>
+                        <td>{format_count(bucket.count)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
             </div>
+          </.async_result>
+        </section>
+
+        <section class="admin-card admin-quick-links" aria-labelledby="admin-quick-links-title">
+          <div class="admin-card-header">
+            <h2 id="admin-quick-links-title">Quick tools</h2>
           </div>
-        </div>
-
-        <.live_component module={CodebattleWeb.Live.Admin.OnboardingFunnel} id="onboarding-funnel" />
-
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-2">
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <h3 class="text-white mb-0">{chart_title(registrations_granularity)}</h3>
-            <%= if @registrations_chart.ok? do %>
-              <span class="cb-text">
-                {format_chart_datetime(
-                  @registrations_chart.result.joins_from,
-                  @registrations_chart.result.granularity
-                )} to {format_chart_datetime(
-                  @registrations_chart.result.joins_to,
-                  @registrations_chart.result.granularity
-                )} • Total: {@registrations_chart.result.total_joins}
-              </span>
-            <% else %>
-              <span class="cb-text">Loading chart data...</span>
-            <% end %>
+          <div class="admin-tool-list">
+            <.tool
+              href="/admin/feedback"
+              short="FB"
+              label="Feedback inbox"
+              description="Review reports from players"
+            />
+            <.tool
+              href="/admin/code-checks?tab=failures"
+              short="CC"
+              label="Code check failures"
+              description="Investigate failed runner checks"
+            />
+            <.tool
+              href="/admin/connections"
+              short="CN"
+              label="Live connections"
+              description="Inspect connected sessions"
+            />
+            <.tool
+              href="/admin/tournament_duplicator"
+              short="DT"
+              label="Duplicate tournament"
+              description="Create copies of an existing tournament"
+            />
           </div>
-
-          <%= if @registrations_chart.ok? do %>
-            <svg
-              viewBox="0 0 940 240"
-              width="100%"
-              height="240"
-              role="img"
-              aria-label="User joins trend"
-            >
-              <rect x="0" y="0" width="940" height="240" rx="8" ry="8" fill="#15151c"></rect>
-              <%= for line <- chart_scale_lines(@registrations_chart.result.max_joins) do %>
-                <line
-                  x1={chart_left_padding()}
-                  y1={line.y}
-                  x2={chart_plot_end_x()}
-                  y2={line.y}
-                  stroke={chart_grid_color()}
-                  stroke-width="1"
-                >
-                </line>
-                <text
-                  x="46"
-                  y={line.y + 4}
-                  fill={chart_axis_text_color()}
-                  font-size="11"
-                  text-anchor="end"
-                >
-                  {line.value}
-                </text>
-              <% end %>
-              <path
-                d={@registrations_chart.result.joins_chart_path}
-                fill="none"
-                stroke={chart_series_color(:registrations)}
-                stroke-width="3"
-                stroke-linejoin="round"
-                stroke-linecap="round"
-              >
-              </path>
-              <line
-                x1={chart_left_padding()}
-                y1={chart_plot_end_y()}
-                x2={chart_plot_end_x()}
-                y2={chart_plot_end_y()}
-                stroke={chart_axis_text_color()}
-                stroke-width="1"
-              >
-              </line>
-              <%= for tick <- chart_x_axis_ticks(
-                @registrations_chart.result.joins_from,
-                @registrations_chart.result.joins_to,
-                @registrations_chart.result.granularity
-              ) do %>
-                <line
-                  x1={tick.x}
-                  y1={chart_plot_end_y()}
-                  x2={tick.x}
-                  y2={chart_plot_end_y() + 4}
-                  stroke={chart_axis_text_color()}
-                  stroke-width="1"
-                >
-                </line>
-                <text
-                  x={tick.x}
-                  y={chart_height() - 6}
-                  fill={chart_axis_text_color()}
-                  font-size="11"
-                  text-anchor={tick.anchor}
-                >
-                  {tick.label}
-                </text>
-              <% end %>
-            </svg>
-
-            <div class="text-center cb-text mt-1">
-              {peak_label(@registrations_chart.result.granularity)}: {@registrations_chart.result.max_joins}
-            </div>
-          <% else %>
-            <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
-              Chart is loading...
-            </div>
-          <% end %>
-
-          <div class="d-flex flex-wrap justify-content-center mt-3">
-            <%= for window_key <- @chart_window_order do %>
-              <% window = @chart_windows[window_key] %>
-              <button
-                type="button"
-                phx-click="set_chart_window"
-                phx-value-window={window_key}
-                phx-value-target="registrations"
-                class={window_button_class(window_key, @registrations_window)}
-                style={window_button_style(window_key, @registrations_window, :registrations)}
-              >
-                {window.label} ({window.bucket_label})
-              </button>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-3">
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <h3 class="text-white mb-0">{games_chart_title(games_granularity)}</h3>
-            <%= if @games_chart.ok? do %>
-              <span class="cb-text">
-                {format_chart_datetime(
-                  @games_chart.result.games_from,
-                  @games_chart.result.granularity
-                )} to {format_chart_datetime(
-                  @games_chart.result.games_to,
-                  @games_chart.result.granularity
-                )} • Total: {@games_chart.result.total_games}
-              </span>
-            <% else %>
-              <span class="cb-text">Loading chart data...</span>
-            <% end %>
-          </div>
-
-          <%= if @games_chart.ok? do %>
-            <svg viewBox="0 0 940 240" width="100%" height="240" role="img" aria-label="Games trend">
-              <rect x="0" y="0" width="940" height="240" rx="8" ry="8" fill="#15151c"></rect>
-              <%= for line <- chart_scale_lines(@games_chart.result.max_games) do %>
-                <line
-                  x1={chart_left_padding()}
-                  y1={line.y}
-                  x2={chart_plot_end_x()}
-                  y2={line.y}
-                  stroke={chart_grid_color()}
-                  stroke-width="1"
-                >
-                </line>
-                <text
-                  x="46"
-                  y={line.y + 4}
-                  fill={chart_axis_text_color()}
-                  font-size="11"
-                  text-anchor="end"
-                >
-                  {line.value}
-                </text>
-              <% end %>
-              <path
-                d={@games_chart.result.games_chart_path}
-                fill="none"
-                stroke={chart_series_color(:games)}
-                stroke-width="3"
-                stroke-linejoin="round"
-                stroke-linecap="round"
-              >
-              </path>
-              <line
-                x1={chart_left_padding()}
-                y1={chart_plot_end_y()}
-                x2={chart_plot_end_x()}
-                y2={chart_plot_end_y()}
-                stroke={chart_axis_text_color()}
-                stroke-width="1"
-              >
-              </line>
-              <%= for tick <- chart_x_axis_ticks(
-                @games_chart.result.games_from,
-                @games_chart.result.games_to,
-                @games_chart.result.granularity
-              ) do %>
-                <line
-                  x1={tick.x}
-                  y1={chart_plot_end_y()}
-                  x2={tick.x}
-                  y2={chart_plot_end_y() + 4}
-                  stroke={chart_axis_text_color()}
-                  stroke-width="1"
-                >
-                </line>
-                <text
-                  x={tick.x}
-                  y={chart_height() - 6}
-                  fill={chart_axis_text_color()}
-                  font-size="11"
-                  text-anchor={tick.anchor}
-                >
-                  {tick.label}
-                </text>
-              <% end %>
-            </svg>
-
-            <div class="text-center cb-text mt-1">
-              {peak_label(@games_chart.result.granularity)}: {@games_chart.result.max_games}
-            </div>
-          <% else %>
-            <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
-              Chart is loading...
-            </div>
-          <% end %>
-
-          <div class="d-flex flex-wrap justify-content-center mt-3">
-            <%= for window_key <- @chart_window_order do %>
-              <% window = @chart_windows[window_key] %>
-              <button
-                type="button"
-                phx-click="set_chart_window"
-                phx-value-window={window_key}
-                phx-value-target="games"
-                class={window_button_class(window_key, @games_window)}
-                style={window_button_style(window_key, @games_window, :games)}
-              >
-                {window.label} ({window.bucket_label})
-              </button>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mt-3">
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-            <h3 class="text-white mb-0">{active_users_chart_title(active_users_granularity)}</h3>
-            <%= if @active_users_chart.ok? do %>
-              <span class="cb-text">
-                {format_chart_datetime(
-                  @active_users_chart.result.active_users_from,
-                  @active_users_chart.result.granularity
-                )} to {format_chart_datetime(
-                  @active_users_chart.result.active_users_to,
-                  @active_users_chart.result.granularity
-                )} • Total: {@active_users_chart.result.total_active_users}
-              </span>
-            <% else %>
-              <span class="cb-text">Loading chart data...</span>
-            <% end %>
-          </div>
-
-          <%= if @active_users_chart.ok? do %>
-            <svg
-              viewBox="0 0 940 240"
-              width="100%"
-              height="240"
-              role="img"
-              aria-label="Unique active users trend"
-            >
-              <rect x="0" y="0" width="940" height="240" rx="8" ry="8" fill="#15151c"></rect>
-              <%= for line <- chart_scale_lines(@active_users_chart.result.max_active_users) do %>
-                <line
-                  x1={chart_left_padding()}
-                  y1={line.y}
-                  x2={chart_plot_end_x()}
-                  y2={line.y}
-                  stroke={chart_grid_color()}
-                  stroke-width="1"
-                >
-                </line>
-                <text
-                  x="46"
-                  y={line.y + 4}
-                  fill={chart_axis_text_color()}
-                  font-size="11"
-                  text-anchor="end"
-                >
-                  {line.value}
-                </text>
-              <% end %>
-              <path
-                d={@active_users_chart.result.active_users_chart_path}
-                fill="none"
-                stroke={chart_series_color(:active_users)}
-                stroke-width="3"
-                stroke-linejoin="round"
-                stroke-linecap="round"
-              >
-              </path>
-              <line
-                x1={chart_left_padding()}
-                y1={chart_plot_end_y()}
-                x2={chart_plot_end_x()}
-                y2={chart_plot_end_y()}
-                stroke={chart_axis_text_color()}
-                stroke-width="1"
-              >
-              </line>
-              <%= for tick <- chart_x_axis_ticks(
-                @active_users_chart.result.active_users_from,
-                @active_users_chart.result.active_users_to,
-                @active_users_chart.result.granularity
-              ) do %>
-                <line
-                  x1={tick.x}
-                  y1={chart_plot_end_y()}
-                  x2={tick.x}
-                  y2={chart_plot_end_y() + 4}
-                  stroke={chart_axis_text_color()}
-                  stroke-width="1"
-                >
-                </line>
-                <text
-                  x={tick.x}
-                  y={chart_height() - 6}
-                  fill={chart_axis_text_color()}
-                  font-size="11"
-                  text-anchor={tick.anchor}
-                >
-                  {tick.label}
-                </text>
-              <% end %>
-            </svg>
-
-            <div class="text-center cb-text mt-1">
-              {peak_label(@active_users_chart.result.granularity)}: {@active_users_chart.result.max_active_users}
-            </div>
-          <% else %>
-            <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
-              Chart is loading...
-            </div>
-          <% end %>
-
-          <div class="d-flex flex-wrap justify-content-center mt-3">
-            <%= for window_key <- @chart_window_order do %>
-              <% window = @chart_windows[window_key] %>
-              <button
-                type="button"
-                phx-click="set_chart_window"
-                phx-value-window={window_key}
-                phx-value-target="active_users"
-                class={window_button_class(window_key, @active_users_window)}
-                style={window_button_style(window_key, @active_users_window, :active_users)}
-              >
-                {window.label} ({window.bucket_label})
-              </button>
-            <% end %>
-          </div>
-        </div>
+        </section>
       </div>
+
+      <.live_component module={CodebattleWeb.Live.Admin.OnboardingFunnel} id="onboarding-funnel" />
     </div>
+    """
+  end
+
+  attr :label, :string, required: true
+  attr :count, :integer, required: true
+  attr :href, :string, required: true
+  attr :link_label, :string, default: nil
+
+  defp total(assigns) do
+    ~H"""
+    <a
+      class="admin-card admin-total"
+      href={@href}
+      title={@link_label}
+      aria-label={@link_label && "#{@label}, #{format_count(@count)}. #{@link_label}"}
+    >
+      <span class="admin-total-label">{@label}</span>
+      <span class="admin-total-value">{format_count(@count)}</span>
+      <span class="admin-total-arrow" aria-hidden="true"></span>
+    </a>
+    """
+  end
+
+  attr :href, :string, required: true
+  attr :short, :string, required: true
+  attr :label, :string, required: true
+  attr :description, :string, required: true
+
+  defp tool(assigns) do
+    ~H"""
+    <a href={@href} class="admin-tool">
+      <span class="admin-tool-icon" aria-hidden="true">{@short}</span>
+      <span>
+        <strong>{@label}</strong>
+        <small>{@description}</small>
+      </span>
+      <span class="admin-tool-arrow" aria-hidden="true"></span>
+    </a>
+    """
+  end
+
+  attr :chart, :map, required: true
+  attr :label, :string, required: true
+
+  defp trend_plot(assigns) do
+    assigns =
+      assign(assigns,
+        width: @chart_width,
+        height: @chart_height,
+        left: @chart_left,
+        right: @chart_right,
+        bottom: @chart_bottom
+      )
+
+    ~H"""
+    <svg
+      viewBox={"0 0 #{@width} #{@height}"}
+      class="admin-chart-plot"
+      role="img"
+      aria-label={"#{@label} over time"}
+    >
+      <defs>
+        <linearGradient id="admin-chart-fill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="currentColor" stop-opacity=".25"></stop>
+          <stop offset="100%" stop-color="currentColor" stop-opacity=".02"></stop>
+        </linearGradient>
+      </defs>
+      <g :for={line <- @chart.scale} class="admin-chart-scale">
+        <line x1={@left} y1={line.y} x2={@right} y2={line.y} vector-effect="non-scaling-stroke">
+        </line>
+        <text x={@left - 10} y={line.y + 5} text-anchor="end">{format_count(line.value)}</text>
+      </g>
+      <polygon
+        points={"#{elem(@chart.first, 0)},#{@bottom} #{@chart.points} #{elem(@chart.last, 0)},#{@bottom}"}
+        fill="url(#admin-chart-fill)"
+      >
+      </polygon>
+      <polyline points={@chart.points} fill="none" vector-effect="non-scaling-stroke"></polyline>
+      <circle cx={elem(@chart.last, 0)} cy={elem(@chart.last, 1)} r="4"></circle>
+      <text
+        :for={{tick, index} <- Enum.with_index(@chart.ticks)}
+        class={[
+          "admin-chart-tick",
+          rem(index, 2) == 1 && index != length(@chart.ticks) - 1 && "admin-chart-tick-detail"
+        ]}
+        x={tick.x}
+        y={@bottom + 25}
+        text-anchor={tick.anchor}
+      >
+        {tick.label}
+      </text>
+    </svg>
     """
   end
 end

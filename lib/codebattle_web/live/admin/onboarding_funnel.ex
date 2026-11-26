@@ -47,13 +47,13 @@ defmodule CodebattleWeb.Live.Admin.OnboardingFunnel do
             type="button"
             phx-click="refresh_onboarding"
             phx-target={@myself}
-            class="btn btn-sm btn-outline-secondary"
+            class="admin-action-secondary"
           >Refresh</button>
         </div>
       </div>
       <p class="cb-text mb-3">
-        Guest sessions first seen on the landing page in this period; milestones reached through now.
-        Reloads count once. These are browser sessions, not unique people. Records expire after 90 days.
+        Counts browser sessions from their first landing and includes milestones reached through today.
+        Reloads count once. Records expire after 90 days.
       </p>
       <p :if={@report.total == 0} class="cb-text" id="onboarding-empty">
         No landing sessions recorded in this period. Tracking starts with this onboarding flow.
@@ -83,11 +83,11 @@ defmodule CodebattleWeb.Live.Admin.OnboardingFunnel do
           </tbody>
         </table>
       </div>
-      <p class="cb-text" id="onboarding-sign-ins">
+      <p class="cb-text mb-0" id="onboarding-sign-ins">
         Signed in after landing: <strong>{@report.signed_in}</strong>.
         Includes existing accounts; this is separate from the practice funnel.
       </p>
-      <div :if={@report.languages != []}>
+      <div :if={@report.languages != []} class="mt-3">
         <h3 class="text-white h5">First practice by language</h3>
         <div class="table-responsive">
           <table class="table cb-text mb-0">
